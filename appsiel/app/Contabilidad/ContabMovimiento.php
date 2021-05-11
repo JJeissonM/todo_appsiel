@@ -12,6 +12,9 @@ use App\Core\TipoDocApp;
 use App\Sistema\TipoTransaccion;
 use App\Contabilidad\ContabCuenta;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
 class ContabMovimiento extends Model
 {
     // tipo_transaccion se refiere al tipo de transacción de la línea

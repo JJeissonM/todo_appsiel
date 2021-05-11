@@ -329,7 +329,7 @@ class RecaudoCxcController extends Controller
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => 0,
                         'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_transferencia_consignacion,
-                        'detalle_operacion' => $tipo_operacion . ' Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion,
+                        'detalle_operacion' => $tipo_operacion . '. Comprobante número ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion,
                         'valor' => $valor_linea
                     ] + $doc_encabezado->toArray();
             
@@ -382,7 +382,7 @@ class RecaudoCxcController extends Controller
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => 0,
                         'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_tarjeta_debito,
-                        'detalle_operacion' => $tipo_operacion . ' Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito,
+                        'detalle_operacion' => $tipo_operacion . '. Comprobante número ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito,
                         'valor' => $valor_linea
                     ] + $doc_encabezado->toArray();
             
@@ -435,7 +435,7 @@ class RecaudoCxcController extends Controller
                         'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                         'teso_caja_id' => 0,
                         'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_tarjeta_credito,
-                        'detalle_operacion' => $tipo_operacion . ' Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_credito,
+                        'detalle_operacion' => $tipo_operacion . '. Comprobante número ' . $lineas_registros[$i]->numero_comprobante_tarjeta_credito,
                         'valor' => $valor_linea
                     ] + $doc_encabezado->toArray();
             
@@ -651,14 +651,16 @@ class RecaudoCxcController extends Controller
             - cxc_abonos y su movimiento en contab_movimientos
             - teso_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
     */
-    public static function anular_recaudo_cxc($id)
+    public function anular_recaudo_cxc($id)
     {        
         $recaudo = TesoDocEncabezado::find( $id );
 
-        $array_wheres = ['core_empresa_id'=>$recaudo->core_empresa_id, 
-            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
-            'consecutivo' => $recaudo->consecutivo];
+        $array_wheres = [
+                            'core_empresa_id' => $recaudo->core_empresa_id, 
+                            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                            'consecutivo' => $recaudo->consecutivo
+                        ];
 
         // >>> Validaciones inciales
 
@@ -713,18 +715,24 @@ class RecaudoCxcController extends Controller
             $linea->delete();
         }
 
+        // Se elimina el movimimeto de cartera (CxC o CxP)
+        CxcMovimiento::where($array_wheres)->delete();
+        CxpMovimiento::where($array_wheres)->delete();
+
         // Borrar movimiento de tesorería del recaudo y su contabilidad. Además actualizar estado del encabezado del documento de recaudo.
-        TesoMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
+        TesoMovimiento::where( $array_wheres )->delete();
 
         // Borrar movimiento contable generado por el documento de pago ( DB: Caja/Banco, CR: CxC )
-        ContabMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
+        ContabMovimiento::where( $array_wheres )->delete();
 
         // Si es el Recaudo de una o varias facturas asociadas a un registro de Plan de Pagos de una libreta de pagos
-        $recaudos_libreta = TesoRecaudosLibreta::where([
-                                                    ['core_tipo_transaccion_id','=',$recaudo->core_tipo_transaccion_id],
-                                                    ['core_tipo_doc_app_id','=',$recaudo->core_tipo_doc_app_id],
-                                                    ['consecutivo','=',$recaudo->consecutivo]
-                                                ])->get();
+        $recaudos_libreta = TesoRecaudosLibreta::where( [
+                                                            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                                                            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                                                            'consecutivo' => $recaudo->consecutivo
+                                                        ] )
+                                                ->get();
+
         foreach( $recaudos_libreta AS $recaudo_libreta )
         {
             $recaudo_libreta->anular();
@@ -733,28 +741,45 @@ class RecaudoCxcController extends Controller
         // Marcar como anulado el encabezado
         $recaudo->update(['estado'=>'Anulado']);
 
+        $this->restablecer_retenciones( $recaudo );
+
         $this->restablecer_cheque( $recaudo );
 
         return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
         
     }
 
+    public function restablecer_retenciones( $recaudo )
+    {
+        $registros = RegistroRetencion::where( [
+                                                'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                                                'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                                                'consecutivo' => $recaudo->consecutivo
+                                            ] )
+                                        ->get();
 
+        foreach ( $registros AS $registro )
+        {
+            $registro->estado = 'Anulado';
+            $registro->modificado_por = Auth::user()->email;
+            $registro->save();
+        }
+    }
 
     public function restablecer_cheque( $recaudo )
     {
-        $cheque_recibido = ControlCheque::where([
-                                                    'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
-                                                    'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+        $cheques_recibidos = ControlCheque::where([
+                                                    'core_tipo_transaccion_id_origen' => $recaudo->core_tipo_transaccion_id,
+                                                    'core_tipo_doc_app_id_origen' => $recaudo->core_tipo_doc_app_id,
                                                     'consecutivo' => $recaudo->consecutivo
                                                 ])
-                                        ->get()
-                                        ->first();
+                                        ->get();
 
-        if ( !is_null($cheque_recibido) )
+        foreach ( $cheques_recibidos AS $cheque )
         {
-            $cheque_recibido->estado = 'Anulado';
-            $cheque_recibido->save();
+            $cheque->estado = 'Anulado';
+            $cheque->modificado_por = Auth::user()->email;
+            $cheque->save();
         }
     }
 

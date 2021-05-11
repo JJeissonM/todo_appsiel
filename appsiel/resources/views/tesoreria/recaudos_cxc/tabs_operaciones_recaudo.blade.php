@@ -1,15 +1,15 @@
 <h5>
 	Operaciones de recaudo 
 	<small>
-		<button style="border: 0; background: transparent;" title="Mostrar" id="btn_mostrar_operaciones">
+		<button style="border: 0; background: transparent; display: none;" title="Mostrar" id="btn_mostrar_operaciones">
 			<i class="fa fa-eye"></i>
 		</button>
-		<button style="border: 0; background: transparent; display: none;" title="Ocultar" id="btn_ocultar_operaciones">
+		<button style="border: 0; background: transparent;" title="Ocultar" id="btn_ocultar_operaciones">
 			<i class="fa fa-eye-slash"></i>
 		</button>
 	</small>
 </h5>
-<div id="div_operaciones" style="display: none;">
+<div id="div_operaciones">
 	<hr>
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#tab1"> Recaudo cartera (CxC) </a></li>
