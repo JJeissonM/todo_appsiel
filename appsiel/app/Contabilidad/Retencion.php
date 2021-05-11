@@ -17,6 +17,11 @@ class Retencion extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
+    public function categoria_retencion()
+    {
+        return $this->belongsTo( CategoriaRetencion::class, 'categoria_retenciones_id' );
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return Retencion::leftJoin('contab_cuentas AS ctas_ventas', 'ctas_ventas.id', '=', 'contab_retenciones.cta_ventas_id')

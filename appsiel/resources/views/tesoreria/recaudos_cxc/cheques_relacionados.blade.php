@@ -5,7 +5,7 @@
 <table class="table table-bordered">
     <tr>
         <td style="text-align: center; background-color: #ddd;"> 
-            <span style="text-align: right; font-weight: bold;"> Cheques relacionados </span> 
+            <span style="text-align: right; font-weight: bold;"> CHEQUES DE TERCEROS </span> 
         </td>
     </tr>
 </table>

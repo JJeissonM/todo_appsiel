@@ -58,45 +58,45 @@
             </td>
         </tr>
     </table>
-<div class="subhead">
-    <table >
-        <tr>
-            <td >
-                <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
-                <br/>
-                <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
-			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
-                <br/>
-                <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
-                <br/>
-                <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
-                @include('matriculas.facturas.datos_estudiante_recaudo')
-            </td>
-            <td>
-                @if( !is_null( $caja ) )
-                    <b>Caja: &nbsp;&nbsp;</b> {{ $caja->descripcion }}
-                    <br>
-                @endif
-                @if( !is_null( $cuenta_bancaria ) )
-                    <b>Cuenta bancaria: &nbsp;&nbsp;</b> Cuenta {{ $cuenta_bancaria->tipo_cuenta }} {{ $cuenta_bancaria->entidad_financiera->descripcion }} No. {{ $cuenta_bancaria->descripcion }}
-                    <br>
-                @endif
-            </td>
-        </tr>
-        <tr>        
-            <td colspan="2">
-                
-            </td>
-        </tr>
-    </table>
-</div>
     
+    <div class="subhead">
+        <table >
+            <tr>
+                <td >
+                    <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
+                    <br/>
+                    <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
+    			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
+                    <br/>
+                    <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
+                    <br/>
+                    <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+                    @include('matriculas.facturas.datos_estudiante_recaudo')
+                </td>
+                <td>
+                    @if( !is_null( $caja ) )
+                        <b>Caja: &nbsp;&nbsp;</b> {{ $caja->descripcion }}
+                        <br>
+                    @endif
+                    @if( !is_null( $cuenta_bancaria ) )
+                        <b>Cuenta bancaria: &nbsp;&nbsp;</b> Cuenta {{ $cuenta_bancaria->tipo_cuenta }} {{ $cuenta_bancaria->entidad_financiera->descripcion }} No. {{ $cuenta_bancaria->descripcion }}
+                        <br>
+                    @endif
+                </td>
+            </tr>
+            <tr>        
+                <td colspan="2">
+                    
+                </td>
+            </tr>
+        </table>
+    </div>
 
     <br>
 
     <table class="table table-bordered">
         <tr>
-            <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Documentos pagados </span> </td>
+            <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> DOCUMENTOS PAGADOS </span> </td>
         </tr>
     </table>
     
@@ -148,7 +148,11 @@
     </table>
 
 
+    @include('tesoreria.medios_de_pago.tabla_show_detalles')
+
     @include('tesoreria.recaudos_cxc.cheques_relacionados')
+
+    @include('tesoreria.recaudos_cxc.retenciones_relacionadas')
 
 
     @if( !empty($registros_contabilidad) ) 

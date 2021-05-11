@@ -13,6 +13,11 @@ class RegistroRetencion extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Núm. Certificado', 'F. certificado', 'F. recepción cert.', 'Doc. ID Tercero', 'Tercero', 'Retención', 'Base Ret.', 'Tasa', 'Valor', 'Doc. relacionado', 'Estado'];
 
+    public function retencion()
+    {
+        return $this->belongsTo(Retencion::class, 'contab_retencion_id' );
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return RegistroRetencion::select('contab_registros_retenciones.numero_certificado AS campo1', 'contab_registros_retenciones.fecha_certificado AS campo2', 'contab_registros_retenciones.fecha_recepcion_certificado AS campo3', 'contab_registros_retenciones.numero_doc_identidad_agente_retencion AS campo4', 'contab_registros_retenciones.razon_social_agente_retencion AS campo5', 'contab_registros_retenciones.contab_retencion_id AS campo6', 'contab_registros_retenciones.valor_base_retencion AS campo7', 'contab_registros_retenciones.tasa_retencion AS campo8', 'contab_registros_retenciones.valor AS campo9', 'contab_registros_retenciones.core_tipo_transaccion_id AS campo10', 'contab_registros_retenciones.estado AS campo11', 'contab_registros_retenciones.id AS campo12')

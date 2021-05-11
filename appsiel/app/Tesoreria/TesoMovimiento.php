@@ -35,6 +35,11 @@ class TesoMovimiento extends Model
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
+    public function motivo()
+    {
+        return $this->belongsTo( TesoMotivo::class,'teso_motivo_id');
+    }
+
     public function caja()
     {
         return $this->belongsTo( TesoCaja::class,'teso_caja_id');
@@ -65,8 +70,6 @@ class TesoMovimiento extends Model
                                             'consecutivo' => $this->consecutivo
                                         ] )
                                     ->get()->first();
-
-                                    //dd( $this->core_tipo_transaccion_id,$this->core_tipo_doc_app_id,$this->consecutivo, $teso_motivo_id, $valor_movimiento );
 
         if ( is_null($encabezado) )
         {

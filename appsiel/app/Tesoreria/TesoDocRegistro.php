@@ -10,6 +10,31 @@ class TesoDocRegistro extends Model
 {
     protected $fillable = ['teso_encabezado_id','teso_motivo_id','core_tercero_id','teso_medio_recaudo_id','teso_caja_id','teso_cuenta_bancaria_id','detalle_operacion','valor','estado'];
 
+    public function motivo()
+    {
+        return $this->belongsTo(TesoMotivo::class, 'teso_motivo_id');
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function medio_pago()
+    {
+        return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
+    }
+
+    public function caja()
+    {
+        return $this->belongsTo(TesoCaja::class, 'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo(TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
+
     public static function get_registros_impresion( $doc_encabezado_id )
     {
         return TesoDocRegistro::leftJoin('teso_motivos','teso_motivos.id','=','teso_doc_registros.teso_motivo_id')
