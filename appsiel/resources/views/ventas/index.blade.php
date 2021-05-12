@@ -36,6 +36,10 @@
 			text-align: center;
 		}
 
+		thead > tr{
+			background-color: unset;
+		}
+
 		.card{
 			border-radius: 12px 12px 0 0;
 			border: 2px solid #ddd;
