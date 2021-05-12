@@ -1,8 +1,8 @@
 <br>
 <div class="row">
 	<div class="col-md-12">
-		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
-			<h5>Registros de Retenciones</h5>
+		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px;">
+			<h5 class="text-center">Registros de Retenciones</h5>
 			<hr>
 			<div class="row">
 				<div class="col-md-6" >
@@ -12,7 +12,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('contab_retencion_id', null, 'Tipo de retención', $retenciones, []) }}
+									{{ Form::bsSelect('contab_retencion_id', null, 'Tipo Ret.', $retenciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -24,24 +24,24 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsFecha( 'fecha_certificado', date('Y-m-d'), 'Fecha certificado', [], []) }}
+									{{ Form::bsFecha( 'fecha_certificado', date('Y-m-d'), 'Fecha Cert.', [], []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsFecha( 'fecha_recepcion_certificado', date('Y-m-d'), 'Fecha recepción certificado', [], []) }}
+									{{ Form::bsFecha( 'fecha_recepcion_certificado', date('Y-m-d'), 'Fecha Recep. Cert.', [], []) }}
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'numero_certificado', null, 'Número certificado', []) }}
+									{{ Form::bsText( 'numero_certificado', null, 'N° Cert.', []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'numero_doc_identidad_agente_retencion', null, config('configuracion.tipo_identificador') . ' agente de retención', []) }}
+									{{ Form::bsText( 'numero_doc_identidad_agente_retencion', null, config('configuracion.tipo_identificador') . ' Ret', []) }}
 								</div>
 							</div>
 						</div>
@@ -55,7 +55,7 @@
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<div class="row">
 							<div class="col-md-12">
-								<h6 style="width: 100%; text-align: center;">LÍNEAS INGRESADAS</h6>
+								<h6 style="width: 100%; text-align: center;">PAGOS INGRESADAS</h6>
 								<hr>
 								<table class="table table-striped table-bordered" id="tabla_registros_retenciones">
 									<thead>

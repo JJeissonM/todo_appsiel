@@ -2,9 +2,9 @@
 <br>
 <div class="row">
 	<div class="col-md-12">
-		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
+		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px;">
 
-			<h5>Registros de pagos en Efectivo</h5>
+			<h5 class="text-center">Registros de pagos en Efectivo</h5>
 			<hr>
 
 			<div class="row">
@@ -15,7 +15,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_efectivo', null, 'Tipo de operación', $tipos_operaciones, []) }}
+									{{ Form::bsSelect('tipo_operacion_id_efectivo', null, 'Tipo Ope.', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -46,7 +46,7 @@
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<div class="row">
 							<div class="col-md-12">
-								<h6 style="width: 100%; text-align: center;">LÍNEAS INGRESADAS</h6>
+								<h6 style="width: 100%; text-align: center;">PAGOS INGRESADAS</h6>
 								<hr>
 								<table class="table table-striped table-bordered" id="tabla_registros_efectivo">
 									<thead>

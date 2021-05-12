@@ -11,12 +11,12 @@
 </h5>
 <div id="div_resumen_operaciones">
 	<hr>
-	<table class="table table-bordered">
+	<table class="table table-bordered table-striped">
 		<tbody>
 			<tr>
 				<td><b>Efectivo:</b></td>
 				<td id="valor_total_efectivo2" align="right" width="200px;">$ 0</td>
-				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
+				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
 				<td><b>Documentos de cartera:</b></td>
 				<td id="total_valor_documentos_cartera" align="right" width="200px;">$ 0</td>
 			</tr>
@@ -26,14 +26,14 @@
 					$ 0
 				</td>
 					<input type="hidden" name="input_valor_total_cuentas_bancarias" id="input_valor_total_cuentas_bancarias" value="0">
-				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
+				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
 				<td><b>Acreditaciones:</b></td>
 				<td id="valor_total_acreditaciones" align="right">$ 0</td>
 			</tr>
 			<tr>
 				<td><b>Cheques:</b></td>
 				<td id="valor_total_cheques2" align="right">$ 0</td>
-				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
+				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
 				<td><b>Otras operaciones:</b></td>
 				<td id="valor_total_otras_operaciones" align="right">
 					$ 0
@@ -43,7 +43,7 @@
 			<tr>
 				<td><b>Retenciones:</b></td>
 				<td id="valor_total_retencion2" align="right">$ 0</td>
-				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
+				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
 				<td colspan="2" style="background-color: #ddd;"> &nbsp; </td>
 			</tr>
 		</tbody>
@@ -51,7 +51,7 @@
 			<tr>
 				<td>&nbsp;</td>
 				<td id="valor_total_resumen_medios_pagos" align="right">$ 0</td>
-				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;">&nbsp;</td>
+				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
 				<td>&nbsp;</td>
 				<td id="valor_total_resumen_operaciones" align="right">
 					$ 0
