@@ -293,11 +293,11 @@
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td style="display: none;">'+ $('#caja_id_cheque').val() +'</td>';
+				celdas[ num_celda ] = '<td style="display: none;">'+ $('#detalle_cheque').val() +'</td>';
 				
 				num_celda++;
 
-				celdas[ num_celda ] = '<td style="display: none;">'+ $('#detalle_cheque').val() +'</td>';
+				celdas[ num_celda ] = '<td style="display: none;">'+ $('#caja_id_cheque').val() +'</td>';
 				
 				num_celda++;
 

@@ -1,26 +1,5 @@
 <?php  
-    $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
-
-    $medio_recaudo = $encabezado_documento->medio_recaudo;
-
-    switch ( $medio_recaudo->comportamiento )
-    {
-    	case 'Efectivo':
-    		$caja = $encabezado_documento->caja;
-    		$cuenta_bancaria = null;
-    		break;
-
-    	case 'Tarjeta bancaria':
-    		$cuenta_bancaria = $encabezado_documento->cuenta_bancaria;
-    		$caja = null;
-    		break;
-    	
-    	default:
-    		$caja = null;
-    		$cuenta_bancaria = null;
-    		break;
-    }
-    
+    $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;    
 ?>
 
 @extends('transaccion.show')

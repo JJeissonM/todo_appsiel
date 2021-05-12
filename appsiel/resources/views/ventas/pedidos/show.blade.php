@@ -1,7 +1,5 @@
 <?php
 	$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
-
-	//dd( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') );
 ?>
 
 @extends('transaccion.show')
@@ -10,25 +8,24 @@
 
 	{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
 	
-	@if($doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado=='Pendiente')
-		<!--{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'vtas_pedidos/id_fila/edit'.$variables_url ),'Editar') }}-->
+	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado == 'Pendiente')
 		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
 	@endif
 
 @endsection
 
 @section('botones_imprimir_email')
-Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
-{{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
-{{ Form::bsBtnEmail( 'vtas_pedidos_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
+	Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	{{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
+	{{ Form::bsBtnEmail( 'vtas_pedidos_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 @endsection
 
 @section('botones_anterior_siguiente')
-{!! $botones_anterior_siguiente->dibujar( 'vtas_pedidos/', $variables_url ) !!}
+	{!! $botones_anterior_siguiente->dibujar( 'vtas_pedidos/', $variables_url ) !!}
 @endsection
 
 @section('cabecera')
-	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 )
+	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' )
 		<div class="col-md-12">
 			<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
 				<input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
@@ -132,7 +129,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
 					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                     <td>
-                        @if( $doc_encabezado->estado = 'Pendiente' )
+                        @if( $doc_encabezado->estado == 'Pendiente' )
                             <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
 
                             @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])

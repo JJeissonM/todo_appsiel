@@ -29,7 +29,27 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
         $cantidad = count($lineas_registros);
         for ($i=0; $i < $cantidad; $i++) 
         {
-            $valor_linea = (float)$lineas_registros[$i]->valor_transferencia_consignacion;
+            $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion );
+
+            switch ( $motivo->movimiento )
+            {
+                case 'entrada':
+                    $valor_linea = (float)$lineas_registros[$i]->valor_transferencia_consignacion;
+                    $valor_debito = (float)$lineas_registros[$i]->valor_transferencia_consignacion;
+                    $valor_credito = 0;
+                    break;
+
+                case 'salida':
+                    $valor_linea = (float)$lineas_registros[$i]->valor_transferencia_consignacion * -1;
+                    $valor_debito = 0;
+                    $valor_credito = (float)$lineas_registros[$i]->valor_transferencia_consignacion;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+
             $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_transferencia_consignacion;
 
             $datos = [
@@ -39,7 +59,7 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
                         'teso_caja_id' => 0,
                         'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_transferencia_consignacion,
                         'detalle_operacion' => $tipo_operacion . '. Comprobante número ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion,
-                        'valor' => $valor_linea
+                        'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             
             TesoDocRegistro::create( $datos );
@@ -49,21 +69,21 @@ class RegistroDeTransferenciaConsignacion extends TesoDocEncabezado
             $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion;
             TesoMovimiento::create( $datos );
 
-            // Contabilizar DB
+            // Contabilizar
             $cuenta_bancaria = TesoCuentaBancaria::find( (int)$lineas_registros[$i]->banco_id_transferencia_consignacion );
             $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $cuenta_bancaria->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
+            $movimiento_contable->contabilizar_linea_registro( $datos, $cuenta_bancaria->contab_cuenta_id, $tipo_operacion, $valor_debito, $valor_credito );
 
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
+            // Contabilizar Contrapartida (Si no es movimiento de cartera)
+            // La contabilizacion para la Cartera se hace en el metodo almacenar_registros_cartera()
             if ( $tipo_operacion != 'Recaudo cartera' && $tipo_operacion != 'Pago proveedores' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion );
+            {
                 $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
+                // Se invierten los valores Debito y Credito de arriba
+                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, $valor_credito, $valor_debito );
             }
 
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
+            $this->transacciones_adicionales( $datos, $tipo_operacion, abs( $valor_linea ) );
         }
     }
 }

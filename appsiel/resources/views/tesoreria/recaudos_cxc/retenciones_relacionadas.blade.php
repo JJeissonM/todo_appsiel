@@ -5,7 +5,7 @@
 <table class="table table-bordered">
     <tr>
         <td style="text-align: center; background-color: #ddd;"> 
-            <span style="text-align: right; font-weight: bold;"> RETENCIONES SUFRIDAS </span> 
+            <span style="text-align: right; font-weight: bold;"> RETENCIONES </span> 
         </td>
     </tr>
 </table>

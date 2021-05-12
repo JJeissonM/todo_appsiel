@@ -212,7 +212,7 @@ use App\Core\Tercero;
 <table class="info">
     <tr>
         <td width="30%"><b>Cotizó:</b></td>
-        <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
+        <td>{{ $doc_encabezado->vendedor->tercero->descripcion }}</td>
     </tr>
     <tr>
         <td width="30%"><b>Condición de Venta:</b></td>

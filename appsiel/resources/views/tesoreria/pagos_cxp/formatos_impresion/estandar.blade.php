@@ -53,6 +53,13 @@
             </tr>
         </tfoot>
     </table>
+
+    @include('tesoreria.medios_de_pago.tabla_show_detalles')
+
+    @include('tesoreria.recaudos_cxc.cheques_relacionados')
+
+    @include('tesoreria.recaudos_cxc.retenciones_relacionadas')
+
 @endsection
 
 @section('tabla_registros_3')
