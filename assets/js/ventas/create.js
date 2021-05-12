@@ -502,7 +502,6 @@ $(document).ready(function(){
 		}
 
 	});
-	
 
     function seleccionar_cliente(item_sugerencia)
     {
@@ -556,12 +555,14 @@ $(document).ready(function(){
         $('#clientes_suggestions').html('');
         $('#clientes_suggestions').hide();
 
+        $('#forma_pago').focus();
+
         reset_tabla_ingreso();
 
         consultar_remisiones_pendientes();
         
 		// Bajar el Scroll hasta el final de la página
-		$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+		//$("html, body").animate( { scrollTop: $(document).height()+"px"} );
     }
 
     function seleccionar_producto(item_sugerencia)

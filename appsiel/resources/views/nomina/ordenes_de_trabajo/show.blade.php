@@ -132,6 +132,7 @@
 	@yield('otros_scripts')
 
 	<script type="text/javascript">
+
 		$(document).ready(function(){
 			$('#btn_print').focus();
 
@@ -332,6 +333,29 @@
 	        $("#myModal").on('hide.bs.modal', function(){
 	            $('#popup_alerta_danger').hide();
 	        });
+
+
+			$('#btn_guardar_documento_inventario').click(function(event){
+				event.preventDefault();
+
+				if ( $('#inv_bodega_id').val() == '' )
+	        	{
+	        		alert('Debe seleccionar una bodega');
+	        		$('#inv_bodega_id').focus();
+	        		return false;
+	        	}
+
+	        	// Estas lineas se eliminan en InventarioController
+	        	$('#ingreso_productos').find('tbody:first').prepend('<tr id="0"> <td>0</td> <td class="nom_prod">0</td> <td><span style="color:white;">0</span><input type="hidden" class="movimiento" value="0"></td>0<td class="cantidad">0</td>0<td></tr>');
+	        	$('#ingreso_productos').find('tbody:last').append('<tr id="0"> <td>0</td> <td class="nom_prod">0</td> <td><span style="color:white;">0</span><input type="hidden" class="movimiento" value="0"></td>0<td class="cantidad">0</td>0<td></tr>');
+
+				var table = $('#ingreso_productos').tableToJSON();
+				$('#movimiento').val(JSON.stringify(table));
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+				$('#form_create').submit();
+			});
 
 		});
 	</script>

@@ -6,5 +6,6 @@
   'core_tercero_id' => '225',
   'motivo_salida_id' => '3',
   'motivo_entrada_id' => '4',
+  'motivo_salida_id_ot' => '5',
   'url_id_modelo' => '0',
 ) ;

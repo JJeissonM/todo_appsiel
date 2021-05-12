@@ -110,6 +110,31 @@
 
 				</div>
 
+				<h4> Parámetros por defecto para salidas de Órdenes de Trabajo  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$motivo_salida_id_ot = 5;
+								if( isset($parametros['motivo_salida_id_ot'] ) )
+								{
+									$motivo_salida_id_ot = $parametros['motivo_salida_id_ot'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_salida_id_ot', $motivo_salida_id_ot, 'Motivo salida default en OT', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

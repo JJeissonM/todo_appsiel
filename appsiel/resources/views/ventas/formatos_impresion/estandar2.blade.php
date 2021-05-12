@@ -174,7 +174,7 @@ use App\Core\Tercero;
         <td><b>Localidad:</b></td>
         <td>{{ $tercero->ciudad->descripcion }}</td>
         <td><b>Remito No.: </b></td>
-        <td>{{ $doc_encabezado->documento_remision_prefijo_consecutivo }}</td>
+        <td>{!! $docs_relacionados[0] !!}</td>
     </tr>
 </table>
 

@@ -462,7 +462,9 @@ class VentaController extends TransaccionController
 
         $abonos = CxcAbono::get_abonos_documento( $doc_encabezado );
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos' ) )->render();
+        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados' ) )->render();
     }
 
     /**
@@ -1226,6 +1228,7 @@ class VentaController extends TransaccionController
         // El precio se trae de la lista de precios del cliente
         $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $inv_producto_id );
 
+        $descuento = 0;
         if ( $remision->vtas_doc_encabezado_origen_id != 0 )
         {
             if ( !is_null( $remision->documento_ventas_padre()) )
@@ -1239,13 +1242,12 @@ class VentaController extends TransaccionController
                         if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
                         {
                             $precio_unitario = $linea_pedido->precio_unitario;
+                            $descuento = $linea_pedido->precio_unitario;
                         }
                     }
                 }
-
             }
         }
-
         return $precio_unitario;
     }
 
@@ -1327,6 +1329,7 @@ class VentaController extends TransaccionController
 
             } // Fin por cada registro de la remisión
         }
+
         return [$base_impuesto_total,$total_impuesto,$precio_total];
     }
 

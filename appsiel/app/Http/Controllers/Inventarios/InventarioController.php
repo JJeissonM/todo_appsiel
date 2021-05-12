@@ -40,6 +40,8 @@ use App\Ventas\VtasDocEncabezado;
 
 use App\Contabilidad\ContabMovimiento;
 
+use App\Nomina\OrdenDeTrabajo;
+
 class InventarioController extends TransaccionController
 {
 
@@ -164,12 +166,22 @@ class InventarioController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store( Request $request )
-    {        
+    {
         $lineas_registros = InventarioController::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
-        
+
         $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-        return redirect( 'inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        if ( isset( $request->ruta_redirect ) )
+        {
+            // Por ahora esto solo se usa para Salidas de Invetario creadas desde Ordenes de Trabajo de Nomina
+            $orden_trabajo = OrdenDeTrabajo::find( (int)$request->registro_id );
+            $orden_trabajo->inv_doc_encabezado_id = $doc_encabezado_id;
+            $orden_trabajo->save();
+
+            return redirect( $request->ruta_redirect . $request->registro_id . '?id=' . $request->url_id . '&id_modelo=' . $request->modelo_id_ruta . '&id_transaccion=' . $request->url_id_transaccion )->with( 'flash_message', 'Documento de inventario generado correctamente.' );
+        }else{
+            return redirect( 'inventarios/' . $doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
+        }
     }
 
 
@@ -217,7 +229,6 @@ class InventarioController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
-
         InventarioController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         return $doc_encabezado->id;
@@ -822,7 +833,7 @@ class InventarioController extends TransaccionController
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);
 
         $producto->existencia_actual = $existencia_actual;
-        //dd( $producto->toArray() );
+
         return $producto;
     }
 

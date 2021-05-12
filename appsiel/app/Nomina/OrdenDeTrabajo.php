@@ -19,7 +19,7 @@ class OrdenDeTrabajo extends Model
 {
     protected $table = 'nom_ordenes_de_trabajo';
     
-    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'nom_doc_encabezado_id', 'core_tercero_id', 'fecha', 'descripcion', 'nom_concepto_id', 'inv_bodega_id', 'ubicacion_desarrollo_actividad', 'estado', 'creado_por', 'modificado_por'];
+    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'nom_doc_encabezado_id', 'inv_doc_encabezado_id', 'core_tercero_id', 'fecha', 'descripcion', 'nom_concepto_id', 'inv_bodega_id', 'ubicacion_desarrollo_actividad', 'estado', 'creado_por', 'modificado_por'];
     
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Fecha', 'Orden de trabajo', 'Doc. nómina (Proyecto)', 'Tercero', 'Detalle', 'Concepto', 'Ubicación desarollo actividad', 'Estado'];
 
@@ -35,6 +35,11 @@ class OrdenDeTrabajo extends Model
     public function documento_nomina()
     {
         return $this->belongsTo(NomDocEncabezado::class, 'nom_doc_encabezado_id');
+    }
+
+    public function documento_inventario()
+    {
+        return $this->belongsTo( 'App\Inventarios\InvDocEncabezado', 'inv_doc_encabezado_id');
     }
 
     public function tipo_trasaccion()

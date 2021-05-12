@@ -493,8 +493,10 @@
 				}else{
 					var hay_productos = $('#hay_productos').val();
 					if(hay_productos>0) {
+						
 						var table = $('#ingreso_productos').tableToJSON();
 				 		$('#movimiento').val(JSON.stringify(table));
+				 		
 				 		var count = Object.values($('#movimiento')).length;
 			  			var control = 1;
 						$( "*[required]" ).each(function() {
