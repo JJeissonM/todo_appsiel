@@ -1,7 +1,7 @@
 <br>
 <div class="row">
 	<div class="col-md-12">
-		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
+		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px;">
 
 			<h5>Registros de Asientos contables</h5>
 			<hr>

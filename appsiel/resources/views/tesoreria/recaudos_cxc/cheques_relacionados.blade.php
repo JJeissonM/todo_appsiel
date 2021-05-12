@@ -2,7 +2,7 @@
     $cheques = $doc_encabezado->cheques_relacionados_recaudos();
 ?>
 @if( !empty( $cheques->toArray() ) )
-<table class="table table-bordered contenido">
+<table class="table table-bordered">
     <tr>
         <td style="text-align: center; background-color: #ddd;"> 
             <span style="text-align: right; font-weight: bold;"> CHEQUES DE TERCEROS </span> 
@@ -28,6 +28,7 @@
                     <td> {{ $cheque->fecha_emision }} </td>
                     <td> {{ $cheque->numero_cheque }} </td>
                     <td> {{ $cheque->referencia_cheque }} </td>
+                    {{ dd($cheque->cuenta_bancaria) }}
                     <td> {{ $descripcion_banco }} </td>
                     <td> {{ $cheque->tercero->descripcion }} </td>
                     <td class="text-right"> $ {{ number_format( $cheque->valor, 0, ',', '.') }} </td>

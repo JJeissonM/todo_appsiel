@@ -10,8 +10,26 @@
 	margin-bottom: 30px;
 }
 
+.no-break{
+	white-space: nowrap;
+}
+
 .marco_formulario h4{
 	color: gray;
+}
+.marco_formulario h5{
+	color: gray;
+}
+
+thead > tr{
+	background-color: #50B794;
+}
+
+thead > tr > th {
+	text-align: center;
+    vertical-align: middle !important;
+    font-weight: bolder;
+    color: #000;
 }
 
 .frame_ajax{

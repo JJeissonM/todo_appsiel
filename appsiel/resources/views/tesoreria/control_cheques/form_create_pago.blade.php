@@ -1,4 +1,4 @@
-<div class="container-fluid" id="div_control_cheques" style="display: none; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
+<div class="container-fluid" id="div_control_cheques" style="display: none; border: 1px solid #ddd; border-radius: 4px; ">
 	<div class="row">
 		<div class="col-md-4">
 				<h5>Cheques activos</h5>

@@ -2,7 +2,7 @@
     $retenciones = $doc_encabezado->retenciones_relacionadas();
 ?>
 @if( !empty( $retenciones->toArray() ) )
-<table class="table table-bordered contenido">
+<table class="table table-bordered">
     <tr>
         <td style="text-align: center; background-color: #ddd;"> 
             <span style="text-align: right; font-weight: bold;"> RETENCIONES </span> 

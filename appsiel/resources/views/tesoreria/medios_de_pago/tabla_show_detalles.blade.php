@@ -6,7 +6,7 @@
             $total = 0;
             $lineas_registros = $doc_encabezado->lineas_registros;
         ?>
-        <table class="table table-bordered contenido">
+        <table class="table table-bordered">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> 
                     <span style="text-align: right; font-weight: bold;"> DETALLE MEDIOS DE PAGO </span> 
@@ -56,7 +56,7 @@
             $total = 0;
             $lineas_movimientos = $doc_encabezado->lineas_movimientos();
         ?>
-        <table class="table table-bordered contenido">
+        <table class="table table-bordered">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> 
                     <span style="text-align: right; font-weight: bold;"> DETALLES DE MOVIMIENTOS </span> 

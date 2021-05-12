@@ -46,7 +46,7 @@
 <h4 style="text-align: center;"> Documentos abonados </h4>
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono','Saldo']) }}
+        {{ Form::bsTableHeader(['Tercero','Fact N°','Fecha','Detalle','Abono','Saldo']) }}
         <tbody>
             <?php 
             

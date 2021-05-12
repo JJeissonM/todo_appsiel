@@ -11,7 +11,7 @@
 </h5>
 <div id="div_resumen_operaciones">
 	<hr>
-	<table class="table table-bordered">
+	<table class="table table-bordered table-striped">
 		<tbody>
 			<tr>
 				<td><b>Efectivo:</b></td>

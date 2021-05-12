@@ -281,9 +281,9 @@ class ProcesoController extends Controller
             $pedido = VtasDocEncabezado::find($pedido_id);
             $pedido->ventas_doc_relacionado_id = $cotizacion->id;
             $pedido->save();
-            return "<br>[OK] Pedido almacenado con exito";
+            return "[OK] Pedido almacenado con exito";
         } else {
-            return "<br>[XX] El pedido no pudo ser almacenado";
+            return "[XX] El pedido no pudo ser almacenado";
         }
     }
 
@@ -325,9 +325,9 @@ class ProcesoController extends Controller
             $pedido->estado = 'Cumplido';
             $pedido->save();
 
-            return "<br>[OK] Remisión Y Factura almacenadas con exito.";
+            return "[OK] Remisión Y Factura almacenadas con exito.";
         } else {
-            return "<br>[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
+            return "[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
         }
     }
 

@@ -2,8 +2,8 @@
 <br>
 <div class="row">
 	<div class="col-md-12">
-		<div class="container-fluid" id="div_control_cheques" style="display: block; border: 1px solid #ddd; border-radius: 4px; background-color: #e1faff;">
-			<h5>Registros de pagos en Cheques</h5>
+		<div class="container-fluid" id="div_control_cheques" style="display: block; border: 1px solid #ddd; border-radius: 4px;">
+			<h5 class="text-center">Registros de pagos en Cheques</h5>
 			<hr>
 			<div class="row">
 				<div class="col-md-6" >
@@ -13,7 +13,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_cheque', null, 'Tipo de operación', $tipos_operaciones, []) }}
+									{{ Form::bsSelect('tipo_operacion_id_cheque', null, 'Tipo Ope.', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -49,19 +49,19 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'numero_cheque', null, 'Número de cheque', []) }}
+									{{ Form::bsText( 'numero_cheque', null, 'N° Cheque', []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'referencia_cheque', null, 'Referencia	', []) }}
+									{{ Form::bsText( 'referencia_cheque', null, 'Ref.	', []) }}
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('entidad_financiera_id', null, 'Entidad financiera', $entidades_financieras, []) }}
+									{{ Form::bsSelect('entidad_financiera_id', null, 'E. Financiera', $entidades_financieras, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
