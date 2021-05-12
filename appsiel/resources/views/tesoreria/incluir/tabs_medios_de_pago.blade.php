@@ -1,15 +1,15 @@
 <h5>
 	Medios de pago
 	<small>
-		<button style="border: 0; background: transparent;" title="Mostrar" id="btn_mostrar_medios_pago">
+		<button style="border: 0; background: transparent; display: none;" title="Mostrar" id="btn_mostrar_medios_pago">
 			<i class="fa fa-eye"></i>
 		</button>
-		<button style="border: 0; background: transparent; display: none;" title="Ocultar" id="btn_ocultar_medios_pago">
+		<button style="border: 0; background: transparent;" title="Ocultar" id="btn_ocultar_medios_pago">
 			<i class="fa fa-eye-slash"></i>
 		</button>
 	</small>
 </h5>
-<div id="div_medios_pago" style="display: none;">
+<div id="div_medios_pago">
 	<hr>
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#tab_mp_1"> Efectivo </a></li>

@@ -25,6 +25,10 @@
 				  }
 				?>
 
+				<div class="alert alert-warning" id="div_documento_descuadrado" style="display: none;">
+				  <strong>¡Advertencia!</strong> Documento está descuadrado.
+				</div>
+
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
 				{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
@@ -34,59 +38,28 @@
 				{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
 
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
-	        	
-	        	@include('tesoreria.control_cheques.form_create_pago')
+				<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="">
+				<input type="hidden" name="lineas_registros_asientos_contables" id="lineas_registros_asientos_contables" value="">
+				<input type="hidden" name="lineas_registros_efectivo" id="lineas_registros_efectivo" value="">
+				<input type="hidden" name="lineas_registros_transferencia_consignacion" id="lineas_registros_transferencia_consignacion" value="">
+				<input type="hidden" name="lineas_registros_tarjeta_debito" id="lineas_registros_tarjeta_debito" value="">
+				<input type="hidden" name="lineas_registros_tarjeta_credito" id="lineas_registros_tarjeta_credito" value="">
+				<input type="hidden" name="lineas_registros_cheques" id="lineas_registros_cheques" value="">
 
 			{{ Form::close() }}
+
+			<div class="marco_formulario">
+				@include('tesoreria.incluir.tabla_resumen_operaciones_create')
+			</div>
+
+			<div class="marco_formulario">
+				@include('tesoreria.pagos_cxp.tabs_operaciones')
+			</div>
+
+			<div class="marco_formulario">
+				@include('tesoreria.incluir.tabs_medios_de_pago')
+			</div>
 	        
-
-			<!-- Documentos pendientes de cartera -->
-            <div class="row">
-            	<div class="col-md-12">
-            		<div id="div_aplicacion_cartera" style="display: none;">
-            			<button class="btn btn-sm btn-info" id="btn_recargar" title="Volver a cargar documentos pendientes."><i class="fa fa-refresh"></i></button>
-		            	<div id="div_documentos_pendientes">
-
-		            	</div>
-		            </div>
-            	</div>
-            </div>
-
-			<!-- Documentos seleccionados -->
-            <div class="row">
-            	<div class="col-md-12">
-            		<div id="div_documentos_a_cancelar" style="display: none;">
-            			<h3 style="width: 100%; text-align: center;"> Documentos seleccionados </h3>
-						<hr>
-
-						<table class="table table-striped" id="tabla_registros_documento">
-						    <thead>
-						        <tr>
-						            <th style="display: none;" data-override="id_doc"> ID Doc. Pendiente </th>
-						            <th> Proveedor </th>
-						            <th> Documento interno </th>
-						            <th> Factura del proveedor </th>
-						            <th> Fecha </th>
-						            <th> Fecha vencimiento </th>
-						            <th> Valor Documento </th>
-						            <th> Valor pagado </th>
-						            <th> Saldo pendiente </th>
-						            <th data-override="abono"> Abono </th>
-						        </tr>
-						    </thead>
-						    <tbody>
-						    </tbody>
-						    <tfoot>
-						        <tr>
-						            <td style="display: none;"> &nbsp; </td>
-						            <td colspan="8"> &nbsp; </td>
-						            <td> <div id="total_valor">$0</div> </td>
-						        </tr>						    	
-						    </tfoot>
-						</table>
-		            </div>
-            	</div>
-            </div>
 		</div>
 	</div>
 	<br/><br/>
@@ -95,14 +68,18 @@
 @section('scripts')
 
 	<script type="text/javascript">
+
+		var hay_cheques = 0;
+		var hay_efectivo = 0;
+		var hay_retencion = 0;
+		var hay_transferencia_consignacion = 0;
+		var hay_tarjeta_debito = 0;
+		var hay_tarjeta_credito = 0;
+		var hay_asiento_contable = 0;
+		
 		$(document).ready(function(){
 			
 			asignar_fecha_hoy();
-
-			var LineaNum = 0;
-
-			ocultar_campo_formulario( $('#teso_caja_id'), false );
-			ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
 
 			$('#proveedor_input').focus();
 
@@ -188,188 +165,41 @@
 		    	return false;
 		    });
 
+		    $(document).on('click','#btn_mostrar_resumen_operaciones', function(){
+		    	$(this).hide();
+		    	$('#btn_ocultar_resumen_operaciones').show();
+		    	$('#div_resumen_operaciones').fadeIn(500);
+		    });
 
-		    function seleccionar_proveedor(item_sugerencia)
-		    {
+		    $(document).on('click','#btn_ocultar_resumen_operaciones', function(){
+		    	$(this).hide();
+		    	$('#btn_mostrar_resumen_operaciones').show();
+		    	$('#div_resumen_operaciones').fadeOut(500);
+		    });
 
-				// Asignar descripción al TextInput
-		        $('#proveedor_input').val( item_sugerencia.html() );
-		        $('#proveedor_input').css( 'background-color','white ' );
+		    $(document).on('click','#btn_mostrar_operaciones', function(){
+		    	$(this).hide();
+		    	$('#btn_ocultar_operaciones').show();
+		    	$('#div_operaciones').fadeIn(500);
+		    });
 
-		        // Asignar Campos ocultos
-		        $('#proveedor_id').val( item_sugerencia.attr('data-tercero_id') );
-		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
-		        $('#core_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
+		    $(document).on('click','#btn_ocultar_operaciones', function(){
+		    	$(this).hide();
+		    	$('#btn_mostrar_operaciones').show();
+		    	$('#div_operaciones').fadeOut(500);
+		    });
 
-		        //Hacemos desaparecer el resto de sugerencias
-		        $('#proveedores_suggestions').html('');
-		        $('#proveedores_suggestions').hide();
+		    $(document).on('click','#btn_mostrar_medios_pago', function(){
+		    	$(this).hide();
+		    	$('#btn_ocultar_medios_pago').show();
+		    	$('#div_medios_pago').fadeIn(500);
+		    });
 
-		        $('#tabla_registros_documento').find('tbody').html( '' );
-		        $('#total_valor').text( "$0" );
-		        get_documentos_pendientes_cxp( item_sugerencia.attr('data-tercero_id') );
-
-		        $('#teso_medio_recaudo_id').focus();
-
-		        return false;
-		    }
-
-
-			$('#btn_recargar').click(function(event){
-				event.preventDefault();
-				$('#div_documentos_a_cancelar').hide();
-				$('#tabla_registros_documento').find('tbody').html('');
-				$("#div_documentos_pendientes input:text").first().select();
-				calcular_totales();
-				get_documentos_pendientes_cxp( $('#core_tercero_id').val() );
-			});
-
-		    function get_documentos_pendientes_cxp( core_tercero_id )
-		    {
-		    	var url = '../../tesoreria/get_documentos_pendientes_cxp';
-
-				$.get( url, { core_tercero_id: core_tercero_id } )
-					.done(function( data ) {
-						// Se llena el DIV con las sugerencias que arroja la consulta
-		                $('#div_aplicacion_cartera').show();
-		                $('#div_documentos_pendientes').html(data);
-		                $('.td_boton').show();
-		                $('.btn_agregar_documento').show();
-					});
-		    }
-
-
-			$(document).on('click', '.btn_agregar_documento', function(event) 
-			{
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-
-				var input_valor_agregar = fila.find("input:text");
-
-				//$('#tabla_registros_documento').find('tbody:last').append( '<tr><td colspan="9"> vamos </td></tr>' );
-
-				if( validar_valor_aplicar( input_valor_agregar ) )
-				{
-					var celda_borrar = "<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_documento'><i class='fa fa-btn fa-trash'></i></button> </td>";
-					//var celda_borrar = "<td> &nbsp; </td>";
-
-					var valor = input_valor_agregar.val();
-					fila.find("td:last").text( valor );
-					fila.find("td:last").attr('class', 'valor_total' );
-					
-					$('#div_documentos_a_cancelar').show();
-					$('#tabla_registros_documento').find('tbody:last').append( fila );
-
-					$("#div_documentos_pendientes input:text").first().select();
-					calcular_totales();	
-
-					//fila.remove();	
-				}		
-			});
-
-			function validar_valor_aplicar(input_valor_agregar){
-				var fila = input_valor_agregar.closest("tr");
-				var respuesta;
-
-				var valor = input_valor_agregar.val();
-
-				if( !validar_input_numerico( input_valor_agregar ) )
-				{
-					return false;
-				}
-				
-				valor = parseFloat( valor );
-
-				var saldo_pendiente = fila.find('td.col_saldo_pendiente').attr('data-saldo_pendiente');
-				//console.log( "aja: " + saldo_pendiente );
-				saldo_pendiente = parseFloat( saldo_pendiente );
-
-				//console.log(valor);
-
-
-				if( valor > 0  && valor <= saldo_pendiente) {
-					input_valor_agregar.attr('style','background-color:white;');
-					respuesta = true;
-				}else{
-					input_valor_agregar.attr('style','background-color:#FF8C8C;');
-					input_valor_agregar.focus();
-					respuesta = false;
-				}
-
-				return respuesta;
-			}
-
-		    
-			$('#core_tipo_doc_app_id').change(function(){
-				$('#fecha').focus();
-			});
-
-			$('#teso_medio_recaudo_id').change(function()
-			{
-				if ( $(this).val() == '' )
-				{
-					ocultar_campo_formulario( $('#teso_caja_id'), false );
-					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
-					$(this).focus();
-					return false;
-				}
-
-				var valor = $(this).val().split('-');
-
-				if (valor[1]=='Tarjeta bancaria')
-				{
-					ocultar_campo_formulario( $('#teso_caja_id'), false );
-					mostrar_campo_formulario( $('#teso_cuenta_bancaria_id'), '*Cuenta bancaria:', true );
-				}else{
-					ocultar_campo_formulario( $('#teso_cuenta_bancaria_id'), false );
-					mostrar_campo_formulario( $('#teso_caja_id'), '*Caja:', true );
-				}
-
-				if ( valor[1] == 'cheque_de_tercero' || valor[1] == 'cheque_propio' )
-				{
-					$('#div_control_cheques').fadeIn(500);
-				}else{
-					$('#div_control_cheques').hide();
-				}
-			});
-
-			$('#cheque_id').change(function()
-			{
-				if ( $(this).val() == '' )
-				{
-					$('#div_ingreso_cheques').fadeIn(500);
-					$('#valor_cheque_seleccionado').html('');
-				}else{
-					$('#div_ingreso_cheques').fadeOut(500);
-					var valor_cheque = $('#cheque_id').val().split('-');
-					$('#valor_cheque_seleccionado').html(valor_cheque[1]);
-				}
-			});
-
-			/*
-			** Al eliminar una fila
-			*/
-			// Se utiliza otra forma con $(document) porque el $('#btn_eliminar') no funciona pues
-			// es un elemento agregadi despues de que se cargó la página
-			$(document).on('click', '.btn_eliminar', function(event) {
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-				fila.remove();
-				$('#btn_nuevo').show();
-				calcular_totales();
-			});
-
-			// Al introducir valor en la caja de texto
-			$(document).on('keyup', '.col_valor', function() {
-				var celda = $(this);
-				//console.log( celda );
-				validar_valor( celda );
-
-				var x = event.which || event.keyCode;
-				if( x === 13 ){
-					celda.next('input:button').focus();
-				}
-			});
+		    $(document).on('click','#btn_ocultar_medios_pago', function(){
+		    	$(this).hide();
+		    	$('#btn_mostrar_medios_pago').show();
+		    	$('#div_medios_pago').fadeOut(500);
+		    });
 
 			// GUARDAR 
 			$('#btn_guardar').click(function(event){
@@ -388,37 +218,8 @@
 					return false;
 				}
 
-				if ( $('cheque_id').val() != '' )
-				{
-					if ( parseFloat( $('#valor_cheque_seleccionado').text() ) < total_valor )
-					{
-						alert('El valor total de documentos a pagar es mayor al valor del cheque seleccionado.');
-						return false;
-					}						
-				}
-
-				// Se obtienen todos los datos del formulario y se envían
-				// Se validan nuevamente los campos requeridos
-				
-
-
 				// Desactivar el click del botón
 				$( this ).off( event );
-				
-				// Eliminar fila de ingreso de registro vacia
-				var object = $('#combobox_motivos').val();	
-				if( typeof object == typeof undefined){
-					// Si no hay linea de ingreso de registros
-					// Todo bien
-					//alert('Todo bien.');
-				}else{
-					var fila = $('#combobox_motivos').closest("tr");
-					fila.remove();
-				}
-
-				// Se asigna la tabla de ingreso de registros a un campo hidden
-				var lineas_registros = $('#tabla_registros_documento').tableToJSON();
-				$('#lineas_registros').val( JSON.stringify(lineas_registros) );
 
 				// Enviar formulario
 				habilitar_campos_form_create();
@@ -426,95 +227,31 @@
 			});
 
 
-			function calcular_totales(){
-				var sum = 0.0;
-				sum = 0.0;
-				$('.valor_total').each(function()
-				{
-				    var cadena = $(this).text();
-				    sum += parseFloat(cadena);
-				});
+		    function seleccionar_proveedor(item_sugerencia)
+		    {
+				// Asignar descripción al TextInput
+		        $('#proveedor_input').val( item_sugerencia.html() );
+		        $('#proveedor_input').css( 'background-color','white ' );
 
-				$('#total_valor').text("$"+sum.toFixed(2));
-			}
+		        // Asignar Campos ocultos
+		        $('#proveedor_id').val( item_sugerencia.attr('data-tercero_id') );
+		        $('#referencia_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
+		        $('#core_tercero_id').val( item_sugerencia.attr('data-tercero_id') );
 
+		        //Hacemos desaparecer el resto de sugerencias
+		        $('#proveedores_suggestions').html('');
+		        $('#proveedores_suggestions').hide();
 
-			function validar_linea(){
-				var ok;
+		        $('#tabla_registros_documento').find('tbody').html( '' );
+		        $('#total_valor').text( "$0" );
+		        
+		        $('#descripcion').focus();
+		        //get_documentos_pendientes_cxp( item_sugerencia.attr('data-tercero_id') );
 
-				if ( $('#combobox_motivos').val() != '' ) {
-					var tercero = '<span style="color:white;">' + $('#combobox_terceros').val() + '-</span>' + $( "#combobox_terceros option:selected" ).text();
+		        //$('#teso_medio_recaudo_id').focus();
 
-					var detalle = $('#col_detalle').val();
-
-					var valor = $('#col_valor').val();
-					
-					if ( valor != '' ) {
-						if ( $.isNumeric(valor)  && valor > 0 ) {
-							ok = true;
-						}else{
-							$('#col_valor').attr('style','background-color:#FF8C8C;');
-							$('#col_valor').focus();
-							ok = false;
-						}
-					}else{
-						$('#col_valor').attr('style','background-color:#FF8C8C;');
-						$('#col_valor').focus();
-						ok = false;
-					}
-				}else{
-					alert('Debe seleccionar una concepto.');
-					$('#combobox_motivos').focus();
-					ok = false;
-				}
-				return ok;
-			}
-
-			function validar_valor(celda){
-				var fila = celda.closest("tr");
-				//console.log(fila);
-
-				var ok;
-
-				var valor = celda.val();
-
-				if( $.isNumeric( valor ) ){
-					valor = parseFloat( valor );
-				}		
-
-				if( $.isNumeric( valor ) && valor > 0 ) {
-					celda.attr('style','background-color:white;');
-					ok = true;
-				}else{
-					celda.attr('style','background-color:#FF8C8C;');
-					celda.focus();
-					ok = false;
-				}
-
-				return ok;
-			}
-
-			function habilitar_text($control){
-				$control.removeAttr('disabled');
-				$control.attr('style','background-color:white;');
-			}
-
-			function deshabilitar_text($control){
-				$control.attr('style','background-color:#ECECE5;');
-				$control.attr('disabled','disabled');
-			}
-
-			function deshabilitar_campos_form_create()
-			{
-
-				$('#fecha').attr('disabled','disabled');
-
-				$('.custom-combobox').hide();
-
-				$('#core_tercero_id').show();
-				$('#core_tercero_id').attr('disabled','disabled');
-				
-			}
+		        return false;
+		    }
 
 			function habilitar_campos_form_create()
 			{
@@ -545,6 +282,55 @@
 
 				$('#fecha').val( today );
 			}
+
+			$.fn.actualizar_total_resumen_medios_pagos = function ( valor_linea )
+			{
+			    // Total resumen
+			    var actual_valor_resumen_medios_pagos = parseFloat( $('#input_valor_total_resumen_medios_pagos').val() );
+				var nuevo_valor_resumen_medios_pagos = actual_valor_resumen_medios_pagos + valor_linea;
+			    $('#valor_total_resumen_medios_pagos').text( '$ ' + new Intl.NumberFormat("de-DE").format( nuevo_valor_resumen_medios_pagos.toFixed(2) ) );
+				$('#input_valor_total_resumen_medios_pagos').val( nuevo_valor_resumen_medios_pagos );
+
+				var valor_diferencia = parseFloat( $('#input_valor_total_resumen_medios_pagos').val() ) - parseFloat( $('#input_valor_total_resumen_operaciones').val() );
+				$('#valor_diferencia').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_diferencia.toFixed(2) ) );
+				$('#input_valor_diferencia').val( valor_diferencia );
+
+				if ( valor_diferencia == 0 )
+				{
+					$('#btn_guardar').show();
+					$('#div_documento_descuadrado').hide();
+					$('#valor_diferencia').removeAttr('style');
+				}else{
+					$('#btn_guardar').hide();
+					$('#div_documento_descuadrado').show();
+					$('#valor_diferencia').attr('style','background-color: #ffa3a3;');
+				}
+			};
+
+			$.fn.actualizar_total_resumen_operaciones = function ( valor_linea )
+			{
+			    // Total resumen
+			    var actual_valor_resumen_operaciones = parseFloat( $('#input_valor_total_resumen_operaciones').val() );
+				var nuevo_valor_resumen_operaciones = actual_valor_resumen_operaciones + valor_linea;
+			    $('#valor_total_resumen_operaciones').text( '$ ' + new Intl.NumberFormat("de-DE").format( nuevo_valor_resumen_operaciones.toFixed(2) ) );
+				$('#input_valor_total_resumen_operaciones').val( nuevo_valor_resumen_operaciones );
+
+				var valor_diferencia = parseFloat( $('#input_valor_total_resumen_medios_pagos').val() ) - parseFloat( $('#input_valor_total_resumen_operaciones').val() );
+				$('#valor_diferencia').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_diferencia.toFixed(2) ) );
+				$('#input_valor_diferencia').val( valor_diferencia );
+
+				if ( valor_diferencia == 0 )
+				{
+					$('#btn_guardar').show();
+					$('#div_documento_descuadrado').hide();
+					$('#valor_diferencia').removeAttr('style');
+				}else{
+					$('#btn_guardar').hide();
+					$('#div_documento_descuadrado').show();
+					$('#valor_diferencia').attr('style','background-color: #ffa3a3;');
+				}
+
+			};
 		});
 	</script>
 @endsection

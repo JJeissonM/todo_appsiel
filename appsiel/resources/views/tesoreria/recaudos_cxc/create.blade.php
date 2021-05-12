@@ -4,41 +4,6 @@
 	use App\Http\Controllers\Sistema\VistaController;
 ?>
 
-@section('estilos_1')
-	<style>
-		#suggestions {
-		    position: absolute;
-		    z-index: 9999;
-		}
-		#clientes_suggestions {
-		    position: absolute;
-		    z-index: 9999;
-		}
-
-		#existencia_actual, #tasa_impuesto{
-			width: 35px;
-		}
-
-		#popup_alerta{
-			display: none;/**/
-			color: #FFFFFF;
-			background: red;
-			border-radius: 5px;
-			position: fixed; /*El div será ubicado con relación a la pantalla*/
-			/*left:0px; A la derecha deje un espacio de 0px*/
-			right:10px; /*A la izquierda deje un espacio de 0px*/
-			bottom:10px; /*Abajo deje un espacio de 0px*/
-			/*height:50px; alto del div */
-			width: 20%;
-			z-index:999999;
-			float: right;
-    		text-align: center;
-    		padding: 5px;
-    		opacity: 0.7;
-		}
-	</style>
-@endsection
-
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 	<hr>
@@ -68,10 +33,9 @@
 
 				{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
 				{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
-				{{ Form::hidden('url_id_transaccion',Input::get('id_transaccion')) }}
+				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
 
 				{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
-
 
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
 				<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="">
@@ -85,7 +49,7 @@
 			{{ Form::close() }}
 
 			<div class="marco_formulario">
-				@include('tesoreria.recaudos_cxc.create_tabla_resumen_operaciones')
+				@include('tesoreria.incluir.tabla_resumen_operaciones_create')
 			</div>
 
 			<div class="marco_formulario">
@@ -254,14 +218,12 @@
 					return false;
 				}
   
-				// Se obtienen todos los datos del formulario y se envían
 				// Desactivar el click del botón
 				$( this ).off( event );
 
 				// Enviar formulario
 				habilitar_campos_form_create();
-				$('#form_create').submit();
-					
+				$('#form_create').submit();					
 			});
 
 		    function seleccionar_cliente(item_sugerencia)
@@ -278,6 +240,8 @@
 		        //Hacemos desaparecer el resto de sugerencias
 		        $('#clientes_suggestions').html('');
 		        $('#clientes_suggestions').hide();
+		        
+		        $('#descripcion').focus();
 		        //get_documentos_pendientes_cxc( item_sugerencia.attr('data-tercero_id') );
 
 		        return false;

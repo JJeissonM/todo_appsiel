@@ -62,14 +62,14 @@ class ControlCheque extends Model
     public static function opciones_campo_select()
     {
         $opciones = ControlCheque::leftJoin('core_terceros','core_terceros.id','=','teso_control_cheques.tercero_id')
-                            ->where('teso_control_cheques.estado','Recibido')
-                            ->select('teso_control_cheques.id','teso_control_cheques.numero_cheque','teso_control_cheques.referencia_cheque','teso_control_cheques.valor','core_terceros.descripcion')
-                            ->get();
+                                ->where('teso_control_cheques.estado','Recibido')
+                                ->select('teso_control_cheques.id','teso_control_cheques.numero_cheque','teso_control_cheques.referencia_cheque','teso_control_cheques.valor','core_terceros.descripcion')
+                                ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $vec[$opcion->id.'-'.$opcion->valor] = '# ' . $opcion->numero_cheque . ' Ref. ' . $opcion->referencia_cheque . ' (' . $opcion->descripcion . ') > $' . number_format($opcion->valor,2,',','.');
+            $vec[$opcion->id] = '# ' . $opcion->numero_cheque . ' Ref. ' . $opcion->referencia_cheque . ' (' . $opcion->descripcion . ') > $' . number_format($opcion->valor,2,',','.');
         }
 
         return $vec;

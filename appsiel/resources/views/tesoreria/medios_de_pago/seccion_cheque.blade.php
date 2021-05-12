@@ -8,19 +8,12 @@
 			<div class="row">
 				<div class="col-md-6" >
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
-						<h6 style="width: 100%; text-align: center;">FORMULARIO</h6>
+						<h6 style="width: 100%; text-align: center;">CREAR NUEVO CHEQUE</h6>
 						<hr>
-						<!-- <div class="row">
-							<div class="col-md-12">
-								<div class="row" style="padding:5px;">
-									{ { Form::bsRadioBtn('tipo_cheque', 'cheque_de_tercero', 'Tipo cheque', '{"cheque_propio":"Cheque propio","cheque_de_tercero":"Cheque de Tercero"}', []) }}
-								</div>
-							</div>
-						</div>-->
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_cheque', null, 'Tipo de operación', [ ''=>'', 'Recaudo cartera'=>'Recaudo cartera (CxC)','Anticipo'=>'Anticipo cliente (CxC a favor)', 'Otros recaudos'=>'Otros recaudos','Prestamo financiero'=>'Prestamo financiero (CxP)'], []) }}
+									{{ Form::bsSelect('tipo_operacion_id_cheque', null, 'Tipo de operación', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -82,12 +75,20 @@
 						</p>
 					</div>
 					<br><br>
+					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
+						<h6 style="width: 100%; text-align: center;">CHEQUES ALMACENADOS</h6>
+						<hr>
+						<p style="text-align: center;">
+							<button class="btn btn-primary" id="btn_cargar_cheques"> Cargar </button>
+						</p>
+					</div>
+					<br><br>
 				</div>
 				<div class="col-md-6">
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<div class="row">
 							<div class="col-md-12">
-								<h6>Cheques ingresados</h6>
+								<h6 style="width: 100%; text-align: center;">LÍNEAS INGRESADAS</h6>
 								<hr>
 								<table class="table table-striped table-bordered" id="tabla_registros_cheques">
 									<thead>
@@ -221,7 +222,7 @@
 				$('#input_valor_total_cheques').val(valor_total_cheques);
 
 
-				if ( tipo_operacion_id != 'Recaudo cartera' )
+				if ( tipo_operacion_id != 'Recaudo cartera' && tipo_operacion_id != 'Pago proveedores' )
 				{
 					var actual_valor_total_otras_operaciones = parseFloat( $('#input_valor_total_otras_operaciones').val() );
 

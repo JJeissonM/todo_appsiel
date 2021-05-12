@@ -21,6 +21,26 @@ class CxpMovimiento extends Model
                               "update":"compras_registro_cxp/id_fila"
                           }';
 
+
+  public function actualizar_saldos($abono)
+  {
+
+    // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se elimina el registro
+    $nuevo_saldo = $this->saldo_pendiente - $abono; //valor_documento
+
+    $nuevo_valor_pagado = $this->valor_pagado + $abono;
+    $this->valor_pagado = $nuevo_valor_pagado;
+    $this->saldo_pendiente = $nuevo_saldo;
+
+    if ( $nuevo_saldo == 0)
+    {
+      $this->estado = 'Pagado';
+      $this->modificado_por = Auth::user()->email;
+    }
+
+    $this->save();
+  }
+
   public static function consultar_registros($nro_registros)
   {
     return CxpMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_movimientos.core_tipo_doc_app_id')

@@ -8,7 +8,7 @@
 				<div class="col-md-12">
 					<br>
 					<button class="btn btn-primary" id="btn_cargar_documentos_pendientes">
-						<i class="fa fa-level-up"></i> Cargar documentos de CxC
+						<i class="fa fa-level-up"></i> Cargar documentos de CxP
 					</button>
 					{{ Form::Spin(48) }}
 					<div id="div_aplicacion_cartera" style="display: none;">
@@ -27,13 +27,13 @@
 					<div id="div_documentos_a_cancelar" style="display: none;">
 						<h3 style="width: 100%; text-align: center;"> Documentos seleccionados </h3>
 						<hr>
-
 						<table class="table table-striped" id="tabla_registros_documento">
 						    <thead>
 						        <tr>
 						            <th style="display: none;" data-override="id_doc"> ID Doc. Pendiente </th>
-						            <th> Cliente </th>
+						            <th> Proveedor </th>
 						            <th> Documento interno </th>
+						            <th> Factura del proveedor </th>
 						            <th> Fecha </th>
 						            <th> Fecha vencimiento </th>
 						            <th> Valor Documento </th>
@@ -47,7 +47,7 @@
 						    <tfoot>
 						        <tr>
 						            <td style="display: none;"> &nbsp; </td>
-						            <td colspan="7"> &nbsp; </td>
+						            <td colspan="8"> &nbsp; </td>
 						            <td> <div id="total_valor">$0</div> </td>
 						        </tr>						    	
 						    </tfoot>
@@ -68,7 +68,7 @@
 		    	if ($('#core_tercero_id').val() == 0 )
 		    	{
 		    		alert('Debe ingresar un Tercero.');
-		    		$('#cliente_input').focus();
+		    		$('#proveedor_input').focus();
 		    		return false;
 		    	}
 
@@ -80,7 +80,7 @@
                 $('#div_aplicacion_cartera').hide();
                 $('#div_documentos_pendientes').html('');
 		    	
-		    	get_documentos_pendientes_cxc( $('#core_tercero_id').val() );
+		    	get_documentos_pendientes_cxp( $('#core_tercero_id').val() );
 
 		    	$('#total_valor_documentos_cartera').text('$ 0');
 
@@ -138,9 +138,9 @@
 				}
 			});
 
-		    function get_documentos_pendientes_cxc( core_tercero_id )
+		    function get_documentos_pendientes_cxp( core_tercero_id )
 		    {
-		    	var url = '../../tesoreria/get_documentos_pendientes_cxc';
+		    	var url = '../../tesoreria/get_documentos_pendientes_cxp';
 
 				$.get( url, { core_tercero_id: core_tercero_id } )
 					.done(function( data ) {
@@ -149,13 +149,13 @@
 		                $('#div_documentos_pendientes').html(data);
 		                $('.td_boton').show();
 		                $('.btn_agregar_documento').show();
-		                $('#div_cargando').hide();
-		                $('#div_spin').hide();
+
+				    	$('#div_cargando').hide();
+				    	$('#div_spin').hide();
 					});
 		    }
 
-			function validar_valor_aplicar(input_valor_agregar)
-			{
+			function validar_valor_aplicar(input_valor_agregar){
 				var fila = input_valor_agregar.closest("tr");
 				var respuesta;
 
@@ -169,8 +169,11 @@
 				valor = parseFloat( valor );
 
 				var saldo_pendiente = fila.find('td.col_saldo_pendiente').attr('data-saldo_pendiente');
-
+				//console.log( "aja: " + saldo_pendiente );
 				saldo_pendiente = parseFloat( saldo_pendiente );
+
+				//console.log(valor);
+
 
 				if( valor > 0  && valor <= saldo_pendiente) {
 					input_valor_agregar.attr('style','background-color:white;');
@@ -194,7 +197,6 @@
 				});
 
 				$('#total_valor').text("$"+sum.toFixed(2));
-				//$('#total_valor_documentos_cartera').text("$"+sum.toFixed(2));
 				$('#total_valor_documentos_cartera').text( '$ ' + new Intl.NumberFormat("de-DE").format( sum.toFixed(2) ) );
 				$('#input_total_valor_documentos_cartera').val( sum );
 

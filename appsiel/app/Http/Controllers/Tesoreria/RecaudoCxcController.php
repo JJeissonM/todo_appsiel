@@ -42,6 +42,12 @@ use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
 
+use App\Tesoreria\RegistroDeEfectivo;
+use App\Tesoreria\RegistroDeTransferenciaConsignacion;
+use App\Tesoreria\RegistroDeTarjetaDebito;
+use App\Tesoreria\RegistroDeTarjetaCredito;
+use App\Tesoreria\RegistroDeCheque;
+
 use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Contabilidad\ContabMovimiento;
@@ -104,6 +110,8 @@ class RecaudoCxcController extends Controller
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $retenciones = Retencion::opciones_campo_select();
 
+        $tipos_operaciones = [ '' => '', 'Recaudo cartera' => 'Recaudo cartera (CxC)', 'Anticipo' => 'Anticipo cliente (CxC a favor)', 'Otros recaudos' => 'Otros recaudos','Prestamo financiero' => 'Préstamo financiero (Crear CxP)'];
+
         $terceros = [''];
 
         $entidades_financieras = TesoEntidadFinanciera::opciones_campo_select();
@@ -114,7 +122,7 @@ class RecaudoCxcController extends Controller
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones' ) );
+        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones' ) );
     }
 
     /**
@@ -133,17 +141,26 @@ class RecaudoCxcController extends Controller
 
         $total_abonos_cxc = $this->almacenar_registros_cxc( $request, $doc_encabezado );
         
-        $this->almacenar_retenciones( $request, $doc_encabezado, $total_abonos_cxc );
+        $retenciones = new RegistroRetencion();
+        $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida' );
 
-        $this->almacenar_registros_efectivo( $request->lineas_registros_efectivo, $doc_encabezado );
+        $efectivo = new RegistroDeEfectivo();
+        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado );
 
-        $this->almacenar_registros_transferencia_consignacion( $request->lineas_registros_transferencia_consignacion, $doc_encabezado );
+        $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
+        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado );
 
-        $this->almacenar_registros_tarjeta_debito( $request->lineas_registros_tarjeta_debito, $doc_encabezado );
+        $tarjeta_debito = new RegistroDeTarjetaDebito();
+        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado );
 
-        $this->almacenar_registros_tarjeta_credito( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
+        $tarjeta_credito = new RegistroDeTarjetaCredito();
+        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
 
-        $this->almacenar_registros_cheques( $request->lineas_registros_cheques, $doc_encabezado );
+        // $teso_medio_recaudo_id = 7; // Cheque de tercero
+        $cheques = new RegistroDeCheque();
+        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 7, 'Recibido' );
+
+        $doc_encabezado->actualizar_valor_total();
 
         // se llama la vista de RecaudoCxcController@show
         return redirect( 'tesoreria/recaudos_cxc/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
@@ -211,342 +228,6 @@ class RecaudoCxcController extends Controller
         }
 
         return $total_abonos_cxc;
-    }
-
-    /*
-        La Retencion solo se aplica sobre los Documentos de CxC abonado
-    */
-    public function almacenar_retenciones( $request, $doc_encabezado, $valor_base_retencion )
-    {        
-        $lineas_registros_retenciones = json_decode($request->lineas_registros_retenciones);
-
-        if( is_null($lineas_registros_retenciones) )
-        {
-            return false;
-        }
-
-        array_pop($lineas_registros_retenciones); // Elimina ultimo elemento del array
-        
-        $cantidad = count($lineas_registros_retenciones);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $tasa_retencion = round( (float)$lineas_registros_retenciones[$i]->valor_retencion * 100 / $valor_base_retencion, 2);
-            $datos = [
-                        'tipo' => 'sufrida',
-                        'numero_certificado' => $lineas_registros_retenciones[$i]->numero_certificado,
-                        'fecha_certificado' => $lineas_registros_retenciones[$i]->fecha_certificado,
-                        'fecha_recepcion_certificado' => $lineas_registros_retenciones[$i]->fecha_recepcion_certificado,
-                        'numero_doc_identidad_agente_retencion' => $lineas_registros_retenciones[$i]->numero_doc_identidad_agente_retencion,
-                        'contab_retencion_id' => (int)$lineas_registros_retenciones[$i]->contab_retencion_id,
-                        'valor_base_retencion' => $valor_base_retencion,
-                        'tasa_retencion' => $tasa_retencion,
-                        'valor' => (float)$lineas_registros_retenciones[$i]->valor_retencion,
-                        'detalle' => 'Recaudo de CxC'
-                    ] + $doc_encabezado->toArray();
-            
-            RegistroRetencion::create( $datos );
-
-            // Contabilizar Retención
-            $retencion = Retencion::find( (int)$lineas_registros_retenciones[$i]->contab_retencion_id );
-            $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $retencion->cta_ventas_id, 'Recaudo de CxC', (float)$lineas_registros_retenciones[$i]->valor_retencion, 0 );
-        }
-    }
-
-    public function almacenar_registros_efectivo( $json_lineas_registros, $doc_encabezado )
-    {
-        $teso_medio_recaudo_id = 1; // Efectivo
-        $lineas_registros = json_decode( $json_lineas_registros );
-
-        if( is_null($lineas_registros) )
-        {
-            return false;
-        }
-
-        array_pop($lineas_registros); // Elimina ultimo elemento del array
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $valor_linea = (float)$lineas_registros[$i]->valor_efectivo;
-            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_efectivo;
-
-            $datos = [
-                        'teso_encabezado_id' => $doc_encabezado->id,
-                        'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_efectivo,
-                        'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
-                        'teso_caja_id' => (int)$lineas_registros[$i]->caja_id_efectivo,
-                        'teso_cuenta_bancaria_id' => 0,
-                        'detalle_operacion' => $tipo_operacion,
-                        'valor' => $valor_linea
-                    ] + $doc_encabezado->toArray();
-            
-            TesoDocRegistro::create( $datos );
-
-            $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
-            TesoMovimiento::create( $datos );
-
-            // Contabilizar DB
-            $caja = TesoCaja::find( (int)$lineas_registros[$i]->caja_id_efectivo );
-            $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $caja->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
-
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
-            if ( $tipo_operacion != 'Recaudo cartera' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_efectivo );
-                $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
-            }
-
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
-        }
-    }
-
-    public function almacenar_registros_transferencia_consignacion( $json_lineas_registros, $doc_encabezado )
-    {
-        $teso_medio_recaudo_id = 4; // Banco (Consignación)
-        $lineas_registros = json_decode( $json_lineas_registros );
-
-        if( is_null($lineas_registros) )
-        {
-            return false;
-        }
-
-        array_pop($lineas_registros); // Elimina ultimo elemento del array
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $valor_linea = (float)$lineas_registros[$i]->valor_transferencia_consignacion;
-            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_transferencia_consignacion;
-
-            $datos = [
-                        'teso_encabezado_id' => $doc_encabezado->id,
-                        'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion,
-                        'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
-                        'teso_caja_id' => 0,
-                        'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_transferencia_consignacion,
-                        'detalle_operacion' => $tipo_operacion . ' Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion,
-                        'valor' => $valor_linea
-                    ] + $doc_encabezado->toArray();
-            
-            TesoDocRegistro::create( $datos );
-
-            $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
-            $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_transferencia_consignacion;
-            TesoMovimiento::create( $datos );
-
-            // Contabilizar DB
-            $cuenta_bancaria = TesoCuentaBancaria::find( (int)$lineas_registros[$i]->banco_id_transferencia_consignacion );
-            $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $cuenta_bancaria->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
-
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
-            if ( $tipo_operacion != 'Recaudo cartera' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_transferencia_consignacion );
-                $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
-            }
-
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
-        }
-    }
-
-    public function almacenar_registros_tarjeta_debito( $json_lineas_registros, $doc_encabezado )
-    {
-        $teso_medio_recaudo_id = 2; // Tarjeta débito
-        $lineas_registros = json_decode( $json_lineas_registros );
-
-        if( is_null($lineas_registros) )
-        {
-            return false;
-        }
-
-        array_pop($lineas_registros); // Elimina ultimo elemento del array
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $valor_linea = (float)$lineas_registros[$i]->valor_tarjeta_debito;
-            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_tarjeta_debito;
-
-            $datos = [
-                        'teso_encabezado_id' => $doc_encabezado->id,
-                        'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_tarjeta_debito,
-                        'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
-                        'teso_caja_id' => 0,
-                        'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_tarjeta_debito,
-                        'detalle_operacion' => $tipo_operacion . ' Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito,
-                        'valor' => $valor_linea
-                    ] + $doc_encabezado->toArray();
-            
-            TesoDocRegistro::create( $datos );
-
-            $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
-            $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_debito;
-            TesoMovimiento::create( $datos );
-
-            // Contabilizar DB
-            $cuenta_bancaria = TesoCuentaBancaria::find( (int)$lineas_registros[$i]->banco_id_tarjeta_debito );
-            $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $cuenta_bancaria->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
-
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
-            if ( $tipo_operacion != 'Recaudo cartera' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_tarjeta_debito );
-                $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
-            }
-
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
-        }
-    }
-
-    public function almacenar_registros_tarjeta_credito( $json_lineas_registros, $doc_encabezado )
-    {
-        $teso_medio_recaudo_id = 3; // Tarjeta crédito
-        $lineas_registros = json_decode( $json_lineas_registros );
-
-        if( is_null($lineas_registros) )
-        {
-            return false;
-        }
-
-        array_pop($lineas_registros); // Elimina ultimo elemento del array
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $valor_linea = (float)$lineas_registros[$i]->valor_tarjeta_credito;
-            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_tarjeta_credito;
-
-            $datos = [
-                        'teso_encabezado_id' => $doc_encabezado->id,
-                        'teso_motivo_id' => (int)$lineas_registros[$i]->teso_motivo_id_tarjeta_credito,
-                        'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
-                        'teso_caja_id' => 0,
-                        'teso_cuenta_bancaria_id' => (int)$lineas_registros[$i]->banco_id_tarjeta_credito,
-                        'detalle_operacion' => $tipo_operacion . ' Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_credito,
-                        'valor' => $valor_linea
-                    ] + $doc_encabezado->toArray();
-            
-            TesoDocRegistro::create( $datos );
-
-            $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
-            $datos['documento_soporte'] = 'Comprobante numero ' . $lineas_registros[$i]->numero_comprobante_tarjeta_credito;
-            TesoMovimiento::create( $datos );
-
-            // Contabilizar DB
-            $cuenta_bancaria = TesoCuentaBancaria::find( (int)$lineas_registros[$i]->banco_id_tarjeta_credito );
-            $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $cuenta_bancaria->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
-
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
-            if ( $tipo_operacion != 'Recaudo cartera' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_tarjeta_credito );
-                $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
-            }
-
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
-        }
-    }
-
-    public function almacenar_registros_cheques( $json_lineas_registros, $doc_encabezado )
-    {
-        $teso_medio_recaudo_id = 7; // Cheque de tercero
-        $lineas_registros = json_decode( $json_lineas_registros );
-
-        if( is_null($lineas_registros) )
-        {
-            return false;
-        }
-
-        array_pop($lineas_registros); // Elimina ultimo elemento del array
-        
-        $cantidad = count($lineas_registros);
-        for ($i=0; $i < $cantidad; $i++) 
-        {
-            $valor_linea = (float)$lineas_registros[$i]->valor_cheque;
-            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_cheque;
-
-            $datos = [
-                        'fuente' => 'de_tercero',
-                        'tercero_id' => $doc_encabezado->core_tercero_id,
-                        'fecha_emision' => $lineas_registros[$i]->fecha_emision,
-                        'fecha_cobro' => $lineas_registros[$i]->fecha_cobro,
-                        'numero_cheque' => $lineas_registros[$i]->numero_cheque,
-                        'referencia_cheque' => $lineas_registros[$i]->referencia_cheque,
-                        'entidad_financiera_id' => $lineas_registros[$i]->entidad_financiera_id,
-                        'valor' => $valor_linea,
-                        'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
-                        'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
-                        'teso_caja_id' => 1,//$lineas_registros[$i]->caja_id_cheque,
-                        'estado' => 'Recibido'
-                    ] + $doc_encabezado->toArray();
-
-            ControlCheque::create( $datos );
-
-            $datos['valor_movimiento'] = $valor_linea;
-            $datos['descripcion'] = $tipo_operacion;
-            $datos['teso_motivo_id'] = (int)$lineas_registros[$i]->teso_motivo_id_cheque;
-            $datos['documento_soporte'] = 'Cheque número ' . $lineas_registros[$i]->numero_cheque;
-            TesoMovimiento::create( $datos );
-
-            // Contabilizar DB
-            $caja = TesoCaja::find( 1 );//(int)$lineas_registros[$i]->caja_id_cheque );
-            $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $caja->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
-
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
-            if ( $tipo_operacion != 'Recaudo cartera' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_cheque );
-                $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
-            }
-
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
-        }
-    }
-
-    public function transacciones_adicionales( $datos, $tipo_operacion, $valor )
-    {
-
-        // Solo los anticipos de clientes se guardan en el movimiento de cartera (CxC)
-        if ( $tipo_operacion == 'Anticipo' )
-        {
-            $datos['valor_documento'] = $valor * -1;
-            $datos['valor_pagado'] = 0;
-            $datos['saldo_pendiente'] = $valor * -1;
-            $datos['fecha_vencimiento'] = $datos['fecha'];
-            $datos['estado'] = 'Pendiente';
-            CxcMovimiento::create( $datos );
-        }
- 
-        // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
-        if ( $tipo_operacion == 'Prestamo financiero' )
-        {
-            $datos['valor_documento'] = $valor;
-            $datos['valor_pagado'] = 0;
-            $datos['saldo_pendiente'] = $valor;
-            $datos['fecha_vencimiento'] = $datos['fecha'];
-            $datos['estado'] = 'Pendiente';
-            CxpMovimiento::create( $datos );
-        }
     }
 
     /**
@@ -651,14 +332,16 @@ class RecaudoCxcController extends Controller
             - cxc_abonos y su movimiento en contab_movimientos
             - teso_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
     */
-    public static function anular_recaudo_cxc($id)
+    public function anular_recaudo_cxc($id)
     {        
         $recaudo = TesoDocEncabezado::find( $id );
 
-        $array_wheres = ['core_empresa_id'=>$recaudo->core_empresa_id, 
-            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
-            'consecutivo' => $recaudo->consecutivo];
+        $array_wheres = [
+                            'core_empresa_id' => $recaudo->core_empresa_id, 
+                            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                            'consecutivo' => $recaudo->consecutivo
+                        ];
 
         // >>> Validaciones inciales
 
@@ -713,18 +396,24 @@ class RecaudoCxcController extends Controller
             $linea->delete();
         }
 
+        // Se elimina el movimimeto de cartera (CxC o CxP)
+        CxcMovimiento::where($array_wheres)->delete();
+        CxpMovimiento::where($array_wheres)->delete();
+
         // Borrar movimiento de tesorería del recaudo y su contabilidad. Además actualizar estado del encabezado del documento de recaudo.
-        TesoMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
+        TesoMovimiento::where( $array_wheres )->delete();
 
         // Borrar movimiento contable generado por el documento de pago ( DB: Caja/Banco, CR: CxC )
-        ContabMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
+        ContabMovimiento::where( $array_wheres )->delete();
 
         // Si es el Recaudo de una o varias facturas asociadas a un registro de Plan de Pagos de una libreta de pagos
-        $recaudos_libreta = TesoRecaudosLibreta::where([
-                                                    ['core_tipo_transaccion_id','=',$recaudo->core_tipo_transaccion_id],
-                                                    ['core_tipo_doc_app_id','=',$recaudo->core_tipo_doc_app_id],
-                                                    ['consecutivo','=',$recaudo->consecutivo]
-                                                ])->get();
+        $recaudos_libreta = TesoRecaudosLibreta::where( [
+                                                            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                                                            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                                                            'consecutivo' => $recaudo->consecutivo
+                                                        ] )
+                                                ->get();
+
         foreach( $recaudos_libreta AS $recaudo_libreta )
         {
             $recaudo_libreta->anular();
@@ -733,28 +422,45 @@ class RecaudoCxcController extends Controller
         // Marcar como anulado el encabezado
         $recaudo->update(['estado'=>'Anulado']);
 
+        $this->restablecer_retenciones( $recaudo );
+
         $this->restablecer_cheque( $recaudo );
 
         return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
         
     }
 
+    public function restablecer_retenciones( $recaudo )
+    {
+        $registros = RegistroRetencion::where( [
+                                                'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
+                                                'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+                                                'consecutivo' => $recaudo->consecutivo
+                                            ] )
+                                        ->get();
 
+        foreach ( $registros AS $registro )
+        {
+            $registro->estado = 'Anulado';
+            $registro->modificado_por = Auth::user()->email;
+            $registro->save();
+        }
+    }
 
     public function restablecer_cheque( $recaudo )
     {
-        $cheque_recibido = ControlCheque::where([
-                                                    'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
-                                                    'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
+        $cheques_recibidos = ControlCheque::where([
+                                                    'core_tipo_transaccion_id_origen' => $recaudo->core_tipo_transaccion_id,
+                                                    'core_tipo_doc_app_id_origen' => $recaudo->core_tipo_doc_app_id,
                                                     'consecutivo' => $recaudo->consecutivo
                                                 ])
-                                        ->get()
-                                        ->first();
+                                        ->get();
 
-        if ( !is_null($cheque_recibido) )
+        foreach ( $cheques_recibidos AS $cheque )
         {
-            $cheque_recibido->estado = 'Anulado';
-            $cheque_recibido->save();
+            $cheque->estado = 'Anulado';
+            $cheque->modificado_por = Auth::user()->email;
+            $cheque->save();
         }
     }
 

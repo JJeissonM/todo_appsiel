@@ -18,6 +18,10 @@ use App\Contabilidad\RegistroRetencion;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
+use App\CxC\CxcMovimiento;
+
+use App\CxP\CxpMovimiento;
+
 class TesoDocEncabezado extends Model
 {
     //protected $table = 'teso_doc_encabezados'; 
@@ -65,6 +69,12 @@ class TesoDocEncabezado extends Model
                                         'consecutivo' => $this->consecutivo
                                     ] )
                                 ->get();
+    } 
+
+    public function actualizar_valor_total()
+    {
+        $this->valor_total = TesoDocRegistro::where('teso_encabezado_id',$this->id)->sum('valor');
+        $this->save();
     }
 
     public function datos_auxiliares_estudiante()
@@ -201,5 +211,53 @@ class TesoDocEncabezado extends Model
                             )
                     ->get()
                     ->first();
+    }
+
+    public function transacciones_adicionales( $datos, $tipo_operacion, $valor )
+    {
+
+        // Solo los anticipos de clientes se guardan en el movimiento de cartera (CxC)
+        if ( $tipo_operacion == 'Anticipo' )
+        {
+            $datos['valor_documento'] = $valor * -1;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $valor * -1;
+            $datos['fecha_vencimiento'] = $datos['fecha'];
+            $datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $datos );
+        }
+ 
+        // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
+        if ( $tipo_operacion == 'Prestamo financiero' )
+        {
+            $datos['valor_documento'] = $valor;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $valor;
+            $datos['fecha_vencimiento'] = $datos['fecha'];
+            $datos['estado'] = 'Pendiente';
+            CxpMovimiento::create( $datos );
+        }
+
+        // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
+        if ( $tipo_operacion == 'Anticipo proveedor' )
+        {
+            $datos['valor_documento'] = $valor * -1;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $valor * -1;
+            $datos['fecha_vencimiento'] = $datos['fecha'];
+            $datos['estado'] = 'Pendiente';
+            CxpMovimiento::create( $datos );
+        }
+
+        // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
+        if ( $tipo_operacion == 'Pago anticipado' )
+        {
+            $datos['valor_documento'] = $valor;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $valor;
+            $datos['fecha_vencimiento'] = $datos['fecha'];
+            $datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $datos );
+        }
     }
 }
