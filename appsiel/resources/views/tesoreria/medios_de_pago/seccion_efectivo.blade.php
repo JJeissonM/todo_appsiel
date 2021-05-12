@@ -15,7 +15,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_efectivo', null, 'Tipo de operación', [''=>'','Recaudo cartera'=>'Recaudo cartera (CxC)','Anticipo'=>'Anticipo cliente (CxC a favor)','Otros recaudos'=>'Otros recaudos','Prestamo financiero'=>'Prestamo financiero (CxP)'], []) }}
+									{{ Form::bsSelect('tipo_operacion_id_efectivo', null, 'Tipo de operación', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -146,7 +146,7 @@
 				}
 			});
 
-			function calcular_totales_efectivo( tipo_operacion_id_efectivo, valor_linea )
+			function calcular_totales_efectivo( tipo_operacion_id, valor_linea )
 			{
 				var valor_total_efectivo = 0.0;
 				$('.linea_registro_efectivo').each(function()
@@ -160,7 +160,7 @@
 				// Para la tabla de resumen
 				$('#valor_total_efectivo2').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_total_efectivo.toFixed(2) ) );
 
-				if ( tipo_operacion_id_efectivo != 'Recaudo cartera' )
+				if ( tipo_operacion_id != 'Recaudo cartera' && tipo_operacion_id != 'Pago proveedores' )
 				{
 					var actual_valor_total_otras_operaciones = parseFloat( $('#input_valor_total_otras_operaciones').val() );
 

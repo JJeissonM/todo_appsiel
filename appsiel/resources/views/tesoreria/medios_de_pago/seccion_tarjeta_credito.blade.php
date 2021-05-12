@@ -15,7 +15,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_tarjeta_credito', null, 'Tipo de operación', [''=>'','Recaudo cartera'=>'Recaudo cartera (CxC)','Anticipo'=>'Anticipo cliente (CxC a favor)','Otros recaudos'=>'Otros recaudos','Prestamo financiero'=>'Prestamo financiero (CxP)'], []) }}
+									{{ Form::bsSelect('tipo_operacion_id_tarjeta_credito', null, 'Tipo de operación', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -170,7 +170,7 @@
 				$('#valor_total_cuentas_bancarias').text( '$ ' + new Intl.NumberFormat("de-DE").format( nuevo_valor_total_cuentas_bancarias.toFixed(2) ) );
 				$('#input_valor_total_cuentas_bancarias').val( nuevo_valor_total_cuentas_bancarias );
 
-				if ( tipo_operacion_id != 'Recaudo cartera' )
+				if ( tipo_operacion_id != 'Recaudo cartera' && tipo_operacion_id != 'Pago proveedores' )
 				{
 					var actual_valor_total_otras_operaciones = parseFloat( $('#input_valor_total_otras_operaciones').val() );
 

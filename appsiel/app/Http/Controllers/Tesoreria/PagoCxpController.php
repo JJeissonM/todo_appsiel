@@ -40,7 +40,15 @@ use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
 
+use App\Tesoreria\RegistroDeEfectivo;
+use App\Tesoreria\RegistroDeTransferenciaConsignacion;
+use App\Tesoreria\RegistroDeTarjetaDebito;
+use App\Tesoreria\RegistroDeTarjetaCredito;
+use App\Tesoreria\RegistroDeCheque;
+
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\Retencion;
+use App\Contabilidad\RegistroRetencion;
 
 use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
@@ -85,14 +93,16 @@ class PagoCxpController extends TransaccionController
                         'campos' => $lista_campos
                     ];
 
-        $motivos = [''];//PagoCxpController::get_motivos($id_transaccion);
+        $motivos = [''];
         $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
         $cajas = TesoCaja::opciones_campo_select();
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
+        $retenciones = Retencion::opciones_campo_select();
+
+        $tipos_operaciones = [ '' => '', 'Pago proveedores' => 'Pago proveedores (CxP)', 'Anticipo proveedor' => 'Anticipo proveedor (CxP a favor)', 'Otros pagos' => 'Otros pagos', 'Pago anticipado' => 'Préstamo financiero (Crear CxC)'];
 
         $terceros = [''];
 
-        $cheques_activos = ControlCheque::opciones_campo_select();
         $entidades_financieras = TesoEntidadFinanciera::opciones_campo_select();
 
         $miga_pan = [
@@ -101,7 +111,7 @@ class PagoCxpController extends TransaccionController
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'cheques_activos', 'entidades_financieras' ) );
+        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones' ) );
     }
 
     /**
@@ -114,21 +124,49 @@ class PagoCxpController extends TransaccionController
      */
     public function store(Request $request)
     {
-        // Crear Documento de tesorería (PAGO)
-        $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
+        // Crear encabezado desde TransaccionController
+        $doc_encabezado = $this->crear_encabezado_documento( $request, $request->url_id_modelo);
 
+        $total_abonos_cxc = $this->almacenar_registros_cxp( $request, $doc_encabezado );
+        
+        $retenciones = new RegistroRetencion();
+        $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'practicada' );
+
+        $efectivo = new RegistroDeEfectivo();
+        $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado );
+
+        $transferencia_consignacion = new RegistroDeTransferenciaConsignacion();
+        $transferencia_consignacion->almacenar_registros( $request->lineas_registros_transferencia_consignacion, $doc_encabezado );
+
+        $tarjeta_debito = new RegistroDeTarjetaDebito();
+        $tarjeta_debito->almacenar_registros( $request->lineas_registros_tarjeta_debito, $doc_encabezado );
+
+        $tarjeta_credito = new RegistroDeTarjetaCredito();
+        $tarjeta_credito->almacenar_registros( $request->lineas_registros_tarjeta_credito, $doc_encabezado );
+
+        // $teso_medio_recaudo_id = 6; // Cheque propio
+        $cheques = new RegistroDeCheque();
+        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 6, 'Emitido' );
+
+        $doc_encabezado->actualizar_valor_total();
+
+        // se llama la vista de PagoCxpController@show
+        return redirect( 'tesoreria/pagos_cxp/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
+
+    public function almacenar_registros_cxp( Request $request, $doc_encabezado )
+    {
         $lineas_registros = json_decode($request->lineas_registros);
 
-        array_pop($lineas_registros); 
+        array_pop($lineas_registros);
 
-        $valor_total = 0;
+        $total_abonos_cxc = 0;
         
         $cantidad = count($lineas_registros);
-        // Por cada documento abonado
         for ($i=0; $i < $cantidad; $i++) 
         {
-
-            $registro_documento_pendiente = DocumentosPendientes::find( $lineas_registros[$i]->id_doc );
+            $abono = (float)$lineas_registros[$i]->abono;
+            $registro_documento_pendiente = CxpMovimiento::find( (int)$lineas_registros[$i]->id_doc );
             
             // Almacenar registro de abono
             $datos = ['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+
@@ -142,7 +180,7 @@ class PagoCxpController extends TransaccionController
                         ['doc_cxp_transacc_id' => $registro_documento_pendiente->core_tipo_transaccion_id]+
                         ['doc_cxp_tipo_doc_id' => $registro_documento_pendiente->core_tipo_doc_app_id]+
                         ['doc_cxp_consecutivo' => $registro_documento_pendiente->consecutivo]+
-                        ['abono' => $lineas_registros[$i]->abono]+
+                        ['abono' => $abono ]+
                         ['creado_por' => $doc_encabezado->creado_por];
 
             CxpAbono::create( $datos );
@@ -150,16 +188,7 @@ class PagoCxpController extends TransaccionController
             // CONTABILIZAR
             $detalle_operacion = 'Abono factura de proveedor '.$registro_documento_pendiente->doc_proveedor_prefijo.' - '.$registro_documento_pendiente->doc_proveedor_consecutivo;
 
-            // 1.2. Para cada registro del documento, también se va actualizando el movimiento de contabilidad
-            
-            // Para el movimiento contable se guarda en detalle_operacion el detalle del encabezado del documento
-
-            if ( $detalle_operacion == '') {
-              $detalle_operacion = $request->descripcion;
-            }
-
             // MOVIMIENTO DEBITO: Cuenta por pagar. Cada Documento pagado puede tener cuenta por cobrar distinta.
-
             // Del movimiento contable, Se llama al ID de la cuenta (moviento CR) afectada por el documento CxP para el tercero al que se le está haciendo el pago
             $cuenta_cxp_id = ContabMovimiento::where('core_tipo_transaccion_id',$registro_documento_pendiente->core_tipo_transaccion_id)
                                             ->where('core_tipo_doc_app_id',$registro_documento_pendiente->core_tipo_doc_app_id)
@@ -173,71 +202,15 @@ class PagoCxpController extends TransaccionController
                 $cuenta_cxp_id = config('configuracion.cta_por_pagar_default');
             }
 
-            ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $lineas_registros[$i]->abono, 0);
+            ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $abono, 0);
 
+            // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se marca como pagado
+            $registro_documento_pendiente->actualizar_saldos($abono);
 
-            // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se elimina el registro
-            $nuevo_saldo = $registro_documento_pendiente->saldo_pendiente - (float)$lineas_registros[$i]->abono; //valor_documento
-
-            $nuevo_valor_pagado = $registro_documento_pendiente->valor_pagado + (float)$lineas_registros[$i]->abono;
-            $registro_documento_pendiente->valor_pagado = $nuevo_valor_pagado;
-            $registro_documento_pendiente->saldo_pendiente = $nuevo_saldo;
-            $registro_documento_pendiente->save();
-
-            if ( $nuevo_saldo == 0)
-            {
-                $registro_documento_pendiente->update(['estado','Pagado']);
-            }
-
-            $valor_total += (float)$lineas_registros[$i]->abono;
-
-          } // FIN FOR CADA LINEA DEL PAGO
-
-
-        // UN SOLO MOVIMIENTO DE TESORERIA y un solo movimiento contable de (CR) CAJA O BANCO
-        $datos = array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] );
-
-        $doc_encabezado->valor_total = $valor_total;
-        $doc_encabezado->save();        
-
-        // Datos la caja o el la cuenta bancaria
-        // Tambien se asigna el ID de la cuenta contable para el movimiento CREDITO
-        $vec_3 = explode("-",$request->teso_medio_recaudo_id);
-        $teso_medio_recaudo_id = $vec_3[0];
-        if ( $vec_3[1] == 'Tarjeta bancaria' ) {
-            $banco = TesoCuentaBancaria::find($request->teso_cuenta_bancaria_id);
-            $contab_cuenta_id = $banco->contab_cuenta_id;
-            $teso_caja_id = 0;
-            $datos['teso_caja_id'] = 0;
-            $teso_cuenta_bancaria_id = $banco->id;
-        }else{
-            $caja = TesoCaja::find($request->teso_caja_id);
-            $contab_cuenta_id = $caja->contab_cuenta_id;
-            $teso_caja_id = $caja->id;
-            $teso_cuenta_bancaria_id = 0;
-            $datos['teso_cuenta_bancaria_id'] = 0;
+            $total_abonos_cxc += $abono;
         }
 
-        // Movimiento de salida se almacena en negativo
-        $valor_movimiento = $valor_total * -1;
-
-        $teso_motivo_id = TesoMotivo::where('movimiento','salida')->get()->first()->id;
-        
-        TesoMovimiento::create( $datos + 
-                        [ 'teso_motivo_id' => $teso_motivo_id] + 
-                        [ 'teso_caja_id' => $teso_caja_id] + 
-                        [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
-                        [ 'valor_movimiento' => $valor_movimiento] +
-                        [ 'estado' => 'Activo' ]
-                    );
-
-        // MOVIMIENTO CREDITO (CAJA/BANCO)
-        ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, $valor_total);
-
-        $this->almacenar_cheque( $request, $doc_encabezado );
-
-        // se llama la vista de PagoCxpController@show
-        return redirect( 'tesoreria/pagos_cxp/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+        return $total_abonos_cxc;
     }
 
     public function almacenar_cheque( $request, $doc_encabezado )

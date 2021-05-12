@@ -102,6 +102,11 @@
 			position: absolute;
 			z-index: 9999;
 		}
+		
+		#clientes_suggestions {
+		    position: absolute;
+		    z-index: 9999;
+		}
 
 		#proveedores_suggestions {
 			position: absolute;

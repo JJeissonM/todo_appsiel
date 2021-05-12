@@ -10,7 +10,7 @@ use Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
-class TesoDocEncabezadoPagoCxp extends Model
+class TesoDocEncabezadoPagoCxp extends TesoDocEncabezado
 {
     // Apunta a la misma tabla de los modelos de tesorería
     protected $table = 'teso_doc_encabezados'; 

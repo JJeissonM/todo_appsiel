@@ -17,8 +17,6 @@ class CxcMovimiento extends Model
 
   public $urls_acciones = '{"show":"no"}';
 
-
-
   public function actualizar_saldos($abono)
   {
     $nuevo_saldo = $this->saldo_pendiente - $abono;
