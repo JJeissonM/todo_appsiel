@@ -301,9 +301,9 @@ class ProcesoController extends Controller
                 $encabezado_doc_venta->estado = 'Cumplido';
             }
             $encabezado_doc_venta->save();
-            return "<br>[OK] Remisión almacenada con exito.";
+            return "[OK] Remisión almacenada con exito.";
         } else {
-            return "<br>[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
+            return "[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
         }
     }
     

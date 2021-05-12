@@ -18,7 +18,7 @@ class ComprasDocEncabezado extends Model
     //protected $table = 'compras_doc_encabezados';
 	protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'cotizacion_id', 'compras_doc_relacionado_id', 'entrada_almacen_id', 'proveedor_id', 'comprador_id', 'forma_pago', 'fecha_recepcion', 'fecha_vencimiento', 'doc_proveedor_prefijo', 'doc_proveedor_consecutivo', 'descripcion', 'creado_por', 'modificado_por', 'estado','valor_total'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento compra', 'Proveedor', 'Factura', 'Detalle', 'Valor total',  'Forma de pago', 'Estado'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Proveedor', 'Fact. Proveedor', 'Detalle', 'Valor total',  'Forma de pago', 'Estado'];
 
     public function tercero()
     {
@@ -40,14 +40,13 @@ class ComprasDocEncabezado extends Model
                                     ->where('compras_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                                     ->select(
                                         'compras_doc_encabezados.fecha AS campo1',
-                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",compras_doc_encabezados.consecutivo) AS campo2'),
-                                        'core_terceros.descripcion AS campo3',
-                                        DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo4'),
-                                        'compras_doc_encabezados.descripcion AS campo5',
-                                        'compras_doc_encabezados.valor_total AS campo6',
-                                        'compras_doc_encabezados.forma_pago AS campo7',
-                                        'compras_doc_encabezados.estado AS campo8',
-                                        'compras_doc_encabezados.id AS campo9'
+                                        'core_terceros.descripcion AS campo2',
+                                        DB::raw('CONCAT(compras_doc_encabezados.doc_proveedor_prefijo," ",compras_doc_encabezados.doc_proveedor_consecutivo) AS campo3'),
+                                        'compras_doc_encabezados.descripcion AS campo4',
+                                        'compras_doc_encabezados.valor_total AS campo5',
+                                        'compras_doc_encabezados.forma_pago AS campo6',
+                                        'compras_doc_encabezados.estado AS campo7',
+                                        'compras_doc_encabezados.id AS campo8'
                                     )
                                     ->orderBy('compras_doc_encabezados.fecha', 'DESC')
                                     ->get();

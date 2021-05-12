@@ -6,7 +6,7 @@
             $total = 0;
             $lineas_registros = $doc_encabezado->lineas_registros;
         ?>
-        <table class="table table-bordered">
+        <table class="table table-bordered contenido">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> 
                     <span style="text-align: right; font-weight: bold;"> DETALLE MEDIOS DE PAGO </span> 
@@ -14,7 +14,7 @@
             </tr>
         </table>
 
-        <div class="table-responsive">
+        <div class="table-responsive contenido">
             <table class="table table-bordered">
                 {{ Form::bsTableHeader(['Medio de pago','Caja/Cta. Bancaria','Valor']) }}
                 <tbody>
@@ -56,7 +56,7 @@
             $total = 0;
             $lineas_movimientos = $doc_encabezado->lineas_movimientos();
         ?>
-        <table class="table table-bordered">
+        <table class="table table-bordered contenido">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> 
                     <span style="text-align: right; font-weight: bold;"> DETALLES DE MOVIMIENTOS </span> 
@@ -64,7 +64,7 @@
             </tr>
         </table>
 
-        <div class="table-responsive">
+        <div class="table-responsive contenido">
             <table class="table table-bordered">
                 {{ Form::bsTableHeader(['Motivo','Valor']) }}
                 <tbody>

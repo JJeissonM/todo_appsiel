@@ -2,14 +2,14 @@
     $cheques = $doc_encabezado->cheques_relacionados_recaudos();
 ?>
 @if( !empty( $cheques->toArray() ) )
-<table class="table table-bordered">
+<table class="table table-bordered contenido">
     <tr>
         <td style="text-align: center; background-color: #ddd;"> 
             <span style="text-align: right; font-weight: bold;"> CHEQUES DE TERCEROS </span> 
         </td>
     </tr>
 </table>
-<div class="table-responsive">
+<div class="table-responsive contenido">
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Fecha','Número','Referencia','Banco','Cliente','Valor']) }}
         <tbody>

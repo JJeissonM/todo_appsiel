@@ -50,13 +50,13 @@
 							<b> {{ $campo->nombre_completo }}</b>
 							<input name="estudiante[]" id="{{ $estudiante }}" type="hidden" value="{{ $campo->id_estudiante }}">
 						</td>
-						<td>
+						<td class="text-center">
 							{{ Form::select( 'codigo_1_id[]',$codigos, null, [ 'class' => 'combobox' ] ) }}
 						</td>
-						<td>
+						<td class="text-center">
 							{{ Form::select( 'codigo_2_id[]',$codigos, null, [ 'class' => 'combobox'] ) }}
 						</td>
-						<td>
+						<td class="text-center">
 							{{ Form::select( 'codigo_3_id[]',$codigos, null, [ 'class' => 'combobox'] ) }}
 						</td>
 						<td>

@@ -2,7 +2,7 @@
 	<div class="container" style="clear: both; width: auto;">
 		<div class="alert alert-success alert-dismissible">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			<em> {!! session('flash_message') !!}</em>
+			<em>{!! session('flash_message') !!}<i class="fa fa-check-circle-o" aria-hidden="true"></i></em>
 		</div>
 	</div>
 @endif
@@ -11,7 +11,7 @@
 	<div class="container" style="clear: both; width: auto;">      
 		<div class="alert alert-danger alert-dismissible">
 			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			<em> {!! session('mensaje_error') !!}</em>
+			<em> {!! session('mensaje_error') !!}<i class="fa fa-times-circle-o" aria-hidden="true"></i></em>
 		</div>
 	</div>
 @endif 

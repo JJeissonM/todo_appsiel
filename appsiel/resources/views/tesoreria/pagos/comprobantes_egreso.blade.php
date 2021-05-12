@@ -62,10 +62,7 @@
 @section('div_advertencia_anulacion')
 	<div class="alert alert-warning" style="display: none;">
 		<a href="#" id="close" class="close">&times;</a>
-		<strong>Advertencia!</strong>
-		<br>
-		Al anular el documento se eliminan los registros del movimiento de tesorería. La anulación no se puede revertir.
-		<br>
-		Si realmente quiere anular el documento, haga click en el siguiente enlace: <span style="text-decoration-line: underline"> <a href="{{ url('teso_comprobante_egreso_anular/'.$id.$variables_url ) }}"> Anular </a> </span>
+		<strong>¡ADVERTENCIA!</strong>
+		Al anular el documento se eliminan los registros del movimiento de tesorería. La anulación no puede revertirse. Si quieres confirmar, hacer click en: <a class="btn btn-danger btn-sm" href="{{ url('teso_comprobante_egreso_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
 	</div>
 @endsection

@@ -171,12 +171,8 @@ use App\Core\Tercero;
         <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
     </tr>
     <tr>
-        <td>
-            <b>Localidad:</b>
-        </td>
-        <td>
-            {{ $tercero->ciudad->descripcion }}
-        </td>
+        <td><b>Localidad:</b></td>
+        <td>{{ $tercero->ciudad->descripcion }}</td>
         <td><b>Remito No.: </b></td>
         <td>{{ $doc_encabezado->documento_remision_prefijo_consecutivo }}</td>
     </tr>

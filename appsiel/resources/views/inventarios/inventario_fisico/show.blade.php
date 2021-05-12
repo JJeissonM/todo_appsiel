@@ -45,10 +45,7 @@
 @section('div_advertencia_anulacion')
 	<div class="alert alert-warning" style="display: none;">
 		<a href="#" id="close" class="close">&times;</a>
-		<strong>Advertencia!</strong>
-		<br>
-		La anulación del documento no se puede reversar.
-		<br>
-		Si realmente quiere anular el documento, haga click en el siguiente enlace: <small> <a href="{{ url('inv_fisico_anular/'.$id.$variables_url ) }}"> Anular </a> </small>
+		<strong>¡ADVERTENCIA!</strong>
+		La anulación no puede revertirse. Si quieres confirmar, hacer click en: <a class="btn btn-danger btn-sm" href="{{ url('inv_fisico_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
 	</div>
 @endsection

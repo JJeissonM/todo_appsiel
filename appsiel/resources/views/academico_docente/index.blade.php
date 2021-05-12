@@ -47,7 +47,7 @@
 									@foreach ($listado as $fila)
 									<tr>
 										<td><input type="checkbox" value="{{$fila->curso_id.';'.$fila->id_asignatura}}" class="btn-gmail-check"></td>
-										<td>{{$contador}}</td>
+										<td class="text-center">{{$contador}}</td>
 										<td>{{ $fila->Curso }}</td>
 										<td>{{ $fila->Asignatura }}</td>
 									</tr>
