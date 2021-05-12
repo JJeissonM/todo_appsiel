@@ -23,7 +23,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar (Sin costo)','3'=>'POS (Sin costo)','4'=>'Estandar (CEOF)','5'=>'Estandar (CEM)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
+	Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar (Sin costo)','3'=>'Estándar v2','4'=>'POS (Sin costo)','5'=>'Estandar (CEOF)','6'=>'Estandar (CEM)'], null, [ 'id' =>'formato_impresion_id' ] ) }}
 	{{ Form::bsBtnPrint( 'transaccion_print/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 	{{ Form::bsBtnEmail( 'inventarios_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 @endsection

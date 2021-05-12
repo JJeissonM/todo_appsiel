@@ -7,7 +7,7 @@
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado')
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
-
+		<a href="{{ url('tesoreria/pagos_cxp/create?id=3&id_modelo=150&id_transaccion=33') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>	
         @if(!$docs_relacionados[1])
         	<!-- WARNING: Solo se hacen notas para facturas con una sola éntrada de almacén -->
         	<a class="btn-gmail" href="{{ url('compras_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=166&id_transaccion=36') }}" title="Nota crédito"><i class="fa fa-file-text"></i></a>
@@ -16,7 +16,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
 	{{ Form::bsBtnPrint( 'compras_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 @endsection
 
@@ -27,6 +27,8 @@
 @section('datos_adicionales_encabezado')
 	<br/>
 	<b>Entrada(s) almacén: </b> {!! $docs_relacionados[0] !!}
+	<br/>
+    <b>Orden de compras: &nbsp;&nbsp;</b> {{ $doc_encabezado->orden_compras }}
 @endsection
 
 @section('filas_adicionales_encabezado')
@@ -42,13 +44,12 @@
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
         </td>
         <td style="border: solid 1px #ddd;">
-            <b>Factura del proveedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->doc_proveedor_prefijo }} - {{ $doc_encabezado->doc_proveedor_consecutivo }}
+            <b>Fact. del proveedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->doc_proveedor_prefijo }} - {{ $doc_encabezado->doc_proveedor_consecutivo }}
             <br/>
             <b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
             <br/>
             <b>Fecha vencimiento: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_vencimiento }}
-            <br/>
-            <b>Orden de compras: &nbsp;&nbsp;</b> {{ $doc_encabezado->orden_compras }}
+            
         </td>
     </tr>
     <tr>        

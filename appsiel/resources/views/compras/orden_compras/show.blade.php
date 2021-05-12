@@ -5,8 +5,9 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 @extends('transaccion.show')
 
 @section('botones_acciones')
-	@if($doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado=='Pendiente')
+	@if($doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado=='Pendiente')		
 		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+		
 	@endif
 	
 	@if( $doc_encabezado->estado!='Cumplida' && $doc_encabezado->estado!='Anulado')
@@ -15,12 +16,17 @@ $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_mode
 @endsection
 
 @section('botones_imprimir_email')
-Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
+Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
 {{ Form::bsBtnPrint( 'compras_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 @endsection
 
 @section('botones_anterior_siguiente')
 {!! $botones_anterior_siguiente->dibujar( 'orden_compra/', $variables_url ) !!}
+@endsection
+
+@section('datos_adicionales_encabezado')
+<br>	
+	<b>Fecha Recepción Mercancía:</b> {{ $doc_encabezado->fecha_recepcion }}
 @endsection
 
 @section('filas_adicionales_encabezado')

@@ -1,6 +1,6 @@
 @if( !empty( $registros_contabilidad ) )
-    <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Registros contables</div>
-    <div class="table-responsive">
+    <div class="contenido" style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Registros contables</div>
+    <div class="table-responsive contenido">
         <table class="table table-bordered table-striped">
             {{ Form::bsTableHeader(['Código','Cuenta','Débito','Crédito']) }}
             <tbody>
@@ -11,7 +11,7 @@
                 @foreach( $registros_contabilidad as $fila )
                     <tr>
                         <td class="text-center"> {{ $fila['cuenta_codigo'] }}</td>
-                        <td> {{ $fila['cuenta_descripcion'] }}</td>
+                        <td class="text-left"> {{ $fila['cuenta_descripcion'] }}</td>
                         <td style="text-align: right;"> {{ number_format(  $fila['valor_debito'], 2, ',', '.') }}</td>
                         <td style="text-align: right;"> {{ number_format(  $fila['valor_credito'] * -1, 2, ',', '.') }}</td>
                     </tr>

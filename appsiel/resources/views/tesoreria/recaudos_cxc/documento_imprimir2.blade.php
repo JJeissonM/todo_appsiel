@@ -247,13 +247,13 @@ use App\Core\Tercero;
 
 
     @if( !empty($registros_contabilidad) ) 
-        <table class="table table-bordered">
+        <table class="table table-bordered contenido">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Registros contables </span> </td>
             </tr>
         </table>
         
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped contenido">
             <thead>
                 <tr>
                     <th>Código</th>

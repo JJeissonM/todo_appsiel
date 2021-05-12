@@ -466,7 +466,7 @@ class InventarioController extends TransaccionController
         if (!is_null($reg_fatura_compras)) {
             $fatura_compra = ComprasDocEncabezado::get_registro_impresion($reg_fatura_compras->id);
             $enlace1 = '<br/>
-                    <b>Factura de compras: </b> <a href="' . url('compras/' . $fatura_compra->id . '?id=9&id_modelo=147&id_transaccion=' . $reg_fatura_compras->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_compra->documento_transaccion_prefijo_consecutivo . '</a>';
+                    <b>Orden de compras: </b> <a href="' . url('compras/' . $fatura_compra->id . '?id=9&id_modelo=147&id_transaccion=' . $reg_fatura_compras->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_compra->documento_transaccion_prefijo_consecutivo . '</a>';
         }
 
         // Verificar si pertenece a una documento de ventas
@@ -510,7 +510,7 @@ class InventarioController extends TransaccionController
         $tipo_doc_app = TipoDocApp::find($encabezado_doc->core_tipo_doc_app_id);
 
         $descripcion_transaccion = $tipo_transaccion->descripcion;
-
+        
         $movimientos = $encabezado_doc->movimientos;
 
         $productos = [];
@@ -532,23 +532,27 @@ class InventarioController extends TransaccionController
         $sql_datos_encabezado_doc = InvDocEncabezado::get_registro($id);
         $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
         $elaboro = $encabezado_doc->creado_por;
-
+        
         switch ( Input::get('formato_impresion_id') )
         {
             case '2':
-                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision');
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision',$datos_encabezado_doc);
                 break;
 
             case '3':
-                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_pos');
-                break;   
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision2',$datos_encabezado_doc);
+                break;          
 
             case '4':
-                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_ceof');
-                break;
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_pos',$datos_encabezado_doc);
+                break;   
 
             case '5':
-                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_cem');
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_ceof',$datos_encabezado_doc);
+                break;
+
+            case '6':
+                $view = $this->generar_documento_vista(Input::get('id_transaccion'), $id, 'inventarios.formatos.remision_cem',$datos_encabezado_doc);
                 break;
             
             default:
@@ -572,7 +576,7 @@ class InventarioController extends TransaccionController
     /*
         Generar la vista para los métodos show(), imprimir() o enviar_por_email()
     */
-    public function generar_documento_vista($id_transaccion, $id, $ruta_vista)
+    public function generar_documento_vista($id_transaccion, $id, $ruta_vista,$datos_encabezado_doc)
     {
         $transaccion = TipoTransaccion::find($id_transaccion);
 
@@ -582,7 +586,7 @@ class InventarioController extends TransaccionController
 
         $empresa = Empresa::find($doc_encabezado->core_empresa_id);        
 
-        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa'))->render();
+        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa','datos_encabezado_doc'))->render();
     }
 
 

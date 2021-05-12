@@ -85,7 +85,7 @@ $semana = ReportesController::ordenes_semana();
 										@foreach($s['data'] as $d)
 										<li>
 											<a style="color: #0b97c4;" target="_blank" href="{{url('orden_compra/'.$d['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$d['documento']}}</a>
-													/ {{ $d['fecha'] }} > <span title="{{ $d['proveedor'] }}"> {{ substr( $d['proveedor'], 0, 10) }}... </span>
+													/ <span title="{{ $d['proveedor'] }}"> {{ substr( $d['proveedor'], 0, 10) }}... </span>
 										</li>
 										@endforeach
 									</ol>
@@ -123,7 +123,7 @@ $semana = ReportesController::ordenes_semana();
 							@foreach($vencidas as $v)
 							<tr>
 								<td><a target="_blank" href="{{url('orden_compra/'.$v['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$v['documento']}}</a></td>
-								<td>{{$v['proveedor']}}</td>
+								<td>{{ substr($v['proveedor'],0,50)}}...</td>
 								<td>{{$v['fecha_recepcion']}}</td>
 							</tr>
 							@endforeach
@@ -151,7 +151,7 @@ $semana = ReportesController::ordenes_semana();
 							@foreach($futuras as $v)
 							<tr>
 								<td><a target="_blank" href="{{url('orden_compra/'.$v['id'].'?id=9&id_modelo=177&id_transaccion=6')}}">{{$v['documento']}}</a></td>
-								<td>{{$v['proveedor']}}</td>
+								<td>{{ substr($v['proveedor'],0,50)}}...</td>
 								<td>{{$v['fecha_recepcion']}}</td>
 							</tr>
 							@endforeach
