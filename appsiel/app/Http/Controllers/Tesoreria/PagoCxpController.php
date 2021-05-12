@@ -86,9 +86,9 @@ class PagoCxpController extends TransaccionController
                     ];
 
         $motivos = [''];//PagoCxpController::get_motivos($id_transaccion);
-        $medios_recaudo = PagoCxpController::get_medios_recaudo();
-        $cajas = PagoCxpController::get_cajas();
-        $cuentas_bancarias = PagoCxpController::get_cuentas_bancarias();
+        $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
+        $cajas = TesoCaja::opciones_campo_select();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
         $terceros = [''];
 

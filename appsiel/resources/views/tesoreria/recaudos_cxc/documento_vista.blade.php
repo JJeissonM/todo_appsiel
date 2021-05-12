@@ -98,6 +98,14 @@
                                                         ->get()
                                                         ->first();
 
+                    $fecha_doc_pagado = '';
+                    $descripcion_doc_pagado = '';
+                    if ( !is_null($documento_pagado) )
+                    {
+                        $fecha_doc_pagado = $documento_pagado->fecha;
+                        $descripcion_doc_pagado = $documento_pagado->descripcion;
+                    }
+
                     $saldo_pendiente = App\CxC\CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
@@ -109,8 +117,8 @@
                     <td class="text-center">
                         {{ $linea->documento_prefijo_consecutivo }}
                     </td>
-                    <td> {{ $documento_pagado->fecha }} </td>
-                    <td> {{ $documento_pagado->descripcion }} </td>
+                    <td> {{ $fecha_doc_pagado }} </td>
+                    <td> {{ $descripcion_doc_pagado }} </td>
                     <td class="text-right"> $ {{ number_format( $linea->abono, 0, ',', '.') }} </td>
                     <td class="text-right"> $ {{ number_format( $saldo_pendiente, 0, ',', '.') }} </td>
                 </tr>
