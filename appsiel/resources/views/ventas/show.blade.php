@@ -58,7 +58,7 @@
             @include('matriculas.facturas.datos_estudiante')
         </td>
         <td style="border: solid 1px #ddd;">
-            <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor_nombre_completo }}
+            <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
             <br/>
             <b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
             <br/>

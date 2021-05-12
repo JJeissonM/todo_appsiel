@@ -160,7 +160,7 @@ use App\Core\Tercero;
         <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
         <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
         <td><b>Vendedor:</b></td>
-        <td>{{ $doc_encabezado->vendedor_nombre_completo }}</td>
+        <td>{{ $doc_encabezado->vendedor->tercero->descripcion }}</td>
     </tr>
     <tr>
         <td><b>Domicilio:</b> </td>

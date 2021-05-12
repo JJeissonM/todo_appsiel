@@ -38,7 +38,7 @@ Cliente:
 @section('encabezado_datos_adicionales')
     @include('matriculas.facturas.datos_estudiante')
     <br>
-    <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor_nombre_completo }}
+    <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
     <br />
     <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 @endsection

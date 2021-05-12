@@ -1,3 +1,4 @@
+<a class="btn btn-primary" href="{{ url('inv_crear_documento_desde_orden_trabajo/create?&id='.Input::get('id').'&id_modelo=167&id_transaccion=38') }}" title="Crear documento de inventario"><i class="fa fa-file-text"></i></a>
 
 <div class="table-responsive">
     <table class="table table-bordered table-striped">

@@ -10,7 +10,6 @@
 	{
 		dd('Error en ciudad. El tercero no tiene una ciudad asignada correctamente. Tercero: ' . $doc_encabezado->tercero->descripcion );
 	}
-
 ?>
 
 
@@ -77,7 +76,7 @@
 			                    @yield('datos_adicionales_encabezado')
 			                    
 			                </div>
-			                @if($doc_encabezado->estado == 'Anulado')
+			                @if( $doc_encabezado->estado == 'Anulado' )
 			                    <div class="alert alert-danger" class="center">
 			                        <strong>Documento Anulado</strong>
 			                    </div>

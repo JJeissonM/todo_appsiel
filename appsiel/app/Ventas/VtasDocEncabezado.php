@@ -503,10 +503,8 @@ class VtasDocEncabezado extends Model
         return VtasDocEncabezado::where('vtas_doc_encabezados.id', $id)
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
-            ->leftJoin('vtas_vendedores', 'vtas_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
             ->leftJoin('inv_doc_encabezados', 'inv_doc_encabezados.id', '=', 'vtas_doc_encabezados.remision_doc_encabezado_id')
             ->leftJoin('core_tipos_docs_apps AS doc_inventarios', 'doc_inventarios.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
-            ->leftJoin('core_terceros AS vendedores', 'vendedores.id', '=', 'vtas_vendedores.core_tercero_id')
             ->select(
                 'vtas_doc_encabezados.id',
                 'vtas_doc_encabezados.core_empresa_id',
@@ -537,8 +535,7 @@ class VtasDocEncabezado extends Model
                 DB::raw('core_terceros.descripcion AS tercero_nombre_completo'),
                 'core_terceros.numero_identificacion',
                 'core_terceros.direccion1',
-                'core_terceros.telefono1',
-                DB::raw('CONCAT(vendedores.apellido1, " ",vendedores.apellido2, " ",vendedores.nombre1, " ",vendedores.otros_nombres) AS vendedor_nombre_completo')
+                'core_terceros.telefono1'
             )
             ->get()
             ->first();
