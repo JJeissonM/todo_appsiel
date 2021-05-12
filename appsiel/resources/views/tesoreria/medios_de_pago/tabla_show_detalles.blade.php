@@ -44,9 +44,7 @@
                     <tr>
                         <td colspan="2"> &nbsp; </td>
                         <td align="right">
-                           $ {{ number_format($total, 0, ',', '.') }} 
-                           <br>
-                           ({{ NumerosEnLetras::convertir($total,'pesos',false) }})
+                           $ {{ number_format($total, 0, ',', '.') }}
                         </td>
                     </tr>
                 </tfoot>

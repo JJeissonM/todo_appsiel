@@ -55,7 +55,19 @@ class RegistroRetencion extends Model
             // Contabilizar Retención
             $retencion = Retencion::find( (int)$lineas_registros[$i]->contab_retencion_id );
             $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $retencion->cta_ventas_id, 'Retención ' . $tipo, $valor_retencion, 0 );
+            switch ( $tipo )
+            {
+                case 'practicada':
+                    $movimiento_contable->contabilizar_linea_registro( $datos, $retencion->cta_compras_id, 'Retención ' . $tipo, 0, $valor_retencion );
+                    break;
+                case 'sufrida':
+                    $movimiento_contable->contabilizar_linea_registro( $datos, $retencion->cta_ventas_id, 'Retención ' . $tipo, $valor_retencion, 0 );
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }                
         }
     }
 

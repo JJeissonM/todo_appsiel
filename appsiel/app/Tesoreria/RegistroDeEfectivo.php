@@ -29,7 +29,27 @@ class RegistroDeEfectivo extends TesoDocEncabezado
         $cantidad = count($lineas_registros);
         for ($i=0; $i < $cantidad; $i++) 
         {
-            $valor_linea = (float)$lineas_registros[$i]->valor_efectivo;
+            $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_efectivo );
+
+            switch ( $motivo->movimiento )
+            {
+                case 'entrada':
+                    $valor_linea = (float)$lineas_registros[$i]->valor_efectivo;
+                    $valor_debito = (float)$lineas_registros[$i]->valor_efectivo;
+                    $valor_credito = 0;
+                    break;
+
+                case 'salida':
+                    $valor_linea = (float)$lineas_registros[$i]->valor_efectivo * -1;
+                    $valor_debito = 0;
+                    $valor_credito = (float)$lineas_registros[$i]->valor_efectivo;
+                    break;
+                
+                default:
+                    # code...
+                    break;
+            }
+                
             $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_efectivo;
 
             $datos = [
@@ -39,7 +59,7 @@ class RegistroDeEfectivo extends TesoDocEncabezado
                         'teso_caja_id' => (int)$lineas_registros[$i]->caja_id_efectivo,
                         'teso_cuenta_bancaria_id' => 0,
                         'detalle_operacion' => $tipo_operacion,
-                        'valor' => $valor_linea
+                        'valor' => abs( $valor_linea )
                     ] + $doc_encabezado->toArray();
             
             TesoDocRegistro::create( $datos );
@@ -48,21 +68,21 @@ class RegistroDeEfectivo extends TesoDocEncabezado
             $datos['descripcion'] = $tipo_operacion;
             TesoMovimiento::create( $datos );
 
-            // Contabilizar DB
+            // Contabilizar
             $caja = TesoCaja::find( (int)$lineas_registros[$i]->caja_id_efectivo );
             $movimiento_contable = new ContabMovimiento();
-            $movimiento_contable->contabilizar_linea_registro( $datos, $caja->contab_cuenta_id, $tipo_operacion, $valor_linea, 0 );
+            $movimiento_contable->contabilizar_linea_registro( $datos, $caja->contab_cuenta_id, $tipo_operacion, $valor_debito, $valor_credito );
 
-            // Contabilizar CR
-            // La contabilizacion CR para Recaudo Cartera se hace en el metodo almacenar_registros_cxc()
+            // Contabilizar Contrapartida (Si no es movimiento de cartera)
+            // La contabilizacion para la Cartera se hace en el metodo almacenar_registros_cartera()
             if ( $tipo_operacion != 'Recaudo cartera' && $tipo_operacion != 'Pago proveedores' )
-            { 
-                $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_efectivo );
+            {
                 $movimiento_contable = new ContabMovimiento();
-                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, 0, $valor_linea );
+                // Se invierten los valores Debito y Credito de arriba
+                $movimiento_contable->contabilizar_linea_registro( $datos, $motivo->contab_cuenta_id, $tipo_operacion, $valor_credito, $valor_debito );
             }
 
-            $this->transacciones_adicionales( $datos, $tipo_operacion, $valor_linea );
+            $this->transacciones_adicionales( $datos, $tipo_operacion, abs( $valor_linea ) );
         }
     }
 }
