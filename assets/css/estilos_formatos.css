@@ -16,8 +16,8 @@
 }
 
 .tabla_registros {
-    border: solid 1px;
-    border-collapse: separate !important;
+    /*border: solid 1px;
+    border-collapse: separate !important;*/
     border-spacing: 0;
     /*margin: 30px;*/
     width: 100%;

@@ -245,9 +245,9 @@ class NominaController extends TransaccionController
         $tabla = '<style> .celda_firma { width: 100px; }  .celda_nombre_empleado { width: 150px; } .table.sticky th {position: sticky; top: 0;} </style>
                     <br>
                     <div class="table-responsive">
-                     <table  class="tabla_registros table table-striped sticky" style="margin-top: 1px; width: 100%;">
+                     <table  class="tabla_registros table table-bordered table-striped sticky" style="margin-top: 1px; width: 100%;">
                     <thead>
-                      <tr class="encabezado">
+                      <tr class="">
                           <th>
                              No.
                           </th>

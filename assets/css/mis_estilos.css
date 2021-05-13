@@ -32,6 +32,10 @@ thead > tr > th {
     color: #000;
 }
 
+.d-inline{
+	display: inline;
+}
+
 .frame_ajax{
 	margin: 10px;
 	padding: 5px;

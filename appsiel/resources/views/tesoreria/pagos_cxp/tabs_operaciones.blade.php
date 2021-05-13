@@ -26,7 +26,7 @@
 	        @include('tesoreria.incluir.seccion_retenciones')
     	</div>
 	    <div id="tab3" class="tab-pane fade">
-	        -- EN DESARROLLO --
+	        -- EN DESARROLLO -- Para acceder por favor consultar al mail paula@appsiel.com.co
     	</div>
 	    <!-- <div id="tab4" class="tab-pane fade">
 	        @ include('tesoreria.recaudos_cxc.seccion_asientos_contables')
