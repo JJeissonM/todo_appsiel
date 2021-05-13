@@ -109,8 +109,6 @@ class EncabezadoCalificacionController extends Controller
             ['creado_por' => Input::get('creado_por')] +
             ['modificado_por' => Input::get('modificado_por')];
 
-        dd($datos);
-
         $cerrar_modal = "true";
 
         switch ($datos['id']) {
@@ -145,38 +143,41 @@ class EncabezadoCalificacionController extends Controller
 
         // Se valida la sumatoria de todos los pesos
         $encabezados = EncabezadoCalificacion::where([['curso_id', $request->curso_id], ['asignatura_id', $request->asignatura_id], ['periodo_id', $request->periodo_id]])->get();
+
         $sumaPesos = 0;
-        if (count($encabezados) > 0) {
-            foreach ($encabezados as $e) {
+        
+        if (count($encabezados) > 0)
+        {
+            foreach ($encabezados as $e)
+            {
                 $sumaPesos = $sumaPesos + $e->peso;
             }
         }
 
-        switch ($request->id) {
+        switch ( $request->id )
+        {
             case '0':
+
                 // Crear
-                if (($sumaPesos + (int)$request->peso) > 100)
+                if (($sumaPesos + (float)$request->peso) > 100)
                 {
                     return "pesos";
                 }
 
-                if ( (int)$request->peso != 0 && $request->descripcion != '' )
-                {
-                    EncabezadoCalificacion::create($request->all());
-                    $cerrar_modal = "true";
-                }
+                EncabezadoCalificacion::create($request->all());
+                $cerrar_modal = "true";
                     
                 break;
 
             default:
                 // Actualizar
-                $registro = EncabezadoCalificacion::find($request->id);
-                if ( ( ($sumaPesos - $registro->peso) + (int)$request->peso ) > 100 )
+                $registro = EncabezadoCalificacion::find( (int)$request->id );
+                if ( ( ($sumaPesos - $registro->peso) + (float)$request->peso ) > 100 )
                 {
                     return "pesos";
                 }
 
-                if ( (int)$request->peso == 0 && $request->descripcion == '' )
+                if ( $request->descripcion == '' )
                 {
                     $registro->delete();
                     $cerrar_modal = "true";
