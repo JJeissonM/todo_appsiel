@@ -211,7 +211,7 @@ class ReportesController extends Controller
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $inicio = date("Y-m-d",strtotime($fecha."- 7 days")); 
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Anulado']])->get();
+        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Anulado']])->take(10)->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {

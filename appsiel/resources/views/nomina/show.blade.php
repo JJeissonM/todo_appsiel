@@ -8,6 +8,13 @@
 		.dropdown-submenu>a:after{display:block;content:" ";float:right;width:0;height:0;border-color:transparent;border-style:solid;border-width:5px 0 5px 5px;border-left-color:#cccccc;margin-top:5px;margin-right:-10px;}
 		.dropdown-submenu:hover>a:after{border-left-color:#ffffff;}
 		.dropdown-submenu.pull-left{float:none;}.dropdown-submenu.pull-left>.dropdown-menu{left:-100%;margin-left:10px;-webkit-border-radius:6px 0 6px 6px;-moz-border-radius:6px 0 6px 6px;border-radius:6px 0 6px 6px;}
+
+		table{
+			margin-top: 0 !important;
+		}
+		td > table > tbody{
+			background-color: unset;
+		}
 	</style>
 @endsection
 
@@ -99,4 +106,22 @@
 	</div>
 	<br/><br/>	
 
+@endsection
+@section('scripts9')
+<script>
+	document.addEventListener("DOMContentLoaded", function(event) {
+    //código a ejecutar cuando el DOM está listo para recibir acciones
+	console.log(event)
+	document.getElementsByClassName("buttons-excel")[0].classList.add("btn-gmail","btn-excel");
+	document.getElementsByClassName("buttons-excel")[0].innerHTML = '<i class="fa fa-file-excel-o"></i>';
+	document.getElementsByClassName("buttons-pdf")[0].classList.add("btn-gmail","btn-pdf");
+	document.getElementsByClassName("buttons-pdf")[0].innerHTML = '<i class="fa fa-file-pdf-o"></i>';
+	document.getElementsByClassName("dt-buttons")[0].classList.add("d-inline");
+	document.getElementById('myTable_filter').children[0].children[0].classList.add('form-control');
+	document.getElementById('myTable_filter').children[0].children[0].placeholder = 'Escriba aquí para buscar...';	
+	
+	
+});
+	
+</script>	
 @endsection

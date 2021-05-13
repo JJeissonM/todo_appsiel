@@ -76,8 +76,8 @@ use App\Core\Tercero;
         <tr>
             <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
             <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif</td>
-            <td><b>Teléfono:</b></td>
-            <td>{{ $doc_encabezado->telefono1 }}</td>
+            <td> </td>
+            <td> </td>
         </tr>
     </table>
 <br>
@@ -87,14 +87,14 @@ use App\Core\Tercero;
     $i=0;
     $vec_motivos = [];
 ?>
-<div class="table-responsive contenido">
+<div class="table-responsive ">
 
     <table class="table table-bordered">
         <tr>
             <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Medios de Recaudo </span> </td>
         </tr>
     </table>
-    <table class="table table-bordered">
+    <table class="table table-bordered contenido">
         {{ Form::bsTableHeader(['Medio de pago','Caja/Cta. Bancaria','Valor']) }}
         <tbody>
             @foreach ($doc_registros as $registro)

@@ -13,10 +13,9 @@
         <td style="border: solid 1px #ddd; margin-top: -40px;" width="70%">
             @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir', 'doc_encabezado' => $encabezado_doc ] )
         </td>
-        <td style="border: solid 1px #ddd; padding-top: -20px;">
+        <td style="border: solid 1px #ddd; padding-top: -20px; font-size: 12px">
 
             <b style="font-size: 1.6em; text-align: center; display: block;">{{ $descripcion_transaccion }}</b>
-                <br/>
                 <b>Documento:</b> {{ $encabezado_doc->documento_app }}
                 <br/>
 
