@@ -350,7 +350,7 @@ class PagoCxpController extends TransaccionController
 
         NOTA: el documento de CxP pagado puede tener registros de terceros diferentes
     */
-    public static function anular_pago_cxp($id)
+    public function anular_pago_cxp($id)
     {        
         $pago = TesoDocEncabezado::find( $id );
 
