@@ -270,21 +270,29 @@ class ProcesoController extends Controller
 
     }
 
-    //crea solo pedido
+    // Crea solo pedido
     public function soloPedido($cotizacion, $request)
     {
-        $pedido_id = $this->pedidoStore($cotizacion, $request);
-        if ($pedido_id > 0)
-        {
-            $cotizacion->estado = 'Cumplido';
-            $cotizacion->save();
-            $pedido = VtasDocEncabezado::find($pedido_id);
-            $pedido->ventas_doc_relacionado_id = $cotizacion->id;
-            $pedido->save();
-            return "[OK] Pedido almacenado con exito";
-        } else {
-            return "[XX] El pedido no pudo ser almacenado";
-        }
+        $core_tipo_transaccion_id = 42;
+        $core_tipo_doc_app_id = 41;
+        $modelo_id = 175;
+        
+        $descripcion = 'Generado desde ' . $cotizacion->tipo_transaccion->descripcion . ' ' . $cotizacion->tipo_documento_app->prefijo . ' ' . $cotizacion->consecutivo;
+
+        $pedido = $cotizacion->clonar_encabezado( date('Y-m-d'), $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion, $modelo_id );
+
+        $pedido->fecha_entrega = $request->fecha_entrega;
+        $pedido->fecha_vencimiento = $request->fecha_entrega;
+        $pedido->estado = 'Pendiente';
+        $pedido->ventas_doc_relacionado_id = $cotizacion->id;
+        $pedido->save();
+        
+        $cotizacion->clonar_lineas_registros( $pedido->id );
+
+        $cotizacion->estado = 'Cumplido';
+        $cotizacion->save();
+
+        return "[OK] Pedido almacenado con exito";
     }
 
 

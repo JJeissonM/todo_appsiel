@@ -1171,7 +1171,7 @@ $(document).ready(function(){
 			
 			$('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( respuesta[0] )  );
 
-			$('#descuento').text( '$ ' + new Intl.NumberFormat("de-DE").format( 0 )  );
+			$('#descuento').text( '$ ' + new Intl.NumberFormat("de-DE").format( respuesta[3] )  );
 
 			// Total impuestos (Sumatoria de valor_impuesto por cantidad)
 			$('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( respuesta[1] ) );
