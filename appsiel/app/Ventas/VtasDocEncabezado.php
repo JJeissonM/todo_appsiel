@@ -172,7 +172,7 @@ class VtasDocEncabezado extends Model
         return CondicionPago::find( $registro_eav->valor )->descripcion;
     }
 
-    public function clonar_encabezado( $fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion )
+    public function clonar_encabezado( $fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion, $modelo_id )
     {
         $datos = $this->toArray();
 
@@ -199,7 +199,7 @@ class VtasDocEncabezado extends Model
         $datos['consecutivo'] = 0;
         $datos['id'] = 0;
         
-        $encabezado_transaccion = new EncabezadoDocumentoTransaccion( (int)config('ventas.factura_ventas_modelo_id') );
+        $encabezado_transaccion = new EncabezadoDocumentoTransaccion( $modelo_id );
 
         return $encabezado_transaccion->crear_nuevo( $datos );
     }

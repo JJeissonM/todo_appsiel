@@ -108,7 +108,7 @@
 	</p>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped">
-			{{ Form::bsTableHeader(['Item','Producto','Cant.','Cant. Pend.','Vr. unitario','IVA','Total Bruto','Total','']) }}
+			{{ Form::bsTableHeader(['Item','Producto','Cant.','Cant. Pend.','Vr. unitario','IVA','Total Bruto','Total Dcto.','Total','']) }}
 			<tbody>
 				<?php
 				$i = 1;
@@ -127,6 +127,7 @@
 					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
 					<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
 					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
+					<td  class="text-right"> {{ '$ '.number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
 					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                     <td>
                         @if( $doc_encabezado->estado == 'Pendiente' )
