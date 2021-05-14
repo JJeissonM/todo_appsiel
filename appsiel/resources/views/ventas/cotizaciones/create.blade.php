@@ -113,26 +113,9 @@
 
 			checkCookie();
 			
-			var today = new Date();
-			var dd = today.getDate();
-			var mm = today.getMonth()+1; //January is 0!
-			var yyyy = today.getFullYear();
-
-			if(dd<10) {
-			    dd = '0'+dd
-			} 
-
-			if(mm<10) {
-			    mm = '0'+mm
-			} 
-
-			today = yyyy + '-' + mm + '-' + dd;
-
-			$('#fecha').val( today );
+			$('#fecha').val( get_fecha_hoy() );
 
 			$('#cliente_input').focus( );
-
-
 
 			/* INVENTARIOS*/
 			var respuesta;
@@ -141,14 +124,6 @@
 			$('#core_tipo_doc_app_id').change(function(){
 				$('#fecha').focus();
 			});
-
-			$('#fecha').keyup(function(event){
-				var x = event.which || event.keyCode;
-				if(x==13){
-					$('#cliente_input').focus();				
-				}		
-			});
-
 
 
 		    $('#cliente_input').on('focus',function(){
@@ -1130,10 +1105,10 @@
 				elemento_modificar.html( valor_nuevo );
 				elemento_modificar.show();
 
-				elemento_padre.find('#valor_nuevo').remove();
-
 				recalcular_linea_editada( elemento_padre.closest('tr') );
 				calcular_totales();
+
+				elemento_padre.find('#valor_nuevo').remove();
 				
 			}
 
@@ -1145,28 +1120,29 @@
 				var precio_unitario = parseFloat( elemento_modificar[1].innerHTML );
 				var tasa_descuento = parseFloat( elemento_modificar[2].innerHTML );
 
-				var valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
-
 				var tasa_impuesto = parseFloat( fila.find('.tasa_impuesto').html() );
 
-				var base_impuesto_unitario = precio_unitario * ( ( 100 - tasa_descuento ) / ( 100 + tasa_impuesto ) );
+				var descuento_unitario = precio_unitario * ( tasa_descuento / 100 );
+
+				var base_impuesto_unitario = ( precio_unitario - descuento_unitario )  / ( 1 + tasa_impuesto / 100 );
+
+				console.log( base_impuesto_unitario, precio_unitario, descuento_unitario, tasa_impuesto );
 				
-				var precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+				var precio_total = (precio_unitario - descuento_unitario) * cantidad;
 
 				fila.find('.cantidad').html( cantidad );
 				fila.find('.precio_unitario').html( precio_unitario );
 				fila.find('.tasa_descuento').html( tasa_descuento );
 
-				fila.find('.base_impuesto').html( base_impuesto_unitario );
+				fila.find('.base_impuesto').html( base_impuesto_unitario ); // unitario
 				fila.find('.base_impuesto_total').html( base_impuesto_unitario * cantidad );
-				fila.find('.valor_impuesto').html( precio_unitario - base_impuesto_unitario );
+				fila.find('.valor_impuesto').html( base_impuesto_unitario * tasa_impuesto / 100 ); // unitario
 				fila.find('.precio_total').html( precio_total );
 
-				fila.find('.valor_total_descuento').html( valor_unitario_descuento * cantidad );
-
+				fila.find('.valor_total_descuento').html( descuento_unitario * cantidad );
 
 				var celdas = fila.find('td');
-				celdas[21].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( valor_unitario_descuento * cantidad );
+				celdas[21].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( descuento_unitario * cantidad );
 				celdas[23].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( precio_total );
 			}
 

@@ -74,8 +74,33 @@
 			     <div class="table-responsive" id="table_content">
 			        <table class="table table-striped" id="ingreso_registros">
 			            <thead>
-			                <tr>
-			                	<th data-override="inv_motivo_id" style="display: none;"></th><th data-override="inv_bodega_id" style="display: none;"></th><th data-override="inv_producto_id" style="display: none;"></th><th data-override="costo_unitario" style="display: none;"></th><th data-override="precio_unitario" style="display: none;"></th><th data-override="base_impuesto" style="display: none;"></th><th data-override="tasa_impuesto" style="display: none;"></th><th data-override="valor_impuesto" style="display: none;"></th><th data-override="base_impuesto_total" style="display: none;"></th><th data-override="cantidad" style="display: none;"></th><th data-override="costo_total" style="display: none;"></th><th data-override="precio_total" style="display: none;"></th><th data-override="tasa_descuento" style="display: none;"></th><th data-override="valor_total_descuento" style="display: none;"></th><th width="10px">&nbsp;</th><th width="280px">Item</th><th width="200px">Motivo</th><th width="35px">Stock</th><th>Cantidad</th><th>Precio Unit. (IVA incluido)</th><th>Dcto. (%)</th><th>Dcto. Tot. ($)</th><th>IVA</th><th>Total</th><th width="10px">&nbsp;</th>                </tr>
+			                <tr>			                	
+			                	<th data-override="inv_motivo_id" style="display: none;"></th>
+			                	<th data-override="inv_bodega_id" style="display: none;"></th>
+			                	<th data-override="inv_producto_id" style="display: none;"></th>
+			                	<th data-override="costo_unitario" style="display: none;"></th>
+			                	<th data-override="precio_unitario" style="display: none;"></th>
+			                	<th data-override="base_impuesto" style="display: none;"></th>
+			                	<th data-override="tasa_impuesto" style="display: none;"></th>
+			                	<th data-override="valor_impuesto" style="display: none;"></th>
+			                	<th data-override="base_impuesto_total" style="display: none;"></th>
+			                	<th data-override="cantidad" style="display: none;"></th>
+			                	<th data-override="costo_total" style="display: none;"></th>
+			                	<th data-override="precio_total" style="display: none;"></th>
+			                	<th data-override="tasa_descuento" style="display: none;"></th>
+			                	<th data-override="valor_total_descuento" style="display: none;"></th>
+			                	<th width="10px">&nbsp;</th>
+			                	<th width="280px">Item</th>
+			                	<th width="200px">Motivo</th>
+			                	<th width="35px">Stock</th>
+			                	<th>Cantidad</th>
+			                	<th>Precio Unit. (IVA incluido)</th>
+			                	<th>Dcto. (%)</th>
+			                	<th>Dcto. Tot. ($)</th>
+			                	<th>IVA</th>
+			                	<th>Total</th>
+			                	<th width="10px">&nbsp;</th>
+			                </tr>
 			            </thead>
 			            <tbody>
 		            		{!! $lineas_documento !!}		                
@@ -1109,34 +1134,33 @@
 
 			function recalcular_linea_editada( fila )
 			{
-				var elemento_modificar = fila.find('.elemento_modificar'); // son tres elementos editables
+				var elemento_modificar = fila.find('.elemento_modificar'); // son tres
 
 				var cantidad = parseFloat( elemento_modificar[0].innerHTML );
 				var precio_unitario = parseFloat( elemento_modificar[1].innerHTML );
 				var tasa_descuento = parseFloat( elemento_modificar[2].innerHTML );
 
-				var valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
-
 				var tasa_impuesto = parseFloat( fila.find('.tasa_impuesto').html() );
 
-				var base_impuesto_unitario = precio_unitario * ( ( 100 - tasa_descuento ) / ( 100 + tasa_impuesto ) );
+				var descuento_unitario = precio_unitario * ( tasa_descuento / 100 );
+
+				var base_impuesto_unitario = ( precio_unitario - descuento_unitario )  / ( 1 + tasa_impuesto / 100 );
 				
-				var precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+				var precio_total = (precio_unitario - descuento_unitario) * cantidad;
 
 				fila.find('.cantidad').html( cantidad );
 				fila.find('.precio_unitario').html( precio_unitario );
 				fila.find('.tasa_descuento').html( tasa_descuento );
 
-				fila.find('.base_impuesto').html( base_impuesto_unitario );
+				fila.find('.base_impuesto').html( base_impuesto_unitario ); // unitario
 				fila.find('.base_impuesto_total').html( base_impuesto_unitario * cantidad );
-				fila.find('.valor_impuesto').html( precio_unitario - base_impuesto_unitario );
+				fila.find('.valor_impuesto').html( base_impuesto_unitario * tasa_impuesto / 100 ); // unitario
 				fila.find('.precio_total').html( precio_total );
 
-				fila.find('.valor_total_descuento').html( valor_unitario_descuento * cantidad );
-
+				fila.find('.valor_total_descuento').html( descuento_unitario * cantidad );
 
 				var celdas = fila.find('td');
-				celdas[21].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( valor_unitario_descuento * cantidad );
+				celdas[21].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( descuento_unitario * cantidad );
 				celdas[23].innerHTML = '$ ' + new Intl.NumberFormat("de-DE").format( precio_total );
 
 				calcular_totales();
