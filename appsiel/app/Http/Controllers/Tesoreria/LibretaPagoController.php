@@ -280,6 +280,7 @@ class LibretaPagoController extends ModeloController
                     ];
 
         $miga_pan = $this->get_miga_pan($modelo,$registro->descripcion);
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
 
         $url_action = 'web/'.$id;
         if ($modelo->url_form_create != '') {
@@ -287,7 +288,7 @@ class LibretaPagoController extends ModeloController
         }
 
 
-        return view('layouts.edit',compact('form_create','miga_pan','registro', 'url_action'));
+        return view('layouts.edit',compact('form_create','miga_pan','registro', 'url_action', 'archivo_js'));
     }
 
     /**
