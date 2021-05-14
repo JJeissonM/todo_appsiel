@@ -14,6 +14,9 @@ class TesoLibretasPago extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Estudiante', 'Curso', 'Cód. Matricula', 'Fecha inicio', 'Vlr. Matrícula', 'Vlr. Pensión anual', 'No. periodos', 'Vlr. Pensión mes', 'Estado'];
 
+    // El archivo js debe estar en la carpeta public
+    public $archivo_js = 'assets/js/tesoreria/libreta_pagos_estudiantes.js';
+
     public function estudiante()
     {
         return $this->belongsTo( 'App\Matriculas\Estudiante', 'id_estudiante' );

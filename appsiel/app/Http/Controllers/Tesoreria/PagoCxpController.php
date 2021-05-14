@@ -350,7 +350,7 @@ class PagoCxpController extends TransaccionController
 
         NOTA: el documento de CxP pagado puede tener registros de terceros diferentes
     */
-    public static function anular_pago_cxp($id)
+    public function anular_pago_cxp($id)
     {        
         $pago = TesoDocEncabezado::find( $id );
 
@@ -440,10 +440,10 @@ class PagoCxpController extends TransaccionController
     public function restablecer_cheque( $pago )
     {
         $cheque_gastado = ControlCheque::where([
-                                                    'core_tipo_transaccion_id_consumo' => $pago->core_tipo_transaccion_id,
-                                                    'core_tipo_doc_app_id_consumo' => $pago->core_tipo_doc_app_id,
-                                                    'consecutivo_doc_consumo' => $pago->consecutivo
-                                                ])
+                                                'core_tipo_transaccion_id_consumo' => $pago->core_tipo_transaccion_id,
+                                                'core_tipo_doc_app_id_consumo' => $pago->core_tipo_doc_app_id,
+                                                'consecutivo_doc_consumo' => $pago->consecutivo
+                                            ])
                                         ->get()
                                         ->first();
 
@@ -457,10 +457,10 @@ class PagoCxpController extends TransaccionController
         }
 
         $cheque_emitido = ControlCheque::where([
-                                                    'core_tipo_transaccion_id' => $pago->core_tipo_transaccion_id,
-                                                    'core_tipo_doc_app_id' => $pago->core_tipo_doc_app_id,
-                                                    'consecutivo' => $pago->consecutivo
-                                                ])
+                                                'core_tipo_transaccion_id_origen' => $pago->core_tipo_transaccion_id,
+                                                'core_tipo_doc_app_id_origen' => $pago->core_tipo_doc_app_id,
+                                                'consecutivo' => $pago->consecutivo
+                                            ])
                                         ->get()
                                         ->first();
 
