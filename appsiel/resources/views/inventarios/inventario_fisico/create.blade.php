@@ -46,7 +46,7 @@
 			</div>
 
 			<br/>
-		    <h4>Ingreso de productos</h4>
+		    <h4 class="text-center">Ingreso de productos</h4>
 		    <table class="table table-striped" id="ingreso_productos">
 		        <thead>
 		            <tr>

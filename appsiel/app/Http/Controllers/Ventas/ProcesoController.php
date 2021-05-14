@@ -292,7 +292,7 @@ class ProcesoController extends Controller
         $cotizacion->estado = 'Cumplido';
         $cotizacion->save();
 
-        return "[OK] Pedido almacenado con exito";
+        return ' Pedido almacenado con exito';
     }
 
 
@@ -309,9 +309,9 @@ class ProcesoController extends Controller
                 $encabezado_doc_venta->estado = 'Cumplido';
             }
             $encabezado_doc_venta->save();
-            return "[OK] Remisión almacenada con exito.";
+            return ' Remisión almacenada con exito.';
         } else {
-            return "[XX] La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente";
+            return '<i class="fa fa-times" aria-hidden="true"></i> La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente';
         }
     }
     

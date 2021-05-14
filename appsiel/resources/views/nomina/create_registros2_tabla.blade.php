@@ -1,5 +1,5 @@
 <div class="container-fluid" style="border: 1px #ddd dashed; padding: 5px;">
-	<h4>Ingreso de horas de trabajo</h4>
+	<h4 class="text-center">INGRESO HORAS DE TRABAJO</h4>
 	<hr>
 	<table class="table table-responsive table-striped" id="tabla_registros_empleados">
 		<thead>
