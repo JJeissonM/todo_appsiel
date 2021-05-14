@@ -81,7 +81,7 @@
 
 			<br/>
 
-			<div class="alert alert-success alert-dismissible" style="display: none;" id="div_entradas_pendientes">
+			<div class="alert alert-dismissible" style="display: none;" id="div_entradas_pendientes">
 				<button href="#" class="close" id="btn_cerrar_alert">&times;</button>
 
 				<div id="listado_entradas_pendientes">
