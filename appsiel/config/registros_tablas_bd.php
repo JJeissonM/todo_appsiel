@@ -4211,11 +4211,11 @@
       'descripcion' => 'Facturas de ventas',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 1,
+      'orden' => 4,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2019-10-21 17:28:30',
-      'updated_at' => '2020-04-21 00:42:59',
+      'updated_at' => '2021-05-14 11:43:32',
     ),
     281 => 
     array (
@@ -4226,11 +4226,11 @@
       'descripcion' => 'Cotizaciones',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 3,
+      'orden' => 1,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2019-10-21 17:29:31',
-      'updated_at' => '2019-10-21 17:30:10',
+      'updated_at' => '2021-05-14 11:43:07',
     ),
     282 => 
     array (
@@ -4241,11 +4241,11 @@
       'descripcion' => 'Remisiones',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 2,
+      'orden' => 3,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2019-10-21 17:30:18',
-      'updated_at' => '2019-10-31 22:28:44',
+      'updated_at' => '2021-05-14 11:43:22',
     ),
     283 => 
     array (
@@ -4256,11 +4256,11 @@
       'descripcion' => 'Pedidos',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 4,
+      'orden' => 2,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2019-10-21 17:30:55',
-      'updated_at' => '2020-02-20 10:35:10',
+      'updated_at' => '2021-05-14 11:43:14',
     ),
     284 => 
     array (
@@ -4361,11 +4361,11 @@
       'descripcion' => 'Movimiento de ventas',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 7,
+      'orden' => 10,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2019-10-31 12:14:42',
-      'updated_at' => '2019-10-31 12:15:24',
+      'updated_at' => '2021-05-14 11:46:14',
     ),
     291 => 
     array (
@@ -5336,11 +5336,11 @@
       'descripcion' => 'Notas crédito directas',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 5,
+      'orden' => 6,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2020-04-14 06:21:38',
-      'updated_at' => '2020-04-14 06:22:18',
+      'updated_at' => '2021-05-14 11:45:22',
     ),
     356 => 
     array (
@@ -5816,11 +5816,11 @@
       'descripcion' => 'Recaudos de CxC',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 7,
+      'orden' => 5,
       'enabled' => 1,
       'fa_icon' => '',
       'created_at' => '2020-07-25 04:31:30',
-      'updated_at' => '2020-07-25 04:31:58',
+      'updated_at' => '2021-05-14 11:45:13',
     ),
     388 => 
     array (
@@ -7256,11 +7256,11 @@
       'descripcion' => 'Notas crédito a facturas',
       'url' => 'web',
       'parent' => 286,
-      'orden' => 6,
+      'orden' => 7,
       'enabled' => 1,
       'fa_icon' => 'list',
       'created_at' => '2021-01-14 05:32:28',
-      'updated_at' => '2021-01-14 05:37:37',
+      'updated_at' => '2021-05-14 11:45:32',
     ),
     484 => 
     array (
