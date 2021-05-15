@@ -28,7 +28,6 @@
                     <td> {{ $cheque->fecha_emision }} </td>
                     <td> {{ $cheque->numero_cheque }} </td>
                     <td> {{ $cheque->referencia_cheque }} </td>
-                    {{ dd($cheque->cuenta_bancaria) }}
                     <td> {{ $descripcion_banco }} </td>
                     <td> {{ $cheque->tercero->descripcion }} </td>
                     <td class="text-right"> $ {{ number_format( $cheque->valor, 0, ',', '.') }} </td>

@@ -43,7 +43,7 @@
     </table>
 </div>
 
-<h4 style="text-align: center;"> Documentos abonados </h4>
+<h4 style="text-align: center;"> Facturas Abonadas </h4>
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Tercero','Fact N°','Fecha','Detalle','Abono','Saldo']) }}
