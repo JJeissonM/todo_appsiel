@@ -1,3 +1,5 @@
+<?php $vistaimprimir = '' ?>
+
 <div class="table-responsive">
     <table class="table table-bordered">
         <tr>

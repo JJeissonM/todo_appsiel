@@ -4,7 +4,7 @@
 	}
 </style>
 <thead>
-	<tr style="background-color: #50B794; vertical-align: middle !important;">
+	<tr style=" vertical-align: middle !important;">
 		<?php
 			for($li=0;$li<count($headers);$li++)
 			{

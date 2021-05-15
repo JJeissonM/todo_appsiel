@@ -13,7 +13,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_cheque', null, 'Tipo Ope.', $tipos_operaciones, []) }}
+									{{ Form::bsSelect('tipo_operacion_id_cheque', null, 'Tipo Ope', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -54,7 +54,7 @@
 							</div>
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'referencia_cheque', null, 'Ref.	', []) }}
+									{{ Form::bsText( 'referencia_cheque', null, 'Ref', []) }}
 								</div>
 							</div>
 						</div>

@@ -12,7 +12,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('contab_retencion_id', null, 'Tipo Ret.', $retenciones, []) }}
+									{{ Form::bsSelect('contab_retencion_id', null, 'Tipo Ret', $retenciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -24,19 +24,19 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsFecha( 'fecha_certificado', date('Y-m-d'), 'Fecha Cert.', [], []) }}
+									{{ Form::bsFecha( 'fecha_certificado', date('Y-m-d'), 'Fecha Cert', [], []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsFecha( 'fecha_recepcion_certificado', date('Y-m-d'), 'Fecha Recep. Cert.', [], []) }}
+									{{ Form::bsFecha( 'fecha_recepcion_certificado', date('Y-m-d'), 'Fecha Recep. Cert', [], []) }}
 								</div>
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'numero_certificado', null, 'N° Cert.', []) }}
+									{{ Form::bsText( 'numero_certificado', null, 'N° Cert', []) }}
 								</div>
 							</div>
 							<div class="col-md-6">

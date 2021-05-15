@@ -24,7 +24,7 @@
 							<div class="table-responsive">
 								<table class="table table-striped table-responsive">
 									<thead>
-										<tr style="background-color: #50B794; vertical-align: middle !important;">
+										<tr style=" vertical-align: middle !important;">
 											<th>Nro.</th>
 											<th>Origen - Destino</th>
 											<th>Vigencia</th>
@@ -63,7 +63,7 @@
 							<div class="table-responsive">
 								<table class="table table-striped table-responsive">
 									<thead>
-										<tr style="background-color: #50B794; vertical-align: middle !important;">
+										<tr style=" vertical-align: middle !important;">
 											<th>Nro. Documento</th>
 											<th>Documento - Categoría</th>
 											<th>Vigencia</th>

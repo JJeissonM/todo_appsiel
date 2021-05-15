@@ -55,7 +55,9 @@
         <?php 
             $total = 0;
             $lineas_movimientos = $doc_encabezado->lineas_registros;
+            
         ?>
+        @if($vistaimprimir == '')
         <table class="table table-bordered">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> 
@@ -89,6 +91,7 @@
                 </tfoot>
             </table>
         </div>
+        @endif
     </div>
 </div>
         
