@@ -555,7 +555,7 @@ $(document).ready(function(){
         $('#clientes_suggestions').html('');
         $('#clientes_suggestions').hide();
 
-        $('#forma_pago').focus();
+        $('#descripcion').focus();
 
         reset_tabla_ingreso();
 

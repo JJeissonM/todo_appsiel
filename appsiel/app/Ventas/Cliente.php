@@ -25,7 +25,15 @@ class Cliente extends Model
     public static function get_cuenta_cartera( $cliente_id )
     {
         $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
-        return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
+        
+        $cta_x_cobrar_id = ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
+
+        if( is_null($cta_x_cobrar_id) )
+        {
+            return (int)config('configuracion.cta_cartera_default');
+        }
+
+        return $cta_x_cobrar_id;
     }
 
     public function lista_precios()
