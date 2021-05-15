@@ -37,7 +37,7 @@
                     <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $linea->valor_impuesto, 0, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
                     <td>
-                        @if($doc_encabezado->estado != 'Anulado' && !$docs_relacionados[1]  && Input::get('id_transaccion') == 23 )
+                        @if( $doc_encabezado->forma_pago != 'contado' && $doc_encabezado->estado != 'Anulado' && !$docs_relacionados[1]  && Input::get('id_transaccion') == 23 )
                             <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
 
                             @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
