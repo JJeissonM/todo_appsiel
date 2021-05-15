@@ -19,16 +19,13 @@
 		</div>
 
 		<div class="col-md-4 text-center"> 
-			<div class="btn-group">		
-				<!--<form action="">
-
-				</form>
+			<div class="btn-group">	
 				Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
-        		{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}--> 
+        		{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 				
-
+<!--
 				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
-				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar2') }}v2
+				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar2') }}v2--> 
 				{{ Form::bsBtnEmail( 'tesoreria_recaudos_cxc_enviar_por_email/'.$id.$variables_url ) }} 
 			</div>			
 		</div>
@@ -105,6 +102,27 @@
 			$('#close').on('click',function(e){
 				e.preventDefault();
 				$('.alert.alert-warning').hide(1000);
+			});
+			
+			$('#formato_impresion_id').on('change',function(){ 
+				var btn_print = $('#btn_print').attr('href');
+
+				n = btn_print.search('formato_impresion_id');
+				var url_aux = btn_print.substr(0,n);
+				var new_url = url_aux + 'formato_impresion_id=' + $(this).val();
+				
+				$('#btn_print').attr('href', new_url);
+
+
+
+				var btn_email = $('#btn_email').attr('href');
+
+				n = btn_email.search('formato_impresion_id');
+				var url_aux = btn_email.substr(0,n);
+				var new_url = url_aux + 'formato_impresion_id=' + $(this).val();
+				
+				$('#btn_email').attr('href', new_url);
+				
 			});
 
 		});
