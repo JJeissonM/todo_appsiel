@@ -54,7 +54,7 @@
     <div class="col-md-6">
         <?php 
             $total = 0;
-            $lineas_movimientos = $doc_encabezado->lineas_movimientos();
+            $lineas_movimientos = $doc_encabezado->lineas_registros;
         ?>
         <table class="table table-bordered">
             <tr>
@@ -66,22 +66,22 @@
 
         <div class="table-responsive contenido">
             <table class="table table-bordered">
-                {{ Form::bsTableHeader(['Motivo','Valor']) }}
+                {{ Form::bsTableHeader(['Motivo','Medio de pago','Valor']) }}
                 <tbody>
                     @foreach ( $lineas_movimientos as $linea )
-                    <?php //dd($linea); ?>
                         <tr>
                             <td> {{ $linea->motivo->descripcion }} </td>
-                            <td align="right"> ${{ number_format($linea->valor_movimiento, 0, ',', '.') }} </td>
+                            <td> {{ $linea->medio_pago->descripcion }} </td>
+                            <td align="right"> ${{ number_format($linea->valor, 0, ',', '.') }} </td>
                         </tr>
                         <?php
-                            $total += $linea->valor_movimiento;               
+                            $total += $linea->valor;               
                         ?>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td> &nbsp; </td>
+                        <td colspan="2"> &nbsp; </td>
                         <td align="right">
                            $ {{ number_format($total, 0, ',', '.') }}
                         </td>
