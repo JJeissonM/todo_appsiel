@@ -19,9 +19,9 @@
             @foreach( $cheques as $cheque )
                 <?php
                     $descripcion_banco = '';
-                    if( !is_null($cheque->cuenta_bancaria) )
+                    if( !is_null($cheque->entidad_financiera) )
                     {
-                        $descripcion_banco = $cheque->cuenta_bancaria->descripcion;
+                        $descripcion_banco = $cheque->entidad_financiera->descripcion;
                     }
                 ?>
                 <tr>
