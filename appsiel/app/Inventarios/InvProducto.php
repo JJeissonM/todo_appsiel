@@ -42,6 +42,19 @@ class InvProducto extends Model
         return $this->hasMany(InvFichaProducto::class, 'producto_id', 'id');
     }
 
+    public function get_productos($tipo)
+    {
+        $opciones = InvProducto::where('estado', 'Activo')
+            ->where('tipo', 'LIKE', '%' . $tipo . '%')
+            ->get();
+        $vec[''] = '';
+        foreach ($opciones as $opcion) {
+            $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $collection =  InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')

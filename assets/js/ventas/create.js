@@ -850,7 +850,7 @@ $(document).ready(function(){
 	{
 		$('#cliente_input').attr('disabled','disabled');
 		$('#fecha').attr('disabled','disabled');
-		$('#inv_bodega_id').attr('disabled','disabled');				
+		$('#inv_bodega_id').attr('disabled','disabled');
 	}
 
 	function habilitar_campos_encabezado()

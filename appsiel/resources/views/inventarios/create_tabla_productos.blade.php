@@ -33,8 +33,8 @@
     <tfoot>
         <tr>
             <td colspan="4">&nbsp;</td>
-            <td> <div id="total_cantidad"> 0 </div> </td>
-            <td> <div id="total_costo_total"> $0</div> </td>
+            <td align="center"> <div id="total_cantidad"> 0 </div> </td>
+            <td align="right"> <div id="total_costo_total"> $0</div> </td>
             <td> &nbsp;</td>
         </tr>
         <tr>

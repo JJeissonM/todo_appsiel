@@ -84,4 +84,6 @@ Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@reconta
 
 //Coneccion de todos los procesos de ventas: cotizacion, pedidos, remisiones, facturas de venta
 
+Route::post('vtas_form_crear_remision_desde_doc_venta','Ventas\ProcesoController@form_crear_remision_desde_doc_venta');
+Route::post('vtas_crear_remision_y_factura_desde_doc_venta','Ventas\ProcesoController@crear_remision_y_factura_desde_doc_venta');
 Route::post('ventas_conexion/procesos/procesar/masivo','Ventas\ProcesoController@conexion_procesos')->name('ventas.conexion_procesos');

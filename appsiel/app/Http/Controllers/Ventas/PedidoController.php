@@ -527,6 +527,7 @@ class PedidoController extends TransaccionController
     public function doc_registro_guardar( Request $request )
     {
         $linea_registro = VtasDocRegistro::find( $request->linea_factura_id );
+        $cantidad_inicial = $linea_registro->cantidad;
         $doc_encabezado = VtasDocEncabezado::find( $linea_registro->vtas_doc_encabezado_id );
 
         $viejo_total_encabezado = $doc_encabezado->valor_total;
@@ -571,6 +572,7 @@ class PedidoController extends TransaccionController
                                     'valor_impuesto' => $valor_impuesto,
                                     'base_impuesto_total' => $base_impuesto_total,
                                     'tasa_descuento' => $tasa_descuento,
+                                    'cantidad_pendiente' => $linea_registro->cantidad_pendiente - $cantidad_inicial + $cantidad,
                                     'valor_total_descuento' => $valor_total_descuento
                                 ] );
 

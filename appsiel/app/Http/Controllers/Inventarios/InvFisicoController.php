@@ -67,7 +67,8 @@ class InvFisicoController extends TransaccionController
 
         $form_create = [
                         'url' => $url_form_create,
-                        'campos' => $lista_campos
+                        'campos' => $lista_campos,
+                        'modo' => 'create'
                     ];
 
         $motivos = InvMotivo::get_motivos_transaccion($id_transaccion);
@@ -312,13 +313,14 @@ class InvFisicoController extends TransaccionController
 
         $form_create = [
                         'url' => $modelo->url_form_create,
-                        'campos' => $lista_campos
+                        'campos' => $lista_campos,
+                        'modo' => 'create'
                     ];
 
         $cantidad_filas = count( $doc_registros->toarray() );
         $filas_tabla = View::make( 'inventarios.inventario_fisico.tabla_para_ajuste', compact( 'doc_registros', 'motivos' ) )->render();
 
-        return view('inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas'));
+        return view( 'inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas'));
     }
 
     /**
