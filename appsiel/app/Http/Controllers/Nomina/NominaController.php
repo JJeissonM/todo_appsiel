@@ -245,7 +245,7 @@ class NominaController extends TransaccionController
         $tabla = '<style> .celda_firma { width: 100px; }  .celda_nombre_empleado { width: 150px; } .table.sticky th {position: sticky; top: 0;} </style>
                     <br>
                     <div class="table-responsive">
-                     <table  class="tabla_registros table table-bordered table-striped sticky" style="margin-top: 1px; width: 100%;">
+                     <table  class="tabla_registros table table-bordered table-striped sticky contenido" style="margin-top: 1px; width: 100%;">
                     <thead>
                       <tr class="">
                           <th>
@@ -346,10 +346,16 @@ class NominaController extends TransaccionController
         $encabezado_doc = $this->encabezado_doc;
 
         $firmas = '';
-              
-        $view_1 = View::make('nomina.incluir.encabezado_transaccion',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad') )->render();
+        if(Input::get('formato_impresion_id') == 2){
+            $view_1 = View::make('nomina.incluir.encabezado_transaccion2',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad') )->render();
 
-        $view_pdf = '<link rel="stylesheet" type="text/css" href="'.asset('assets/css/estilos_formatos.css').'" media="screen" /> '.$view_1.$tabla.$firmas.'<div class="page-break"></div>';
+            $view_pdf = $view_1.$tabla.$firmas.'<div class="page-break"></div>';
+        }else{
+            $view_1 = View::make('nomina.incluir.encabezado_transaccion',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad') )->render();
+
+            $view_pdf = '<link rel="stylesheet" type="text/css" href="'.asset('assets/css/estilos_formatos.css').'" media="screen" /> '.$view_1.$tabla.$firmas.'<div class="page-break"></div>';    
+        }
+        
         
         return $view_pdf;
     }

@@ -51,7 +51,7 @@
 					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Planillas Generadas al Contrato</h4>
 					<table class="table table-bordered table-striped">
 						<thead>
-							<tr style="background-color: #50B794; vertical-align: middle !important;">
+							<tr style=" vertical-align: middle !important;">
 								<th>Id Planilla</th>
 								<th>Título Plantilla</th>
 								<th>Fecha Generada</th>

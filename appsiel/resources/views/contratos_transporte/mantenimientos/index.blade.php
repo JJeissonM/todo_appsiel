@@ -21,7 +21,7 @@
 				<div class="table-responsive" id="table_content">
 					<table class="table table-bordered table-striped">
 						<thead>
-							<tr style="background-color: #50B794; vertical-align: middle !important;">
+							<tr style=" vertical-align: middle !important;">
 								<th>Interno</th>
 								<th>Vinculación</th>
 								<th>Placa</th>

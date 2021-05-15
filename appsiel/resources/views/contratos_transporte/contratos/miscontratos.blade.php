@@ -34,7 +34,7 @@
 				<div class="table-responsive col-md-12" id="table_content">
 					<table class="table table-bordered table-striped">
 						<thead>
-							<tr style="background-color: #50B794; vertical-align: middle !important;">
+							<tr style=" vertical-align: middle !important;">
 								<th>Nro.</th>
 								<th>Objeto</th>
 								<th>Fecha Celebrado</th>

@@ -15,7 +15,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsSelect('tipo_operacion_id_transferencia_consignacion', null, 'Tipo Ope.', $tipos_operaciones, []) }}
+									{{ Form::bsSelect('tipo_operacion_id_transferencia_consignacion', null, 'Tipo Ope', $tipos_operaciones, []) }}
 								</div>
 							</div>
 							<div class="col-md-6">
@@ -27,7 +27,7 @@
 						<div class="row">
 							<div class="col-md-12">
 								<div class="row" style="padding:5px;">
-									{{ Form::bsText( 'numero_comprobante_transferencia_consignacion', null, 'N°. Comp.', []) }}
+									{{ Form::bsText( 'numero_comprobante_transferencia_consignacion', null, 'N° Comp', []) }}
 								</div>
 							</div>
 						</div>

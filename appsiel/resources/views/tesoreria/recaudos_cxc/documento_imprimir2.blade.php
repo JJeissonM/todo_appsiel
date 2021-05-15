@@ -7,7 +7,7 @@ use App\Core\Tercero;
     $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
 
     $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
-    
+    $vistaimprimir = 'imprimir';
 ?>
 <!DOCTYPE html>
 <html>
@@ -108,12 +108,12 @@ use App\Core\Tercero;
 
     <table class="table table-bordered">
         <tr>
-            <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Documentos Pagados </span> </td>
+            <td style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> DOCUMENTOS PAGADOS </span> </td>
         </tr>
     </table>
     
     <table class="table table-bordered table-striped contenido">
-        {{ Form::bsTableHeader(['Tercero','Documento','Fecha','Detalle','Abono','Saldo']) }}
+        {{ Form::bsTableHeader(['TERCERO','DOCUMENTO','FECHA','DETALLE','ABONO','SALDO']) }}
         <tbody>
             <?php 
             
