@@ -269,12 +269,6 @@ class ProcesoController extends Controller
             case '3':
                 $response = $this->solo_remision($encabezado, $request);
                 break;
-            case 'remision_desde_pedido':
-                $response = $this->solo_remision($encabezado, $request);
-                break;
-            case 'remision_y_factura_desde_pedido':
-                $response = $this->remision_y_factura_desde_pedido($encabezado, $request);
-                break;
         }
 
         return redirect( $url )->with('flash_message', $response);
@@ -328,6 +322,9 @@ class ProcesoController extends Controller
         }
     }
     
+    /*
+        Este metodo se llama desde la vista show de pedidos via POST
+    */
     public function crear_remision_y_factura_desde_doc_venta( Request $request )
     {
         $pedido = VtasDocEncabezado::find( (int)$request->doc_encabezado_id );
