@@ -339,8 +339,12 @@
 				if ($(this).val() == "") {
 					$(this).focus();
 					//alert( 'Este campo es requerido: ' + $(this).attr('name') );
-
-					alert('Este campo es requerido: ' + $(this).parent().prev('label').text());
+					var lbl_campo = $(this).parent().prev('label').text();
+					if( lbl_campo === '' )
+					{
+						lbl_campo = $(this).prev('label').text();
+					}
+					alert( 'Este campo es requerido: ' + lbl_campo );
 
 					control_requeridos = false;
 					return false;

@@ -29,14 +29,7 @@
                     <td style="text-align: right;">
                         ${{ number_format( $item_orden_trabajo->costo_unitario, 2, '.', '') }}
                     </td>
-                    <td class="cantidad" align="center">
-                        @if( $orden_de_trabajo->inv_doc_encabezado_id == 0 )
-                            <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('nom_ordenes_trabajo_cambiar_cantidad_items') . "/" . $orden_de_trabajo->id . "/" . $item_orden_trabajo->item->id }}"> {{ $item_orden_trabajo->cantidad }} 
-                            </div>
-                        @else
-                            {{ number_format( $item_orden_trabajo->cantidad, 2, ',', '.') }}
-                        @endif
-                    </td>
+                    <td class="cantidad" align="center">@if( $orden_de_trabajo->inv_doc_encabezado_id == 0 )<div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('nom_ordenes_trabajo_cambiar_cantidad_items') . "/" . $orden_de_trabajo->id . "/" . $item_orden_trabajo->item->id }}"> {{ $item_orden_trabajo->cantidad }}</div> {{ $item_orden_trabajo->item->unidad_medida1 }}@else{{ number_format( $item_orden_trabajo->cantidad, 2, ',', '.') }} {{ $item_orden_trabajo->item->unidad_medida1 }}@endif</td>
                     <td class="costo_total" style="text-align: right;">
                         ${{ number_format( $item_orden_trabajo->costo_total, 2, '.', '') }}
                     </td>

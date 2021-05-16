@@ -189,22 +189,39 @@ class OrdenDeTrabajo extends Model
     public function store_adicional( $datos, $registro )
     {
         $tabla_empleados = json_decode( $datos['tabla_empleados'] );
-        
+
         $cantidad_empleados = count($tabla_empleados);
         for ($i = 0; $i < $cantidad_empleados; $i++)
         {
+            $cantidad_horas = 0;
+            if ( isset($tabla_empleados[$i]->cantidad_horas) )
+            {
+                $cantidad_horas = (float)$tabla_empleados[$i]->cantidad_horas;
+            }
+
+            $valor_unitario = 0;
+            if ( isset($tabla_empleados[$i]->valor_unitario) )
+            {
+                $valor_unitario = (float)$tabla_empleados[$i]->valor_unitario;
+            }
+
             $linea_empleado = [ 
                                 'orden_trabajo_id' => $registro->id,
                                 'nom_concepto_id' => (int)$datos['nom_concepto_id'],
                                 'nom_contrato_id' => (int)$tabla_empleados[$i]->nom_contrato_id,
-                                'cantidad_horas' => (float)$tabla_empleados[$i]->cantidad_horas,
-                                'valor_por_hora' => (float)$tabla_empleados[$i]->valor_unitario,
+                                'cantidad_horas' => $cantidad_horas,
+                                'valor_por_hora' => $valor_unitario,
                                 'valor_devengo' => (float)$tabla_empleados[$i]->valor_total,
                                 'estado' => 'Pendiente',
                                 'creado_por' => Auth::user()->email
                             ];
 
             EmpleadoOrdenDeTrabajo::create( $linea_empleado  );
+
+            if ( (float)$tabla_empleados[$i]->valor_total == 0 )
+            {
+                continue;
+            }
 
             // Crear registro en documento de nomina
             $contrato = NomContrato::find( (int)$tabla_empleados[$i]->nom_contrato_id );
@@ -225,8 +242,9 @@ class OrdenDeTrabajo extends Model
                     ];
             NomDocRegistro::create( $datos_registro_doc_nomina );
 
-            $registro->documento_nomina->actualizar_totales();
         }
+        
+        $registro->documento_nomina->actualizar_totales();
 
         // PARA LOS ITEMS INGRESADOS
         $lineas_registros = json_decode( $datos['movimiento'] );

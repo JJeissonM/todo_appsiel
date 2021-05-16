@@ -54,6 +54,9 @@ use App\Nomina\PilaRiesgoLaboral;
 use App\Nomina\PilaParafiscales;
 use App\Nomina\EmpleadoPlanilla;
 
+use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvProducto;
+
 class ReporteController extends Controller
 {
    public function reportes()
@@ -1062,6 +1065,49 @@ class ReporteController extends Controller
         $total_deducciones = $devengos_y_deducciones->whereIn('nom_concepto_id', $conceptos_de_la_agrupacion )->sum( 'valor_deduccion' );
 
         return abs($total_devengos - $total_deducciones);
+    }
+
+
+    public function costos_por_proyectos(Request $request)
+    {
+        $nom_contrato_id = (int)$request->nom_contrato_id;
+        $nom_concepto_id = (int)$request->nom_concepto_id;
+
+        $detalla_empleados = $request->detalla_empleados;
+
+        $nom_doc_encabezado_id  = (int)$request->nom_doc_encabezado_id;
+        
+        $movimiento = NomDocRegistro::listado_acumulados_documento( $nom_doc_encabezado_id, 0, $nom_contrato_id, $nom_concepto_id) ;
+
+        if( $nom_concepto_id == 0 )
+        {
+            $conceptos =  NomConcepto::whereIn( 'id', array_keys( $movimiento->groupBy('nom_concepto_id')->toArray() ) )->get();
+        }else{
+            $conceptos =  NomConcepto::where( 'id', $nom_concepto_id )->get();
+        }
+
+        if ( $nom_contrato_id == 0 )
+        {
+            $empleados =  NomContrato::whereIn( 'core_tercero_id', array_keys( $movimiento->groupBy('core_tercero_id')->toArray() ) )->get();
+        }else{
+            $empleados =  NomContrato::where( 'id', $nom_contrato_id )->get();
+        }
+        
+        $documento_nomina = NomDocEncabezado::find( $nom_doc_encabezado_id );
+
+        $array_ids_doc_encabezados = array_unique( $documento_nomina->ordenes_de_trabajo->pluck('inv_doc_encabezado_id')->toArray() );        
+
+        $movimiento_inventario = InvMovimiento::whereIn( 'inv_doc_encabezado_id', $array_ids_doc_encabezados )->get();
+
+        $items = InvProducto::whereIn( 'id', array_keys( $movimiento_inventario->groupBy('inv_producto_id')->toArray() ) )->get();
+
+        $view = View::make('nomina.reportes.costos_por_proyecto', compact( 'movimiento', 'conceptos', 'empleados', 'documento_nomina', 'detalla_empleados', 'movimiento_inventario', 'items') )->render();
+
+        $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
+
+        Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
+
+        return $view;
     }
 
 }
