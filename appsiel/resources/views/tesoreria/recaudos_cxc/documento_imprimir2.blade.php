@@ -159,7 +159,7 @@ use App\Core\Tercero;
         </tfoot>
     </table>
 
-    @include('tesoreria.medios_de_pago.tabla_show_detalles')
+    @include('tesoreria.medios_de_pago.tabla_show_detalles', [ 'vistaimprimir' => 'si' ] )
 
     @include('tesoreria.recaudos_cxc.cheques_relacionados')
 

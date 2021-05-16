@@ -121,6 +121,7 @@
 				$subtotal = 0;
 				$total_impuestos = 0;
 				$total_factura = 0;
+                $total_descuentos = 0;
 				$array_tasas = [];
 				?>
 				@foreach($doc_registros as $linea )
@@ -148,6 +149,7 @@
 				$subtotal += (float) $linea->base_impuesto * (float) $linea->cantidad;
 				$total_impuestos += (float) $linea->valor_impuesto * (float) $linea->cantidad;
 				$total_factura += $linea->precio_total;
+                $total_descuentos += $linea->valor_total_descuento;
 
 				// Si la tasa no está en el array, se agregan sus valores por primera vez
 				if (!isset($array_tasas[$linea->tasa_impuesto])) {
@@ -177,29 +179,9 @@
 			</tbody>
 		</table>
 	</div>
-		
-	<div class="table-responsive">
-		<table class="table table-bordered">
-			<tr>
-				<td width="75%"> <b> &nbsp; </b> <br> </td>
-				<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td>
-				<td style="text-align: right; font-weight: bold;" id="tbstotal"> $ {{ round($subtotal,2,PHP_ROUND_HALF_UP) }} </td>
-			</tr>
 
-			@foreach( $array_tasas as $key => $value )
-				<tr>
-					<td width="75%"> <b> &nbsp; </b> <br> </td>
-					<td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
-					<td style="text-align: right; font-weight: bold;" id="tbimpuesto"> ${{ round($value['valor_impuesto'],2,PHP_ROUND_HALF_UP) }} </td>
-				</tr>
-			@endforeach
-			<tr>
-				<td width="75%"> <b> &nbsp; </b> <br> </td>
-				<td style="text-align: right; font-weight: bold;"> Total Pedido: &nbsp; </td>
-				<td style="text-align: right; font-weight: bold;" id="tbtotal"> $ {{ round($total_factura,2,PHP_ROUND_HALF_UP) }} </td>
-			</tr>
-		</table>
-	</div>
+
+	@include('ventas.incluir.factura_firma_totales')
 @endsection
 
 @section('otros_scripts')

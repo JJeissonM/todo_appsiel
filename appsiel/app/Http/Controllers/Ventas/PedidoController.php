@@ -177,24 +177,25 @@ class PedidoController extends TransaccionController
                 $inv_motivo_id = $lineas_registros[$i]->inv_motivo_id;
 
             // Se llama nuevamente el precio de venta para estar SEGURO ( Cuando se hace desde la web )
-          $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+              $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+              $tasa_descuento = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
 
-          if ( isset( $request->url_id ) )
-          {
-            if ( (int)$request->url_id == 13 || (int)$request->url_id == 20 ) // Si el pedido se hace desde el modulo de ventas o POS
-            {
-                $precio_unitario = (float)$lineas_registros[$i]->precio_unitario;
-            }
-          }
-          
-          $tasa_descuento = ListaDctoDetalle::get_descuento_producto( $lista_descuentos_id, $doc_encabezado->fecha, $lineas_registros[$i]->inv_producto_id );
+              if ( isset( $request->url_id ) )
+              {
+                // Si el pedido se hace desde el modulo de Ventas o POS
+                if ( (int)$request->url_id == 13 || (int)$request->url_id == 20 ) 
+                {
+                    $precio_unitario = (float)$lineas_registros[$i]->precio_unitario;
+                    $tasa_descuento = (float)$lineas_registros[$i]->tasa_descuento;
+                }
+              }
 
-          $tasa_impuesto = Impuesto::get_tasa($lineas_registros[$i]->inv_producto_id,0,$doc_encabezado->cliente_id);
+              $tasa_impuesto = Impuesto::get_tasa($lineas_registros[$i]->inv_producto_id,0,$doc_encabezado->cliente_id);
 
-          $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
-          $valor_impuesto = $precio_unitario - $base_impuesto;
+              $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
+              $valor_impuesto = $precio_unitario - $base_impuesto;
 
-          $linea_datos = ['vtas_motivo_id' =>$inv_motivo_id] +
+              $linea_datos = ['vtas_motivo_id' =>$inv_motivo_id] +
                           ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
                           ['precio_unitario' => $precio_unitario] +
                           ['cantidad' => $lineas_registros[$i]->cantidad] +

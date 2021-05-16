@@ -57,40 +57,40 @@
             $lineas_movimientos = $doc_encabezado->lineas_registros;
             
         ?>
-        @if($vistaimprimir == '')
-        <table class="table table-bordered">
-            <tr>
-                <td style="text-align: center; background-color: #ddd;"> 
-                    <span style="text-align: right; font-weight: bold;"> DETALLES DE MOVIMIENTOS </span> 
-                </td>
-            </tr>
-        </table>
-
-        <div class="table-responsive contenido">
+        @if( $vistaimprimir == '')
             <table class="table table-bordered">
-                {{ Form::bsTableHeader(['Motivo','Medio de pago','Valor']) }}
-                <tbody>
-                    @foreach ( $lineas_movimientos as $linea )
-                        <tr>
-                            <td> {{ $linea->motivo->descripcion }} </td>
-                            <td> {{ $linea->medio_pago->descripcion }} </td>
-                            <td align="right"> ${{ number_format($linea->valor, 0, ',', '.') }} </td>
-                        </tr>
-                        <?php
-                            $total += $linea->valor;               
-                        ?>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="2"> &nbsp; </td>
-                        <td align="right">
-                           $ {{ number_format($total, 0, ',', '.') }}
-                        </td>
-                    </tr>
-                </tfoot>
+                <tr>
+                    <td style="text-align: center; background-color: #ddd;"> 
+                        <span style="text-align: right; font-weight: bold;"> DETALLES DE MOVIMIENTOS </span> 
+                    </td>
+                </tr>
             </table>
-        </div>
+
+            <div class="table-responsive contenido">
+                <table class="table table-bordered">
+                    {{ Form::bsTableHeader(['Motivo','Medio de pago','Valor']) }}
+                    <tbody>
+                        @foreach ( $lineas_movimientos as $linea )
+                            <tr>
+                                <td> {{ $linea->motivo->descripcion }} </td>
+                                <td> {{ $linea->medio_pago->descripcion }} </td>
+                                <td align="right"> ${{ number_format($linea->valor, 0, ',', '.') }} </td>
+                            </tr>
+                            <?php
+                                $total += $linea->valor;               
+                            ?>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"> &nbsp; </td>
+                            <td align="right">
+                               $ {{ number_format($total, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
         @endif
     </div>
 </div>
