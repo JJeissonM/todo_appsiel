@@ -12,8 +12,14 @@
         {
             $color = 'entrada';
         }
+
+        $color_fila = 'transparent';
+        if ( ($linea->existencia_actual - abs($linea->cantidad) ) < 0 )
+        {
+            $color_fila = '#FF8C8C';
+        }
     ?>
-    <tr id="{{$linea->inv_producto_id}}">
+    <tr id="{{$linea->inv_producto_id}}" style="background-color: {{$color_fila}}">
         <td> {{$linea->inv_producto_id}} </td>
         <td class="nom_prod"> {{$etiqueta_producto}}</td>
         <td>

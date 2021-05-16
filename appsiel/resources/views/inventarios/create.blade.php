@@ -49,6 +49,17 @@
 				@if( !is_null( Input::get('doc_ventas_id') ))
 					{{ Form::bsHidden( 'doc_ventas_id', Input::get('doc_ventas_id') ) }}
 				@endif
+
+				@if( isset( $hay_existencias_negativas ) )
+					{{ Form::bsHidden( 'hay_existencias_negativas', $hay_existencias_negativas ) }}
+				@else
+					{{ Form::bsHidden( 'hay_existencias_negativas', 0 ) }}
+				@endif
+
+				<div class="alert alert-warning" id="div_hay_existencias_negativas" style="display: none;">
+				  <strong>Advertencia!</strong> Los items con filas en rojo no tienen cantidades sufiencientes. No podrá guardar este documento.
+				</div>
+				
 				
 			{{ Form::close() }}
 

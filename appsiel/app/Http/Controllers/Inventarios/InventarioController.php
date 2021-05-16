@@ -512,13 +512,16 @@ class InventarioController extends TransaccionController
             $cantidad = $linea->cantidad_pendiente * -1; // Salida de inventarios
             $costo_total = $cantidad * $costo_unitario;
 
+            $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $inv_bodega_id, $doc_encabezado->fecha );
+
             $lineas[] = (object)[
                                     'item' => $linea->item,
                                     'motivo' => $linea->motivo,
                                     'inv_producto_id' => $linea->inv_producto_id,
                                     'costo_unitario' => $costo_unitario,
                                     'cantidad' => $cantidad,
-                                    'costo_total' => $costo_total
+                                    'costo_total' => $costo_total,
+                                    'existencia_actual' => $existencia_actual
                                 ];
         }
 

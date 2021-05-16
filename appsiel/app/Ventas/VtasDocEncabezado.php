@@ -18,6 +18,7 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
 use App\Inventarios\InvProducto;
+use App\Inventarios\InvMovimiento;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -231,6 +232,21 @@ class VtasDocEncabezado extends Model
 
             VtasMovimiento::create($datos);
         }
+    }
+
+    public function determinar_posibles_existencias_negativas()
+    {
+        $lineas_registros = $this->lineas_registros;
+        foreach ($lineas_registros as $linea)
+        {
+            $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $this->cliente->inv_bodega_id, $this->fecha );
+
+            if ( ( $existencia_actual - abs($linea->cantidad) ) < 0 )
+            {
+                return 1;
+            }
+        }
+        return 0;
     }
 
     public function datos_auxiliares_estudiante()

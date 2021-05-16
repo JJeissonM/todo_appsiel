@@ -92,7 +92,12 @@ $(document).ready(function(){
 		$('#btn_nuevo').show();
 	}
 	
-	
+	if ( $('#hay_existencias_negativas').val() == '1' )
+	{
+		$('#btn_guardar').hide();
+		$('#btn_nuevo').hide();
+		$('#div_hay_existencias_negativas').show();
+	}
 
 	/* INVENTARIOS*/
 	var respuesta;

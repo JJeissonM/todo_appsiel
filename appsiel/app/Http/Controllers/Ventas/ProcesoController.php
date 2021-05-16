@@ -332,6 +332,13 @@ class ProcesoController extends Controller
     {
         $pedido = VtasDocEncabezado::find( (int)$request->doc_encabezado_id );
 
+        $hay_existencias_negativas = $pedido->determinar_posibles_existencias_negativas();
+        
+        if ( $hay_existencias_negativas )
+        {
+            return redirect( 'vtas_pedidos/' . $pedido->id . '?id=13&id_modelo=175&id_transaccion=42' )->with( 'mensaje_error', 'No hay cantidades suficientes para facturar.' );
+        }
+
         // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
         $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, $request->fecha );
 
@@ -461,10 +468,10 @@ class ProcesoController extends Controller
         $datos_remision['descripcion'] = $descripcion;
 
         $datos_remision['vtas_doc_encabezado_origen_id'] = $encabezado_doc_venta->id;
+        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
 
         $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
-
-        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
+        
         InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros);
 
         InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
@@ -511,8 +518,11 @@ class ProcesoController extends Controller
         $tabla = ''; //new TablaIngresoLineaRegistros( InvTransaccion::get_datos_tabla_ingreso_lineas_registros( $tipo_transaccion, $motivos ) );
 
         $cantidad_filas = count( $encabezado_doc_venta->lineas_registros->toArray() );
-
-        $filas_tabla = View::make( 'inventarios.incluir.tabla_lineas_registros_para_almacenar', ['lineas_registros'=> InventarioController::crear_lineas_registros_desde_doc_ventas( $encabezado_doc_venta ) ] )->render();
+        $lineas_registros = InventarioController::crear_lineas_registros_desde_doc_ventas( $encabezado_doc_venta );
+        
+        $hay_existencias_negativas = $this->determinar_existencias_negativas( $lineas_registros );
+        
+        $filas_tabla = View::make( 'inventarios.incluir.tabla_lineas_registros_para_almacenar', [ 'lineas_registros'=> $lineas_registros ] )->render();
 
         foreach ($lista_campos as $key => $value)
         {
@@ -550,7 +560,20 @@ class ProcesoController extends Controller
 
         $registro_id = 0;
 
-        return view( 'inventarios.create', compact('form_create', 'id_transaccion', 'productos', 'servicios', 'motivos', 'miga_pan', 'tabla','filas_tabla','cantidad_filas', 'registro_id'));
+        return view( 'inventarios.create', compact('form_create', 'id_transaccion', 'productos', 'servicios', 'motivos', 'miga_pan', 'tabla','filas_tabla','cantidad_filas', 'registro_id', 'hay_existencias_negativas'));
+    }
+
+    public function determinar_existencias_negativas( $lineas_registros )
+    {
+        foreach( $lineas_registros AS $linea )
+        {
+            if ( ($linea->existencia_actual - abs($linea->cantidad) ) < 0 )
+            {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 
     public function actualizar_cantidades_pendientes( $lineas_registros )
