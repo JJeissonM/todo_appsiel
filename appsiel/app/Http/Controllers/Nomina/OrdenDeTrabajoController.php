@@ -181,4 +181,26 @@ class OrdenDeTrabajoController extends TransaccionController
 
         return 'true';        
     }
+
+    public function anular( $orden_trabajo_id )
+    {
+        $orden_de_trabajo = OrdenDeTrabajo::find( $orden_trabajo_id );
+
+        if ( $orden_de_trabajo->inv_doc_encabezado_id != 0 )
+        {
+            return redirect( 'nom_ordenes_trabajo/'.$orden_trabajo_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Orden de Trabajo no puede ser anulada. Tiene documentos de inventario asociados.');
+        }
+        
+        EmpleadoOrdenDeTrabajo::where('orden_trabajo_id',$orden_trabajo_id)->delete();
+
+        NomDocRegistro::where('orden_trabajo_id',$orden_trabajo_id)->delete();
+
+        ItemOrdenDeTrabajo::where('orden_trabajo_id',$orden_trabajo_id)->delete();
+
+        $orden_de_trabajo->documento_nomina->actualizar_totales();
+
+        $orden_de_trabajo->update(['estado'=>'Anulado']);
+
+        return redirect( 'nom_ordenes_trabajo/'.$orden_trabajo_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Orden de Trabajo ANULADA correctamente.');
+    } 
 }

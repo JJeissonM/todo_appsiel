@@ -9,6 +9,7 @@ use View;
 use Lava;
 use Input;
 use Form;
+use Schema;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -1254,6 +1255,12 @@ class InventarioController extends TransaccionController
                 $orden_compra->estado = "Pendiente";
                 $orden_compra->save();
             }       
+        }
+
+        // Si esta relacionado con una Orden de Trabajo
+        if ( Schema::hasTable( 'nom_ordenes_de_trabajo' ) )
+        {
+            OrdenDeTrabajo::where( 'inv_doc_encabezado_id',$documento->id )->update(['inv_doc_encabezado_id'=>0]);
         }
 
         // Marcar documento como Anulado
