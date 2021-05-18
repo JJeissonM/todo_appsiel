@@ -346,8 +346,8 @@
 				var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
 
 				if($.isNumeric(costo_total) && costo_total>0){
-					celda_costo_unitario = '<td>$'+parseFloat(costo_unitario).toFixed(2)+'</td>';
-					celda_costo_total = '<td class="costo_total">$'+costo_total+'</td>';
+					celda_costo_unitario = '<td class="text-right">$'+parseFloat(costo_unitario).toFixed(2)+'</td>';
+					celda_costo_total = '<td class="text-right costo_total">$'+costo_total+'</td>';
 					
 					// Si la transaccion es ENSAMBLE, no se muestran los costos para los productos
 					// finales (tipo entrada, movimiento suma)
@@ -356,10 +356,10 @@
 							// para la entradas se suman las cantidades
 							suma_cantidades_prod_entrada = suma_cantidades_prod_entrada + parseFloat(cantidad);
 							// la class costo_unitario solo la tienen las celdas de los productos de entradas
-							celda_costo_unitario = '<td class="costo_unitario">Sin calcular</td>';
+							celda_costo_unitario = '<td class="text-right costo_unitario">Sin calcular</td>';
 							// se usa otra class costo_total2 porque esta es la que se va a rellenar cuando se
 							// calcule el costo de los productos de entrada
-							celda_costo_total = '<td class="costo_total2">Sin calcular</td>';
+							celda_costo_total = '<td class="text-right costo_total2">Sin calcular</td>';
 						}else{
 							// para las salidas se suman los costos
 							suma_costo_total_prod_salida = suma_costo_total_prod_salida + parseFloat(costo_total);
@@ -367,11 +367,11 @@
 					}
 
 					$('#ingreso_productos').find('tbody:last').append('<tr id="'+producto.val()+'">'+
-																	'<td>'+producto.val()+'</td>'+
+																	'<td class="text-center">'+producto.val()+'</td>'+
 																	'<td class="nom_prod">'+nombre_producto+'</td>'+
 																	'<td><span style="color:white;">'+mov[0]+'-</span><span '+estilo+'>'+motivo+'</span><input type="hidden" class="movimiento" value="'+mov[1]+'"></td>'+
 																	celda_costo_unitario+
-																	'<td class="cantidad">'+cantidad+" "+$('#unidad_medida1').val()+'</td>'+
+																	'<td class="text-center cantidad">'+cantidad+" "+$('#unidad_medida1').val()+'</td>'+
 																	celda_costo_total+
 																	'<td>'+btn_borrar+'</td>'+
 																	'</tr>');

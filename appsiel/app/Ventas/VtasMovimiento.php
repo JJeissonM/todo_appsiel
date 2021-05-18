@@ -44,7 +44,7 @@ class VtasMovimiento extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
             ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
-                'vtas_movimientos.fecha AS campo1',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw($select_raw),
                 DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS campo3'),
                 'core_terceros.descripcion AS campo4',
@@ -79,7 +79,7 @@ class VtasMovimiento extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
             ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
-                'vtas_movimientos.fecha AS FECHA',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw($select_raw),
                 DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS PRODUCTO'),
                 'core_terceros.descripcion AS CLIENTE',
@@ -118,7 +118,7 @@ class VtasMovimiento extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
             ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
-                'vtas_movimientos.fecha AS campo1',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw($select_raw),
                 DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS campo3'),
                 'core_terceros.descripcion AS campo4',

@@ -152,7 +152,7 @@ use App\Core\Tercero;
                 ?>
             <td class="text-left" width="250px"> {{ $descripcion_item }} </td>
             <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-            <td> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 2, ',', '.') }}
+            <td class="text-right"> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 2, ',', '.') }}
             </td>
             <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
             <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->valor_total_descuento, 2, ',', '.') }} </td>

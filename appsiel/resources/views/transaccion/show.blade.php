@@ -69,9 +69,9 @@
 			                <div style="vertical-align: center;">
 			                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
 			                    <br/>
-			                    <b>Documento:</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+			                    <b>Documento:</b> {{ $doc_encabezado->documento_transaccion_descripcion.' '.$doc_encabezado->documento_transaccion_prefijo_consecutivo }}
 			                    <br/>
-			                    <b>Fecha:</b> {{ $doc_encabezado->fecha }}
+			                    <b>Fecha:</b> {{ date_format(date_create($doc_encabezado->fecha),"d-m-Y") }}
 
 			                    @yield('datos_adicionales_encabezado')
 			                    

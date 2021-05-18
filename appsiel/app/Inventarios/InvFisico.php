@@ -25,7 +25,7 @@ class InvFisico extends InvDocEncabezado
                                 ->where('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                                 ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                                 ->select(
-                                    'inv_doc_encabezados.fecha AS campo1',
+                                    DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                                     DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2' ),
                                     'inv_bodegas.descripcion AS campo3',
                                     DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4' ),
@@ -43,7 +43,7 @@ class InvFisico extends InvDocEncabezado
             ->where('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->select(
-                'inv_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2' ),
                 'inv_bodegas.descripcion AS campo3',
                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4' ),

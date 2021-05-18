@@ -1,25 +1,25 @@
 <br/><br/><br/>
 <h4 style="width: 100%; text-align: center;">Ingreso de productos</h4>
-<table class="table table-striped" id="ingreso_productos">
+<table class="table table-striped table-bordered" id="ingreso_productos">
     <thead>
         <tr>
-            <th data-override="inv_producto_id">Cod.</th>
-            <th width="280px">Producto</th>
-            <th width="200px" data-override="motivo">Motivo</th>
-            <th data-override="costo_unitario"> Costo Unit. </th>
-            <th data-override="cantidad">Cantidad</th>
-            <th data-override="costo_total">Costo Total</th>
+            <th data-override="inv_producto_id">COD.</th>
+            <th width="280px">PRODUCTO</th>
+            <th width="200px" data-override="motivo">MOTIVO</th>
+            <th data-override="costo_unitario"> COSTO UNIT. </th>
+            <th data-override="cantidad">CANTIDAD</th>
+            <th data-override="costo_total">COSTO TOTAL</th>
             <th width="10px">&nbsp;</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td></td>
+            <td width="100px"></td>
             <td class="nom_prod"></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td width="150px"></td>
+            <td width="150px"></td>
+            <td width="150px"></td>
             <td></td>
         </tr>
 
@@ -33,8 +33,8 @@
     <tfoot>
         <tr>
             <td colspan="4">&nbsp;</td>
-            <td> <div id="total_cantidad"> 0 </div> </td>
-            <td> <div id="total_costo_total"> $0</div> </td>
+            <td class="text-center"> <div id="total_cantidad"> 0 </div> </td>
+            <td class="text-right"> <div id="total_costo_total"> $0</div> </td>
             <td> &nbsp;</td>
         </tr>
         <tr>

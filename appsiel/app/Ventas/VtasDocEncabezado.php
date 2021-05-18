@@ -386,7 +386,7 @@ class VtasDocEncabezado extends Model
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                'vtas_doc_encabezados.fecha AS FECHA',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS FECHA'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 DB::raw('core_terceros.descripcion AS CLIENTE'),
                 'vtas_doc_encabezados.descripcion AS DETALLE',
@@ -421,9 +421,9 @@ class VtasDocEncabezado extends Model
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                'vtas_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('core_terceros.descripcion AS campo3'),
+                'core_terceros.descripcion AS campo3',
                 'vtas_doc_encabezados.descripcion AS campo4',
                 'vtas_doc_encabezados.valor_total AS campo5',
                 'vtas_doc_encabezados.forma_pago AS campo6',
@@ -515,9 +515,9 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.core_tipo_transaccion_id',
                 'vtas_doc_encabezados.core_tipo_doc_app_id',
                 'vtas_doc_encabezados.consecutivo',
-                'vtas_doc_encabezados.fecha',
-                'vtas_doc_encabezados.fecha_vencimiento',
-                'vtas_doc_encabezados.fecha_entrega',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS fecha'),
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS fecha_vencimiento'),
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS fecha_entrega'),
                 'vtas_doc_encabezados.vendedor_id',
                 'vtas_doc_encabezados.descripcion',
                 'vtas_doc_encabezados.estado',

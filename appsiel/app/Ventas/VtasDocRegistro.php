@@ -19,15 +19,15 @@ class VtasDocRegistro extends Model
 
     public $campos_visibles_linea_registro = [ 
     											['&nbsp;','10px'],
-    											['Item','280px'],
-    											['Motivo','200px'],
-    											['Stock','35px'],
-                                                ['Cantidad',''],
-                                                ['Precio Unit. (IVA incluido)',''],
-                                                ['Dcto. (%)',''],
-                                                ['Dcto. Tot. ($)',''],
+    											['ITEM','280px'],
+    											['MOTIVO','200px'],
+    											['STOCK','35px'],
+                                                ['CANT.',''],
+                                                ['PRECIO UNIT. (IVA INCLUIDO)',''],
+                                                ['DCTO. (%)',''],
+                                                ['DCTO. TOT. ($)',''],
                                                 ['IVA',''],
-    											['Total',''],
+    											['TOTAL',''],
     											['&nbsp;','10px']
     										]; // 9 campos
 

@@ -55,10 +55,10 @@ class VtasPedido extends VtasDocEncabezado
                 ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                 ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                 ->select(
-                    'vtas_doc_encabezados.fecha AS campo1',
+                    DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
                     DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                    'vtas_doc_encabezados.fecha_entrega AS campo4',
+                    DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_entrega,"%d-%m-%Y") AS campo4'),
                     'vtas_doc_encabezados.descripcion AS campo5',
                     'vtas_doc_encabezados.estado AS campo6',
                     'vtas_doc_encabezados.id AS campo7'
@@ -72,10 +72,10 @@ class VtasPedido extends VtasDocEncabezado
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                'vtas_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'vtas_doc_encabezados.fecha_entrega AS campo4',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_entrega,"%d-%m-%Y") AS campo4'),
                 'vtas_doc_encabezados.descripcion AS campo5',
                 'vtas_doc_encabezados.estado AS campo6',
                 'vtas_doc_encabezados.id AS campo7'
@@ -101,7 +101,7 @@ class VtasPedido extends VtasDocEncabezado
                 'vtas_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS CLIENTE'),
-                'vtas_doc_encabezados.fecha_entrega AS FECHA_ENTREGA',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_entrega,"%d-%m-%Y") AS FECHA_ENTREGA'),
                 'vtas_doc_encabezados.descripcion AS DETALLE',
                 'vtas_doc_encabezados.estado AS ESTADO'
             )
@@ -132,10 +132,10 @@ class VtasPedido extends VtasDocEncabezado
                 ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                 ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                 ->select(
-                    'vtas_doc_encabezados.fecha AS campo1',
+                    DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
                     DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                    'vtas_doc_encabezados.fecha_entrega AS campo4',
+                    DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_entrega,"%d-%m-%Y") AS campo4'),
                     'vtas_doc_encabezados.descripcion AS campo5',
                     'vtas_doc_encabezados.estado AS campo6',
                     'vtas_doc_encabezados.id AS campo7'
@@ -148,10 +148,10 @@ class VtasPedido extends VtasDocEncabezado
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                'vtas_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'vtas_doc_encabezados.fecha_entrega AS campo4',
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_entrega,"%d-%m-%Y") AS campo4'),
                 'vtas_doc_encabezados.descripcion AS campo5',
                 'vtas_doc_encabezados.estado AS campo6',
                 'vtas_doc_encabezados.id AS campo7'
