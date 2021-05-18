@@ -125,7 +125,6 @@ class CotizacionController extends TransaccionController
         $cantidad_registros = count($lineas_registros);
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
-
             $linea_datos = [ 'vtas_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id ] +
                             [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
                             [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +

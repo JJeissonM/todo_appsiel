@@ -160,7 +160,6 @@ class PedidoController extends TransaccionController
     */
     public function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
-
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros
         $lista_precios_id = Cliente::find( $doc_encabezado->cliente_id )->lista_precios->id;
         $lista_descuentos_id = Cliente::find($doc_encabezado->cliente_id)->lista_descuentos->id;

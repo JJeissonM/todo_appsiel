@@ -47,13 +47,15 @@
                 <?php
                     $total_cantidad += $linea->cantidad;
                     $total_bruto += (float)$linea->precio_unitario * (float)$linea->cantidad;
-                    $subtotal += (float)($linea->precio_unitario - $linea->valor_impuesto) * (float)$linea->cantidad;
                     $total_impuestos += (float)$linea->valor_impuesto * (float)$linea->cantidad;
                     $total_factura += $linea->precio_total;
                     $total_descuentos += $linea->valor_total_descuento;
                     $cantidad_items++;
                 ?>
             @endforeach
+                <?php
+                    $subtotal = $total_factura + $total_descuentos - $total_impuestos;
+                ?>
         </tbody>
         <tfoot>
             <tr style="font-weight: bold;">

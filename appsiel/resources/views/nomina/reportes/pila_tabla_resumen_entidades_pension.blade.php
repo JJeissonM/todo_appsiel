@@ -34,8 +34,6 @@
 
 				if( $entidad_anterior != $codigo_nacional )
 				{
-					//dd('aja');
-
 					if ( $es_siguiente_iteracion )
 					{
 						echo dibujar_valor( $total_entidad );

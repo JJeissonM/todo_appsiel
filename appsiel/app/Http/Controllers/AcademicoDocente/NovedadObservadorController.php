@@ -65,7 +65,6 @@ class NovedadObservadorController extends Controller
       $url_estado = '';
       $url_print = ''; 
 
-      //dd('hi');
       $source = "INDEX1";
       $curso = new Curso();
       $asignatura = new Asignatura();

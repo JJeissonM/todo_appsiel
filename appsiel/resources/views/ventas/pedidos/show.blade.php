@@ -125,57 +125,59 @@
 				$array_tasas = [];
 				?>
 				@foreach($doc_registros as $linea )
-				<tr>
-					<td class="text-center"> {{ $i }} </td>
-					<td width="250px"> {{ $linea->producto_descripcion }} </td>
-					<td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-					<td class="text-center"> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
-					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
-					<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
-					<td  class="text-right"> {{ '$ '.number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
-					<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
-                    <td>
-                        @if( $doc_encabezado->estado == 'Pendiente' )
-                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
+					<tr>
+						<td class="text-center"> {{ $i }} </td>
+						<td width="250px"> {{ $linea->producto_descripcion }} </td>
+						<td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+						<td class="text-center"> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
+						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
+						<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
+						<td  class="text-right"> {{ '$ '.number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
+						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+	                    <td>
+	                        @if( $doc_encabezado->estado == 'Pendiente' )
+	                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
 
-                            @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
-                        @endif
-                    </td>
-				</tr>
-				<?php
-				$i++;
-				$total_cantidad += $linea->cantidad;
-				$subtotal += (float) $linea->base_impuesto * (float) $linea->cantidad;
-				$total_impuestos += (float) $linea->valor_impuesto * (float) $linea->cantidad;
-				$total_factura += $linea->precio_total;
-                $total_descuentos += $linea->valor_total_descuento;
+	                            @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
+	                        @endif
+	                    </td>
+					</tr>
+					<?php
+					$i++;
+					$total_cantidad += $linea->cantidad;
+					$total_impuestos += (float) $linea->valor_impuesto * (float) $linea->cantidad;
+					$total_factura += $linea->precio_total;
+	                $total_descuentos += $linea->valor_total_descuento;
 
-				// Si la tasa no está en el array, se agregan sus valores por primera vez
-				if (!isset($array_tasas[$linea->tasa_impuesto])) {
-					// Clasificar el impuesto
-					$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA ' . $linea->tasa_impuesto . '%';
-					if ($linea->tasa_impuesto == 0) {
-						$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA 0%';
+					// Si la tasa no está en el array, se agregan sus valores por primera vez
+					if (!isset($array_tasas[$linea->tasa_impuesto])) {
+						// Clasificar el impuesto
+						$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA ' . $linea->tasa_impuesto . '%';
+						if ($linea->tasa_impuesto == 0) {
+							$array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA 0%';
+						}
+						// Guardar la tasa en el array
+						$array_tasas[$linea->tasa_impuesto]['tasa'] = $linea->tasa_impuesto;
+
+
+						// Guardar el primer valor del impuesto y base en el array
+						$array_tasas[$linea->tasa_impuesto]['precio_total'] = (float) $linea->precio_total;
+						$array_tasas[$linea->tasa_impuesto]['base_impuesto'] = (float) $linea->base_impuesto * (float) $linea->cantidad;
+						$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] = (float) $linea->valor_impuesto * (float) $linea->cantidad;
+					} else {
+						// Si ya está la tasa creada en el array
+						// Acumular los siguientes valores del valor base y valor de impuesto según el tipo
+						$precio_total_antes = $array_tasas[$linea->tasa_impuesto]['precio_total'];
+						$array_tasas[$linea->tasa_impuesto]['precio_total'] = $precio_total_antes + (float) $linea->precio_total;
+						$array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float) $linea->base_impuesto * (float) $linea->cantidad;
+						$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float) $linea->valor_impuesto * (float) $linea->cantidad;
 					}
-					// Guardar la tasa en el array
-					$array_tasas[$linea->tasa_impuesto]['tasa'] = $linea->tasa_impuesto;
-
-
-					// Guardar el primer valor del impuesto y base en el array
-					$array_tasas[$linea->tasa_impuesto]['precio_total'] = (float) $linea->precio_total;
-					$array_tasas[$linea->tasa_impuesto]['base_impuesto'] = (float) $linea->base_impuesto * (float) $linea->cantidad;
-					$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] = (float) $linea->valor_impuesto * (float) $linea->cantidad;
-				} else {
-					// Si ya está la tasa creada en el array
-					// Acumular los siguientes valores del valor base y valor de impuesto según el tipo
-					$precio_total_antes = $array_tasas[$linea->tasa_impuesto]['precio_total'];
-					$array_tasas[$linea->tasa_impuesto]['precio_total'] = $precio_total_antes + (float) $linea->precio_total;
-					$array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float) $linea->base_impuesto * (float) $linea->cantidad;
-					$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float) $linea->valor_impuesto * (float) $linea->cantidad;
-				}
-				?>
+					?>
 				@endforeach
+				<?php
+					$subtotal = $total_factura + $total_descuentos - $total_impuestos;
+				?>
 			</tbody>
 		</table>
 	</div>

@@ -914,7 +914,7 @@ $(document).ready(function(){
 			return false;		  			
 		}
 
-		if ( $('#url_id_transaccion').val() != 42 ) // Para doscumentos distintos a pedidos
+		if ( $('#url_id_transaccion').val() != 42 && $('#url_id_transaccion').val() != 44 ) // Para doscumentos distintos a pedidos y Facturas medicas
 		{
 			if( !comparar_total_factura_total_medios_recaudos()  )
 			{

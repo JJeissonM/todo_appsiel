@@ -18,24 +18,6 @@
 		#existencia_actual, #tasa_impuesto, #tasa_descuento{
 			width: 40px;
 		}
-
-		#popup_alerta{
-			display: none;/**/
-			color: #FFFFFF;
-			background: red;
-			border-radius: 5px;
-			position: fixed; /*El div será ubicado con relación a la pantalla*/
-			/*left:0px; A la derecha deje un espacio de 0px*/
-			right:10px; /*A la izquierda deje un espacio de 0px*/
-			bottom:10px; /*Abajo deje un espacio de 0px*/
-			/*height:50px; alto del div */
-			width: 20%;
-			z-index:999999;
-			float: right;
-    		text-align: center;
-    		padding: 5px;
-    		opacity: 0.7;
-		}
 	</style>
 @endsection
 
@@ -147,8 +129,8 @@
 	                </table>
 	                <input type="hidden" name="no_es_paciente" value="0" id="no_es_paciente">
 	            </div>
-		            
 
+				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 				
 			{{ Form::close() }}
 

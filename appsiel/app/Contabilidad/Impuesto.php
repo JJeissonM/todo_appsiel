@@ -117,7 +117,6 @@ class Impuesto extends Model
             }
         }
 
-
         return $tasa_impuesto;
     }
 }

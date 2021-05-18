@@ -984,7 +984,6 @@ class VentaController extends TransaccionController
 
         $viejo_total_encabezado = $doc_encabezado->valor_total;
 
-        // Se pasaron las validaciones
         $precio_unitario = $request->precio_unitario; // IVA incluido
 
         $cantidad = $request->cantidad;
@@ -1210,8 +1209,8 @@ class VentaController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1; // se cambia signo de la cantidad
                 
                 $datos_precio_descuento = $this->get_precio_unitario_remision( Input::get('lista_precios_id'), Input::get('fecha'), $un_registro->producto_id, $remision );
-
-                $precio_unitario = $datos_precio_descuento[0];
+                //dd($datos_precio_descuento->precio_unitario);
+                $precio_unitario = $datos_precio_descuento->precio_unitario;
 
                 $todos_los_productos[$i]['producto_descripcion'] = $un_registro->producto_id.' - '.$un_registro->producto_descripcion;
                 $todos_los_productos[$i]['costo_unitario'] = $un_registro->costo_unitario;
@@ -1233,29 +1232,30 @@ class VentaController extends TransaccionController
     {
         // El precio se trae de la lista de precios del cliente
         $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $inv_producto_id );
+        
         $tasa_descuento = 0;
-
         $descuento = 0;
+
+        // Si la remision se genero desde un pedido se llama el precio unitario del pedido
         if ( $remision->vtas_doc_encabezado_origen_id != 0 )
         {
-            if ( !is_null( $remision->documento_ventas_padre()) )
+            if ( !is_null( $remision->documento_ventas_padre() ) )
             {
                 $lineas_pedido = $remision->documento_ventas_padre()->lineas_registros;
-                $lineas_remision = $remision->lineas_registros;
+
                 foreach( $lineas_pedido AS $linea_pedido )
                 {
-                    foreach( $lineas_remision AS $linea_remision )
+                    if ( $linea_pedido->inv_producto_id == $inv_producto_id )
                     {
-                        if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
-                        {
-                            $precio_unitario = $linea_pedido->precio_unitario;
-                            $tasa_descuento = $linea_pedido->tasa_descuento;
-                        }
+                        $precio_unitario = $linea_pedido->precio_unitario;
+                        $tasa_descuento = $linea_pedido->tasa_descuento;
+                        return (object)[ 'precio_unitario' => $precio_unitario, 'tasa_descuento' => $tasa_descuento ];
                     }
                 }
             }
         }
-        return [ $precio_unitario, $tasa_descuento];
+        
+        return (object)[ 'precio_unitario' => $precio_unitario, 'tasa_descuento' => $tasa_descuento ];
     }
 
     public static function get_datos_precio_descuento( $lista_precios_id, $fecha, $inv_producto_id, $remision )
@@ -1263,7 +1263,6 @@ class VentaController extends TransaccionController
         // El precio se trae de la lista de precios del cliente
         $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $inv_producto_id );
         $tasa_descuento = 0;
-        $valor_total_descuento = 0;
 
         // Si la remisión se genero desde un pedido
         if ( $remision->vtas_doc_encabezado_origen_id != 0 )
@@ -1271,24 +1270,22 @@ class VentaController extends TransaccionController
             if ( !is_null( $remision->documento_ventas_padre()) )
             {
                 $lineas_pedido = $remision->documento_ventas_padre()->lineas_registros;
-                $lineas_remision = $remision->lineas_registros;
+
                 foreach( $lineas_pedido AS $linea_pedido )
                 {
-                    foreach( $lineas_remision AS $linea_remision )
+                    if ( $linea_pedido->inv_producto_id == $inv_producto_id )
                     {
-                        if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
-                        {
-                            $precio_unitario = $linea_pedido->precio_unitario;
-                            $tasa_descuento = $linea_pedido->tasa_descuento;
-                            $valor_total_descuento = ($precio_unitario * $tasa_descuento / 100 ) * $linea_remision->cantidad;
-                        }
+                        $precio_unitario = $linea_pedido->precio_unitario;
+                        $tasa_descuento = $linea_pedido->tasa_descuento;
+
+                        return (object)[ 'precio_unitario' => $precio_unitario, 'tasa_descuento' => $tasa_descuento ];
                     }
                 }
 
             }
         }
 
-        return [ $precio_unitario, $tasa_descuento, $valor_total_descuento ];
+        return (object)[ 'precio_unitario' => $precio_unitario, 'tasa_descuento' => $tasa_descuento ];
     }
 
 
@@ -1331,10 +1328,10 @@ class VentaController extends TransaccionController
 
                 $datos_precio_descuento = $this->get_precio_unitario_remision( $request->lista_precios_id2, $request->fecha2, $un_registro->inv_producto_id, InvDocEncabezado::find($doc_remision_id) );
 
-                $precio_unitario = $datos_precio_descuento[0];
+                $precio_unitario = $datos_precio_descuento->precio_unitario;
 
                 // El descuento se calcula cuando el precio tiene el IVA incluido
-                $valor_unitario_descuento = $precio_unitario * ( $datos_precio_descuento[1] / 100 );
+                $valor_unitario_descuento = $precio_unitario * ( $datos_precio_descuento->tasa_descuento / 100 );
                 $valor_total_descuento += ( $valor_unitario_descuento * $cantidad);
 
                 $precio_venta = $precio_unitario - $valor_unitario_descuento;
@@ -1351,9 +1348,7 @@ class VentaController extends TransaccionController
 
                 $base_impuesto_total += $base_impuesto * $cantidad;
 
-                $total_impuesto += ($valor_impuesto * $cantidad);
-
-                
+                $total_impuesto += ($valor_impuesto * $cantidad);                
 
             } // Fin por cada registro de la remisión
         }
@@ -1391,9 +1386,14 @@ class VentaController extends TransaccionController
                 //$precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
 
                 $datos_precio_descuento = self::get_datos_precio_descuento( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id, InvDocEncabezado::find($doc_remision_id) );
+                
+                $precio_unitario = $datos_precio_descuento->precio_unitario;
 
-                $valor_unitario_descuento = $datos_precio_descuento[0] * ( $datos_precio_descuento[1] / 100 );
-                $precio_unitario = $datos_precio_descuento[0];
+                $valor_unitario_descuento = $precio_unitario * ( $datos_precio_descuento->tasa_descuento / 100 );
+
+                $valor_total_descuento = $valor_unitario_descuento * $cantidad;
+
+                $precio_venta_unitario = $precio_unitario - $valor_unitario_descuento;
 
                 $cliente = Cliente::where( 'core_tercero_id', $un_registro->core_tercero_id )->get()->first();
 
@@ -1401,7 +1401,9 @@ class VentaController extends TransaccionController
 
                 $precio_total = $precio_unitario * $cantidad;
 
-                $base_impuesto = ($precio_unitario- $valor_unitario_descuento) / ( 1 + $tasa_impuesto / 100 );
+                $base_impuesto = $precio_venta_unitario / ( 1 + $tasa_impuesto / 100 );
+
+                $valor_impuesto = $precio_venta_unitario - $base_impuesto;
 
                 $base_impuesto_total = $base_impuesto * $cantidad;
 
@@ -1412,10 +1414,10 @@ class VentaController extends TransaccionController
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario - $base_impuesto ) ] +
+                                [ 'valor_impuesto' => $valor_impuesto ] +
                                 [ 'base_impuesto_total' => $base_impuesto_total ] +
-                                [ 'tasa_descuento' => $datos_precio_descuento[1] ] +
-                                [ 'valor_total_descuento' => $datos_precio_descuento[2] ] +
+                                [ 'tasa_descuento' => $datos_precio_descuento->tasa_descuento ] +
+                                [ 'valor_total_descuento' => $valor_total_descuento ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
