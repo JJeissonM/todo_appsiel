@@ -69,9 +69,25 @@ class OrdenDeTrabajoController extends TransaccionController
     	return $documento_vista;
     }
 
-    public function imprimir()
+    public function imprimir($orden_trabajo_id)
     {
-    	echo "imprimir";
+        $this->set_variables_globales();
+
+        $orden_de_trabajo = OrdenDeTrabajo::find($orden_trabajo_id);
+        //  dd($orden_de_trabajo);
+        $empresa = $this->empresa;
+        $doc_encabezado = NomDocEncabezado::find( (int)$orden_de_trabajo->nom_doc_encabezado_id);
+
+        // Se obtienen los Empleados del documento
+        $empleados = $doc_encabezado->empleados;
+        $documento_vista = View::make( 'nomina.ordenes_de_trabajo.formatos_impresion.estandar', compact('orden_de_trabajo','doc_encabezado','empresa') )->render();
+        
+
+        // Se prepara el PDF
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+
+        return $pdf->stream($doc_encabezado->documento_transaccion_descripcion . ' - ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
     }
 
     public function get_tabla_empleados_ingreso_registros()

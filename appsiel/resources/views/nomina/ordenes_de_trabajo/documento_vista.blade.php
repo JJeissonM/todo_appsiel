@@ -1,4 +1,6 @@
-
+<?php 
+    $imprimir = true;
+?>
 <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Empleados de la Orden de Trabajo</div>
 @include('nomina.ordenes_de_trabajo.show_empleados')
 

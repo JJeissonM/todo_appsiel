@@ -36,11 +36,22 @@ use App\Core\Tercero;
         <td>Email: <a href="mailto:{{ $empresa->email }}">{{ $empresa->email }}</a></td>
     </tr>
 </table>
-
 <table class="info">
     <tr>
-        <td><b>Documento:</b></td>
-        <td>{{ $encabezado_doc->documento_app }}</td>
+        <td width="55%">{{ $empresa->descripcion }}</td>
+        <td width="45%" rowspan="2">
+            <b style="font-size: 16px">Orden de Trabajo N° {{ $encabezado_doc->documento_app }}</b>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p>{{ config("configuracion.tipo_identificador") }}: {{ $empresa->numero_identificacion }} - {{ $empresa->digito_verificacion }}</p>
+        </td>
+    </tr>
+</table>
+<hr>
+<table class="info">
+    <tr>
         @php 
             $fecha = explode("-",$encabezado_doc->fecha) 
         @endphp
@@ -50,10 +61,10 @@ use App\Core\Tercero;
         <td>{{ $tiempo_a_liquidar[ $encabezado_doc->tiempo_a_liquidar ] }}</td>
     </tr>
     <tr>
-        <td colspan="6"><b>Detalle: </b> &nbsp; {{ $encabezado_doc->descripcion }}</td>
+        <td colspan="4"><b>Detalle: </b> &nbsp; {{ $encabezado_doc->descripcion }}</td>
     </tr>
 </table>
-
+<hr>
 <table class="info">
     <tr>
         <td>

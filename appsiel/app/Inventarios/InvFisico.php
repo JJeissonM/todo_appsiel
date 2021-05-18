@@ -70,7 +70,7 @@ class InvFisico extends InvDocEncabezado
             ->where('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->select(
-                'inv_doc_encabezados.fecha AS FECHA',
+                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS FECHA'),
                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS DOCUMENTO' ),
                 'inv_bodegas.descripcion AS BODEGA',
                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO' ),

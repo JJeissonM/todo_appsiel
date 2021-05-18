@@ -26,7 +26,7 @@
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td> {{ $unidad_medida }} </td>
+                    <td class="text-center"> {{ $unidad_medida }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $linea->precio_unitario, 0, ',', '.') }} </td>

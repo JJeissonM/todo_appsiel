@@ -65,7 +65,7 @@
 			                <div style="vertical-align: center;">
 			                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $orden_de_trabajo->tipo_trasaccion->descripcion }}</b>
 			                    <br/>
-			                    <b>Documento:</b> {{ $orden_de_trabajo->tipo_documento_app->prefijo . ' ' . $orden_de_trabajo->consecutivo }}
+			                    <b>Documento:</b> {{ $orden_de_trabajo->tipo_trasaccion->descripcion }} {{ $orden_de_trabajo->tipo_documento_app->prefijo . ' ' . $orden_de_trabajo->consecutivo }}
 			                    <br/>
 			                    <b>Fecha:</b> {{ $orden_de_trabajo->fecha }}
 			                    <br/>

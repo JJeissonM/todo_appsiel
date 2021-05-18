@@ -39,11 +39,11 @@ $datos = [
                 <table class="table table-striped" id="ingreso_registros_medios_recaudo">
                     <thead>
                     <tr>
-                        <th data-override="teso_medio_recaudo_id">Medio de Pago/Recaudo</th>
-                        <th data-override="teso_motivo_id">Motivo</th>
-                        <th data-override="teso_caja_id">Caja</th>
-                        <th data-override="teso_cuenta_bancaria_id">Cta. Bancaria</th>
-                        <th data-override="valor">Valor</th>
+                        <th data-override="teso_medio_recaudo_id">MEDIO DE PAGO/RECAUDO</th>
+                        <th data-override="teso_motivo_id">MOTIVO</th>
+                        <th data-override="teso_caja_id">CAJA</th>
+                        <th data-override="teso_cuenta_bancaria_id">CTA. BANCARIA</th>
+                        <th data-override="valor">VALOR</th>
                         <th width="10px"> </th>
                     </tr>
                     </thead>
@@ -57,7 +57,7 @@ $datos = [
                     <tfoot>
                     <tr>
                         <td colspan="4">&nbsp;</td>
-                        <td> 
+                        <td class="text-right"> 
                             <div id="total_valor_total">$0.00</div>
                         </td>
                         <td> &nbsp; </td>
