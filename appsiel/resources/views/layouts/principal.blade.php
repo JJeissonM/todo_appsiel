@@ -329,15 +329,8 @@
 	<script src="https://unpkg.com/jspdf@ latest/dist/jspdf.min.js"></script>
 	-->
 	<script type="text/javascript">
-		/*if (document.getElementById('id_tipo_documento_id') !== null)
-		{
-			document.getElementById('id_tipo_documento_id').value = 13;
-		}
 
-		if (document.getElementById('codigo_ciudad') !== null)
-		{
-			document.getElementById('codigo_ciudad').value = 16920001;
-		}*/
+		var url_raiz = "{{ url('/') }}";
 
 		var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
 		function validar_requeridos() {
@@ -346,8 +339,12 @@
 				if ($(this).val() == "") {
 					$(this).focus();
 					//alert( 'Este campo es requerido: ' + $(this).attr('name') );
-
-					alert('Este campo es requerido: ' + $(this).parent().prev('label').text());
+					var lbl_campo = $(this).parent().prev('label').text();
+					if( lbl_campo === '' )
+					{
+						lbl_campo = $(this).prev('label').text();
+					}
+					alert( 'Este campo es requerido: ' + lbl_campo );
 
 					control_requeridos = false;
 					return false;

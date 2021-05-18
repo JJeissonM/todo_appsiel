@@ -30,6 +30,7 @@ class Permiso extends Permission
     {
         return Permission::leftJoin('sys_aplicaciones', 'sys_aplicaciones.id', '=', 'permissions.core_app_id')
                                 ->leftJoin('sys_modelos', 'sys_modelos.id', '=', 'permissions.modelo_id')
+                                ->leftJoin('permissions AS padres', 'padres.id', '=', 'permissions.parent')
                                 ->select(
                                     'permissions.id AS campo1',
                                     'sys_aplicaciones.descripcion AS campo2',
@@ -37,7 +38,7 @@ class Permiso extends Permission
                                     'permissions.name AS campo4',
                                     'permissions.descripcion AS campo5',
                                     'permissions.url AS campo6',
-                                    'permissions.parent AS campo7',
+                                    'padres.descripcion AS campo7',
                                     'permissions.orden AS campo8',
                                     'permissions.enabled AS campo9',
                                     'permissions.fa_icon AS campo10',
@@ -48,7 +49,7 @@ class Permiso extends Permission
                                 ->orWhere("permissions.name", "LIKE", "%$search%")
                                 ->orWhere("permissions.descripcion", "LIKE", "%$search%")
                                 ->orWhere("permissions.url", "LIKE", "%$search%")
-                                ->orWhere("permissions.parent", "LIKE", "%$search%")
+                                ->orWhere("padres.descripcion", "LIKE", "%$search%")
                                 ->orWhere("permissions.orden", "LIKE", "%$search%")
                                 ->orWhere("permissions.enabled", "LIKE", "%$search%")
                                 ->orWhere("permissions.fa_icon", "LIKE", "%$search%")

@@ -57,7 +57,7 @@
 				<div class="container-fluid" style="border: 1px #ddd dashed; padding: 5px;">
 
 					<?php 
-						$id_transaccion = 1;
+						$id_transaccion = 3;
 						$motivos = \App\Inventarios\InvMotivo::get_motivos_transaccion($id_transaccion);
 					?>
 

@@ -9,6 +9,7 @@ use View;
 use Lava;
 use Input;
 use Form;
+use Schema;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -143,7 +144,8 @@ class InventarioController extends TransaccionController
         
         $form_create = [
                         'url' => $acciones->store,
-                        'campos' => $lista_campos
+                        'campos' => $lista_campos,
+                        'modo' => 'create'
                     ];
 
         $productos = InventarioController::get_productos('r');
@@ -159,24 +161,22 @@ class InventarioController extends TransaccionController
         return view('inventarios.create', compact('form_create', 'id_transaccion', 'productos', 'servicios', 'motivos', 'miga_pan', 'tabla'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store( Request $request )
     {
-        $lineas_registros = InventarioController::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
 
-        $doc_encabezado_id = InventarioController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
+        $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
+
+        $doc_encabezado_id = self::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
         if ( isset( $request->ruta_redirect ) )
         {
             // Por ahora esto solo se usa para Salidas de Invetario creadas desde Ordenes de Trabajo de Nomina
             $orden_trabajo = OrdenDeTrabajo::find( (int)$request->registro_id );
-            $orden_trabajo->inv_doc_encabezado_id = $doc_encabezado_id;
-            $orden_trabajo->save();
+            if ( !is_null( $orden_trabajo ) )
+            {
+                $orden_trabajo->inv_doc_encabezado_id = $doc_encabezado_id;
+                $orden_trabajo->save();
+            }
 
             return redirect( $request->ruta_redirect . $request->registro_id . '?id=' . $request->url_id . '&id_modelo=' . $request->modelo_id_ruta . '&id_transaccion=' . $request->url_id_transaccion )->with( 'flash_message', 'Documento de inventario generado correctamente.' );
         }else{
@@ -184,7 +184,52 @@ class InventarioController extends TransaccionController
         }
     }
 
+    public function store_remision_desde_pedido( Request $request )
+    {
+        $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
 
+        $doc_encabezado_remision_id = self::crear_documento($request, $lineas_registros, $request->url_id_modelo);
+
+        // Por ahora esto solo se usa para Salidas de Invetario creadas desde Ordenes de Trabajo de Nomina
+        $encabezado_pedido = VtasDocEncabezado::find( (int)$request->doc_ventas_id );
+        if ( !is_null( $encabezado_pedido ) )
+        {
+
+            $encabezado_remision = InvDocEncabezado::find( $doc_encabezado_remision_id );
+            $encabezado_remision->vtas_doc_encabezado_origen_id = $encabezado_pedido->id;
+            $encabezado_remision->save();
+
+            $this->actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision );
+
+            $encabezado_pedido->estado = 'Remisionado';
+
+            if ( $encabezado_pedido->lineas_registros->sum('cantidad_pendiente') == 0 )
+            {
+                $encabezado_pedido->estado = 'Cumplido';
+            }
+            $encabezado_pedido->save();
+        }
+
+        return redirect( 'inventarios/' . $doc_encabezado_remision_id . '?id=13&id_modelo=164&id_transaccion=24' )->with( 'flash_message', 'Remisión almacenada correctamente.' );
+    }
+
+    public function actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision )
+    {
+        $lineas_registros_pedido = $encabezado_pedido->lineas_registros;
+        $lineas_registros_remision = $encabezado_remision->lineas_registros;
+        foreach( $lineas_registros_pedido AS $linea_pedido )
+        {
+            foreach( $lineas_registros_remision AS $linea_remision )
+            {
+                if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
+                {
+                    // Las cantidades de la remision estan almacenadas con signo negativo (salida de inventario)
+                    $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente - abs($linea_remision->cantidad);
+                    $linea_pedido->save();
+                }                    
+            }
+        }
+    }
 
     public static function preparar_array_lineas_registros( $request_registros, $modo_ajuste )
     {
@@ -200,6 +245,8 @@ class InventarioController extends TransaccionController
         $cantidad = count($lineas_registros);
         for ($i = 0; $i < $cantidad; $i++)
         {
+            //dd( $lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " ") );
+
             $lineas_registros[$i]->inv_motivo_id = explode( "-", $lineas_registros[$i]->motivo )[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
             $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
@@ -240,7 +287,6 @@ class InventarioController extends TransaccionController
     */
     public static function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
-
         $tipo_transferencia = 2;
 
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
@@ -290,7 +336,6 @@ class InventarioController extends TransaccionController
                 continue;
             }
 
-
             // Contabilizar
 
             $detalle_operacion = '';
@@ -310,7 +355,8 @@ class InventarioController extends TransaccionController
             }
 
             // 2.2. Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
-            if ($motivo->movimiento == 'salida') {
+            if ($motivo->movimiento == 'salida')
+            {
                 $valor_debito = 0;
                 $valor_credito = abs($costo_total);
             }
@@ -319,7 +365,6 @@ class InventarioController extends TransaccionController
             InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, $valor_debito, $valor_credito);
             // 4. Contabilizar CR
             InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_contrapartida_id, $detalle_operacion, $valor_credito, $valor_debito);
-
 
             // Cuando es una transaferencia, se deben guardar los registros de la bodega destino
             if ($request->core_tipo_transaccion_id == $tipo_transferencia) 
@@ -443,6 +488,45 @@ class InventarioController extends TransaccionController
                 InvMovimiento::create( $datos + $linea_datos );
             }  
         }
+    }
+
+    public static function crear_lineas_registros_desde_doc_ventas( $doc_encabezado )
+    {
+        $lineas_registros = $doc_encabezado->lineas_registros;
+        $cantidad_registros = count($lineas_registros);
+
+        $lineas = [];
+        foreach( $lineas_registros AS $linea )
+        {
+            if ( $linea->cantidad_pendiente == 0 )
+            {
+                continue;
+            }
+
+            $inv_bodega_id = $doc_encabezado->cliente->inv_bodega_id;
+            if ( is_null($inv_bodega_id) )
+            {
+                $inv_bodega_id = 1;
+            }
+
+            $costo_unitario = InvCostoPromProducto::get_costo_promedio( $inv_bodega_id, $linea->inv_producto_id );
+            $cantidad = $linea->cantidad_pendiente * -1; // Salida de inventarios
+            $costo_total = $cantidad * $costo_unitario;
+
+            $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $inv_bodega_id, $doc_encabezado->fecha );
+
+            $lineas[] = (object)[
+                                    'item' => $linea->item,
+                                    'motivo' => $linea->motivo,
+                                    'inv_producto_id' => $linea->inv_producto_id,
+                                    'costo_unitario' => $costo_unitario,
+                                    'cantidad' => $cantidad,
+                                    'costo_total' => $costo_total,
+                                    'existencia_actual' => $existencia_actual
+                                ];
+        }
+
+        return $lineas;
     }
 
 
@@ -598,6 +682,139 @@ class InventarioController extends TransaccionController
         $empresa = Empresa::find($doc_encabezado->core_empresa_id);        
 
         return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa','datos_encabezado_doc'))->render();
+    }
+
+
+
+    /**
+     * Show the form for creating a new resource.
+     * Este método create() es llamado desde un botón-select en el index de inventarios
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function edit( $id )
+    {
+        $this->set_variables_globales();
+
+        $tipo_tranferencia = 2;
+
+        $id_transaccion = $this->transaccion->id;
+
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'edit');
+        $cantidad_campos = count($lista_campos);
+
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $this->transaccion, $lista_campos, $cantidad_campos, 'edit', $tipo_tranferencia);
+
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
+
+        $productos = InventarioController::get_productos('r');
+        $servicios = InventarioController::get_productos('servicio');
+
+        $motivos = InvMotivo::get_motivos_transaccion($id_transaccion);
+
+        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
+
+        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
+        $tabla = '';
+
+        $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->find( $id );
+
+        $cantidad_filas = count( $doc_encabezado->lineas_registros->toArray() );
+
+        $filas_tabla = View::make( 'inventarios.incluir.tabla_lineas_registros_para_almacenar', ['lineas_registros'=> $doc_encabezado->lineas_registros ] )->render();
+
+        foreach ($lista_campos as $key => $value)
+        {
+            if ($value['name'] == 'core_tipo_transaccion_id')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->core_tipo_transaccion_id;
+            }
+
+            if ($value['name'] == 'inv_bodega_id')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->inv_bodega_id;
+            }
+
+            if ($value['name'] == 'fecha')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->fecha;
+            }
+
+            if ($value['name'] == 'core_tercero_id')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->core_tercero_id;
+            }
+
+            if ($value['name'] == 'descripcion')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->descripcion;
+            }
+
+            if ($value['name'] == 'documento_soporte')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->documento_soporte;
+            }
+        }
+        
+        $url_action = str_replace('id_fila', $id, $acciones->update);
+
+        $form_create = [
+                        'url' => $url_action,
+                        'campos' => $lista_campos,
+                        'modo' => 'edit'
+                    ];
+        $registro_id = $id;
+        return view( 'inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas', 'registro_id'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Actualizar datos del encabezado
+        $doc_encabezado = InvDocEncabezado::find($id);
+        $doc_encabezado->fecha = $request->fecha;
+        $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->documento_soporte = $request->documento_soporte;
+        $doc_encabezado->core_tercero_id = $request->core_tercero_id;
+        $doc_encabezado->modificado_por = Auth::user()->email;
+        $doc_encabezado->save();
+
+        // Borrar líneas de registros anteriores
+        InvDocRegistro::where('inv_doc_encabezado_id',$doc_encabezado->id)->delete();
+
+        // Borrar movimiento contable
+        ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc_encabezado->consecutivo)
+            ->delete();
+
+        // Eliminar movimiento de inventarios
+        InvMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc_encabezado->consecutivo)
+            ->delete();
+
+        // Crear nuevamente las líneas de registros
+
+        $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, null );
+
+        $request['creado_por'] = $doc_encabezado->creado_por;
+        $request['modificado_por'] = Auth::user()->email;
+        self::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+
+        $ruta_redirect = 'inventarios/';
+        if ( isset( $request->ruta_redirect ) )
+        {
+            $ruta_redirect = $request->ruta_redirect;
+        }
+
+        $registro_id = $id;
+        if ( isset( $request->registro_id ) )
+        {
+            $registro_id = $request->registro_id;
+        }
+
+        return redirect( $ruta_redirect . $registro_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with( 'flash_message', 'Documento actualizado correctamente.' );
     }
 
 
@@ -1000,7 +1217,7 @@ class InventarioController extends TransaccionController
             }
         }
 
-        // Para una remisión de ventas, se activa nuevamente el pedido de ventas, si se gene´ró con base en pedido
+        // Para una remisión de ventas, se activa nuevamente el pedido de ventas, si se generó con base en pedido
         if( $documento->core_tipo_transaccion_id == 24 ) 
         {
             $pedido = VtasDocEncabezado::find( $documento->vtas_doc_encabezado_origen_id );
@@ -1038,6 +1255,12 @@ class InventarioController extends TransaccionController
                 $orden_compra->estado = "Pendiente";
                 $orden_compra->save();
             }       
+        }
+
+        // Si esta relacionado con una Orden de Trabajo
+        if ( Schema::hasTable( 'nom_ordenes_de_trabajo' ) )
+        {
+            OrdenDeTrabajo::where( 'inv_doc_encabezado_id',$documento->id )->update(['inv_doc_encabezado_id'=>0]);
         }
 
         // Marcar documento como Anulado

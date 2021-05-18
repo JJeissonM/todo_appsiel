@@ -37,6 +37,8 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsFecha', 'components.form.fecha', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsHora', 'components.form.hora', ['name', 'value', 'lbl', 'opciones', 'attributes']);
 
+        Form::component('bsHidden', 'components.form.hidden', ['name', 'value']);
+
         Form::component('bsButtonsForm', 'components.form.buttons_form', ['url_cancelar']);
         Form::component('bsButtonsForm2', 'components.form.buttons_form2', ['url_cancelar']);
         Form::component('bsBtnEdit', 'components.form.btn_edit', ['url']);

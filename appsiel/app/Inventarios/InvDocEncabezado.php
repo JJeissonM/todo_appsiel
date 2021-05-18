@@ -286,6 +286,7 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.hora_inicio',
                                 'inv_doc_encabezados.inv_bodega_id',
                                 'inv_doc_encabezados.documento_soporte',
+                                'inv_doc_encabezados.vtas_doc_encabezado_origen_id',
                                 'inv_doc_encabezados.estado',
                                 'inv_doc_encabezados.creado_por',
                                 'inv_doc_encabezados.modificado_por',

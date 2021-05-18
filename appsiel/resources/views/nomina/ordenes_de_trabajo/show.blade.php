@@ -44,23 +44,11 @@
 
 	@include('layouts.mensajes')
 
-	{{ Form::open(['url'=>'nom_ordenes_trabajo_anular', 'id'=>'form_anular']) }}
-		<div class="alert alert-warning" style="display: none;">
-			<a href="#" id="close" class="close">&times;</a>
-			<strong>Advertencia!</strong>
-			<br>
-			Al anular el documento se eliminan los registros de empleados e items relacionados.
-			<br>
-			Si realmente quiere anular el documento, haga click en el siguiente enlace: <small> <a href="#" id="enlace_anular" data-url="{{ url('nom_ordenes_trabajo_anular/' . $variables_url ) }}"> Anular </a> </small>
-		</div>
-
-				{{ Form::hidden('url_id', Input::get('id')) }}
-				{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
-				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
-
-				{{ Form::hidden( 'orden_de_trabajo_id', $id ) }}
-
-	{{ Form::close() }}
+	<div class="alert alert-warning" style="display: none;">
+		<a href="#" id="close" class="close">&times;</a>
+		<strong>¡ADVERTENCIA!</strong>
+		La anulación no puede revertirse. Si quieres confirmar, hacer click en: <a class="btn btn-danger btn-sm" href="{{ url( 'nom_ordenes_trabajo_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
+	</div>
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
@@ -80,6 +68,8 @@
 			                    <b>Documento:</b> {{ $orden_de_trabajo->tipo_documento_app->prefijo . ' ' . $orden_de_trabajo->consecutivo }}
 			                    <br/>
 			                    <b>Fecha:</b> {{ $orden_de_trabajo->fecha }}
+			                    <br/>
+			                    <b>Proyecto:</b> {{ $orden_de_trabajo->documento_nomina->descripcion }}
 
 			                    @yield('datos_adicionales_encabezado')
 			                    

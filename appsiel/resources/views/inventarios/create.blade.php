@@ -15,7 +15,13 @@
 		<div class="marco_formulario">
 		    <h4>Nuevo registro</h4>
 		    <hr>
-			{{ Form::open(['url' => $form_create['url'],'id'=>'form_create']) }}
+
+		    @if( $form_create['modo'] == 'create' )
+				{{ Form::open(['url' => $form_create['url'],'id'=>'form_create','files' => true]) }}
+			@else
+				{{ Form::model($registro_id, ['url' => $form_create['url'] , 'id'=>'form_create', 'method' => 'PUT','files' => true]) }}
+			@endif
+
 				<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
@@ -31,6 +37,29 @@
 				{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
 				{{ Form::hidden('url_id_transaccion',Input::get('id_transaccion'))}}
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux'])}}
+
+				@if( !is_null( Input::get('ruta_redirect') ))
+					{{ Form::bsHidden( 'ruta_redirect', Input::get('ruta_redirect') ) }}
+				@endif
+
+				@if( !is_null( Input::get('registro_id') ))
+					{{ Form::bsHidden( 'registro_id', Input::get('registro_id') ) }}
+				@endif
+
+				@if( !is_null( Input::get('doc_ventas_id') ))
+					{{ Form::bsHidden( 'doc_ventas_id', Input::get('doc_ventas_id') ) }}
+				@endif
+
+				@if( isset( $hay_existencias_negativas ) )
+					{{ Form::bsHidden( 'hay_existencias_negativas', $hay_existencias_negativas ) }}
+				@else
+					{{ Form::bsHidden( 'hay_existencias_negativas', 0 ) }}
+				@endif
+
+				<div class="alert alert-warning" id="div_hay_existencias_negativas" style="display: none;">
+				  <strong>Advertencia!</strong> Los items con filas en rojo no tienen cantidades sufiencientes. No podrá guardar este documento.
+				</div>
+				
 				
 			{{ Form::close() }}
 
@@ -45,267 +74,40 @@
 @endsection
 
 @section('scripts')
+	<script src="{{ asset( 'assets/js/inventarios/commons.js' ) }}"></script>
+	<script src="{{ asset( 'assets/js/modificar_con_doble_click_sin_recargar.js' ) }}"></script>
+
 	<script type="text/javascript">
+		
+		function ejecutar_funcion_guardar_nuevo_valor_doble_click( campo_modificado, nuevo_valor )
+	    {
+	    	recalcular_totales();
+	    }
 
-		function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
-        {
-        	reset_form_producto();
-			$('#spin').show();
-
-			// Si no se seleccionó un producto, salir
-			if ( $('#inv_producto_id').val() === '' || $('#inv_producto_id').val() === undefined )
-			{
-				$('#spin').hide();
-				return false;
-			}
-
-			// Preparar datos de los controles para enviar formulario de ingreso de productos
-			var form_producto = $('#form_producto');
-			var url = form_producto.attr('action');
-			$('#id_bodega').val($('#inv_bodega_id').val());
-			var datos = form_producto.serialize();
-
-
-			// Enviar formulario de ingreso de productos vía POST (InventarioController > post_ajax)
-			$.post(url,datos,function(respuesta){
-				
-				var mov = $('#motivo').val().split('-');
-				$('#spin').hide();
-				
-				// Se valida la existencia actual
-				$('#existencia_actual').val(respuesta.existencia_actual);
-				$('#saldo_original').val(respuesta.existencia_actual);
-
-				$('#tipo_producto').val(respuesta.tipo);
-
-				if ( respuesta.existencia_actual >= 0) {
-					$('#existencia_actual').attr('style','background-color:#97D897;');
-				}else{
-					
-					$('#existencia_actual').attr('style','background-color:#FF8C8C;');
-					
-					// Si el tipo de producto es "producto" y el movimiento NO es de entrada, no se permite seguir con existencia 0
-					if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' )
-					{
-						$('#btn_agregar').hide(500);
-						return false;
-					}
-				}
-				
-				// Asignar datos a los controles
-				$('#costo_unitario').val(parseFloat(respuesta.precio_compra).toFixed(2));
-				$('#unidad_medida1').val(respuesta.unidad_medida1);
-
-				$('#inv_producto_id_aux').val( respuesta.descripcion );
-
-				
-				// Si la TRANSACCIÓN es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario			
-				if ( $('#id_transaccion').val() == 1 || $('#id_transaccion').val() == 35 || respuesta.tipo == 'servicio' )
-				{
-					$('#costo_unitario').removeAttr('disabled');
-					$('#costo_unitario').attr('style','background-color:white;');
-					$('#costo_unitario').select();
-				}else{
-					// Se pasa a ingresar las cantidades
-					$('#cantidad').removeAttr('disabled');
-					$('#cantidad').attr('style','background-color:white;');
-					$('#cantidad').select();
-				}			
-			});
-        }
-
-		function reset_form_producto()
+		function recalcular_totales()
 		{
-			$('#form_producto input[type="text"]').val('');
-			$('#form_producto input[type="text"]').attr('style','background-color:#ECECE5;');
-			$('#form_producto input[type="text"]').attr('disabled','disabled');
-
-			$('#inv_producto_id_aux').removeAttr('disabled');
-			$('#inv_producto_id_aux').attr('style','background-color:#ffffff;');
-
-			$('#spin').hide();
-			$('#btn_agregar').hide();
-			$('#inv_producto_id_aux').focus();
-		}
-
-		$(document).ready(function(){
-			$('#core_empresa_id').val(1);
-
-			if ( $('#hay_productos_aux').val() > 1 )
+			var sum = 0.0;
+			$('.cantidad').each(function()
 			{
-				$('#btn_nuevo').show();
-			}
-			
-			
-			$('#fecha').focus();
+			    var cantidad = $(this).text();
+				// Se elimina la cadena "UND" del texto de la cantidad
+				var pos_espacio = cantidad.search(" ");
+				cantidad = cantidad.substring(0,pos_espacio);
+			    sum += parseFloat(cantidad);
 
-			/* INVENTARIOS*/
-			var respuesta;
-			// VARIABLES GLOBALES PAR ENSAMBLES
-			var suma_costo_total_prod_salida = 0;
-			var suma_cantidades_prod_entrada = 0;
-			var celda_costo_unitario;
-			var celda_costo_total;
-			var costos_finales_correctos = false;
-
-			$('#core_tipo_doc_app_id').change(function(){
-				$('#fecha').focus();
+			    var fila = $(this).closest("tr");
+			    var costo_unitario_text = fila.find('td.costo_unitario').text();
+			    var costo_unitario = parseFloat( costo_unitario_text.substring(1) );
+			    fila.find('td.costo_total').text( '$' + cantidad * costo_unitario );
 			});
+			var texto = sum.toFixed(2);
+			$('#total_cantidad').text(texto);
 
-			$('#fecha').keyup(function(event){
-				var x = event.which || event.keyCode;
-				if(x==13){
-					$('#core_tercero_id').focus();				
-				}		
-			});
-
-			$('#core_tercero_id').change(function(){
-				$('#inv_bodega_id').focus();
-			});
-
-			// Al seleccionar una bodega, se muestra el ingreso de productos
-			$('#inv_bodega_id').change(function(){
-				if ($('#inv_bodega_id').val()!='') {
-					$('#btn_nuevo').show();
-					if ($('#id_transaccion').val()==2) { // Si es una transferencia
-						$('#bodega_destino_id').focus();
-					}else{
-						$('#btn_nuevo').focus();
-					}
-				}else{
-					$('#btn_nuevo').hide();
-				}
-			});	
-
-			$('#bodega_destino_id').change(function(){
-				$('#btn_nuevo').focus();
-			});
-
-			/*
-			**	Abrir formulario de productos
-			*/
-			$("#btn_nuevo").click(function(event){
-				event.preventDefault();
-		    	$('#inv_producto_id_aux').val('')
-		    	$('#inv_producto_id').val('')
-		        reset_form_producto();
-		        $("#myModal").modal({backdrop: "static"});
-		    });
-		    	
-		    	// Al mostrar la ventana modal
-		    $("#myModal,#myModal2").on('shown.bs.modal', function () {
-		    	$('#inv_producto_id_aux').focus();
-		    	$('#fecha_aux').val( $('#fecha').val() );
-		    });
-			// Al OCULTAR la ventana modal
-		    $("#myModal,#myModal2").on('hidden.bs.modal', function () {
-		       $('#btn_nuevo').focus();
-		    });
-
-
-			/*
-			** Al dejar el control del costo unitario, se valida lo ingresado, se inactiva el control
-			** y se pasa a las cantidades
-			*/
-			$('#costo_unitario').keyup(function(event){
-				calcula_costo_total();
-				var x = event.which || event.keyCode;
-				if( x==13 ){
-					if (enfocar_el_incorrecto()!='costo_unitario') {
-						$('#cantidad').removeAttr('disabled');
-						$('#cantidad').select();
-						$('#cantidad').attr('style','background-color:white;');
-					}				
-				}
-			});
-
-			/*
-			** Al digitar la cantidad, se valida la existencia actual, si es un movimiento de resta
-			** luego se calcular el costo total
-			*/
-			$('#cantidad').keyup(function(event){
-				
-				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-		        {
-		            calcula_nuevo_saldo_a_la_fecha();
-		            
-					calcula_costo_total();
-
-		            var x = event.which || event.keyCode;
-		            if( x==13 )
-		            {
-		                if ( !validar_existencia_actual() )
-		                {
-		                    $('#costo_total').val('');
-		                    return false;
-		                }
-		                if (enfocar_el_incorrecto()!='cantidad')
-		                {
-							if (enfocar_el_incorrecto()!='costo_unitario')
-							{
-								validacion_saldo_movimientos_posteriores();						
-							}
-						}
-
-		            }
-
-		            $('#costo_total').val( parseFloat( $('#costo_unitario').val() ) * parseFloat( $('#cantidad').val() ));
-		        }else{
-		            $('#costo_total').val('');
-		            $(this).focus();
-		            return false;
-		        }
-			});
-
-			/*
-			    validar_existencia_actual
-			*/
-			function validar_existencia_actual()
+			sum = 0.0;
+			$('.costo_total,.costo_total2').each(function()
 			{
-				var mov = $('#motivo').val().split('-');
-			    
-			    // PARA ENTRADAS
-			    if ( mov[1] == 'entrada' )
-			    {
-			    	// Para que pueda pasar las validadciones
-					if ( $('#costo_unitario').val( ) == 0 || $('#costo_unitario').val( ) == "" ) 
-					{
-						$('#costo_unitario').val( 0.0000001 );
-					}
-
-					/*
-			        if ( parseFloat( $('#existencia_actual').val() ) < 0 ) 
-			        {
-			        	$('#btn_agregar').hide();
-			            alert('Saldo negativo a la fecha.');
-			            $('#cantidad').val('');
-			            $('#cantidad').focus();
-			            return false;
-			        }
-			        */
-			    }
-
-			    // PARA SALIDAS
-			    if ( mov[1] == 'salida' )
-			    {
-			        if ( parseFloat( $('#existencia_actual').val() ) < 0 && $('#tipo_producto').val() != 'servicio' ) 
-			        {
-			        	$('#btn_agregar').hide();
-			            alert('Saldo negativo a la fecha.');
-			            $('#cantidad').val('');
-			            $('#cantidad').focus();
-			            return false;
-			        }
-			    }
-			    return true;
-			}
-			
-
-			// Al cambiar de motivo
-			$('#motivo').change(function(){
-				reset_form_producto();
-		    	$('#inv_producto_id_aux').val('')
-				$('#inv_producto_id').val('');
+			    var cadena = $(this).text();
+			    sum += parseFloat(cadena.substring(1));
 			});
 
 			/*
@@ -718,7 +520,8 @@
 				// Solo se coloca la fecha de hoy si no es un ajuste desde inventarios físico
 				$('#fecha').val( get_fecha_hoy() );
 			}
+			$('#total_costo_total').text("$"+sum.toFixed(2));
+		}
 
-		});
 	</script>
 @endsection

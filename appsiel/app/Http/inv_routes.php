@@ -27,7 +27,11 @@ Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajus
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');
 
+
+Route::post('inv_store_remision_desde_pedido', 'Inventarios\InventarioController@store_remision_desde_pedido');
+
 Route::resource('inventarios', 'Inventarios\InventarioController');
+
 Route::get('inv_get_lista_productos', 'Inventarios\InventarioController@get_lista_productos');
 
 Route::get('transaccion_print/{id_transaccion}','Inventarios\InventarioController@imprimir');

@@ -27,9 +27,10 @@
 @section('cabecera')
 	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' )
 		<div class="col-md-12">
-			<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
+			{{ Form::open(['url' => 'vtas_form_crear_remision_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' . $doc_encabezado->id,'id'=>'form_create','files' => true]) }}
 				<input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
-				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
+				<input type="hidden" name="doc_encabezado_id" value="{{$doc_encabezado->id}}" />
+				<input type="hidden" name="doc_encabezado_cotizacion_id" id="doc_encabezado_cotizacion_id" value="{{$doc_encabezado->ventas_doc_relacionado_id}}" />
 				<input type="hidden" name="source" value="PEDIDO" />
 				{{ csrf_field() }}
 				<label class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
@@ -38,14 +39,18 @@
 							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
 					</div>
 					<div class="col-md-2">
-						{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+						@if( $doc_encabezado->enlaces_remisiones_hijas() == '' )
+							{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+						@else
+							{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+						@endif
 					</div>
 					<div class="col-md-1 col-lg-2">
 						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
 					</div>
 				</div>
 					
-			</form>
+			{{ Form::close() }}
 		</div>
 		<div id="div_advertencia_factura" style="display: none; color: red;" class="container-fluid">
 			Nota: La condición de pago (Crédito o Contado) de la factura será tomada de los datos del cliente.
@@ -116,6 +121,7 @@
 				$subtotal = 0;
 				$total_impuestos = 0;
 				$total_factura = 0;
+                $total_descuentos = 0;
 				$array_tasas = [];
 				?>
 				@foreach($doc_registros as $linea )
@@ -143,6 +149,7 @@
 				$subtotal += (float) $linea->base_impuesto * (float) $linea->cantidad;
 				$total_impuestos += (float) $linea->valor_impuesto * (float) $linea->cantidad;
 				$total_factura += $linea->precio_total;
+                $total_descuentos += $linea->valor_total_descuento;
 
 				// Si la tasa no está en el array, se agregan sus valores por primera vez
 				if (!isset($array_tasas[$linea->tasa_impuesto])) {
@@ -172,29 +179,9 @@
 			</tbody>
 		</table>
 	</div>
-		
-	<div class="table-responsive">
-		<table class="table table-bordered">
-			<tr>
-				<td width="75%"> <b> &nbsp; </b> <br> </td>
-				<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td>
-				<td style="text-align: right; font-weight: bold;" id="tbstotal"> $ {{ round($subtotal,2,PHP_ROUND_HALF_UP) }} </td>
-			</tr>
 
-			@foreach( $array_tasas as $key => $value )
-				<tr>
-					<td width="75%"> <b> &nbsp; </b> <br> </td>
-					<td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
-					<td style="text-align: right; font-weight: bold;" id="tbimpuesto"> ${{ round($value['valor_impuesto'],2,PHP_ROUND_HALF_UP) }} </td>
-				</tr>
-			@endforeach
-			<tr>
-				<td width="75%"> <b> &nbsp; </b> <br> </td>
-				<td style="text-align: right; font-weight: bold;"> Total Pedido: &nbsp; </td>
-				<td style="text-align: right; font-weight: bold;" id="tbtotal"> $ {{ round($total_factura,2,PHP_ROUND_HALF_UP) }} </td>
-			</tr>
-		</table>
-	</div>
+
+	@include('ventas.incluir.factura_firma_totales')
 @endsection
 
 @section('otros_scripts')
@@ -202,8 +189,6 @@
 		var array_registros = [];
 		var cliente = <?php echo $cliente; ?>;
 		
-		
-
 		$(document).ready(function() {
 
 			$(".btn_editar_registro").click(function(event){
@@ -313,6 +298,17 @@
 				}
 			});
 
+
+			$('#generar').on('change',function(){
+				
+				if ( $(this).val() == 'remision_desde_pedido' )
+				{
+					$('#form_create').attr('action', url_raiz + '/' + 'vtas_form_crear_remision_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' + $('#doc_encabezado_id').val() );
+				}else{
+					$('#form_create').attr('action', url_raiz + '/' + 'vtas_crear_remision_y_factura_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' + $('#doc_encabezado_id').val() );
+				}
+			});
+
 			function calcular_valor_descuento()
 			{
 				var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
@@ -373,13 +369,17 @@
 
 			function validar_cantidad_pendiente()
 			{
-				if ( parseFloat( $('#cantidad').val() ) > parseFloat( $('#cantidad_pendiente').val() ) ) 
+				console.log( $('#doc_encabezado_cotizacion_id').val() );
+				if ( $('#doc_encabezado_cotizacion_id').val() != 0 )
 				{
-					alert('Cantidad no puede ser mayor a la cantidad pendiente.');
-					$('#cantidad').val('');
-					$('#cantidad').focus();
-					return false;
-				}
+					if ( parseFloat( $('#cantidad').val() ) > parseFloat( $('#cantidad_pendiente').val() ) ) 
+					{
+						alert('Cantidad no puede ser mayor a la cantidad pendiente.');
+						$('#cantidad').val('');
+						$('#cantidad').focus();
+						return false;
+					}
+				}					
 
 				return true;
 			}
@@ -391,22 +391,6 @@
             	$('.btn_save_modal').off( 'click' );
                 $('#popup_alerta_danger').hide();
                 $('#form_edit').submit();
-
-                /*var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#bodega_id').val() + '/' + $('#producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#saldo_a_la_fecha2').val() + '/salida';
-
-                $.get( url )
-                    .done( function( data ) {
-                        if ( data != 0 )
-                        {
-                            $('#popup_alerta_danger').show();
-                            $('#popup_alerta_danger').text( data );
-                        }else{
-                            $('.btn_save_modal').off( 'click' );
-                            $('#form_edit').submit();
-                            $('#popup_alerta_danger').hide();
-                        }
-                    });
-                */
             }
 	            
 			array_registros = <?php echo json_encode($doc_registros); ?>;

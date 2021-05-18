@@ -49,7 +49,7 @@ Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteControl
 //		ORDENES DE TRABAJO
 Route::get('nom_get_tabla_empleados_ingreso_registros', 'Nomina\OrdenDeTrabajoController@get_tabla_empleados_ingreso_registros');
 Route::get('nom_ordenes_trabajo_imprimir/{orden_trabajo_id}', 'Nomina\OrdenDeTrabajoController@imprimir');
-Route::post('nom_ordenes_trabajo_anular', 'Nomina\OrdenDeTrabajoController@anula');
+Route::get('nom_ordenes_trabajo_anular/{orden_trabajo_id}', 'Nomina\OrdenDeTrabajoController@anular');
 
 
 Route::get('nom_ordenes_trabajo_cambiar_cantidad_horas_empleados/{orden_trabajo_id}/{nom_concepto_id}/{nom_contrato_id}/{nueva_cantidad_horas}','Nomina\OrdenDeTrabajoController@cambiar_cantidad_horas_empleados');
@@ -68,6 +68,7 @@ Route::post('nom_listado_acumulados','Nomina\ReporteController@listado_acumulado
 Route::post('nom_libro_fiscal_vacaciones','Nomina\ReporteController@libro_fiscal_vacaciones');
 Route::post('nom_resumen_x_entidad_empleado','Nomina\ReporteController@resumen_x_entidad_empleado');
 Route::post('nom_listado_aportes_pila','Nomina\ReporteController@listado_aportes_pila');
+Route::post('nom_costos_por_proyectos','Nomina\ReporteController@costos_por_proyectos');
 
 Route::get('nomina/reportes','Nomina\ReporteController@reportes');
 

@@ -8,6 +8,7 @@
 	{{ Form::bsBtnCreate( 'inventarios/create'.$variables_url ) }}
     <!-- @ if( in_array($id_transaccion, [1, 2, 3, 4, 27, 28, 35]) ) -->
         @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) )
+            {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inventarios/id_fila/edit'.$variables_url ),'Editar') }}
             <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
         @endif
         
@@ -37,6 +38,11 @@
     {!! $enlace1 !!}
     
     {!! $enlace2 !!}
+
+    @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+        <br>
+        <b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}
+    @endif
 
 @endsection
 

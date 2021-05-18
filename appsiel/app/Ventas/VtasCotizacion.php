@@ -63,7 +63,7 @@ class VtasCotizacion extends Model
                                         'vtas_doc_encabezados.estado AS campo5',
                                         'vtas_doc_encabezados.id AS campo6'
                                     )
-                                    ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
+                                    ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
                                     ->get();
 
         //hacemos el filtro de $search si $search tiene contenido

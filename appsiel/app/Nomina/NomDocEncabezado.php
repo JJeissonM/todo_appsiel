@@ -61,6 +61,11 @@ class NomDocEncabezado extends Model
         $this->save();
     }
 
+    public function ordenes_de_trabajo()
+    {
+        return $this->hasMany(OrdenDeTrabajo::class, 'nom_doc_encabezado_id');
+    }
+
     public function horas_liquidadas_empleado($core_tercero_id)
     {
         $registros_documento = $this->registros_liquidacion->where('core_tercero_id', $core_tercero_id)->all();
