@@ -21,15 +21,15 @@
                     <th data-override="tasa_descuento" style="display: none;"></th>
                     <th data-override="valor_total_descuento" style="display: none;"></th>
                     <th width="10px">&nbsp;</th>
-                    <th width="280px">Item</th>
-                    <th width="200px">Motivo</th>
-                    <th width="35px">Stock</th>
-                    <th>Cantidad</th>
-                    <th>Precio Unit. (IVA incluido)</th>
-                    <th>Dcto. (%)</th>
-                    <th>Dcto. Tot. ($)</th>
+                    <th width="280px">ITEM</th>
+                    <th width="200px">MOTIVO</th>
+                    <th width="35px">STOCK</th>
+                    <th>CANTIDAD</th>
+                    <th>PRECIO UNIT. (IVA INCLUIDO)</th>
+                    <th>DCTO. (%)</th>
+                    <th>DCTO. TOT. ($)</th>
                     <th>IVA</th>
-                    <th>Total</th>
+                    <th>TOTAL</th>
                     <th width="10px">&nbsp;</th>
                 </tr>
             </thead>

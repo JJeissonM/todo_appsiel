@@ -30,7 +30,7 @@
         margin-right: -40px;
         padding: 10px;
     }
-    .contenido > tr > td{ 
+    .contenido tr > td{ 
         border: 1px solid black !important;
         text-align: right;
         padding: 0 3px;
@@ -40,6 +40,9 @@
     }
     .text-left{
         text-align: left !important;
+    }
+    .text-right{
+        text-align: right !important;
     }
     .text-indent, .text-indent > *{
         padding-left: 10px !important;

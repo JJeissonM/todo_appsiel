@@ -25,7 +25,7 @@ class RemisionVentas extends InvDocEncabezado
                                 ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                                 ->select(
-                                    'inv_doc_encabezados.fecha AS campo1',
+                                    DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                                     'inv_bodegas.descripcion AS campo3',
                                     'core_terceros.descripcion AS campo4',
@@ -43,7 +43,7 @@ class RemisionVentas extends InvDocEncabezado
             ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                'inv_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                 'inv_bodegas.descripcion AS campo3',
                 'core_terceros.descripcion AS campo4',

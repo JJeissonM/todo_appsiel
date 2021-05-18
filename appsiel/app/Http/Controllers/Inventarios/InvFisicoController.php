@@ -387,7 +387,7 @@ class InvFisicoController extends TransaccionController
             }
 
             $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' . 
-                                                                '<td>' . $linea->inv_producto_id . '</td>' . 
+                                                                '<td class="text-center">' . $linea->inv_producto_id . '</td>' . 
                                                                 '<td class="nom_prod">' . $descripcion_item . '</td>' . 
                                                                 '<td><span style="color:white;">12-</span><span style="color:green;">Inventario Físico</span><input type="hidden" class="movimiento" value="entrada"></td>' . 
                                                                 '<td class="lbl_costo_unitario">' . $linea->costo_unitario . '</td>' . 
