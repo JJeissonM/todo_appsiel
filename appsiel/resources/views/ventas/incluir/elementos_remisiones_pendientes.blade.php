@@ -21,7 +21,7 @@
 			            <th> DOCUMENTO </th>
 			            <th> FECHA </th>
 			            <th> DETALLE </th>
-			            <th> VALOR DOcumento </th>
+			            <th> VALOR DOCUMENTO </th>
 			            <th> </th>
 			            <th class="td_boton"> </th>
 			        </tr>

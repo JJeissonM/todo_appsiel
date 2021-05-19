@@ -43,7 +43,13 @@ use App\Core\Tercero;
 <p>{{ $empresa->descripcion }}</p>
 <p>{{ config("configuracion.tipo_identificador") }}: {{ $empresa->numero_identificacion }} - {{ $empresa->digito_verificacion }}</p>
 </div>
-
+@if( !is_null($doc_encabezado->contacto_cliente) )
+				<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+				<br>
+				<b>Tel: </b> {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}
+				<br>
+				<b>Email: </b> {{ $doc_encabezado->contacto_cliente->tercero->email }}
+			@endif
 
 <hr>
 <table class="info">
@@ -71,7 +77,7 @@ use App\Core\Tercero;
             <b>Contacto:</b>
         </td>
         <td>
-            {{ $contacto->descripcion }}
+            @if( !is_null($doc_encabezado->contacto_cliente) ) {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}@endif
         </td>
         <td width="16%">
             <b>Fecha de Entrega:</b>
@@ -90,7 +96,7 @@ use App\Core\Tercero;
             <b>Teléfono: </b>
         </td>
         <td colspan="3">
-            {{ $contacto->telefono1 }}
+            @if( !is_null($doc_encabezado->contacto_cliente) ) {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}@endif
         </td>
     </tr>
     <tr>
@@ -98,7 +104,8 @@ use App\Core\Tercero;
             <b>Mail: </b>
         </td>
         <td>
-            <a href="mailto:{{ $contacto->email }}">{{ $contacto->email }}</a>
+            @if( !is_null($doc_encabezado->contacto_cliente) ) 
+            <a href="mailto:{{ $doc_encabezado->contacto_cliente->tercero->email }}">{{ $doc_encabezado->contacto_cliente->tercero->email }}</a>@endif
         </td>
         <td>
             <!--<b>Valido hasta:</b>-->
