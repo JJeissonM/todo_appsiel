@@ -38,13 +38,17 @@
                 <?php
                     $total_cantidad += $linea->cantidad;
                     $total_bruto += (float)$linea->precio_unitario * (float)$linea->cantidad;
-                    $subtotal += (float)($linea->precio_unitario - $linea->valor_impuesto) * (float)$linea->cantidad;
+                    //$subtotal += (float)($linea->precio_unitario - $linea->valor_impuesto) * (float)$linea->cantidad;
                     $total_impuestos += (float)$linea->valor_impuesto * (float)$linea->cantidad;
                     $total_factura += $linea->precio_total;
                     $total_descuentos += $linea->valor_total_descuento;
                     $cantidad_items++;
                 ?>
             @endforeach
+                <?php
+                    $subtotal = $total_factura + $total_descuentos - $total_impuestos;
+                    $subtotal_sin_iva = $total_bruto - $total_impuestos;
+                ?>
         </tbody>
         <tfoot>
             <tr style="font-weight: bold;">
@@ -52,7 +56,7 @@
                 <td style="text-align: center;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td >&nbsp;</td>
                 <td style="text-align: right;"> $ &nbsp;{{ number_format($total_bruto, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> $ &nbsp;{{ number_format($subtotal, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> $ &nbsp;{{ number_format($subtotal_sin_iva, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
                 <td style="text-align: right;"> $ &nbsp;{{ number_format($total_descuentos, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>

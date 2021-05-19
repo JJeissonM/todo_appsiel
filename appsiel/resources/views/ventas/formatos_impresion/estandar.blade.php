@@ -88,8 +88,6 @@ Cliente:
             $total_factura += $linea->precio_total;
             $total_descuentos += $linea->valor_total_descuento;
 
-            
-
             $total_abonos = 0;
             foreach ($abonos as $linea_abono)
             {
@@ -102,7 +100,7 @@ Cliente:
 @endsection
 
 @section('tabla_registros_2')
-@include('ventas.incluir.factura_firma_totales')
+    @include('ventas.incluir.factura_firma_totales')
 @endsection
 
 @section('tabla_registros_3')

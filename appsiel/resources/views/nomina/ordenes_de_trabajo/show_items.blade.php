@@ -85,7 +85,9 @@
                         {{ Form::close() }}
                     </td>
                     <td>
-                        <button class="btn btn-primary" id="btn_guardar_documento_inventario" title="Crear documento de inventario"><i class="fa fa-file-text" aria-hidden="true"></i> GENERAR</button>
+                        @if( $total_cantidad != 0)
+                            <button class="btn btn-primary" id="btn_guardar_documento_inventario" title="Crear documento de inventario"><i class="fa fa-file-text" aria-hidden="true"></i> GENERAR</button>
+                        @endif
                     </td>
                 </tr>
             @else
