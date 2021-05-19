@@ -20,8 +20,9 @@
 </head>
 <body>
     <div style="position: absolute; left: 40mm; top: 64mm;">
-        {{ $doc_encabezado->tercero_nombre_completo }} / @if( !is_null($doc_encabezado->contacto_cliente) )
-        <b>CONTACTO: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+        {{ $doc_encabezado->tercero_nombre_completo }} @if( !is_null($doc_encabezado->documento_ventas_padre()) )
+       / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
+        
     @endif
     </div>
 
@@ -68,7 +69,7 @@
 
     </div>
 
-    <div style="position: absolute; left: 171mm; top: 253mm;">        
+    <div style="position: absolute; left: 194mm; top: 253mm;">        
         {{ abs($total_cantidad) }}
     </div>
 
