@@ -5,13 +5,13 @@
 		<thead>
 			<tr>
 				<th style="display: none;">nom_contrato_id</th>
-				<th>Empleado</th>
+				<th>EMPLEADO</th>
 				@if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-					<th data-override="cantidad_horas"> Cant. horas </th>
-					<th data-override="valor_unitario"> Vlr. unitario </th>
-					<th data-override="valor_total"> Vlr. total </th>
+					<th data-override="cantidad_horas"> CANT. HORAS </th>
+					<th data-override="valor_unitario"> VLR. UNITARIO </th>
+					<th data-override="valor_total"> VLR. TOTAL </th>
 				@else
-					<th data-override="valor_total"> Vlr. total </th>
+					<th data-override="valor_total"> VLR. TOTAL </th>
 				@endif
 				
 			</tr>

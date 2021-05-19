@@ -20,7 +20,7 @@
         }
     ?>
     <tr id="{{$linea->inv_producto_id}}" style="background-color: {{$color_fila}}">
-        <td> {{$linea->inv_producto_id}} </td>
+        <td class="text-center"> {{$linea->inv_producto_id}} </td>
         <td class="nom_prod"> {{$etiqueta_producto}}</td>
         <td>
             <span style="color:transparent;">{{$linea->motivo->id}}-</span>

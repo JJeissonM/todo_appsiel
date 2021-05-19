@@ -177,7 +177,7 @@
 							{
 
 								$('#ingreso_productos').find('tbody:last').append('<tr id="'+data[i].producto_id+'">'+
-																'<td>'+data[i].producto_id+'</td>'+
+																'<td class="text-center">'+data[i].producto_id+'</td>'+
 																'<td class="nom_prod">'+data[i]['producto_descripcion']+'</td>'+
 																'<td><span style="color:white;">'+mov[0]+'-</span><span '+estilo+'>'+motivo+'</span><input type="hidden" class="movimiento" value="'+mov[1]+'"></td>'+
 																'<td class="lbl_costo_unitario">'+data[i]['costo_unitario']+'</td>'+

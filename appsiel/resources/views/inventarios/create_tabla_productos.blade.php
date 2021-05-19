@@ -7,7 +7,7 @@
             <th width="280px">PRODUCTO</th>
             <th width="200px" data-override="motivo">MOTIVO</th>
             <th data-override="costo_unitario"> COSTO UNIT. </th>
-            <th data-override="cantidad">CANTIDAD</th>
+            <th data-override="cantidad">CANT.</th>
             <th data-override="costo_total">COSTO TOTAL</th>
             <th width="10px">&nbsp;</th>
         </tr>

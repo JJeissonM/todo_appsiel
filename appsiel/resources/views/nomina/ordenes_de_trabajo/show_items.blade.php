@@ -18,7 +18,7 @@
             ?>
             @foreach( $items as $item_orden_trabajo )
                 <tr id="{{ $item_orden_trabajo->item->id }}">
-                    <td>{{ $item_orden_trabajo->item->id }}</td>
+                    <td class="text-center">{{ $item_orden_trabajo->item->id }}</td>
                     <td class="nom_prod">
                         {{ $item_orden_trabajo->item->id }} {{ $item_orden_trabajo->item->descripcion }} ({{ $item_orden_trabajo->item->unidad_medida1 }})
                     </td>

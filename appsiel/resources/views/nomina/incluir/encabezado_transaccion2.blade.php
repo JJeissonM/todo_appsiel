@@ -40,7 +40,7 @@ use App\Core\Tercero;
     <tr>
         <td width="55%">{{ $empresa->descripcion }}</td>
         <td width="45%" rowspan="2">
-            <b style="font-size: 16px">Orden de Trabajo N° {{ $encabezado_doc->documento_app }}</b>
+            <b style="font-size: 16px">Documento Nomina {{ $encabezado_doc->documento_app }}</b>
         </td>
     </tr>
     <tr>
