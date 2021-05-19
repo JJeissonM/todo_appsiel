@@ -1399,7 +1399,7 @@ class VentaController extends TransaccionController
 
                 $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, 0, $cliente->id );
 
-                $precio_total = $precio_unitario * $cantidad;
+                $precio_total = $precio_venta_unitario * $cantidad;
 
                 $base_impuesto = $precio_venta_unitario / ( 1 + $tasa_impuesto / 100 );
 
