@@ -42,7 +42,7 @@
     </div>
 
     <div style="position: absolute; left: 40mm; top: 94mm;">        
-        {{ $doc_encabezado->descripcion }}
+        CONSTANCIA ENTREGA MATERIAL
     </div>
 
     <div style="position: absolute; left: 5mm; top: 104mm; width: 193mm">
@@ -69,7 +69,7 @@
     </div>
 
     <div style="position: absolute; left: 171mm; top: 253mm;">        
-        {{ $total_cantidad }}
+        {{ abs($total_cantidad) }}
     </div>
 
 
