@@ -55,6 +55,7 @@
             @endforeach
                 <?php
                     $subtotal = $total_factura + $total_descuentos - $total_impuestos;
+                    $subtotal_sin_iva = $total_bruto - $total_impuestos;
                 ?>
         </tbody>
         <tfoot>
@@ -63,7 +64,7 @@
                 <td style="text-align: center;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td >&nbsp;</td>
                 <td style="text-align: right;"> {{ number_format($total_bruto, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> {{ number_format($subtotal, 0, ',', '.') }} </td>
+                <td style="text-align: right;"> {{ number_format($subtotal_sin_iva, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
                 <td style="text-align: right;"> ${{ number_format($total_descuentos, 0, ',', '.') }} </td>
                 <td>&nbsp;</td>
