@@ -281,9 +281,9 @@ class NominaController extends TransaccionController
             $this->total_deducciones_empleado = 0;
 
             $tabla.='<tr>
-                    <td>'.$i.'</td>
-                    <td class="celda_nombre_empleado">'.$empleado->tercero->descripcion.'</td>
-                    <td>'.$empleado->tercero->numero_identificacion.'</td>';
+                    <td class="text-center">'.$i.'</td>
+                    <td class="text-left celda_nombre_empleado">'.$empleado->tercero->descripcion.'</td>
+                    <td class="text-center">'.$empleado->tercero->numero_identificacion.'</td>';
 
             $this->pos = 0;
             foreach ($conceptos as $un_concepto)
