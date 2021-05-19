@@ -78,9 +78,12 @@
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<h6 style="width: 100%; text-align: center;">CHEQUES ALMACENADOS</h6>
 						<hr>
-						<p style="text-align: center;">
-							<button class="btn btn-primary" id="btn_cargar_cheques"> Cargar </button>
-						</p>
+						<button class="btn btn-primary" id="btn_cargar_cheques"><i class="fa fa-level-up"></i> Cargar </button>
+						<br>
+						{{ Form::Spin(48) }}
+						<div id="div_cheques_almacenados" class="container-fluid">
+							
+				        </div>
 					</div>
 					<br><br>
 				</div>

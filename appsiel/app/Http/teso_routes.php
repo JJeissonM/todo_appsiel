@@ -72,6 +72,7 @@ Route::get('tesoreria_recaudos_cxc_imprimir/{id}', 'Tesoreria\RecaudoCxcControll
 Route::resource('tesoreria/recaudos_cxc', 'Tesoreria\RecaudoCxcController');
 
 // CONTROL DE CHEQUES
+Route::get('get_cheques_recibidos/{teso_medio_recaudo_id}', 'Tesoreria\ControlChequeController@cheques_recibidos');
 Route::get('teso_get_formulario_control_cheques/{teso_medio_recaudo_id}', 'Tesoreria\ControlChequeController@get_formulario_control_cheques');
 
 

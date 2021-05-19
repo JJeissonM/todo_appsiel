@@ -38,6 +38,7 @@ use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
+use App\Tesoreria\ControlCheque;
 
 use App\Matriculas\FacturaAuxEstudiante;
 
@@ -316,180 +317,15 @@ class ControlChequeController extends Controller
     }
 
 
-    public function get_medios_recaudo(){
-        $registros = TesoMedioRecaudo::all();  
-        $vec_m['']=''; 
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id.'-'.$fila->comportamiento]=$fila->descripcion; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function get_cajas(){
-        $registros = TesoCaja::where('core_empresa_id',Auth::user()->empresa_id)->get();       
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id]=$fila->descripcion; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function get_cuentas_bancarias(){
-        $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
-                    ->where('core_empresa_id',Auth::user()->empresa_id)
-                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion AS cta_bancaria','teso_entidades_financieras.descripcion AS entidad_financiera')
-                    ->get();        
-        foreach ($registros as $fila) {
-            $vec_m[$fila->id] = $fila->entidad_financiera.': '.$fila->cta_bancaria; 
-        }
-        
-        return $vec_m;
-    }
-
-    public function ajax_get_terceros($tercero_id){
-        $registros = Tercero::where('estado','Activo')
-                            ->get();
-            $opciones='<option value=""></option>';                
-        foreach ($registros as $campo) {
-            if ( $campo->id == $tercero_id ) {
-                $selected = ' selected="selected"';
-            }else{
-                $selected = '';
-            }
-            $opciones.= '<option value="'.$campo->id.'"'.$selected.'>'.$campo->descripcion.'</option>';
-        }
-        return $opciones;
-    }
-
     /*
-        Proceso de eliminar RECAUDO DE CXC
-        Se eliminan los registros de:
-            - cxc_abonos y su movimiento en contab_movimientos
-            - teso_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
+        Este metodo genera un listado de los cheques en estado Recibidos que se podran utilizar para pagos de CxP
     */
-    public static function anular_recaudo_cxc($id)
-    {        
-        $recaudo = TesoDocEncabezado::find( $id );
-
-        $array_wheres = ['core_empresa_id'=>$recaudo->core_empresa_id, 
-            'core_tipo_transaccion_id' => $recaudo->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $recaudo->core_tipo_doc_app_id,
-            'consecutivo' => $recaudo->consecutivo];
-
-        // >>> Validaciones inciales
-
-        // Está en un documento cruce de cartera?
-        $cantidad = CxcAbono::where($array_wheres)
-                            ->where('doc_cruce_transacc_id','<>',0)
-                            ->count();
-
-        if($cantidad != 0)
-        {
-            return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Recaudo NO puede ser anulado. Está en documento cruce de cartera.');
-        }
-
-        // Se reversan los abonos hecho por este documento de recaudo: aumenta el saldo_pendiente en el documento pendiente
-        $documentos_abonados = CxcAbono::get_documentos_abonados( $recaudo );
-
-        foreach ( $documentos_abonados as $linea )
-        {
-            $documento_cxc_pendiente = CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
-                                                        ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
-                                                        ->where('consecutivo',$linea->doc_cxc_consecutivo)
-                                                        ->get()
-                                                        ->first();
-            
-            if ( $documento_cxc_pendiente->estado == 'Pagado' )
-            {
-                // Se halla el total de todos los abonos que halla tenido el documento de cxc abonado (incluido el abono realizado por este recaudo)
-                $valor_abonos_aplicados = CxcAbono::where('doc_cxc_transacc_id',$linea->doc_cxc_transacc_id)
-                                                ->where('doc_cxc_tipo_doc_id',$linea->doc_cxc_tipo_doc_id)
-                                                ->where('doc_cxc_consecutivo',$linea->doc_cxc_consecutivo)
-                                                ->where('referencia_tercero_id',$linea->referencia_tercero_id)
-                                                ->sum('abono');
-
-
-                $nuevo_saldo_pendiente = $documento_cxc_pendiente->valor_documento - $valor_abonos_aplicados + $linea->abono;
-                
-                $nuevo_valor_pagado = $valor_abonos_aplicados - $linea->abono; // el valor_abonos_aplicados es como mínimo el valor de $linea->abono
-
-            }else{
-
-                $nuevo_saldo_pendiente = $documento_cxc_pendiente->saldo_pendiente + $linea->abono;
-
-                $nuevo_valor_pagado = $documento_cxc_pendiente->valor_pagado - $linea->abono;
-            }
-
-            // Actualizar registro del documento pendiente
-            $documento_cxc_pendiente->valor_pagado = $nuevo_valor_pagado;
-            $documento_cxc_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
-            $documento_cxc_pendiente->save();
-
-            // Se elimina el abono
-            $linea->delete();
-        }
-
-        // Borrar movimiento de tesorería del recaudo y su contabilidad. Además actualizar estado del encabezado del documento de recaudo.
-        TesoMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
-
-        // Borrar movimiento contable generado por el documento de pago ( DB: Caja/Banco, CR: CxC )
-        ContabMovimiento::where('core_tipo_transaccion_id',$recaudo->core_tipo_transaccion_id)->where('core_tipo_doc_app_id',$recaudo->core_tipo_doc_app_id)->where('consecutivo',$recaudo->consecutivo)->delete();
-
-        // Si es el Recaudo de una o varias facturas asociadas a un registro de Plan de Pagos de una libreta de pagos
-        $recaudos_libreta = TesoRecaudosLibreta::where([
-                                                    ['core_tipo_transaccion_id','=',$recaudo->core_tipo_transaccion_id],
-                                                    ['core_tipo_doc_app_id','=',$recaudo->core_tipo_doc_app_id],
-                                                    ['consecutivo','=',$recaudo->consecutivo]
-                                                ])->get();
-        foreach( $recaudos_libreta AS $recaudo_libreta )
-        {
-            $recaudo_libreta->anular();
-        }
-
-        // Marcar como anulado el encabezado
-        $recaudo->update(['estado'=>'Anulado']);
-
-        return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Recaudo de CxC ANULADO correctamente.');
-        
-    }
-
-    // Por cada linea del Recaudo de CxC
-    public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
+    public function get_cheques_recibidos()
     {
-        $factura = VtasDocEncabezado::where([
-                                                [ 'core_tipo_transaccion_id','=', $registro_cxc_pendiente->core_tipo_transaccion_id ],
-                                                [ 'core_tipo_doc_app_id','=', $registro_cxc_pendiente->core_tipo_doc_app_id ],
-                                                [ 'consecutivo','=', $registro_cxc_pendiente->consecutivo ]
-                                            ])->get()->first();
+        $cheques = ControlCheque::where( 'estado', 'Recibido' );
 
-        if ( is_null($factura) )
-        {
-            return false;
-        }
-
-        $aux_factura = FacturaAuxEstudiante::where('vtas_doc_encabezado_id', $factura->id )->get()->first();
-
-        if ( is_null($aux_factura) )
-        {
-            return false;
-        }
-
-        $recaudo = TesoRecaudosLibreta::create( [
-                                    'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
-                                    'core_tipo_doc_app_id' => (int)$doc_encabezado_recaudo->core_tipo_doc_app_id,
-                                    'consecutivo' => $doc_encabezado_recaudo->consecutivo,
-                                    'id_libreta' => $aux_factura->cartera_estudiante->id_libreta,
-                                    'id_cartera' => $aux_factura->cartera_estudiante_id,
-                                    'concepto' => $aux_factura->cartera_estudiante->inv_producto_id,
-                                    'fecha_recaudo' => $doc_encabezado_recaudo->fecha,
-                                    'teso_medio_recaudo_id' => $doc_encabezado_recaudo->teso_medio_recaudo_id,
-                                    'cantidad_cuotas' => 1,
-                                    'valor_recaudo' => $abono,
-                                    'creado_por' => $doc_encabezado_recaudo->creado_por
-                                ] );
-
-        $recaudo->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $abono );
-        $recaudo->libreta->actualizar_estado();
+        $vista = View::make( 'tesoreria.medios_de_pago.cheques_recibidos', compact('cheques') )->render();
+   
+        return $vista;
     }
 }
