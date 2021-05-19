@@ -14,7 +14,7 @@
         }
 
         $color_fila = 'transparent';
-        if ( ($linea->existencia_actual - abs($linea->cantidad) ) < 0 )
+        if ( ($linea->existencia_actual - abs($linea->cantidad) ) < 0 && $linea->item->tipo != 'servicio' )
         {
             $color_fila = '#FF8C8C';
         }

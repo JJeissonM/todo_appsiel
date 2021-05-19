@@ -564,6 +564,11 @@ class ProcesoController extends Controller
     {
         foreach( $lineas_registros AS $linea )
         {
+            if ( $linea->item->tipo == 'servicio' )
+            {
+                continue;
+            }
+            
             if ( ($linea->existencia_actual - abs($linea->cantidad) ) < 0 )
             {
                 return 1;

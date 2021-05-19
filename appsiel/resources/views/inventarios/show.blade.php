@@ -17,7 +17,14 @@
         @endif
         
         @if( $doc_encabezado->estado == 'Pendiente' && Input::get('id_transaccion') == 24 )
-            <a class="btn-gmail" href="{{ url('ventas/create') . '?id=13&id_modelo=139&id_transaccion=23' }}" title="Crear Factura de Ventas"><i class="fa fa-btn fa-file-text"></i></a>
+            <?php 
+                $cliente_id = 0;
+                if ( !is_null( $doc_encabezado->cliente() ) )
+                {
+                    $cliente_id = $doc_encabezado->cliente()->id;
+                }
+            ?>
+            <a class="btn-gmail" href="{{ url('ventas/create') . '?id=13&id_modelo=139&id_transaccion=23&cliente_id=' . $cliente_id }}" title="Crear Factura de Ventas"><i class="fa fa-btn fa-file-text"></i></a>
         @endif
 
     <!-- @ endif -->

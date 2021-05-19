@@ -15,7 +15,15 @@ $(document).ready(function(){
 
 	$('#fecha').val( get_fecha_hoy() );
 
-	$('#cliente_input').focus( );		
+	$('#cliente_input').focus( );
+
+	console.log( $('#item_sugerencia_cliente').val() );
+
+	if ( $('#item_sugerencia_cliente').val() != '0' )
+	{
+		$('#item_sugerencia_cliente').after( $('#item_sugerencia_cliente').val() );
+		seleccionar_cliente( $('#item_sugerencia_cliente').next() );
+	}
 
     // Al cambiar la fecha
     $('#fecha').on('change',function(){
@@ -282,9 +290,7 @@ $(document).ready(function(){
     			break;
     	}
 
-    });
-
-		    
+    });		    
 
     //Al hacer click en alguna de las sugerencias (escoger un producto)
     $(document).on('click','.list-group-item-productos', function(){
@@ -399,9 +405,6 @@ $(document).ready(function(){
 
 				$('#tasa_descuento').select();			
 			}
-
-
-
 		}else{
 
 			$(this).select();
@@ -419,7 +422,6 @@ $(document).ready(function(){
 
         valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
 	}
-
 
 
     $('#tasa_descuento').keyup(function(){
@@ -505,7 +507,8 @@ $(document).ready(function(){
 
     function seleccionar_cliente(item_sugerencia)
     {
-    	
+    	console.log( item_sugerencia );
+
 		// Asignar descripción al TextInput
         $('#cliente_input').val( item_sugerencia.html() );
         $('#cliente_input').css( 'background-color','white ' );
@@ -560,6 +563,25 @@ $(document).ready(function(){
         reset_tabla_ingreso();
 
         consultar_remisiones_pendientes();
+
+        // Cargar contactos asociados al cliente
+		$('#contacto_cliente_id').html('<option value=""></option>');
+    	$('#div_cargando').show();
+
+        var url = url_raiz + "/get_opciones_select_contactos/" + $('#cliente_id').val();
+
+		$.ajax({
+        	url: url,
+        	type: 'get',
+        	success: function(datos){
+        		$('#div_cargando').hide();	    				
+				$('#contacto_cliente_id').html( datos );
+				$('#contacto_cliente_id').focus();
+
+				// Bajar el Scroll hasta el final de la página
+				//$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+	        }
+	    });
         
 		// Bajar el Scroll hasta el final de la página
 		//$("html, body").animate( { scrollTop: $(document).height()+"px"} );

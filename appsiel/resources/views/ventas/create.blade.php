@@ -139,6 +139,7 @@
 		<input type="hidden" name="lineas_registros_remisiones" id="lineas_registros_remisiones" value="0">
 		<input type="hidden" name="lista_precios_id2" id="lista_precios_id2" value="0">
 		<input type="hidden" name="fecha2" id="fecha2" value="0">
+		<input type="hidden" name="item_sugerencia_cliente" id="item_sugerencia_cliente" value="{{$item_sugerencia_cliente}}">
 	{{ Form::close() }}
 
 @endsection
@@ -146,7 +147,7 @@
 @section('scripts')
 
 	<script type="text/javascript">
-
+		var url_raiz = "{{ url('/') }}";
 		var dias_plazo;
 
 		$.fn.actualizar_medio_recaudo = function(){

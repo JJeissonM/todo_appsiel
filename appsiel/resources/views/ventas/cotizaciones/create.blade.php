@@ -543,8 +543,7 @@
 						// Bajar el Scroll hasta el final de la página
 						//$("html, body").animate( { scrollTop: $(document).height()+"px"} );
 			        }
-			    });               
-					
+			    });
             }
 
             
