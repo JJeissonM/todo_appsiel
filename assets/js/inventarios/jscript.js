@@ -253,7 +253,7 @@ $(document).ready(function(){
 																	'<td class="nom_prod">'+nombre_producto+'</td>'+
 																	'<td><span style="color:white;">'+mov[0]+'-</span><span '+estilo+'>'+motivo+'</span><input type="hidden" class="movimiento" value="'+mov[1]+'"></td>'+
 																	celda_costo_unitario+
-																	'<td class="cantidad">'+cantidad+" "+$('#unidad_medida1').val()+'</td>'+
+																	'<td class="text-center cantidad">'+cantidad+" "+$('#unidad_medida1').val()+'</td>'+
 																	celda_costo_total+
 																	'<td>'+btn_borrar+'</td>'+
 																	'</tr>');

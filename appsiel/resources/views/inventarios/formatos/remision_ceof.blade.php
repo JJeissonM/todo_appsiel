@@ -56,7 +56,7 @@
         <tr>
             <td style="text-align: center;" width="15%"> {{ $linea->producto_id }} </td>
             <td width="70%"> {{ $linea->producto_descripcion }} </td>
-            <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }}</td>
+            <td style="text-align: right;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }}</td>
         </tr>
                 <?php 
                     $total_cantidad += $linea->cantidad;
