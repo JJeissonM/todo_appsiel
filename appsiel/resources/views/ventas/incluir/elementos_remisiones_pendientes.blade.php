@@ -16,12 +16,12 @@
 			<table class="table table-striped" id="tabla_registros_documento" style="color: #000;">
 			    <thead>
 			        <tr>
-			            <th style="display: none;" data-override="id_doc" > ID Encabezado Remisión/Devolución </th>
-			            <th> Tercero </th>
-			            <th> Documento </th>
-			            <th> Fecha </th>
-			            <th> Detalle </th>
-			            <th> Valor documento </th>
+			            <th style="display: none;" data-override="id_doc" > ID ENCABEZADO REMISIÓN/DEVOLUCIÓN </th>
+			            <th> TERCERO </th>
+			            <th> DOCUMENTO </th>
+			            <th> FECHA </th>
+			            <th> DETALLE </th>
+			            <th> VALOR DOcumento </th>
 			            <th> </th>
 			            <th class="td_boton"> </th>
 			        </tr>

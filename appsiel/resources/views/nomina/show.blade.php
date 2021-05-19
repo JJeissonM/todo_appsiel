@@ -22,41 +22,54 @@
 
 	{{ Form::bsMigaPan($miga_pan) }}
 
-	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnCreate( 'web/create?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
-	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( 'nomina_print/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion').'&formato_impresion_id=1' ) }}
-	{{ Form::bsBtnPrint( 'nomina_print/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion').'&formato_impresion_id=2' ) }}
+	<div class="row">
+		<div class="col-md-5">
+			&nbsp;&nbsp;&nbsp; {{ Form::bsBtnCreate( 'web/create?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+			
 
-	@if ( $encabezado_doc->estado == 'Activo' )
-		{{ Form::bsBtnEdit2('web/'.$id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
-		{{ Form::bsBtnEliminar('web_eliminar/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
-		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Liquidar', 'primary', 'cogs', 
-		          [ 
-		            ['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
-		            'etiqueta' => 'Registros automáticos (todo)'],
-		            ['link' => 'nom_liquidar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
-		            'etiqueta' => 'Primas de antigüedad']
-		          ] ) }}
-		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Retirar', 'warning', 'history', 
-		          [ 
-		            ['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ],
-		            ['link' => 'nom_retirar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
-		            'etiqueta' => 'Primas de antigüedad']
-		          ] ) }}
-	@else
-		<small>(Documento está <b>{{ $encabezado_doc->estado }}</b>)</small>
-	@endif
+			@if ( $encabezado_doc->estado == 'Activo' )
+				{{ Form::bsBtnEdit2('web/'.$id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+				{{ Form::bsBtnEliminar('web_eliminar/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+				&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Liquidar', 'primary', 'cogs', 
+						[ 
+							['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							'etiqueta' => 'Registros automáticos (todo)'],
+							['link' => 'nom_liquidar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							'etiqueta' => 'Primas de antigüedad']
+						] ) }}
+				&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Retirar', 'warning', 'history', 
+						[ 
+							['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ],
+							['link' => 'nom_retirar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							'etiqueta' => 'Primas de antigüedad']
+						] ) }}
+			@else
+				<small>(Documento está <b>{{ $encabezado_doc->estado }}</b>)</small>
+			@endif
+		</div>
+		<div class="col-md-6">
+
+			Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar v2'], null, [ 'id' =>'formato_impresion_id' ] ) }}
+			{{ Form::bsBtnPrint( 'nomina_print/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion').'&formato_impresion_id=1' ) }}
+			
+		</div>
+		<div class="col-md-1">
+			<div class="pull-right">
+				@if($reg_anterior!='')
+					{{ Form::bsBtnPrev( 'nomina/'.$reg_anterior.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
+				@endif
+
+				@if($reg_siguiente!='')
+					{{ Form::bsBtnNext( 'nomina/'.$reg_siguiente.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
+				@endif
+			</div>
+		</div>
+	</div>
+	
 
 	<!-- @ include('nomina.incluir.btn_liquidacion') -->
 
-	<div class="pull-right">
-		@if($reg_anterior!='')
-			{{ Form::bsBtnPrev( 'nomina/'.$reg_anterior.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
-		@endif
-
-		@if($reg_siguiente!='')
-			{{ Form::bsBtnNext( 'nomina/'.$reg_siguiente.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
-		@endif
-	</div>
+	
 	<hr>
 
 	@include('layouts.mensajes')
@@ -123,6 +136,25 @@
 	
 	
 });
-	
+			$('#formato_impresion_id').on('change',function(){
+				var btn_print = $('#btn_print').attr('href');
+
+				n = btn_print.search('formato_impresion_id');
+				var url_aux = btn_print.substr(0,n);
+				var new_url = url_aux + 'formato_impresion_id=' + $(this).val();
+				
+				$('#btn_print').attr('href', new_url);
+
+
+
+				var btn_email = $('#btn_email').attr('href');
+
+				n = btn_email.search('formato_impresion_id');
+				var url_aux = btn_email.substr(0,n);
+				var new_url = url_aux + 'formato_impresion_id=' + $(this).val();
+				
+				$('#btn_email').attr('href', new_url);
+				
+			});
 </script>	
 @endsection

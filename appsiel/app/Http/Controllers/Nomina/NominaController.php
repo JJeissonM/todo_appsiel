@@ -249,23 +249,23 @@ class NominaController extends TransaccionController
                     <thead>
                       <tr class="">
                           <th>
-                             No.
+                             NO.
                           </th>
                           <th>
-                             Empleado
+                             EMPLEADO
                           </th>
                           <th>
-                             Identifcación
+                             IDENTIFCACIÓN
                           </th>';
         foreach ($conceptos as $registro)
         {          
           $tabla.='<th>'.$registro->abreviatura.'</th>';
         }
 
-        $tabla.='<th>Tot. <br> Devengos</th>
-                    <th>Tot. <br> Deducciones</th>
-                    <th>Total a pagar</th>
-                    <th width="100px">Firma</th>
+        $tabla.='<th>T. DEVENGOS</th>
+                    <th>T. DEDUCCIONES</th>
+                    <th>TOTAL A PAGAR</th>
+                    <th width="100px">FIRMA</th>
                     </tr>
                     </thead>
                     <tbody>';
@@ -281,9 +281,9 @@ class NominaController extends TransaccionController
             $this->total_deducciones_empleado = 0;
 
             $tabla.='<tr>
-                    <td>'.$i.'</td>
-                    <td class="celda_nombre_empleado">'.$empleado->tercero->descripcion.'</td>
-                    <td>'.number_format($empleado->tercero->numero_identificacion, 0, ',', '.').'</td>';
+                    <td class="text-center">'.$i.'</td>
+                    <td class="text-left celda_nombre_empleado">'.$empleado->tercero->descripcion.'</td>
+                    <td class="text-center">'.$empleado->tercero->numero_identificacion.'</td>';
 
             $this->pos = 0;
             foreach ($conceptos as $un_concepto)

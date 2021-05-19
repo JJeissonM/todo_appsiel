@@ -15,13 +15,13 @@
 			<table class="table table-striped" id="tabla_registros_documento">
 			    <thead>
 			        <tr>
-			            <th style="display: none;" data-override="id_doc" > ID Encabezado Entrada </th>
-			            <th> Tercero </th>
-			            <th> Documento </th>
-			            <th> Fecha </th>
-			            <th> Detalle </th>
-			            <th> Valor Entrada </th>
-			            <th> Valor Factura (IVA incluido) </th>
+			            <th style="display: none;" data-override="id_doc" > ID ENCABEZADO ENTRADA </th>
+			            <th> TERCERO </th>
+			            <th> DOCUMENTO </th>
+			            <th> FECHA </th>
+			            <th> DETALLE </th>
+			            <th> VALOR ENTRADA </th>
+			            <th> VALOR FACTURA (IVA INCLUIDO) </th>
 			            <th class="td_boton"> </th>
 			        </tr>
 			    </thead>

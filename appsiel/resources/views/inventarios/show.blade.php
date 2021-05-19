@@ -2,7 +2,7 @@
     $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
 ?>
 
-@extends('transaccion.show')
+@extends('transaccion.show') 
 
 @section('botones_acciones')
 	{{ Form::bsBtnCreate( 'inventarios/create'.$variables_url ) }}
@@ -48,13 +48,22 @@
 
 @section('filas_adicionales_encabezado')
     <tr>
-        <td colspan="2" style="border: solid 1px #ddd;">
+        <td style="border: solid 1px #ddd;">
             <b>Estado Doc.:</b> {{ $doc_encabezado->estado }}
             <br/>
             <b>Tercero:</b> {{ $doc_encabezado->tercero_nombre_completo }}
             <br/>
             <b>{{ config("configuracion.tipo_identificador") }}:
                 @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif</b><br/>
+        </td>
+        <td>
+            @if( !is_null($doc_encabezado->contacto_cliente) )
+				<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
+				<br>
+				<b>Tel: </b> {{ $doc_encabezado->contacto_cliente->tercero->telefono1 }}
+				<br>
+				<b>Email: </b> {{ $doc_encabezado->contacto_cliente->tercero->email }}
+			@endif
         </td>
     </tr>
     <tr>

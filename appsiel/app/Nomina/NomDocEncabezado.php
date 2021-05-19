@@ -319,7 +319,7 @@ class NomDocEncabezado extends Model
         $tabla = '<div class="table-responsive">
                 <table class="table table-bordered table-striped" id="myTable">
                     <thead>';
-        $encabezado_tabla = ['Orden', 'Cédula', 'Empleado', 'Acción'];
+        $encabezado_tabla = ['ORDEN', 'IDENTIFCACIÓN', 'EMPLEADO', 'ACCIÓN'];
         for ($i = 0; $i < count($encabezado_tabla); $i++) {
             $tabla .= '<th>' . $encabezado_tabla[$i] . '</th>';
         }

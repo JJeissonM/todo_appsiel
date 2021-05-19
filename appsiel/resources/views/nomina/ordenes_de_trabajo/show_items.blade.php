@@ -1,12 +1,12 @@
 <div class="table-responsive">
-    <table class="table table-bordered table-striped" id="ingreso_productos">
+    <table class="table table-bordered table-striped contenido" id="ingreso_productos">
         <thead>
             <tr>
                 <th data-override="inv_producto_id">Cod.</th>
                 <th width="280px">Producto</th>
                 <th width="200px" data-override="motivo">Motivo</th>
                 <th data-override="costo_unitario"> Costo Unit. </th>
-                <th data-override="cantidad">Cantidad</th>
+                <th data-override="cantidad">Cant.</th>
                 <th data-override="costo_total">Costo Total</th>
             </tr>
         </thead>
@@ -50,7 +50,7 @@
         </tfoot>
     </table>
 </div>
-
+@if($imprimir)
 <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Documento de Salida de inventario</div>
 <div class="table-responsive">
     @if( $orden_de_trabajo->estado != 'Anulado' )
@@ -85,7 +85,7 @@
                         {{ Form::close() }}
                     </td>
                     <td>
-                        <button class="btn btn-primary" id="btn_guardar_documento_inventario" title="Crear documento de inventario"><i class="fa fa-file-text"></i> Crear</button>
+                        <button class="btn btn-primary" id="btn_guardar_documento_inventario" title="Crear documento de inventario"><i class="fa fa-file-text" aria-hidden="true"></i> GENERAR</button>
                     </td>
                 </tr>
             @else
@@ -98,3 +98,4 @@
         </table>
     @endif
 </div>
+@endif

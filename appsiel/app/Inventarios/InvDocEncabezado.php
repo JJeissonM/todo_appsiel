@@ -87,7 +87,7 @@ class InvDocEncabezado extends Model
             ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->whereIn('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipos_transacciones_ids)
             ->select(
-                'inv_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                 'inv_bodegas.descripcion AS campo3',
                 DB::raw('core_terceros.descripcion AS campo4'),
@@ -114,7 +114,7 @@ class InvDocEncabezado extends Model
             ->where('inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->whereIn('inv_doc_encabezados.core_tipo_transaccion_id', $core_tipos_transacciones_ids)
             ->select(
-                'inv_doc_encabezados.fecha AS campo1',
+                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                 'inv_bodegas.descripcion AS campo3',
                 DB::raw('core_terceros.descripcion AS campo4'),
@@ -123,7 +123,7 @@ class InvDocEncabezado extends Model
                 'inv_doc_encabezados.id AS campo7'
             )
             ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
@@ -250,7 +250,7 @@ class InvDocEncabezado extends Model
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
                     ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
                     ->select(
-                                'inv_doc_encabezados.fecha AS campo1',
+                                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                                 DB::raw($select_raw),
                                 DB::raw($select_raw2),
                                 'inv_doc_encabezados.descripcion AS campo4',
@@ -281,7 +281,7 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.core_tipo_transaccion_id',
                                 'inv_doc_encabezados.core_tipo_doc_app_id',
                                 'inv_doc_encabezados.consecutivo',
-                                'inv_doc_encabezados.fecha',
+                                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS fecha'),
                                 'inv_doc_encabezados.descripcion',
                                 'inv_doc_encabezados.hora_inicio',
                                 'inv_doc_encabezados.inv_bodega_id',
@@ -317,7 +317,7 @@ class InvDocEncabezado extends Model
                                                 'inv_doc_encabezados.core_tipo_transaccion_id',
                                                 'inv_doc_encabezados.core_tipo_doc_app_id',
                                                 'inv_doc_encabezados.consecutivo',
-                                                'inv_doc_encabezados.fecha',
+                                                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS fecha'),
                                                 'inv_doc_encabezados.descripcion',
                                                 'inv_doc_encabezados.hora_inicio',
                                                 'inv_doc_encabezados.inv_bodega_id',

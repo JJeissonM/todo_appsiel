@@ -538,7 +538,7 @@ class FacturaPosController extends TransaccionController
                     '<td><span style="color:white;">' . $motivo[0] . '-</span>' . $motivo[1] . '</td>' .
                     '<td><span style="color:white;">' . $caja[0] . '-</span>' . $caja[1] . '</td>' .
                     '<td><span style="color:white;">' . $cuenta_bancaria[0] . '-</span>' . $cuenta_bancaria[1] . '</td>' .
-                    '<td class="valor_total">' . $linea->valor . '</td>' .
+                    '<td class="text-center valor_total">' . $linea->valor . '</td>' .
                     '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo"><i class="fa fa-btn fa-trash"></i></button> </td> </tr>';
             }
         }
