@@ -323,21 +323,21 @@ class InventarioController extends TransaccionController
             );
 
             $tipo_producto = InvProducto::find($lineas_registros[$i]->inv_producto_id)->tipo;
-            if ($tipo_producto == 'producto')
-            {
-                $datos['consecutivo'] = $doc_encabezado->consecutivo;
-                InvMovimiento::create(
-                                        $datos +
-                                        ['inv_doc_encabezado_id' => $doc_encabezado->id] +
-                                        $linea_datos
-                                    );
-            }else{
-                // Si no es un producto, saltar la contabilización de abajo.
+
+            // Solo los productos generan movimiento de inventario y contabilización.
+            if ($tipo_producto == 'servicio' )
+            {                
                 continue;
             }
 
-            // Contabilizar
+            $datos['consecutivo'] = $doc_encabezado->consecutivo;
+            InvMovimiento::create(
+                                    $datos +
+                                    ['inv_doc_encabezado_id' => $doc_encabezado->id] +
+                                    $linea_datos
+                                );
 
+            // Contabilizar
             $detalle_operacion = '';
             
             // 1. Determinar las cuentas

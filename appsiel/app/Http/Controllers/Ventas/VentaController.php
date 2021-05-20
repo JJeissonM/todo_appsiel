@@ -87,7 +87,44 @@ class VentaController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
 
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'ventas.create', $tabla );
+        $item_sugerencia_cliente = '';
+        if ( !is_null( Input::get('cliente_id') ) )
+        {
+            //$cliente = Cliente::find( (int)Input::get('cliente_id') );
+            $cliente = Cliente::leftJoin('core_terceros','core_terceros.id','=','vtas_clientes.core_tercero_id')
+                                ->leftJoin('vtas_vendedores','vtas_vendedores.id','=','vtas_clientes.vendedor_id')
+                                ->leftJoin('vtas_condiciones_pago','vtas_condiciones_pago.id','=','vtas_clientes.condicion_pago_id')
+                                ->leftJoin('vtas_listas_precios_encabezados','vtas_listas_precios_encabezados.id','=','vtas_clientes.lista_precios_id')
+                                ->leftJoin('vtas_listas_dctos_encabezados','vtas_listas_dctos_encabezados.id','=','vtas_clientes.lista_descuentos_id')
+                                ->leftJoin('inv_bodegas','inv_bodegas.id','=','vtas_clientes.inv_bodega_id')
+                                ->where('vtas_clientes.estado','Activo')
+                                ->where( 'vtas_clientes.id', (int)Input::get('cliente_id') )
+                                ->select(
+                                            'vtas_clientes.id',
+                                            'vtas_clientes.id AS cliente_id',
+                                            'vtas_clientes.liquida_impuestos',
+                                            'vtas_clientes.zona_id',
+                                            'vtas_clientes.clase_cliente_id',
+                                            'core_terceros.id AS core_tercero_id',
+                                            'core_terceros.descripcion',
+                                            'core_terceros.numero_identificacion',
+                                            'core_terceros.direccion1',
+                                            'core_terceros.telefono1',
+                                            'core_terceros.email',
+                                            'vtas_vendedores.id AS vendedor_id',
+                                            'vtas_vendedores.equipo_ventas_id',
+                                            'inv_bodegas.id AS inv_bodega_id',
+                                            'vtas_condiciones_pago.dias_plazo',
+                                            'vtas_listas_precios_encabezados.id AS lista_precios_id',
+                                            'vtas_listas_dctos_encabezados.id AS lista_descuentos_id'
+                                        )
+                                ->get()
+                                ->first();
+
+            $item_sugerencia_cliente = $this->get_linea_item_sugerencia( $cliente, 'active', 1, 0 );
+        }
+
+        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'ventas.create', $tabla, $item_sugerencia_cliente );
     }
 
     /**
@@ -689,7 +726,7 @@ class VentaController extends TransaccionController
                                             'vtas_clientes.zona_id',
                                             'vtas_clientes.clase_cliente_id',
                                             'core_terceros.id AS core_tercero_id',
-                                            'core_terceros.descripcion AS nombre_cliente',
+                                            'core_terceros.descripcion',
                                             'core_terceros.numero_identificacion',
                                             'core_terceros.direccion1',
                                             'core_terceros.telefono1',
@@ -724,27 +761,8 @@ class VentaController extends TransaccionController
                 $ultimo_item = 1;
             }
 
-            $html .= '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
-                                '" data-primer_item="'.$primer_item.
-                                '" data-accion="na" '.
-                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+            $html .= $this->get_linea_item_sugerencia( $linea, $clase, $primer_item, $ultimo_item );
 
-            $html .=            '" data-nombre_cliente="'.$linea->nombre_cliente.
-                                '" data-zona_id="'.$linea->zona_id.
-                                '" data-clase_cliente_id="'.$linea->clase_cliente_id.
-                                '" data-liquida_impuestos="'.$linea->liquida_impuestos.
-                                '" data-core_tercero_id="'.$linea->core_tercero_id.
-                                '" data-direccion1="'.$linea->direccion1.
-                                '" data-telefono1="'.$linea->telefono1.
-                                '" data-numero_identificacion="'.$linea->numero_identificacion.
-                                '" data-vendedor_id="'.$linea->vendedor_id.
-                                '" data-equipo_ventas_id="'.$linea->equipo_ventas_id.
-                                '" data-inv_bodega_id="'.$linea->inv_bodega_id.
-                                '" data-email="'.$linea->email.
-                                '" data-dias_plazo="'.$linea->dias_plazo.
-                                '" data-lista_precios_id="'.$linea->lista_precios_id.
-                                '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
-                                '" > '.$linea->nombre_cliente.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
             $num_item++;
         }
 
@@ -754,6 +772,32 @@ class VentaController extends TransaccionController
 
         $html .= '</div>';
 
+        return $html;
+    }
+
+    public function get_linea_item_sugerencia( Cliente $linea, $clase, $primer_item, $ultimo_item )
+    {
+        $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+
+        $html .=            '" data-nombre_cliente="'.$linea->descripcion.
+                            '" data-zona_id="'.$linea->zona_id.
+                            '" data-clase_cliente_id="'.$linea->clase_cliente_id.
+                            '" data-liquida_impuestos="'.$linea->liquida_impuestos.
+                            '" data-core_tercero_id="'.$linea->core_tercero_id.
+                            '" data-direccion1="'.$linea->direccion1.
+                            '" data-telefono1="'.$linea->telefono1.
+                            '" data-numero_identificacion="'.$linea->numero_identificacion.
+                            '" data-vendedor_id="'.$linea->vendedor_id.
+                            '" data-equipo_ventas_id="'.$linea->equipo_ventas_id.
+                            '" data-inv_bodega_id="'.$linea->inv_bodega_id.
+                            '" data-email="'.$linea->email.
+                            '" data-dias_plazo="'.$linea->dias_plazo.
+                            '" data-lista_precios_id="'.$linea->lista_precios_id.
+                            '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
+                            '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
         return $html;
     }
     
@@ -1301,6 +1345,10 @@ class VentaController extends TransaccionController
 
         $lineas_registros = json_decode( $request->lineas_registros );
 
+        $registros_medio_pago = new RegistrosMediosPago;
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );        
+        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+
         VentaController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
 
         return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
@@ -1451,7 +1499,6 @@ class VentaController extends TransaccionController
             }else{
                 $remision_doc_encabezado_id .= ','.$doc_remision_id;
             }
-
         }
 
         $doc_encabezado->valor_total = $total_documento;
@@ -1459,7 +1506,7 @@ class VentaController extends TransaccionController
         $doc_encabezado->save();
         
         // Un solo registro contable débito
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        $forma_pago = $doc_encabezado->forma_pago;
 
         // Cartera ó Caja (DB)
         VentaController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );

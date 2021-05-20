@@ -60,6 +60,11 @@ class InvDocEncabezado extends Model
         return VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
     }
 
+    public function cliente()
+    {
+        return Cliente::where( 'core_tercero_id', $this->core_tercero_id )->get()->first();
+    }
+
     public function enlace_show_documento()
     {
         $enlace = '<a href="' . url( 'inventarios/' . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';

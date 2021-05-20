@@ -156,11 +156,16 @@ class TransaccionController extends Controller
     }
 
     // FORMULARIO PARA CREAR UN NUEVO REGISTRO
-    public function crear( $app, $modelo, $transaccion, $vista, $tabla = null )
+    public function crear( $app, $modelo, $transaccion, $vista, $tabla = null, $item_sugerencia_cliente = null )
     {   
         if ( is_null($tabla) )
         {
             $tabla = '';
+        }
+
+        if ( is_null($tabla) )
+        {
+            $item_sugerencia_cliente = '';
         }
         
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
@@ -201,7 +206,7 @@ class TransaccionController extends Controller
 
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
         
-        return view( $vista, compact('form_create','miga_pan','tabla','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias'));
+        return view( $vista, compact( 'form_create','miga_pan','tabla','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias', 'item_sugerencia_cliente' ) );
     }
     
     /*
