@@ -38,7 +38,12 @@
     </div>
 
     <div style="position: absolute; right: 75mm; top: 41mm;">
-        {{ $doc_encabezado->fecha }} 
+        <?php
+                $fecha = date_create($doc_encabezado->fecha);
+                $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
+                $fecha_final = date_format($fecha,"d")." ".$meses[date_format($fecha,"n")-1]." ".date_format($fecha,"Y");
+            ?>
+            {{ $fecha_final }}
     </div>
 
     <div style="position: absolute; left: 40mm; top: 94mm;">
