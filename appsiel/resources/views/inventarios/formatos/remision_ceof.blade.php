@@ -19,33 +19,38 @@
     </style>
 </head>
 <body>
-    <div style="position: absolute; left: 40mm; top: 64mm;">
+    <div style="position: absolute; left: 40mm; top: 67mm;">
         {{ $doc_encabezado->tercero_nombre_completo }} @if( !is_null($doc_encabezado->documento_ventas_padre()) )
-       / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
+       / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}        
     @endif
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 70mm;">
+    <div style="position: absolute; left: 40mm; top: 73mm;">
         {{ $doc_encabezado->numero_identificacion}}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 76mm;">
+    <div style="position: absolute; left: 40mm; top: 79mm;">
         {{ $empresa->direccion1 }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 82mm;">
+    <div style="position: absolute; left: 40mm; top: 85mm;">
         {{ $ciudad->descripcion }} 
     </div>
 
-    <div style="position: absolute; left: 144mm; top: 88mm;">
-        
+    <div style="position: absolute; right: 75mm; top: 41mm;">
+        <?php
+                $fecha = date_create($doc_encabezado->fecha);
+                $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
+                $fecha_final = date_format($fecha,"d")." ".$meses[date_format($fecha,"n")-1]." ".date_format($fecha,"Y");
+            ?>
+            {{ $fecha_final }}
     </div>
 
     <div style="position: absolute; left: 40mm; top: 94mm;">
         CONSTANCIA ENTREGA OBRA FINALIZADA
     </div>
 
-    <div style="position: absolute; left: 5mm; top: 104mm; width: 193mm">
+    <div style="position: absolute; left: 15mm; top: 112mm; width: 193mm">
 
     <table width="100%">
         <?php
@@ -55,21 +60,19 @@
         @foreach($doc_registros as $linea )
         <tr>
             <td style="text-align: center;" width="15%"> {{ $linea->producto_id }} </td>
-            <td width="70%"> {{ $linea->producto_descripcion }} </td>
-            <td style="text-align: right;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }}</td>
+            <td width="60%"> {{ $linea->producto_descripcion }} </td>
+            <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }}</td>
         </tr>
                 <?php 
                     $total_cantidad += $linea->cantidad;
-                    $numero++;
-                    
+                    $numero++;                    
                 ?>
         @endforeach
-    </table>
-        
+    </table>       
 
     </div>
 
-    <div style="position: absolute; left: 194mm; top: 253mm;">        
+    <div style="position: absolute; left: 187mm; top: 248mm;">        
         {{ abs($total_cantidad) }}
     </div>
 
