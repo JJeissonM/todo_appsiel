@@ -1,103 +1,108 @@
 @extends('layouts.principal')
 
 @section('content')
-{{ Form::bsMigaPan($miga_pan) }}
-<hr>
+	{{ Form::bsMigaPan($miga_pan) }}
+	<hr>
 
-<style>
-	table th {
-		padding: 15px;
-		text-align: center;
-		border-bottom: solid 2px;
-		background-color: #E5E4E3;
-	}
+	<style>
+		table th {
+			padding: 15px;
+			text-align: center;
+			border-bottom: solid 2px;
+			background-color: #E5E4E3;
+		}
 
-	table td {
-		padding: 2px;
-	}
-</style>
+		table td {
+			padding: 2px;
+		}
+	</style>
 
-<hr>
+	<hr>
 
-@include('layouts.mensajes')
+	@include('layouts.mensajes')
 
-<div class="container-fluid">
-	<div class="marco_formulario">
-		<h4 style="text-align: center;">
-			Ingreso de {{ $titulo }}
-			<br>
-			Año lectivo: {{ $periodo_lectivo->descripcion }}
-		</h4>
-		<hr>
-		{{ Form::open( [ 'url' => 'calificaciones/almacenar_calificacion', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario'] ) }}
+	<div class="container-fluid">
+		<div class="marco_formulario">
+			<h4 style="text-align: center;">
+				Ingreso de {{ $titulo }}
+				<br>
+				Año lectivo: {{ $periodo_lectivo->descripcion }}
+			</h4>
+			<hr>
+			{{ Form::open( [ 'url' => 'calificaciones/almacenar_calificacion', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario'] ) }}
 
-		{{ Form::hidden('escala_min', $escala_min_max[0], ['id' =>'escala_min']) }}
-		{{ Form::hidden('escala_max', $escala_min_max[1], ['id' =>'escala_max']) }}
+				{{ Form::hidden('escala_min', $escala_min_max[0], ['id' =>'escala_min']) }}
+				{{ Form::hidden('escala_max', $escala_min_max[1], ['id' =>'escala_max']) }}
 
-		{{ Form::hidden('id_colegio', $id_colegio, ['id' =>'id_colegio']) }}
-		{{ Form::hidden('creado_por', $creado_por, ['id' =>'creado_por']) }}
-		{{ Form::hidden('modificado_por', $modificado_por, ['id' =>'modificado_por']) }}
-		{{ Form::hidden('id_periodo', $periodo->id, ['id' =>'id_periodo']) }}
-		{{ Form::hidden('curso_id', $curso->id, ['id' =>'curso_id']) }}
-		{{ Form::hidden('anio', $anio, ['id' =>'anio']) }}
-		{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
-		{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
+				{{ Form::hidden('id_colegio', $id_colegio, ['id' =>'id_colegio']) }}
+				{{ Form::hidden('creado_por', $creado_por, ['id' =>'creado_por']) }}
+				{{ Form::hidden('modificado_por', $modificado_por, ['id' =>'modificado_por']) }}
+				{{ Form::hidden('id_periodo', $periodo->id, ['id' =>'id_periodo']) }}
+				{{ Form::hidden('curso_id', $curso->id, ['id' =>'curso_id']) }}
+				{{ Form::hidden('anio', $anio, ['id' =>'anio']) }}
+				{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
+				{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
 
-		{{ Form::hidden('codigo_matricula',null,['id'=>'codigo_matricula']) }}
-		{{ Form::hidden('id_estudiante',null,['id'=>'id_estudiante']) }}
+				{{ Form::hidden('codigo_matricula',null,['id'=>'codigo_matricula']) }}
+				{{ Form::hidden('id_estudiante',null,['id'=>'id_estudiante']) }}
 
-		{{ Form::hidden('id_calificacion_aux',null,['id'=>'id_calificacion_aux']) }}
-		@for ($c=1; $c < 16; $c++) {{ Form::hidden('C'.$c,null,['id'=>'C'.$c]) }} @endfor {{ Form::hidden('logros',null,['id'=>'logros']) }} {{ Form::hidden('calificacion',null,['id'=>'calificacion']) }} {{ Form::hidden('id_calificacion',null,['id'=>'id_calificacion']) }} {{ Form::hidden('id_app',Input::get('id')) }} {{ Form::hidden('return', $ruta ) }} 
-		{{Form::close()}} 
+				{{ Form::hidden('id_calificacion_aux',null,['id'=>'id_calificacion_aux']) }}
+				@for($c=1; $c < 16; $c++) 
+					{{ Form::hidden('C'.$c,null,['id'=>'C'.$c]) }} 
+				@endfor 
+				{{ Form::hidden('logros',null,['id'=>'logros']) }} {{ Form::hidden('calificacion',null,['id'=>'calificacion']) }}
+				{{ Form::hidden('id_calificacion',null,['id'=>'id_calificacion']) }} {{ Form::hidden('id_app',Input::get('id')) }} 
+				{{ Form::hidden('return', $ruta ) }} 
+			{{Form::close()}} 
 
-		<div class="row">
-			<div class="col-sm-12">
-				<b>Año:</b><code>{{ $anio }}</code>
-				<b>Periodo:</b> <code>{{ $periodo->descripcion }}</code>
-				<b>Curso:</b><code>{{ $curso->descripcion }}</code>
-				<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
+			<div class="row">
+				<div class="col-sm-12">
+					<b>Año:</b><code>{{ $anio }}</code>
+					<b>Periodo:</b> <code>{{ $periodo->descripcion }}</code>
+					<b>Curso:</b><code>{{ $curso->descripcion }}</code>
+					<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
+				</div>
 			</div>
-		</div>
 
-		<div class="row">
-			<div class="col-sm-12">
-				<h4><i class="fa fa-info-circle"> &nbsp; </i>Use las flechas de dirección y tabular para desplazarse: &nbsp;<i class="fa fa-arrow-down"></i>&nbsp;<i class="fa fa-arrow-up"></i>&nbsp;<b>TAB </b></h4>
+			<div class="row">
+				<div class="col-sm-12">
+					<h4><i class="fa fa-info-circle"> &nbsp; </i>Use las flechas de dirección y tabular para desplazarse: &nbsp;<i class="fa fa-arrow-down"></i>&nbsp;<i class="fa fa-arrow-up"></i>&nbsp;<b>TAB </b></h4>
+				</div>
+				</br></br>
 			</div>
-			</br></br>
-		</div>
 
-		<p style="color: gray; text-align: right;" id="mensaje_formulario">
+			<p style="color: gray; text-align: right;" id="mensaje_formulario">
 
-			<spam id="mensaje_inicial">
-				&nbsp;</spam>
+				<spam id="mensaje_inicial">
+					&nbsp;</spam>
 
-			<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
-				Sin guardar</spam>
+				<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
+					Sin guardar</spam>
 
-			<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
-				Guardando...</spam>
+				<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
+					Guardando...</spam>
 
-			<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
-				Calificaciones guardadas</spam>
-		</p>
+				<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
+					Calificaciones guardadas</spam>
+			</p>
 
-		<div class="row">
-			<div class="col-sm-12">
+			<div class="row">
+				<div class="col-sm-12">
 
-				@yield('tabla')
+					@yield('tabla')
 
+				</div>
 			</div>
-		</div>
 
-		<div style="text-align: center; width: 100%;">
-			<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
-			<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
-		</div>
+			<div style="text-align: center; width: 100%;">
+				<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
+				<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
+			</div>
 
+		</div>
 	</div>
-</div>
 
-@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente'])
+	@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente'])
 
 @endsection
 
@@ -115,6 +120,10 @@
 		var caja
 		caja = document.getElementById("caja_logro").value;
 		document.getElementById("logros_" + caja).value = a_value;
+		$('#mensaje_inicial').hide();
+		$('#mensaje_guardadas').hide();
+		$('#mensaje_sin_guardar').show();
+		$('#bs_boton_guardar').prop('disabled', false);
 	}
 
 	$(document).ready(function() {
@@ -167,41 +176,43 @@
 		// Cuando se presiona una caja de texto
 		$("input[type=text]").keyup(function(e) {
 
-			//Si NO se presiona flecha hacia abajo
-			if (e.keyCode != 40) 
-			{ 
-				// Si NO se presiona flecha hacia arriba
-				if (e.keyCode != 38)
-				{ 
-					if ($.inArray(e.keyCode, teclas_especiales) < 0) { // Si NO se presionan teclas especiales
-
-						if ( validar_valor_ingresado( $(this) ) )
-						{
-							calcular_promedio( $(this) );
-						}
-
-						// Cuando cambie el valor de una celda, se cambian los mensajes
-						$('#mensaje_inicial').hide();
-						$('#mensaje_guardadas').hide();
-						$('#mensaje_sin_guardar').show();
-						$('#bs_boton_guardar').prop('disabled', false);
-
-					}
-
-				} else {
-					var ID = $(this).attr("id");
-					var n = ID.split("_");
-					var j = parseInt(n[1]) - 1;
-					var sig = ("#" + n[0] + "_" + j);
-					$(sig).focus().select();
-				}
-			} else { // Si SI se presiona flecha hacia abajo
-
+			// Si se presiona flecha hacia abajo
+			if (e.keyCode == 40) 
+			{
 				var ID = $(this).attr("id");
 				var n = ID.split("_");
 				var j = parseInt(n[1]) + 1;
 				var sig = ("#" + n[0] + "_" + j);
 				$(sig).focus().select();
+				return false;
+			}
+
+			// Si se presiona flecha hacia arriba
+			if (e.keyCode == 38)
+			{ 
+				var ID = $(this).attr("id");
+				var n = ID.split("_");
+				var j = parseInt(n[1]) - 1;
+				var sig = ("#" + n[0] + "_" + j);
+				$(sig).focus().select();
+				return false;
+			}
+
+			// inArray devuelve la posicion del codigo de la tecla presionada (e.keyCode) dentro del array: 0,1,... y un valor negativo si no se halla el codigo.
+
+			// Si NO se presionan teclas especiales, el codigo no esta en el Array
+			if( $.inArray(e.keyCode, teclas_especiales) < 0)
+			{
+				if ( validar_valor_ingresado( $(this) ) )
+				{
+					calcular_promedio( $(this) );
+				}
+
+				// Cuando cambie el valor de una celda, se cambian los mensajes
+				$('#mensaje_inicial').hide();
+				$('#mensaje_guardadas').hide();
+				$('#mensaje_sin_guardar').show();
+				$('#bs_boton_guardar').prop('disabled', false);
 			}
 		});
 
@@ -297,9 +308,11 @@
 			//determinar si hay pesos o no
 			$.get(url + 'pesos/' + curso + '/' + periodo + '/' + asignatura + '/verificar', function(respuesta) {
 				$(clase).each(function() {
+					/*
 					if (!validar_valor_ingresado($('#' + this.id))) {
 						return;
 					}
+					*/
 					val = this.value; // este this es diferente a $(this)
 					totalPesos += 1;
 					if (val !== "" && val !== 0) {
@@ -312,6 +325,10 @@
 								async: false,
 								data: null,
 								success: function(encabezado) {
+									if( encabezado == 'false' )
+									{
+										encabezado = 0;
+									}
 									total = total + (val * (encabezado / 100));
 								}
 							});
@@ -409,7 +426,8 @@
 			var data = $("#formulario_modal").serialize();
 
 			$.post(url, data, function(respuesta) {
-				if (respuesta == 'pesos') {
+				if (respuesta == 'pesos')
+				{
 					$('#div_spin').hide();
 					alert('El peso total sobrepasa 100%, debe indicar un peso menor.');
 				} else {
@@ -418,7 +436,21 @@
 
 					$("#alert_mensaje").fadeIn();
 
-					if (respuesta == "true") {
+					if (respuesta == "true")
+					{
+						if ( $('#peso').val() != 0 )
+						{
+							var columna_calificacion = $("#columna_calificacion").val();
+							var btn_columna = $( "#btn_" + columna_calificacion );
+							btn_columna.attr( 'data-peso', $('#peso').val() );
+							btn_columna.attr( 'title', 'Peso = ' + $('#peso').val() );
+							$("#nota_hay_pesos").show();
+							
+							recalcular_definitivas();
+
+							almacenar_definitivas();
+						}							
+						
 						$("#myModal").modal('hide');
 						alert('Encabezado de la calificación guardado.');
 					}
@@ -428,6 +460,34 @@
 
 		});
 
+		function recalcular_definitivas()
+		{
+			var linea = 1;
+			$('#tabla_registros > tbody > tr').each(function(i, item) {
+				// Por cada una de las cajas de texto de la linea
+				var total_def = 0;
+				$('.valores_' + linea).each(function() {
+
+					var id = $(this).attr('id');
+					var vec_id = id.split("_");
+					var celda_encabezado_columna = $( ".celda_" + vec_id[0] );
+					var peso_columna = parseFloat( celda_encabezado_columna.find('button').attr('data-peso') );
+
+					total_def += this.value * (peso_columna / 100);
+
+				});
+				
+				$( '#calificacion_texto' + linea ).val( total_def.toFixed(2) );
+
+				linea++;
+			});
+		}
+
+		
+		function almacenar_definitivas()
+		{
+			alert('almacenar definitivas.');
+		}
 
 		function setCookie(cname, cvalue, exdays) {
 			var d = new Date();

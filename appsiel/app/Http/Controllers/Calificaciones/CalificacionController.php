@@ -214,16 +214,24 @@ class CalificacionController extends Controller
         // Validación del ingreso de calificaciones
         $parametros = config('calificaciones');
 
-        if ($parametros['permitir_calificaciones_sin_logros'] == 'No') {
+        if ($parametros['permitir_calificaciones_sin_logros'] == 'No')
+        {
             $logros = Logro::get_logros($this->colegio->id, $request->curso_id, $request->id_asignatura, $request->id_periodo, $nro_registros, $search);
-            if (empty($logros)) {
+            if (empty($logros))
+            {
                 return redirect(url()->previous())->with('mensaje_error', 'No se permite ingresar calificaciones para las asignaturas que aún no tienen logros en el periodo seleccionado.');
             }
         }
 
         $periodo = Periodo::find($request->id_periodo);
+        $datos_asignatura = CursoTieneAsignatura::get_datos_asignacion($periodo->periodo_lectivo_id, $request->curso_id, $request->id_asignatura);
 
-        // Warning!!!! El año se toma del periodo. Analizar si está bien.
+        if ( is_null($datos_asignatura) )
+        {
+            return redirect()->back()->with('mensaje_error', 'Hay problemas en la asignación de la asignatura al curso. Consulte con el administrador.');
+        }
+
+        // Warning!!!! El año se toma del periodo.
         $anio = explode("-", $periodo->fecha_desde)[0];
 
         $periodo_lectivo = PeriodoLectivo::find($periodo->periodo_lectivo_id);
@@ -234,10 +242,21 @@ class CalificacionController extends Controller
         // Warning!!! No usar funciones de Eloquent en el controller (acoplamiento al framework) 
         $curso = Curso::find($request->curso_id);
 
-        $datos_asignatura = CursoTieneAsignatura::get_datos_asignacion($periodo->periodo_lectivo_id, $request->curso_id, $request->id_asignatura);
-
-        if (is_null($datos_asignatura)) {
-            return redirect()->back()->with('mensaje_error', 'Hay problemas en la asignación de la asignatura al curso. Consulte con el administrador.');
+        $pesos_encabezados = EncabezadoCalificacion::where([
+                                                            [ 'periodo_id', '=', $request->id_periodo ],
+                                                            [ 'curso_id', '=', $request->curso_id ],
+                                                            [ 'asignatura_id', '=', $request->id_asignatura ],
+                                                            [ 'peso', '>', 0 ]
+                                                        ])
+                                                    ->select('columna_calificacion','peso')
+                                                    ->orderBy('columna_calificacion')
+                                                    ->get();
+        $array_pesos = array_fill(0, 16, 0);
+        $hay_pesos = false;
+        foreach ($pesos_encabezados as $peso_encabezado )
+        {
+            $array_pesos[ (int)str_replace('C', '', $peso_encabezado->columna_calificacion ) ] = $peso_encabezado->peso;
+            $hay_pesos = true;
         }
 
         $creado_por = Auth::user()->email;
@@ -246,7 +265,8 @@ class CalificacionController extends Controller
         // Se crea un array con los valores de las calificaciones de cada estudiante
         $vec_estudiantes = array();
         $i = 0;
-        foreach ($estudiantes as $estudiante) {
+        foreach ($estudiantes as $estudiante)
+        {
             $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
             $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo; //." ".$estudiante->apellido2." ".$estudiante->nombres;
             $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
@@ -254,7 +274,8 @@ class CalificacionController extends Controller
             $vec_estudiantes[$i]['calificacion'] = 0;
             $vec_estudiantes[$i]['logros'] = '';
             $vec_estudiantes[$i]['id_calificacion_aux'] = "no";
-            for ($c = 1; $c < 16; $c++) {
+            for ($c = 1; $c < 16; $c++)
+            {
                 $key = "C" . $c;
                 $vec_estudiantes[$i][$key] = 0;
             }
@@ -269,7 +290,8 @@ class CalificacionController extends Controller
                 ->first();
 
             // Si el estudiante tiene calificacion se envian los datos de esta para editarp
-            if (!is_null($calificacion_est)) {
+            if (!is_null($calificacion_est))
+            {
                 $creado_por = $calificacion_est->creado_por;
                 $modificado_por = Auth::user()->email;
                 // Obtener la calificación auxiliar del estudiante
@@ -292,7 +314,8 @@ class CalificacionController extends Controller
                 $vec_estudiantes[$i]['logros'] = $calificacion_est->logros;
                 $vec_estudiantes[$i]['id_calificacion_aux'] = $calificacion_aux->id;
 
-                for ($c = 1; $c < 16; $c++) {
+                for ($c = 1; $c < 16; $c++)
+                {
                     $key = "C" . $c;
                     $vec_estudiantes[$i][$key] = $calificacion_aux->$key;
                 }
@@ -320,6 +343,8 @@ class CalificacionController extends Controller
             'ruta' => $request->ruta,
             'miga_pan' => $miga_pan,
             'escala_min_max' => $escala_min_max,
+            'array_pesos' => $array_pesos,
+            'hay_pesos' => $hay_pesos,
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por,
             'id_colegio' => $this->colegio->id
@@ -361,9 +386,8 @@ class CalificacionController extends Controller
     }
 
 
-    public static function almacenar_calificacion(Request $request)
+    public function almacenar_calificacion(Request $request)
     {
-
         $id_calificacion = $request->id_calificacion;
         $calificacion_texto = $request->calificacion;
         $id_calificacion_aux = $request->id_calificacion_aux;
@@ -375,7 +399,8 @@ class CalificacionController extends Controller
 
         if (is_null($calificacion)) {
             // Crear nuevos registros
-            if ($request->calificacion != 0) {
+            if ($request->calificacion != 0)
+            {
                 $calificacion_creada = Calificacion::create($request->all());
                 $calificacion_aux_creada = CalificacionAuxiliar::create($request->all());
 
@@ -478,7 +503,13 @@ class CalificacionController extends Controller
     //verificar si el promedio es por pesos o normal
     public function get_peso($curso, $periodo, $asignatura, $celda)
     {
-        $ec = EncabezadoCalificacion::where([['curso_id', $curso], ['asignatura_id', $asignatura], ['periodo_id', $periodo], ['columna_calificacion', 'C' . $celda]])->first();
+        $ec = EncabezadoCalificacion::where( [
+                                                    ['curso_id', $curso],
+                                                    ['asignatura_id', $asignatura],
+                                                    ['periodo_id', $periodo],
+                                                    ['columna_calificacion', 'C' . $celda]
+                                            ])
+                                        ->first();
         if ($ec != null) {
             return $ec->peso;
         }

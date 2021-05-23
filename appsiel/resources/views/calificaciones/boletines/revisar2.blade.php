@@ -130,7 +130,7 @@
 								}
 
 								$tbody.='<tr>
-										<td width="350px">'.$asignatura->descripcion.'</td>';
+										<td width="350px">'.$asignatura->descripcion . $asignatura->id .'</td>';
 
 								if( $calificacion == 0)
 								{
@@ -141,28 +141,11 @@
 										$escala = (object) array('id' => 0, 'nombre_escala' => '');
 									}
 									$tbody.='<td>'.$calificacion.'( '.$escala->nombre_escala.')</td>';
-								}/**/
-
-								if ( !is_null($escala) ) 
-								{
-									$logros = App\Calificaciones\Logro::where('escala_valoracion_id',$escala->id)->where('periodo_id',$periodo->id)->where('curso_id',$estudiante->curso_id)->where('asignatura_id',$asignatura->id)->where('estado','Activo')->get();
-
-									$n_nom_logros = count($logros);
-								}else{
-									$logros = (object) array('descripcion' => '');
-									$n_nom_logros = 0;
 								}
 								
-								$tbody.='<td ';if($n_nom_logros==0){ $tbody.=$estilo_advertencia;}
-								$tbody.='>
-										<ul>';
-										foreach($logros as $un_logro)
-										{
-											$tbody.='<li>'.$un_logro->descripcion.'</li>';
-										}		
-								$tbody.='</ul>
-										</td>
-											</tr>';
+								$tbody .=  \View::make('calificaciones.boletines.revisar2_incluir_celda_logros',[
+												'escala'=>$escala,'periodo_id'=>$periodo->id,'curso_id'=>$estudiante->curso_id,'asignatura_id'=>$asignatura->id, 'obj_calificacion' => $obj_calificacion])->render();
+								$tbody.='</tr>';
 
 							} //fin recorrido de asignaturas del estudiante
 
