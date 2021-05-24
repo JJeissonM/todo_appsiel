@@ -15,6 +15,20 @@
 		table td {
 			padding: 2px;
 		}
+		#tabla_lineas_registros_calificaciones{
+			color: white;
+		}
+
+		#tabla_lineas_registros_calificaciones td{
+			color: white;
+			background-color: white;
+		}
+
+		#tabla_lineas_registros_calificaciones th{
+			color: white;
+			background-color: white;
+			border: 0px solid;
+		}
 	</style>
 
 	<hr>
@@ -28,32 +42,7 @@
 				<br>
 				Año lectivo: {{ $periodo_lectivo->descripcion }}
 			</h4>
-			<hr>
-			{{ Form::open( [ 'url' => 'calificaciones/almacenar_calificacion', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario'] ) }}
-
-				{{ Form::hidden('escala_min', $escala_min_max[0], ['id' =>'escala_min']) }}
-				{{ Form::hidden('escala_max', $escala_min_max[1], ['id' =>'escala_max']) }}
-
-				{{ Form::hidden('id_colegio', $id_colegio, ['id' =>'id_colegio']) }}
-				{{ Form::hidden('creado_por', $creado_por, ['id' =>'creado_por']) }}
-				{{ Form::hidden('modificado_por', $modificado_por, ['id' =>'modificado_por']) }}
-				{{ Form::hidden('id_periodo', $periodo->id, ['id' =>'id_periodo']) }}
-				{{ Form::hidden('curso_id', $curso->id, ['id' =>'curso_id']) }}
-				{{ Form::hidden('anio', $anio, ['id' =>'anio']) }}
-				{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
-				{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
-
-				{{ Form::hidden('codigo_matricula',null,['id'=>'codigo_matricula']) }}
-				{{ Form::hidden('id_estudiante',null,['id'=>'id_estudiante']) }}
-
-				{{ Form::hidden('id_calificacion_aux',null,['id'=>'id_calificacion_aux']) }}
-				@for($c=1; $c < 16; $c++) 
-					{{ Form::hidden('C'.$c,null,['id'=>'C'.$c]) }} 
-				@endfor 
-				{{ Form::hidden('logros',null,['id'=>'logros']) }} {{ Form::hidden('calificacion',null,['id'=>'calificacion']) }}
-				{{ Form::hidden('id_calificacion',null,['id'=>'id_calificacion']) }} {{ Form::hidden('id_app',Input::get('id')) }} 
-				{{ Form::hidden('return', $ruta ) }} 
-			{{Form::close()}} 
+			<hr>		
 
 			<div class="row">
 				<div class="col-sm-12">
@@ -72,9 +61,6 @@
 			</div>
 
 			<p style="color: gray; text-align: right;" id="mensaje_formulario">
-
-				<spam id="mensaje_inicial">
-					&nbsp;</spam>
 
 				<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
 					Sin guardar</spam>
@@ -99,10 +85,54 @@
 				<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
 			</div>
 
+			<div class="row">
+				<div class="col-sm-12">
+					{{ Form::open( [ 'url' => 'calificaciones/almacenar_calificacion', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario'] ) }}
+
+						{{ Form::hidden('escala_min', $escala_min_max[0], ['id' =>'escala_min']) }}
+						{{ Form::hidden('escala_max', $escala_min_max[1], ['id' =>'escala_max']) }}
+
+						{{ Form::hidden('id_colegio', $id_colegio, ['id' =>'id_colegio']) }}
+						{{ Form::hidden('creado_por', $creado_por, ['id' =>'creado_por']) }}
+						{{ Form::hidden('modificado_por', $modificado_por, ['id' =>'modificado_por']) }}
+						{{ Form::hidden('id_periodo', $periodo->id, ['id' =>'id_periodo']) }}
+						{{ Form::hidden('curso_id', $curso->id, ['id' =>'curso_id']) }}
+						{{ Form::hidden('anio', $anio, ['id' =>'anio']) }}
+						{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
+						{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
+
+						{{ Form::hidden('id_app',Input::get('id')) }} 
+						{{ Form::hidden('return', $ruta ) }}
+
+						{{ Form::bsHidden( 'hay_pesos', $hay_pesos ) }}
+
+						{{ Form::bsHidden( 'lineas_registros_calificaciones', 0 ) }}
+					{{Form::close()}}
+
+					<table class="table" id="tabla_lineas_registros_calificaciones" border="0">
+						<thead>
+							<tr>
+								<th>id_calificacion</th>
+								<th>id_calificacion_aux</th>
+								<th>codigo_matricula</th>
+								<th>id_estudiante</th>
+								@for($c=1; $c < 16; $c++) 
+									<th>C{{$c}}</th>
+								@endfor
+								<th>calificacion</th>
+								<th>logros</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+
+				</div>
+			</div>
+
 		</div>
 	</div>
 
-	@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente'])
+	@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente.'])
 
 @endsection
 
@@ -120,7 +150,6 @@
 		var caja
 		caja = document.getElementById("caja_logro").value;
 		document.getElementById("logros_" + caja).value = a_value;
-		$('#mensaje_inicial').hide();
 		$('#mensaje_guardadas').hide();
 		$('#mensaje_sin_guardar').show();
 		$('#bs_boton_guardar').prop('disabled', false);
@@ -139,15 +168,6 @@
 		var teclas_especiales = [9, 16];
 
 		var guardando = false;
-
-		// Guardar calificaciones cada diez (10) segundos
-		/*setInterval( function(){ 
-	   			if( !guardando )
-	   			{
-	   				guardar_calificaciones();
-	   			}
-	   		}, 10000);
-			*/
 
 		// Vaciar los inputs que tienen cero (0)
 		$("input[type=text]").each(function() {
@@ -172,16 +192,17 @@
 			$("#tabla_registros th.celda_" + vec_id[0]).css('background-color', '#e5e4e3');
 		});
 
-
 		// Cuando se presiona una caja de texto
 		$("input[type=text]").keyup(function(e) {
+
+			var caja_texto_id = $(this).attr("id"); // Cx_x, x=1,2,3...15
+			var n = caja_texto_id.split("_");
+			var numero_fila = parseInt( n[1] );
 
 			// Si se presiona flecha hacia abajo
 			if (e.keyCode == 40) 
 			{
-				var ID = $(this).attr("id");
-				var n = ID.split("_");
-				var j = parseInt(n[1]) + 1;
+				var j = numero_fila + 1;
 				var sig = ("#" + n[0] + "_" + j);
 				$(sig).focus().select();
 				return false;
@@ -189,10 +210,8 @@
 
 			// Si se presiona flecha hacia arriba
 			if (e.keyCode == 38)
-			{ 
-				var ID = $(this).attr("id");
-				var n = ID.split("_");
-				var j = parseInt(n[1]) - 1;
+			{
+				var j = numero_fila - 1;
 				var sig = ("#" + n[0] + "_" + j);
 				$(sig).focus().select();
 				return false;
@@ -200,16 +219,19 @@
 
 			// inArray devuelve la posicion del codigo de la tecla presionada (e.keyCode) dentro del array: 0,1,... y un valor negativo si no se halla el codigo.
 
-			// Si NO se presionan teclas especiales, el codigo no esta en el Array
+			// Si NO se presionan teclas especiales (El codigo no esta en el Array)
 			if( $.inArray(e.keyCode, teclas_especiales) < 0)
 			{
-				if ( validar_valor_ingresado( $(this) ) )
-				{
-					calcular_promedio( $(this) );
-				}
+				validar_valor_ingresado( $(this) ); // Si el valor esta errado, borra el valor ingresado. Luego tambien hay que calcular la definitva
 
+				if( verificar_hay_pesos() )
+				{
+					$( '#calificacion_texto' + numero_fila ).val( calcular_definitiva_una_fila_promedio_poderado( numero_fila ).toFixed(2) );
+				}else{
+					$( '#calificacion_texto' + numero_fila ).val( calcular_definitiva_una_fila_promedio_simple( numero_fila ).toFixed(2) );
+				}
+				
 				// Cuando cambie el valor de una celda, se cambian los mensajes
-				$('#mensaje_inicial').hide();
 				$('#mensaje_guardadas').hide();
 				$('#mensaje_sin_guardar').show();
 				$('#bs_boton_guardar').prop('disabled', false);
@@ -231,132 +253,107 @@
 
 			guardando = true;
 
-			var item;
+			llenar_tabla_lineas_registros();
 
-			$('#mensaje_inicial').hide();
+			var table = $('#tabla_lineas_registros_calificaciones').tableToJSON();
+			$('#lineas_registros_calificaciones').val( JSON.stringify( table ) );
+
+			$('#div_cargando').show();
 			$('#mensaje_sin_guardar').hide();
-			$('#mensaje_guardando').show();
+			
+			var url = $("#formulario").attr('action');
+			var data = $("#formulario").serialize();
 
-			var linea = 1;
-			$('#tabla_registros > tbody > tr').each(function(i, item) {
-				$('#codigo_matricula').val($(item).attr('data-codigo_matricula'));
-				$('#id_estudiante').val($(item).attr('data-id_estudiante'));
+			$.post( url, data, function( respuesta ) {
 
-				$('#id_calificacion').val($(item).attr('data-id_calificacion'));
-				$('#calificacion').val($('#calificacion_texto' + linea).val());
-				$('#logros').val($('#logros_' + linea).val());
-
-				$('#id_calificacion_aux').val($(item).attr('data-id_calificacion_aux'));
-
-				var c = 1;
-				$('.valores_' + linea).each(function() {
-					$('#C' + c).val(this.value);
-					c++;
-
+				$.each(respuesta, function(i, item) {
+					$( "#fila_" + respuesta[i].numero_fila ).attr('data-id_calificacion', respuesta[i].id_calificacion );
+					$( "#fila_" + respuesta[i].numero_fila ).attr('data-id_calificacion_aux', respuesta[i].id_calificacion_aux );
 				});
 
-				var url = $("#formulario").attr('action');
-				var data = $("#formulario").serialize();
+				$('#tabla_lineas_registros_calificaciones').find('tbody:last').html('');
 
-				$.post(url, data, function(respuesta) {
-					$(item).attr('data-id_calificacion', respuesta[0]);
-					$(item).attr('data-calificacion', respuesta[1]);
-					$(item).attr('data-id_calificacion_aux', respuesta[2]);
+		    	$('#popup_alerta_danger').hide();
+				$('#div_cargando').hide();
+				$('#mensaje_guardadas').show();
 
-			    	$('#popup_alerta_danger').hide();
-				}).fail(function( respuesta_error ) {
-				    
-			    	$('#popup_alerta_danger').show();
-					$('#popup_alerta_danger').css('background-color','red');
-					$('#popup_alerta_danger').text( 'Error. Algunos datos no se pudieron almacenar. Por favor actualice la información e intente nuevamente.' );
+				$('#bs_boton_volver').prop('disabled', false);
 
-				    if( respuesta_error.status == 401 )
-				    {
-						$('#popup_alerta_danger').text( 'Error. Su sesión ha terminado de manera inesperada. La información no se pudo almacenar.' );
-						document.location.href = "{{ url()->previous() }}";
-				    }
-				  });
+				guardando = false;
 
-				linea++;
+			}).fail(function( respuesta_error ) {
+			    
+		    	$('#popup_alerta_danger').show();
+				$('#popup_alerta_danger').css('background-color','red');
+				$('#popup_alerta_danger').text( 'Error. Algunos datos no se pudieron almacenar. Por favor actualice la información e intente nuevamente.' );
+
+			    if( respuesta_error.status == 401 )
+			    {
+					$('#popup_alerta_danger').text( 'Error. Su sesión ha terminado de manera inesperada. La información no se pudo almacenar.' );
+					document.location.href = "{ { url()->previous() }}";
+			    }
 			});
-
-			$('#mensaje_guardando').hide();
-			$('#bs_boton_volver').prop('disabled', false);
-
-			$('#mensaje_guardadas').show();
-
-			guardando = false;
+			/**/
 		};
-
-		/*
-		 * calcular_promedio
-		 * obj corresponde al text input, se usa para obtener la fila de la tabla
-		 */
-		function calcular_promedio(obj) {
-			var total, valid_labels, average, val;
-			var clase = '.' + obj.attr('class');
-			var periodo = $('#id_periodo').val();
-			var curso = $('#curso_id').val();
-			var asignatura = $('#id_asignatura').val();
-			var url = "{{url('/')}}" + '/calificaciones/';
-
-			average = 0;
-			total = 0;
-			valid_labels = 0;
-			var totalPesos = 0;
-
-			//determinar si hay pesos o no
-			$.get(url + 'pesos/' + curso + '/' + periodo + '/' + asignatura + '/verificar', function(respuesta) {
-				$(clase).each(function() {
-					/*
-					if (!validar_valor_ingresado($('#' + this.id))) {
-						return;
-					}
-					*/
-					val = this.value; // este this es diferente a $(this)
-					totalPesos += 1;
-					if (val !== "" && val !== 0) {
-						val = parseFloat(val, 10);
-						if (respuesta == 'true') {
-							//pesos
-							$.ajax({
-								type: 'GET',
-								url: url + 'pesos/' + curso + '/' + periodo + '/' + asignatura + '/' + totalPesos + "/listar",
-								async: false,
-								data: null,
-								success: function(encabezado) {
-									if( encabezado == 'false' )
-									{
-										encabezado = 0;
-									}
-									total = total + (val * (encabezado / 100));
-								}
-							});
-						} else {
-							//promedio suma de todo entre numero de elementos
-							valid_labels += 1;
-							total = total + val;
-						}
-					}
-				});
-				if (respuesta == 'true') {
-					//pesos
-					average = total;
-				} else {
-					//promedio suma de todo entre numero de elementos
-					if (valid_labels != 0) {
-						average = total / valid_labels;
-					}
-				}
-				var n = clase.split("_");
-				var j = n[1];
-				$('#calificacion_texto' + j).val(average.toFixed(2));
+		
+		function llenar_tabla_lineas_registros()
+		{
+			var numero_fila = 1;
+			$('#tabla_registros > tbody > tr').each(function(i, obj_fila_tabla ) {
+				var string_fila = generar_string_celdas( obj_fila_tabla, numero_fila );
+				$('#tabla_lineas_registros_calificaciones').find('tbody:last').append('<tr>' + string_fila + '</tr>');
+				numero_fila++;
 			});
 		}
 
+		function generar_string_celdas( obj_fila_tabla, numero_fila )
+		{
+			var celdas = [];
+			var num_celda = 0;
+			
+			celdas[ num_celda ] = '<td>'+ $(obj_fila_tabla).attr('data-id_calificacion') +'</td>';
+			
+			num_celda++;
+			
+			celdas[ num_celda ] = '<td>'+ $(obj_fila_tabla).attr('data-id_calificacion_aux') +'</td>';
+			
+			num_celda++;
+			
+			celdas[ num_celda ] = '<td>'+ $(obj_fila_tabla).attr('data-codigo_matricula') +'</td>';
+			
+			num_celda++;
+			
+			celdas[ num_celda ] = '<td>'+ $(obj_fila_tabla).attr('data-id_estudiante') +'</td>';
+			
+			num_celda++;
+
+			$('.valores_' + numero_fila ).each(function() {
+				celdas[ num_celda ] = '<td>' + this.value + '</td>';
+				num_celda++;
+			});
+			
+			celdas[ num_celda ] = '<td>'+ $( '#calificacion_texto' + numero_fila ).val() +'</td>';
+			
+			num_celda++;
+			
+			celdas[ num_celda ] = '<td>'+ $( '#logros_' + numero_fila ).val() +'</td>';
+
+			var cantidad_celdas = celdas.length;
+			var string_celdas = '';
+			for (var i = 0; i < cantidad_celdas; i++)
+			{
+				string_celdas = string_celdas + celdas[i];
+			}
+
+			return string_celdas;
+		}
+
 		// Validar que sea númerico y que esté entre la escala de valoración
-		function validar_valor_ingresado(obj) {
-			if (obj.attr('class') == 'caja_logros') {
+		function validar_valor_ingresado(obj)
+		{
+			
+			if (obj.attr('class') == 'caja_logros')
+			{
 				return true;
 			}
 
@@ -364,14 +361,12 @@
 			if (obj.val() != '' && !$.isNumeric(obj.val())) {
 				alert("Debe ingresar solo números. Para decimales use punto ( . ). No la coma ( , ).");
 				obj.val('');
-				calcular_promedio(obj);
 				valido = false;
 			}
 
 			if (obj.val() != '' && (obj.val() < escala_min || obj.val() > escala_max)) {
 				alert("La calificación ingresada está por fuera de la escala de valoración. Ingrese un número entre " + escala_min + " y " + escala_max);
 				obj.val('');
-				calcular_promedio(obj);
 				valido = false;
 			}
 
@@ -419,6 +414,14 @@
 
 			$("#alert_mensaje").hide();
 
+			// Para un nuevo registro de encabezado que se le quiera almacenar un peso sin descripcion
+			if ( $('#id_encabezado_calificacion').val() == 0 && $('#descripcion').val() == '' && $('#peso').val() != 0 )
+			{
+				$('#descripcion').focus();
+				alert('Debe ingresar una descripción a la actividad, si quiere asignar un Peso a la calificación.');
+				return false;
+			}
+
 			$('#div_spin').fadeIn();
 
 			// Este formulario se genera al hacer click en el botón Cn (n=1,2,3,4,5,6,...,15) del encabezado
@@ -436,57 +439,153 @@
 
 					$("#alert_mensaje").fadeIn();
 
-					if (respuesta == "true")
+					// Si la Descripcion de la actividad esta vacia entonces, fue eliminada.
+					if ( $('#descripcion').val() == '' )
 					{
-						if ( $('#peso').val() != 0 )
-						{
-							var columna_calificacion = $("#columna_calificacion").val();
-							var btn_columna = $( "#btn_" + columna_calificacion );
-							btn_columna.attr( 'data-peso', $('#peso').val() );
-							btn_columna.attr( 'title', 'Peso = ' + $('#peso').val() );
-							$("#nota_hay_pesos").show();
-							
-							recalcular_definitivas();
-
-							almacenar_definitivas();
-						}							
-						
-						$("#myModal").modal('hide');
-						alert('Encabezado de la calificación guardado.');
+						cambiar_datos_boton( 0 );
+					}else{
+						cambiar_datos_boton( $('#peso').val() );
 					}
 
+					if ( verificar_hay_pesos() )
+					{
+						$("#nota_hay_pesos").show();
+					}else{
+						$("#nota_hay_pesos").hide();
+					}
+					
+					recalcular_definitivas();
+
+					guardar_calificaciones();
+					
+					$("#myModal").modal('hide');
+					alert('El encabezado de la calificación ha sido ' + respuesta + ' correctamente.');
 				}
 			});
 
 		});
 
+		// Se debe ejecutar cuando la ventana modal este abierta. 
+		function cambiar_datos_boton( peso )
+		{
+			var columna_calificacion = $("#columna_calificacion").val();
+			var btn_columna = $( "#btn_" + columna_calificacion );
+			btn_columna.attr( 'data-peso', peso );
+			btn_columna.attr( 'title', 'Peso= ' + peso + '%');					
+
+			if ( peso == 0 )
+			{
+				var color_btn = 'white';
+			}else{
+				var color_btn = '#50B794';
+			}
+
+			btn_columna.attr( 'style', 'background-color: ' + color_btn );
+		}
+
+		function verificar_hay_pesos()
+		{
+			var totalPesos = 0;
+			$('.encabezado_calificacion').each(function() {
+				totalPesos += parseFloat( $(this).attr('data-peso') );
+			});
+
+			if ( totalPesos > 0 )
+			{
+				return true;
+			}
+
+			return false;
+		}
+
 		function recalcular_definitivas()
 		{
-			var linea = 1;
+			if( verificar_hay_pesos() )
+			{
+				calcular_definitivas_promedio_poderado();
+			}else{
+				calcular_definitivas_promedio_simple();
+			}
+		}
+
+		function calcular_definitivas_promedio_poderado()
+		{
+			var numero_fila = 1;
+			// Por cada fila de la tabla
 			$('#tabla_registros > tbody > tr').each(function(i, item) {
-				// Por cada una de las cajas de texto de la linea
-				var total_def = 0;
-				$('.valores_' + linea).each(function() {
-
-					var id = $(this).attr('id');
-					var vec_id = id.split("_");
-					var celda_encabezado_columna = $( ".celda_" + vec_id[0] );
-					var peso_columna = parseFloat( celda_encabezado_columna.find('button').attr('data-peso') );
-
-					total_def += this.value * (peso_columna / 100);
-
-				});
 				
-				$( '#calificacion_texto' + linea ).val( total_def.toFixed(2) );
+				$( '#calificacion_texto' + numero_fila ).val( calcular_definitiva_una_fila_promedio_poderado( numero_fila ).toFixed(2) );
 
-				linea++;
+				numero_fila++;
 			});
 		}
 
-		
-		function almacenar_definitivas()
+		function calcular_definitiva_una_fila_promedio_poderado( numero_fila )
 		{
-			alert('almacenar definitivas.');
+
+			// Por cada caja de texto de la fila
+			var total_def = 0;
+			$('.valores_' + numero_fila).each(function() {
+
+				var peso_columna = get_valor_peso_columna( $(this) );
+
+				total_def += this.value * (peso_columna / 100);
+			});
+			return total_def;
+		}
+
+		function calcular_definitivas_promedio_simple()
+		{
+			var total_def = 0;
+			var numero_fila = 1;
+			// Por cada fila de la tabla
+			$('#tabla_registros > tbody > tr').each(function(i, item) {
+				
+				$( '#calificacion_texto' + numero_fila ).val( calcular_definitiva_una_fila_promedio_simple( numero_fila ).toFixed(2) );
+
+				numero_fila++;
+			});
+		}
+
+		function calcular_definitiva_una_fila_promedio_simple( numero_fila )
+		{
+			var total_def = 0;
+				
+			// Por cada caja de texto de la fila
+			var sumatoria_calificaciones = 0;
+			var n = 0;
+			$( '.valores_' + numero_fila ).each(function() {
+				if ( $.isNumeric( parseFloat( this.value ) ) && parseFloat( this.value ) != 0 )
+				{
+					sumatoria_calificaciones += parseFloat( this.value );
+					n++;
+				}
+			});
+			
+			if ( n!= 0 )
+			{
+				total_def = sumatoria_calificaciones / n;
+			}
+
+			return total_def;
+		}
+
+		function get_valor_peso_columna( obj_input_text )
+		{
+			var btn_columna, peso_columna;
+			btn_columna = get_obj_boton_columna( obj_input_text );
+			peso_columna = parseFloat( btn_columna.attr('data-peso') );
+			return peso_columna;
+		}
+
+		function get_obj_boton_columna( obj_input_text )
+		{
+			var id_input_text, vec_aux_id, celda_encabezado_columna;
+
+			id_input_text = obj_input_text.attr('id');
+			vec_aux_id = id_input_text.split("_");
+			celda_encabezado_columna = $( ".celda_" + vec_aux_id[0] );			
+			return celda_encabezado_columna.find('button');
 		}
 
 		function setCookie(cname, cvalue, exdays) {

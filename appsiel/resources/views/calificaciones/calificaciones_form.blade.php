@@ -465,7 +465,6 @@
 				$(".btn_edit_modal").hide();
 				$(".btn_save_modal").hide();
 
-				/* <li class="list-group-item">Las calificaciones se almacenan automáticamente cada diez (10) segundos.</li> */
 				$("#contenido_modal").html('<div class="well well-lg"><ul class="list-group"><li class="list-group-item">Se pueden guardar las calificaciones en cualquier momento presionando el botón guardar y seguir ingresando información.</li>  <li class="list-group-item">Verifique que antes de salir de la página se muestre el mensaje <spam id="mensaje_guardadas" style="background-color: #b1e6b2;">Calificaciones guardadas</spam></li></ul> <div class="checkbox">  <label><input type="checkbox" name="mostrar_ayuda_calificaciones_form" id="mostrar_ayuda_calificaciones_form" value="true">No volver a mostrar este mensaje.</label> </div></div>');
 
 				setCookie("mostrar_ayuda_calificaciones_form", true, 365);
@@ -481,7 +480,6 @@
 				});
 			}
 		}
-
 	});
 </script>
 @endsection

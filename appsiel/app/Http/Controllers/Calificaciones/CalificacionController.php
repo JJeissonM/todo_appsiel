@@ -388,50 +388,79 @@ class CalificacionController extends Controller
 
     public function almacenar_calificacion(Request $request)
     {
-        $id_calificacion = $request->id_calificacion;
-        $calificacion_texto = $request->calificacion;
-        $id_calificacion_aux = $request->id_calificacion_aux;
+        $lineas_registros_calificaciones = json_decode( $request->lineas_registros_calificaciones );
 
-        // Recibe las calificaciones de una fila (un estudiante)
+        $resultados = [];
+        $numero_fila = 1;
+        $cantidad_registros = count( $lineas_registros_calificaciones );
+        for ($i=0; $i < $cantidad_registros; $i++) 
+        {
+            $id_calificacion = (int)$lineas_registros_calificaciones[$i]->id_calificacion;
+            $calificacion_texto = (float)$lineas_registros_calificaciones[$i]->calificacion;
+            $id_calificacion_aux = (int)$lineas_registros_calificaciones[$i]->id_calificacion_aux;
 
-        // Se verifica si la calificación y las calificaciones auxiliares ya existen
-        $calificacion = Calificacion::find($request->id_calificacion);
+            $linea_datos = [ 'id_colegio' => (int)$request->id_colegio ] +
+                            [ 'anio' => (int)$request->anio ] +
+                            [ 'id_periodo' => (int)$request->id_periodo ] +
+                            [ 'curso_id' => (int)$request->curso_id ] +
+                            [ 'id_asignatura' => (int)$request->id_asignatura ] +
+                            [ 'codigo_matricula' => $lineas_registros_calificaciones[$i]->codigo_matricula ] +
+                            [ 'id_estudiante' => (int)$lineas_registros_calificaciones[$i]->id_estudiante ] +
+                            [ 'calificacion' => $calificacion_texto ] +
+                            [ 'logros' => $lineas_registros_calificaciones[$i]->logros ] +
+                            [ 'creado_por' => $request->creado_por ];
 
-        if (is_null($calificacion)) {
-            // Crear nuevos registros
-            if ($request->calificacion != 0)
+            for ($k=1; $k < 16; $k++)
             {
-                $calificacion_creada = Calificacion::create($request->all());
-                $calificacion_aux_creada = CalificacionAuxiliar::create($request->all());
-
-                $id_calificacion = $calificacion_creada->id;
-                $calificacion_texto = $calificacion_creada->calificacion;
-                $id_calificacion_aux = $calificacion_aux_creada->id;
+                $variable_columna = 'C'.$k;
+                $linea_datos += [ $variable_columna => (float)$lineas_registros_calificaciones[$i]->$variable_columna ];
             }
-        } else {
-            // Actualizar registros existentes
-            $calificacion_aux = CalificacionAuxiliar::find($request->id_calificacion_aux);
+            
+            // Se verifica si la calificación y las calificaciones auxiliares ya existen
+            $calificacion = Calificacion::find( $id_calificacion );
 
-            // Si la calificación ENVIADA es cero se borran de la BD los registros almacenados
-            if ($request->calificacion == 0) {
-                $calificacion->delete();
-                $calificacion_aux->delete();
+            if ( is_null($calificacion) )
+            {
+                // Crear nuevos registros
+                if ( $calificacion_texto != 0 )
+                {
+                    $calificacion_creada = Calificacion::create( $linea_datos );
 
-                $id_calificacion = 'no';
-                $calificacion_texto = 0;
-                $id_calificacion_aux = 'no';
+                    $calificacion_aux_creada = CalificacionAuxiliar::create( $linea_datos );
+
+                    $id_calificacion = $calificacion_creada->id;
+                    $calificacion_texto = $calificacion_creada->calificacion;
+                    $id_calificacion_aux = $calificacion_aux_creada->id;
+                }
+
             } else {
+                // Actualizar registros existentes
+                $calificacion_aux = CalificacionAuxiliar::find( $id_calificacion_aux );
 
-                // Si no, se actualizan la calificación y las auxiliares
-                $calificacion->fill($request->all());
-                $calificacion->save();
+                // Si la calificación ENVIADA es cero se borran de la BD los registros almacenados
+                if ( $calificacion_texto == 0 )
+                {
+                    $calificacion->delete();
+                    $calificacion_aux->delete();
 
-                $calificacion_aux->fill($request->all());
-                $calificacion_aux->save();
+                    $id_calificacion = 'no';
+                    $calificacion_texto = 0;
+                    $id_calificacion_aux = 'no';
+                } else {
+
+                    // Si no, se actualizan la calificación y las auxiliares
+                    $calificacion->fill( $linea_datos );
+                    $calificacion->save();
+
+                    $calificacion_aux->fill( $linea_datos );
+                    $calificacion_aux->save();
+                }
             }
+            
+            $resultados[] = (object)[ 'numero_fila' => $numero_fila, 'id_calificacion' => $id_calificacion, 'calificacion_texto' => $calificacion_texto,'id_calificacion_aux' => $id_calificacion_aux ];
+            $numero_fila++;
         }
-
-        return [$id_calificacion, $calificacion_texto, $id_calificacion_aux];
+        return $resultados;
     }
 
 
@@ -500,7 +529,6 @@ class CalificacionController extends Controller
         return $tienePeso;
     }
 
-    //verificar si el promedio es por pesos o normal
     public function get_peso($curso, $periodo, $asignatura, $celda)
     {
         $ec = EncabezadoCalificacion::where( [

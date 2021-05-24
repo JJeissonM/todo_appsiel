@@ -75,7 +75,6 @@ Route::get('calificaciones/pesos/{curso}/{periodo}/{asignatura}/{celda}/listar',
 
 
 // ENCABEZADOS CALIFICACIONES
-//Route::get('calificaciones_encabezados_guardar', 'Calificaciones\EncabezadoCalificacionController@guardar_encabezado');
 Route::resource('calificaciones_encabezados', 'Calificaciones\EncabezadoCalificacionController');
 
 

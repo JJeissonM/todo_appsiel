@@ -211,6 +211,8 @@ class BoletinController extends Controller
 
                 $cuerpo_boletin->lineas[$a]->calificacion = $calificacion;
 
+                if(is_null($asignacion->asignatura)){dd($asignacion);} // La asignatura no existe
+
                 $cuerpo_boletin->lineas[$a]->area_id = $asignacion->asignatura->area_id;
                 $cuerpo_boletin->lineas[$a]->peso_asignatura = $asignacion->peso;
                 $cuerpo_boletin->lineas[$a]->valor_calificacion = 0;

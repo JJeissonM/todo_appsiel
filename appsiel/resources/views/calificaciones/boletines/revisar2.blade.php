@@ -130,7 +130,7 @@
 								}
 
 								$tbody.='<tr>
-										<td width="350px">'.$asignatura->descripcion . $asignatura->id .'</td>';
+										<td width="350px" title="ID: '.$asignatura->id.'">'.$asignatura->descripcion .'</td>';
 
 								if( $calificacion == 0)
 								{
