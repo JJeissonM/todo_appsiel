@@ -415,10 +415,10 @@
 			$("#alert_mensaje").hide();
 
 			// Para un nuevo registro de encabezado que se le quiera almacenar un peso sin descripcion
-			if ( $('#id_encabezado_calificacion').val() == 0 && $('#descripcion').val() == '' && $('#peso').val() != 0 )
+			if ( $('#id_encabezado_calificacion').val() == 0 && $('#descripcion').val() == '' )
 			{
 				$('#descripcion').focus();
-				alert('Debe ingresar una descripción a la actividad, si quiere asignar un Peso a la calificación.');
+				alert('Debe ingresar una descripción para la actividad.');
 				return false;
 			}
 

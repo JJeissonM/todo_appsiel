@@ -117,11 +117,14 @@ class Cliente extends Model
             ->leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_clientes.lista_precios_id')
             ->leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_clientes.lista_descuentos_id')
             ->leftJoin('vtas_zonas', 'vtas_zonas.id', '=', 'vtas_clientes.zona_id')
+            ->leftJoin('core_ciudades', 'core_ciudades.id', '=', 'core_terceros.codigo_ciudad')
             ->select(
                 'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
                 'core_terceros.descripcion AS TERCERO',
                 'core_terceros.direccion1 AS DIRECCIÓN',
+                'core_ciudades.descripcion AS CIUDAD',
                 'core_terceros.telefono1 AS TELÉFONO',
+                'core_terceros.email AS EMAIL',
                 'vtas_clases_clientes.descripcion AS CLASE_DE_CLIENTE',
                 'vtas_listas_precios_encabezados.descripcion AS LISTA_DE_PRECIOS',
                 'vtas_listas_dctos_encabezados.descripcion AS LISTA_DE_DESCUENTOS',
