@@ -29,10 +29,10 @@
 		<table class="contenido table-bordered">
 			<thead>
 				<tr>
-					<th style="width:150px;">{{ $lbl_asigatura }}</th>
-					<th>I.H.</th>
+					<th style="width:230px;">{{ $lbl_asigatura }}</th>
+					<th style="width:40px;">I.H.</th>
 					@if($curso->maneja_calificacion==1)
-						<th>Calificación</th>
+						<th style="width:80px;">Cal.</th>
 						<?php $cant_columnas++;  ?>
 					@endif
 					@if( $mostrar_fallas )
