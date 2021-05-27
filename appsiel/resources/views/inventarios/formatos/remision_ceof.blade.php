@@ -19,25 +19,25 @@
     </style>
 </head>
 <body>
-    <div style="position: absolute; left: 40mm; top: 67mm;">
+    <div style="position: absolute; left: 40mm; top: 63mm;">
         {{ $doc_encabezado->tercero_nombre_completo }} @if( !is_null($doc_encabezado->documento_ventas_padre()) )
        / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}        
     @endif
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 73mm;">
+    <div style="position: absolute; left: 40mm; top: 68mm;">
         {{ $doc_encabezado->numero_identificacion}}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 79mm;">
+    <div style="position: absolute; left: 40mm; top: 73mm;">
         {{ $empresa->direccion1 }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 85mm;">
+    <div style="position: absolute; left: 40mm; top: 80mm;">
         {{ $ciudad->descripcion }} 
     </div>
 
-    <div style="position: absolute; right: 75mm; top: 41mm;">
+    <div style="position: absolute; right: 65mm; top: 36mm;">
         <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
@@ -46,11 +46,11 @@
             {{ $fecha_final }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 94mm;">
+    <div style="position: absolute; left: 40mm; top: 91mm;">
         CONSTANCIA ENTREGA OBRA FINALIZADA
     </div>
 
-    <div style="position: absolute; left: 15mm; top: 112mm; width: 193mm">
+    <div style="position: absolute; left: 25mm; top: 122mm; width: 173mm">
 
     <table width="100%">
         <?php
@@ -72,7 +72,7 @@
 
     </div>
 
-    <div style="position: absolute; left: 187mm; top: 248mm;">        
+    <div style="position: absolute; left: 175mm; top: 254mm;">        
         {{ abs($total_cantidad) }}
     </div>
 
