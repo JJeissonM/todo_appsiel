@@ -16,7 +16,7 @@ class Calificacion extends Model
     protected $table = 'sga_calificaciones';
 
     // logros es un string donde se almacenan códigos de logros separados por coma (usado para logros adicionales)
-    protected $fillable = ['codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros', 'creado_por', 'modificado_por'];
+    protected $fillable = [ 'codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros', 'creado_por', 'modificado_por'];
 
     public function nota_nivelacion()
     {
@@ -150,6 +150,7 @@ class Calificacion extends Model
                 'sga_estudiantes.id AS estudiante_id',
                 'sga_asignaturas.id AS asignatura_id',
                 'sga_calificaciones.calificacion',
+                'sga_calificaciones.logros',
                 'sga_calificaciones.id AS calificacion_id'
             )
             ->get();

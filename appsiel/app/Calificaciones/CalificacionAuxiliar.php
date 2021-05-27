@@ -11,7 +11,7 @@ class CalificacionAuxiliar extends Model
 {
     protected $table = 'sga_calificaciones_auxiliares';
 
-	protected $fillable = ['codigo_matricula','id_colegio','anio','id_periodo','curso_id','id_estudiante','id_asignatura','C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','C11','C12','C13','C14','C15','creado_por','modificado_por'];
+	protected $fillable = [ 'codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15', 'creado_por', 'modificado_por'];
 
 	public static function get_todas_un_estudiante_periodo( $estudiante_id, $periodo_id )
 	{

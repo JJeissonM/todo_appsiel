@@ -131,8 +131,6 @@
 
 		var guardando = false;
 
-
-
 		// Guardar calificaciones cada diez (10) segundos
 		/*setInterval( function(){ 
 	   			if( !guardando )
@@ -169,12 +167,17 @@
 		// Cuando se presiona una caja de texto
 		$("input[type=text]").keyup(function(e) {
 
-			if (e.keyCode != 40) { //Si NO se presiona flecha hacia abajo
-				if (e.keyCode != 38) { // Si NO se presiona flecha hacia arriba
+			//Si NO se presiona flecha hacia abajo
+			if (e.keyCode != 40) 
+			{ 
+				// Si NO se presiona flecha hacia arriba
+				if (e.keyCode != 38)
+				{ 
 					if ($.inArray(e.keyCode, teclas_especiales) < 0) { // Si NO se presionan teclas especiales
 
-						if (validar_valor_ingresado($(this))) {
-							calcular_promedio($(this));
+						if ( validar_valor_ingresado( $(this) ) )
+						{
+							calcular_promedio( $(this) );
 						}
 
 						// Cuando cambie el valor de una celda, se cambian los mensajes
@@ -214,7 +217,6 @@
 
 			$('#bs_boton_guardar').prop('disabled', true);
 			$('#bs_boton_volver').prop('disabled', true);
-
 
 			guardando = true;
 
@@ -463,7 +465,6 @@
 				$(".btn_edit_modal").hide();
 				$(".btn_save_modal").hide();
 
-				/* <li class="list-group-item">Las calificaciones se almacenan automáticamente cada diez (10) segundos.</li> */
 				$("#contenido_modal").html('<div class="well well-lg"><ul class="list-group"><li class="list-group-item">Se pueden guardar las calificaciones en cualquier momento presionando el botón guardar y seguir ingresando información.</li>  <li class="list-group-item">Verifique que antes de salir de la página se muestre el mensaje <spam id="mensaje_guardadas" style="background-color: #b1e6b2;">Calificaciones guardadas</spam></li></ul> <div class="checkbox">  <label><input type="checkbox" name="mostrar_ayuda_calificaciones_form" id="mostrar_ayuda_calificaciones_form" value="true">No volver a mostrar este mensaje.</label> </div></div>');
 
 				setCookie("mostrar_ayuda_calificaciones_form", true, 365);
@@ -479,7 +480,6 @@
 				});
 			}
 		}
-
 	});
 </script>
 @endsection
