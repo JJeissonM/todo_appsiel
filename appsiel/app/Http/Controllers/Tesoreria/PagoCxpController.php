@@ -42,6 +42,7 @@ use App\Tesoreria\TesoEntidadFinanciera;
 
 use App\Tesoreria\RegistroDeEfectivo;
 use App\Tesoreria\RegistroDeTransferenciaConsignacion;
+use App\Tesoreria\RegistroDescuentoProntoPago;
 use App\Tesoreria\RegistroDeTarjetaDebito;
 use App\Tesoreria\RegistroDeTarjetaCredito;
 use App\Tesoreria\RegistroDeCheque;
@@ -49,6 +50,8 @@ use App\Tesoreria\RegistroDeCheque;
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Retencion;
 use App\Contabilidad\RegistroRetencion;
+
+use App\Compras\DescuentoProntoPago;
 
 use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
@@ -98,6 +101,7 @@ class PagoCxpController extends TransaccionController
         $cajas = TesoCaja::opciones_campo_select();
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $retenciones = Retencion::opciones_campo_select();
+        $descuentos_pronto_pago = DescuentoProntoPago::opciones_campo_select();
 
         $tipos_operaciones = [ '' => '', 'Pago proveedores' => 'Pago proveedores (CxP)', 'Anticipo proveedor' => 'Anticipo proveedor (CxP a favor)', 'Otros pagos' => 'Otros pagos', 'Pago anticipado' => 'Préstamo financiero (Crear CxC)'];
 
@@ -111,7 +115,7 @@ class PagoCxpController extends TransaccionController
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones' ) );
+        return view('tesoreria.pagos_cxp.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones', 'descuentos_pronto_pago' ) );
     }
 
     /**
@@ -131,6 +135,9 @@ class PagoCxpController extends TransaccionController
         
         $retenciones = new RegistroRetencion();
         $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'practicada' );
+        
+        $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
+        $descuentos_pronto_pago->almacenar_nuevos_registros( $request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'recibido' );
 
         $efectivo = new RegistroDeEfectivo();
         $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado );
@@ -146,7 +153,7 @@ class PagoCxpController extends TransaccionController
 
         // $teso_medio_recaudo_id = 6; // Cheque propio
         $cheques = new RegistroDeCheque();
-        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 6, 'Emitido' );
+        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 6, 'Emitido', 'propio' );
 
         $doc_encabezado->actualizar_valor_total();
 
@@ -211,46 +218,6 @@ class PagoCxpController extends TransaccionController
         }
 
         return $total_abonos_cxc;
-    }
-
-    public function almacenar_cheque( $request, $doc_encabezado )
-    {
-        $vec_3 = explode("-", $request->teso_medio_recaudo_id);
-        if ( $vec_3[1] == 'cheque_propio' || $vec_3[1] == 'cheque_de_tercero' )
-        {
-            $cheque_id = (int)explode('-', $request->cheque_id)[0];
-            if ( $cheque_id != 0 )
-            {
-                $cheque_activo = ControlCheque::find( $cheque_id );
-                $cheque_activo->core_tipo_transaccion_id_consumo = $doc_encabezado->core_tipo_transaccion_id;
-                $cheque_activo->core_tipo_doc_app_id_consumo = $doc_encabezado->core_tipo_doc_app_id;
-                $cheque_activo->consecutivo_doc_consumo = $doc_encabezado->consecutivo;
-                $cheque_activo->estado = 'Gastado';
-                $cheque_activo->save();
-            }
-            
-            if ( $cheque_id == 0 )
-            {
-                $datos = [
-                            'fuente' => $vec_3[1],
-                            'tercero_id' => $doc_encabezado->core_tercero_id,
-                            'fecha_emision' => $request->fecha_emision,
-                            'fecha_cobro' => $request->fecha_cobro,
-                            'numero_cheque' => $request->numero_cheque,
-                            'referencia_cheque' => $request->referencia_cheque,
-                            'entidad_financiera_id' => $request->entidad_financiera_id,
-                            'valor' => $doc_encabezado->valor_total,
-                            'detalle' => $request->detalle,
-                            'creado_por' => $doc_encabezado->creado_por,
-                            'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
-                            'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
-                            'consecutivo' => $doc_encabezado->consecutivo,
-                            'teso_caja_id' => $request->teso_caja_id,
-                            'estado' => 'Emitido'
-                        ];
-                ControlCheque::create( $datos );
-            }
-        }
     }
 
     /**

@@ -372,25 +372,8 @@ class VtasDocEncabezado extends Model
 
         if ( $this->forma_pago == 'contado')
         {
-            if ( empty( $datos['registros_medio_pago'] ) )
-            {
-                // WARNING: La caja la debe tomar de la caja por defecto asociada al usuario,
-                // Si el usuario no tiene caja asignada, el sistema no debe permitirle hacer facturas de contado.
-                $caja = TesoCaja::get()->first();
-                // El motivo lo debe traer de unparámetro de la configuración
-                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
-                $datos['teso_caja_id'] = $caja->id;
-                $datos['teso_cuenta_bancaria_id'] = 0;
-                $datos['valor_movimiento'] = $this->valor_total;
-                TesoMovimiento::create( $datos );
-            }else{
-                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
-                $datos['teso_motivo_id'] = $datos['registros_medio_pago']['teso_motivo_id'];
-                $datos['teso_caja_id'] = $datos['registros_medio_pago']['teso_caja_id'];
-                $datos['teso_cuenta_bancaria_id'] = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
-                $datos['valor_movimiento'] = $datos['registros_medio_pago']['valor_recaudo'];
-                TesoMovimiento::create( $datos );
-            }
+            $teso_movimiento = new TesoMovimiento();
+            $teso_movimiento->almacenar_registro_pago_contado( $datos, $datos['registros_medio_pago'], 'entrada', $this->valor_total );
         }
     }
 

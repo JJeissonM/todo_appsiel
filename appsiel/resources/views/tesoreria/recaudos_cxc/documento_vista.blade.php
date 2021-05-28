@@ -108,13 +108,15 @@
     </table>
 </div>
 
+@include('tesoreria.incluir.registros_descuentos')
+
 @include('tesoreria.medios_de_pago.tabla_show_detalles', [ 'vistaimprimir' => '' ] )
 
 @include('tesoreria.recaudos_cxc.cheques_relacionados')
 
 @include('tesoreria.recaudos_cxc.retenciones_relacionadas')
 
-<h4 style="text-align: center;">Registros contables</h4>
+<h4 style="text-align: center;">Registros contables </h4>
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
         <thead>

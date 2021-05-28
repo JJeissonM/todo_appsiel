@@ -180,6 +180,7 @@ class InvMovimiento extends Model
                                 ->where('inv_doc_encabezados.fecha','<=',$fecha_corte)
                                 ->where('inv_movimientos.inv_bodega_id',$operador1,$mov_bodega_id)
                                 ->where('inv_grupos.id',$operador2,$grupo_inventario_id)
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->select(
                                             'inv_productos.id',
                                             'inv_productos.descripcion',
@@ -201,6 +202,7 @@ class InvMovimiento extends Model
                                 ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','inv_doc_encabezados.inv_bodega_id')
                                 ->where( $array_wheres )
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->select(
                                             'inv_productos.id',
                                             'inv_productos.descripcion',
@@ -223,6 +225,7 @@ class InvMovimiento extends Model
                     ->where('inv_productos.id','=',$id_producto)
                     ->where('inv_movimientos.inv_bodega_id','=', $id_bodega)
                     ->where('inv_doc_encabezados.fecha','<',$fecha_inicial)
+                    ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                     ->select(DB::raw('sum(inv_movimientos.cantidad) as mCantidad'),DB::raw('sum(inv_movimientos.costo_total) as mCosto'))
                     ->get()
                     ->toArray();    
@@ -250,6 +253,7 @@ class InvMovimiento extends Model
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                             ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                             ->where( $array_wheres )
+                            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->select(
                                         'inv_productos.id AS item_id',
                                         DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento'),
@@ -287,6 +291,7 @@ class InvMovimiento extends Model
                             ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                             ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
                             ->where( $array_wheres )
+                            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->select(
                                         'inv_productos.id AS item_id',
                                         DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento'),
@@ -302,6 +307,7 @@ class InvMovimiento extends Model
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('inv_movimientos.inv_bodega_id','=',$id_bodega)
                                 ->where('inv_movimientos.inv_producto_id','=',$id_producto)
                                 ->whereBetween('inv_doc_encabezados.fecha', [$fecha_inicial, $fecha_final])
@@ -331,6 +337,7 @@ class InvMovimiento extends Model
         return InvMovimiento::leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                             ->whereIn( 'inv_movimientos.inv_motivo_id', [ 10, 15, 17, 22] )
                             ->whereBetween('inv_doc_encabezados.fecha', [ $fecha_inicial, $fecha_final ] )
+                            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->get();
     }
 
@@ -342,6 +349,7 @@ class InvMovimiento extends Model
                     ->where('inv_doc_encabezados.fecha','<=',$fecha_corte)
                     ->where('inv_movimientos.inv_bodega_id',$bodega_id)
                     ->where('inv_movimientos.inv_producto_id',$producto_id)
+                    ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                     ->select( DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),DB::raw('sum(inv_movimientos.costo_total) as Costo'))
                     ->get()[0];
     }
@@ -350,6 +358,7 @@ class InvMovimiento extends Model
     {
         $existencia_actual = InvMovimiento::where('inv_bodega_id','=',$bodega_id)
                                 ->where('inv_producto_id','=',$producto_id)
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('fecha','<=',$fecha_corte)
                                 ->sum('cantidad');
 

@@ -55,7 +55,7 @@
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
 						<div class="row">
 							<div class="col-md-12">
-								<h6 style="width: 100%; text-align: center;">PAGOS INGRESADAS</h6>
+								<h6 style="width: 100%; text-align: center;">RETENCIONES INGRESADAS</h6>
 								<hr>
 								<table class="table table-striped table-bordered" id="tabla_registros_retenciones">
 									<thead>

@@ -43,6 +43,7 @@ use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
 
 use App\Tesoreria\RegistroDeEfectivo;
+use App\Tesoreria\RegistroDescuentoProntoPago;
 use App\Tesoreria\RegistroDeTransferenciaConsignacion;
 use App\Tesoreria\RegistroDeTarjetaDebito;
 use App\Tesoreria\RegistroDeTarjetaCredito;
@@ -60,6 +61,7 @@ use App\CxC\CxcAbono;
 use App\CxP\CxpMovimiento;
 
 use App\Ventas\VtasDocEncabezado;
+use App\Ventas\DescuentoPpEncabezado;
 
 class RecaudoCxcController extends Controller
 {
@@ -109,6 +111,7 @@ class RecaudoCxcController extends Controller
         $cajas = TesoCaja::opciones_campo_select();
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $retenciones = Retencion::opciones_campo_select();
+        $descuentos_pronto_pago = DescuentoPpEncabezado::opciones_campo_select();
 
         $tipos_operaciones = [ '' => '', 'Recaudo cartera' => 'Recaudo cartera (CxC)', 'Anticipo' => 'Anticipo cliente (CxC a favor)', 'Otros recaudos' => 'Otros recaudos','Prestamo financiero' => 'Préstamo financiero (Crear CxP)'];
 
@@ -122,7 +125,7 @@ class RecaudoCxcController extends Controller
                 ['url'=>'NO','etiqueta' => 'Crear nuevo' ]
             ];
 
-        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones' ) );
+        return view('tesoreria.recaudos_cxc.create', compact( 'form_create','id_transaccion','motivos','miga_pan','medios_recaudo','cajas','cuentas_bancarias', 'terceros', 'entidades_financieras', 'retenciones', 'tipos_operaciones', 'descuentos_pronto_pago' ) );
     }
 
     /**
@@ -143,6 +146,9 @@ class RecaudoCxcController extends Controller
         
         $retenciones = new RegistroRetencion();
         $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida' );
+        
+        $descuentos_pronto_pago = new RegistroDescuentoProntoPago();
+        $descuentos_pronto_pago->almacenar_nuevos_registros( $request->lineas_registros_descuento_pronto_pagos, $doc_encabezado, 'concedido' );
 
         $efectivo = new RegistroDeEfectivo();
         $efectivo->almacenar_registros( $request->lineas_registros_efectivo, $doc_encabezado );
@@ -158,7 +164,7 @@ class RecaudoCxcController extends Controller
 
         // $teso_medio_recaudo_id = 7; // Cheque de tercero
         $cheques = new RegistroDeCheque();
-        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 7, 'Recibido' );
+        $cheques->almacenar_registros( $request->lineas_registros_cheques, $doc_encabezado, 7, 'Recibido', 'de_tercero' );
 
         $doc_encabezado->actualizar_valor_total();
 
@@ -577,6 +583,7 @@ class RecaudoCxcController extends Controller
                                     [ 'teso_motivo_id' => $teso_motivo_id] + 
                                     [ 'teso_caja_id' => $teso_caja_id] + 
                                     [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
+                                    [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] + 
                                     [ 'valor_movimiento' => $valor_movimiento] +
                                     [ 'estado' => 'Activo' ]
                                 );

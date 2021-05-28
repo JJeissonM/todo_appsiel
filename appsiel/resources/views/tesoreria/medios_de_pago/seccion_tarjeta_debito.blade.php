@@ -4,7 +4,7 @@
 	<div class="col-md-12">
 		<div class="container-fluid" style="display: block; border: 1px solid #ddd; border-radius: 4px;">
 
-			<h5>Registros de pagos por Tarjeta Crédito</h5>
+			<h5 class="text-center">Registros de pagos por Tarjeta Crédito</h5>
 			<hr>
 
 			<div class="row">

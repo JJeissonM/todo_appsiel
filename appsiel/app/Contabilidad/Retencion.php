@@ -11,7 +11,7 @@ use Schema;
 class Retencion extends Model
 {
     protected $table = 'contab_retenciones';
-    protected $fillable = ['categoria_retenciones_id', 'descripcion', 'nombre_corto', 'tasa_retencion', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'estado'];
+    protected $fillable = [ 'categoria_retenciones_id', 'descripcion', 'nombre_corto', 'tasa_retencion', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'estado' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Categoría', 'Descripción', 'Nombre corto', 'Tasa', 'Cta. Ventas', 'Cta. Compras', 'Estado'];
 

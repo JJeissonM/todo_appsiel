@@ -27,6 +27,7 @@ class RegistrosMediosPago
         $datos = [];
         foreach( $campo_lineas_recaudos as $linea )
         {
+            $datos['teso_medio_recaudo_id'] = (int)explode("-", $linea->teso_medio_recaudo_id)[0];
             $datos['teso_motivo_id'] = (int)explode("-", $linea->teso_motivo_id)[0];
             $datos['teso_caja_id'] = (int)explode("-", $linea->teso_caja_id)[0];
             $datos['teso_cuenta_bancaria_id'] = (int)explode("-", $linea->teso_cuenta_bancaria_id)[0];

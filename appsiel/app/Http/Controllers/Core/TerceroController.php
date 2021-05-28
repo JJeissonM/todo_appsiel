@@ -182,7 +182,7 @@ class TerceroController extends Controller
 
         $array_wheres = [ 
                             [ 'core_terceros.estado', '=', 'Activo' ],
-                            [ 'core_terceros.core_empresa_id', '=', Auth::user()->empresa_id ],
+                            //[ 'core_terceros.core_empresa_id', '=', Auth::user()->empresa_id ],
                             [ 'core_terceros.'.$campo_busqueda, 'LIKE', $cadena_busqueda ]
                         ];
 
@@ -237,7 +237,7 @@ class TerceroController extends Controller
         }
 
         $datos = Tercero::where('core_terceros.estado','Activo')
-                    ->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)
+                    //->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)
                     ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
                     ->select('core_terceros.id AS tercero_id','core_terceros.descripcion','core_terceros.numero_identificacion')
                     ->get()

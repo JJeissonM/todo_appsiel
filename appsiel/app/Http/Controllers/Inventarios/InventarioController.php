@@ -74,6 +74,7 @@ class InventarioController extends TransaccionController
             //$movimientos['bodega'][$i] = $una_bodega->descripcion;
             $movimientos['registros'][$i] = InvMovimiento::where('inv_movimientos.inv_bodega_id', '=', $una_bodega->id)
                 ->where('inv_productos.tipo', '=', 'producto')
+                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                 ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
                 ->select('inv_productos.descripcion as Producto', DB::raw('sum(inv_movimientos.cantidad) as Cantidad'))
                 ->groupBy('inv_movimientos.inv_producto_id')
@@ -417,7 +418,7 @@ class InventarioController extends TransaccionController
                 $costo_prom = TransaccionController::calcular_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha);
 
                 // Actualizo/Almaceno el costo promedio
-                TransaccionController::set_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
+                TransaccionController::set_costo_promedio( $request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
             }
         }
     }
@@ -791,6 +792,7 @@ class InventarioController extends TransaccionController
         // Eliminar movimiento de inventarios
         InvMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
             ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->where('consecutivo', $doc_encabezado->consecutivo)
             ->delete();
 
@@ -1123,7 +1125,9 @@ class InventarioController extends TransaccionController
         $registro = InvBodega::find($inv_bodega_id);
 
         // Verificación 1: Está en un producto
-        $cantidad = InvMovimiento::where('inv_bodega_id', $inv_bodega_id)->count();
+        $cantidad = InvMovimiento::where('inv_bodega_id', $inv_bodega_id)
+                                    ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                    ->count();
         if ($cantidad != 0) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Bodega NO puede ser eliminada. Tiene movimientos.');
         }
@@ -1140,7 +1144,9 @@ class InventarioController extends TransaccionController
         $registro = InvProducto::find($inv_producto_id);
 
         // Verificación 1: Tiene movimientos
-        $cantidad = InvMovimiento::where('inv_producto_id', $inv_producto_id)->count();
+        $cantidad = InvMovimiento::where('inv_producto_id', $inv_producto_id)
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->count();
         if ($cantidad != 0) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Item NO puede ser eliminado. Tiene movimientos.');
         }
@@ -1194,6 +1200,7 @@ class InventarioController extends TransaccionController
         // Eliminar movimiento de inventarios
         InvMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
             ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
             ->where('consecutivo', $documento->consecutivo)
             ->delete();
 
@@ -1318,6 +1325,7 @@ class InventarioController extends TransaccionController
         {
             // 1. Actualiza movimiento de inventarios
             InvMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                 ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
                 ->where('consecutivo', $doc_encabezado->consecutivo)
                 ->where('inv_producto_id', $linea_registro->inv_producto_id)

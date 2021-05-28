@@ -220,6 +220,7 @@ class ControlChequeController extends Controller
                                     [ 'teso_motivo_id' => $teso_motivo_id] + 
                                     [ 'teso_caja_id' => $teso_caja_id] + 
                                     [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
+                                    [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] + 
                                     [ 'valor_movimiento' => $valor_movimiento] +
                                     [ 'estado' => 'Activo' ]
                                 );
@@ -320,11 +321,11 @@ class ControlChequeController extends Controller
     /*
         Este metodo genera un listado de los cheques en estado Recibidos que se podran utilizar para pagos de CxP
     */
-    public function get_cheques_recibidos()
+    public function get_cheques_recibidos( $tipo_operacion_id, $teso_motivo_id, $caja_id)
     {
-        $cheques = ControlCheque::where( 'estado', 'Recibido' );
+        $cheques = ControlCheque::where( 'estado', 'Recibido' )->get();
 
-        $vista = View::make( 'tesoreria.medios_de_pago.cheques_recibidos', compact('cheques') )->render();
+        $vista = View::make( 'tesoreria.medios_de_pago.cheques_recibidos', compact('cheques','tipo_operacion_id', 'teso_motivo_id', 'caja_id') )->render();
    
         return $vista;
     }

@@ -895,15 +895,21 @@ class FacturaPosController extends TransaccionController
         }
 
         // Agregar el movimiento a tesorería
-        if ($forma_pago == 'contado') {
+        if ($forma_pago == 'contado')
+        {
+            /*
+                lineas_registros_medios_recaudos =  esta variable es un campo de vtas_pos_doc_encabezados
+            */
             $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
             if (!is_null($lineas_recaudos)) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
-                foreach ($lineas_recaudos as $linea) {
+                foreach ($lineas_recaudos as $linea)
+                {
                     $datos['teso_motivo_id'] = explode("-", $linea->teso_motivo_id)[0];
                     $datos['teso_caja_id'] = explode("-", $linea->teso_caja_id)[0];
                     $datos['teso_cuenta_bancaria_id'] = explode("-", $linea->teso_cuenta_bancaria_id)[0];
+                    $datos['teso_medio_recaudo_id'] = explode("-", $linea->teso_medio_recaudo_id)[0];
                     $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
                     TesoMovimiento::create($datos);
                 }
@@ -912,10 +918,11 @@ class FacturaPosController extends TransaccionController
                 $pdv = Pdv::find($datos['pdv_id']);
 
                 $caja = TesoCaja::find($pdv->caja_default_id);
-                // El motivo lo debe traer de unparÃ¡metro de la configuraciÃ³n
+                // El motivo lo debe traer de un parametro de la configuracion
                 $datos['teso_motivo_id'] = TesoMotivo::where('movimiento', 'entrada')->get()->first()->id;
                 $datos['teso_caja_id'] = $caja->id;
                 $datos['teso_cuenta_bancaria_id'] = 0;
+                $datos['teso_medio_recaudo_id'] = 1;
                 $datos['valor_movimiento'] = $total_documento;
                 TesoMovimiento::create($datos);
             }

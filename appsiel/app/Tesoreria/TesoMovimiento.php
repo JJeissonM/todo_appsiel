@@ -12,9 +12,7 @@ use App\Tesoreria\TesoDocRegistro;
 
 class TesoMovimiento extends Model
 {
-    //protected $table = 'teso_doc_registros_recaudos';
-
-    protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
+    protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle'];
 
@@ -33,6 +31,11 @@ class TesoMovimiento extends Model
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function medio_pago()
+    {
+        return $this->belongsTo(TesoMedioRecaudo::class, 'teso_medio_recaudo_id');
     }
 
     public function motivo()
@@ -329,5 +332,36 @@ class TesoMovimiento extends Model
                             ->orderBy('teso_movimientos.fecha')
                             ->orderBy('teso_movimientos.created_at')
                             ->get();
+    }
+
+    public function almacenar_registro_pago_contado( $datos, $registros_medio_pago, $movimiento, $valor_movimiento )
+    {
+        $signo_unidad = 1;
+        if ( $movimiento == 'salida' )
+        {
+            $signo_unidad = -1;
+        }
+
+        if ( empty( $registros_medio_pago ) )
+        {
+            // Valores por defecto
+            $caja = TesoCaja::get()->first();
+        
+            // Agregar el movimiento a tesorería
+            $datos['teso_motivo_id'] = TesoMotivo::where( 'movimiento', $movimiento )->get()->first()->id;
+            $datos['teso_caja_id'] = $caja->id;
+            $datos['teso_cuenta_bancaria_id'] = 0;
+            $datos['teso_medio_recaudo_id'] = 1;
+            $datos['valor_movimiento'] = $valor_movimiento * $signo_unidad;// Motivo de salida, movimiento negativo
+        }else{
+            // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+            $datos['teso_motivo_id'] = $registros_medio_pago['teso_motivo_id'];
+            $datos['teso_caja_id'] = $registros_medio_pago['teso_caja_id'];
+            $datos['teso_cuenta_bancaria_id'] = $registros_medio_pago['teso_cuenta_bancaria_id'];
+            $datos['teso_medio_recaudo_id'] = $registros_medio_pago['teso_medio_recaudo_id'];
+            $datos['valor_movimiento'] = $registros_medio_pago['valor_recaudo'] * $signo_unidad;
+        }
+
+        TesoMovimiento::create( $datos );
     }
 }

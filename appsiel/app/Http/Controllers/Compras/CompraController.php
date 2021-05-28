@@ -93,8 +93,6 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
-        //$lineas_registros = json_decode($request->lineas_registros);
-
         $registros_medio_pago = new RegistrosMediosPago;
 
         $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );
@@ -360,11 +358,6 @@ class CompraController extends TransaccionController
 
     public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
     {
-        /*
-            Se crea un SOLO registro contable de la cuenta por pagar (Crédito) o la tesorería (Contado)
-            WARNING. Esto debe ser un parámetro de la configuración. Si se quiere llevar la factura contado a la caja directamente o si se causa una cuenta por pagar
-        */
-
         if ( $forma_pago == 'credito')
         {
             // Cargar a los registros de cuentas por pagar
@@ -379,26 +372,8 @@ class CompraController extends TransaccionController
         
         if ( $forma_pago == 'contado')
         {
-            if ( empty( $datos['registros_medio_pago'] ) )
-            {
-                // Valores por defecto
-                $caja = TesoCaja::get()->first();
-            
-                // Agregar el movimiento a tesorería
-                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','salida')->get()->first()->id;
-                $datos['teso_caja_id'] = $caja->id;
-                $datos['teso_cuenta_bancaria_id'] = 0;
-                $datos['valor_movimiento'] = $total_documento * -1;// Motivo de salida, movimiento negativo
-                TesoMovimiento::create( $datos );
-            }else{
-                // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
-                $datos['teso_motivo_id'] = $datos['registros_medio_pago']['teso_motivo_id'];
-                $datos['teso_caja_id'] = $datos['registros_medio_pago']['teso_caja_id'];
-                $datos['teso_cuenta_bancaria_id'] = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
-                $datos['valor_movimiento'] = $datos['registros_medio_pago']['valor_recaudo'] * -1;
-
-                TesoMovimiento::create( $datos );
-            }
+            $teso_movimiento = new TesoMovimiento();
+            $teso_movimiento->almacenar_registro_pago_contado( $datos, $datos['registros_medio_pago'], 'salida', $total_documento );
         }
     }
 

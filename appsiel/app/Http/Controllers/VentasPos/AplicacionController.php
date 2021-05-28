@@ -262,6 +262,7 @@ class AplicacionController extends TransaccionController
             $datos['teso_motivo_id'] = TesoMotivo::where('movimiento','entrada')->get()->first()->id;
             $datos['teso_caja_id'] = $caja->id;
             $datos['teso_cuenta_bancaria_id'] = 0;
+            $datos['teso_medio_recaudo_id'] = 1;
             $datos['valor_movimiento'] = $total_documento;
             TesoMovimiento::create( $datos );
         }

@@ -59,7 +59,7 @@ class InvProducto extends Model
     {
         $collection =  InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
             ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
-            ->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
+            ->where( 'inv_productos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
                 'inv_productos.id AS campo1',
                 'inv_productos.referencia AS campo2',
@@ -101,6 +101,56 @@ class InvProducto extends Model
         
         return $collection;
     }
+
+    /*public static function consultar_registros($nro_registros, $search)
+    {
+        dd( Auth::user()->empresa_id );
+
+        $collection =  InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+            ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+            ->where( 'inv_productos.core_empresa_id', Auth::user()->empresa_id)
+            ->select(
+                'inv_productos.id AS campo1',
+                'inv_productos.referencia AS campo2',
+                'inv_productos.descripcion AS campo3',
+                'inv_productos.unidad_medida1 AS campo4',
+                'inv_grupos.descripcion AS campo5',
+                'contab_impuestos.tasa_impuesto AS campo6',
+                'inv_productos.tipo AS campo7',
+                'inv_productos.mostrar_en_pagina_web AS campo8',
+                'inv_productos.estado AS campo9',
+                'inv_productos.id AS campo10'
+            )
+            ->where("inv_productos.id", "LIKE", "%$search%")
+            ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.unidad_medida1", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.precio_compra", "LIKE", "%$search%")
+            ->orWhere("inv_productos.precio_venta", "LIKE", "%$search%")
+            ->orWhere("contab_impuestos.tasa_impuesto", "LIKE", "%$search%")
+            ->orWhere("inv_productos.tipo", "LIKE", "%$search%")
+            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
+            ->orderBy('inv_productos.created_at', 'DESC')
+            ->paginate($nro_registros);
+
+        if (count($collection) > 0)
+        {
+            foreach ($collection as $c)
+            {
+                if ( $c->campo8 )
+                {
+                    $c->campo8 = 'Si';
+                }else{
+                    $c->campo8 = 'No';
+                }
+
+                $c->campo6 = $c->campo6 . '%';
+            }
+        }
+        
+        return $collection;
+    }
+    */
 
     public static function sqlString($search)
     {

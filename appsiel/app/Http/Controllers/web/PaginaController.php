@@ -96,13 +96,19 @@ class PaginaController extends Controller
         $pagina = Pagina::find($id);
         $widgets = $pagina->widgets()->orderBy('orden')->get();
         $secciones = [];
-        foreach ($widgets as $widget) {
+        foreach ($widgets as $widget)
+        {
+            if ( is_null($widget->seccion) )
+            {
+                dd( $widget );
+            }
+                
             $secciones[] = [
-                'widget_id' => $widget->id,
-                'orden' => $widget->orden,
-                'seccion' => $widget->seccion->nombre,
-                'tipo' => $widget->seccion->tipo
-            ];
+                                'widget_id' => $widget->id,
+                                'orden' => $widget->orden,
+                                'seccion' => $widget->seccion->nombre,
+                                'tipo' => $widget->seccion->tipo
+                            ];
         }
 
         return response()->json(['secciones' => $secciones]);

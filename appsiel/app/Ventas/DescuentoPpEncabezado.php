@@ -4,23 +4,30 @@ namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
+use DB;
+
 class DescuentoPpEncabezado extends Model
 {
     protected $table = 'vtas_descuentos_pp_encabezados';
-    protected $fillable = ['descripcion', 'estado'];
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Estado'];
+    
+    protected $fillable = [ 'descripcion', 'contab_cuenta_id', 'estado' ];
 
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Cuenta de gastos', 'Estado'];
+    
     public static function consultar_registros($nro_registros, $search)
     {
-        $registros = DescuentoPpEncabezado::select(
-            'vtas_descuentos_pp_encabezados.descripcion AS campo1',
-            'vtas_descuentos_pp_encabezados.estado AS campo2',
-            'vtas_descuentos_pp_encabezados.id AS campo3'
-        )
-            ->where("vtas_descuentos_pp_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_descuentos_pp_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('vtas_descuentos_pp_encabezados.created_at', 'DESC')
-            ->paginate($nro_registros);
+        $registros = DescuentoPpEncabezado::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'vtas_descuentos_pp_encabezados.contab_cuenta_id')
+                                    ->select(
+                                        'vtas_descuentos_pp_encabezados.descripcion AS campo1',
+                                        DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS campo2'),
+                                        'vtas_descuentos_pp_encabezados.estado AS campo3',
+                                        'vtas_descuentos_pp_encabezados.id AS campo4'
+                                        )
+                                    ->where("vtas_descuentos_pp_encabezados.descripcion", "LIKE", "%$search%")
+                                    ->orWhere(DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion)'), "LIKE", "%$search%")
+                                    ->orWhere("vtas_descuentos_pp_encabezados.estado", "LIKE", "%$search%")
+                                    ->orderBy('vtas_descuentos_pp_encabezados.created_at', 'DESC')
+                                    ->paginate($nro_registros);
         return $registros;
     }
 

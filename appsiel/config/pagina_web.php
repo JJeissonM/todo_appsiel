@@ -2,7 +2,7 @@
  return array (
   'titulo' => '',
   'lista_precios_id' => '1',
-  'lista_descuentos_id' => '',
+  'lista_descuentos_id' => '1',
   'clase_cliente_id' => '1',
   'vendedor_id' => '1',
   'inv_bodega_id' => '1',

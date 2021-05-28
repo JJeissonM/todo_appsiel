@@ -144,6 +144,7 @@ class PagoController extends TransaccionController
         for ($i=0; $i < $cant; $i++) 
         {
             // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 
+
             $vec_1 = explode("-", $tabla_registros_documento[$i]->teso_motivo_id);
             $teso_motivo_id = $vec_1[0];
             $motivo = TesoMotivo::find( $teso_motivo_id );
@@ -154,26 +155,8 @@ class PagoController extends TransaccionController
                 $core_tercero_id = $request->core_tercero_id;
             }
 
-            // Se les quita la etiqueta de signo peso a los textos monetarios recibidos
-            // en la tabla de movimiento
-            $valor = (float)substr($tabla_registros_documento[$i]->valor, 1);
+            $this->datos = array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo, 'core_tercero_id' => $core_tercero_id ] );
 
-            $detalle_operacion = $tabla_registros_documento[$i]->detalle;
-
-            TesoDocRegistro::create(
-                                [ 'teso_encabezado_id' => $doc_encabezado->id ] +
-                                [ 'teso_motivo_id' => $teso_motivo_id ] + 
-                                [ 'core_tercero_id' => $core_tercero_id ] + 
-                                [ 'detalle_operacion' => $detalle_operacion ] +
-                                [ 'valor' => $valor ] +
-                                [ 'estado' => 'Activo' ] );
-            
-
-            // 1.1. Para cada registro del documento, se va actualizando el movimiento de tesorería (teso_movimientos)
-            $this->datos = array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo, 'core_tercero_id' => $core_tercero_id ] );            
-
-            // Datos la caja o el la cuenta bancaria
-            // Tambien se asigna el ID de la cuenta contable para el movimiento CREDITO
             $vec_3 = explode( '-', $request->teso_medio_recaudo_id );
             $teso_medio_recaudo_id = $vec_3[0];
 
@@ -192,6 +175,27 @@ class PagoController extends TransaccionController
                 $this->datos['teso_cuenta_bancaria_id'] = 0;
             }
 
+            // Se les quita la etiqueta de signo peso a los textos monetarios recibidos
+            // en la tabla de movimiento
+            $valor = (float)substr($tabla_registros_documento[$i]->valor, 1);
+
+            $detalle_operacion = $tabla_registros_documento[$i]->detalle;
+
+            TesoDocRegistro::create(
+                                [ 'teso_encabezado_id' => $doc_encabezado->id ] +
+                                [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id ] + 
+                                [ 'teso_caja_id' => $teso_caja_id ] + 
+                                [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id ] + 
+                                [ 'teso_motivo_id' => $teso_motivo_id ] + 
+                                [ 'core_tercero_id' => $core_tercero_id ] + 
+                                [ 'detalle_operacion' => $detalle_operacion ] +
+                                [ 'valor' => $valor ] +
+                                [ 'estado' => 'Activo' ] );
+            
+
+            // 1.1. Para cada registro del documento, se va actualizando el movimiento de tesorería (teso_movimientos)
+            
+
             // Los pagos son movimiento de salida, se registran con signo negativo en el movimiento
             $valor_movimiento = $valor * -1; // No se tiene en cuenta el motivo
 
@@ -199,6 +203,7 @@ class PagoController extends TransaccionController
                             [ 'teso_motivo_id' => $teso_motivo_id] + 
                             [ 'teso_caja_id' => $teso_caja_id] + 
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
+                            [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] + 
                             [ 'valor_movimiento' => $valor_movimiento] +
                             [ 'estado' => 'Activo' ]
                         );

@@ -160,8 +160,6 @@ class RecaudoController extends TransaccionController
             // en la tabla de movimiento
             $valor = (float)substr($lineas_registros[$i]->valor, 1);
 
-            //dd( '  teso_encabezado_id: '.$doc_encabezado->id.'    teso_medio_recaudo_id'.$teso_medio_recaudo_id.'    teso_motivo_id: '.$teso_motivo_id.'     teso_caja_id: '.$teso_caja_id.'       teso_cuenta_bancaria_id: '.$teso_cuenta_bancaria_id.'     valor_total: '.$valor );
-
             TesoDocRegistro::create(
                             [ 'core_tercero_id' => $this->datos['core_tercero_id'] ] + 
                             [ 'teso_encabezado_id' => $doc_encabezado->id ] + 
@@ -179,6 +177,7 @@ class RecaudoController extends TransaccionController
                             [ 'teso_motivo_id' => $teso_motivo_id] + 
                             [ 'teso_caja_id' => $teso_caja_id] + 
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
+                            [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] + 
                             [ 'valor_movimiento' => $valor]
                         );
 

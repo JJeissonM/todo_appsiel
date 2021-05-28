@@ -186,6 +186,7 @@ class TesoDocController extends Controller
                             [ 'teso_motivo_id' => $teso_motivo_id] + 
                             [ 'teso_caja_id' => $teso_caja_id] + 
                             [ 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id] + 
+                            [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] + 
                             [ 'valor_movimiento' => $valor_movimiento] +
                             [ 'estado' => 'Activo' ]
                         );

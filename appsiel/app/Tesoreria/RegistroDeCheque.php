@@ -3,6 +3,7 @@
 namespace App\Tesoreria;
 
 use DB;
+use Auth;
 
 use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
@@ -15,7 +16,7 @@ use App\Contabilidad\ContabMovimiento;
 
 class RegistroDeCheque extends TesoDocEncabezado
 {
-    public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $teso_medio_recaudo_id, $estado )
+    public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $teso_medio_recaudo_id, $estado, $fuente )
     {
         $lineas_registros = json_decode( $json_lineas_registros );
 
@@ -49,11 +50,9 @@ class RegistroDeCheque extends TesoDocEncabezado
                     # code...
                     break;
             }
-                
-            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_cheque;
 
             $datos = [
-                        'fuente' => 'de_tercero',
+                        'fuente' => $fuente,
                         'tercero_id' => $doc_encabezado->core_tercero_id,
                         'fecha_emision' => $lineas_registros[$i]->fecha_emision,
                         'fecha_cobro' => $lineas_registros[$i]->fecha_cobro,
@@ -64,14 +63,34 @@ class RegistroDeCheque extends TesoDocEncabezado
                         'core_tipo_transaccion_id_origen' => $doc_encabezado->core_tipo_transaccion_id,
                         'core_tipo_doc_app_id_origen' => $doc_encabezado->core_tipo_doc_app_id,
                         'teso_caja_id' => $lineas_registros[$i]->caja_id_cheque,
+                        'creado_por' => Auth::user()->email,
                         'estado' => $estado
                     ] + $doc_encabezado->toArray();
 
-            ControlCheque::create( $datos );
+            $cheque = ControlCheque::find( (int)$lineas_registros[$i]->cheque_id );
+            if ( is_null( $cheque ) )
+            {
+                ControlCheque::create( $datos );
+            }else{
+                $cheque->estado = 'Gastado';
+                $cheque->modificado_por = Auth::user()->email;
+                $cheque->core_tipo_transaccion_id_consumo = $doc_encabezado->core_tipo_transaccion_id;
+                $cheque->core_tipo_doc_app_id_consumo = $doc_encabezado->core_tipo_doc_app_id;
+                $cheque->consecutivo_doc_consumo = $doc_encabezado->consecutivo;
+                $cheque->save();
+            }
 
+            $tipo_operacion = $lineas_registros[$i]->tipo_operacion_id_cheque;
+            
+            $datos['teso_encabezado_id'] = $doc_encabezado->id;
+            $datos['teso_motivo_id'] = (int)$lineas_registros[$i]->teso_motivo_id_cheque;
+            $datos['teso_medio_recaudo_id'] = $teso_medio_recaudo_id;
+            $datos['detalle_operacion'] = $tipo_operacion;
+            $datos['estado'] = 'Activo';
+            TesoDocRegistro::create( $datos );
+                
             $datos['valor_movimiento'] = $valor_linea;
             $datos['descripcion'] = $tipo_operacion;
-            $datos['teso_motivo_id'] = (int)$lineas_registros[$i]->teso_motivo_id_cheque;
             $datos['documento_soporte'] = 'Cheque número ' . $lineas_registros[$i]->numero_cheque;
             TesoMovimiento::create( $datos );
 

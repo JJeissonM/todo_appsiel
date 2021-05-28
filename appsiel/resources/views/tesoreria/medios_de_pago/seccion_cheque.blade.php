@@ -8,7 +8,7 @@
 			<div class="row">
 				<div class="col-md-6" >
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
-						<h6 style="width: 100%; text-align: center;">CREAR NUEVO CHEQUE</h6>
+						<h6 style="width: 100%; text-align: center;">FORMULARIO</h6>
 						<hr>
 						<div class="row">
 							<div class="col-md-6">
@@ -34,6 +34,11 @@
 								</div>
 							</div>
 						</div>
+					</div>
+					<br><br>
+					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
+						<h6 style="width: 100%; text-align: center;">CREAR NUEVO CHEQUE</h6>
+						<hr>
 						<div class="row">
 							<div class="col-md-6">
 								<div class="row" style="padding:5px;">
@@ -76,9 +81,11 @@
 					</div>
 					<br><br>
 					<div style="border-radius: 4px; border: solid 1px #848484; padding: 5px;">
-						<h6 style="width: 100%; text-align: center;">CHEQUES ALMACENADOS</h6>
+						<h6 style="width: 100%; text-align: center;">USAR CHEQUES ALMACENADOS</h6>
 						<hr>
-						<button class="btn btn-primary" id="btn_cargar_cheques"><i class="fa fa-level-up"></i> Cargar </button>
+						<p style="text-align: center;">
+							<button class="btn btn-primary" id="btn_cargar_cheques"><i class="fa fa-level-up"></i> Cargar </button>
+						</p>						
 						<br>
 						{{ Form::Spin(48) }}
 						<div id="div_cheques_almacenados" class="container-fluid">
@@ -96,6 +103,7 @@
 								<table class="table table-striped table-bordered" id="tabla_registros_cheques">
 									<thead>
 										<tr>
+            								<th style="display: none;">cheque_id</th>
 											<th style="display: none;">tipo_operacion_id_cheque</th>
 											<th style="display: none;">teso_motivo_id_cheque</th>
 											<th style="display: none;">detalle_cheque</th>
@@ -173,6 +181,46 @@
 				$('#numero_cheque').focus();
 			});
 
+			
+
+			$(document).on('click', '#btn_cargar_cheques', function(event) 
+			{
+				event.preventDefault();
+
+				if( !validar_requeridos2() )
+				{
+					return false;
+				}
+
+				$('#div_cargando').show();
+			    $('#div_cheques_almacenados').html('');
+				
+				var url = "{{url('teso_get_cheques_recibidos')}}" + '/' + $('#tipo_operacion_id_cheque').val() + '/' + $('#teso_motivo_id_cheque').val() + '/' + $('#caja_id_cheque').val();
+				
+				$.get( url, function( respuesta ) {
+			        $('#div_cheques_almacenados').html( respuesta );
+					$('#div_cargando').hide();
+				});
+			});
+
+			// De lo cheques pendientes seleccionar uno para agregarlo al listado de lineas ingresadas
+			$(document).on('click', '.btn_seleccionar_cheque', function(event) 
+			{
+				event.preventDefault();
+				var fila = $(this).closest("tr");
+
+				fila.find('.btn_eliminar_cheque').attr('style','display: block');
+				fila.find('.btn_seleccionar_cheque').attr('style','display: none');
+
+				fila.attr('class','linea_registro_cheque');
+
+				$('#tabla_registros_cheques').find('tbody:last').append( fila );
+				
+				hay_cheques++;
+
+				calcular_totales_cheques( $('#tipo_operacion_id_cheque').val(), parseFloat( fila.find('.valor_cheque').text() ) );
+			});
+
 			$(document).on('click', '.btn_eliminar_cheque', function(event) 
 			{
 				var fila = $(this).closest("tr");
@@ -214,6 +262,7 @@
 
 			function calcular_totales_cheques( tipo_operacion_id, valor_linea )
 			{
+				console.log( tipo_operacion_id, valor_linea );
 				var valor_total_cheques = 0.0;
 				$('.linea_registro_cheque').each(function()
 				{
@@ -254,6 +303,20 @@
 
 			function validar_requeridos()
 			{
+				if( $('#tipo_operacion_id_cheque').val() == '' )
+				{
+					alert('Debe seleccionar un Tipo de operación.')
+					$('#tipo_operacion_id_cheque').focus();
+					return false;
+				}
+
+				if( $('#teso_motivo_id_cheque').val() == '' )
+				{
+					alert('Debe seleccionar un Motivo.')
+					$('#teso_motivo_id_cheque').focus();
+					return false;
+				}
+
 				if( $('#caja_id_cheque').val() == '' )
 				{
 					alert('Debe seleccionar una Caja.')
@@ -283,10 +346,40 @@
 				return true;
 			}
 
+			function validar_requeridos2()
+			{
+				if( $('#tipo_operacion_id_cheque').val() == '' )
+				{
+					alert('Debe seleccionar un Tipo de operación.')
+					$('#tipo_operacion_id_cheque').focus();
+					return false;
+				}
+
+				if( $('#teso_motivo_id_cheque').val() == '' )
+				{
+					alert('Debe seleccionar un Motivo.')
+					$('#teso_motivo_id_cheque').focus();
+					return false;
+				}
+
+				if( $('#caja_id_cheque').val() == '' )
+				{
+					alert('Debe seleccionar una Caja.')
+					$('#caja_id_cheque').focus();
+					return false;
+				}
+
+				return true;
+			}
+
 			function generar_string_celdas()
 			{
 				var celdas = [];
 				var num_celda = 0;
+
+				celdas[ num_celda ] = '<td style="display: none;">0</td>'; // cheque_id
+				
+				num_celda++;
 
 				celdas[ num_celda ] = '<td style="display: none;" class="tipo_operacion_id_cheque">'+ $('#tipo_operacion_id_cheque').val() +'</td>';
 				

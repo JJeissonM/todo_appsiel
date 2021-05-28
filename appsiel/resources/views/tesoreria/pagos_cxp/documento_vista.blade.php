@@ -60,6 +60,8 @@
         </tfoot>
     </table>
 
+    @include('tesoreria.incluir.registros_descuentos')
+
     @include('tesoreria.medios_de_pago.tabla_show_detalles', [ 'vistaimprimir' => '' ] )
 
     @include('tesoreria.recaudos_cxc.cheques_relacionados')

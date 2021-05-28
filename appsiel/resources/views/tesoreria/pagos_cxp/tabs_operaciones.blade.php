@@ -14,7 +14,7 @@
 	<ul class="nav nav-tabs">
 		<li class="active"><a data-toggle="tab" href="#tab1"> Documentos pendientes </a></li>
 		<li><a data-toggle="tab" href="#tab2"> Retenciones </a></li>
-		<li><a data-toggle="tab" href="#tab3"> Dctos pronto pago </a></li>
+		<li><a data-toggle="tab" href="#tab3"> Descuentos o deducciones </a></li>
 		<!-- <li><a data-toggle="tab" href="#tab4"> Asientos contables </a></li> -->
     </ul>
 
@@ -26,7 +26,7 @@
 	        @include('tesoreria.incluir.seccion_retenciones')
     	</div>
 	    <div id="tab3" class="tab-pane fade">
-	        -- EN DESARROLLO -- Para acceder por favor consultar al mail paula@appsiel.com.co
+	        @include('tesoreria.incluir.seccion_descuento_pronto_pago')
     	</div>
 	    <!-- <div id="tab4" class="tab-pane fade">
 	        @ include('tesoreria.recaudos_cxc.seccion_asientos_contables')

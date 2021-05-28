@@ -46,6 +46,12 @@
 				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
 				<td colspan="2" style="background-color: #ddd;"> &nbsp; </td>
 			</tr>
+			<tr>
+				<td><b>Dcto. pronto pago:</b></td>
+				<td id="valor_total_descuento_pronto_pago2" align="right">$ 0</td>
+				<td width="10px;" style="border-top: 1px solid white; border-bottom: 1px solid white;background-color: #fff;">&nbsp;</td>
+				<td colspan="2" style="background-color: #ddd;"> &nbsp; </td>
+			</tr>
 		</tbody>
 		<tfoot>
 			<tr>

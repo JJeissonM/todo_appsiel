@@ -64,13 +64,15 @@
                 @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif</b><br/>
         </td>
         <td>
-            @if( !is_null($doc_encabezado->documento_ventas_padre()->contacto_cliente) )
-				<b>Contacto: </b> {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
-				<br>
-				<b>Tel: </b> {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->telefono1 }}
-				<br>
-				<b>Email: </b> {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->email }}
-			@endif
+            @if( !is_null($doc_encabezado->documento_ventas_padre()) )
+                @if( !is_null($doc_encabezado->documento_ventas_padre()->contacto_cliente) )
+    				<b>Contacto: </b> {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
+    				<br>
+    				<b>Tel: </b> {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->telefono1 }}
+    				<br>
+    				<b>Email: </b> {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->email }}
+    			@endif
+            @endif
         </td>
     </tr>
     <tr>

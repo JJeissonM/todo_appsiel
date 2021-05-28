@@ -16,15 +16,13 @@ class InvBodega extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = InvBodega::where('inv_bodegas.core_empresa_id', Auth::user()->empresa_id)
-            ->select(
-                'inv_bodegas.descripcion AS campo1',
-                'inv_bodegas.estado AS campo2',
-                'inv_bodegas.id AS campo3'
-            )
-            ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
-            ->orWhere("inv_bodegas.estado", "LIKE", "%$search%")
-            ->orderBy('inv_bodegas.created_at', 'DESC')
-            ->paginate($nro_registros);
+                            ->select(
+                                'inv_bodegas.descripcion AS campo1',
+                                'inv_bodegas.estado AS campo2',
+                                'inv_bodegas.id AS campo3'
+                            )
+                            ->orderBy('inv_bodegas.created_at', 'DESC')
+                            ->paginate($nro_registros);
 
         return $registros;
     }

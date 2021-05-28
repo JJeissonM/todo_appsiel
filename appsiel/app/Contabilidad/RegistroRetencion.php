@@ -12,7 +12,7 @@ class RegistroRetencion extends Model
     protected $table = 'contab_registros_retenciones';
 
     // tipo = { sufrida | practicada }
-    protected $fillable = ['tipo', 'numero_certificado', 'fecha_certificado', 'fecha_recepcion_certificado', 'numero_doc_identidad_agente_retencion', 'razon_social_agente_retencion', 'contab_retencion_id', 'valor_base_retencion', 'tasa_retencion', 'valor', 'detalle', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'creado_por', 'modificado_por', 'estado'];
+    protected $fillable = [ 'tipo', 'numero_certificado', 'fecha_certificado', 'fecha_recepcion_certificado', 'numero_doc_identidad_agente_retencion', 'razon_social_agente_retencion', 'contab_retencion_id', 'valor_base_retencion', 'tasa_retencion', 'valor', 'detalle', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'creado_por', 'modificado_por', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Núm. Certificado', 'F. certificado', 'F. recepción cert.', 'Doc. ID Tercero', 'Tercero', 'Retención', 'Base Ret.', 'Tasa', 'Valor', 'Doc. relacionado', 'Estado'];
 

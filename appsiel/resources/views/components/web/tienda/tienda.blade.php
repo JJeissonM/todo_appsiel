@@ -6,12 +6,13 @@
 
 <style>
     .font-tienda{
-        if($pedido != null){
-            font-family: {{ $pedido->configuracionfuente->fuente->font }};
-        }else{
+        @if($pedido != null)
+                @if( !is_null($pedido->configuracionfuente ) )
+                    font-family: {{ $pedido->configuracionfuente->fuente->font }};
+                @endif            
+        @else
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
-        }
-        
+        @endif        
     }
 </style>
 

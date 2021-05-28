@@ -221,7 +221,10 @@ class ComprobanteEgreso extends Model
     {
         $teso_motivo_id = (int)config('tesoreria.motivo_comprobante_egresos_id');
 
-        if ( explode("-", $datos['teso_medio_recaudo_id'])[1] == 'Efectivo' )
+        $vec_3 = explode( "-", $datos['teso_medio_recaudo_id'] );
+        $teso_medio_recaudo_id = $vec_3[0];
+
+        if ( $vec_3[1] == 'Efectivo' )
         {
             $datos['teso_cuenta_bancaria_id'] = 0;
         }else{
@@ -239,6 +242,7 @@ class ComprobanteEgreso extends Model
         TesoMovimiento::create(
                                 $datos +
                                 [ 'teso_motivo_id' => $teso_motivo_id] +
+                                [ 'teso_medio_recaudo_id' => $teso_medio_recaudo_id] +
                                 [ 'codigo_referencia_tercero' => $codigo_referencia_tercero ] +
                                 [ 'valor_movimiento' => (float)$datos['valor_total'] * -1] +
                                 [ 'estado' => 'Activo']

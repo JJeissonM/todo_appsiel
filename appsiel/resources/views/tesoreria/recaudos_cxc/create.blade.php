@@ -39,6 +39,7 @@
 
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
 				<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="">
+				<input type="hidden" name="lineas_registros_descuento_pronto_pagos" id="lineas_registros_descuento_pronto_pagos" value="">
 				<input type="hidden" name="lineas_registros_asientos_contables" id="lineas_registros_asientos_contables" value="">
 				<input type="hidden" name="lineas_registros_efectivo" id="lineas_registros_efectivo" value="">
 				<input type="hidden" name="lineas_registros_transferencia_consignacion" id="lineas_registros_transferencia_consignacion" value="">
@@ -78,6 +79,7 @@
 		var hay_tarjeta_debito = 0;
 		var hay_tarjeta_credito = 0;
 		var hay_asiento_contable = 0;
+		var hay_descuento_pronto_pago = 0;
 		
 		$(document).ready(function(){
 			

@@ -167,7 +167,7 @@
                                             </div> 
                                             <div class="form-group">
                                                 <label for="">Fuente Para el Componente <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span></label>
-                                                @if($fonts!=null)
+                                                @if( isset($fonts) )
                                                 {!! Form::select('configuracionfuente_id',$fonts,$pedido->configuracionfuente_id,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                                 @endif
                                             </div>
@@ -190,7 +190,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label for="">Fuente Para el Componente <span data-toggle="tooltip" title="Establece el tipo de fuente de la sección."> <i class="fa fa-question-circle"></i></span></label>                        
-                                                @if($fonts!=null)
+                                                @if( isset($fonts) )
                                                 {!! Form::select('configuracionfuente_id',$fonts,null,['class'=>'form-control select2','placeholder'=>'-- Seleccione una opción --','required','style'=>'width: 100%;']) !!}
                                                 @endif
                                             </div>
