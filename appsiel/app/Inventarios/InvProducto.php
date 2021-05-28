@@ -241,7 +241,7 @@ class InvProducto extends Model
 
     public static function get_grupos_pagina_web()
     {
-        $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id','inv_grupos.descripcion AS grupo_descripcion')->where('inv_productos.mostrar_en_pagina_web',1)->get();
+        $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id','inv_grupos.descripcion AS grupo_descripcion','inv_grupos.imagen')->where('inv_productos.mostrar_en_pagina_web',1)->get();
         return $grup->groupBy('grupo_descripcion')->all();
     }
 

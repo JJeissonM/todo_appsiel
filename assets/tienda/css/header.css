@@ -28,7 +28,7 @@
     }
 
     .header-content {
-        height: 250px;
+        height: 150px;
     }
 }
 
@@ -48,6 +48,7 @@
     width: 100%;
     margin: 10px 0 0;
     border: 1px solid #ddd;
+    display: flex;    
 }
 
 .box-search-bar  select {
@@ -57,13 +58,13 @@
 .box-search-bar input.input-text {
     font-size: 16px;
     font-weight: bold;
-    width: 60%;
     height: 40px;
     margin: 0;
     border: none;
     background: none;
     padding: 10px;
     font-style: italic;
+    flex: 1 1 auto;
 }
 
 .box-search-bar button.btn{
@@ -116,7 +117,7 @@
 
     @media (max-width: 479px){
         .nav-categorias {
-            display: none;
+            /*display: none;*/
         }
     }
 

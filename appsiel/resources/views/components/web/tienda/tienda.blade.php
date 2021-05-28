@@ -1,10 +1,20 @@
 <link rel="stylesheet" href="{{asset('assets/tienda/css/skeleton.css')}}">
-<link rel="stylesheet" href="{{asset('assets/tienda/css/normalize.css')}}">
 <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
-<link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
+<link rel="stylesheet" href="{{asset('assets/tienda/css/products.css')}}">
 <link rel="stylesheet" href="{{asset('assets/css/toastr.min.css')}}">
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Open+Sans+Condensed:ital,wght@0,300;0,700;1,300&display=swap');
+    .font-oswald{
+        font-family: 'Open Sans Condensed', sans-serif;
+    }
+    #categoria_filtrada > span > img{
+        display: none;        
+    }
+    a.close {
+        font-size: 2.2rem;
+        float: none;
+    }
     .font-tienda{
         @if($pedido != null)
                 @if( !is_null($pedido->configuracionfuente ) )
@@ -14,59 +24,36 @@
             font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
         @endif        
     }
+    
 </style>
 
 <!--@ include('web.tienda.carousel')-->
 @include('web.tienda.search')
 
-<main style="background: white;">
+<main style="background: white;" class="font-tienda">
     <div class="main-container col2-left-layout">
         <div class="container">
             <div class="container-inner">
                 <div class="main">
                     <div class="main-inner">
                         <div class="row">
-                            <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
-                                <div class="block block-layered-nav h-100">
-                                    <div class="block-title">
-                                        <strong><span class="font-tienda">Filtrar Por</span></strong>
-                                    </div>
-                                    <div class="block-content">
-                                        <p class="block-subtitle">Opciones de compra</p>
-                                        <dl id="narrow-by-list">
-                                            <dt class="odd font-tienda" style="margin:20px 0;">Categorias</dt>
-                                            <div id="categoria_filtrada"></div>
-                                            <dd class="odd">
-                                                <ol style="list-style: none; padding-left: 0">
-                                                    @foreach($grupos as $key => $value)
-                                                        <li>
-                                                            <a class="ajaxLayer"
-                                                               onclick="filtrar_categoria('{{ $value[0]->id }}', this)" > {{$key}} ({{$value->count()}})</a>
-                                                        </li>
-                                                    @endforeach
-                                                </ol>
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-main col-lg-9 col-md-9 col-sm-12 col-xs-12">
+                            <div class="col-main col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="page-title category-title">
-                                    <h1 class="font-tienda">Nuestros Productos</h1>
+                                    <h1 class="font-tienda text-center">Nuestros Productos</h1>
+                                    <div id="categoria_filtrada" style="margin-bottom: 2rem; color: #64686d"></div>
                                 </div>
                                 <div class="category-products">
                                     <div id="lista_productos">
                                         <ul class="products-grid row first odd align-content-start">
                                             
                                             @foreach($items as $item)
-                                                <li class="col-sm-3 col-md-3 col-6 col-sms-1 col-smb-1 item first" style="list-style: none; padding: 0 0 0 0">
+                                                <li class=" item first" style="list-style: none; padding: 0 0 0 0">
                                                     <div class="item-inner">
                                                         <div class="ma-box-content" data-id="{{$item->id}}">
                                                             <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
                                                             <input id="precio_venta" type="hidden" value="{{$item->precio_venta}}">
                                                             <div class="products clearfix">
-                                                                <a href="#"
+                                                                <a href="{{route('tienda.detalleproducto',$item->id)}}"
                                                                    title="{{$item->descripcion}}" class="product-image">
                                                                     <div class="product-image"> 
                                                                         <?php 
@@ -76,12 +63,14 @@
                                                                                 $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen );
                                                                             }
                                                                         ?>
+                                                                        
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                             width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain">
-                                                                        </div>
+                                                                             width="200" height="200" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain;">
+                                                                            
+                                                                    </div>
                                                                 </a>
                                                             </div>
-                                                            <h2 class="product-name text-center" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'" style="height: 45px">
+                                                            <h2 class="font-oswald product-name text-center mx-2" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
                                                                 <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                                                             </h2>
                                                             <!--<div class="ratings">
@@ -91,12 +80,11 @@
                                                             </div>-->
                                                             <div class="price-box text-center">
                                                                 <span class="regular-price" id="product-price-1">
-                                                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
+                                                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
+                                                                </span>
                                                             </div>
                                                             <div class="actions agregar-carrito">
-                                                                <button type="button" class="btn-cart form-control">
-                                                                    <i class="fa fa-shopping-cart"></i>
-                                                                    Comprar
+                                                                <button type="button" class="btn-cart btn-primary form-control" style="background-color: var(--color-primario); border: none ;font-size: 16px" >  Añadir &nbsp;<i class="fa fa-cart-plus" ></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -106,7 +94,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="d-flex justify-content-center">
                                     {{$items->render()}}
                                 </div>
                             </div>
@@ -142,7 +130,7 @@
                     $('#lista_productos').html( data );
                     $('#lista_productos').fadeIn( 1000 );
 
-                    $('#categoria_filtrada').html( '<div style="border: 1px solid; border-radius: 4px; padding: 3px;"> Filtado por: <a href="javascript:location.reload()" class="close" aria-label="close">&times;</a> <br>' + enlace.innerHTML + ' </div><hr>' );
+                    $('#categoria_filtrada').html( 'Filtado por: <span style="border-radius: 4px; border: 2px solid var(--color-secundario); padding: 3px;"> ' + enlace.innerHTML + ' <a href="javascript:location.reload()" class="close fa fa-close" aria-label="close"></a></span>' ); 
 
                 })
                 .error(function(){
@@ -163,7 +151,7 @@
             var url = form_consulta.attr('action');
             var datos = form_consulta.serialize();
 
-            //console.log( enlace );
+            console.log( event );
 
             $.get( url, datos )
                 .done(function( data ) {
@@ -171,7 +159,7 @@
                     $('#lista_productos').html( data );
                     $('#lista_productos').fadeIn( 1000 );
 
-                    $('#categoria_filtrada').html( '<div style="border: 1px solid; border-radius: 4px; padding: 3px;"> Filtado por: <a href="javascript:location.reload()" class="close" aria-label="close">&times;</a> <br>' + enlace.innerHTML + ' </div><hr>' );
+                    $('#categoria_filtrada').html( 'Filtado por: <span style="border-radius: 4px; border: 2px solid var(--color-secundario); padding: 3px;"> ' + datos.substr(7) + ' <a href="javascript:location.reload()" class="close fa fa-close" aria-label="close"></a></span>' ); 
 
                 })
                 .error(function(){

@@ -10,6 +10,7 @@ use App\web\Footer;
 use App\web\RedesSociales;
 use App\web\Tienda;
 use Form;
+use Input;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -214,13 +215,14 @@ class TiendaController extends Controller
         $paises = DB::table('core_paises')->get();
 
         $cliente = null;
-
+        
         if (!Auth::guest()) {
             $user = Auth::user();
             $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
         }
 
         if ($cliente == null) {
+            
             return redirect()->route('tienda.login');
         }
 
@@ -231,15 +233,28 @@ class TiendaController extends Controller
 
     }
 
+    public function newcuenta()
+    {         
+        $paises = DB::table('core_paises')->get(); 
+
+        $user = Auth::user();
+        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
+
+        $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->get();
+        $footer = Footer::all()->first();
+        $redes = RedesSociales::all();
+        return view('web.tienda.cuenta', compact('paises', 'cliente','footer','redes','doc_encabezados'));
+    }
+
     public function login()
-    {
+    {        
         $grupos = InvProducto::get_grupos_pagina_web();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
         return view('web.tienda.login', compact( 'grupos' ,'footer','redes'));
     }
 
-    public function crearCuenta()
+    public function crearCuenta()   
     {
         $tipos = DB::table('core_tipos_docs_id')->get();
         return view('web.tienda.crearCuenta', compact('tipos'));

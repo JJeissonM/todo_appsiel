@@ -61,8 +61,7 @@ class UserController extends ModeloController
 		
 		$role_r = Role::where('id', '=', $request->role)->firstOrFail();            
 		$user->assignRole($role_r); //Assigning role to user
-		
-        return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with('flash_message','Usuario creado correctamente.');
+        return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with('flash_message','Usuario creado correctamente.');        
     }
 
 

@@ -90,7 +90,6 @@ a:-webkit-any-link {
 #lista-productos img{
   max-width: 90px;
   border-radius: 4px;
-  margin-top: 20px;
 }
 
 #lista-productos tbody td {
@@ -111,8 +110,8 @@ a:-webkit-any-link {
 }
 
 .contenido p {
-    font-weight: bold;
-    font-size: 24px;
+    font-size: 20px;
+    margin-bottom: 8px;
 }
 
 .total_compra {
@@ -127,9 +126,9 @@ a:-webkit-any-link {
     padding: 10px 0;
 }
 
-.total_compra p {
+.total_compra p{
+    margin: 0;
     font-weight: bold;
-    font-size: 28px;
 }
 
 .terminos {

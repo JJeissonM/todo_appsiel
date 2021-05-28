@@ -19,25 +19,25 @@
     </style>
 </head>
 <body>
-    <div style="position: absolute; left: 40mm; top: 67mm;">
+    <div style="position: absolute; left: 40mm; top: 63mm;">
         {{ $doc_encabezado->tercero_nombre_completo }} @if( !is_null($doc_encabezado->documento_ventas_padre()) )
        / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}        
     @endif
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 73mm;">
+    <div style="position: absolute; left: 40mm; top: 68mm;">
         {{ $doc_encabezado->numero_identificacion}}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 79mm;">
+    <div style="position: absolute; left: 40mm; top: 73mm;">
         {{ $empresa->direccion1 }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 85mm;">
+    <div style="position: absolute; left: 40mm; top: 80mm;">
         {{ $ciudad->descripcion }} 
     </div>
 
-    <div style="position: absolute; right: 75mm; top: 41mm;">
+    <div style="position: absolute; right: 65mm; top: 36mm;">
         <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
@@ -46,34 +46,31 @@
             {{ $fecha_final }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 94mm;">        
+    <div style="position: absolute; left: 40mm; top: 91mm;">
         CONSTANCIA ENTREGA MATERIAL
     </div>
 
-    <div style="position: absolute; left: 15mm; top: 112mm; width: 193mm">
-
-    <table width="100%">
-        <?php
-                $total_cantidad = 0;
-                $numero = 1;
-            ?>
-        @foreach($doc_registros as $linea )
-        <tr>
-            <td style="text-align: center;" width="15%"> {{ $linea->producto_id }} </td>
-            <td width="65%"> {{ $linea->producto_descripcion }} </td>
-            <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
-        </tr>
-                <?php 
-                    $total_cantidad += $linea->cantidad;
-                    $numero++;
+    <div style="position: absolute; left: 25mm; top: 122mm; width: 173mm">
+        <table width="100%">
+            <?php
+                    $total_cantidad = 0;
+                    $numero = 1;
                 ?>
-        @endforeach
-    </table>
-        
-
+            @foreach($doc_registros as $linea )
+            <tr>
+                <td style="text-align: center;" width="15%"> {{ $linea->producto_id }} </td>
+                <td width="65%"> {{ $linea->producto_descripcion }} </td>
+                <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
+            </tr>
+                    <?php 
+                        $total_cantidad += $linea->cantidad;
+                        $numero++;
+                    ?>
+            @endforeach
+        </table>     
     </div>
 
-    <div style="position: absolute; left: 187mm; top: 248mm;">        
+    <div style="position: absolute; left: 175mm; top: 254mm;">        
         {{ abs($total_cantidad) }}
     </div>
 

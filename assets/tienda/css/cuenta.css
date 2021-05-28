@@ -184,10 +184,10 @@ ul,ol         { list-style:none; margin: 0;}
 #wishlist-table .cart-cell{text-align: center;}
 /* Sidebar =============================================================================== */
 .block {margin:0 0 30px;clear: both;border: 1px solid #eee;padding: 15px 10px 10px 15px}
-.block .block-title strong {font-size:14px;word-wrap: break-word;display:block;text-transform: uppercase;font-weight: bold;}
+.block .block-title strong {font-size:14px;word-wrap: break-word;display:block;font-weight: bold;}
 .block .block-title strong span {}
 .block .block-title a { text-decoration:none !important; }
-.block-layered-nav .block-subtitle {margin:0; padding:5px 0;  font-weight: normal;text-transform: uppercase; border-bottom: 1px solid #f2f2f2;font-family: SegoeUISemibold;}
+.block-layered-nav .block-subtitle {margin:0; padding:5px 0;  font-weight: normal; border-bottom: 1px solid #f2f2f2;font-family: SegoeUISemibold;}
 .block .block-content { margin:15px 0 0}
 .block .block-content li.item { padding: 0; }
 .block .btn-edit { float:right; margin:10px 0 2px 5px; }

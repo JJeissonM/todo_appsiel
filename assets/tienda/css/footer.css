@@ -12,14 +12,12 @@
 
 .footer-static-title h3 {
     font-size: 14px;
-    text-transform: uppercase;
     margin: 0;
     font-weight: bold;
 }
 
 .footer-static-content ul li {
     line-height: 28px;
-    text-transform: uppercase;
     font-size: 10px;
 }
 
@@ -102,7 +100,6 @@ ul.link-follow a {
 .block-subscribe .actions button.button  {
     text-align: center;
     border-radius: 3px;
-    text-transform: uppercase;
     background-color: #ff8441;
     color: #fff;
 }

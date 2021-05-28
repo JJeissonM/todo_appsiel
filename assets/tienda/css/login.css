@@ -21,7 +21,7 @@
 }
 
 button.button {
-    background-color: #000;
+    background-color: var(--color-primario);
     color: #fff;
 }
 
@@ -35,12 +35,20 @@ button.button {
     padding: 20px;
 }
 
-.page-title h1, .page-title h2 {
+.page-title h1{
     margin: 0;
-    font-size: 16px;
-    color: #e98388;
-    text-transform: uppercase;
+    font-size: calc(1.375rem + 1.5vw);
+    color: #000;
+    
 }
+.page-title h2 {
+    margin: 0;
+    font-size: calc(1.325rem + .9vw);
+    color: #000;
+    
+}
+
+
 
 .page-title {
     width: 100%;
