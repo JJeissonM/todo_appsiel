@@ -60,7 +60,7 @@ function insertarCarrito(curso) {
           <td>${curso.titulo}</td>
           <td>${curso.precio}</td>
           <td>
-               <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
+               <a href="#" class="borrar-curso" data-id="${curso.id}"><i class="fa fa-times" aria-hidden="true"></i></a>
           </td>
      `;
      listaCursos.appendChild(row);
@@ -141,7 +141,7 @@ function leerLocalStorage() {
              <td>${curso.titulo}</td>
              <td>${curso.precio}</td>
              <td>
-                  <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
+                  <a href="#" class="borrar-curso" data-id="${curso.id}"><i class="fa fa-times" aria-hidden="true"></i></a>
              </td>
         `;
         listaCursos.appendChild(row);

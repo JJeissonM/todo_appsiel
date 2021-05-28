@@ -12,6 +12,7 @@ use App\web\RedesSociales;
 use App\web\Seccion;
 use App\web\Widget;
 use App\web\WidgetsElementsDesign;
+use App\User;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
@@ -42,6 +43,11 @@ class PaginaController extends Controller
         $variables_url = '?id=' . Input::get('id');
 
         return view('web.paginas.index', compact('miga_pan', 'paginas', 'variables_url'));
+    } 
+
+    public function validar_email( $email )
+    {
+        return User::where('email',$email)->value('email');
     }
 
 

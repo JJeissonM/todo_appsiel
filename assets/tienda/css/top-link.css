@@ -16,7 +16,6 @@
 
 p.welcome-msg {
     margin: 0;
-    text-transform: uppercase;
     float: left;
     padding: 10px 0;
 }
@@ -37,7 +36,11 @@ li {
 }*/
 
 .links li {
-    display: inline;
+    display: inline;  
+    font-size: 12px;  
+}
+.links{
+    display: flex;
 }
 
 .top-link ul.links li {
@@ -49,9 +52,12 @@ li {
     padding-left: 0 !important;
 }
 
+.links li i{
+    font-size: 16px;
+}
+
 .top-link a {
     color: #eeeeee;
-    text-transform: uppercase;
 }
 
 a {

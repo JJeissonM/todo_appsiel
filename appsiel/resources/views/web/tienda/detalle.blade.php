@@ -21,7 +21,6 @@
             border-radius: 4px;
             color: white;
             font-weight: bold;
-            text-transform: uppercase;
         }
 
         .cantidades {
@@ -31,23 +30,28 @@
 
         .cantidades input {
           height: 30px;
+          border-radius: 0;
+          border: none;
         }
 
         .label-success {
            background-color: green;
-            margin-left: 5px;
+           border-radius: 0 5px 5px 0;             
         }
 
         .label-danger {
            background-color: red;
-            margin-right: 5px;
+           border-radius: 5px 0 0 5px;
         }
 
         .label {
-            padding: 5px;
-            color: white;
-            border-radius: 5px;
+            padding: 3px;
+            color: white;            
             cursor: pointer;
+        }
+
+        .description{
+            font-size: 20px
         }
 
     </style>
@@ -75,32 +79,43 @@
                                     $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $inv_producto->imagen );
                                 }
                                 ?>
-                                <div class="col-left sidebar col-lg-6 col-md-6 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
-                                    <img id="img_producto" src="{{$url_imagen_producto}}"  alt="">
+                                <div class="col-left sidebar col-lg-8 col-md-8 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
+                                    <img id="img_producto" src="{{$url_imagen_producto}}"  alt="" style="object-fit: contain; width: 100%; height: 350px;">
                                 </div>
-                                <div class="col-main col-lg-6 col-md-6 col-sm-12 col-xs-12">
-                                    <div class="page-title category-title">
-                                        <h1>{{$inv_producto->descripcion}}</h1>
+                                <div class="col-main col-lg-4 col-md-4 col-sm-12 col-xs-12 d-flex flex-column justify-content-between">
+                                    <div class="description">
+                                        <div class="page-title category-title">
+                                            <h1>{{$inv_producto->descripcion}}</h1>
+                                        </div>
+                                        <p>{{$inv_producto->detalle}}</p>
+                                        <div class="my-2">
+                                            <label style="width: 110px; display: inline-block"><strong>Precio: </strong></label>$ {{ number_format( $inv_producto->precio_venta,0,',','.' ) }}
+                                        </div>
+                                        
+                                        <div class="cantidades">
+                                            <label for="" style="width: 110px;margin-right: 5px;">Cantidad: </label>
+                                            <span class="label label-danger" onclick="less()"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                            <input type="text" style="width: 40px; " value="1" id="cantidad">
+                                            <span class="label label-success" onclick="plus()"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                        </div>    
                                     </div>
-                                    <p>{{$inv_producto->detalle}}</p>
-                                    <p><strong>PRECIO:</strong> $ {{$inv_producto->precio_venta}}</p>
-                                     <div style="display: flex; justify-content: space-between">
-                                         <div class="cantidades">
-                                             <label for="" style="margin-right: 5px;">CANTIDAD</label>
-                                             <span class="label label-danger" onclick="less()"><i class="fa fa-minus-square-o" aria-hidden="true"></i></span>
-                                             <input type="text" style="width: 40px; " value="1" id="cantidad">
-                                             <span class="label label-success" onclick="plus()"><i class="fa fa-plus-square-o" aria-hidden="true"></i></span>
-                                         </div>
+                                    
 
-                                         <button class="btn add_carrito" style="" onclick="add_carrito({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})">Agregar al Carrito</button>
+                                     <div style="display: flex; flex-direction: column; justify-content: space-between; margin-top: 2rem; height: 84px;">
+
+                                         <a href="#" onclick="comprarUno({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})"  id="comprar" class="btn button u-full-width" style="background-color: var(--color-primario,#42A3DC); border: none ;font-size: 16px; color: white">Comprar</a>
+
+                                         <button class="btn add_carrito" style="color: var(--color-primario,#42A3DC); border: none ;font-size: 16px; background-color: var(--color-primario,#42A3DC44)" onclick="add_carrito({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})">Agregar al Carrito</button>
+
+                                         
                                      </div>
                                 </div>
                                 <div class="col-main col-lg-12 col-md-12 col-sm-12 col-xs-12"  style="margin-top: 20px">
                                     <h2 class="title" style=" padding-bottom: 10px; font-size: 24px; border-bottom: 1px solid grey">Especificacíones</h2>
-                                    <div style="width: 80%; display: flex; justify-content: space-between">
+                                    <div style="width: 100%; display: flex; flex-direction: column; justify-content: space-between">
                                         @if($inv_producto->fichas->count() > 0)
                                             @foreach($inv_producto->fichas as $ficha)
-                                                <div class="caracteristica" style="width: 50%;">
+                                                <div class="caracteristica">
                                                     <p style="margin-bottom: 5px;"><strong>{{$ficha->key}}</strong></p>
                                                     <p><?php echo $ficha->descripcion; ?></p>
                                                 </div>
@@ -138,6 +153,16 @@
              let val = $('#cantidad').val();
              val++;
              $('#cantidad').val(val);
+         }
+
+         function comprarUno(producto){
+            window.location.href='{{route("tienda.comprar")}}';
+            let val = $('#cantidad').val();
+            if(val == 1){
+                add_carrito(producto);
+            }else{
+                add_carrito(producto);
+            }
          }
          
          function add_carrito(producto) {

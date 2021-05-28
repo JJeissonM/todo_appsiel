@@ -155,5 +155,12 @@ return array(
             'preview' => 'assets/web/componentes/sticky.png',
             'tipo' => 'GENERICO'
         ],
+        '22' => [
+            'id' => 26,
+            'nombre' => 'Categorias Tienda Online',
+            'descripcion' => 'Categorias Tienda Online.',
+            'preview' => 'assets/web/componentes/sticky.png',
+            'tipo' => 'GENERICO'
+        ],
     )
 );

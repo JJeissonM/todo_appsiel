@@ -4,35 +4,45 @@
 ?>
 
 <header>
-    <div class="top-link" style="background: {{ $configuracion->color_primario }};">
+    <div class="top-link" style="background: var(--color-primario,#42A3DC); font-size:20px">
         <div class="container" style="padding: 0 ">
             <div class="top-link-inner">
                 <div class="row">
-                    <div class="col-md-3 col-sm-3 col-xs-12">
-                        <div class="toplink-static">
-                            <span style="line-height: 40px; color: white;">
-                                Linea Directa : <a href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank"><i style="font-size: 16px; color: green;" class="fa fa-whatsapp" aria-hidden="true"></i> {{ $empresa->telefono1 }}</a>
-                            </span>
+                    <div class="col-md-6 col-sm-6 col-xs-12 d-flex align-items-center">
+                        <div class="toplink-static d-flex justify-content-center" style="width: 100px; height: 60px;">
+                            <div style="position: absolute; z-index: 10;" >
+                                <a href="{{ url('') }}">
+                                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: auto"> 
+                                </a>                                  
+                            </div>                                                     
                         </div>
+                        <span class="toplink-static" style="color: white; ">
+                                Venta Telefónica: <a style="text-transform: none" href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank">&nbsp;<i style="font-size: 16px; color: green; background-color: white; border-radius: 100%; padding: 4px; width: 24px;" class="fa fa-whatsapp text-center" aria-hidden="true"></i>&nbsp; Atención al cliente.</a>
+                            </span>
                     </div>
 
-                    <div class="col-md-9 col-sm-9 col-xs-12 toplink-static">
-                        <p class="welcome-msg">Bienvenido a {{ $empresa->descripcion }} </p>
-
+                    <div class="col-md-6 col-sm-6 col-xs-12 d-flex align-items-center justify-content-center">
+                        
                         <ul class="links">
-                            <li class="first"><a
+                            <li class="first">
+                                <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
+                                <a
                                         href="{{route('tienda.micuenta')}}"
                                         title="Mi Cuenta">Mi Cuenta</a></li>
-                            <li><a href="{{route("tienda.comprar")}}"
+                            <li>
+                                <i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;
+                                <a href="{{route("tienda.comprar")}}"
                                    title="My Cart" class="top-link-cart">Mi Carrito</a></li>
-                            <li><a href="#"
-                                   title="Checkout" class="top-link-checkout">Revisa</a></li>
                             @if(Auth::guest())
-                                     <li class=" last"><a
+                                     <li class=" last">
+                                        <i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; 
+                                        <a
                                         href="{{route('tienda.login')}}"
                                         title="Iniciar sesión">Iniciar Sesión</a>
                                      </li>
-                                <li class=" last"><a
+                                <li class=" last">
+                                    <i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;
+                                    <a
                                             href="{{route('tienda.nuevacuenta')}}"
                                             title="Registrarse"
                                             onclick="registrarse( event )">Registrarse</a>
@@ -45,7 +55,9 @@
                             @else
 
 
-                                <li class=" last"><a
+                                <li class=" last">
+                                    <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
+                                    <a
                                             href="{{url('/logout')}}"
                                             title="Cerra sesión">Cerrar Sesión</a>
                                 </li>

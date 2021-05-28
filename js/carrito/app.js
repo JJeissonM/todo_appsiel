@@ -72,10 +72,11 @@ function insertarCarrito(producto) {
                <img src="${item.imagen}" width=100>
           </td>
           <td>${item.titulo}</td>
-          <td>${item.precio}</td>
           <td>${item.cantidad}</td>
+          <td class="text-right">${item.precio}</td>
+          
           <td>
-               <a href="#" class="borrar-curso" data-id="${item.id}">X</a>
+               <a href="#" class="borrar-curso" data-id="${item.id}"><i class="fa fa-times" aria-hidden="true"></i></a>
           </td>
         `;
 
@@ -97,11 +98,17 @@ function eliminarProducto(e) {
 
      let producto,
         productoId;
-     if(e.target.classList.contains('borrar-curso') ) {
-          e.target.parentElement.parentElement.remove();
-          producto = e.target.parentElement.parentElement;
+        console.log(e.target)
+     if(e.target.parentElement.classList.contains('borrar-curso')) {          
+          producto = e.target.parentElement.parentElement.parentElement;
           productoId = producto.querySelector('a').getAttribute('data-id');
+          producto.remove();   
      }
+     if(e.target.classList.contains('borrar-curso')) {          
+        producto = e.target.parentElement.parentElement;
+        productoId = producto.querySelector('a').getAttribute('data-id');
+        producto.remove();   
+   }
      eliminarProductoLocalStorage(productoId);
     let element  =  document.querySelector('.item-nav .item');
     let count = element.textContent;
@@ -113,7 +120,6 @@ function eliminarProducto(e) {
         element.style.display = 'none';
         element.innerHTML = `${count}`;
     }
-
 }
 // Elimina los cursos del carrito en el DOM
 function vaciarCarrito() {
@@ -200,11 +206,11 @@ function leerLocalStorage() {
              <td>  
                  <center><img src="${producto.imagen}" width=100></center> 
              </td>
-             <td><center>${producto.titulo}</center></td>
-             <td><center>${producto.precio}</center></td>
-             <td><center>${producto.cantidad}</center></td>         
+             <td><center>${producto.titulo}</center></td>             
+             <td><center>${producto.cantidad}</center></td>  
+             <td class="text-right" style="width: 80px; white-space: nowrap">$ ${producto.precio}</td>       
              <td>
-                  <center><a href="#" class="borrar-curso" data-id="${producto.id}">X</a></center>
+                  <a href="#" class="borrar-curso" data-id="${producto.id}"><i class="fa fa-times" aria-hidden="true"></i></a>
              </td>
         `;
 

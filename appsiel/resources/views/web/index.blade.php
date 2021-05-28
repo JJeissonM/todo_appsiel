@@ -106,6 +106,7 @@
             padding-left: 0;
             margin: 10px 0;
             border-radius: 4px;
+
         }
 
         .pagination>li {
@@ -119,10 +120,9 @@
             padding: 6px 12px;
             margin-left: -1px;
             line-height: 1.428571429;
-            color: #428bca;
             text-decoration: none;
             background-color: #fff;
-            border: 1px solid #ddd;
+            margin: 4px;
         }
 
         .pagination>li:first-child>a,
@@ -142,9 +142,8 @@
         .pagination>li>span:hover,
         .pagination>li>a:focus,
         .pagination>li>span:focus {
-            color: #2a6496;
-            background-color: #eee;
-            border-color: #ddd;
+            color: grey;
+            background-color: lightgrey;
         }
 
         .pagination>.active>a,
@@ -154,10 +153,9 @@
         .pagination>.active>a:focus,
         .pagination>.active>span:focus {
             z-index: 2;
-            color: #fff;
+            color: black;
             cursor: default;
-            background-color: #428bca;
-            border-color: #428bca;
+            background-color: grey;
         }
 
         .pagination>.disabled>span,
@@ -169,7 +167,7 @@
             color: #999;
             cursor: not-allowed;
             background-color: #fff;
-            border-color: #ddd;
+            display: none;
         }
 
         :root{
@@ -181,8 +179,7 @@
             --color-primario: {{$configuracion->color_primario}};
             --color-secundario: {{$configuracion->color_segundario}};
             --color-terciario: {{$configuracion->color_terciario}};
-            @endif
-            
+            @endif          
            
         }
 
@@ -203,21 +200,20 @@
             background-color: var(--color-primario) !important;
         }
 
-        .pagination>li>a,
-        .pagination>li>span {
-            color: var(--color-primario) !important;
-        }
-
+        .
         .pagination>.active>a,
         .pagination>.active>span,
         .pagination>.active>a:hover,
         .pagination>.active>span:hover,
         .pagination>.active>a:focus,
         .pagination>.active>span:focus {
-            color: var(--color-secundario) !important;
+            color: black;
             cursor: default;
-            background-color: var(--color-primario) !important;
-            border-color: var(--color-primario) !important;
+            background-color: grey;
+        }
+        .pagination span:hover{
+            color: grey;
+            background-color: whitesmoke;
         }
 
         .column-title:after {

@@ -182,7 +182,7 @@ class PedidoController extends TransaccionController
               $cantidad = (float)$lineas_registros[$i]->cantidad;
               $valor_unitario_descuento = 0;
 
-              if ( isset( $request->url_id ) )
+              if ( isset( $request->url_id ) && !$request->pedido_web)
               {
                 // Si el pedido se hace desde el modulo de Ventas o POS
                 if ( (int)$request->url_id == 13 || (int)$request->url_id == 20 ) 

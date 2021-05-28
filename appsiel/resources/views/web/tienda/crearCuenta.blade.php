@@ -20,7 +20,7 @@
                         <div class="col-main">
                             <div class="account-create">
                                 <div class="page-title">
-                                    <h1>Nuevo Cliente</h1>
+                                    <h1>Completa tus datos...</h1>
                                 </div>
                                     <form action="{{url('/web')}}" method="post" id="form-validate">
                                         <input type="hidden" name="_token" value="{{csrf_token()}}">
@@ -52,14 +52,15 @@
                                             </div>
                                             <div class="col-xs-12 col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">*Numero de identificación: </label>
+                                                    <label for="">*Número de identificación: </label>
                                                     <input type="number" name="numero_identificacion" class="form-control" placeholder="Identificación" required>
                                                 </div>
                                             </div>
                                             <div class="col-xs-12 col-md-6">
                                                 <div class="form-group">
                                                     <label for="">*Email: </label>
-                                                    <input type="email" name="email" class="form-control" placeholder="Email" required>
+                                                    <input type="email" id="email" name="email" class="form-control" placeholder="Email" required>
+                                                    <label id="errormail" style="color: red">Ya existe una persona con ese correo</label>
                                                 </div>
                                             </div>
                                             <div class="col-xs-12 col-md-6">
@@ -70,8 +71,8 @@
                                             </div>
                                             <div class="col-xs-12 col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">*Telefono: </label>
-                                                    <input type="number" name="telefono" class="form-control" placeholder="Telefono" required>
+                                                    <label for="">*Teléfono: </label>
+                                                    <input type="number" name="telefono" class="form-control" placeholder="Teléfono" required>
                                                 </div>
                                             </div>
                                             <div class="col-xs-12 col-md-6">
@@ -89,7 +90,7 @@
                                         </div>
                                         <div class="buttons-set">
                                             <p class="required">* Campos requeridos</p>
-                                            <button type="submit" title="Submit" class="button"><span><span>Registrarme</span></span></button>
+                                            <button id="btn_crear_cuenta" type="button" title="Submit" class="button"><span><span>Registrarme</span></span></button>
                                         </div>
                                     </form>
                             </div>
@@ -105,5 +106,47 @@
 @section('script')
     <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
     <script type="text/javascript">
+
+$(document).on('blur', '#email', validarEmail);
+$(document).on('keyup', '#email', validarEmail);
+
+
+function validarEmail () {
+		var documento = $("#email").val();
+
+		/* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
+		url = "{{ url('core/validar_numero_identificacion/') }}";*/
+        
+
+        url = '../../ecommerce/validar_email/'; // crear
+		
+
+		$.get(url + documento, function (datos) {
+            console.log(datos);
+			if (datos != '') {
+				if (datos == documento) {
+					// No hay problema
+                    $('#errormail').css({'display':'block'})
+					//alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");  
+                    $('#btn_crear_cuenta').attr('type','button')
+                    console.log('false')  ;  
+                    return false;   
+                               
+				}else{
+                    $('#errormail').css({'display':'none'})
+                    $('#btn_crear_cuenta').attr('type','submit')
+                    console.log('true')
+                    return true;
+                }
+			}else{
+                $('#errormail').css({'display':'none'})
+                $('#btn_crear_cuenta').attr('type','submit')
+                console.log('true')
+                return true;
+            }
+		});
+        
+	};
+
     </script>
 @endsection

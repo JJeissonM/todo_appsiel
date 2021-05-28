@@ -48,7 +48,7 @@
                                     <div class="category-products">
                                         <ul class="products-grid row first odd">
                                             @foreach($items as $item)
-                                                <li class="col-sm-4 col-md-4 col-sms-12 col-smb-12 item first">
+                                                <li class="item first">
                                                     <div class="item-inner">
                                                         <div class="ma-box-content">
                                                             <div class="products clearfix">
@@ -56,7 +56,7 @@
                                                                    title="Fusce aliquam" class="product-image">
                                                                 <span class="product-image">
                                                                     <img src="{{ asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen ) }} " loading="lazy"
-                                                                         width="300" height="350" alt="{{$item->descripcion}}">
+                                                                         width="200" height="200" alt="{{$item->descripcion}}">
                                                                 </span>
                                                                 </a>
                                                             </div>
@@ -73,8 +73,8 @@
                                                                 <span class="price">${{$item->precio_venta}}</span></span>
                                                             </div>
                                                             <div class="actions">
-                                                                <button type="button" class="button btn-cart agregar-carrito"                                                                        data-original-title="Add to Cart" rel="tooltip"><i
-                                                                            class="fa fa-shopping-cart"></i><span>Comprar</span></button>
+                                                                <button type="button" class="btn-cart btn-primary agregar-carrito form-control" style="background-color: var(--color-primario); border: none ;font-size: 16px" data-original-title="Add to Cart" rel="tooltip">
+                                                                <i class="fa fa-shopping-cart"></i><span>Comprar</span></button>
                                                             </div>
                                                         </div>
                                                     </div>

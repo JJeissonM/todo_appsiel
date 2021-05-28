@@ -224,10 +224,12 @@ Route::get('ecommerce/public/signIn', 'web\TiendaController@login')->name('tiend
 Route::get('ecommerce/public/nuevacuenta', 'web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
 Route::get('ecommerce/comprar', 'web\TiendaController@comprar')->name('tienda.comprar');
 Route::get('ecommerce/public/account', 'web\TiendaController@cuenta')->name('tienda.micuenta');
+Route::get('ecommerce/public/newaccount', 'web\TiendaController@newcuenta');
 Route::put('ecommerce/account/informacion/updated/{clienteweb}', 'web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 Route::get('ecommerce/public/filtro/categoria/{categoria}', 'web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
 Route::get('ecommerce/public/busqueda/', 'web\TiendaController@busqueda')->name('tienda.busqueda');
 Route::get('ecommerce/public/product/{id}/detalle', 'Inventarios\ProductoController@detalle_producto')->name('tienda.detalleproducto');
+Route::get('ecommerce/validar_email/{email}', 'web\PaginaController@validar_email');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

@@ -1,3 +1,7 @@
+<?php
+$empresa = App\Core\Empresa::find(1);
+$configuracion = App\web\Configuraciones::all()->first();
+?>
 <!DOCTYPE html>
 <html lang="es">
 
@@ -50,6 +54,19 @@
     @yield('style')
 
     <style type="text/css">
+        :root{
+            --color-primario: #574696;
+            --color-secundario: #42A3DC;
+            --color-terciario: #50B794;
+
+            @if ($configuracion !=null) 
+            --color-primario: {{$configuracion->color_primario}};
+            --color-secundario: {{$configuracion->color_segundario}};
+            --color-terciario: {{$configuracion->color_terciario}};
+            @endif          
+           
+        }
+
         .pagination {
             display: inline-block;
             padding-left: 0;
@@ -131,7 +148,7 @@
         @yield('content')
     </div>
 
-    <!-- End main content -->
+    <!-- End main content pw -->
 
     <!-- JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->

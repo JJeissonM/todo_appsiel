@@ -12,7 +12,7 @@ use Form;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
-class NavegacionTiendaComponent implements IDrawComponent
+class CategoriesTiendaComponent implements IDrawComponent
 {
     public function __construct($widget)
     {
@@ -24,7 +24,7 @@ class NavegacionTiendaComponent implements IDrawComponent
         $items = InvProducto::get_datos_pagina_web('', 'Activo');
         $grupos = InvProducto::get_grupos_pagina_web();
         
-        return Form::navegaciontienda($items,$grupos);
+        return Form::categoriestienda($items,$grupos);
     }
 
     function viewComponent()

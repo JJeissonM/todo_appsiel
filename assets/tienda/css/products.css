@@ -18,27 +18,68 @@
 }
 
 .products-grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     justify-content: flex-start;
     flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .products-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
 }
 
 .product-image  {
     width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
+/*.product-image::after
+{
+ box-shadow: inset 0px 0px 3px 0 #dcdcdc;
+ content: '';
+ display: block;
+ height: 100%;
+ position: absolute;
+ top: 0;
+ width: 100%;
+}*/
+
+.product-image:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+    transition-duration: 50ms;
+    transition-timing-function: ease;
+}
 
 .products-grid .item {
     position: relative;
+    width: 100%;
+    border-radius: 5px;
 }
+
+.products-grid .item-inner{
+    height: 100%;    
+} 
 
 .ma-box-content {
     position: relative;
     background-color: #fff;
-    padding: 15px;
-    border: 1px solid #fff;
     overflow: hidden;
     margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    box-shadow: 0px 0px 3px 0 #dcdcdc;
 }
 
 .label-pro-sale, .label-pro-new {
@@ -46,7 +87,7 @@
     height: 68px;
     font-size: 0;
     text-indent: -9999px;
-    background: url(http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/sale.png) no-repeat;
+    background: url('http://www.plazathemes.com/demo/ma_dicove/skin/frontend/ma_dicove/ma_dicove/images/sale.png') no-repeat;
     z-index: 1;
     position: absolute;
     right: 10px;
@@ -64,9 +105,11 @@
     overflow: hidden;
     margin-bottom: 10px;
     width: 100%;
+    border-radius: 5px 5px 0 0px ;
 }
 
-.products >a {
+
+.products > a {
     display: block;
     float: left;
     width: 100%;
@@ -89,8 +132,9 @@ h2 {
 }
 
 .product-name a {
-    font-size: 16px;
+    font-size: 20px;
     text-transform: uppercase;
+    font-weight: bold;
 }
 
 .ratings {

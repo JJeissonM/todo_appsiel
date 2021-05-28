@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{{asset('assets/tienda/css/custom.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/login.css')}}">
+    <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -21,7 +22,7 @@
                                 <div class="col-main">
                                     <div class="account-login">
                                         <div class="page-title">
-                                            <h1>Inicia sesión o Crea una cuenta con nostros</h1>
+                                            <h1>Inicia sesión o Crea una cuenta con nosotros</h1>
                                         </div>
                                         <form action="{{ url('/login') }}" method="post" id="login-form">
                                             {{ csrf_field() }}
@@ -45,12 +46,22 @@
                                                                     <div class="input-box">
                                                                         <input style="font-size: 16px;" placeholder="Correo Electronico" type="text" name="email"  value="{{old('email')}}" id="email" class="input-text required-entry validate-email" title="Email Address">
                                                                     </div>
+                                                                    @if ($errors->has('email'))
+                                                                    <span class="help-block text-danger">
+                                                                        <strong>{{ $errors->first('email') }}</strong>
+                                                                    </span>
+                                                                    @endif
                                                                 </li>
                                                                 <li>
                                                                     <label for="pass" class="required"><em>*</em>Contraseña</label>
                                                                     <div class="input-box">
                                                                         <input style="font-size: 16px;" placeholder="Password" type="password" name="password"  class="input-text required-entry validate-password" id="pass" title="Password">
                                                                     </div>
+                                                                    @if ($errors->has('password'))
+                                                                    <span class="help-block text-danger">
+                                                                        <strong>{{ $errors->first('password') }}</strong>
+                                                                    </span>
+                                                                    @endif
                                                                 </li>
                                                             </ul>
                                                             <div class="buttons-set">
@@ -70,11 +81,18 @@
             </div>
         </div>
     </main>
-    {!! Form::footer($footer,$redes,null,'small')  !!})
+    {!! Form::footer($footer,$redes,null,'small')  !!}
 @endsection
 
 @section('script')
     <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
-    <script type="text/javascript">
-    </script>
+    <script src="{{asset('assets/js/toastr.min.js')}}"></script>
+    <?php
+        if(isset($_GET['reg'])){
+            echo '<script type="text/javascript">';
+            echo 'toastr["success"]("Se ha registrado satisfactoriamente")';
+            echo '</script>';
+        }    
+    ?>
+
 @endsection

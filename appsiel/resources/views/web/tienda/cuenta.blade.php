@@ -19,6 +19,9 @@
              background-color: red;
              color: white;
         }
+        ul li{
+            list-style: none;
+        }
     </style>
 
 @endsection
@@ -510,7 +513,8 @@
         });
     }
     //<![CDATA[
-    var dataForm = new VarienForm('form-validate', true);
+    /*var dataForm = new VarienForm('form-validate', true);
+
     function setPasswordForm(arg){
         if(arg){
             $('#form-password').removeAttr('style','display');
@@ -530,7 +534,7 @@
             $('#confirmation').removeClass('required-entry');
             // $('confirmation').removeClassName('required-entry');
         }
-    }
+    }*/
     //]]>
 </script>
 @endsection

@@ -7,7 +7,7 @@
 @else
     <ul class="products-grid row first odd">
         @foreach($items as $item)
-            <li class="col-sm-3 col-md-3 col-sms-12 col-smb-12 item first" style="list-style: none;padding: 0 0 0 0">
+            <li class="item first" style="list-style: none;padding: 0 0 0 0">
                 <div class="item-inner">
                     <div class="ma-box-content" data-id="{{$item->id}}">
                         <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
@@ -24,7 +24,7 @@
                                                                         }
                                                                         ?>
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
-                                                                        width="350" height="150" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain">
+                                                                        width="200" height="200" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain">
                                                                     </div>
                             </a>
                         </div>
@@ -36,12 +36,12 @@
                                 <div class="rating" style="width:67%"></div>
                             </div>
                         </div>-->
-                        <div class="price-box text-center">
+                        <div class="price-box text-center mx-2">
                             <span class="regular-price" id="product-price-1">
                             <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>
                         </div>
                         <div class="actions agregar-carrito">
-                            <button type="button" class="btn-cart form-control">
+                            <button type="button" class="btn-cart btn-primary form-control" style="background-color: var(--color-primario); border: none ;font-size: 16px" >
                                 <i class="fa fa-shopping-cart"></i>  
                                 Comprar
                             </button>
