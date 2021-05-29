@@ -1,10 +1,16 @@
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
+
+	$descripcion_modelo = '';
+	if ( isset($modelo) )
+	{
+		$descripcion_modelo = $modelo->descripcion;
+	}
 ?>
 
 <div class="container-fluid">
 	<div class="marco_formulario">
-	    <h4 style="width: 100%; text-align: center;">Nuevo registro: {{ $modelo->descripcion }}</h4>
+	    <h4 style="width: 100%; text-align: center;">Nuevo registro: {{ $descripcion_modelo }}</h4>
 	    <hr>
 
 		{{ Form::open(['url'=>$form_create['url'],'id'=>'form_create','files' => true]) }}

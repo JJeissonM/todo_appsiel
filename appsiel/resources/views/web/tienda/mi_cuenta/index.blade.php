@@ -65,6 +65,7 @@
                         <!-- Category Image-->
                         <div class="main-inner">
                             <div class="row">
+                                <input type="hidden" name="cliente_id" id="cliente_id" value="{{ $cliente->id }}">
                                 
                                 <div class="col-left sidebar col-lg-3 col-md-3 col-sm-12 col-xs-12">
                                     @include('web.tienda.mi_cuenta.menu_lateral')
@@ -75,7 +76,7 @@
                                         <div class="dashboard">
                                             <div class="tab-content py-3 px-3 px-sm-0" style="border: 0;" id="nav-tabContent">
                                                 
-                                                <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
+                                                <div class="tab-pane fade" id="nav-home" role="tabpanel"
                                                      aria-labelledby="nav-home-tab">
 
                                                     @include('web.tienda.mi_cuenta.panel_principal')
@@ -89,7 +90,7 @@
 
                                                 </div>
                                                 
-                                                <div class="tab-pane fade" id="nav-directorio" role="tabpanel"
+                                                <div class="tab-pane fade show active" id="nav-directorio" role="tabpanel"
                                                      aria-labelledby="nav-directorio-tab">
 
                                                     @include('web.tienda.mi_cuenta.mis_direcciones')
@@ -143,30 +144,104 @@
                 }
             });
         }
-        //<![CDATA[
-        /*var dataForm = new VarienForm('form-validate', true);
 
-        function setPasswordForm(arg){
-            if(arg){
-                $('#form-password').removeAttr('style','display');
-                $('#current_password').attr('class','input-text required-entry');
-                // $('current_password').addClassName('required-entry');
-                // $('password').addClassName('required-entry');
-                $("#password").attr('class','input-text required-entry');
-                $("#confirmation").attr('class','input-text required-entry');
-                // $('confirmation').addClassName('required-entry');
 
-            }else{
-                $('#form-password').attr('style','display:none');
-                // $('current_password').removeClassName('required-entry');
-                $('#current_password').removeClass('required-entry');
-                $('#password').removeClass('required-entry');
-                // $('password').removeClassName('required-entry');
-                $('#confirmation').removeClass('required-entry');
-                // $('confirmation').removeClassName('required-entry');
+        // RELATIVO A MIS DIRECCIONES
+        $("#btn_create_general").on('click', function(e) {
+            e.preventDefault();
+            
+            $("#contenido_modal").html('');
+
+            $("#myModal").modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+
+            $('#div_spin').fadeIn();
+            $('.btn_edit_modal').hide();
+            $(".btn_save_modal").show();
+            $(".modal-title").html('Agrega un domicilio');
+
+            var url = '{{url('/')}}/vtas_direcciones_entrega/create?cliente_id=' + $('#cliente_id').val() + '&id_modelo=300';
+
+            $.get(url, function(respuesta) {
+                $('#div_spin').hide();
+                $("#contenido_modal").html(respuesta);
+            });
+
+        });
+
+        $(".btn_edit_direccion").on('click', function(e) {
+            e.preventDefault();
+            
+            $("#contenido_modal").html('');
+
+            $("#myModal").modal({
+                keyboard: false,
+                backdrop: 'static'
+            });
+
+            $('#div_spin').fadeIn();
+            $('.btn_edit_modal').hide();
+            $(".btn_save_modal").show();
+            $(".modal-title").html('Modificar domicilio');
+
+            var url = '{{url('/')}}/vtas_direcciones_entrega/' + $(this).attr('data-direccion_cliente_id') + '/edit?id_modelo=300';
+
+            $.get(url, function(respuesta) {
+                $('#div_spin').hide();
+                $("#contenido_modal").html(respuesta);
+            });
+
+        });
+
+        $(document).on('click', '.btn_save_modal', function(e) {
+
+            e.preventDefault();
+
+            if ( !validar_requeridos() )
+            {
+                return false;
             }
-        }*/
-        //]]>
+
+            $('#form_create').submit();
+        });
+
+        $(document).on('click', '.btn_delete_direccion', function(e) {
+
+            e.preventDefault();
+
+            if ( confirm('¿Realmente desea eliminar este domicilio del cliente?') )
+            {
+                $(this.form).submit();
+            }
+
+            
+        });
+
+        var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo
+        function validar_requeridos()
+        {
+            control_requeridos = true;
+            $("#form_create :input[required]").each(function() {
+                if ($(this).val() == "") {
+                    $(this).focus();
+                    //alert( 'Este campo es requerido: ' + $(this).attr('name') );
+                    var lbl_campo = $(this).parent().prev('label').text();
+                    if( lbl_campo === '' )
+                    {
+                        lbl_campo = $(this).prev('label').text();
+                    }
+                    alert( 'Este campo es requerido: ' + lbl_campo );
+
+                    control_requeridos = false;
+                    return false;
+                }
+            });
+
+            return control_requeridos;
+        }
+
     </script>
 
 @endsection

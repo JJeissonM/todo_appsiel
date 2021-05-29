@@ -32,6 +32,10 @@ Route::get('vtas_pedidos_anular/{id}', 'Ventas\PedidoController@anular_pedido');
 Route::get('vtas_pedidos_get_formulario_edit_registro','Ventas\PedidoController@get_formulario_edit_registro');
 Route::post('vtas_pedidos_doc_registro_guardar','Ventas\PedidoController@doc_registro_guardar');
 
+// Direciones de entrega (Domicilios)
+Route::resource('vtas_direcciones_entrega', 'Ventas\DireccionEntregaController');
+
+
 
 // NOTAS CREDITO
 Route::get('ventas_notas_credito_anular/{id}', 'Ventas\NotaCreditoController@anular');

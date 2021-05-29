@@ -384,7 +384,7 @@ class ModeloController extends Controller
     */
     public function crear_nuevo_registro($request)
     {
-        $this->modelo = Modelo::find($request->url_id_modelo);
+        $this->modelo = Modelo::find( $request->url_id_modelo );
         
         $this->validar_requeridos_y_unicos($request, $this->modelo);
 
