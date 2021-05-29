@@ -40461,6 +40461,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-05-28 09:46:22',
       'updated_at' => '2021-05-28 09:46:22',
     ),
+    1294 => 
+    array (
+      'id' => 1300,
+      'descripcion' => 'ID modelo',
+      'tipo' => 'hidden',
+      'name' => 'url_id_modelo',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-29 11:45:09',
+      'updated_at' => '2021-05-29 11:45:29',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -64647,6 +64663,20 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 16,
       'core_modelo_id' => 300,
       'core_campo_id' => 53,
+    ),
+    2543 => 
+    array (
+      'id' => 2906,
+      'orden' => 99,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 562,
+    ),
+    2544 => 
+    array (
+      'id' => 2907,
+      'orden' => 99,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 1300,
     ),
   ),
   'sys_reportes' => 
