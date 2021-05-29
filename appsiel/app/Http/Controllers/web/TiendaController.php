@@ -229,7 +229,7 @@ class TiendaController extends Controller
         $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->get();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.cuenta', compact('paises', 'cliente','footer','redes','doc_encabezados'));
+        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados'));
 
     }
 

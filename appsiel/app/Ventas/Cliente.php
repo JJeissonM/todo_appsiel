@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Ventas\ClaseCliente;
 use App\Ventas\Vendedor;
 use App\Ventas\ContactoCliente;
+use App\Ventas\DireccionEntrega;
 use App\Core\Tercero;
 
 use DB;
@@ -69,6 +70,11 @@ class Cliente extends Model
     public function contactos()
     {
         return $this->hasMany(ContactoCliente::class, 'cliente_id');
+    }
+
+    public function direcciones_entrega()
+    {
+        return $this->hasMany( DireccionEntrega::class, 'cliente_id');
     }
 
 	public static function consultar_registros($nro_registros, $search)

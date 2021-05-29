@@ -360,6 +360,10 @@
 
     @yield('script')
     @yield('script1')
+    @yield('script3')
+    @yield('script4')
+    @yield('script5')
+    @yield('script6')
 
     <script type="text/javascript">
         $(document).ready(function() {

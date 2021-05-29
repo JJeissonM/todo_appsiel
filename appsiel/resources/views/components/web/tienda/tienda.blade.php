@@ -30,7 +30,7 @@
 <!--@ include('web.tienda.carousel')-->
 @include('web.tienda.search')
 
-<main style="background: white;" class="font-tienda">
+<main style="background: white;" class="font-tienda">    
     <div class="main-container col2-left-layout">
         <div class="container">
             <div class="container-inner">
@@ -79,9 +79,18 @@
                                                                 </div>
                                                             </div>-->
                                                             <div class="price-box text-center">
-                                                                <span class="regular-price" id="product-price-1">
-                                                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
-                                                                </span>
+                                                                @if( $item->descuento == 0)
+                                                                    <span class="regular-price" id="product-price-1">
+                                                                        <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
+                                                                    </span>
+                                                                @else
+                                                                    <span class="regular-price" id="product-price-1">
+                                                                        <span class="price"> <del>${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</del></span>
+                                                                        -{{ $item->descuento }}%
+                                                                        <br>
+                                                                        <span class="price">${{ number_format( $item->precio_venta - $item->valor_descuento,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
+                                                                    </span>
+                                                                @endif
                                                             </div>
                                                             <div class="actions agregar-carrito">
                                                                 <button type="button" class="btn-cart btn-primary form-control" style="background-color: var(--color-primario); border: none ;font-size: 16px" >  Añadir &nbsp;<i class="fa fa-cart-plus" ></i>
@@ -169,4 +178,3 @@
                 });
     }
 </script>
-

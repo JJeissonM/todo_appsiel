@@ -285,12 +285,16 @@ class InvProducto extends Model
                     ->where('inv_productos.descripcion','LIKE','%'.$busqueda.'%')
                     ->orderBy('grupo_descripcion', 'ASC')
                     ->paginate( $count );
+
         foreach ($productos as $item)
         {
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $item->id );
 
             $item->descuento = ListaDctoDetalle::get_descuento_producto( config('pagina_web.lista_descuentos_id'), date('Y-m-d'), $item->id );
+
+            $item->valor_descuento = $item->precio_venta * ( $item->descuento / 100);
         }
+
         return $productos;
     }
     

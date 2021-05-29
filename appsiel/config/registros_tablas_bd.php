@@ -7817,6 +7817,21 @@
       'created_at' => '2021-05-27 19:06:16',
       'updated_at' => '2021-05-27 19:07:10',
     ),
+    521 => 
+    array (
+      'id' => 547,
+      'core_app_id' => 13,
+      'modelo_id' => 300,
+      'name' => 'vtas_direcciones_entrega_clientes',
+      'descripcion' => 'Direcciones de entrega de clientes',
+      'url' => 'web',
+      'parent' => 0,
+      'orden' => 2,
+      'enabled' => 0,
+      'fa_icon' => 'truck',
+      'created_at' => '2021-05-28 18:25:44',
+      'updated_at' => '2021-05-28 18:26:58',
+    ),
   ),
   'roles' => 
   array (
@@ -19605,6 +19620,24 @@
     array (
       'orden' => 0,
       'permission_id' => 546,
+      'role_id' => 9,
+    ),
+    1936 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 547,
+      'role_id' => 1,
+    ),
+    1937 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 547,
+      'role_id' => 3,
+    ),
+    1938 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 547,
       'role_id' => 9,
     ),
   ),
@@ -40396,6 +40429,38 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-05-27 13:52:05',
       'updated_at' => '2021-05-27 13:52:16',
     ),
+    1292 => 
+    array (
+      'id' => 1298,
+      'descripcion' => 'Nombre contacto',
+      'tipo' => 'bsText',
+      'name' => 'nombre_contacto',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-28 09:46:22',
+      'updated_at' => '2021-05-28 09:46:22',
+    ),
+    1293 => 
+    array (
+      'id' => 1299,
+      'descripcion' => 'Datos adicionales',
+      'tipo' => 'bsText',
+      'name' => 'datos_adicionales',
+      'opciones' => '',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-05-28 09:46:22',
+      'updated_at' => '2021-05-28 09:46:22',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -46756,6 +46821,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2021-05-27 09:13:22',
       'updated_at' => '2021-05-27 09:13:22',
+    ),
+    289 => 
+    array (
+      'id' => 300,
+      'descripcion' => 'Direcciones de entrega de clientes',
+      'modelo' => 'DireccionEntrega',
+      'name_space' => 'App\\Ventas\\DireccionEntrega',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2021-05-28 09:13:22',
+      'updated_at' => '2021-05-28 09:13:22',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -64504,6 +64591,62 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 6,
       'core_modelo_id' => 299,
       'core_campo_id' => 22,
+    ),
+    2535 => 
+    array (
+      'id' => 2898,
+      'orden' => 13,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 50,
+    ),
+    2536 => 
+    array (
+      'id' => 2899,
+      'orden' => 15,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 52,
+    ),
+    2537 => 
+    array (
+      'id' => 2900,
+      'orden' => 17,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 54,
+    ),
+    2538 => 
+    array (
+      'id' => 2901,
+      'orden' => 18,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 55,
+    ),
+    2539 => 
+    array (
+      'id' => 2902,
+      'orden' => 2,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 1298,
+    ),
+    2540 => 
+    array (
+      'id' => 2903,
+      'orden' => 18,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 1299,
+    ),
+    2541 => 
+    array (
+      'id' => 2904,
+      'orden' => 22,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 22,
+    ),
+    2542 => 
+    array (
+      'id' => 2905,
+      'orden' => 16,
+      'core_modelo_id' => 300,
+      'core_campo_id' => 53,
     ),
   ),
   'sys_reportes' => 
