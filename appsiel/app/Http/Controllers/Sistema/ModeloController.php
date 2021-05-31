@@ -353,10 +353,6 @@ class ModeloController extends Controller
         // $this->modelo se actualiza en el método de arriba crear_nuevo_registro()
         $this->almacenar_imagenes($request, $this->modelo->ruta_storage_imagen, $registro);
 
-        $acciones = $this->acciones_basicas_modelo($this->modelo, '');
-
-        $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
-
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)
         */
@@ -373,6 +369,10 @@ class ModeloController extends Controller
                 }
             }
         }
+
+        $acciones = $this->acciones_basicas_modelo($this->modelo, '');
+
+        $url_ver = str_replace('id_fila', $registro->id, $acciones->show);
 
         return redirect($url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Registro CREADO correctamente.');
     }
