@@ -8,7 +8,7 @@ class DireccionEntrega extends Model
 {
     protected $table = 'vtas_direcciones_entrega_clientes';
     
-    protected $fillable = ['cliente_id', 'nombre_contacto', 'codigo_ciudad', 'direccion1', 'barrio', 'codigo_postal', 'telefono1', 'datos_adicionales', 'estado'];
+    protected $fillable = ['cliente_id', 'nombre_contacto', 'codigo_ciudad', 'direccion1', 'barrio', 'codigo_postal', 'telefono1', 'datos_adicionales', 'por_defecto'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Cliente', 'Nombre', 'Ciudad', 'Dirección', 'Barrio', 'Cód. postal', 'Teléfono', 'Datos adicionales', 'Estado'];
 
@@ -20,6 +20,34 @@ class DireccionEntrega extends Model
     public function ciudad()
     {
         return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
+    public function actualizar_por_defecto( $valor_por_defecto )
+    {
+        $this->por_defecto = $valor_por_defecto;
+        $this->save();
+
+        if ( $valor_por_defecto == 1 )
+        {
+            $valor_por_defecto_demas = 0;
+        }else{
+            $valor_por_defecto_demas = 1;
+        }
+
+        DireccionEntrega::where([
+                                ['cliente_id','=',$this->cliente_id],
+                                ['id','<>',$this->id]
+                            ])
+                        ->update(['por_defecto'=>$valor_por_defecto_demas]);
+    }
+
+    public function lbl_por_defecto()
+    {
+        if ( $this->por_defecto == 1 )
+        {
+            return "Si";
+        }
+        return "No";
     }
 
     public static function consultar_registros($nro_registros, $search)

@@ -65,6 +65,8 @@ class DireccionEntregaController extends ModeloController
     {
         $registro = $this->crear_nuevo_registro($request);
 
+        $registro->actualizar_por_defecto( $request->por_defecto );
+
         return redirect( 'ecommerce/public/account' )->with( 'flash_message','Domicilio CREADO correctamente.' );
     }
 
@@ -110,6 +112,8 @@ class DireccionEntregaController extends ModeloController
 
         $registro->fill( $request->all() );
         $registro->save();
+
+        $registro->actualizar_por_defecto( $request->por_defecto );
 
         return redirect( 'ecommerce/public/account' )->with( 'flash_message','Domicilio MODIFICADO correctamente.' );
     }

@@ -86,6 +86,11 @@
                                     <font style="vertical-align: inherit;">
                                     Tel.: {{$direccion->telefono1}}
                                 </font>
+                            </font><br>
+                                <font style="vertical-align: inherit;">
+                                    <font style="vertical-align: inherit;">
+                                    Por defecto: {{ $direccion->lbl_por_defecto() }}
+                                </font>
                             </font>
                         </address>
                     </li>
