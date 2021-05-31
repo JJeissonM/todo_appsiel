@@ -34,7 +34,6 @@ use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 
-
 class ModeloController extends Controller
 {
     protected $aplicacion, $modelo, $datos;
