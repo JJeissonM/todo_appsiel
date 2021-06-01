@@ -67,7 +67,7 @@ class FodaEstudiante extends Model
                         'sga_foda_estudiantes.tipo_caracteristica AS campo3',
                         'sga_foda_estudiantes.descripcion AS campo4',
                         'sga_foda_estudiantes.id AS campo5')
-                    ->get()
-                    ->toArray();
+                    ->paginate(10);
     }
+
 }

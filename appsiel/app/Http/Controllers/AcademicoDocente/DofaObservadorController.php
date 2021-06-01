@@ -21,6 +21,8 @@ use App\Sistema\Modelo;
 use App\Matriculas\FodaEstudiante;
 
 use App\Calificaciones\Periodo;
+use App\Calificaciones\Asignatura;
+use App\Matriculas\Curso;
 
 class DofaObservadorController extends Controller
 {
@@ -37,7 +39,7 @@ class DofaObservadorController extends Controller
      */
     public function index()
     {
-		  $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+		$colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
         
         $registros = FodaEstudiante::get_foda_un_estudiante( Input::get('estudiante_id') );
 
@@ -58,9 +60,25 @@ class DofaObservadorController extends Controller
 
         $url_edit = 'academico_docente/dofa_observador/id_fila/edit'.$variables_url;
 
+        $url_print = '';
+        $url_ver = '';
+        $url_estado = '';
+
         $url_eliminar = 'academico_docente/dofa_observador/eliminar/id_fila'.$variables_url;
 
-        return view('layouts.index', compact('registros','miga_pan','url_crear','encabezado_tabla','url_edit','url_eliminar'));
+        $sqlString = "";
+        $tituloExport = "";
+        //determinar la busqueda
+        $search = "";
+
+        $id_app = 5;
+        $id_modelo = 18; 
+        $source = "INDEX1";
+        $curso = new Curso();
+        $asignatura = new Asignatura();
+        $nro_registros = 10;
+
+        return view( 'layouts.index', compact('registros','miga_pan','url_crear','encabezado_tabla','url_edit','url_eliminar','sqlString','tituloExport','search','source','curso','asignatura','id_app','id_modelo','nro_registros','url_ver','url_print','url_estado'));
     }
 
     /**
