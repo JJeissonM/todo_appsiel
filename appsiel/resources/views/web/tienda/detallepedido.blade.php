@@ -290,8 +290,7 @@
                                             </div>
                                             <div class="modal-footer">
                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <form action="{{ url('vtas_pedidos_imprimir').'/'.$doc_encabezado->id }}">
-                                                <input type="hidden" id="token" name="_token" value="{{csrf_token()}}">
+                                              <form action="{{ url('vtas_pedidos_enviar_por_email').'/'.$doc_encabezado->id }}">
                                                   <button type="submit" class="btn btn-primary">Pagar en Efectivo</button>
                                               </form>                                              
                                             </div>
