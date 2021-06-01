@@ -38,6 +38,7 @@ comprar.addEventListener('click',function (event) {
                       // Añadimos el arreglo actual a storage 
                       localStorage.setItem('productos', JSON.stringify([]));                      
                       listaProductos.innerHTML = '';
+                      window.location.href = document.getElementById('url_detallepedido').value+'/'+data.pedidowebid;
                       console.log(document.getElementById('url_detallepedido').value+'/'+data.pedidowebid) ;
                   }
               }).catch(error => {

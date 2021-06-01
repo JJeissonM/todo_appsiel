@@ -152,7 +152,7 @@
                 <div class="contenido px-2 flex-column">
                     <?php 
                         $direcciones = $cliente->direcciones_entrega;
-                        $direccion_por_defecto;
+                        $direccion_por_defecto = null;
                     ?>                
                     <h4 class="text-center">Forma de Envio</h4>
                     <div class="nav nav-pills w-100 bg-light" id="myTab" role="tablist">
@@ -165,7 +165,8 @@
                         @endforeach 
                         
                         <a class="nav-link active" style="flex: 1 1 auto;" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
-                                    Domicilio: {{$direccion_por_defecto->nombre_contacto}}<br>
+                            
+                                    Domicilio
                                     
                                 </a>
                         
@@ -214,18 +215,22 @@
                                         @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
                                         <a class="btn text-light btn-secondary btn-block" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
                                         @else  
-                                        <form>
-                                            <script
-                                            src="https://checkout.wompi.co/widget.js"
-                                            data-render="button"
-                                            data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
-                                            data-currency="COP"
-                                            data-amount-in-cents="{{ ($total_pagar+5000).'00' }}"
-                                            data-reference="{{ $doc_encabezado->id }}"
-                                            data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
-                                            >
-                                            </script>
-                                        </form>                          
+                                            @if ($direccion_por_defecto != null)
+                                            <form>
+                                                <script
+                                                src="https://checkout.wompi.co/widget.js"
+                                                data-render="button"
+                                                data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
+                                                data-currency="COP"
+                                                data-amount-in-cents="{{ ($total_pagar+5000).'00' }}"
+                                                data-reference="{{ $doc_encabezado->id }}"
+                                                data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
+                                                >
+                                                </script>
+                                            </form>   
+                                            @else   
+                                                <p class="text-danger">Agregue una dirección de envio para poder hacer el pago</p>
+                                            @endif                    
                                         @endif                        
                                     </div>     
                                 </div>
