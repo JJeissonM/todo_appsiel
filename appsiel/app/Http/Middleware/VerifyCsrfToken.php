@@ -12,6 +12,6 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        //
+        'vtas_crear_factura_desde_pasarela_de_pago*'
     ];
 }

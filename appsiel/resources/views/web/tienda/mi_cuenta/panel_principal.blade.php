@@ -2,8 +2,8 @@
     <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit; text-align: left !important;">MI TABLERO</font></font></h1>
 </div>
 <div class="welcome-msg">
-    <p class="hello"><strong><font style="vertical-align: inherit; background: yellow; color:black;"><font style="vertical-align: inherit;">Hola {{ $cliente->nombre_completo }}!</font></font></strong></p>
-    <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Desde el Panel de control de Mi cuenta, puede ver una instantánea de la actividad reciente de su cuenta y actualizar la información de su cuenta. </font><font style="vertical-align: inherit;">Seleccione un enlace a continuación para ver o editar información.</font></font></p>
+    <h1 class="hello"><font style="vertical-align: inherit; color:black; font-weight: bold">Hola {{ $cliente->nombre_completo }}</font></h1>
+    <p>Estos son los datos de contacto e información para hacer la entrega de tus productos.</p>
 </div>
 <div class="box-account box-info">
     <div class="box-head">
@@ -59,9 +59,6 @@
                                     {{$cliente->ciudad}}, {{$cliente->departamento}}, {{$cliente->codigo_postal}}
                                 </font></font><br>
                             <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                    {{$cliente->pais}}
-                                </font></font><br>
-                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
                                     Tel. {{$cliente->telefono1}}
                                 </font></font><br>
                         @endif
@@ -69,26 +66,35 @@
                 </div>
                 <div class="col-2" style="max-width: 50%">
                     <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dirección de entrega por defecto</font></font></h4>
+                    <?php 
+                        $direcciones = $cliente->direcciones_entrega;
+                        $direccion_por_defecto;
+                    ?>    
+                    @foreach( $direcciones AS $direccion )
+                    @if($direccion->por_defecto == 1)
+                    <?php 
+                        $direccion_por_defecto = $direccion;
+                    ?>        
+                    @endif        
+                    @endforeach 
                     <address>
-                        @if($cliente->direccion1 === 0 || $cliente->direccion1 === null)
+                        @if($direccion_por_defecto === null)
                             <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
                                     No ha establecido una dirección de envío predeterminada.
                                 </font></font><br>
                         @else
                             <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                    {{$cliente->nombre_completo}}
+                                
+                                    {{$direccion_por_defecto->nombre_contacto}}
                                 </font></font><br>
                             <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                    {{$cliente->direccion1}}, {{$cliente->barrio}}
+                                    {{$direccion_por_defecto->direccion1}}, {{$direccion_por_defecto->barrio}}
                                 </font></font><br>
                             <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                    {{$cliente->ciudad}}, {{$cliente->departamento}}, {{$cliente->codigo_postal}}
+                                    {{$direccion_por_defecto->ciudad->descripcion}}, {{$direccion_por_defecto->ciudad->departamento->descripcion}}, {{$direccion_por_defecto->codigo_postal}}
                                 </font></font><br>
                             <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                    {{$cliente->pais}}
-                                </font></font><br>
-                            <font style="vertical-align: inherit;"><font style="vertical-align: inherit;">
-                                    Tel. {{$cliente->telefono1}}
+                                    Tel. {{$direccion_por_defecto->telefono1}}
                                 </font></font><br>
                         @endif
                     </address>

@@ -263,6 +263,8 @@ button {
 button,
 select {
   text-transform: none;
+  font-size: 1.5rem !important;
+  height: 38px !important;
 }
 
 /**

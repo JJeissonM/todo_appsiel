@@ -3,12 +3,11 @@
     $configuracion = App\web\Configuraciones::all()->first();
 ?>
 
-<header>
+<header id="navegacion-tienda">
     <div class="top-link" style="background: var(--color-primario,#42A3DC); font-size:20px">
         <div class="container" style="padding: 0 ">
             <div class="top-link-inner">
-                <div class="row">
-                    <div class="col-md-6 col-sm-6 col-xs-12 d-flex align-items-center">
+                <div class="header-tienda">
                         <div class="toplink-static d-flex justify-content-center" style="width: 100px; height: 60px;">
                             <div style="position: absolute; z-index: 10;" >
                                 <a href="{{ url('') }}">
@@ -16,30 +15,21 @@
                                 </a>                                  
                             </div>                                                     
                         </div>
-                        <span class="toplink-static" style="color: white; ">
+                        <span class="welcome-msg" style="color: white; ">
                                 Venta Telefónica: <a style="text-transform: none" href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank">&nbsp;<i style="font-size: 16px; color: green; background-color: white; border-radius: 100%; padding: 4px; width: 24px;" class="fa fa-whatsapp text-center" aria-hidden="true"></i>&nbsp; Atención al cliente.</a>
-                            </span>
-                    </div>
+                        </span>
 
-                    <div class="col-md-6 col-sm-6 col-xs-12 d-flex align-items-center justify-content-center">
-                        
                         <ul class="links">
-                            <li class="first">
-                                <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
-                                <a
-                                        href="{{route('tienda.micuenta')}}"
-                                        title="Mi Cuenta">Mi Cuenta</a></li>
+                            
                             <li>
                                 <i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;
-                                <a href="{{route("tienda.comprar")}}"
-                                   title="My Cart" class="top-link-cart">Mi Carrito</a></li>
+                                <a href="{{route("tienda.comprar")}}" title="My Cart" class="top-link-cart">Mi Carrito</a>
+                            </li>
                             @if(Auth::guest())
-                                     <li class=" last">
-                                        <i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; 
-                                        <a
-                                        href="{{route('tienda.login')}}"
-                                        title="Iniciar sesión">Iniciar Sesión</a>
-                                     </li>
+                                <li class=" last">
+                                    <i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; 
+                                    <a href="{{route('tienda.login')}}" title="Iniciar sesión">Iniciar Sesión</a>
+                                </li>
                                 <li class=" last">
                                     <i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;
                                     <a
@@ -53,17 +43,16 @@
 
                                 </li>-->
                             @else
-
-
+                                <li class="first" style="order: 1">
+                                    <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
+                                    <a href="{{route('tienda.micuenta')}}" title="Mi Cuenta">Mi Cuenta</a>
+                                </li>
                                 <li class=" last">
                                     <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
-                                    <a
-                                            href="{{url('/logout')}}"
-                                            title="Cerra sesión">Cerrar Sesión</a>
+                                    <a href="{{url('/logout')}}" title="Cerra sesión">Cerrar Sesión</a>
                                 </li>
                             @endif
                         </ul>
-                    </div>
                 </div>
             </div>
         </div>

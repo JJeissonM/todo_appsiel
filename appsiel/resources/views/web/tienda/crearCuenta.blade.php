@@ -110,6 +110,7 @@
 $(document).on('blur', '#email', validarEmail);
 $(document).on('keyup', '#email', validarEmail);
 
+$('#errormail').css({'display':'none'})
 
 function validarEmail () {
 		var documento = $("#email").val();

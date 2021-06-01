@@ -21,7 +21,7 @@
                     font-family: {{ $pedido->configuracionfuente->fuente->font }};
                 @endif            
         @else
-            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
         @endif        
     }
     
