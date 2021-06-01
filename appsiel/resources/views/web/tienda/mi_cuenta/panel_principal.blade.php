@@ -68,7 +68,7 @@
                     <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dirección de entrega por defecto</font></font></h4>
                     <?php 
                         $direcciones = $cliente->direcciones_entrega;
-                        $direccion_por_defecto;
+                        $direccion_por_defecto = null;
                     ?>    
                     @foreach( $direcciones AS $direccion )
                     @if($direccion->por_defecto == 1)
