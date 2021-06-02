@@ -108,13 +108,6 @@
 
 			$('#movimiento').removeAttr('required');
 
-			$('#fecha').keyup(function(event){
-				var x = event.which || event.keyCode;
-				if(x==13){
-					$('.custom-combobox-input').focus();				
-				}		
-			});
-
 		    $('#inv_bodega_id').change(function(){
 				$('#grupo_inventario_id').focus();
 			});

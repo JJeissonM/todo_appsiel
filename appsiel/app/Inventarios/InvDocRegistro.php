@@ -8,9 +8,9 @@ use DB;
 
 class InvDocRegistro extends Model
 {
-    //protected $table = 'teso_doc_registros_recaudos';
+    // linea_registro_doc_origen_id : normalmente es del pedido de ventas
 
-    protected $fillable = ['core_empresa_id','inv_doc_encabezado_id','inv_motivo_id','inv_bodega_id','inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'estado','codigo_referencia_tercero','core_tercero_id'];
+    protected $fillable = ['core_empresa_id','inv_doc_encabezado_id','inv_motivo_id','inv_bodega_id','inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'estado','codigo_referencia_tercero','core_tercero_id', 'linea_registro_doc_origen_id'];
 
     public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','cantidad','costo_total'];
 

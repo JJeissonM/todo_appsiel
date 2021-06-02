@@ -224,8 +224,6 @@ class ProcesoController extends Controller
         NotaCreditoController::contabilizar_movimiento_credito($documento->toArray(), $total_documento, $detalle_operacion);/**/
     }
 
-
-
     public function actualizar_valor_total_vtas_encabezados_doc()
     {
         $documentos = VtasDocEncabezado::all();
@@ -266,9 +264,6 @@ class ProcesoController extends Controller
             case '1':
                 $response = $this->soloPedido($encabezado, $request);
                 break;
-            case '3':
-                $response = $this->solo_remision($encabezado, $request);
-                break;
         }
 
         return redirect( $url )->with('flash_message', $response);
@@ -300,27 +295,6 @@ class ProcesoController extends Controller
         return ' Pedido almacenado con exito';
     }
 
-
-    // Solo remision
-    public function solo_remision( $encabezado_doc_venta, $request )
-    {
-        $doc_remision = $this->crear_remision_desde_doc_venta( $encabezado_doc_venta, $request->fecha );
-
-        if ( $doc_remision->id > 0 )
-        {
-            $encabezado_doc_venta->estado = 'Remisionado';
-            if ( $encabezado_doc_venta->lineas_registros->sum('cantidad_pendiente') == 0 )
-            {
-                $encabezado_doc_venta->estado = 'Cumplido';
-            }
-            $encabezado_doc_venta->save();
-
-            return redirect( 'inventarios/' . $doc_remision->id . '/edit?id=13&id_modelo=164&id_transaccion=24&ruta_redirect=vtas_pedidos&registro_id=' . $encabezado_doc_venta->id . '&modelo_id_redirect=175&transaccion_id_redirect=42' )->with( 'flash_message', 'Remisión almacenada con exito. Ahora puede modificar las cantidades.');
-
-        } else {
-            return '<i class="fa fa-times" aria-hidden="true"></i> La remisión no pudo ser almacenada. Proceda a crearla desde el pedido o manualmente';
-        }
-    }
     
     /*
         Este metodo se llama desde la vista show de pedidos via POST
@@ -353,6 +327,7 @@ class ProcesoController extends Controller
         return redirect( 'vtas_pedidos/' . $pedido->id . '?id=13&id_modelo=175&id_transaccion=42' )->with( 'flash_message', 'Remisión y Factura almacenadas correctamente.' );
     }
 
+    // Crea SOLO Factura (sin Remision) con cantidades completas
     public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha )
     {
         $modelo_id = 139;
@@ -382,78 +357,9 @@ class ProcesoController extends Controller
         return $nueva_factura;
     }
 
-    //crea un pedido
-    public function pedidoStore($cotizacion, $request)
-    {
-        $url_id = explode("=", explode("&", $request->url)[0])[1];
-        $url_id_modelo = 175;
-        $cliente = Cliente::find($cotizacion->cliente_id);
-        $registros = VtasDocRegistro::where('vtas_doc_encabezado_id', $cotizacion->id)->get();
-        $lineas_registros = null;
-        foreach ($registros as $r) {
-            $lineas_registros[] = [
-                'inv_motivo_id' => $r->vtas_motivo_id,
-                'inv_bodega_id' => $cliente->inv_bodega_id,
-                'inv_producto_id' => $r->inv_producto_id,
-                'costo_unitario' => '0', //pendiente
-                'precio_unitario' => $r->precio_unitario,
-                'base_impuesto' => $r->base_impuesto,
-                'tasa_impuesto' => $r->tasa_impuesto,
-                'valor_impuesto' => $r->valor_impuesto,
-                'base_impuesto_total' => $r->base_impuesto_total,
-                'cantidad' => $r->cantidad,
-                'costo_total' => '0', //pendiente
-                'precio_total' => $r->precio_total,
-                'tasa_descuento' => $r->tasa_descuento,
-                'valor_total_descuento' => $r->valor_total_descuento
-            ];
-        }
-
-        $descripcion = 'Generado desde ' . $cotizacion->tipo_transaccion->descripcion . ' ' . $cotizacion->tipo_documento_app->prefijo . ' ' . $cotizacion->consecutivo;
-
-        $data = [
-            'core_tipo_doc_app_id' => 41,
-            'core_empresa_id' => $cotizacion->core_empresa_id,
-            'fecha' => date('Y-m-d'),
-            'fecha_entrega' => $request->fecha_entrega,
-            'cliente_input' => '',
-            'descripcion' => $descripcion,
-            'core_tipo_transaccion_id' => 42,
-            'consecutivo' => '',
-            'url_id' => $url_id,
-            'url_id_modelo' => 175,
-            'url_id_transaccion' => 42,
-            'inv_bodega_id_aux' => '',
-            'contacto_cliente_id' => $cotizacion->contacto_cliente_id,
-            'vendedor_id' => $cotizacion->vendedor_id,
-            'forma_pago' => $cotizacion->forma_pago,
-            'fecha_vencimiento' => $request->fecha_entrega,
-            'inv_bodega_id' => $cliente->inv_bodega_id,
-            'cliente_id' => $cotizacion->cliente_id,
-            'zona_id' => $cliente->zona_id,
-            'clase_cliente_id' => $cliente->clase_cliente_id,
-            'equipo_ventas_id' => '', //pendiente
-            'core_tercero_id' => $cotizacion->core_tercero_id,
-            'lista_precios_id' => $cliente->lista_precios_id,
-            'lista_descuentos_id' => $cliente->lista_descuentos_id,
-            'liquida_impuestos' => $cliente->liquida_impuestos,
-            'lineas_registros' => json_encode($lineas_registros),
-            'estado' => 'Pendiente',
-            'tipo_transaccion' => 'factura_directa',
-            'rm_tipo_transaccion_id' => config('ventas.rm_tipo_transaccion_id'),
-            'dvc_tipo_transaccion_id' => config('ventas.dvc_tipo_transaccion_id')
-        ];
-        
-        $request->request->add($data);
-        $lineas_registros2 = json_decode($request->lineas_registros);
-        // 2do. Crear documento de Ventas
-        $pc = new PedidoController();
-        return $pc->crear_documento($request, $lineas_registros2, $url_id_modelo);
-    }
 
     /*
-        Este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
-        Ejemplo: $encabezado_doc_venta->crear_remision_desde_doc_venta()
+        Este metodo crea una remision con las cantidades completas de un documento de venta.
     */
     public function crear_remision_desde_doc_venta( $encabezado_doc_venta, $fecha )
     {
@@ -465,7 +371,8 @@ class ProcesoController extends Controller
         $datos_remision['descripcion'] = $descripcion;
 
         $datos_remision['vtas_doc_encabezado_origen_id'] = $encabezado_doc_venta->id;
-        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
+        //$lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
+        $lineas_registros = $encabezado_doc_venta->lineas_registros;
 
         $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
         
@@ -478,6 +385,7 @@ class ProcesoController extends Controller
         return $doc_remision;
     }
 
+    // Se llama a la vista inventarios.create
     public function form_crear_remision_desde_doc_venta( Request $request )
     {
         $encabezado_doc_venta = VtasDocEncabezado::find( $request->doc_encabezado_id ); //el documento desde donde se inicia el proceso
@@ -515,6 +423,7 @@ class ProcesoController extends Controller
         $tabla = ''; //new TablaIngresoLineaRegistros( InvTransaccion::get_datos_tabla_ingreso_lineas_registros( $tipo_transaccion, $motivos ) );
 
         $cantidad_filas = count( $encabezado_doc_venta->lineas_registros->toArray() );
+
         $lineas_registros = InventarioController::crear_lineas_registros_desde_doc_ventas( $encabezado_doc_venta );
         
         $hay_existencias_negativas = $this->determinar_existencias_negativas( $lineas_registros );

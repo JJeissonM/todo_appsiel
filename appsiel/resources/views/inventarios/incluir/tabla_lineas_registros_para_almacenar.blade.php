@@ -20,6 +20,7 @@
         }
     ?>
     <tr id="{{$linea->inv_producto_id}}" style="background-color: {{$color_fila}}">
+        <td style="display:none;">{{$linea->linea_registro_doc_origen_id}}</td>
         <td class="text-center"> {{$linea->inv_producto_id}} </td>
         <td class="nom_prod"> {{$etiqueta_producto}}</td>
         <td>

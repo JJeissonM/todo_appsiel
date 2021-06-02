@@ -73,7 +73,6 @@ class InvFisicoController extends TransaccionController
 
         $motivos = InvMotivo::get_motivos_transaccion($id_transaccion);
 
-        //dd($motivos);
         $miga_pan = [
                 ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
                 ['url'=>'NO','etiqueta'=>$tipo_transaccion->descripcion]
@@ -235,8 +234,6 @@ class InvFisicoController extends TransaccionController
 
         $empresa = $this->empresa;
 
-        //dd($doc_encabezado);
-
         $documento_vista = View::make( 'inventarios.inventario_fisico.formato_estandar', compact('doc_encabezado', 'doc_registros', 'empresa' ) )->render();
 
         // Se prepara el PDF
@@ -297,7 +294,8 @@ class InvFisicoController extends TransaccionController
 
             if ($value['name'] == 'fecha')
             {
-                $lista_campos[$key]['value'] = $doc_encabezado->fecha;
+                $fecha = explode('-', $doc_encabezado->fecha);
+                $lista_campos[$key]['value'] = $fecha[2] . '-' . $fecha[1] . '-' . $fecha[0];
             }
 
             if ($value['name'] == 'descripcion')
@@ -357,7 +355,8 @@ class InvFisicoController extends TransaccionController
 
             if ($value['name'] == 'fecha')
             {
-                $lista_campos[$key]['value'] = $registro->fecha;
+                $fecha = explode('-', $registro->fecha);
+                $lista_campos[$key]['value'] = $fecha[2] . '-' . $fecha[1] . '-' . $fecha[0];
             }
 
             if ($value['name'] == 'descripcion')
@@ -414,7 +413,6 @@ class InvFisicoController extends TransaccionController
 
         $motivos = InvMotivo::get_motivos_transaccion($id_transaccion);
 
-        //dd($motivos);
         $miga_pan = [
                 ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
                 ['url'=>'NO','etiqueta'=>$tipo_transaccion->descripcion]
