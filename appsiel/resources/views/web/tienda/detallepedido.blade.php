@@ -222,7 +222,7 @@
                                                 data-render="button"
                                                 data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
                                                 data-currency="COP"
-                                                data-amount-in-cents="{{ ($total_pagar+5000).'00' }}"
+                                                data-amount-in-cents="{{ ($total_pagar+5000) }}"
                                                 data-reference="{{ $doc_encabezado->id }}"
                                                 data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
                                                 >
@@ -271,7 +271,7 @@
                                             data-render="button"
                                             data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
                                             data-currency="COP"
-                                            data-amount-in-cents="{{ $total_pagar.'00' }}"
+                                            data-amount-in-cents="{{ $total_pagar }}"
                                             data-reference="{{ $doc_encabezado->id }}"
                                             data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
                                             >
