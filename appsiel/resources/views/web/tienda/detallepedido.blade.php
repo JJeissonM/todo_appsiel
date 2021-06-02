@@ -295,9 +295,7 @@
                                             </div>
                                             <div class="modal-footer">
                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                              <form action="{{ url('vtas_pedidos_enviar_por_email').'/'.$doc_encabezado->id }}">
-                                                  <button type="submit" class="btn btn-primary">Pagar en Efectivo</button>
-                                              </form>                                              
+                                                  <a href="{{ url('vtas_pedidos_enviar_por_email').'/'.$doc_encabezado->id }}" class="btn btn-primary">Pagar en Efectivo</a>               
                                             </div>
                                           </div>
                                         </div>

@@ -103,7 +103,7 @@
 
                                      <div style="display: flex; flex-direction: column; justify-content: space-between; margin-top: 2rem; height: 84px;">
 
-                                         <a href="#" onclick="comprarUno({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})"  id="comprar" class="btn button u-full-width" style="background-color: var(--color-primario,#42A3DC); border: none ;font-size: 16px; color: white">Comprar</a>
+                                         <a href="#" onclick="comprarUno({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})"  id="comprar" class="btn button btn-block" style="background-color: var(--color-primario,#42A3DC); border: none ;font-size: 16px; color: white">Comprar</a>
 
                                          <button class="btn add_carrito" style="border: none ;font-size: 16px; background-color: var(--color-primario,#42A3DC44)" onclick="add_carrito({'id':'{{$inv_producto->id}}','imagen':'{{$url_imagen_producto}}', 'titulo':'{{$inv_producto->descripcion}}','precio':'{{$inv_producto->precio_venta}}','tasa_impuesto':'{{$inv_producto->tasa_impuesto}}'})">Agregar al Carrito</button>
 

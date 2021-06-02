@@ -45,8 +45,9 @@ ul {
     z-index: 1;
     background-color: white;
     padding: 20px;
-    min-height: 400px;
+    height: 400px;
     min-width: 350px;
+    overflow-y: scroll;
 }
 
 .vacio {
