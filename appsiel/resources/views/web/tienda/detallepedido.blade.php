@@ -222,7 +222,7 @@
                                                 data-render="button"
                                                 data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
                                                 data-currency="COP"
-                                                data-amount-in-cents="{{ ($total_pagar+5000) }}"
+                                                data-amount-in-cents="{{ ($total_pagar+5000).'00' }}"
                                                 data-reference="{{ $doc_encabezado->id }}"
                                                 data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
                                                 >
@@ -265,13 +265,14 @@
                                         @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
                                         <a class="btn text-light btn-secondary btn-block" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
                                         @else  
+                                        {{ $total_pagar.'00' }}
                                         <form>
                                             <script
                                             src="https://checkout.wompi.co/widget.js"
                                             data-render="button"
                                             data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
                                             data-currency="COP"
-                                            data-amount-in-cents="{{ $total_pagar }}"
+                                            data-amount-in-cents="{{ $total_pagar.'00' }}"
                                             data-reference="{{ $doc_encabezado->id }}"
                                             data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
                                             >
