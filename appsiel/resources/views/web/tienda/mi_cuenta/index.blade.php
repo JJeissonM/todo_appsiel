@@ -15,12 +15,12 @@
             padding: 15px;
             text-align: center;
         }
-        th {
-             background-color: red;
-             color: white;
-        }
         ul li{
             list-style: none;
+        }
+        .pull-right{
+            position: absolute;
+            right: 25px;
         }
     </style>
 
@@ -76,7 +76,7 @@
                                         <div class="dashboard">
                                             <div class="tab-content py-3 px-3 px-sm-0" style="border: 0;" id="nav-tabContent">
                                                 
-                                                <div class="tab-pane fade" id="nav-home" role="tabpanel"
+                                                <div class="tab-pane fade show active" id="nav-home" role="tabpanel"
                                                      aria-labelledby="nav-home-tab">
 
                                                     @include('web.tienda.mi_cuenta.panel_principal')
@@ -90,7 +90,7 @@
 
                                                 </div>
                                                 
-                                                <div class="tab-pane fade show active" id="nav-directorio" role="tabpanel"
+                                                <div class="tab-pane fade" id="nav-directorio" role="tabpanel"
                                                      aria-labelledby="nav-directorio-tab">
 
                                                     @include('web.tienda.mi_cuenta.mis_direcciones')
@@ -121,6 +121,9 @@
 
 @section('script')
     <script type="text/javascript">
+    <?php
+            echo "$('#".$vista."').tab('show');";
+    ?>
         function getCiudades() {
             var pais = $("#pais").val();
             if (pais == null) {

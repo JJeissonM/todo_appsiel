@@ -4,19 +4,19 @@
 
 <div class="box-account box-info">
      <table>
-         <thead>
-              <th># pedido</th>
-              <th>Fecha del Pedido</th>
+         <thead class="bg-primary text-light">
+              <th># Pedido</th>
               <th>Valor total</th>
               <th>Estado</th>
+              <th>Ver detalles</th>
          </thead>
          <tbody>
             @foreach($doc_encabezados  as $key => $value)
                 <tr>
-                    <td><a target="_blank" href="{{url('/vtas_pedidos_imprimir').'/'.$value->id.'?id=13&id_modelo=175&id_transaccion=42&formato_impresion_id=1'}}">PV-{{$value->consecutivo}}</a></td>
-                    <td>{{$value->fecha}}</td>
+                    <td>PV-{{$value->consecutivo}}</td>
                     <td>${{$value->valor_total}}</td>
                     <td>{{$value->estado}}</td>
+                    <td><a class="btn-lg btn-primary" target="_blank" href="{{url('/ecommerce/public/detallepedido').'/'.$value->id}}"><i class="fa fa-eye" aria-hidden="true"></i></a></td>
                 </tr>
             @endforeach
          </tbody>

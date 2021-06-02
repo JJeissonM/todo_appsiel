@@ -91,15 +91,19 @@ class PedidoController extends TransaccionController
 
         if( isset($request['pedido_web']) )
         {
-            self::enviar_pedidoweb_email($ventas_doc_encabezado_id);
+            //self::enviar_pedidoweb_email($ventas_doc_encabezado_id);                     
+
             return  response()->json([
-                  'status' => 'ok',
-                  'mensaje' => 'Pedido recibido correctamente, pronto uno de nuestros asesores te estará contactando para proceder con el envío.'
+                'pedidowebid' => $ventas_doc_encabezado_id,
+                'status' => 'ok',
+                'mensaje' => 'Pedido recibido correctamente, pronto uno de nuestros asesores te estará contactando para proceder con el envío.'
             ]);
         }else{
             return redirect('vtas_pedidos/' . $ventas_doc_encabezado_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion);
         }
     }
+
+    
 
     public function completar_request( $request )
     {

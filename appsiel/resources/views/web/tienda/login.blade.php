@@ -29,8 +29,8 @@
                                                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
                                                     <div class="col-md-6 col-sm-12">
                                                         <div class="content">
-                                                            <h2>Clientes Nuevos</h2>
-                                                            <p>Al crear una cuenta en nuestra tienda, podrá pasar por el proceso de pago más rápido, almacenar múltiples direcciones de envío, ver y rastrear sus pedidos en su cuenta y más.</p>
+                                                            <h2>Soy Nuevo</h2>
+                                                            <p>Al crear una cuenta en nuestra tienda, puedes hacer el pago más rápido, enviar tus productos y muchos beneficios más.</p>
                                                             <div class="buttons-set">
                                                                 <button type="button" title="Create an Account" class="button" onclick="window.location.href='{{route('tienda.nuevacuenta')}}';"><span><span>Crear una Cuenta</span></span></button>
                                                             </div>
@@ -38,7 +38,7 @@
                                                     </div>
                                                     <div class="col-md-6 col-sm-12">
                                                         <div class="content">
-                                                            <h2>Clientes Registrados</h2>
+                                                            <h2>Ya tengo una cuenta</h2>
                                                             <p>Si tiene una cuenta con nosotros, inicie sesión.</p>
                                                             <ul class="form-list">
                                                                 <li>
@@ -66,7 +66,7 @@
                                                             </ul>
                                                             <div class="buttons-set">
                                                                 <!--<a href="" class="f-left">¿Olvidaste Tu Contraseña?</a>-->
-                                                                <button type="submit" class="button" title="Login" name="send" id="send2"><span><span>Iniciar Sesión</span></span></button>
+                                                                <button style="width: 254px;" type="submit" class="button mt-3" title="Login" name="send" id="send2"><span><span>Iniciar Sesión</span></span></button>
                                                             </div>
                                                         </div>
                                                     </div>

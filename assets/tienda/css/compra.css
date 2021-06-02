@@ -23,7 +23,7 @@ img {
 }
 
 a {
-    color: #08c;
+    color: var(--primary);
     text-decoration: none;
 }
 
@@ -102,7 +102,6 @@ a:-webkit-any-link {
 }
 
 .contenido {
-    width: 80%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -115,7 +114,6 @@ a:-webkit-any-link {
 }
 
 .total_compra {
-    width: 80%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -132,7 +130,6 @@ a:-webkit-any-link {
 }
 
 .terminos {
-    width: 80%;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -152,7 +149,6 @@ a:-webkit-any-link {
 }
 
 #comprar {
-    background-color: rgb(253, 153, 67);
     border-radius: 10px;
     font-weight: 400;
     color: white;

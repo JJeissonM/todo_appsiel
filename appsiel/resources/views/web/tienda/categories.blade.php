@@ -65,7 +65,7 @@
                                         
                                         <a style="display: flex; flex-direction: column; justify-content: space-between" class="ajaxLayer" onclick="filtrar_categoria('{{ $value[0]->id }}', this)" >
                                             
-                                            <img class="my-4" src="{{ $url_imagen_producto }}" alt="{{ $url_imagen_producto }}" style="height: 80px; object-fit: contain">
+                                            <img class="my-4" src="{{ $url_imagen_producto }}" alt="{{ $url_imagen_producto }}" onerror="imgError(this)" style="height: 80px; object-fit: contain">
                                             
                                             <span style="text-transform: uppercase; font-size: 16px; font-weight: bold">{{$key}} ({{$value->count()}})</span>
                                         </a>
@@ -87,5 +87,10 @@
     $('#exampleSlider').multislider({
         interval:false
     });
+    function imgError(image) {
+            image.onerror = "";
+            image.src = "{{asset('assets/img/noimage.jpg')}}";
+            return true;
+        }
 </script>    
 

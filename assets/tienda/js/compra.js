@@ -35,9 +35,11 @@ comprar.addEventListener('click',function (event) {
                       toastr.warning(data.mensaje);
                   }else if (data.status == 'ok'){
                       toastr.success(data.mensaje);
-                      // Añadimos el arreglo actual a storage
-                      localStorage.setItem('productos', JSON.stringify([]));
+                      // Añadimos el arreglo actual a storage 
+                      localStorage.setItem('productos', JSON.stringify([]));                      
                       listaProductos.innerHTML = '';
+                      window.location.href = document.getElementById('url_detallepedido').value+'/'+data.pedidowebid;
+                      console.log(document.getElementById('url_detallepedido').value+'/'+data.pedidowebid) ;
                   }
               }).catch(error => {
                const url =  document.getElementById('url_login').value;

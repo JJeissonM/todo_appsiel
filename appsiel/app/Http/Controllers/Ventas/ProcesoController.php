@@ -328,6 +328,40 @@ class ProcesoController extends Controller
     }
 
     // Crea SOLO Factura (sin Remision) con cantidades completas
+    public function crear_factura_desde_pasarela_de_pago(Request $request)
+    {
+        $data = $request->data['transaction'];
+        dd($data['status']);
+        if($data['status'] == 'APPROVED'){
+            $pedido = VtasDocEncabezado::find( (int)$data['reference'] );        
+
+            // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
+            $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, date('Y-m-d') );
+
+            $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, date('Y-m-d') );
+            $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
+            $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
+            $nueva_factura->save();
+
+            $doc_remision->estado = 'Facturada';
+            $doc_remision->save();
+
+            $pedido->estado = 'Cumplido';
+            $pedido->save();
+
+            return response()->json([
+                'status'=> '200',
+                'msg'=>'Transacción completada con exito'
+            ]);
+        }else{
+            return response()->json([
+                'status'=> '400',
+                'msg'=>'Transacción fallida'
+            ]);
+        }
+        
+    }
+
     public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha )
     {
         $modelo_id = 139;

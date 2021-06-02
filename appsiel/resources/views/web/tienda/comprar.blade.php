@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -12,11 +12,11 @@
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Main Style -->
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
     <link href="{{asset('assets/tienda/css/compra.css')}}" rel="stylesheet">
-    <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">  
 
     <style>
         .label-success {
@@ -66,23 +66,29 @@
             border: 1px solid #e9ecef;
 
         }
+
+        .addresses-list h2 {
+            font-weight: normal;
+            font-size: 13px;
+            color: #333;
+            text-transform: uppercase;
+        }
+        .pull-right{
+            position: absolute;
+            right: 25px;
+        }
+        
     </style>
 
 </head>
 <body>
-<header>
-    <div class="checkoutHeader">
-        <div class="checkoutHeader__logoHeader">
-        </div>
-        <div class="checkoutHeader__safePurchase">
-            <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
-        </div>
-    </div>
-</header>
+
 <main>
-    <div class="container-fluid" >
+    <div class="container-fluid mt-4" >
         <div class="row">
-            <div class="col-md-8 col-sm-12" id="products" style="overflow-y: scroll; height: 70vh;">
+            <div class="col-md-9 col-sm-12" id="products" style="overflow-y: scroll; height: 70vh;">
+                
+                
                <table id="lista-productos" style="width: 100%">
                    <thead>
                        <tr>
@@ -99,7 +105,8 @@
                    </tbody>
                </table>
             </div>
-            <div class="col-md-4 col-sm-12">
+            <div class="col-md-3 col-sm-12">
+                
                 <div class="contenido px-2">
                     <p>Subtotal</p>
                     <p id="subtotal">$ 0.000</p>
@@ -120,23 +127,34 @@
                     <a href="">Aceptas términos y condiciones de la marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.</a>
                 </div>
 
-                <div class="acciones">
+                <div class="acciones">                    
                     <form action="{{url('/vtas_pedidos')}}" id="form" method="POST">
                         <input type="hidden" name="login" id="url_login" value="{{url('/ecommerce/public/signIn')}}"> 
+                        <input type="hidden" name="detailpedido" id="url_detallepedido" value="{{url('/ecommerce/public/detallepedido')}}"> 
                         <input type="hidden" id="token" name="_toker" value="{{csrf_token()}}">
                         <center><img style="display: none" id="loading" src="{{asset('img/fidget-spinner-loading.gif')}}" alt="" width="250px" height="250px"></center>
-                        <button class="btn-block" id="comprar" type="submit">Finalizar Compra</button>
+                        <button class="btn btn-primary btn-block" id="comprar" type="submit">Comfirmar Compra</button>
                     </form>
-                    <a href="{{url('/')}}"><center>Seguir comprando</center></a>
+                    <a class="btn btn-light btn-block mt-2" href="{{url('/')}}"><center>Seguir comprando</center></a>
                 </div>
 
             </div>
         </div>
     </div>
 </main>
+<header>
+    <div class="checkoutHeader">
+        <div class="checkoutHeader__logoHeader">
+        </div>
+        <div class="checkoutHeader__safePurchase">
+            <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
+        </div>
+    </div>
+</header>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{asset('assets/js/toastr.min.js')}}"></script>
 <script src="{{asset('assets/js/axios.min.js')}}"></script>
 <script src="{{asset('assets/tienda/js/compra.js')}}"></script>
+
 </body>
 </html>

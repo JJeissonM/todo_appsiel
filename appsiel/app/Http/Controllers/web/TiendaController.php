@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
+use App\Ventas\VtasDocEncabezado;
+use App\Ventas\VtasDocRegistro;
+
 class TiendaController extends Controller
 {
     /*
@@ -210,7 +213,7 @@ class TiendaController extends Controller
      * Muestra el panel de la cuenta del cliente en la parte publica
      * @param un $id usuario logueado
      */
-    public function cuenta()
+    public function cuenta(Request $request)
     {
         $paises = DB::table('core_paises')->get();
 
@@ -221,15 +224,19 @@ class TiendaController extends Controller
             $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
         }
 
-        if ($cliente == null) {
-            
+        if ($cliente == null) {            
             return redirect()->route('tienda.login');
         }
+        if($request->vista == null){
+            $vista = 'nav-home-tab';
+        }else{
+            $vista = $request->vista;
+        }
 
-        $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->get();
+        $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->orderBy('fecha','desc')->get();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados'));
+        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados','vista'));
 
     }
 
@@ -243,7 +250,7 @@ class TiendaController extends Controller
         $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->get();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.cuenta', compact('paises', 'cliente','footer','redes','doc_encabezados'));
+        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados'));
     }
 
     public function login()
@@ -258,6 +265,17 @@ class TiendaController extends Controller
     {
         $tipos = DB::table('core_tipos_docs_id')->get();
         return view('web.tienda.crearCuenta', compact('tipos'));
+    }
+
+    public function detallepedido($pedido_id){
+        if(Auth::user()){
+            $doc_encabezado = VtasDocEncabezado::get_registro_impresion($pedido_id);
+            $doc_registros = VtasDocRegistro::get_registros_impresion($pedido_id); 
+            $user = Auth::user();
+            $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
+            return  view('web.tienda.detallepedido', compact('doc_encabezado', 'doc_registros','cliente'));    
+        }
+        
     }
 
 
@@ -343,7 +361,9 @@ class TiendaController extends Controller
     }
 
     function comprar(){
-        return view('web.tienda.comprar');
+        $user = Auth::user();
+        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
+        return view('web.tienda.comprar',compact('cliente'));
     }
 
 

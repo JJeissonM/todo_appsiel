@@ -18,6 +18,17 @@
     padding: 14px 21px;
     border: 1px solid #f2f2f2;
     margin-bottom: 10px;
+    list-style: none !important;
+}
+
+
+.form-group select.form-control{
+    font-size: 1.5rem;
+    height: 38px !important;
+}
+
+.account-login .content ul li{
+    list-style: none !important;
 }
 
 button.button {
@@ -37,13 +48,13 @@ button.button {
 
 .page-title h1{
     margin: 0;
-    font-size: calc(1.375rem + 1.5vw);
+    font-size: calc(1.325rem + 1.2vw);
     color: #000;
     
 }
 .page-title h2 {
     margin: 0;
-    font-size: calc(1.325rem + .9vw);
+    font-size: calc(1.275rem + .9vw);
     color: #000;
     
 }

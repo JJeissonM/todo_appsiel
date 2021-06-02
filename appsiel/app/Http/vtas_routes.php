@@ -90,4 +90,5 @@ Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@reconta
 
 Route::post('vtas_form_crear_remision_desde_doc_venta','Ventas\ProcesoController@form_crear_remision_desde_doc_venta');
 Route::post('vtas_crear_remision_y_factura_desde_doc_venta','Ventas\ProcesoController@crear_remision_y_factura_desde_doc_venta');
+Route::post('vtas_crear_factura_desde_pasarela_de_pago','Ventas\ProcesoController@crear_factura_desde_pasarela_de_pago');
 Route::post('ventas_conexion/procesos/procesar/masivo','Ventas\ProcesoController@conexion_procesos')->name('ventas.conexion_procesos');

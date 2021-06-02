@@ -36,9 +36,11 @@ $configuracion = App\web\Configuraciones::all()->first();
                                         </thead>
                                         <tbody></tbody>
                                     </table>
-                                    <a href="#" onclick="window.location.href='{{route("tienda.comprar")}}'"  id="comprar" class="btn button u-full-width" style="background-color: var(--color-primario); border: none ;font-size: 16px; color: white">Comprar</a>
-                                    <a href="#" id="vaciar-carrito" class="button u-full-width">Vaciar
-                                        Carrito</a>
+                                        <a href="#" onclick="window.location.href='{{route("tienda.comprar")}}'"  id="comprar" class="btn button btn-block" style="background-color: var(--color-primario); border: none ;font-size: 16px; color: white">Comprar</a>
+                                        <a href="#" id="vaciar-carrito" class="button btn-block">Vaciar
+                                            Carrito</a>    
+                                    
+                                    
                                 </div>
                             </li>
                         </ul>
