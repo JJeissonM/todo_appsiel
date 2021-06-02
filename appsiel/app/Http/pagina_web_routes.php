@@ -226,12 +226,13 @@ Route::get('ecommerce/comprar', 'web\TiendaController@comprar')->name('tienda.co
 Route::get('ecommerce/public/account/{vista?}', 'web\TiendaController@cuenta')->name('tienda.micuenta');
 Route::get('ecommerce/public/newaccount', 'web\TiendaController@newcuenta');
 Route::get('ecommerce/public/detallepedido/{pedido_id}', 'web\TiendaController@detallepedido');
-
 Route::put('ecommerce/account/informacion/updated/{clienteweb}', 'web\TiendaController@informacionUpdate')->name('tienda.informacionupdate');
 Route::get('ecommerce/public/filtro/categoria/{categoria}', 'web\TiendaController@filtroCategoria')->name('tienda.filtrocategoria');
 Route::get('ecommerce/public/busqueda/', 'web\TiendaController@busqueda')->name('tienda.busqueda');
 Route::get('ecommerce/public/product/{id}/detalle', 'Inventarios\ProductoController@detalle_producto')->name('tienda.detalleproducto');
 Route::get('ecommerce/validar_email/{email}', 'web\PaginaController@validar_email');
+
+Route::post('vtas_crear_factura_desde_pasarela_de_pago','web\TiendaController@crear_factura_desde_pasarela_de_pago');
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');
