@@ -13,6 +13,7 @@ use Form;
 use Input;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Inventarios\InventarioController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -278,6 +279,90 @@ class TiendaController extends Controller
         
     }
 
+    public function crear_factura_desde_pasarela_de_pago(Request $request)
+    {
+        $data = $request->data['transaction'];
+        if($data['status'] == 'APPROVED' ){
+            $encabezado_doc_venta = VtasDocEncabezado::find( (int)$data['reference'] );        
+
+            // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
+
+//crear_remision_desde_doc_venta
+        $datos_remision = $encabezado_doc_venta->toArray();
+        $datos_remision['fecha'] = date('Y-m-d');
+        $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
+
+        $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
+        $datos_remision['descripcion'] = $descripcion;
+
+        $datos_remision['vtas_doc_encabezado_origen_id'] = $encabezado_doc_venta->id;
+        $lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
+
+        $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision, 'Pendiente');
+        
+        InventarioController::crear_registros_remision_ventas( $doc_remision, $lineas_registros);
+
+        InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
+
+        $this->actualizar_cantidades_pendientes( $lineas_registros );
+//crear_remision_desde_doc_venta
+//crear_remision_desde_doc_venta
+        $modelo_id = 139;
+
+        $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
+
+        $nueva_factura = $encabezado_doc_venta->clonar_encabezado(date('Y-m-d'), (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion, $modelo_id );
+        
+        if ( $nueva_factura->forma_pago == 'credito' )
+        {
+            $nueva_factura->fecha_vencimiento = $this->sumar_dias_calendario_a_fecha(date('Y-m-d'), $nueva_factura->cliente->condicion_pago->dias_plazo );
+        }
+
+        $nueva_factura->estado = 'Activo';
+        $nueva_factura->save();
+        
+        $encabezado_doc_venta->clonar_lineas_registros( $nueva_factura->id );
+
+        $nueva_factura->crear_movimiento_ventas();
+
+        // Contabilizar
+        $nueva_factura->contabilizar_movimiento_debito();
+        $nueva_factura->contabilizar_movimiento_credito();
+
+        $nueva_factura->crear_registro_pago();
+
+//crear_remision_desde_doc_venta
+            $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
+            $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
+            $nueva_factura->save();
+
+            $doc_remision->estado = 'Facturada';
+            $doc_remision->save();
+
+            $pedido->estado = 'Cumplido';
+            $pedido->save();
+
+            return response()->json([
+                'status'=> '200',
+                'msg'=>'Transacción completada con exito'
+            ]);
+        }else{
+            return response()->json([
+                'status'=> '400',
+                'msg'=>'Transacción fallida'
+            ]);
+        }
+        
+    }
+
+    public function actualizar_cantidades_pendientes( $lineas_registros )
+    {
+        foreach( $lineas_registros AS $linea )
+        {
+            $linea->cantidad_pendiente = $linea->cantidad_pendiente - $linea->cantidad;
+            $linea->save();
+        }
+    }
 
     /*
      * Edita la informacion general de la cuenta del clienteweb
