@@ -38,6 +38,7 @@ use App\Inventarios\InvCostoPromProducto;
 
 use App\Compras\ComprasDocEncabezado;
 use App\Ventas\VtasDocEncabezado;
+use App\Ventas\VtasDocRegistro;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -191,16 +192,14 @@ class InventarioController extends TransaccionController
 
         $doc_encabezado_remision_id = self::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
-        // Por ahora esto solo se usa para Salidas de Invetario creadas desde Ordenes de Trabajo de Nomina
         $encabezado_pedido = VtasDocEncabezado::find( (int)$request->doc_ventas_id );
         if ( !is_null( $encabezado_pedido ) )
         {
-
             $encabezado_remision = InvDocEncabezado::find( $doc_encabezado_remision_id );
             $encabezado_remision->vtas_doc_encabezado_origen_id = $encabezado_pedido->id;
             $encabezado_remision->save();
 
-            $this->actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision );
+            self::actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision, 'restar' );
 
             $encabezado_pedido->estado = 'Remisionado';
 
@@ -214,21 +213,22 @@ class InventarioController extends TransaccionController
         return redirect( 'inventarios/' . $doc_encabezado_remision_id . '?id=13&id_modelo=164&id_transaccion=24' )->with( 'flash_message', 'Remisión almacenada correctamente.' );
     }
 
-    public function actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision )
+    public static function actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision, $operacion )
     {
-        $lineas_registros_pedido = $encabezado_pedido->lineas_registros;
         $lineas_registros_remision = $encabezado_remision->lineas_registros;
-        foreach( $lineas_registros_pedido AS $linea_pedido )
+        foreach( $lineas_registros_remision AS $linea_remision )
         {
-            foreach( $lineas_registros_remision AS $linea_remision )
+            $linea_pedido = VtasDocRegistro::find( $linea_remision->linea_registro_doc_origen_id );
+            
+            if ( $operacion == 'restar' )
             {
-                if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
-                {
-                    // Las cantidades de la remision estan almacenadas con signo negativo (salida de inventario)
-                    $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente - abs($linea_remision->cantidad);
-                    $linea_pedido->save();
-                }                    
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente - abs($linea_remision->cantidad);
+            }else{
+                // sumar: al anular la remision
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente + abs($linea_remision->cantidad);
             }
+                
+            $linea_pedido->save();
         }
     }
 
@@ -246,8 +246,6 @@ class InventarioController extends TransaccionController
         $cantidad = count($lineas_registros);
         for ($i = 0; $i < $cantidad; $i++)
         {
-            //dd( $lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " ") );
-
             $lineas_registros[$i]->inv_motivo_id = explode( "-", $lineas_registros[$i]->motivo )[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
             $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
@@ -305,13 +303,14 @@ class InventarioController extends TransaccionController
 
             // Cuando el motivo de la transacción es de salida, 
             // las cantidades y costos totales restan del movimiento ( negativo )
-            if ($motivo->movimiento == 'salida')
+            if ( $motivo->movimiento == 'salida')
             {
                 $cantidad = (float) $cantidad * -1;
                 $costo_total = (float) $costo_total * -1;
             }
 
             $linea_datos = ['inv_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
+                ['linea_registro_doc_origen_id' => $lineas_registros[$i]->linea_registro_doc_origen_id] +
                 ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
                 ['costo_unitario' => $costo_unitario] +
                 ['cantidad' => $cantidad] +
@@ -517,6 +516,7 @@ class InventarioController extends TransaccionController
             $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $inv_bodega_id, $doc_encabezado->fecha );
 
             $lineas[] = (object)[
+                                    'linea_registro_doc_origen_id' => $linea->id,
                                     'item' => $linea->item,
                                     'motivo' => $linea->motivo,
                                     'inv_producto_id' => $linea->inv_producto_id,
@@ -1230,19 +1230,8 @@ class InventarioController extends TransaccionController
             $pedido = VtasDocEncabezado::find( $documento->vtas_doc_encabezado_origen_id );
             if( !is_null($pedido) )
             {
-                $lineas_pedido = $pedido->lineas_registros;
-                $lineas_remision = $documento->lineas_registros;
-                foreach( $lineas_pedido AS $linea_pedido )
-                {
-                    foreach( $lineas_remision AS $linea_remision )
-                    {
-                        if ( $linea_pedido->inv_producto_id == $linea_remision->inv_producto_id )
-                        {
-                            $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente + abs($linea_remision->cantidad);
-                            $linea_pedido->save();
-                        }
-                    }
-                }
+
+                self::actualizar_cantidades_pendientes( $pedido, $documento, 'sumar' );
 
                 $pedido->estado = "Pendiente";
                 $pedido->save();

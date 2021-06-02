@@ -32,6 +32,7 @@
             }
 
             $filas_tabla .= '<tr id="'.$linea->producto_id.'">
+                        <td style="display:none;">0</td>
                         <td class="text-center">'.$linea->producto_id.'</td>
                         <td class="nom_prod">'. $etiqueta_producto .'</td>
                         <td>'.$motivo.'</td>

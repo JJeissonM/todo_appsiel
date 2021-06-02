@@ -463,6 +463,11 @@ class PedidoController extends TransaccionController
     public static function anular_pedido($id)
     {
         $pedido = VtasDocEncabezado::find( $id );
+        
+        if ( !is_null( $pedido->documento_ventas_hijo() ) )
+        {
+            return redirect('vtas_pedidos/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with('flash_message', 'Pedido NO puede ser anulado. Tiene documentos relacionados.');
+        }
 
         // Se marcan como anulados todos los registros del documento
         VtasDocRegistro::where('vtas_doc_encabezado_id', $pedido->id)->update(['estado' => 'Anulado']);

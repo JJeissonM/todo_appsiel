@@ -641,12 +641,11 @@ $(document).ready(function(){
 	if( getParameterByName('doc_inv_fisico_id') != '' || getParameterByName('crear_remision_desde_pedido') == 'yes' || direccion.search("edit") >= 0 )
 	{
 		$('#btn_nuevo').show();
-
 		$('#fecha').attr('disabled','disabled');
 
 		// se trae la cantidad de productos desde el controller
-		$('#hay_productos').val( $('#hay_productos_aux').val() );		
-
+		$('#hay_productos').val( $('#hay_productos_aux').val() );
+		
 		calcular_totales();
 	}else{
 		$('#fecha').val( get_fecha_hoy() );

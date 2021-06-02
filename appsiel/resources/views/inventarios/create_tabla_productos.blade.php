@@ -3,6 +3,7 @@
 <table class="table table-striped table-bordered" id="ingreso_productos">
     <thead>
         <tr>
+            <th style="display:none;">linea_registro_doc_origen_id</th>
             <th data-override="inv_producto_id">COD.</th>
             <th width="280px">PRODUCTO</th>
             <th width="200px" data-override="motivo">MOTIVO</th>
@@ -14,6 +15,7 @@
     </thead>
     <tbody>
         <tr>
+            <td style="display:none;"></td>
             <td width="100px"></td>
             <td class="nom_prod"></td>
             <td></td>
@@ -26,7 +28,6 @@
         	<!-- Cuando se está haciendo ajuste desde Inventario Físico -->
         	@if( isset($filas_tabla) )
         		{!! $filas_tabla !!}
-        		{{ Form::hidden('hay_productos_aux', $cantidad_filas,['id'=>'hay_productos_aux']) }}
         	@endif
 
     </tbody>
