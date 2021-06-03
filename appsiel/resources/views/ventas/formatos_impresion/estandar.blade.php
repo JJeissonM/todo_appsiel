@@ -52,6 +52,8 @@ Cliente:
         $total_factura = 0;
         $array_tasas = [];
 
+        $impuesto_iva = 0;//iva en firma
+
         foreach($doc_registros as $linea )
         {
 
@@ -92,6 +94,9 @@ Cliente:
             foreach ($abonos as $linea_abono)
             {
                 $total_abonos += $linea_abono->abono;
+            }
+            if($linea->valor_impuesto > 0){
+                $impuesto_iva = $linea->tasa_impuesto;
             }
         }
     ?>

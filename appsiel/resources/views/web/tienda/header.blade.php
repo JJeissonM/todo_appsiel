@@ -8,15 +8,15 @@
         <div class="container" style="padding: 0 ">
             <div class="top-link-inner">
                 <div class="header-tienda">
-                        <div class="toplink-static d-flex justify-content-center" style="width: 100px; height: 60px;">
+                        <div class="toplink-static d-flex justify-content-center" style="/*width: auto;*/ height: 60px;">
                             <div style="position: absolute; z-index: 10;" >
                                 <a href="{{ config('pagina_web.main_page_tienda_online') }}">
-                                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: auto"> 
+                                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: auto; min-width:60px"> 
                                 </a>                                  
                             </div>                                                     
                         </div>
-                        <span class="welcome-msg" style="color: white; ">
-                                Venta Telefónica: <a style="text-transform: none" href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank">&nbsp;<i style="font-size: 16px; color: green; background-color: white; border-radius: 100%; padding: 4px; width: 24px;" class="fa fa-whatsapp text-center" aria-hidden="true"></i>&nbsp; Atención al cliente.</a>
+                        <span class="welcome-msg" style="color: white; white-space: nowrap">
+                                Venta Telefónica: <a style="text-transform: none;" href="https://api.whatsapp.com/send?phone=+57{{ $empresa->telefono1 }}" target="_blank">&nbsp;<i style="font-size: 16px; color: green; background-color: white; border-radius: 100%; padding: 4px; width: 24px;" class="fa fa-whatsapp text-center" aria-hidden="true"></i>&nbsp; Atención al cliente.</a>
                         </span>
 
                         <ul class="links">

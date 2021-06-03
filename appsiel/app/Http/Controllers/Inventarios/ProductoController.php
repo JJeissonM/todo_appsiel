@@ -69,10 +69,10 @@ class ProductoController extends  Controller {
 
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        $inv_producto =  InvProducto::findOrFail($id);
+        $inv_producto =  InvProducto::get_producto_pagina_web($id);
         $inv_producto->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $id );
 
-        return view('web.tienda.detalle',compact('footer','redes','inv_producto'));
+        return view('web.tienda.detalle',compact('footer','redes','inv_producto')); 
     }
 
 }

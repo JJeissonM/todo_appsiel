@@ -120,6 +120,8 @@ use App\Core\Tercero;
         $total_factura = 0;
         $array_tasas = [];
 
+        $impuesto_iva = 0;//iva en firma
+
         $cantidad_items = 0;
         ?>
         @foreach($doc_registros as $linea )
@@ -178,6 +180,9 @@ use App\Core\Tercero;
 
 
                 $cantidad_items++;
+                if($linea->valor_impuesto > 0){
+                    $impuesto_iva = $linea->tasa_impuesto;
+                }
             ?>
         @endforeach
     </tbody>

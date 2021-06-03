@@ -119,9 +119,10 @@
                 <table id="lista-productos" style="width: 100%">
                     <thead>
                         <tr>
-                            <th width="15%"><center>Cant.</center></th>
+                            <th width="10%"><center>Cant.</center></th>
                             <th><center>Descripcion</center></th>
-                            <th width="15%"><center>Precio Total</center></th>
+                            <th width="10%"><center>Precio Total</center></th>
+                            <th width="10%"><center>Descuento</center></th>
                         </tr>
                     </thead>
 
@@ -135,7 +136,8 @@
                             <tr>
                                 <td class="text-center">{{ $producto->cantidad.' '.$producto->unidad_medida1 }}</td>
                                 <td>{{ $producto->producto_descripcion }}</td>
-                                <td class="text-right">{{ $producto->precio_total }}</td>
+                                <td class="text-right">$ {{ $producto->precio_total }}</td>
+                                <td class="text-right">$ {{ ($producto->precio_venta - $producto->valor_descuento) }}</td>
                             </tr>
                             <?php
                                 $total_pagar += $producto->precio_total;
@@ -307,17 +309,51 @@
                                 </div>
 
                             </div>
-                          </div>                       
+                            <div class="d-flex justify-content-center">
+                                <a class="btn btn-outline-primary" style="width: 162px" href="{{ config('pagina_web.main_page_tienda_online') }}">Volver a la tienda</a>
+                            </div>
+                            
+                        </div>                       
                 </div>    
             </div>
         </div>
     </div>
 </main>
+<div class="modal fade" id="succesCompra" tabindex="-1" role="dialog" aria-labelledby="succesCompraLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="succesCompraLabel">Completaste tu compra</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          Tu compra ha sido completada con exito. Revisa tu correo para descargar tu factura.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <div class="d-flex justify-content-center">
+            <a class="btn btn-outline-primary" style="width: 162px" href="{{ config('pagina_web.main_page_tienda_online') }}">Volver a la tienda</a>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 <script src="{{asset('js/jquery.js')}}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
     </script>
+    <?php
+        
+        if (isset($_GET['id'])) {
+            echo '<script>';
+            echo "$('#succesCompra').modal('show')";
+            echo '</script>';
+        }
+        
+    ?>
 </body>
 </html>

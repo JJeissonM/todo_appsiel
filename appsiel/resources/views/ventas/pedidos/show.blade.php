@@ -123,6 +123,8 @@
 				$total_factura = 0;
                 $total_descuentos = 0;
 				$array_tasas = [];
+
+				$impuesto_iva = 0;//iva en firma
 				?>
 				@foreach($doc_registros as $linea )
 					<tr>
@@ -172,6 +174,10 @@
 						$array_tasas[$linea->tasa_impuesto]['precio_total'] = $precio_total_antes + (float) $linea->precio_total;
 						$array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float) $linea->base_impuesto * (float) $linea->cantidad;
 						$array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float) $linea->valor_impuesto * (float) $linea->cantidad;
+					}
+
+					if($linea->valor_impuesto > 0){
+						$impuesto_iva = $linea->tasa_impuesto;
 					}
 					?>
 				@endforeach

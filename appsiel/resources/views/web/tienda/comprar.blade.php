@@ -79,7 +79,15 @@
 
 </head>
 <body>
-
+    <header>
+        <div class="checkoutHeader">
+            <div class="checkoutHeader__logoHeader">
+            </div>
+            <div class="checkoutHeader__safePurchase">
+                <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
+            </div>
+        </div>
+    </header>
 <main>
     <div class="container-fluid mt-4" >
         <div class="row">
@@ -139,15 +147,7 @@
         </div>
     </div>
 </main>
-<header>
-    <div class="checkoutHeader">
-        <div class="checkoutHeader__logoHeader">
-        </div>
-        <div class="checkoutHeader__safePurchase">
-            <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
-        </div>
-    </div>
-</header>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="{{asset('assets/js/toastr.min.js')}}"></script>
 <script src="{{asset('assets/js/axios.min.js')}}"></script>

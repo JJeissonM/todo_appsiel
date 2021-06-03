@@ -14,6 +14,7 @@
 .toplink-static {
     font-size: 14px;
     padding: 10px 0;
+    width: 100px;
 }
 
 .toplink-static span {
@@ -45,10 +46,6 @@
     padding: 0 10px;      
 }
 
-.links li.first {
-    padding-left: 0 !important;
-}
-
 .links li i{
     font-size: 16px;
 }
@@ -72,7 +69,13 @@ a {
     flex-grow: 1;
 }
 
+
+
 @media (max-width: 767px){ 
+
+    #navegacion-tienda{    
+        height: 98px;
+    }    
 
     .header-tienda{
         justify-content: center;
@@ -81,10 +84,10 @@ a {
       
     .toplink-static {
         text-align: center;
+        width: auto;
     }
 
     .welcome-msg {
-        width: 130px;
         flex-shrink: 1;
     }
 
@@ -92,6 +95,7 @@ a {
         width: 300px;
         flex-shrink: 1;
         flex-grow: 1;
+        padding: 8px;
     }
     .top-link ul.links {
         display: flex;
