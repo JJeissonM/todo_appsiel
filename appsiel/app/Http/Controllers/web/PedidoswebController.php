@@ -38,7 +38,7 @@ class PedidoswebController extends Controller
      */
     public function store(Request $request)
     {
-        $a = new Pedidoweb($request->all());
+        $a = new Pedidoweb( $request->all() );
         $result = $a->save();
         $variables_url = $request->variables_url;
         if ($result) {

@@ -283,7 +283,8 @@ class NubeController extends Controller
     //subir archivos
     public function upload(Request $request)
     {
-        if (isset($request->archivo)) {
+        if (isset($request->archivo))
+        {
             $files = $request->file("archivo");
             foreach ($files as $f) {
                 $name = str_slug($f->getClientOriginalName()) . "." . $f->getClientOriginalExtension();
@@ -292,15 +293,15 @@ class NubeController extends Controller
             }
         }
         $miga_pan = [
-            [
-                'url' => 'pagina_web' . '?id=' . $request->id,
-                'etiqueta' => 'Web'
-            ],
-            [
-                'url' => 'NO',
-                'etiqueta' => 'Almacenamiento en la Nube'
-            ]
-        ];
+                        [
+                            'url' => 'pagina_web' . '?id=' . $request->id,
+                            'etiqueta' => 'Web'
+                        ],
+                        [
+                            'url' => 'NO',
+                            'etiqueta' => 'Almacenamiento en la Nube'
+                        ]
+                    ];
         $this->listFolder($request->path);
         $simple = "'";
         $doble = '"';

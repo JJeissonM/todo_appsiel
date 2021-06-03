@@ -322,8 +322,8 @@ class TiendaController extends Controller
             InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
 
             $this->actualizar_cantidades_pendientes( $lineas_registros );
-        //crear_remision_desde_doc_venta
-        //crear_remision_desde_doc_venta
+            //crear_remision_desde_doc_venta
+            //crear_remision_desde_doc_venta
             $modelo_id = 139;
 
             $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;

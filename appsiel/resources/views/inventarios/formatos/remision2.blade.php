@@ -176,7 +176,7 @@ use App\Compras\ComprasDocEncabezado;
         </tr>
     </table>
 <br>
-<b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+<b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}
 
 </body>
 </html>
