@@ -276,10 +276,8 @@ class ProcesoController extends Controller
         $core_tipo_transaccion_id = 42;
         $core_tipo_doc_app_id = 41;
         $modelo_id = 175;
-        
-        $descripcion = 'Generado desde ' . $cotizacion->tipo_transaccion->descripcion . ' ' . $cotizacion->tipo_documento_app->prefijo . ' ' . $cotizacion->consecutivo;
 
-        $pedido = $cotizacion->clonar_encabezado( date('Y-m-d'), $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion, $modelo_id );
+        $pedido = $cotizacion->clonar_encabezado( date('Y-m-d'), $core_tipo_transaccion_id, $core_tipo_doc_app_id, $cotizacion->descripcion, $modelo_id );
 
         $pedido->fecha_entrega = $request->fecha_entrega;
         $pedido->fecha_vencimiento = $request->fecha_entrega;
@@ -401,8 +399,7 @@ class ProcesoController extends Controller
         $datos_remision['fecha'] = $fecha;
         $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
 
-        $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
-        $datos_remision['descripcion'] = $descripcion;
+        $datos_remision['descripcion'] = $encabezado_doc_venta->descripcion;
 
         $datos_remision['vtas_doc_encabezado_origen_id'] = $encabezado_doc_venta->id;
         //$lineas_registros = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $encabezado_doc_venta->id )->get();
@@ -488,7 +485,7 @@ class ProcesoController extends Controller
 
             if ($value['name'] == 'descripcion')
             {
-                $lista_campos[$key]['value'] = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
+                $lista_campos[$key]['value'] = $encabezado_doc_venta->descripcion;
             }
         }
         

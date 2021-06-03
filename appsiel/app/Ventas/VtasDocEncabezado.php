@@ -239,6 +239,11 @@ class VtasDocEncabezado extends Model
         $lineas_registros = $this->lineas_registros;
         foreach ($lineas_registros as $linea)
         {
+            if ( $linea->item->tipo == 'servicio' )
+            {
+                continue;
+            }
+            
             $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $this->cliente->inv_bodega_id, $this->fecha );
 
             if ( ( $existencia_actual - abs($linea->cantidad) ) < 0 )

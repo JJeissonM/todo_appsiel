@@ -20,6 +20,8 @@ class CxcAbono extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento recaudo', 'Proveedor', 'Documento CxC Abonado', 'Valor abono'];
 
+    public $urls_acciones = '{"show":"no"}';
+
     public static function consultar_registros( $nro_registros, $search )
     {
         $collection = CxcAbono::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_abonos.core_tipo_doc_app_id')

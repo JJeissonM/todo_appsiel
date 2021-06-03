@@ -20,9 +20,12 @@
 </head>
 <body>
     <div style="position: absolute; left: 40mm; top: 63mm;">
-        {{ $doc_encabezado->tercero_nombre_completo }} @if( !is_null($doc_encabezado->documento_ventas_padre()) )
-       / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}        
-    @endif
+        {{ $doc_encabezado->tercero_nombre_completo }} 
+        @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+            @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
+                / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
+            @endif
+        @endif
     </div>
 
     <div style="position: absolute; left: 40mm; top: 68mm;">

@@ -20,6 +20,8 @@ class CxpAbono extends Model
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento pago', 'Proveedor', 'Documento de CxP', 'Documento Cruce', 'Valor abono'];
 
+    public $urls_acciones = '{"show":"no"}';
+
     public static function consultar_registros($nro_registros, $search)
     {
         $collection = CxpAbono::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxp_abonos.core_tipo_doc_app_id')

@@ -149,4 +149,4 @@
 </table>
 <b>Detalle: &nbsp;&nbsp;</b>
 <br>
-{{ $doc_encabezado->descripcion }}
+{!! $doc_encabezado->descripcion !!}

@@ -287,7 +287,7 @@ class TiendaController extends Controller
 
             // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
 
-//crear_remision_desde_doc_venta
+        //crear_remision_desde_doc_venta
         $datos_remision = $encabezado_doc_venta->toArray();
         $datos_remision['fecha'] = date('Y-m-d');
         $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
@@ -305,8 +305,8 @@ class TiendaController extends Controller
         InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
 
         $this->actualizar_cantidades_pendientes( $lineas_registros );
-//crear_remision_desde_doc_venta
-//crear_remision_desde_doc_venta
+        //crear_remision_desde_doc_venta
+        //crear_remision_desde_doc_venta
         $modelo_id = 139;
 
         $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
@@ -331,7 +331,7 @@ class TiendaController extends Controller
 
         $nueva_factura->crear_registro_pago();
 
-//crear_remision_desde_doc_venta
+        //crear_remision_desde_doc_venta
             $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
             $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
             $nueva_factura->save();
