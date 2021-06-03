@@ -37,7 +37,7 @@
         {{ $ciudad->descripcion }} 
     </div>
 
-    <div style="position: absolute; right: 65mm; top: 36mm;">
+    <div style="position: absolute; right: 55mm; top: 38mm;">
         <?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
@@ -46,14 +46,14 @@
             {{ $fecha_final }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 91mm;">
+    <div style="position: absolute; left: 40mm; top: 95mm;">
         CONSTANCIA ENTREGA OBRA FINALIZADA
     </div>
-    <div style="position: absolute; left: 47mm; top: 122mm; width: 173mm">
+    <div style="position: absolute; left: 47mm; top: 112mm; width: 180mm">
         <table width="100%">
             <tr>
                 <td width="15%"></td>
-                <td width="60%">{{ $doc_encabezado->descripcion }}</td>
+                <td width="60%"><?php echo $doc_encabezado->descripcion ?></td>
                 <td></td>
             </tr>   
         </table>         
