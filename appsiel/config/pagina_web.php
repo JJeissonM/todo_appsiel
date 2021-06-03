@@ -9,5 +9,7 @@
   'zona_id' => '1',
   'condicion_pago_id' => '1',
   'pedidos_inv_motivo_id' => '10',
+  'main_page_tienda_online' => 'http://localhost/todo_appsiel/sitio-tienda-online',
+  'public_key_wompi' => 'pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf',
   'url_id_modelo' => '0',
 ) ;

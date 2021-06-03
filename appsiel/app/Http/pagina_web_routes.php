@@ -232,7 +232,9 @@ Route::get('ecommerce/public/busqueda/', 'web\TiendaController@busqueda')->name(
 Route::get('ecommerce/public/product/{id}/detalle', 'Inventarios\ProductoController@detalle_producto')->name('tienda.detalleproducto');
 Route::get('ecommerce/validar_email/{email}', 'web\PaginaController@validar_email');
 
+Route::get('enviar_pedido_web_email/{id}', 'Ventas\PedidoController@enviar_pedidoweb_email');
 Route::post('vtas_crear_factura_desde_pasarela_de_pago','web\TiendaController@crear_factura_desde_pasarela_de_pago');
+
 
 //NUBE
 Route::get('pagina_web/nube/view', 'web\NubeController@view')->name('nube.view');

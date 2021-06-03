@@ -213,7 +213,10 @@ class VtasDocEncabezado extends Model
         {
             $datos = $linea->toArray();
             $datos['vtas_doc_encabezado_id'] = $vtas_doc_encabezado_id;
-            $datos['creado_por'] = Auth::user()->email;
+            $datos['creado_por'] = 'paula@appsiel.com.co';
+            if(Auth::user()){
+                $datos['creado_por'] = Auth::user()->email;
+            }   
             $datos['modificado_por'] = '';
 
             VtasDocRegistro::create( $datos );
@@ -329,7 +332,10 @@ class VtasDocEncabezado extends Model
         foreach ($lineas_registros as $linea)
         {
             $una_linea_registro = $datos + $linea->toArray();
-            $una_linea_registro['creado_por'] = Auth::user()->email;
+            $una_linea_registro['creado_por'] = 'paula@appsiel.com.co';
+            if(Auth::user()){
+                $una_linea_registro['creado_por']  = Auth::user()->email;
+            }   
             $una_linea_registro['modificado_por'] = '';
             $una_linea_registro['estado'] = 'Activo';
             $una_linea_registro['tipo_transaccion'] = 'facturacion_ventas';

@@ -56,7 +56,7 @@ use App\Core\Tercero;
             {{ $tercero->razon_social }}
         </td>
         <td colspan="2">
-            <b style="font-size: 16px">Cotización Nª {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</b>
+            <b style="font-size: 16px">Cotización No. {{ sprintf("%04d", $doc_encabezado->documento_transaccion_consecutivo) }}</b>
         </td>
     </tr>
     <tr>

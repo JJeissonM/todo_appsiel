@@ -52,32 +52,19 @@
     <div style="position: absolute; left: 40mm; top: 91mm;">
         CONSTANCIA ENTREGA OBRA FINALIZADA
     </div>
-
-    <div style="position: absolute; left: 25mm; top: 122mm; width: 173mm">
-
-    <table width="100%">
-        <?php
-                $total_cantidad = 0;
-                $numero = 1;
-            ?>
-        @foreach($doc_registros as $linea )
-        <tr>
-            <td style="text-align: center;" width="15%"> {{ $linea->producto_id }} </td>
-            <td width="60%"> {{ $linea->producto_descripcion }} </td>
-            <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }}</td>
-        </tr>
-                <?php 
-                    $total_cantidad += $linea->cantidad;
-                    $numero++;                    
-                ?>
-        @endforeach
-    </table>       
-
+    <div style="position: absolute; left: 47mm; top: 122mm; width: 173mm">
+        <table width="100%">
+            <tr>
+                <td width="15%"></td>
+                <td width="60%">{{ $doc_encabezado->descripcion }}</td>
+                <td></td>
+            </tr>   
+        </table>         
     </div>
 
-    <div style="position: absolute; left: 175mm; top: 254mm;">        
-        {{ abs($total_cantidad) }}
-    </div>
+   
+
+  
 
 
 

@@ -436,7 +436,12 @@ class InventarioController extends TransaccionController
         {
             $datos['estado'] = $estado;
         }
-        $datos['creado_por'] = Auth::user()->email;
+
+        
+        $datos['creado_por'] = 'paula@appsiel.com.co';
+        if(Auth::user()){
+            $datos['creado_por'] = Auth::user()->email;
+        }        
         $datos['consecutivo'] = TipoDocApp::get_consecutivo_actual( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] ) + 1;
 
         TipoDocApp::aumentar_consecutivo( $datos['core_empresa_id'], $datos['core_tipo_doc_app_id'] );

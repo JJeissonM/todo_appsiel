@@ -220,7 +220,7 @@
                                                 <script
                                                 src="https://checkout.wompi.co/widget.js"
                                                 data-render="button"
-                                                data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
+                                                data-public-key="{{ config('pagina_web.public_key_wompi') }}"
                                                 data-currency="COP"
                                                 data-amount-in-cents="{{ number_format(($total_pagar+5000),2,'','') }}"
                                                 data-reference="{{ $doc_encabezado->id }}"
@@ -269,7 +269,7 @@
                                             <script
                                             src="https://checkout.wompi.co/widget.js"
                                             data-render="button"
-                                            data-public-key="pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf"
+                                            data-public-key="{{ config('pagina_web.public_key_wompi') }}"
                                             data-currency="COP"
                                             data-amount-in-cents="{{ number_format($total_pagar,2,'','') }}"
                                             data-reference="{{ $doc_encabezado->id }}"
@@ -295,7 +295,7 @@
                                             </div>
                                             <div class="modal-footer">
                                               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                  <a href="{{ url('vtas_pedidos_enviar_por_email').'/'.$doc_encabezado->id }}" class="btn btn-primary">Pagar en Efectivo</a>               
+                                                  <a href="{{ url('enviar_pedido_web_email').'/'.$doc_encabezado->id }}" class="btn btn-primary">Pagar en Efectivo</a>               
                                             </div>
                                           </div>
                                         </div>
