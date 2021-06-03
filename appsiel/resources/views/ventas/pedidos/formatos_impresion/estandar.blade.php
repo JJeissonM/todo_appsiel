@@ -4,7 +4,7 @@
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
     <link rel="stylesheet" href="{{ asset("css/stylepdf.css") }}">
     <style type="text/css">
-        
+    
     </style>
 </head>
 <body>
@@ -70,9 +70,9 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td class="text-center"> {{ $i }} </td>
-                    <td width="250px"> {{ $linea->producto_descripcion }} </td>
-                    <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                    <td width="12.5%" class="text-center"> {{ $i }} </td>
+                    <td> {{ $linea->producto_descripcion }} </td>
+                    <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $i++;

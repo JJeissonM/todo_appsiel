@@ -55,16 +55,13 @@
             .cant{
                 min-width: 80px;
             }
-        }
-
-        
+        }        
         .cant{
             min-width: 00px;
         }
 
         table td, table th{
             border: 1px solid #e9ecef;
-
         }
 
         .addresses-list h2 {

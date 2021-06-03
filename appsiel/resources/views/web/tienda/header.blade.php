@@ -10,7 +10,7 @@
                 <div class="header-tienda">
                         <div class="toplink-static d-flex justify-content-center" style="width: 100px; height: 60px;">
                             <div style="position: absolute; z-index: 10;" >
-                                <a href="{{ url('') }}">
+                                <a href="{{ config('pagina_web.main_page_tienda_online') }}">
                                     <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: auto"> 
                                 </a>                                  
                             </div>                                                     

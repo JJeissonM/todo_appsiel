@@ -165,8 +165,40 @@
 						</div>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+							if( isset($parametros['main_page_tienda_online'] ) )
+							{
+								$main_page_tienda_online = $parametros['main_page_tienda_online'];
+							}else{
+								$main_page_tienda_online = 'http://localhost/todo_appsiel/sitio-tienda-online';
+							}
+							?>
+							{{ Form::bsText('main_page_tienda_online', $main_page_tienda_online, 'Pagina principal tienda online', App\Ventas\CondicionPago::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
 
+
+						<div class="col-md-6">
+							<div class="row" style="padding:5px;">
+								<?php 
+									if( isset($parametros['public_key_wompi'] ) )
+									{
+										$public_key_wompi = $parametros['public_key_wompi'];
+									}else{
+										$public_key_wompi = 'pub_test_enceqQgcwYlN9PQozadt9XBRa9VLCnsf';
+									}
+								?>
+								{{ Form::bsText('public_key_wompi', $public_key_wompi, 'Llave publica pasarela de pago Wompi', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							</div>
+						</div>
+					</div>
+
+				</div>
 			</div>
+			
 
 			<br><br>
 
