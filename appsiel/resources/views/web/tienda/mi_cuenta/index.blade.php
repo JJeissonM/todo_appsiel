@@ -130,8 +130,7 @@
         //dd($doc_encabezados);
         if($doc_encabezados[0]->estado == 'Pendiente'){
             echo 'pedidop = true;';
-        }
-        
+        }     
     
     ?>
     

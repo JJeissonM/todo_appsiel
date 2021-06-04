@@ -1,5 +1,21 @@
 <div class="page-title">
     <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">EDITAR INFORMACIÓN DE LA CUENTA</font></font></h1>
+    @if(Session::has('flash_message'))
+    <div class="container-fluid">
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <em> {!! session('flash_message') !!}</em>
+        </div>
+    </div>
+    @endif
+    @if(Session::has('mensaje_error'))
+    <div class="container-fluid">
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <em> {!! session('mensaje_error') !!}</em>
+        </div>
+    </div>
+    @endif
 </div>
 {!! Form::model($cliente,['route'=>['tienda.informacionupdate',$cliente],'method'=>'PUT','class'=>'form-horizontal','id'=>'form-validate','autocomplete'=>'off','files'=>'true'])!!}
     <div class="fieldset">
@@ -10,7 +26,7 @@
                     <div class="field name-firstname">
                         <label for="firstname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Nombre</font></font></label>
                         <div class="input-box">
-                            <input type="text" id="firstname" name="nombre1" value="{{$cliente->nombre1}}" title="Nombre de pila" maxlength="255" class="input-text required-entry">
+                            <input type="text" id="firstname" name="nombre1" value="{{$cliente->nombre1}}" title="Nombre de pila" maxlength="255" class="input-text" required>
                         </div>
                     </div>
                     <div class="field name-firstname">
@@ -26,13 +42,13 @@
                     <div class="field name-lastname">
                         <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Primer Apellido</font></font></label>
                         <div class="input-box">
-                            <input type="text" id="lastname" name="apellido1" value="{{$cliente->apellido1}}" title="Primer Apellido" maxlength="255" class="input-text required-entry">
+                            <input type="text" id="lastname" name="apellido1" value="{{$cliente->apellido1}}" title="Primer Apellido" maxlength="255" class="input-text required-entry" required>
                         </div>
                     </div>
                     <div class="field name-lastname">
                         <label for="lastname" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Segundo Apellido</font></font></label>
                         <div class="input-box">
-                            <input type="text" id="apellido2" name="apellido2" value="{{$cliente->apellido2}}" title="Apellido" maxlength="255" class="input-text required-entry">
+                            <input type="text" id="apellido2" name="apellido2" value="{{$cliente->apellido2}}" title="Apellido" maxlength="255" class="input-text required-entry" required>
                         </div>
                     </div>
                 </div>
@@ -40,7 +56,7 @@
             <li>
                 <label for="email" class="required"><em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">*</font></font></em><font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> Dirección de correo electrónico</font></font></label>
                 <div class="input-box">
-                    <input type="text" name="email" id="email" value="{{$cliente->email}}" title="Dirección de correo electrónico" class="input-text required-entry validate-email">
+                    <input type="email" name="email" id="email" value="{{$cliente->email}}" title="Dirección de correo electrónico" class="input-text required-entry validate-email" required>
                 </div>
             </li>
             <li class="control">
@@ -77,6 +93,35 @@
     </div>
     <div class="buttons-set">
         <p class="required"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">* Campos requeridos</font></font></p>
-        <button type="submit" title="Salvar" class="button"><span><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Salvar</font></font></span></span></button>
+        <button type="submit" title="Guardar" class="button"><span><span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Guardar</font></font></span></span></button>
     </div>
 {!! Form::close() !!}
+
+@section('script1')
+<script type="text/javascript">    
+    //<![CDATA[
+    //var dataForm = new VarienForm('form-validate', true);
+
+    function setPasswordForm(arg){
+        if(arg){
+            $('#form-password').removeAttr('style','display');
+            $('#current_password').attr('class','input-text required-entry');
+            // $('current_password').addClassName('required-entry');
+            // $('password').addClassName('required-entry');
+            $("#password").attr('class','input-text required-entry');
+            $("#confirmation").attr('class','input-text required-entry');
+            // $('confirmation').addClassName('required-entry');
+
+        }else{
+            $('#form-password').attr('style','display:none');
+            // $('current_password').removeClassName('required-entry');
+            $('#current_password').removeClass('required-entry');
+            $('#password').removeClass('required-entry');
+            // $('password').removeClassName('required-entry');
+            $('#confirmation').removeClass('required-entry');
+            // $('confirmation').removeClassName('required-entry');
+        }
+    }
+    //]]>
+</script>
+@endsection

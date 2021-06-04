@@ -119,13 +119,12 @@
                 <table id="lista-productos" style="width: 100%">
                     <thead>
                         <tr>
-                            <th width="10%"><center>Cant.</center></th>
+                            <th><center>Cant.</center></th>
                             <th><center>Descripcion</center></th>
-                            <th width="10%"><center>Precio Total</center></th>
-                            <th width="10%"><center>Descuento</center></th>
+                            <th><center>Precio Total</center></th>
+                            <th><center>Desc.</center></th>
                         </tr>
                     </thead>
-
                     <tbody>
                         <?php
                                 $total_pagar = 0;
@@ -188,11 +187,14 @@
                                         No ha establecido una dirección de envío predeterminada.
                                     </address>
                                     @else
-                                    <address>
+                                    <address id="addressdomicilio">
+                                        <div>
                                         <b>Domicilio: {{$direccion_por_defecto->nombre_contacto}}</b><br>
                                         {{$direccion_por_defecto->direccion1}}, {{$direccion_por_defecto->barrio}}<br>
                                         {{$direccion_por_defecto->ciudad->descripcion }}, {{ $direccion_por_defecto->ciudad->departamento->descripcion }}, {{$direccion_por_defecto->codigo_postal}}<br>
-                                        Tel.: {{$direccion_por_defecto->telefono1}}<br>
+                                        Tel.: {{$direccion_por_defecto->telefono1}}<br>    
+                                        </div>
+                                        
                                     </address>
                                     @endif  
                                 </div>
@@ -239,12 +241,14 @@
                             </div>
                             <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
                                 <div class="border border-primary rounded">
-                                    <address>
-                                        <b>Recoger en Tienda: {{ $empresa->descripcion }}</b>
-                                        <br>
+                                    <address id="addressempresa">
+                                        <div>
+                                        <b>{{ $empresa->descripcion }}</b><br>
                                         {{ $empresa->direccion1 }}, {{ $empresa->barrio }}<br>
                                         {{ $empresa->ciudad->descripcion }}, {{ $empresa->ciudad->departamento->descripcion }}, {{ $empresa->codigo_postal }}<br>
-                                        Tel.: {{$empresa->telefono1}}<br>    
+                                        Tel.: {{$empresa->telefono1}}<br>     
+                                        </div>
+                                           
                                     </address>
                                 </div>
                                 <div class="contenido px-2">
@@ -287,7 +291,7 @@
                                         <div class="modal-dialog" role="document">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Pago en Efectivo</h5>
+                                              <h5 class="modal-title" id="exampleModalLabel">Pago en Tienda</h5>
                                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                               </button>

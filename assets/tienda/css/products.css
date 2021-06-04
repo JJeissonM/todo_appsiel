@@ -5,6 +5,13 @@
     margin: 0 0 35px;
 }
 
+del{
+    text-decoration-color: rgba(0,0,0,.2);
+    text-decoration-thickness: 3px;
+    color: lightslategrey;
+    opacity: .8;
+}
+
 .main {
     margin: 0 auto;
     min-height: 400px;

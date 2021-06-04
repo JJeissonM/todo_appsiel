@@ -47,7 +47,13 @@
                                         <ul class="products-grid row first odd align-content-start">
                                             
                                             @foreach($items as $item)
-                                                <li class=" item first" style="list-style: none; padding: 0 0 0 0">
+                                                <li class=" item first" style="list-style: none; padding: 0 0 0 0; position: relative;">
+                                                    @if( $item->descuento != 0)
+                                                    <div style="position: absolute; z-index: 20; overflow: visible; top: -20px; right: -10px;">
+                                                        <i class="fa fa-certificate" aria-hidden="true" style="position:relative;color: red; font-size: 80px;"></i>
+                                                    </div>
+                                                    <div style="font-size:24px; position: absolute;z-index:21; top: 0px; right: 2px;transform: rotate(-20deg); color: white">-{{ $item->descuento }}%</div> 
+                                                    @endif
                                                     <div class="item-inner">
                                                         <div class="ma-box-content" data-id="{{$item->id}}">
                                                             <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
@@ -73,11 +79,6 @@
                                                             <h2 class="font-oswald product-name text-center mx-2" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
                                                                 <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                                                             </h2>
-                                                            <!--<div class="ratings">
-                                                                <div class="rating-box">
-                                                                    <div class="rating" style="width:67%"></div>
-                                                                </div>
-                                                            </div>-->
                                                             <div class="price-box text-center">
                                                                 @if( $item->descuento == 0)
                                                                     <span class="regular-price" id="product-price-1">
@@ -86,7 +87,7 @@
                                                                 @else
                                                                     <span class="regular-price" id="product-price-1">
                                                                         <span class="price"> <del>${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</del></span>
-                                                                        -{{ $item->descuento }}%
+                                                                       
                                                                         <br>
                                                                         <span class="price">${{ number_format( $item->precio_venta - $item->valor_descuento,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
                                                                     </span>

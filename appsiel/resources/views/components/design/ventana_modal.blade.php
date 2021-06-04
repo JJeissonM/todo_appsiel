@@ -22,11 +22,11 @@
       </div>
 
       <div class="modal-footer">
-      	<button class="btn btn-danger btn-xs" data-dismiss="modal"> <i class="fa fa-close"></i> Cerrar </button>
+      	<button class="btn btn-danger" data-dismiss="modal"> <i class="fa fa-close"></i> Cerrar </button>
     		
-        <button class="btn btn-warning btn-xs btn_edit_modal"> <i class="fa fa-edit"></i> Editar </button>
+        <button class="btn btn-warning btn_edit_modal"> <i class="fa fa-edit"></i> Editar </button>
         
-        <button class="btn btn-primary btn-xs btn_save_modal"> <i class="fa fa-save"></i> Guardar </button>
+        <button class="btn btn-primary btn_save_modal"> <i class="fa fa-save"></i> Guardar </button>
 
     		<br><br>
       </div>

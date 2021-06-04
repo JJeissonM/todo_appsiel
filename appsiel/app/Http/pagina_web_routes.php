@@ -219,7 +219,6 @@ Route::put('tienda/inventario/updated/{tienda}', 'web\TiendaController@inventari
 Route::put('tienda/terminos/condiciones/updated/{tienda}', 'web\TiendaController@terminos')->name('tienda.terminos');
 
 //TIENDA PUBLICA
-Route::get('ecommerce/public/cuenta', 'web\TiendaController@cuenta')->name('tienda.cuenta');
 Route::get('ecommerce/public/signIn', 'web\TiendaController@login')->name('tienda.login');
 Route::get('ecommerce/public/nuevacuenta', 'web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
 Route::get('ecommerce/comprar', 'web\TiendaController@comprar')->name('tienda.comprar');

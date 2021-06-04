@@ -129,7 +129,7 @@
 
                 <div class="terminos">
                     <input class="select" type="checkbox" id="contrato">
-                    <a href="">Aceptas términos y condiciones de la marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.</a>
+                    <a href="" class="my-1" style="line-height: normal">Aceptas términos y condiciones de la marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.</a>
                 </div>
 
                 <div class="acciones">                    

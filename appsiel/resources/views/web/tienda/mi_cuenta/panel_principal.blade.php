@@ -10,7 +10,7 @@
         <h2><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información de la cuenta</font></font></h2>
     </div>
     <div class="col2-set">
-        <div class="col-1" style="max-width: 50%">
+        <div class="">
             <div class="box">
                 <div class="box-title">
                     <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Información del contacto</font></font></h3>
@@ -23,25 +23,14 @@
                 </div>
             </div>
         </div>
-        <div class="col-2" style="max-width: 50%">
-            <div class="box">
-                <div class="box-title">
-                    <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Boletines informativos</font></font></h3>
-                    <a href="http://www.plazathemes.com/demo/ma_dicove/index.php/newsletter/manage/"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Editar</font></font></a>
-                </div>
-                <div class="box-content">
-                    <p><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Actualmente no estás suscrito a ningún boletín.</font></font></p>
-                </div>
-            </div>
-        </div>
     </div>
     <div class="col2-set">
         <div class="box">
             <div class="box-title">
                 <h3><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Directorio</font></font></h3>
             </div>
-            <div class="box-content">
-                <div class="col-1" style="max-width: 50%">
+            <div class="row">
+                <div class="col-md-6">
                     <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">direccion de FACTURACIÓN por defecto</font></font></h4>
                     <address>
                         @if($cliente->direccion1 === 0 || $cliente->direccion1 === null)
@@ -64,7 +53,7 @@
                         @endif
                     </address>
                 </div>
-                <div class="col-2" style="max-width: 50%">
+                <div class="col-md-6">
                     <h4><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Dirección de entrega por defecto</font></font></h4>
                     <?php 
                         $direcciones = $cliente->direcciones_entrega;

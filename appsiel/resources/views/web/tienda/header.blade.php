@@ -11,7 +11,7 @@
                         <div class="toplink-static d-flex justify-content-center" style="/*width: auto;*/ height: 60px;">
                             <div style="position: absolute; z-index: 10;" >
                                 <a href="{{ config('pagina_web.main_page_tienda_online') }}">
-                                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: auto; min-width:60px"> 
+                                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: 60px; min-width:60px"> 
                                 </a>                                  
                             </div>                                                     
                         </div>

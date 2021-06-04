@@ -30,7 +30,7 @@
 #exampleSlider .MS-controls button {
     position: absolute;      /* recommended */
     top: 0px;
-    font-size: 25px
+    font-size: 25px;
 }
 #exampleSlider .MS-controls .MS-left {
     left: 10px;

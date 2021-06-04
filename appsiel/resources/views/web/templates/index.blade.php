@@ -17,8 +17,7 @@ $configuracion = App\web\Configuraciones::all()->first();
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Slick slider -->
     <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
     <!-- Gallery Lightbox -->
@@ -195,6 +194,7 @@ $configuracion = App\web\Configuraciones::all()->first();
     <!-- About us Skills Circle progress  -->
 
     @yield('script')
+    @yield('script1')
 
     <script type="text/javascript">
         $(function() {

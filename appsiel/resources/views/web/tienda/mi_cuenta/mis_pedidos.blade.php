@@ -6,7 +6,7 @@ use App\Ventas\VtasDocEncabezado;
     <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">MIS PEDIDOS</font></font></h1>
 </div>
 
-<div class="box-account box-info">
+<div class="box-account box-info" style="overflow-x: scroll">
      <table>
          <thead class="bg-primary text-light">
               <th># Pedido</th>

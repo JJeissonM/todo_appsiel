@@ -96,7 +96,7 @@
                                             <div class="my-2">
                                                 <label style="width: 110px; display: inline-block">
                                                     <strong>Precio: </strong>                                            
-                                                </label>${{ number_format( $inv_producto->precio_venta - $inv_producto->valor_descuento,0,',','.' ) }} <del> ${{ number_format( $inv_producto->precio_venta,0,',','.' ) }}</del>
+                                                </label>${{ number_format( $inv_producto->precio_venta - $inv_producto->valor_descuento,0,',','.' ) }} <sup><del> ${{ number_format( $inv_producto->precio_venta,0,',','.' ) }}</del> -{{ $inv_producto->descuento }}%<sup>
                                             </div>
                                         @endif
                                         
