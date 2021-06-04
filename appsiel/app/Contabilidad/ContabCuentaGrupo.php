@@ -26,9 +26,9 @@ class ContabCuentaGrupo extends Model
                                     ->leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
                                     ->where('contab_cuenta_grupos.core_empresa_id', Auth::user()->empresa_id)
                                     ->select(
-                                                'contab_cuenta_clases.descripcion AS campo1',
-                                                'grupos_padres.descripcion as campo2',
-                                                'contab_cuenta_grupos.descripcion AS campo3',
+                                                'contab_cuenta_clases.descripcion as campo1',
+                                                DB::raw('CONCAT(grupos_padres.id," ",grupos_padres.descripcion) AS campo2'),
+                                                DB::raw('CONCAT(contab_cuenta_grupos.id," ",contab_cuenta_grupos.descripcion) AS campo3'),
                                                 'contab_cuenta_grupos.id AS campo4'
                                             )
                                     ->orderBy('contab_cuenta_grupos.contab_cuenta_clase_id')
