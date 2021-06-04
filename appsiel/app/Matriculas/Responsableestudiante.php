@@ -35,25 +35,26 @@ class Responsableestudiante extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         return Responsableestudiante::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_responsableestudiantes.estudiante_id')
-            ->leftJoin('core_terceros AS Estudiantes', 'Estudiantes.id', '=', 'sga_estudiantes.core_tercero_id')
-            ->leftJoin('core_terceros AS Responsables', 'Responsables.id', '=', 'sga_responsableestudiantes.tercero_id')
-            ->leftJoin('sga_tiporesponsables', 'sga_tiporesponsables.id', '=', 'sga_responsableestudiantes.tiporesponsable_id')
-            ->select(
-                DB::raw('CONCAT(Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres) AS campo1'),
-                DB::raw('CONCAT(Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres) AS campo2'),
-                'sga_tiporesponsables.descripcion AS campo3',
-                'Responsables.direccion1 AS campo4',
-                'Responsables.telefono1 AS campo5',
-                'sga_responsableestudiantes.ocupacion AS campo6',
-                'sga_responsableestudiantes.id AS campo7'
-            )->where(DB::raw('CONCAT(Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres)'), "LIKE", "%$search%")
-            ->orWhere("sga_tiporesponsables.descripcion", "LIKE", "%$search%")
-            ->orWhere("Responsables.direccion1", "LIKE", "%$search%")
-            ->orWhere("Responsables.telefono1", "LIKE", "%$search%")
-            ->orWhere("sga_responsableestudiantes.ocupacion", "LIKE", "%$search%")
-            ->orderBy('sga_responsableestudiantes.created_at', 'DESC')
-            ->paginate($nro_registros);
+                            ->leftJoin('core_terceros AS Estudiantes', 'Estudiantes.id', '=', 'sga_estudiantes.core_tercero_id')
+                            ->leftJoin('core_terceros AS Responsables', 'Responsables.id', '=', 'sga_responsableestudiantes.tercero_id')
+                            ->leftJoin('sga_tiporesponsables', 'sga_tiporesponsables.id', '=', 'sga_responsableestudiantes.tiporesponsable_id')
+                            ->select(
+                                        DB::raw('CONCAT(Estudiantes.numero_identificacion," - ",Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres) AS campo1'),
+                                        DB::raw('CONCAT(Responsables.numero_identificacion," - ",Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres) AS campo2'),
+                                        'sga_tiporesponsables.descripcion AS campo3',
+                                        'Responsables.direccion1 AS campo4',
+                                        'Responsables.telefono1 AS campo5',
+                                        'sga_responsableestudiantes.ocupacion AS campo6',
+                                        'sga_responsableestudiantes.id AS campo7'
+                                    )
+                            ->where(DB::raw('CONCAT(Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres)'), "LIKE", "%$search%")
+                            ->orWhere(DB::raw('CONCAT(Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres)'), "LIKE", "%$search%")
+                            ->orWhere("sga_tiporesponsables.descripcion", "LIKE", "%$search%")
+                            ->orWhere("Responsables.direccion1", "LIKE", "%$search%")
+                            ->orWhere("Responsables.telefono1", "LIKE", "%$search%")
+                            ->orWhere("sga_responsableestudiantes.ocupacion", "LIKE", "%$search%")
+                            ->orderBy('sga_responsableestudiantes.created_at', 'DESC')
+                            ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
@@ -63,13 +64,17 @@ class Responsableestudiante extends Model
             ->leftJoin('core_terceros AS Responsables', 'Responsables.id', '=', 'sga_responsableestudiantes.tercero_id')
             ->leftJoin('sga_tiporesponsables', 'sga_tiporesponsables.id', '=', 'sga_responsableestudiantes.tiporesponsable_id')
             ->select(
-                DB::raw('CONCAT(Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres) AS ESTUDIANTE'),
-                DB::raw('CONCAT(Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres) AS RESPONSABLE'),
-                'sga_tiporesponsables.descripcion AS TIPO',
-                'Responsables.direccion1 AS DIRECCIÓN',
-                'Responsables.telefono1 AS TELÉFONO',
-                'sga_responsableestudiantes.ocupacion AS OCUPACIÓN'
-            )->where(DB::raw('CONCAT(Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres)'), "LIKE", "%$search%")
+                        DB::raw('CONCAT(Estudiantes.numero_identificacion," - ",Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres) AS ESTUDIANTE'),
+                        DB::raw('CONCAT(Responsables.numero_identificacion," - ",Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres) AS RESPONSABLE'),
+                        'sga_tiporesponsables.descripcion AS TIPO',
+                        'Responsables.direccion1 AS DIRECCIÓN',
+                        'Responsables.telefono1 AS TELÉFONO',
+                        'sga_responsableestudiantes.ocupacion AS OCUPACIÓN',
+                        'sga_estudiantes.id AS ESTUDIANTE_ID',
+                        'Responsables.id AS TERCERO_RESPONSABLE_ID',
+                        'Estudiantes.id AS TERCERO_ESTUDIANTE_ID'
+                    )
+            ->where(DB::raw('CONCAT(Estudiantes.apellido1," ",Estudiantes.apellido2," ",Estudiantes.nombre1," ",Estudiantes.otros_nombres)'), "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(Responsables.apellido1," ",Responsables.apellido2," ",Responsables.nombre1," ",Responsables.otros_nombres)'), "LIKE", "%$search%")
             ->orWhere("sga_tiporesponsables.descripcion", "LIKE", "%$search%")
             ->orWhere("Responsables.direccion1", "LIKE", "%$search%")

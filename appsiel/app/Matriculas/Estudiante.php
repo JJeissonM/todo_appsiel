@@ -25,7 +25,7 @@ class Estudiante extends Model
 
     protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'user_id'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Email papá', 'Email mamá'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Dirección', 'Email'];
 
     public function tercero()
     {
@@ -87,8 +87,8 @@ class Estudiante extends Model
                 'sga_estudiantes.genero AS campo3',
                 'sga_estudiantes.fecha_nacimiento AS campo4',
                 'core_terceros.telefono1 AS campo5',
-                'sga_estudiantes.email_papa AS campo6',
-                'sga_estudiantes.email_mama AS campo7',
+                'core_terceros.direccion1 AS campo6',
+                'core_terceros.email AS campo7',
                 'sga_estudiantes.id AS campo8'
             )->where("sga_estudiantes.genero", "LIKE", "%$search%")
             ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
@@ -104,31 +104,34 @@ class Estudiante extends Model
     public static function sqlString($search)
     {
         $string = Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
-            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
-            ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRE'),
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS DOCUMENTO'),
-                'sga_estudiantes.genero AS GENERO',
-                'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
-                'core_terceros.telefono1 AS TELEFONO',
-                'sga_estudiantes.email_papa AS EMAIL_PAPÁ',
-                'sga_estudiantes.email_mama AS EMAIL_MAMÁ'
-            )->where("sga_estudiantes.genero", "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
-            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
-            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
-            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
-            ->orderBy('sga_estudiantes.id', 'desc')
-            ->toSql();
+                            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+                            ->select(
+                                        DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRE'),
+                                        DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS DOCUMENTO'),
+                                        'sga_estudiantes.genero AS GENERO',
+                                        'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
+                                        'core_terceros.telefono1 AS TELEFONO',
+                                        'core_terceros.direccion1 AS EMAIL_PAPÁ',
+                                        'core_terceros.email AS EMAIL_MAMÁ',
+                                        'sga_estudiantes.id AS ESTUDIANTE_ID',
+                                        'core_terceros.id AS TERCERO_ID'
+                                    )
+                            ->where("sga_estudiantes.genero", "LIKE", "%$search%")
+                            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+                            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+                            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+                            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+                            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
+                            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
+                            ->orderBy('sga_estudiantes.id', 'desc')
+                            ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO CATALOGO ESTUDIANTES";
+        return "LISTADO DE ESTUDIANTES";
     }
 
     public static function opciones_campo_select()
