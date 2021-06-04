@@ -49,15 +49,15 @@
             {{ $fecha_final }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 95mm;">
-        CONSTANCIA ENTREGA OBRA FINALIZADA
+    <div style="position: absolute; left: 40mm; top: 92.5mm;font-size: 14px">
+        <b>CONSTANCIA DE ENTREGA DE OBRA FINALIZADA</b>
     </div>
-    <div style="position: absolute; left: 47mm; top: 112mm; width: 180mm">
+    <div style="position: absolute; left: 25mm; top: 112mm; width: 180mm">
         <table width="100%">
             <tr>
-                <td width="15%"></td>
-                <td width="60%"><?php echo $doc_encabezado->descripcion ?></td>
-                <td></td>
+                <td width="10%"></td>
+                <td width="78%"><?php echo $doc_encabezado->descripcion ?></td>
+                <td width="12%"></td>
             </tr>   
         </table>         
     </div>
