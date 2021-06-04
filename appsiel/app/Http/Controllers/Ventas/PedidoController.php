@@ -85,7 +85,6 @@ class PedidoController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
         $request['estado'] = "Pendiente";
-
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
@@ -130,7 +129,7 @@ class PedidoController extends TransaccionController
         $request['core_tercero_id'] = $tercero[0]->id;
         $request['lista_precios_id'] = config('ventas.lista_precios_id');
         $request['lista_descuentos_id'] = config('ventas.lista_descuentos_id');
-        $request['liquida_impuestos'] = config('ventas.liquida_impuestos');
+        $request['liquida_impuestos'] = config('configuracion.liquidacion_impuestos');
         $request['cliente_id'] = $cliente[0]->id;
         $request['dvc_tipo_transaccion_id'] = config('ventas.dvc_tipo_transaccion_id');
         $request['rm_tipo_transaccion_id'] = config('ventas.rm_tipo_transaccion_id');
