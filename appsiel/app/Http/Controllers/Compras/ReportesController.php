@@ -86,11 +86,7 @@ class ReportesController extends Controller
 
     public static function grafica_compras_diarias($fecha_inicial, $fecha_final)
     {
-        $registros = ComprasMovimiento::whereBetween('fecha',[$fecha_inicial, $fecha_final])
-                                        ->select(DB::raw('SUM(base_impuesto) as total_compras'),'fecha')
-                                        ->groupBy('fecha')
-                                        ->orderBy('fecha')
-                                        ->get();
+        $registros = ComprasMovimiento::mov_compras_totales_por_fecha( $fecha_inicial, $fecha_final );
 
         $stocksTable1 = Lava::DataTable();
       
@@ -190,7 +186,9 @@ class ReportesController extends Controller
         $parametros = config('compras');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $ordenes_db = OrdenCompra::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '<', $fecha], ['estado', 'Pendiente']])
+                                ->get();
         $ordenes = null;
         if (count($ordenes_db) > 0) {
             foreach ($ordenes_db as $o) {
@@ -208,7 +206,8 @@ class ReportesController extends Controller
         $parametros = config('compras');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $ordenes_db = OrdenCompra::where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '>', $fecha], ['estado', 'Pendiente']])->get();
+        $ordenes_db = OrdenCompra::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['oc_tipo_doc_app_id']], ['fecha_recepcion', '>', $fecha], ['estado', 'Pendiente']])->get();
         $ordenes = null;
         if (count($ordenes_db) > 0) {
             foreach ($ordenes_db as $o) {

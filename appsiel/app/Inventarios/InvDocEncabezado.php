@@ -310,9 +310,12 @@ class InvDocEncabezado extends Model
 
     public static function get_documentos_por_transaccion( $core_tipo_transaccion_id, $core_tercero_id, $estado)
     {
-        $documentos = InvDocEncabezado::where( 'inv_doc_encabezados.core_tercero_id', $core_tercero_id )
-                                    ->where( 'inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id )
-                                    ->where( 'inv_doc_encabezados.estado', $estado )
+        $documentos = InvDocEncabezado::where( [
+                                                ['inv_doc_encabezados.core_empresa_id', Auth::user()->empresa_id ],
+                                                ['inv_doc_encabezados.core_tercero_id', $core_tercero_id],
+                                                ['inv_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id],
+                                                ['inv_doc_encabezados.estado', $estado]
+                                            ] )
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
                                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
                                     ->select(

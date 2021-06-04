@@ -69,7 +69,6 @@ class CxCController extends TransaccionController
 
     $select_crear = $this->get_boton_select_crear( $this->app );
 
-
     $opciones = Empresa::all();
     foreach ($opciones as $empresa) {
         $empresas[$empresa->id] = $empresa->descripcion;
@@ -93,6 +92,7 @@ class CxCController extends TransaccionController
         $empresa_id = Auth::user()->empresa_id;
     }
 
+    // LA EDAD DE LA CARTERA SON LOS DIAS QUE TIENE DESPUES DE LA FECHA DE VENCIMIENTO
     $edades = ['0',$e1,$e2,$e3,$e4,'999'];
 
     // Creación de gráfico de Torta MATRICULAS
@@ -101,10 +101,14 @@ class CxCController extends TransaccionController
     $stocksTable1->addStringColumn('Edad')
                   ->addNumberColumn('Valor');
 
-      
-    //print_r($cartera);
-
     // obtención de cartera x edades
+
+    /*$cartera_vencida = CxCMovimiento::where([
+                                            ['estado','=','Pendiente'],
+                                            ['core_empresa_id','=',$empresa_id]
+                                          ])
+                                    ->get();
+             dd($cartera_vencida);*/
     $hasta = count($edades);
     for($i=1;$i<$hasta;$i++)
     {
@@ -112,13 +116,10 @@ class CxCController extends TransaccionController
         $max = (int)$edades[$i];
 
         // Obtención de datos, esto arroja un array de objetos
-        //$cartera = DB::select( DB::raw( "SELECT edad,saldo_pendiente FROM ( SELECT fecha_vencimiento,saldo_pendiente, IF( CURRENT_DATE() > cxc_movimientos.fecha_vencimiento, DATEDIFF(CURRENT_DATE(),fecha_vencimiento), 0) AS edad FROM `cxc_movimientos` WHERE estado='Vencido' AND core_empresa_id = ".$empresa_id.") AS edades WHERE edad > ".$min." AND edad <= ".$max ) );
+        $cartera = DB::select(DB::raw("SELECT edad,saldo_pendiente FROM (SELECT fecha_vencimiento,saldo_pendiente, IF( CURRENT_DATE() > cxc_movimientos.fecha_vencimiento,DATEDIFF(CURRENT_DATE(),fecha_vencimiento),0) AS edad FROM `cxc_movimientos` WHERE estado='Pendiente' AND core_empresa_id = ".$empresa_id.") AS edades WHERE edad > ".$min." AND edad <= ".$max));
+        dd($cartera);
         // Convertir a array de arrays
-        //$cartera = json_decode(json_encode($cartera), true);
-
-        $cartera['edad'] = 0;
-        $cartera['saldo_pendiente'] = 0;
-
+        $cartera = json_decode(json_encode($cartera), true);
         // Agregar campo a la torta
         if ($max!=999) {
             $lbl = ($min+1)." - ".$max." días";

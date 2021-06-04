@@ -34,39 +34,24 @@ class ReportesController extends Controller
 
     public static function grafica_ventas_diarias($fecha_inicial, $fecha_final)
     {
-        $fechas = VtasMovimiento::whereBetween('fecha', [$fecha_inicial, $fecha_final])
-                                    ->select('fecha')
-                                    ->groupBy('fecha')
-                                    ->orderBy('fecha')
-                                    ->get();
+        $registros = VtasMovimiento::mov_ventas_totales_por_fecha( $fecha_inicial, $fecha_final );
 
         // Gráfica de rendimiento académico
         $stocksTable1 = Lava::DataTable();
-
+      
         $stocksTable1->addStringColumn('Ventas')
-            ->addNumberColumn('$');
+                    ->addNumberColumn('$');
 
         $i = 0;
         $tabla = [];
-        foreach ($fechas as $key => $value)
+        foreach ($registros as $linea) 
         {
-            $registros = VtasMovimiento::where('fecha', $value->fecha )
-                                    ->select(DB::raw('SUM(precio_total) as total_ventas'), 'fecha', 'tasa_impuesto')
-                                    ->groupBy('tasa_impuesto')
-                                    ->get();
+            $fecha  = date("d-m-Y", strtotime("$linea->fecha"));
 
-            $total_ventas = 0;
-            foreach ($registros as $linea)
-            {
-                $total_ventas += (float) $linea->total_ventas / (1 + (float)$linea->tasa_impuesto / 100 );
-            }
+            $stocksTable1->addRow( [ $linea->fecha, (float)$linea->total_ventas ]);
 
-            $fecha  = date("d-m-Y", strtotime("$value->fecha"));
-
-            $stocksTable1->addRow([$fecha, $total_ventas]);
-
-            $tabla[$i]['fecha'] = $fecha;            
-            $tabla[$i]['valor'] = $total_ventas;
+            $tabla[$i]['fecha'] = $linea->fecha;
+            $tabla[$i]['valor'] = (float)$linea->total_ventas;
             $i++;
         }
 
@@ -173,7 +158,8 @@ class ReportesController extends Controller
         $parametros = config('ventas');
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '<', $fecha], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '<', $fecha], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -192,7 +178,8 @@ class ReportesController extends Controller
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $inicio = date("Y-m-d",strtotime($fecha.'sunday this week'));
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Pendiente']])->get();
+        $pedidos_db = VtasPedido::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Pendiente']])->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -211,7 +198,8 @@ class ReportesController extends Controller
         $hoy = getdate();
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $inicio = date("Y-m-d",strtotime($fecha."- 7 days")); 
-        $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Anulado']])->take(10)->get();
+        $pedidos_db = VtasPedido::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Anulado']])->take(10)->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -244,9 +232,11 @@ class ReportesController extends Controller
             $diff_fecha = date_create($fecha) > date_create($f);
             
             if(!$diff_fecha){                
-                $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Pendiente']])->orWhere([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Cumplido']])->get();
+                $pedidos_db = VtasPedido::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Pendiente']])->orWhere([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Cumplido']])->get();
             }else{
-                $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Cumplido']])->get();
+                $pedidos_db = VtasPedido::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$f.'%'],['estado', 'Cumplido']])->get();
             }
             $pedidos = null;            
 

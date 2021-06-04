@@ -158,4 +158,19 @@ class ComprasMovimiento extends Model
             return $registro->precio_unitario;
         }
     }
+
+    // 
+    public static function mov_compras_totales_por_fecha( $fecha_inicial, $fecha_final )
+    {
+        return ComprasMovimiento::where('core_empresa_id', Auth::user()->empresa_id)
+                                ->whereBetween('fecha',[$fecha_inicial, $fecha_final])
+                                ->select(
+                                            DB::raw('SUM(base_impuesto) as total_compras'),
+                                            DB::raw('SUM(precio_total) as total_compras_netas'),
+                                            'fecha')
+                                ->groupBy('fecha')
+                                ->orderBy('fecha')
+                                ->get();
+
+    }
 }
