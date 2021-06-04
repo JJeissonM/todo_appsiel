@@ -263,6 +263,8 @@ class TiendaController extends Controller
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
 
+        $cliente = null;
+
         if (!Auth::guest()) {
             $user = Auth::user();
             $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
