@@ -468,7 +468,7 @@ class TiendaController extends Controller
         $empresa = Empresa::find( Auth::user()->empresa_id );
 
         $vec = \App\Http\Controllers\Sistema\EmailController::enviar_por_email_documento($empresa->descripcion, $tercero->email . ',' . $email_interno, $asunto, $cuerpo_mensaje, $documento_vista);
-        return null;
+        return redirect()->back();
     }
 
     public function enviar_facturaweb_email( $id )
