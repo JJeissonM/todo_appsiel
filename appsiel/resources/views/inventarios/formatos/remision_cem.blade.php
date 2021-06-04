@@ -46,8 +46,8 @@
             {{ $fecha_final }}
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 95mm;">
-        CONSTANCIA ENTREGA MATERIAL
+    <div style="position: absolute; left: 40mm; top: 92.5mm;font-size: 14px">
+        <b>CONSTANCIA ENTREGA MATERIAL</b>
     </div>
 
     <div style="position: absolute; left: 25mm; top: 112mm; width: 180mm">
