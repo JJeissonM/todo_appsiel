@@ -85,6 +85,8 @@ a {
     .toplink-static {
         text-align: center;
         width: auto;
+        min-width: 60px;
+        padding-left: 10px;
     }
 
     .welcome-msg {

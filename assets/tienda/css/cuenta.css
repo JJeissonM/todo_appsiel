@@ -36,7 +36,7 @@ caption,th,td { vertical-align:top; text-align:left; font-weight:normal; }
 /* Content */
 p             { margin:0 0 10px; }
 strong        { font-weight:normal; }
-address       { font-style:normal; line-height:20px;margin: 0;color: #aaaaaa;text-transform: uppercase;font-size: 10px;clear: both; }
+address       { font-style:normal; line-height:20px;margin: 0;text-transform: uppercase;font-size: 10px;clear: both; }
 cite          { font-style:normal; }
 q,
 blockquote    { quotes:none; }

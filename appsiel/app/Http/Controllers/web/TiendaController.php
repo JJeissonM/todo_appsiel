@@ -217,12 +217,12 @@ class TiendaController extends Controller
      * Muestra el panel de la cuenta del cliente en la parte publica
      * @param un $id usuario logueado
      */
-    public function cuenta(Request $request)
+    public function cuenta($vista = "nav-home-tab")
     {
         $paises = DB::table('core_paises')->get();
 
         $cliente = null;
-        
+        //dd($vista);
         if (!Auth::guest()) {
             $user = Auth::user();
             $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
@@ -230,13 +230,7 @@ class TiendaController extends Controller
 
         if ($cliente == null) {            
             return redirect()->route('tienda.login');
-        }
-
-        if($request->vista == null){
-            $vista = 'nav-home-tab';
-        }else{
-            $vista = $request->vista;
-        }
+        }        
 
         $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->where('core_tipo_transaccion_id',42)->orderBy('fecha','desc')->get();
         $footer = Footer::all()->first();
@@ -273,7 +267,7 @@ class TiendaController extends Controller
         if ($cliente == null) {            
             return view('web.tienda.login', compact('footer','redes'));
         }else{
-            return redirect()->route('tienda.cuenta');
+            return redirect()->route('tienda.micuenta');
         }
         
     }
@@ -605,27 +599,27 @@ class TiendaController extends Controller
                         } else {
                             //la nueva contraseña no coincide ;
                             $message = 'Las contraseñas no coinciden.';
-                            return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                            return redirect()->route('tienda.micuenta', 'nav-infor-tab')->with('mensaje_error', $message);
                         }
                     } else {
                         //la contraseña incorrecta lo devuelve
                         $message = 'La contraseña actual ingresada no es correcta.';
-                        return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                        return redirect()->route('tienda.micuenta', 'nav-infor-tab')->with('mensaje_error', $message);
                     }
                 } else {
                     //debe completar todos los campos
-                    $message = 'Debe completar todos los campos para cambiar la contraseña';
-                    return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                    $message = 'Debe completar todos los campos obligatorios para cambiar la contraseña';
+                    return redirect()->route('tienda.micuenta', 'nav-infor-tab')->with('mensaje_error', $message);
                 }
             }
             $result2 = $user->save();
             if ($result2) {
                 $message = 'Datos modificados de forma exitosa!';
-                return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+                return redirect()->route('tienda.micuenta', 'nav-infor-tab')->with('flash_message', $message);
             }
         } else {
             $message = 'Los datos no pudieron ser modificados.';
-            return redirect()->route('tienda.micuenta', $id)->with('flash_message', $message);
+            return redirect()->route('tienda.micuenta', 'nav-infor-tab')->with('mensaje_error', $message);
         }
     }
 

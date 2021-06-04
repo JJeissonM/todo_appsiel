@@ -260,7 +260,6 @@ button {
  * Correct `select` style inheritance in Firefox.
  */
 
-button,
 select {
   text-transform: none;
   font-size: 1.5rem !important;
