@@ -80,7 +80,7 @@
                                 }
                                 ?>
                                 <div class="col-left sidebar col-lg-8 col-md-8 col-sm-12 col-xs-12" style="margin-bottom: 20px;">
-                                    <img id="img_producto" src="{{$url_imagen_producto}}"  alt="" style="object-fit: contain; width: 100%; height: 350px;">
+                                    <img id="img_producto" onerror="imgError(this)" src="{{$url_imagen_producto}}"  alt="" style="object-fit: contain; width: 100%; height: 350px;">
                                 </div>
                                 <div class="col-main col-lg-4 col-md-4 col-sm-12 col-xs-12 d-flex flex-column justify-content-between">
                                     <div class="description">
@@ -88,9 +88,17 @@
                                             <h1>{{$inv_producto->descripcion}}</h1>
                                         </div>
                                         <p>{{$inv_producto->detalle}}</p>
-                                        <div class="my-2">
-                                            <label style="width: 110px; display: inline-block"><strong>Precio: </strong></label>$ {{ number_format( $inv_producto->precio_venta,0,',','.' ) }}
-                                        </div>
+                                        @if( $inv_producto->descuento == 0)
+                                            <div class="my-2">
+                                                <label style="width: 110px; display: inline-block"><strong>Precio: </strong></label>$ {{ number_format( $inv_producto->precio_venta,0,',','.' ) }}
+                                            </div>
+                                        @else
+                                            <div class="my-2">
+                                                <label style="width: 110px; display: inline-block">
+                                                    <strong>Precio: </strong>                                            
+                                                </label>${{ number_format( $inv_producto->precio_venta - $inv_producto->valor_descuento,0,',','.' ) }} <del> ${{ number_format( $inv_producto->precio_venta,0,',','.' ) }}</del>
+                                            </div>
+                                        @endif
                                         
                                         <div class="cantidades">
                                             <label for="" style="width: 110px;margin-right: 5px;">Cantidad: </label>
@@ -139,6 +147,12 @@
 @section('script')
     <script src="{{asset('assets/js/toastr.min.js')}}"></script>
     <script type="text/javascript">
+
+        function imgError(image) {
+            image.onerror = "";
+            image.src = "{{asset('assets/img/noimage.jpg')}}";
+            return true;
+        }
 
          function less() {
            let val = $('#cantidad').val();

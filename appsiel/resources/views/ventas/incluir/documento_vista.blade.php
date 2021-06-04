@@ -11,6 +11,9 @@
             $total_factura = 0;
             $total_descuentos = 0;
             $cantidad_items = 0;
+
+            $impuesto_iva = 0;//iva en firma
+
             ?>
             @foreach($doc_registros as $linea )
 
@@ -51,6 +54,10 @@
                     $total_factura += $linea->precio_total;
                     $total_descuentos += $linea->valor_total_descuento;
                     $cantidad_items++;
+
+                    if($linea->valor_impuesto > 0){
+                        $impuesto_iva = $linea->tasa_impuesto;
+                    }
                 ?>
             @endforeach
                 <?php

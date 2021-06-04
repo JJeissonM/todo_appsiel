@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Core\Tercero;
+use App\Core\Empresa;
 use App\Inventarios\InvProducto;
 use App\User;
 use App\Ventas\ClienteWeb;
@@ -11,6 +12,7 @@ use App\web\RedesSociales;
 use App\web\Tienda;
 use Form;
 use Input;
+use View;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -229,6 +231,7 @@ class TiendaController extends Controller
         if ($cliente == null) {            
             return redirect()->route('tienda.login');
         }
+
         if($request->vista == null){
             $vista = 'nav-home-tab';
         }else{
@@ -249,7 +252,7 @@ class TiendaController extends Controller
         $user = Auth::user();
         $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
 
-        $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->get();
+        $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->where('core_tipo_transaccion_id',42)->orderBy('fecha','desc')->get();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
         return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados'));
@@ -257,10 +260,22 @@ class TiendaController extends Controller
 
     public function login()
     {        
-        $grupos = InvProducto::get_grupos_pagina_web();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.login', compact( 'grupos' ,'footer','redes'));
+
+        $cliente = null;
+
+        if (!Auth::guest()) {
+            $user = Auth::user();
+            $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
+        }
+
+        if ($cliente == null) {            
+            return view('web.tienda.login', compact('footer','redes'));
+        }else{
+            return redirect()->route('tienda.cuenta');
+        }
+        
     }
 
     public function crearCuenta()   
@@ -291,7 +306,7 @@ class TiendaController extends Controller
 
                 // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
 
-            //crear_remision_desde_doc_venta
+        //crear_remision_desde_doc_venta
             $datos_remision = $encabezado_doc_venta->toArray();
             $datos_remision['fecha'] = date('Y-m-d');
             $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
@@ -308,10 +323,10 @@ class TiendaController extends Controller
 
             InventarioController::contabilizar_documento_inventario( $doc_remision->id, '' );
 
-        $this->actualizar_cantidades_pendientes( $lineas_registros );
-        //crear_remision_desde_doc_venta
-        //crear_remision_desde_doc_venta
-        $modelo_id = 139;
+            $this->actualizar_cantidades_pendientes( $lineas_registros );
+            //crear_remision_desde_doc_venta
+            //crear_remision_desde_doc_venta
+            $modelo_id = 139;
 
             $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
 
@@ -343,6 +358,8 @@ class TiendaController extends Controller
             $encabezado_doc_venta->estado = 'Cumplido';
             $encabezado_doc_venta->save();
 
+            $this->enviar_facturaweb_email($nueva_factura->id);
+
             return response()->json([
                 'status'=> '200',
                 'msg'=>'Transacción completada con exito'
@@ -370,6 +387,194 @@ class TiendaController extends Controller
         $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
 
         return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
+    }
+
+    public function get_etiquetas()
+    {
+        $parametros = config('ventas');
+
+        $encabezado = '';
+
+        if ($parametros['encabezado_linea_1'] != '')
+        {
+            $encabezado .= $parametros['encabezado_linea_1'];
+        }
+
+        if ($parametros['encabezado_linea_2'] != '')
+        {
+            $encabezado .= '<br>'.$parametros['encabezado_linea_2'];
+        }
+
+        if ($parametros['encabezado_linea_3'] != '')
+        {
+            $encabezado .= '<br>'.$parametros['encabezado_linea_3'];
+        }
+
+
+        $pie_pagina = '';
+
+        if ($parametros['pie_pagina_linea_1'] != '')
+        {
+            $pie_pagina .= $parametros['pie_pagina_linea_1'];
+        }
+
+        if ($parametros['pie_pagina_linea_2'] != '')
+        {
+            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_2'];
+        }
+
+        if ($parametros['pie_pagina_linea_3'] != '')
+        {
+            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_3'];
+        }
+
+        return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];
+    }
+
+    public function get_documento_transaccion_prefijo_consecutivo( $doc_encabezado )
+    {
+        if( (int)config('ventas.longitud_consecutivo_factura') == 0 )
+        {
+            return $doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        }
+
+        $consecutivo = $doc_encabezado->consecutivo;
+        $largo = (int)config('ventas.longitud_consecutivo_factura') - strlen($doc_encabezado->consecutivo);
+        for ($i=0; $i < $largo; $i++)
+        { 
+            $consecutivo = '0' . $consecutivo;
+        }
+
+        return $doc_encabezado->tipo_documento_app->prefijo . ' ' . $consecutivo;
+    }
+
+    public function enviar_pedidoweb_email($id){
+
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+
+        $documento_vista = $this->generar_documento_vista_pedido($id);
+
+        $tercero = Tercero::find($doc_encabezado->core_tercero_id);
+        //dd($tercero);
+
+        $asunto = $doc_encabezado->documento_transaccion_descripcion . ' No. ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        $empresa = Empresa::all()->first();
+        $descripcion =  $empresa->descripcion;
+        $cuerpo_mensaje = "Hola <strong>$tercero->nombre1 $tercero->nombre2</strong> </br>"
+                          ."Gracias por su compra en <strong> $descripcion </strong> </br>"
+                          ."Hemos recibido tu pedido; el cual ha ingresado a un proceso de validación de datos personales e inventario. Una vez finalizada esta verificación se  procederá a realizar el despacho. </br>"
+                          ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";
+
+        
+        $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
+
+        //$empresa = Empresa::find( Auth::user()->empresa_id );
+
+        $vec = \App\Http\Controllers\Sistema\EmailController::enviar_por_email_documento($empresa->descripcion, $tercero->email . ',' . $email_interno, $asunto, $cuerpo_mensaje, $documento_vista);
+        return redirect()->back();
+    }
+
+    public function enviar_facturaweb_email( $id )
+    {
+        $empresa = Empresa::all()->first();
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+
+        $documento_vista = $this->generar_documento_vista_factura( $id, 'ventas.formatos_impresion.estandar' );
+
+        $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
+
+        $asunto = $doc_encabezado->documento_transaccion_descripcion.' No. '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
+
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+
+        $email_destino = $tercero->email;
+        if ( $doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $email_destino = $doc_encabezado->contacto_cliente->tercero->email;
+        }
+
+        $vec = \App\Http\Controllers\Sistema\EmailController::enviar_por_email_documento( $empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );
+
+    }
+
+    public function imprimir_pedido($id)
+    {
+        $documento_vista = $this->generar_documento_vista_pedido($id);
+
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+
+        // Se prepara el PDF
+        $orientacion = 'portrait';
+        $tam_hoja = array(0, 0, 50, 800); //'A4';
+
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+
+        //echo $documento_vista;
+        return $pdf->stream($doc_encabezado->documento_transaccion_descripcion . ' - ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
+    }
+
+    public function imprimir_factura( $id )
+    {
+        $documento_vista = $this->generar_documento_vista_factura($id);
+
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+
+        // Se prepara el PDF
+        $pdf = \App::make('dompdf.wrapper');
+        $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
+
+        //echo $documento_vista;
+        return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+        
+    }
+
+    public function generar_documento_vista_factura($id){
+
+        //set_variables_globales
+        $empresa = Empresa::all()->first();
+        $app = \App\Sistema\Aplicacion::find( '13' );
+        $modelo = \App\Sistema\Modelo::find( '139' );
+        $transaccion = \App\Sistema\TipoTransaccion::find( '23' );
+        //set_variables_globales
+        
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+        $doc_registros = VtasDocRegistro::get_registros_impresion($id); 
+
+        $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
+
+        $resolucion = \App\Ventas\ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last();
+
+        $etiquetas = $this->get_etiquetas();
+
+        $abonos = \App\CxC\CxcAbono::get_abonos_documento( $doc_encabezado );
+
+        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
+
+        return View::make( 'ventas.formatos_impresion.estandar', compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados' ) )->render();
+    }
+
+    public function generar_documento_vista_pedido($id){
+
+        $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+
+        $doc_registros = VtasDocRegistro::get_registros_impresion($doc_encabezado->id);
+
+        $empresa = Empresa::find($doc_encabezado->core_empresa_id);
+
+        $contacto = (object)[ 'descripcion'=> $doc_encabezado->tercero->descripcion, 'telefono1' => $doc_encabezado->tercero->telefono1, 'email' => $doc_encabezado->tercero->email ];
+        if ( $doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $contacto = $doc_encabezado->contacto_cliente->tercero;
+        }
+
+        $resolucion = '';
+
+        $empresa = $empresa;
+
+        $etiquetas = $this->get_etiquetas();
+
+        return View::make('ventas.pedidos.formatos_impresion.estandar', compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas','contacto'))->render();
     }
 
     /*
@@ -454,9 +659,7 @@ class TiendaController extends Controller
     }
 
     function comprar(){
-        $user = Auth::user();
-        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
-        return view('web.tienda.comprar',compact('cliente'));
+        return view('web.tienda.comprar');
     }
 
 

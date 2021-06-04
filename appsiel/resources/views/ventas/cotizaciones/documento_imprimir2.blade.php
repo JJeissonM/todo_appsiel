@@ -56,7 +56,7 @@ use App\Core\Tercero;
             {{ $tercero->razon_social }}
         </td>
         <td colspan="2">
-            <b style="font-size: 16px">Cotización No. {{ sprintf("%04d", $doc_encabezado->documento_transaccion_consecutivo) }}</b>
+            <b style="font-size: 16px">Cotización Nro. {{ sprintf("%04d", $doc_encabezado->documento_transaccion_consecutivo) }}</b>
         </td>
     </tr>
     <tr>
@@ -137,6 +137,8 @@ use App\Core\Tercero;
         $total_factura = 0;
         $array_tasas = [];
 
+        $impuesto_iva = 0;//iva en firma
+
         $cantidad_items = 0;
         ?>
         @foreach($doc_registros as $linea )
@@ -154,7 +156,7 @@ use App\Core\Tercero;
             <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
             <td class="text-right"> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 2, ',', '.') }}
             </td>
-            <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+            <td class="text-right"> {{ '$  '.number_format( $linea->valor_impuesto, 2, ',', '.') }} </td>
             <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->valor_total_descuento, 2, ',', '.') }} </td>
             <td class="text-right"> {{ '$  '.number_format( $linea->precio_total, 2, ',', '.') }} </td>
         </tr>
@@ -192,9 +194,11 @@ use App\Core\Tercero;
                     $array_tasas[$linea->tasa_impuesto]['base_impuesto'] += (float)$linea->base_impuesto * (float)$linea->cantidad;
                     $array_tasas[$linea->tasa_impuesto]['valor_impuesto'] += (float)$linea->valor_impuesto * (float)$linea->cantidad;
                 }
-
-
                 $cantidad_items++;
+
+                if($linea->valor_impuesto > 0){
+                    $impuesto_iva = $linea->tasa_impuesto;
+                }
             ?>
         @endforeach
     </tbody>
@@ -234,22 +238,3 @@ use App\Core\Tercero;
 </div>
 </body>
 </html>
-
-<!--<p><strong><u>CONDICIONES COMERCIALES:</u></strong></p>
-<p>La aceptaci&oacute;n del presente presupuesto puede realizarse v&iacute;a email para coordinar los trabajos a ejecutar.</p>
-
-<p><strong><u>ALCANCE DE LA PROPUESTA:</u></strong></p>
-
-<ol>
-	<li>El presente presupuesto es v&aacute;lido para horas normales y en horario extendido de 17 a 21 hs para d&iacute;as de semana en caso que el cliente propusiese comienzo en d&iacute;a distinto, o que por motivos ajenos a Seizo los trabajos o traslado se tuvieran que efectuar en horarios o d&iacute;as especiales; eso podr&aacute; provocar cambios en el presente presupuesto y Seizo se reserva el derecho de exigir adicionales.</li>
-	<li>En caso que fuera necesario aplicar alg&uacute;n repuesto no incluido en el presupuesto y el cliente no cuente con los mismos, esto ser&aacute; cotizado como adicional.</li>
-	<li>Limpieza general de los equipos no est&aacute; incluida.</li>
-	<li>Si por indisponibilidad del equipo por parte del comitente se provocaran tiempos de espera que atenten contra la realizaci&oacute;n de los trabajos previstos dentro del plazo establecido, esto ser&aacute; notificado al cliente y se acordar&aacute; con &eacute;l en funci&oacute;n del nivel de avance a alcanzar:
-<ul>
-	<li>La terminaci&oacute;n de los trabajos posibles dentro del plazo previsto, y el acuerdo de una nueva visita.</li>
-	<li>La prolongaci&oacute;n del cronograma hasta alcanzar la culminaci&oacute;n de los trabajos, si otros compromisos para los t&eacute;cnicos Seizo no lo impidieran y esto fuese posible para el cliente. En cualquiera de los casos, el cargo por d&iacute;as adicionales y dem&aacute;s gastos asociados (alojamientos, comidas, etc.) ser&aacute;n tomados como adicional y cotizados aparte.</li>
-</ul>
-    <li>Si por motivos de fuerza mayor (medidas de fuerza, problemas energ&eacute;ticos, causas naturales, etc.) no se pudieran iniciar o continuar los trabajos, esto ser&aacute; notificado al cliente y se acordar&aacute; con &eacute;l de igual forma que el punto anterior.</li>
-    <li>El presente presupuesto contempla documentaci&oacute;n de ingreso est&aacute;ndar (ART, Seguro de Vida, EPP, estudios m&eacute;dicos anuales regulares).</li>
-</li>
-</ol>-->
