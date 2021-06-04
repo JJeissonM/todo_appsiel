@@ -22,15 +22,16 @@ class ContabCuentaGrupo extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $registros = ContabCuentaGrupo::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
+        $collection = ContabCuentaGrupo::leftJoin('contab_cuenta_grupos AS grupos_padres', 'grupos_padres.id', '=', 'contab_cuenta_grupos.grupo_padre_id')
+                                    ->leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
                                     ->where('contab_cuenta_grupos.core_empresa_id', Auth::user()->empresa_id)
                                     ->select(
                                                 'contab_cuenta_clases.descripcion AS campo1',
-                                                'contab_cuenta_grupos.grupo_padre_id as campo2',
+                                                'grupos_padres.descripcion as campo2',
                                                 'contab_cuenta_grupos.descripcion AS campo3',
                                                 'contab_cuenta_grupos.id AS campo4'
                                             )
-                                    ->orderBy('contab_cuenta_grupos.created_at', 'DESC')
+                                    ->orderBy('contab_cuenta_grupos.contab_cuenta_clase_id')
                                     ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
