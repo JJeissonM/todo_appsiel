@@ -530,7 +530,7 @@ class TiendaController extends Controller
     public function generar_documento_vista_factura($id){
 
         //set_variables_globales
-        $empresa = \App\Core\Empresa::find( Auth::user()->empresa_id );
+        $empresa = Empresa::all()->first();
         $app = \App\Sistema\Aplicacion::find( '13' );
         $modelo = \App\Sistema\Modelo::find( '139' );
         $transaccion = \App\Sistema\TipoTransaccion::find( '23' );
