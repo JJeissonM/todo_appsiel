@@ -215,7 +215,7 @@
                                 <div class="acciones">
                                     <div class="d-flex justify-content-center">
                                         @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
-                                        <a class="btn text-light btn-secondary btn-block" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
+                                        <a class="btn text-light btn-secondary btn-block"  style="width: 162px" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
                                         @else  
                                             @if ($direccion_por_defecto != null)
                                             <form>
