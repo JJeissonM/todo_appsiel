@@ -465,7 +465,8 @@ class TiendaController extends Controller
 
         
         $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
-        $empresa = Empresa::find( Auth::user()->empresa_id );
+
+        //$empresa = Empresa::find( Auth::user()->empresa_id );
 
         $vec = \App\Http\Controllers\Sistema\EmailController::enviar_por_email_documento($empresa->descripcion, $tercero->email . ',' . $email_interno, $asunto, $cuerpo_mensaje, $documento_vista);
         return redirect()->back();
@@ -473,7 +474,7 @@ class TiendaController extends Controller
 
     public function enviar_facturaweb_email( $id )
     {
-        $empresa = \App\Core\Empresa::find( Auth::user()->empresa_id );
+        $empresa = Empresa::all()->first();
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
         $documento_vista = $this->generar_documento_vista_factura( $id, 'ventas.formatos_impresion.estandar' );
@@ -492,7 +493,6 @@ class TiendaController extends Controller
 
         $vec = \App\Http\Controllers\Sistema\EmailController::enviar_por_email_documento( $empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );
 
-        return null;
     }
 
     public function imprimir_pedido($id)
