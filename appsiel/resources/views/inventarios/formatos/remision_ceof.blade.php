@@ -20,24 +20,25 @@
 </head>
 <body>
     <div style="position: absolute; left: 40mm; top: 69mm;">
-        {{ $doc_encabezado->tercero_nombre_completo }} 
+        <b>{{ $doc_encabezado->tercero_nombre_completo }} 
         @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
             @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
                 / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
             @endif
         @endif
+        </b>
     </div>
 
     <div style="position: absolute; left: 40mm; top: 74mm;">
-        {{ $doc_encabezado->numero_identificacion}} - {{ $doc_encabezado->digito_verificacion }}
+        <b>{{ $doc_encabezado->numero_identificacion}}{{ $doc_encabezado->digito_verificacion }}</b>
     </div>
 
     <div style="position: absolute; left: 40mm; top: 79mm;">
-        {{ $doc_encabezado->direccion1 }}
+        <b>{{ $doc_encabezado->direccion1 }}</b>
     </div>
 
     <div style="position: absolute; left: 40mm; top: 84mm;">
-        {{ $ciudad->descripcion }} 
+        <b>{{ $ciudad->descripcion }}</b>
     </div>
 
     <div style="position: absolute; right: 55mm; top: 36.5mm;">
