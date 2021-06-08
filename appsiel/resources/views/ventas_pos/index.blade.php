@@ -2,12 +2,12 @@
 	
 	$user = \Auth::user();
 
-	if ( !$user->hasRole('Cajedo PDV') ) 
+	if ( $user->hasRole('Cajero PDV') ) 
     {
-    	$pdvs = App\VentasPos\Pdv::all();
-    }else{
     	$pdvs = App\VentasPos\Pdv::where( 'cajero_default_id', $user->id )
     								->get();
+    }else{
+    	$pdvs = App\VentasPos\Pdv::all();
     }
 ?>
 
@@ -77,7 +77,7 @@
 
 		        		$btn_abrir = '<a href="' . url('web/create') . '?id=20&id_modelo=228&id_transaccion=45&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-success" > Apertura </a>';
 
-		        		$btn_facturar = '<a href="' . url('pos_factura/create') . '?id=20&id_modelo=230&id_transaccion=47&pdv_id='.$pdv->id . '" class="btn btn-xs btn-primary" > Facturar </a>';
+		        		$btn_facturar = '<a href="' . url('pos_factura/create') . '?id=20&id_modelo=230&id_transaccion=47&pdv_id='.$pdv->id . '&action=create" class="btn btn-xs btn-primary" > Facturar </a>';
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
@@ -210,17 +210,19 @@
 
 		        $("#myModal").modal({backdrop: "static"});
 		        $("#div_spin").show();
+        		$("#myModal .close").hide();
+		        $(".btn_close_modal").hide();
 		        $(".btn_edit_modal").hide();
 		        $(".btn_save_modal").hide();
 
-		        $('#contenido_modal').html( '<h1> Acumulando facturas POS... </h1>' );
+		        $('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Acumulando facturas POS... </h1>' );
 
 		        var url = "{{url('pos_factura_acumular')}}" + "/" + pdv_id;
 
 				$.get( url )
 					.done(function( data ) {
 							
-						$('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1> <h1> Contabilizando documentos... </h1>' );
+						$('#contenido_modal').html( '<h1 style="text-align:center;">  <small>Por favor espere</small> <br> Acumulación completada exitosamente. <i class="fa fa-check"></i> <br> Contabilizando documentos... </h1>' );
 
 						/**/
 						// Nueva petición AJAX
@@ -229,7 +231,7 @@
 						$.get( url_2 )
 							.done(function( data ) {
 									
-								$('#contenido_modal').html( '<h1>Acumulación completada exitosamente. </h1> <h1> Contabilización completada exitosamente. </h1>' );
+								$('#contenido_modal').html( '<h1 style="text-align:center;">  <small>Por favor espere</small> <br> Acumulación completada exitosamente. <i class="fa fa-check"></i> <br> Contabilización completada exitosamente. <i class="fa fa-check"></i> </h1>' );
 								
 				                $("#div_spin").hide();
 
@@ -237,7 +239,11 @@
 
 							});
 						
-					});		        
+					}).fail(function(data, textStatus, xhr) {
+						$('#contenido_modal').html( '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error </small> <br> Code: ' + data.status + '  <br> Status: ' + textStatus + " - " + xhr + ' </h1>' );
+		        		$(".btn_close_modal").fadeIn(1000);
+		            });
+
 		    });
 
 			$(document).on('click',".btn_consultar_facturas",function(event){

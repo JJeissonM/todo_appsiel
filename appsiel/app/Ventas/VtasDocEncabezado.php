@@ -26,13 +26,15 @@ use Illuminate\Pagination\Paginator;
 use App\Core\ModeloEavValor;
 use App\Ventas\CondicionPago;
 
+use App\VentasPos\FacturaPos;
+
 use App\Matriculas\FacturaAuxEstudiante;
 
 class VtasDocEncabezado extends Model
 {
     //protected $table = 'vtas_doc_encabezados'; 
 
-    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
+    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'hora_entrega', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Forma de pago', 'Estado'];
 
@@ -85,7 +87,12 @@ class VtasDocEncabezado extends Model
         
         if ( is_null( $doc_padre ) )
         {
-            return null;
+            $doc_padre = FacturaPos::find( $this->ventas_doc_relacionado_id );
+        
+            if ( is_null( $doc_padre ) )
+            {
+                return null;
+            }
         }
 
         return $doc_padre;

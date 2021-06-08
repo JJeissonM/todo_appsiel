@@ -48,11 +48,11 @@ class Cuestionario extends Model
         {
             foreach ($collection as $c)
             {
-                $c->campo2 = 'No';
-
                 if ( $c->campo2 )
                 {
                     $c->campo2 = 'Si';
+                }else{
+                    $c->campo2 = 'No';
                 }
             }
         }

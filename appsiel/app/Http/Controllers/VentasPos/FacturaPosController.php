@@ -53,6 +53,8 @@ use App\VentasPos\DocRegistro;
 use App\VentasPos\Movimiento;
 
 use App\Ventas\VtasPedido;
+use App\Ventas\VtasDocRegistro;
+use App\Ventas\Vendedor;
 
 use App\VentasPos\Pdv;
 
@@ -101,19 +103,16 @@ class FacturaPosController extends TransaccionController
 
         if (is_null($tabla)) {
             $tabla = '';
-        } 
+        }
+
+        $user = Auth::user();
+
+        $pdv = Pdv::find(Input::get('pdv_id'));
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
         $cantidad_campos = count($lista_campos);
 
         $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
-
-        $modelo_controller = new ModeloController;
-        $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
-
-        $user = Auth::user();
-
-        $pdv = Pdv::find(Input::get('pdv_id'));
 
         //Personalización de la lista de campos
         for ($i = 0; $i < $cantidad_campos; $i++)
@@ -129,13 +128,15 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    //array_shift($lista_campos[$i]['opciones']);
                     $lista_campos[$i]['value'] = [$pdv->cliente->vendedor_id];
-                    //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
+                    break;
+
+                case 'forma_pago':
+                    $lista_campos[$i]['value'] = $pdv->cliente->forma_pago( date('Y-m-d') );
                     break;
 
                 case 'fecha_vencimiento':
-                    $lista_campos[$i]['value'] = date('Y-m-d');
+                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') );
                     break;
 
                 case 'inv_bodega_id':
@@ -147,6 +148,9 @@ class FacturaPosController extends TransaccionController
             }
         }
 
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
+        
         $form_create = [
             'url' => $acciones->store,
             'campos' => $lista_campos
@@ -160,8 +164,6 @@ class FacturaPosController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo');
-        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista($pdv->cliente->lista_precios_id);
-        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista($pdv->cliente->lista_descuentos_id);
         $productosTemp = null;
         foreach ($productos as $pr)
         {
@@ -173,10 +175,23 @@ class FacturaPosController extends TransaccionController
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
 
+        $cliente = $pdv->cliente;
 
-        $redondear_centena = config('ventas_pos.redondear_centena');
+        $pedido_id = 0;
 
-        return view('ventas_pos.create', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'productos', 'precios', 'descuentos', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias'));
+        $lineas_registros = '<tbody></tbody>';
+
+        $numero_linea = 1;
+
+        $valor_subtotal = 0;
+        $valor_descuento = 0;
+        $valor_total_impuestos = 0;
+        $valor_total_factura = 0;
+        $total_efectivo_recibido = 0;
+
+        $vendedores = Vendedor::where('estado','Activo')->get();
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores'));
     }
 
     /**
@@ -187,6 +202,8 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $pedido = VtasPedido::find($request->pedido_id);
+
         $lineas_registros = json_decode($request->lineas_registros);
 
         $this->actualizar_campo_lineas_registros_medios_recaudos_request($request);
@@ -205,12 +222,13 @@ class FacturaPosController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
-        if (isset($request->pedido_id))
+        if ( !is_null( $pedido ) )
         {
-            $pedido = VtasPedido::find($request->pedido_id);
             $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
             $pedido->estado = 'Facturado';
             $pedido->save();
+
+            self::actualizar_cantidades_pendientes( $pedido, 'restar' );
         }
 
         return $doc_encabezado->consecutivo;
@@ -224,7 +242,9 @@ class FacturaPosController extends TransaccionController
 
         $medios_recaudos = json_encode($lineas_registros_medios_recaudos);
 
-        if ($medios_recaudos == "[]") {
+
+        if ($medios_recaudos == "[]") // Si no se envian medios de pago, se utiliza efectivo por defecto
+        {
             $pdv = Pdv::find($request_2->pdv_id);
 
             $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' . $pdv->caja_default_id . '-' . $pdv->caja->descripcion . '","teso_cuenta_bancaria_id":"0-","valor":"$' . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) . '"}]';
@@ -260,28 +280,28 @@ class FacturaPosController extends TransaccionController
             }
             
             $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
-                ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
-                ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
-                ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
-                ['precio_total' => (float)$lineas_registros[$i]->precio_total] +
-                ['base_impuesto' => (float)$lineas_registros[$i]->base_impuesto] +
-                ['tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto] +
-                ['valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto] +
-                ['base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total] +
-                ['tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento] +
-                ['valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento] +
-                ['creado_por' => Auth::user()->email] +
-                ['estado' => 'Pendiente'] +
-                ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
+                            ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
+                            ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
+                            ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
+                            ['precio_total' => (float)$lineas_registros[$i]->precio_total] +
+                            ['base_impuesto' => (float)$lineas_registros[$i]->base_impuesto] +
+                            ['tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto] +
+                            ['valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto] +
+                            ['base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total] +
+                            ['tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento] +
+                            ['valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento] +
+                            ['creado_por' => Auth::user()->email] +
+                            ['estado' => 'Pendiente'] +
+                            ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
 
             $registro_creado = DocRegistro::create($linea_datos);
 
             $datos['consecutivo'] = $doc_encabezado->consecutivo;
 
             Movimiento::create(
-                $datos +
-                    $linea_datos
-            );
+                                $datos +
+                                    $linea_datos
+                            );
 
             $total_documento += (float)$lineas_registros[$i]->precio_total;
         } // Fin por cada registro
@@ -485,8 +505,6 @@ class FacturaPosController extends TransaccionController
         $total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
 
         $productos = InvProducto::get_datos_basicos('', 'Activo');
-        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista($registro->cliente->lista_precios_id);
-        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista($registro->cliente->lista_descuentos_id);
         $productosTemp = null;
         foreach ($productos as $pr) {
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
@@ -499,15 +517,28 @@ class FacturaPosController extends TransaccionController
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
 
         $redondear_centena = config('ventas_pos.redondear_centena');
+        
+        $cliente = $registro->cliente;
+        $cliente->vendedor_id = $registro->vendedor_id;
+        $cliente->vendedor_descripcion = $registro->vendedor->tercero->descripcion;
 
-        return view('ventas_pos.edit', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'precios', 'descuentos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos'));
+        $pedido_id = 0;
+
+        $valor_subtotal = number_format($registro->lineas_registros->sum('base_impuesto_total') + $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.');
+
+        $valor_descuento = number_format( $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.');
+
+        $valor_total_impuestos = number_format( $registro->lineas_registros->sum('precio_total') - $registro->lineas_registros->sum('base_impuesto_total'),'2',',','.');
+
+        $valor_total_factura = $registro->lineas_registros->sum('precio_total');
+
+        $vendedores = Vendedor::where('estado','Activo')->get();
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores'));
     }
-
-
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)
     {
-
         $cuerpo_tabla_lineas_registros = '<tbody>';
         $i = 1;
         foreach ($lineas_registros_documento as $linea) {
@@ -599,7 +630,35 @@ class FacturaPosController extends TransaccionController
         // Se marca como anulado el documento
         $factura->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
+        $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
+        if( !is_null($pedido) )
+        {
+            $pedido->estado = "Pendiente";
+            $pedido->ventas_doc_relacionado_id = 0;
+            $pedido->save();
+
+            self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
+        }
+
+
         return 1;
+    }
+
+    public static function actualizar_cantidades_pendientes( $encabezado_pedido, $operacion )
+    {
+        $lineas_registros_pedido = $encabezado_pedido->lineas_registros;
+        foreach( $lineas_registros_pedido AS $linea_pedido )
+        {            
+            if ( $operacion == 'restar' )
+            {
+                $linea_pedido->cantidad_pendiente = 0;
+            }else{
+                // sumar: al anular
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad;
+            }
+                
+            $linea_pedido->save();
+        }
     }
 
     public static function anular_factura_acumulada(Request $request)
@@ -670,12 +729,14 @@ class FacturaPosController extends TransaccionController
     */
     public function acumular($pdv_id)
     {
+        $lote = uniqid();
 
         $pdv = Pdv::find($pdv_id);
 
         $encabezados_documentos = FacturaPos::where('pdv_id', $pdv_id)->where('estado', 'Pendiente')->get();
 
-        if (is_null($encabezados_documentos)) {
+        if ( is_null($encabezados_documentos) )
+        {
             return 1;
         }
 
@@ -688,16 +749,30 @@ class FacturaPosController extends TransaccionController
                 $factura->core_tercero_id = $pdv->cliente->tercero->id;
             }
 
+            $cliente = $factura->cliente;
+
             $lineas_registros = DocRegistro::where('vtas_pos_doc_encabezado_id', $factura->id)->get();
+
+            // Crear Remisión y Mov. de inventarios
+            $datos_remision = $factura->toArray();
+            $datos_remision['inv_bodega_id'] = $pdv->bodega_default_id;
+            $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision);
+            InventarioController::crear_registros_remision_ventas($doc_remision, $lineas_registros);
+
+            $factura->remision_doc_encabezado_id = $doc_remision->id;
 
             foreach ($lineas_registros as $linea)
             {
                 $datos = $factura->toArray() + $linea->toArray();
 
                 // Movimiento de Ventas
+                $datos['zona_id'] = $cliente->zona_id;
+                $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
+                $datos['equipo_ventas_id'] = $factura->vendedor->equipo_ventas_id;
+                $datos['detalle'] = $lote;
                 $datos['estado'] = 'Activo';
 
-                VtasMovimiento::create($datos);
+                VtasMovimiento::create( $datos );
 
                 $linea->estado = 'Acumulado';
                 $linea->save();
@@ -709,20 +784,12 @@ class FacturaPosController extends TransaccionController
                         ->where('consecutivo', $factura->consecutivo)
                         ->update(['estado' => 'Acumulado']);
 
-            // Crear Remisión y Mov. de inventarios
-            $datos_remision = $factura->toArray();
-            $datos_remision['inv_bodega_id'] = $pdv->bodega_default_id;
-
-            $doc_remision = InventarioController::crear_encabezado_remision_ventas($datos_remision);
-
-            InventarioController::crear_registros_remision_ventas($doc_remision, $lineas_registros);
-
             // Movimiento de Tesoreria ó CxC
             $datos['estado'] = 'Activo';
             FacturaPosController::crear_registro_pago($factura->forma_pago, $datos, $factura->valor_total, $factura->descripcion);
 
-            $factura->remision_doc_encabezado_id = $doc_remision->id;
             $factura->estado = 'Acumulado';
+            $factura->lote_acumulacion = $lote;
             $factura->save();
         }
 
@@ -732,16 +799,16 @@ class FacturaPosController extends TransaccionController
     public function resumen_cantidades_facturadas($pdv_id, $inv_producto_id = null)
     {
         $ids_encabezados_documentos = FacturaPos::where('pdv_id', $pdv_id)
-            ->where('estado', 'Pendiente')
-            ->select('id')
-            ->get()
-            ->pluck('id')
-            ->all();
+                                                ->where('estado', 'Pendiente')
+                                                ->select('id')
+                                                ->get()
+                                                ->pluck('id')
+                                                ->all();
 
         $cantidades_facturadas = DocRegistro::whereIn('vtas_pos_doc_encabezado_id', $ids_encabezados_documentos)
-            ->select(DB::raw('sum(cantidad) AS cantidad_facturada'), 'inv_producto_id')
-            ->groupBy('inv_producto_id')
-            ->get();
+                                            ->select(DB::raw('sum(cantidad) AS cantidad_facturada'), 'inv_producto_id')
+                                            ->groupBy('inv_producto_id')
+                                            ->get();
         if ($inv_producto_id !== null) {
             return $cantidades_facturadas->where('inv_producto_id', $inv_producto_id)->all();
         }
@@ -749,6 +816,8 @@ class FacturaPosController extends TransaccionController
         return $cantidades_facturadas;
     }
 
+    // item_consumir_id: el que se compra
+    // item_producir_id: el que se vende
     public function hacer_desarme_automatico($pdv_id, $fecha)
     {
         $bodega_default_id = Pdv::find($pdv_id)->bodega_default_id;
@@ -757,45 +826,64 @@ class FacturaPosController extends TransaccionController
 
         $ids_items_facturados = $cantidades_facturadas->pluck('inv_producto_id')->all();
 
-        $items_desarme_automatico = ItemDesarmeAutomatico::whereIn('item_producir_id', $ids_items_facturados)->get();
-
-        $parametros = config('inventarios');
+        $parametros_items_producir = ItemDesarmeAutomatico::whereIn('item_producir_id', $ids_items_facturados)->groupBy('item_producir_id')->get();
+        
+        $parametros = config( 'inventarios' );
+        $motivo_salida = InvMotivo::find( (int)$parametros['motivo_salida_id'] );
+        $motivo_entrada = InvMotivo::find( (int)$parametros['motivo_entrada_id'] );
 
         $lineas_desarme = '[{"inv_producto_id":"","Producto":"","motivo":"","costo_unitario":"","cantidad":"","costo_total":""}';
 
-        foreach ($items_desarme_automatico as $parametros_item_desarme)
+        // Por cada item vendido
+        $hay_productos = 0;
+        foreach ($parametros_items_producir as $parametro_item_producir)
         {
-            $motivo = InvMotivo::find($parametros['motivo_salida_id']);
-            $cantidad_proporcional = $parametros_item_desarme->cantidad_proporcional;
-            if ($cantidad_proporcional == null && $cantidad_proporcional == 0)
+            $cantidad_facturada = $cantidades_facturadas->where('inv_producto_id', $parametro_item_producir->item_producir_id)->sum('cantidad_facturada');
+
+            $existencia_item_facturado = InvMovimiento::get_existencia_producto($parametro_item_producir->item_producir_id, $bodega_default_id, $fecha)->Cantidad;
+
+            if ( is_null( $existencia_item_facturado ) )
             {
-                $cantidad_proporcional = 1;
+                $existencia_item_facturado = 0;
             }
 
-            $cantidad_facturada = $cantidades_facturadas->where('inv_producto_id', $parametros_item_desarme->item_producir_id)->sum('cantidad_facturada');
+            $cantidad_producir = $cantidad_facturada - $existencia_item_facturado;
 
-            $existencia_item_facturado = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_producir_id, $bodega_default_id, $fecha);
-
-            $cantidad_consumir = intdiv( (int)($cantidad_facturada - $existencia_item_facturado->Cantidad), $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
-
-            $existencia_item_consumir = InvMovimiento::get_existencia_producto($parametros_item_desarme->item_consumir_id, $bodega_default_id, $fecha);
-
-            if ($existencia_item_consumir->Cantidad == null && $existencia_item_consumir->Cantidad == 0) {
+            if ( $cantidad_producir <= 0 )
+            {
                 continue;
             }
 
-            $costo_unitario_consumir = $existencia_item_consumir->Costo / $existencia_item_consumir->Cantidad;
+            $parametros_items_cosumir = ItemDesarmeAutomatico::where( 'item_producir_id', $parametro_item_producir->item_producir_id )->get();
 
-            $lineas_desarme .= ',{"inv_producto_id":"' . $parametros_item_desarme->item_consumir->id . '","Producto":"' . $parametros_item_desarme->item_consumir->id . ' ' . $parametros_item_desarme->item_consumir->descripcion . ' (' . $parametros_item_desarme->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo->id . '-' . $motivo->descripcion . '","costo_unitario":"$' . $costo_unitario_consumir . '","cantidad":"' . $cantidad_consumir . ' UND","costo_total":"$' . ($cantidad_consumir * $costo_unitario_consumir) . '"}';
+            $costo_total_items_consumo = 0;
+            foreach( $parametros_items_cosumir AS $parametro_item_consumo )
+            {
+                $cantidad_proporcional = $parametro_item_consumo->cantidad_proporcional;
+                if ($cantidad_proporcional == null || $cantidad_proporcional == 0)
+                {
+                    $cantidad_proporcional = 1;
+                }
+                
+                $cantidad_consumir = $cantidad_producir * $cantidad_proporcional;
+
+                $costo_unitario_item_consumo = $parametro_item_consumo->item_consumir->get_costo_promedio( $bodega_default_id );
+                
+                $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_consumo->item_consumir->id . '","Producto":"' . $parametro_item_consumo->item_consumir->id . ' ' . $parametro_item_consumo->item_consumir->descripcion . ' (' . $parametro_item_consumo->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_consumo . '","cantidad":"' . $cantidad_consumir . ' UND","costo_total":"$' . ($cantidad_consumir * $costo_unitario_item_consumo) . '"}';
+
+                $costo_total_items_consumo += ($cantidad_consumir * $costo_unitario_item_consumo);
+            }
+
+            $costo_unitario_item_producir = $costo_total_items_consumo / $cantidad_producir;
 
             $lineas_desarme .= ',';
+            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_producir . ' UND","costo_total":"$' . $costo_total_items_consumo . '"}';
+            $hay_productos++;
+        }
 
-            $motivo = InvMotivo::find($parametros['motivo_entrada_id']);
-            $cantidad_producir = $cantidad_consumir * $cantidad_proporcional;
-
-            $costo_unitario_producir = $costo_unitario_consumir / $cantidad_proporcional;
-
-            $lineas_desarme .= '{"inv_producto_id":"' . $parametros_item_desarme->item_producir->id . '","Producto":"' . $parametros_item_desarme->item_producir->id . ' ' . $parametros_item_desarme->item_producir->descripcion . ' (' . $parametros_item_desarme->item_producir->unidad_medida1 . '))","motivo":"' . $motivo->id . '-' . $motivo->descripcion . '","costo_unitario":"$' . $costo_unitario_producir . '","cantidad":"' . $cantidad_producir . ' UND","costo_total":"$' . ($cantidad_producir * $costo_unitario_producir) . '"}';
+        if ( $hay_productos == 0 )
+        {
+            return 0;
         }
 
         $lineas_desarme .= ',{"inv_producto_id":"","Producto":"00.00","motivo":"$00.00","costo_unitario":""},{"inv_producto_id":"Agregar productos","Producto":"Agregar productos","motivo":"Agregar productos","costo_unitario":"Agregar productos","cantidad":"Agregar productos","costo_total":"Calcular costos"}]';
@@ -804,10 +892,10 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();
         $modelo_id = 25;
         $request["core_empresa_id"] = $user->empresa_id;
-        $request["core_tipo_transaccion_id"] = $parametros['core_tipo_transaccion_id'];
-        $request["core_tipo_doc_app_id"] = $parametros['core_tipo_doc_app_id'];
+        $request["core_tipo_transaccion_id"] = (int)$parametros['core_tipo_transaccion_id'];
+        $request["core_tipo_doc_app_id"] = (int)$parametros['core_tipo_doc_app_id'];
         $request["fecha"] = $fecha;
-        $request["core_tercero_id"] = $parametros['core_tercero_id'];
+        $request["core_tercero_id"] = (int)$parametros['core_tercero_id'];
         $request["descripcion"] = "";
         $request["documento_soporte"] = "";
         $request["inv_bodega_id"] = $bodega_default_id;
@@ -819,7 +907,7 @@ class FacturaPosController extends TransaccionController
         $request["estado"] = "Activo";
         $request["url_id"] = "8";
         $request["url_id_modelo"] = $modelo_id;
-        $request["url_id_transaccion"] = $parametros['core_tipo_transaccion_id'];
+        $request["url_id_transaccion"] = (int)$parametros['core_tipo_transaccion_id'];
 
         $lineas_registros = InventarioController::preparar_array_lineas_registros($request->movimiento, $request->modo_ajuste);
 
@@ -844,10 +932,12 @@ class FacturaPosController extends TransaccionController
 
         $detalle_operacion = 'Acumulación PDV: ' . $pdv->descripcion;
 
-        foreach ($encabezados_documentos as $factura) {
+        foreach ($encabezados_documentos as $factura)
+        {
             $lineas_registros = DocRegistro::where('vtas_pos_doc_encabezado_id', $factura->id)->get();
 
-            foreach ($lineas_registros as $linea) {
+            foreach ($lineas_registros as $linea)
+            {
                 $una_linea_registro = $factura->toArray() + $linea->toArray();
 
                 $una_linea_registro['estado'] = 'Activo';
@@ -866,10 +956,9 @@ class FacturaPosController extends TransaccionController
                 ->update(['estado' => 'Contabilizado']);
 
             // Contabilizar Caja y Bancos ó Cartera de clientes
-            $forma_pago = $factura->forma_pago;
             $datos = $factura->toArray();
             $datos['estado'] = 'Activo';
-            FacturaPosController::contabilizar_movimiento_debito($forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $pdv->caja_default_id);
+            FacturaPosController::contabilizar_movimiento_debito( $factura->forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $pdv->caja_default_id);
 
             // Inventarios (Inventarios y Costos)
             InventarioController::contabilizar_documento_inventario($factura->remision_doc_encabezado_id, $detalle_operacion);
@@ -902,7 +991,7 @@ class FacturaPosController extends TransaccionController
             */
             $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
-            if (!is_null($lineas_recaudos)) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            if ( !is_null($lineas_recaudos) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
                 foreach ($lineas_recaudos as $linea)
                 {
@@ -913,18 +1002,6 @@ class FacturaPosController extends TransaccionController
                     $datos['valor_movimiento'] = (float)substr($linea->valor, 1);
                     TesoMovimiento::create($datos);
                 }
-            } else {
-                // Para viejas versiones
-                $pdv = Pdv::find($datos['pdv_id']);
-
-                $caja = TesoCaja::find($pdv->caja_default_id);
-                // El motivo lo debe traer de un parametro de la configuracion
-                $datos['teso_motivo_id'] = TesoMotivo::where('movimiento', 'entrada')->get()->first()->id;
-                $datos['teso_caja_id'] = $caja->id;
-                $datos['teso_cuenta_bancaria_id'] = 0;
-                $datos['teso_medio_recaudo_id'] = 1;
-                $datos['valor_movimiento'] = $total_documento;
-                TesoMovimiento::create($datos);
             }
         }
     }
@@ -949,13 +1026,15 @@ class FacturaPosController extends TransaccionController
             ContabilidadController::contabilizar_registro2($datos, $cta_x_cobrar_id, $detalle_operacion, $total_documento, 0);
         }
 
-        // Agregar el movimiento a tesorería
-        if ($forma_pago == 'contado') {
+        // Contabiliazar el movimiento a tesorería
+        if ($forma_pago == 'contado')
+        {
             $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
             if (!is_null($lineas_recaudos)) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
-                foreach ($lineas_recaudos as $linea) {
+                foreach ($lineas_recaudos as $linea)
+                {
                     $contab_cuenta_id = TesoCaja::find(1)->contab_cuenta_id;
 
                     $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
@@ -970,15 +1049,6 @@ class FacturaPosController extends TransaccionController
 
                     ContabilidadController::contabilizar_registro2($datos, $contab_cuenta_id, $detalle_operacion, (float)substr($linea->valor, 1), 0, $teso_caja_id, $teso_cuenta_bancaria_id);
                 }
-            } else {
-                // Para viejas versiones
-                $pdv = Pdv::find($datos['pdv_id']);
-
-                $caja = TesoCaja::find($pdv->caja_default_id);
-
-                $cta_caja_id = $caja->contab_cuenta_id;
-
-                ContabilidadController::contabilizar_registro2($datos, $cta_caja_id, $detalle_operacion, $total_documento, 0, $caja->id, 0);
             }
         }
     }
@@ -1275,9 +1345,6 @@ class FacturaPosController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo');
-        $precios = ListaPrecioDetalle::get_precios_productos_de_la_lista($cliente->lista_precios_id);
-        $descuentos = ListaDctoDetalle::get_descuentos_productos_de_la_lista($cliente->lista_descuentos_id);
-
         $productosTemp = null;
         foreach ($productos as $pr){
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
@@ -1292,6 +1359,31 @@ class FacturaPosController extends TransaccionController
 
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($pedido->lineas_registros);
 
-        return view('ventas_pos.crear_desde_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'productos', 'precios', 'descuentos', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos'));
+        $valor_subtotal = 0;
+        $valor_descuento = 0;
+        $valor_total_impuestos = 0;
+        $valor_total_factura = 0;
+        $total_efectivo_recibido = 0;
+
+        $vendedores = Vendedor::where('estado','Activo')->get();
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores') );
+    }
+
+    public function set_catalogos( $pdv_id )
+    {
+        $pdv = Pdv::find( $pdv_id );
+        $datos = [
+                    'redondear_centena' => config('ventas_pos.redondear_centena'),
+                    'productos' => InvProducto::get_datos_basicos('', 'Activo'),
+                    'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
+                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),
+                    'clientes' => Cliente::where( 'estado', 'Activo' )->get(),
+                    'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray() ) ,
+                    'forma_pago_default' => $pdv->cliente->forma_pago(),
+                    'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') )
+                ];
+        
+        return response()->json( $datos );
     }
 }

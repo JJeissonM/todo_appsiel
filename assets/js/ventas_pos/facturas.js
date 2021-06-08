@@ -26,7 +26,7 @@ $.fn.actualizar_medio_recaudo = function () {
 
 	$('#efectivo_recibido').val(parseFloat(texto_total_recaudos));
 	$('#total_efectivo_recibido').val(parseFloat(texto_total_recaudos));
-	$('#efectivo_recibido').attr('readonly', 'readonly');
+	$('#efectivo_recibido').removeAttr('readonly');
 
 	$.fn.set_label_efectivo_recibido(texto_total_recaudos);
 
@@ -53,10 +53,10 @@ $.fn.set_label_efectivo_recibido = function (efectivo_recibido) {
 
 $.fn.cambiar_estilo_div_total_cambio = function () {
 
-	$('#div_total_cambio').attr('class', 'alert alert-danger');
+	$('#div_total_cambio').attr('class', 'danger');
 
 	if (total_cambio.toFixed(0) >= 0)
-		$('#div_total_cambio').attr('class', 'alert alert-success');
+		$('#div_total_cambio').attr('class', 'success');
 };
 
 $.fn.activar_boton_guardar_factura = function () {
@@ -67,8 +67,6 @@ $.fn.activar_boton_guardar_factura = function () {
 		$('#btn_guardar_factura').removeAttr('disabled');
 
 };
-
-
 
 $.fn.checkCookie = function () {
 	var ultimo_valor_total_factura = parseFloat($.fn.getCookie("ultimo_valor_total_factura"));
@@ -227,7 +225,35 @@ $.fn.generar_string_celdas = function (fila) {
 	return string_celdas;
 };
 
-function get_precio(producto_id) {
+function reset_campos_formulario()
+{
+	$('#fecha').val( get_fecha_hoy() );
+	$('#descripcion').val( '' );
+
+	$('#cliente_id').val( cliente_default.id );
+	$('#cliente_input').val( cliente_default.descripcion );
+	$('#cliente_input').css('background-color', 'transparent');
+	$('#vendedor_id').val( cliente_default.vendedor_id );
+	$('#inv_bodega_id').val( cliente_default.inv_bodega_id );
+	$('#forma_pago').val( forma_pago_default );
+	$('#fecha_vencimiento').val( fecha_vencimiento_default );
+	$('#lista_precios_id').val( cliente_default.lista_precios_id );
+	$('#lista_descuentos_id').val( cliente_default.lista_descuentos_id );
+	$('#liquida_impuestos').val( cliente_default.liquida_impuestos );
+	$('#core_tercero_id').val( cliente_default.core_tercero_id );
+	$('#zona_id').val( cliente_default.zona_id );
+	$('#clase_cliente_id').val( cliente_default.clase_cliente_id );
+
+	$('#cliente_descripcion_aux').val( cliente_default.descripcion );
+	$('#numero_identificacion').val( cliente_default.numero_identificacion );
+	$('#direccion1').val( cliente_default.direccion1 );
+	$('#telefono1').val( cliente_default.telefono1 );
+
+	$('#lineas_registros').val(0); // Input que recoge el listado de productos
+}
+
+function get_precio(producto_id)
+{
 	var precio = precios.find(item => item.producto_codigo === producto_id);
 
 	if (precio === undefined) {
@@ -242,7 +268,8 @@ function get_precio(producto_id) {
 	return precio;
 }
 
-function get_descuento(producto_id) {
+function get_descuento(producto_id)
+{
 	var descuento = descuentos.find(item => item.producto_codigo === producto_id);
 
 	if (descuento === undefined) {
@@ -265,6 +292,8 @@ function ventana_imprimir() {
 	ventana_factura.print();
 }
 
+
+// Se llama desde el listado de productos (boton de la lupa)
 function mandar_codigo(item_id) {
 	$('#myModal').modal("hide");
 
@@ -305,8 +334,10 @@ function mandar_codigo2(item_id) {
 	numero_linea = 1;
 	agregar_la_linea2();
 }
+/**/
 
-function agregar_la_linea2() {
+function agregar_la_linea2()
+{
 	$('#popup_alerta').hide();
 
 	// Se escogen los campos de la fila ingresada
@@ -343,7 +374,8 @@ function agregar_la_linea2() {
 	numero_linea++;
 }
 
-function reset_efectivo_recibido2() {
+function reset_efectivo_recibido2()
+{
 	$('#efectivo_recibido').val('');
 	$('#total_efectivo_recibido').val(0);
 	$('#lbl_efectivo_recibido').text('$ 0');
@@ -440,7 +472,8 @@ function calcular_precio_total2() {
 }
 
 // Valores unitarios
-function calcular_impuestos2() {
+function calcular_impuestos2()
+{
 	var precio_venta = precio_unitario - valor_unitario_descuento;
 
 	base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
@@ -455,18 +488,29 @@ function calcular_valor_descuento2() {
 	valor_total_descuento = valor_unitario_descuento * cantidad;
 }
 
-$(document).ready(function () {
 
-	//$.fn.checkCookie();
+
+function agregar_la_linea_ini() {
+	// Se escogen los campos de la fila ingresada
+	var fila = $('#linea_ingreso_default_aux');
+	
+	// agregar nueva fila a la tabla
+	$('#ingreso_registros').find('tfoot:last').append(fila);
+
+	$('#inv_producto_id').focus();
+}
+
+
+// LA CARGAR EL DOCUMENTO
+$(document).ready(function () {
 
 	$('#btn_guardar').hide();
 
 	agregar_la_linea_ini();
 
 	// Elementos al final de la página
+	$('#cliente_input').parent().parent().attr('style','left: 0');
 	$('#cliente_input').parent().parent().attr('class', 'elemento_fondo');
-	$('#vendedor_id').parent().parent().attr('class', 'elemento_fondo');
-
 
 	$('#cliente_input').on('focus', function () {
 		$(this).select();
@@ -476,8 +520,6 @@ $(document).ready(function () {
 
 	// Al ingresar código, descripción o código de barras del producto
 	$('#cliente_input').on('keyup', function () {
-
-		reset_campos_formulario();
 
 		var codigo_tecla_presionada = event.which || event.keyCode;
 
@@ -510,7 +552,8 @@ $(document).ready(function () {
 
 				var item = $('a.list-group-item.active');
 
-				if (item.attr('data-cliente_id') === undefined) {
+				if (item.attr('data-cliente_id') === undefined)
+				{
 					alert('El cliente ingresado no existe.');
 					reset_campos_formulario();
 				} else {
@@ -542,31 +585,18 @@ $(document).ready(function () {
 		}
 	});
 
-	function agregar_la_linea_ini() {
-		// Se escogen los campos de la fila ingresada
-		var fila = $('#linea_ingreso_default_aux');
+	$('.btn_vendedor').on('click', function (e) {
+		e.preventDefault();
 
-		// agregar nueva fila a la tabla
-		$('#ingreso_registros').find('tfoot:last').append(fila);
+		$('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
 
-		$('#inv_producto_id').focus();
-	}
+		$(this).attr('class','btn btn-default btn_vendedor vendedor_activo');
 
-	function reset_campos_formulario() {
-		$('#cliente_id').val('');
-		$('#cliente_input').css('background-color', '#FF8C8C');
-		$('#vendedor_id').val('');
-		$('#inv_bodega_id').val('');
-		$('#forma_pago').val('contado');
-		$('#fecha_vencimiento').val('');
-		$('#lista_precios_id').val('');
-		$('#lista_descuentos_id').val('');
-		$('#liquida_impuestos').val('');
+		$('#efectivo_recibido').focus();
 
-		$('#core_tercero_id').val('');
-		$('#lineas_registros').val(0);
-		$('#zona_id').val('');
-		$('#clase_cliente_id').val('');
-	}
-
+		$('#vendedor_id').val( $(this).attr('data-vendedor_id') );
+		$('#vendedor_id').attr( 'data-vendedor_descripcion', $(this).attr('data-vendedor_descripcion') );
+		
+	});
+	
 });

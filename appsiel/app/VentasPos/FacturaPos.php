@@ -6,20 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use Input;
 
+use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
 
 class FacturaPos extends Model
 {
     protected $table = 'vtas_pos_doc_encabezados';
 
-    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
+    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'lote_acumulacion', 'valor_total', 'estado', 'creado_por', 'modificado_por'];
 
     public $urls_acciones = '{"store":"pos_factura","update":"pos_factura/id_fila","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'PDV', 'Estado'];
 
     public $vistas = '{"index":"layouts.index3"}';
+
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
 
     public function tipo_documento_app()
     {
@@ -44,6 +51,88 @@ class FacturaPos extends Model
     public function lineas_registros()
     {
         return $this->hasMany(DocRegistro::class, 'vtas_pos_doc_encabezado_id');
+    }
+
+    // Doc. desde el cual fue generado
+    public function documento_ventas_padre()
+    {
+        $doc_padre = FacturaPos::find( $this->ventas_doc_relacionado_id );
+
+        if ( is_null( $doc_padre ) )
+        {
+            return null;
+        }
+
+        return $doc_padre;
+    }
+
+    // Doc. que se generó a partir de este
+    public function documento_ventas_hijo()
+    {
+        $doc_hijo = FacturaPos::where( 'ventas_doc_relacionado_id', $this->id )->get()->first();
+        
+        if ( is_null( $doc_hijo ) )
+        {
+            return null;
+        }
+
+        return $doc_hijo;
+    }
+
+    public function enlaces_remisiones_hijas()
+    {
+        $remisiones = $this->remisiones_hijas();
+        $lista = '';
+        $es_el_primero = true;
+        foreach ($remisiones as $remision )
+        {
+            if ( $es_el_primero )
+            {
+                $lista = $remision->enlace_show_documento();
+                $es_el_primero = false;
+            }else{
+                $lista .= ', ' . $remision->enlace_show_documento();
+            }
+        }
+        return $lista;
+    }
+
+    public function remisiones_hijas()
+    {
+        return InvDocEncabezado::where( 'vtas_doc_encabezado_origen_id', $this->id )->get();
+    }
+
+    public function enlace_show_documento()
+    {
+        switch ( $this->core_tipo_transaccion_id )
+        {
+            case '23':
+                $url = 'ventas/';
+                break;
+            
+            
+            case '42':
+                $url = 'vtas_pedidos/';
+                break;
+            
+            
+            case '30':
+                $url = 'vtas_cotizacion/';
+                break;
+            
+            
+            case '47':
+                $url = 'pos_factura/';
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+
+        return $enlace;
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -177,6 +266,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.core_empresa_id',
                 'vtas_pos_doc_encabezados.core_tercero_id',
                 'vtas_pos_doc_encabezados.cliente_id',
+                'vtas_pos_doc_encabezados.vendedor_id',
                 'vtas_pos_doc_encabezados.remision_doc_encabezado_id',
                 'vtas_pos_doc_encabezados.core_tipo_transaccion_id',
                 'vtas_pos_doc_encabezados.core_tipo_doc_app_id',

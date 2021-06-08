@@ -117,7 +117,7 @@ class CxCController extends TransaccionController
 
         // Obtención de datos, esto arroja un array de objetos
         $cartera = DB::select(DB::raw("SELECT edad,saldo_pendiente FROM (SELECT fecha_vencimiento,saldo_pendiente, IF( CURRENT_DATE() > cxc_movimientos.fecha_vencimiento,DATEDIFF(CURRENT_DATE(),fecha_vencimiento),0) AS edad FROM `cxc_movimientos` WHERE estado='Pendiente' AND core_empresa_id = ".$empresa_id.") AS edades WHERE edad > ".$min." AND edad <= ".$max));
-        dd($cartera);
+        //dd($cartera);
         // Convertir a array de arrays
         $cartera = json_decode(json_encode($cartera), true);
         // Agregar campo a la torta

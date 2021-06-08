@@ -293,7 +293,7 @@ class InventarioController extends TransaccionController
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         // Ahora mismo el campo inv_bodega_id se envía en el request, pero se debe tomar de cada línea de registro
         $datos = $request->all();
-
+        
         $cantidad_registros = count($lineas_registros);
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
@@ -311,12 +311,18 @@ class InventarioController extends TransaccionController
                 $costo_total = (float) $costo_total * -1;
             }
 
+            $linea_registro_doc_origen_id = 0;
+            if ( isset( $lineas_registros[$i]->linea_registro_doc_origen_id ) )
+            {
+                $linea_registro_doc_origen_id = $lineas_registros[$i]->linea_registro_doc_origen_id;
+            }
+
             $linea_datos = ['inv_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
-                ['linea_registro_doc_origen_id' => $lineas_registros[$i]->linea_registro_doc_origen_id] +
-                ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
-                ['costo_unitario' => $costo_unitario] +
-                ['cantidad' => $cantidad] +
-                ['costo_total' => $costo_total];
+                            ['linea_registro_doc_origen_id' => $linea_registro_doc_origen_id ] +
+                            ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
+                            ['costo_unitario' => $costo_unitario] +
+                            ['cantidad' => $cantidad] +
+                            ['costo_total' => $costo_total];
 
             InvDocRegistro::create(
                 $datos +

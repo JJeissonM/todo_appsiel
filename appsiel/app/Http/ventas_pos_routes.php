@@ -2,10 +2,14 @@
 
 Route::resource('ventas_pos', 'VentasPos\AplicacionController');
 
+Route::get( 'ventas_pos_set_catalogos/{pdv_id}', 'VentasPos\FacturaPosController@set_catalogos');
+
 Route::get('pos_get_saldos_caja_pdv/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@get_saldos_caja_pdv');
 Route::get('pos_consultar_documentos_pendientes/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@consultar_documentos_pendientes');
 
 Route::get('pos_factura_imprimir/{doc_encabezado_id}', 'VentasPos\FacturaPosController@imprimir');
+
+Route::get('pos_hacer_desarme_automatico/{pdv_id}/{fecha}', 'VentasPos\FacturaPosController@hacer_desarme_automatico');
 
 // Anular factura que no esté acumulada
 Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_pos');

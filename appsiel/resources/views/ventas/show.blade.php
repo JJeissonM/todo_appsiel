@@ -1,5 +1,6 @@
 <?php  
 	$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
+	//dd( $doc_encabezado );
 ?>
 
 @extends('transaccion.show')
@@ -52,7 +53,7 @@
             <br/>
             <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif
             <br/>
-            <b>Dirección: &nbsp;&nbsp;</b> {{ $encabezado_documento->tercero->direccion1 }}, {{ $encabezado_documento->tercero->ciudad->descripcion }} - {{ $encabezado_documento->tercero->ciudad->departamento->descripcion }}
+            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->direccion1 }}, {{ $doc_encabezado->tercero->ciudad->descripcion }} - {{ $doc_encabezado->tercero->ciudad->departamento->descripcion }}
             <br/>
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
             @include('matriculas.facturas.datos_estudiante')

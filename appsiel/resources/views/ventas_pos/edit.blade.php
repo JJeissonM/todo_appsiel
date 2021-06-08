@@ -90,8 +90,6 @@
 				  	echo "<p>El modelo no tiene campos asociados.</p>";
 				  }
 
-				  //dd( $registro->cliente() );
-
 				?>
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}

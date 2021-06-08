@@ -31,7 +31,7 @@
                             &nbsp;&nbsp;&nbsp;
                             @if( $fila['campo8'] != 'Anulado' && $fila['campo8'] == 'Pendiente' )
                                 
-                                <a class="btn btn-warning btn-xs btn_modificar_factura" href="{{ url( 'pos_factura/' . $fila['campo9'] . '/edit?id=20&id_modelo=230&id_transaccion=47' ) }}" title="Modificar"> <i class="fa fa-edit"></i> </a> <!-- target="_blank"  -->
+                                <a class="btn btn-warning btn-xs btn_modificar_factura" href="{{ url( 'pos_factura/' . $fila['campo9'] . '/edit?id=20&id_modelo=230&id_transaccion=47&action=edit' ) }}" title="Modificar"> <i class="fa fa-edit"></i> </a> <!-- target="_blank"  -->
                                 
                                 &nbsp;&nbsp;&nbsp;
 

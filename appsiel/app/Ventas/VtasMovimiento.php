@@ -13,7 +13,7 @@ class VtasMovimiento extends Model
     // base_impuesto: es unitario y siempre positivo
     // valor_impuesto: es unitario
     // precio_total: tiene signo dependiendo de la operacion (ventas +, notas crédito -)
-    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'vtas_motivo_id', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento'];
+    protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'vtas_motivo_id', 'fecha', 'core_tercero_id', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'codigo_referencia_tercero', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'detalle'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Producto', 'Cliente', 'Precio unit.', 'Cantidad', 'Precio total', 'IVA', 'Base IVA Total'];
 

@@ -12,6 +12,7 @@ use App\Core\Tercero;
 
 use DB;
 use Schema;
+use Carbon\Carbon;
 
 class Cliente extends Model
 {
@@ -62,6 +63,22 @@ class Cliente extends Model
         return $this->belongsTo( CondicionPago::class, 'condicion_pago_id');
     }
 
+    public function forma_pago()
+    {
+        if ( $this->condicion_pago->dias_plazo > 0 )
+        {
+            return 'credito';
+        }else{
+            return 'contado';
+        }
+    }
+
+    public function fecha_vencimiento_pago( $fecha )
+    {        
+        return $this->sumar_dias_calendario_a_fecha( $fecha, $this->condicion_pago->dias_plazo );
+    }
+
+        
     public function vendedor()
     {
         return $this->belongsTo( Vendedor::class, 'vendedor_id');
@@ -222,5 +239,12 @@ class Cliente extends Model
         }
 
         return 'ok';
+    }
+
+    public function sumar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
     }
 }

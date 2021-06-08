@@ -75,7 +75,8 @@
                     <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div>
                 </td>
                 <td>
-                    <b>Fecha:</b> <div class="lbl_fecha" style="display: inline;">{{ date('Y-m-d') }}</div>
+                    <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;"></div> / 
+                    <b>Hora:</b> <div id="lbl_hora" style="display: inline;"></div>
                 </td>
             </tr>
 

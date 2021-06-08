@@ -1,7 +1,7 @@
 <div id="div_ingreso_registros">
 	<br/>
     @if( $datos['titulo'] != '' )
-        <h4>{{ $datos['titulo'] }} <small style="color: red;"> &#171;En cada campo presione Enter para continuar.&#187;</small></h4>
+        <h5>{{ $datos['titulo'] }} <small style="color: red;"> &#171;En cada campo presione Enter para continuar.&#187;</small></h5>
         <hr>
     @endif
     <div class="table-responsive" id="table_content">

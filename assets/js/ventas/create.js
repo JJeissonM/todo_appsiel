@@ -17,9 +17,7 @@ $(document).ready(function(){
 
 	$('#cliente_input').focus( );
 
-	console.log( $('#item_sugerencia_cliente').val() );
-
-	if ( $('#item_sugerencia_cliente').val() != '0' )
+	if ( $('#item_sugerencia_cliente').val() != '0' && $('#item_sugerencia_cliente').val() != undefined )
 	{
 		$('#item_sugerencia_cliente').after( $('#item_sugerencia_cliente').val() );
 		seleccionar_cliente( $('#item_sugerencia_cliente').next() );

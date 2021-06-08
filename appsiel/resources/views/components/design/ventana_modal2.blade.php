@@ -30,7 +30,7 @@
       </div>
 
       <div class="modal-footer">
-      	<button class="btn btn-danger" data-dismiss="modal"> <i class="fa fa-close"></i> Cerrar </button>
+      	<button class="btn btn-danger btn_close_modal" data-dismiss="modal"> <i class="fa fa-close"></i> Cerrar </button>
     		
         <button class="btn btn-warning btn_edit_modal"> <i class="fa fa-edit"></i> Editar </button>
         

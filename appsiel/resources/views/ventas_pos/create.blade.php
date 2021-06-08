@@ -691,12 +691,10 @@ use App\Http\Controllers\Sistema\VistaController;
 
             }
 
-
             function reset_descuento() {
                 $('#tasa_descuento').val(0);
                 calcular_valor_descuento();
             }
-
 
             function seleccionar_cliente(item_sugerencia) {
 
