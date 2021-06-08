@@ -1,5 +1,5 @@
 <?php
-    $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
+    $ciudad = DB::table('core_ciudades')->where('id',$doc_encabezado->codigo_ciudad)->get()[0];
 ?>
 
 <html lang="es">
@@ -33,14 +33,14 @@
     </div>
 
     <div style="position: absolute; left: 40mm; top: 79mm;">
-        {{ $empresa->direccion1 }}
+        {{ $doc_encabezado->direccion1 }}
     </div>
 
     <div style="position: absolute; left: 40mm; top: 84mm;">
         {{ $ciudad->descripcion }} 
     </div>
 
-    <div style="position: absolute; right: 55mm; top: 39mm;font-size: 14px">
+    <div style="position: absolute; right: 55mm; top: 36.5mm;font-size: 14px">
         <b><?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
