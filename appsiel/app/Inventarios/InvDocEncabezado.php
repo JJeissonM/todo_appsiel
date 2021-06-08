@@ -301,7 +301,9 @@ class InvDocEncabezado extends Model
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
                                 DB::raw( 'core_terceros.descripcion AS tercero_nombre_completo' ),
                                 'core_terceros.numero_identificacion',
+                                'core_terceros.digito_verificacion',
                                 'core_terceros.direccion1',
+                                'core_terceros.codigo_ciudad',
                                 'core_terceros.telefono1'
                             )
                     ->get()
