@@ -42,7 +42,7 @@ comprar.addEventListener('click',function (event) {
                   }
               }).catch(error => {
                const url =  document.getElementById('url_login').value;
-               toastr.error(`Hubo un error en la solicitud, Asegúrese de estar logeado al momento de realizar el pedido <a href='${url}' style="text-decoration:underline;">Iniciar Sesión</a>`,'',{timeOut: 0,extendedTimeOut: 0});
+               toastr.error(`Para seguir comprando, por favor <a href='${url}' style="text-decoration:underline;">Iniciar Sesión</a>`,'',{timeOut: 0,extendedTimeOut: 0});
           });
       }else{
           toastr.warning('La lista de productos en el carrito está vacía');

@@ -261,25 +261,6 @@ label > .label-body {
   font-weight: normal; }
 
 
-/* Lists
-–––––––––––––––––––––––––––––––––––––––––––––––––– 
-ul {
-  list-style: circle inside; }
-ol {
-  list-style: decimal inside; }
-ol, ul {
-  padding-left: 0;
-  margin-top: 0; }
-ul ul,
-ul ol,
-ol ol,
-ol ul {
-  margin: 1.5rem 0 1.5rem 3rem;
-  font-size: 90%; }
-li {
-  margin-bottom: 1rem; }*/
-
-
 /* Code
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 code {
@@ -300,8 +281,7 @@ pre > code {
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 th,
 td {
-  padding: 12px 15px;
-  text-align: left;
+  padding: 0px 5px;
   border-bottom: 1px solid #E1E1E1; }
 th:first-child,
 td:first-child {
@@ -310,28 +290,6 @@ th:last-child,
 td:last-child {
   padding-right: 0; }
 
-
-/* Spacing
-–––––––––––––––––––––––––––––––––––––––––––––––––– 
-button,
-.button {
-  margin-bottom: 1rem; }
-input,
-textarea,
-select,
-fieldset {
-  margin-bottom: 1.5rem; }
-pre,
-blockquote,
-dl,
-figure,
-table,
-p,
-ul,
-ol,
-form {
-  margin-bottom: 2.5rem; }
-*/
 
 /* Utilities
 –––––––––––––––––––––––––––––––––––––––––––––––––– */

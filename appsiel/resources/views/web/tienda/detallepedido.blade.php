@@ -121,8 +121,9 @@
                         <tr>
                             <th><center>Cant.</center></th>
                             <th><center>Descripcion</center></th>
-                            <th><center>Precio Total</center></th>
                             <th><center>Desc.</center></th>
+                            <th><center>Precio Total</center></th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -135,8 +136,8 @@
                             <tr>
                                 <td class="text-center">{{ $producto->cantidad.' '.$producto->unidad_medida1 }}</td>
                                 <td>{{ $producto->producto_descripcion }}</td>
-                                <td class="text-right">$ {{ $producto->precio_total }}</td>
                                 <td class="text-right">$ {{ ($producto->precio_venta - $producto->valor_descuento) }}</td>
+                                <td class="text-right">$ {{ $producto->precio_total }}</td>                                
                             </tr>
                             <?php
                                 $total_pagar += $producto->precio_total;
@@ -165,18 +166,16 @@
                         @endif        
                         @endforeach 
                         
-                        <a class="nav-link active" style="flex: 1 1 auto;" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
-                            
-                                    Domicilio
-                                    
+                        <a class="nav-link active" style="flex: 1 1 auto;" data-toggle="pill" href="#domicilio" role="tab" aria-controls="domicilio" aria-selected="true">                            
+                                    Domicilio                                    
                                 </a>
                         
-                        <a class="nav-link" style="flex: 1 1 auto;" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                        <a class="nav-link" style="flex: 1 1 auto;" data-toggle="pill" href="#empresa" role="tab" aria-controls="empresa" aria-selected="false">
                                     Recoger en Tienda
                         </a>                        
                     </div>
                     <div class="tab-content w-100" id="v-pills-tabContent">
-                            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                            <div class="tab-pane fade show active" id="domicilio" role="tabpanel" aria-labelledby="domicilio-tab">
                                 <div class="border border-primary rounded position-relative">
                                     <a id="cruddomicilio" class="btn pull-right bg-light rounded-circle" href="{{route('tienda.micuenta').'/nav-directorio-tab'}}">Agregar o Cambiar</a>
                                     @if ($direccion_por_defecto == null)
@@ -228,7 +227,7 @@
                                                 data-currency="COP"
                                                 data-amount-in-cents="{{ number_format(($total_pagar+5000),2,'','') }}"
                                                 data-reference="{{ $doc_encabezado->id }}"
-                                                data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
+                                                data-redirect-url="{{ url('ecommerce/public/detallepedido').'/'.$doc_encabezado->id.'?compra=domicil' }}"
                                                 >
                                                 </script>
                                             </form>   
@@ -239,7 +238,7 @@
                                     </div>     
                                 </div>
                             </div>
-                            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                            <div class="tab-pane fade" id="empresa" role="tabpanel" aria-labelledby="empresa-tab">
                                 <div class="border border-primary rounded">
                                     <address id="addressempresa">
                                         <div>
@@ -279,7 +278,7 @@
                                             data-currency="COP"
                                             data-amount-in-cents="{{ number_format($total_pagar,2,'','') }}"
                                             data-reference="{{ $doc_encabezado->id }}"
-                                            data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
+                                            data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id.'?compra=empresa' }}"
                                             >
                                             </script>
                                         </form>    
@@ -291,16 +290,17 @@
                                         <div class="modal-dialog" role="document">
                                           <div class="modal-content">
                                             <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Pago en Tienda</h5>
+                                              <h5 class="modal-title" id="exampleModalLabel">Pago en Tienda (Sede Valledupar)</h5>
                                               <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                               </button>
                                             </div>
-                                            <div class="modal-body">
-                                              Se enviara a tu correo un comprobante con los detalles de tu pedido, el cual deberas llevar a la tienda para reclamarlo.
+                                            <div class="modal-body">                                                
+                                                Enviamos el comprobante del pedido realizado a tu correo electrónico.
+                                                Productos para recoger en Tienda (sede Valledupar).
                                             </div>
                                             <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                                                   <a href="{{ url('enviar_pedido_web_email').'/'.$doc_encabezado->id }}" class="btn btn-primary">Pagar en Efectivo</a>               
                                             </div>
                                           </div>
@@ -333,10 +333,18 @@
           </button>
         </div>
         <div class="modal-body">
-          Tu compra ha sido completada con exito. Revisa tu correo para descargar tu factura.
+            <?php        
+            if (isset($_GET['compra'])) {
+                if($_GET['compra'] == "empresa"){
+                    echo 'Tu compra ha sido completada con éxito. Revisa tu correo electrónico para ver factura.<br>Productos para recoger en Tienda (sede Valledupar)';
+                }else{
+                    echo 'Tu compra ha sido completada con éxito. Revisa tu correo electrónico para ver factura.';
+                }
+            }        
+            ?>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
           <div class="d-flex justify-content-center">
             <a class="btn btn-outline-primary" style="width: 162px" href="{{ config('pagina_web.main_page_tienda_online') }}">Volver a la tienda</a>
         </div>
@@ -350,14 +358,18 @@
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
     </script>
-    <?php
-        
+    <?php        
         if (isset($_GET['id'])) {
             echo '<script>';
             echo "$('#succesCompra').modal('show')";
             echo '</script>';
-        }
-        
+        }        
     ?>
+    <script>
+        $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
+            console.log(e.target.getAttribute("aria-controls"))  // newly activated tab
+            e.relatedTarget // previous active tab
+        })
+    </script>
 </body>
 </html>

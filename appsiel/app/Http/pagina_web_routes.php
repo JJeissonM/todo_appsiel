@@ -234,7 +234,7 @@ Route::get('ecommerce/validar_email/{email}', 'web\PaginaController@validar_emai
 Route::get('enviar_pedido_web_email/{id}', 'web\TiendaController@enviar_pedidoweb_email');
 Route::get('imprimir_pedido_web/{id}', 'web\TiendaController@imprimir_pedido');
 
-Route::get('enviar_factura_web_email/{id}', 'web\TiendaController@enviar_facturaweb_email');
+//Route::get('enviar_factura_web_email/{id}', 'web\TiendaController@enviar_facturaweb_email');
 Route::get('imprimir_factura_web/{id}', 'web\TiendaController@imprimir_factura');
 
 Route::post('vtas_crear_factura_desde_pasarela_de_pago','web\TiendaController@crear_factura_desde_pasarela_de_pago');

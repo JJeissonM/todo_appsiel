@@ -290,7 +290,7 @@ class TiendaController extends Controller
     }
 
     public function crear_factura_desde_pasarela_de_pago(Request $request)
-    {
+    {     
         $data = $request->data['transaction'];
         $cheksum_request = $request->signature['checksum'];
         $cheksum_generated = hash ("sha256",$data['id'].$data['status'].$data['amount_in_cents'].$request->timestamp.env('APP_TIENDA','none'));
@@ -298,9 +298,9 @@ class TiendaController extends Controller
         if($data['status'] == 'APPROVED' && $cheksum_request == $cheksum_generated){
             $encabezado_doc_venta = VtasDocEncabezado::find( (int)$data['reference'] );        
 
-                // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
+            // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
 
-        //crear_remision_desde_doc_venta
+            //crear_remision_desde_doc_venta
             $datos_remision = $encabezado_doc_venta->toArray();
             $datos_remision['fecha'] = date('Y-m-d');
             $datos_remision['inv_bodega_id'] = $encabezado_doc_venta->cliente->inv_bodega_id;
@@ -352,7 +352,7 @@ class TiendaController extends Controller
             $encabezado_doc_venta->estado = 'Cumplido';
             $encabezado_doc_venta->save();
 
-            $this->enviar_facturaweb_email($nueva_factura->id);
+            $this->enviar_facturaweb_email($nueva_factura->id,str_contains($data['redirect_url'],'domicil'));           
 
             return response()->json([
                 'status'=> '200',
@@ -449,15 +449,18 @@ class TiendaController extends Controller
         $documento_vista = $this->generar_documento_vista_pedido($id);
 
         $tercero = Tercero::find($doc_encabezado->core_tercero_id);
-        //dd($tercero);
 
         $asunto = $doc_encabezado->documento_transaccion_descripcion . ' No. ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo;
         $empresa = Empresa::all()->first();
         $descripcion =  $empresa->descripcion;
-        $cuerpo_mensaje = "Hola <strong>$tercero->nombre1 $tercero->nombre2</strong> </br>"
-                          ."Gracias por su compra en <strong> $descripcion </strong> </br>"
-                          ."Hemos recibido tu pedido; el cual ha ingresado a un proceso de validación de datos personales e inventario. Una vez finalizada esta verificación se  procederá a realizar el despacho. </br>"
-                          ."<strong style='color:red;'>NOTA:</strong>  para los productos pesados el precio puede variar, los detalles de está variación los podra revisar en la factura que le haremos llegar con los productos, Esta observación es valida para los productos que son sometidos a un proceso de medida , donde el proceso de medición no siempre es exacto. ";
+        $cuerpo_mensaje = "Hola <strong>$tercero->nombre1 $tercero->nombre2</strong>,"
+                          ."Gracias por su compra en <strong> $descripcion. </strong> </br>"
+                          ."Le hacemos llegar su Pedido de Ventas $doc_encabezado->documento_transaccion_prefijo_consecutivo. Forma de pago en Efectivo. <br><br>"
+                          ."Estamos alistando su compra. Los esperemos en la dirección. $empresa->direccion1, $empresa->barrio <br>"
+                          ."¡No olvide llevar este comprobante!<br><br>"
+                          ."Si tiene alguna duda o sugerencia nos puede llamar y escribirnos al $empresa->telefono1 o $empresa->email.<br><br>
+                          Por favor no responda este mensaje, fue generado automáticamente.
+                          ";
 
         
         $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
@@ -465,21 +468,43 @@ class TiendaController extends Controller
         //$empresa = Empresa::find( Auth::user()->empresa_id );
 
         $vec = \App\Http\Controllers\Sistema\EmailController::enviar_por_email_documento($empresa->descripcion, $tercero->email . ',' . $email_interno, $asunto, $cuerpo_mensaje, $documento_vista);
-        return redirect()->back();
+        return redirect()->route('ecommerce/public/detallepedido'.'/'.$id.'?efectivo=true');
     }
 
-    public function enviar_facturaweb_email( $id )
+    public function enviar_facturaweb_email( $id, $compra_domi)
     {
         $empresa = Empresa::all()->first();
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
-        $documento_vista = $this->generar_documento_vista_factura( $id, 'ventas.formatos_impresion.estandar' );
-
-        $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
+        $tercero = Tercero::find( $doc_encabezado->core_tercero_id );   
+        
+        $documento_vista = $this->generar_documento_vista_factura( $id, 'ventas.formatos_impresion.estandar' );        
 
         $asunto = $doc_encabezado->documento_transaccion_descripcion.' No. '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
 
-        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+        if($compra_domi){
+            $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($tercero->user_id, 'users.id');
+            $domicilio = $cliente->direccion_por_defecto();
+            
+            $cuerpo_mensaje = "Hola <strong>$tercero->nombre1 $tercero->nombre2</strong>,"
+                          ."Gracias por su compra en <strong> $descripcion. </strong> </br>"
+                          ."Le hacemos llegar su Factura de Ventas $doc_encabezado->documento_transaccion_prefijo_consecutivo. Forma de pago en Wompi. <br><br>"
+                          ."Estamos alistando su compra para ser enviada a la dirección $domicilio->direccion1, $domicilio->barrio <br>"
+                          ."Si tiene alguna duda o sugerencia nos puede llamar y escribirnos al $domicilio->telefono1 o $tercero->email.<br><br>
+                          Por favor no responda este mensaje, fue generado automáticamente.
+                          ";
+        }else{
+            $cuerpo_mensaje = "Hola <strong>$tercero->nombre1 $tercero->nombre2</strong>,"
+                          ."Gracias por su compra en <strong> $descripcion. </strong> </br>"
+                          ."Le hacemos llegar su Factura de Ventas $doc_encabezado->documento_transaccion_prefijo_consecutivo. Forma de pago en Wompi. <br><br>"
+                          ."Estamos alistando su compra. Lo esperamos en la dirección $empresa->direccion1, $empresa->barrio <br>"
+                          ."¡No olvide llevar este comprobante!<br><br>"
+                          ."Si tiene alguna duda o sugerencia nos puede llamar y escribirnos al $empresa->telefono1 o $empresa->email.<br><br>
+                          Por favor no responda este mensaje, fue generado automáticamente.
+                          ";
+        }
+
+        
 
         $email_destino = $tercero->email;
         if ( $doc_encabezado->contacto_cliente_id != 0 )

@@ -97,7 +97,7 @@
 @endsection
 
 @section('script')
-    <script src="{{asset('js/carrito/app.js')}}"></script>
+    <script src="{{asset('assets/tienda/js/app.js')}}"></script>
     <script type="text/javascript">
     </script>
 @endsection

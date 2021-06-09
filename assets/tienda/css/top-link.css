@@ -87,6 +87,7 @@ a {
         width: auto;
         min-width: 60px;
         padding-left: 10px;
+        padding-top: 0;
     }
 
     .welcome-msg {

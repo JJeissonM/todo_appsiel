@@ -129,7 +129,7 @@
 
                 <div class="terminos">
                     <input class="select" type="checkbox" id="contrato">
-                    <a href="" class="my-1" style="line-height: normal">Aceptas términos y condiciones de la marketplace y autorizo el tratamiento de mis datos personales con las siguientes condiciones.</a>
+                    <a href="" class="my-1" style="line-height: normal">Acepto haber leído los Términos y Condiciones y la Política de Privacidad para hacer esta compra</a>
                 </div>
 
                 <div class="acciones">                    
@@ -138,7 +138,7 @@
                         <input type="hidden" name="detailpedido" id="url_detallepedido" value="{{url('/ecommerce/public/detallepedido')}}"> 
                         <input type="hidden" id="token" name="_toker" value="{{csrf_token()}}">
                         <center><img style="display: none" id="loading" src="{{asset('img/fidget-spinner-loading.gif')}}" alt="" width="250px" height="250px"></center>
-                        <button class="btn btn-primary btn-block" id="comprar" type="submit">Comfirmar Compra</button>
+                        <button class="btn btn-primary btn-block" id="comprar" type="submit">Confirmar Compra</button>
                     </form>
                     <a class="btn btn-light btn-block mt-2" href="{{url('/')}}"><center>Seguir comprando</center></a>
                 </div>

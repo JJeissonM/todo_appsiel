@@ -36,7 +36,7 @@
             <div class="container-inner">
                 <div class="main">
                     <div class="main-inner">
-                        <div class="row">
+                        <div class="">
                             <div class="col-main col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="page-title category-title">
                                     <h1 class="font-tienda text-center">Nuestros Productos</h1>
@@ -44,8 +44,7 @@
                                 </div>
                                 <div class="category-products">
                                     <div id="lista_productos">
-                                        <ul class="products-grid row first odd align-content-start">
-                                            
+                                        <ul class="products-grid row first odd align-content-start">                                            
                                             @foreach($items as $item)
                                                 <li class=" item first" style="list-style: none; padding: 0 0 0 0; position: relative;">
                                                     @if( $item->descuento != 0)
@@ -116,7 +115,7 @@
     </div>
 </main>
 
-<script src="{{asset('js/carrito/app.js')}}"></script>
+<script src="{{asset('assets/tienda/js/app.js')}}"></script>
 
 <script type="text/javascript">
 
@@ -140,7 +139,7 @@
                     $('#lista_productos').html( data );
                     $('#lista_productos').fadeIn( 1000 );
 
-                    $('#categoria_filtrada').html( 'Filtado por: <span style="border-radius: 4px; border: 2px solid var(--color-secundario); padding: 3px;"> ' + enlace.innerHTML + ' <a href="javascript:location.reload()" class="close fa fa-close" aria-label="close"></a></span>' ); 
+                    $('#categoria_filtrada').html( 'Filtrado por: <span style="border-radius: 4px; border: 2px solid var(--color-secundario); padding: 3px;"> ' + enlace.innerHTML + ' <a href="javascript:location.reload()" class="close fa fa-close" aria-label="close"></a></span>' ); 
 
                 })
                 .error(function(){

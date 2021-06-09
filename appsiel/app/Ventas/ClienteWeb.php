@@ -25,6 +25,10 @@ class ClienteWeb extends Model
         return $this->hasMany( DireccionEntrega::class, 'cliente_id');
     }
 
+    public function direccion_por_defecto(){
+        return DireccionEntrega::where('por_defecto',1)->get()->first();
+    }
+
     public static function consultar_registros($nro_registros)
     {
         $registros = ClienteWeb::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')->leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_clientes.lista_precios_id')->leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_clientes.lista_descuentos_id')->leftJoin('vtas_zonas', 'vtas_zonas.id', '=', 'vtas_clientes.zona_id')

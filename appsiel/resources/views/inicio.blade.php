@@ -16,6 +16,8 @@
 	.img-responsive:hover {
 		transform: scale(1.2) rotate(-15deg);
 		cursor: pointer;
+		transition-duration: .1s;
+		transition-timing-function: ease;
 	}
 
 	.banner {
