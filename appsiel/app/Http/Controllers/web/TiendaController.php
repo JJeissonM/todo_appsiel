@@ -370,6 +370,7 @@ class TiendaController extends Controller
             $doc_remision->save();
 
             $encabezado_doc_venta->estado = 'Cumplido';
+            $encabezado_doc_venta->descripcion = $descripcion;
             $encabezado_doc_venta->save();
 
             //$this->enviar_facturaweb_email($nueva_factura->id,str_contains($data['redirect_url'],'domicil'));           
