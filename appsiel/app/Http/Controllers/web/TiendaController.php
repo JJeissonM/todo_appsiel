@@ -329,20 +329,18 @@ class TiendaController extends Controller
                 $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($tercero->user_id, 'users.id');
                 $direccion_por_defecto = $cliente->direccion_por_defecto();
 
-                $descripcion += "<address>
+                $descripcion .= "<address>
                                     <b>Domicilio: $direccion_por_defecto->nombre_contacto</b><br>
                                     $direccion_por_defecto->direccion1, $direccion_por_defecto->barrio<br>".
-                                    $direccion_por_defecto->ciudad->descripcion.", ".$direccion_por_defecto->ciudad->departamento->descripcion.", "
-                                    .strval($direccion_por_defecto->codigo_postal)
-                                    ."<br>Tel.: ".((int)$direccion_por_defecto->telefono1)." <br></address>";
+                                    $direccion_por_defecto->ciudad->descripcion.", ".$direccion_por_defecto->ciudad->departamento->descripcion.", $direccion_por_defecto->codigo_postal<br>
+                                    Tel.: $direccion_por_defecto->telefono1 <br></address>";
             }else{
                 $empresa = Empresa::all()->first();
-                $descripcion += "<address>
+                $descripcion .= "<address>
                                     <b>Recoger en: $empresa->descripcion</b><br>
                                     $empresa->direccion1, $empresa->barrio<br>".
-                                    $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", "
-                                    .strval($empresa->codigo_postal)
-                                    ."<br>Tel.: ".((int)$empresa->telefono1)." <br></address>";
+                                    $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", $empresa->codigo_postal<br>
+                                    Tel.: $empresa->telefono1 <br></address>";
 
             }
 
@@ -374,7 +372,7 @@ class TiendaController extends Controller
             $encabezado_doc_venta->estado = 'Cumplido';
             $encabezado_doc_venta->save();
 
-            $this->enviar_facturaweb_email($nueva_factura->id,str_contains($data['redirect_url'],'domicil'));           
+            //$this->enviar_facturaweb_email($nueva_factura->id,str_contains($data['redirect_url'],'domicil'));           
 
             return response()->json([
                 'status'=> '200',
