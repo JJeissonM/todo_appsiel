@@ -322,7 +322,29 @@ class TiendaController extends Controller
             //crear_remision_desde_doc_venta
             $modelo_id = 139;
 
-            $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
+            $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo.'\n';
+
+            if(str_contains($data['redirect_url'],'domicil')){
+                $tercero = Tercero::find($doc_encabezado->core_tercero_id);
+                $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($tercero->user_id, 'users.id');
+                $direccion_por_defecto = $cliente->direccion_por_defecto();
+
+                $descripcion += "<address>
+                                    <b>Domicilio: $direccion_por_defecto->nombre_contacto</b><br>
+                                    $direccion_por_defecto->direccion1, $direccion_por_defecto->barrio<br>".
+                                    $direccion_por_defecto->ciudad->descripcion.", ".$direccion_por_defecto->ciudad->departamento->descripcion.", $direccion_por_defecto->codigo_postal<br>
+                                    Tel.: $direccion_por_defecto->telefono1<br>                                           
+                                </address>";
+            }else{
+                $empresa = Empresa::all()->first();
+                $descripcion += "<address>
+                                    <b>Recoger en: $empresa->descripcion</b><br>
+                                    $empresa->direccion1, $empresa->barrio<br>".
+                                    $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", $empresa->codigo_postal<br>
+                                    Tel.: $empresa->telefono1<br>                                           
+                                </address>";
+
+            }
 
             $nueva_factura = $encabezado_doc_venta->clonar_encabezado(date('Y-m-d'), (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion, $modelo_id );
             
@@ -335,13 +357,13 @@ class TiendaController extends Controller
 
             $nueva_factura->crear_movimiento_ventas();
 
-            // Contabilizar
+                // Contabilizar
             $nueva_factura->contabilizar_movimiento_debito();
             $nueva_factura->contabilizar_movimiento_credito();
 
             $nueva_factura->crear_registro_pago();
 
-        //crear_remision_desde_doc_venta
+            //crear_remision_desde_doc_venta
             $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
             $nueva_factura->ventas_doc_relacionado_id = $encabezado_doc_venta->id;
             $nueva_factura->save();

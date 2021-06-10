@@ -64,7 +64,7 @@ function leerLocalStorage() {
         const row = document.createElement('tr');
         row.innerHTML = /*html*/`
              <td>  
-                 <center><img src="${producto.imagen}" width=100></center> 
+                 <center><img onerror="imgError(this)" src="${producto.imagen}" width=100></center> 
              </td>
              <td style="padding-left: 3px">${producto.titulo}</td>
              <td style="white-space: nowrap" class="text-right">$ ${parseFloat(producto.precio).toFixed(2).toLocaleString("es-ES")}</td>

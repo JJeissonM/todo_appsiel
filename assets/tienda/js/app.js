@@ -69,7 +69,7 @@ function insertarCarrito(producto) {
 
         row.innerHTML = `
           <td>  
-               <img src="${item.imagen}" width=100>
+               <img onerror="imgError(this)" src="${item.imagen}" width=100>
           </td>
           <td class="text-left">${item.titulo}</td>
           <td>${item.cantidad}</td>
@@ -204,7 +204,7 @@ function leerLocalStorage() {
         const row = document.createElement('tr');
         row.innerHTML = `
              <td>  
-                 <center><img src="${producto.imagen}" width=100></center> 
+                 <center><img onerror="imgError(this)" src="${producto.imagen}" width=100></center> 
              </td>
              <td>${producto.titulo}</td>             
              <td><center>${producto.cantidad}</center></td>  

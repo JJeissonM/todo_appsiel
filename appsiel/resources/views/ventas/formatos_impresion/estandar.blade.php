@@ -39,8 +39,6 @@ Cliente:
     @include('matriculas.facturas.datos_estudiante')
     <br>
     <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
-    <br />
-    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 @endsection
 
 @section('tabla_registros_1')
@@ -111,4 +109,6 @@ Cliente:
 @section('tabla_registros_3')
 @include('transaccion.registros_contables')
 @include('transaccion.auditoria')
+<b>Detalle: &nbsp;&nbsp;</b> <?php echo $doc_encabezado->descripcion ?>
 @endsection
+

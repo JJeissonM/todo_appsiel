@@ -136,7 +136,7 @@
         <tr>
             <td >
                 @if( $doc_encabezado->descripcion != '' )
-                    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+                    <b>Detalle: &nbsp;&nbsp;</b> <?php echo $doc_encabezado->descripcion ?>
                     <br>
                 @endif
             </td>
