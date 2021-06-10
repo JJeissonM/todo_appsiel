@@ -332,17 +332,17 @@ class TiendaController extends Controller
                 $descripcion += "<address>
                                     <b>Domicilio: $direccion_por_defecto->nombre_contacto</b><br>
                                     $direccion_por_defecto->direccion1, $direccion_por_defecto->barrio<br>".
-                                    $direccion_por_defecto->ciudad->descripcion.", ".$direccion_por_defecto->ciudad->departamento->descripcion.", ".strval($direccion_por_defecto->codigo_postal)."<br>
-                                    Tel.: ".strval($direccion_por_defecto->telefono1)." <br>                                           
-                                </address>";
+                                    $direccion_por_defecto->ciudad->descripcion.", ".$direccion_por_defecto->ciudad->departamento->descripcion.", "
+                                    .strval($direccion_por_defecto->codigo_postal)
+                                    ."<br>Tel.: ".strval($direccion_por_defecto->telefono1)." <br></address>";
             }else{
                 $empresa = Empresa::all()->first();
                 $descripcion += "<address>
                                     <b>Recoger en: $empresa->descripcion</b><br>
                                     $empresa->direccion1, $empresa->barrio<br>".
-                                    $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", ".strval($empresa->codigo_postal)." <br>
-                                    Tel.: ".strval($empresa->telefono1)." <br>                                            
-                                </address>";
+                                    $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", "
+                                    .strval($empresa->codigo_postal)
+                                    ."<br>Tel.: ".strval($empresa->telefono1)." <br></address>";
 
             }
 
