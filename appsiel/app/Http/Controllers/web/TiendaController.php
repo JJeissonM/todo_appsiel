@@ -474,6 +474,7 @@ class TiendaController extends Controller
     public function enviar_facturaweb_email( $id, $compra_domi)
     {
         $empresa = Empresa::all()->first();
+        $descripcion =  $empresa->descripcion;
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
         $tercero = Tercero::find( $doc_encabezado->core_tercero_id );   
