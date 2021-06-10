@@ -334,7 +334,7 @@ class TiendaController extends Controller
                                     $direccion_por_defecto->direccion1, $direccion_por_defecto->barrio<br>".
                                     $direccion_por_defecto->ciudad->descripcion.", ".$direccion_por_defecto->ciudad->departamento->descripcion.", "
                                     .strval($direccion_por_defecto->codigo_postal)
-                                    ."<br>Tel.: ".strval($direccion_por_defecto->telefono1)." <br></address>";
+                                    ."<br>Tel.: ".((int)$direccion_por_defecto->telefono1)." <br></address>";
             }else{
                 $empresa = Empresa::all()->first();
                 $descripcion += "<address>
@@ -342,7 +342,7 @@ class TiendaController extends Controller
                                     $empresa->direccion1, $empresa->barrio<br>".
                                     $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", "
                                     .strval($empresa->codigo_postal)
-                                    ."<br>Tel.: ".strval($empresa->telefono1)." <br></address>";
+                                    ."<br>Tel.: ".((int)$empresa->telefono1)." <br></address>";
 
             }
 
