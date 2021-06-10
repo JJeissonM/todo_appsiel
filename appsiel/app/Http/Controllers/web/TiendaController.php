@@ -325,7 +325,7 @@ class TiendaController extends Controller
             $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo.'\n';
 
             if(str_contains($data['redirect_url'],'domicil')){
-                $tercero = Tercero::find($doc_encabezado->core_tercero_id);
+                $tercero = Tercero::find($encabezado_doc_venta->core_tercero_id);
                 $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($tercero->user_id, 'users.id');
                 $direccion_por_defecto = $cliente->direccion_por_defecto();
 
