@@ -21,11 +21,7 @@
 <body>
     <div style="position: absolute; left: 40mm; top: 69mm;">
         <b>{{ $doc_encabezado->tercero_nombre_completo }} 
-        @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
-            @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
-                / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
-            @endif
-        @endif
+        
         </b>
     </div>
 
@@ -57,7 +53,21 @@
         <table width="100%">
             <tr>
                 <td width="10%"></td>
-                <td width="70%"><?php echo $doc_encabezado->descripcion ?></td>
+                <td width="70%"><?php echo $doc_encabezado->descripcion ?>
+                    <br>
+                    <br>
+                    <b>
+                    @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+                        @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
+                            CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}<br>
+                        @endif
+                    @endif
+                    @if(!is_null( $doc_encabezado->documento_ventas_padre()->documento_ventas_padre() ))
+                        COTIZACIÓN NRO. {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->consecutivo }}<br>
+                        ORDEN DE COMPRAS: {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->orden_compras }}
+                    @endif
+                    </b>
+                </td>
                 <td width="20%"></td>
             </tr>   
         </table>         

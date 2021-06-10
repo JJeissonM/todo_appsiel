@@ -20,13 +20,7 @@
 </head>
 <body>
     <div style="position: absolute; left: 40mm; top: 69mm;">
-        <b>{{ $doc_encabezado->tercero_nombre_completo }} 
-        @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
-            @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
-                / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
-            @endif
-        @endif
-        </b>
+        <b>{{ $doc_encabezado->tercero_nombre_completo }}</b>
     </div>
 
     <div style="position: absolute; left: 40mm; top: 74mm;">
@@ -71,6 +65,26 @@
                 $numero++;
             ?>
             @endforeach
+            <tr>
+                <td style="text-align: center;" width="10%"></td>
+                <td width="70%">
+                    <br>
+                    <br>
+                    <b>
+                    @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+                        @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
+                            CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}<br>
+                        @endif
+                    @endif
+                    @if(!is_null( $doc_encabezado->documento_ventas_padre()->documento_ventas_padre() ))
+                        COTIZACIÓN NRO. {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->consecutivo }}<br>
+                        ORDEN DE COMPRAS: {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->orden_compras }}
+                    @endif
+                    </b>
+                </td>
+                <td width="20%" style="text-align: center;"></td>
+            </tr>
+                    
         </table>     
     </div>
 
