@@ -19,6 +19,7 @@ use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMovimiento;
+use App\Tesoreria\TesoDocEncabezadoTraslado;
 use App\User;
 use Input;
 use Illuminate\Support\Facades\Auth;
@@ -30,33 +31,6 @@ use Form;
 
 class TrasladoEfectivosController extends TransaccionController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $this->set_variables_globales();
@@ -101,39 +75,6 @@ class TrasladoEfectivosController extends TransaccionController
         return $pdf->download('traslado_efectivo.pdf');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 
     // AJAX: enviar fila para el ingreso de registros al elaborar pago
     public function ajax_get_fila()
@@ -192,5 +133,33 @@ class TrasladoEfectivosController extends TransaccionController
         $documento->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
         return redirect('tesoreria/traslado_efectivo/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Documento de traslado de efectico fue anulado correctamente.');
+    }
+
+
+
+    public function recontabilizar( $doc_encabezado_id )
+    {
+        $doc_encabezado = TesoDocEncabezadoTraslado::find( $doc_encabezado_id );
+
+        $doc_encabezado->recontabilizar();
+
+        return redirect('tesoreria/traslado_efectivo/' . $doc_encabezado_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Documento RECONTABILIZADO Correctamente.');
+    }
+
+
+    public function recontabilizacion_masiva( $fecha_inicial, $fecha_final )
+    {
+        $docs_encabezados = TesoDocEncabezadoTraslado::where('core_tipo_transaccion_id',43)
+                                                    ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
+                                                    ->get();
+
+        $i = 0;
+        foreach ($docs_encabezados as $doc_encabezado)
+        {
+            $doc_encabezado->recontabilizar();
+            $i++;
+        }
+
+        echo 'Se Recontabilizaron <u>' . $i . '</u> documentos.';
     }
 }

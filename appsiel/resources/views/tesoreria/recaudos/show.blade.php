@@ -13,6 +13,7 @@
     @if($doc_encabezado->estado != 'Anulado')
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
     @endif
+    <a class="btn-gmail" href="{{ url( 'teso_traslado_efectivo_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
 @endsection
 
 @section('botones_imprimir_email')

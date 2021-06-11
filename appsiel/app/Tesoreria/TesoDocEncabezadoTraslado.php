@@ -24,6 +24,74 @@ class TesoDocEncabezadoTraslado extends Model
 
     public $vistas = '{"create":"tesoreria.traslados_efectivo.create"}';
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function caja()
+    {
+        return $this->belongsTo(TesoCaja::class, 'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo(TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
+
+    public function lineas_registros()
+    {
+        return $this->hasMany( TesoDocRegistro::class, 'teso_encabezado_id');
+    }
+
+    public function recontabilizar()
+    {
+        // Eliminar ontabilizacion anterior
+        ContabMovimiento::where([
+                                    ['core_tipo_transaccion_id', $this->core_tipo_transaccion_id],
+                                    ['core_tipo_doc_app_id', $this->core_tipo_doc_app_id],
+                                    ['consecutivo', $this->consecutivo]
+                                ])
+                        ->delete();
+
+        $lineas_registros = $this->lineas_registros;
+        foreach( $lineas_registros AS $linea_registro )
+        {
+            if ($linea_registro->teso_caja_id != 0)
+            {
+                $contab_cuenta_id = $linea_registro->caja->contab_cuenta_id;
+            }
+
+            if ($linea_registro->teso_cuenta_bancaria_id != 0)
+            {
+                $contab_cuenta_id = $linea_registro->cuenta_bancaria->contab_cuenta_id;
+            }
+
+            if ( $linea_registro->motivo->movimiento == 'entrada' )
+            {
+                $valor_debito = $linea_registro->valor;
+                $valor_credito = 0;
+            }else{
+                $valor_debito = 0;
+                $valor_credito = $linea_registro->valor * -1;
+            }
+
+            $datos = $this->toArray();
+            $datos['tipo_transaccion'] = 'causacion_tesoreria';
+            $datos['teso_caja_id'] = $linea_registro->teso_caja_id;
+            $datos['teso_cuenta_bancaria_id'] = $linea_registro->teso_cuenta_bancaria_id;
+
+            $movimiento_contable = new ContabMovimiento();
+            $detalle_operacion = 'Recontabilización ' . $this->tipo_transaccion->descripcion . ' ' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+            $movimiento_contable->contabilizar_linea_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+        }
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $transaccion_id = 43;
@@ -118,7 +186,8 @@ class TesoDocEncabezadoTraslado extends Model
 
         $registros = json_decode($datos['lineas_registros']);
         $total = 0;
-        foreach ($registros as $item) {
+        foreach ($registros as $item)
+        {
             $motivo = explode('-', $item->teso_motivo_id);
             $aux = TesoMotivo::where([['teso_tipo_motivo', 'Traslado'], ['movimiento', $motivo[0]]])->first();
             $medio_recaudo = explode('-', $item->teso_medio_recaudo_id);
@@ -131,7 +200,8 @@ class TesoDocEncabezadoTraslado extends Model
             $teso_registro->teso_motivo_id = $aux->id;
             $teso_registro->teso_cuenta_bancaria_id = $cuenta[0];
             $teso_registro->core_tercero_id = $registro->core_tercero_id;
-            if ($medio_recaudo[1] != 'Tarjeta bancaria') {
+            if ($medio_recaudo[1] != 'Tarjeta bancaria')
+            {
                 $teso_registro->teso_caja_id = $caja[0];
                 $teso_registro->teso_cuenta_bancaria_id = 0;
             } else {
@@ -142,9 +212,10 @@ class TesoDocEncabezadoTraslado extends Model
             $teso_registro->valor = $valor[1];
             $teso_registro->estado = 'Activo';
             $teso_registro->detalle_operacion = 0;
-            $total = $total + abs($teso_registro->valor);
+            $total += abs($teso_registro->valor);
             $result = $teso_registro->save();
-            if ($result) {
+            if ($result)
+            {
                 $movimiento = new TesoMovimiento();
                 $movimiento->fecha = $registro->fecha;
                 $movimiento->core_empresa_id = $registro->core_empresa_id;
@@ -161,12 +232,11 @@ class TesoDocEncabezadoTraslado extends Model
                 $movimiento->save();
             }
 
-
-
             /*
                 **  Determinar la cuenta contable DB (CAJA O BANCOS)
             */
-            if ($teso_registro->teso_caja_id != 0) {
+            if ($teso_registro->teso_caja_id != 0)
+            {
                 $sql_contab_cuenta_id = TesoCaja::find($teso_registro->teso_caja_id);
                 $contab_cuenta_id = $sql_contab_cuenta_id->contab_cuenta_id;
             }
@@ -177,21 +247,16 @@ class TesoDocEncabezadoTraslado extends Model
             }
 
             $detalle_operacion = $datos['descripcion'];
-            $valor_debito = $teso_registro->valor;
-            $valor_credito = 0;
-
-            $this->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_registro->teso_caja_id, $teso_registro->teso_cuenta_bancaria_id);
-
-            // Como los motivos se ingresaron al momento de registrar cada medio de pago,
-            // Si es un Anticipo u Otro Recaudo se contabiliza la contrapartida de cada motivo Inmediatamente
-            /*
-                **  Determinar la cuenta contable desde el motivo
-            */
             $motivo = TesoMotivo::find($teso_registro->teso_motivo_id);
-            $contab_cuenta_id = $motivo->contab_cuenta_id;
 
-            $valor_debito = 0;
-            $valor_credito = $teso_registro->valor;
+            if ( $motivo->movimiento == 'entrada' )
+            {
+                $valor_debito = $teso_registro->valor;
+                $valor_credito = 0;
+            }else{
+                $valor_debito = 0;
+                $valor_credito = $teso_registro->valor * -1;
+            }
 
             $this->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
         }

@@ -380,7 +380,14 @@
 		    			break;
 
 		    		case 40:// Flecha hacia abajo
-		    			var item_activo = $("a.list-group-item.active");					
+		    			var item_activo = $("a.list-group-item.active");
+
+						// Si es el útimo item, entonces no se mueve hacia abajo
+						if( item_activo.attr('data-ultimo_item') == 1 )
+						{
+							return false;
+						}
+
 						item_activo.next().attr('class','list-group-item list-group-item-productos active');
 						item_activo.attr('class','list-group-item list-group-item-productos');
 						$('#inv_producto_id').val( item_activo.html() );
@@ -388,7 +395,14 @@
 
 		    		case 38:// Flecha hacia arriba
 		    			$(".flecha_mover:focus").prev().focus();
-						var item_activo = $("a.list-group-item.active");					
+						var item_activo = $("a.list-group-item.active");
+
+						// Si es el primer item, entonces no se mueve hacia arriba
+						if( item_activo.attr('data-primer_item') == 1 )
+						{
+							return false;
+						}
+											
 						item_activo.prev().attr('class','list-group-item list-group-item-productos active');
 						item_activo.attr('class','list-group-item list-group-item-productos');
 						$('#inv_producto_id').val( item_activo.html() );
