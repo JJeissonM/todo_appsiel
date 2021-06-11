@@ -100,6 +100,7 @@ function obtenerProductosLocalStorage() {
 
     return productosLS;
 }
+
 function total(){
     let productosLS,total = 0,subtotal = 0;
     productosLS = obtenerProductosLocalStorage();
@@ -112,6 +113,7 @@ function total(){
     document.getElementById('iva').innerHTML = `$ ${parseFloat(total-subtotal).toFixed(2)}`;
     document.getElementById('total').innerHTML = `$ ${total.toFixed(2)}`;
 }
+
 function down(event,id){
    event.preventDefault();
    let parent = event.target.parentElement.parentElement;
@@ -146,6 +148,7 @@ function down(event,id){
     document.getElementById('iva').innerHTML = `$ ${parseFloat(total_venta-subtotal).toFixed(2)}`;
     document.getElementById('total').innerHTML = `$ ${total_venta.toFixed(2)}`;
 }
+
 function up (event,id){
     event.preventDefault();
     let parent = event.target.parentElement.parentElement;

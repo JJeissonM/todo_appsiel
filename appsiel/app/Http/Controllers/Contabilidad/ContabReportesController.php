@@ -1073,7 +1073,7 @@ class ContabReportesController extends Controller
                         ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                         ->whereIn( 'contab_cuenta_id', $cuentas_tesoreria )
                         ->select( 
-                                    'contab_movimientos.id AS contab_movimiento_id',
+                                    'contab_movimientos.id',
                                     DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
                                     'contab_movimientos.core_tipo_transaccion_id',
                                     'contab_movimientos.core_tipo_doc_app_id',
