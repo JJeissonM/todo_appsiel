@@ -9,7 +9,7 @@
 
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Fecha','Documento','Detalle operación','Cód. Cuenta','Mov. débito','Mov. crédito','Saldo','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_tercero_id','teso_caja_id','teso_motivo_id','valor_movimiento']) }}
+        {{ Form::bsTableHeader(['Fecha','Documento','Detalle operación','Cód. Cuenta','Mov. débito','Mov. crédito','Saldo','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_tercero_id','teso_caja_id','teso_cuenta_bancaria_id','teso_motivo_id','valor_movimiento']) }}
         <tbody>
             <?php 
             
@@ -39,7 +39,8 @@
                         <td> {{ $linea->core_tipo_doc_app_id }} </td>
                         <td class="text-center"> {{ $linea->consecutivo }} </td>
                         <td> {{ $linea->core_tercero_id }} </td>
-                        <td> 1 </td>
+                        <td> {{ $linea->teso_caja_id }} </td>
+                        <td> {{ $linea->teso_cuenta_bancaria_id }} </td>
                         <td> {{ $motivo_id }} </td>
                         <td> {{ $linea->valor_saldo }} </td>
                         <!--<td> 
