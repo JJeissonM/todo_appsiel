@@ -1096,12 +1096,13 @@ class ContabReportesController extends Controller
                         ->get();
         
 
-        // Se filtran los registros del movimiento ontable que no están en el movimiento de tesorería
-        $registros = $movimiento->filter(function ($value, $key) {
+        // Se filtran los registros del movimiento contable que no están en el movimiento de tesorería
+        $registros = $movimiento->filter(function ($value, $key)
+        {
 
             return \App\Tesoreria\TesoMovimiento::where(
                                                         [ 
-                                                            'fecha' => $value->fecha, 
+                                                            'estado' => 'Activo', 
                                                             'core_tipo_transaccion_id' => $value->core_tipo_transaccion_id,
                                                             'core_tipo_doc_app_id' => $value->core_tipo_doc_app_id,
                                                             'consecutivo' => $value->consecutivo,
@@ -1110,31 +1111,6 @@ class ContabReportesController extends Controller
                                                         )
                                                 ->get()->first() == null;
         });
-
-        /*
-        $cajas = \App\Tesoreria\TesoCaja::opciones_campo_select();
-
-        $motivos_tesoreria = \App\Tesoreria\TesoMotivo::select('id','descripcion','movimiento')->get();
-        
-        $motivos_tesoreria_salida = [];
-        foreach( $motivos_tesoreria as $fila )
-        {
-            if( $fila->movimiento == 'salida')
-            {
-                $motivos_tesoreria_salida[$fila->id] = $fila->descripcion;
-            }            
-        }
-        
-        
-        $motivos_tesoreria_entrada = [];
-        foreach( $motivos_tesoreria as $fila )
-        {
-            if( $fila->movimiento == 'entrada')
-            {
-                $motivos_tesoreria_entrada[$fila->id] = $fila->descripcion;
-            }            
-        }
-        */
 
         $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros') )->render();
 
