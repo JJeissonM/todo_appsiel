@@ -12,6 +12,9 @@
     @endif
     @if($doc_encabezado->estado != 'Anulado')
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+        @if( $doc_encabezado->core_tipo_transaccion_id == 43)
+            <a class="btn-gmail" href="{{ url( 'teso_traslado_efectivo_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
+        @endif
     @endif
 @endsection
 

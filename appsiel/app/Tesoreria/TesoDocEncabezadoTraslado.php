@@ -13,6 +13,9 @@ use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Contabilidad\ContabMovimiento;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
 class TesoDocEncabezadoTraslado extends Model
 {
     // Apunta a la misma tabla del modelo de Recaudos
@@ -24,19 +27,85 @@ class TesoDocEncabezadoTraslado extends Model
 
     public $vistas = '{"create":"tesoreria.traslados_efectivo.create"}';
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function caja()
+    {
+        return $this->belongsTo(TesoCaja::class, 'teso_caja_id');
+    }
+
+    public function cuenta_bancaria()
+    {
+        return $this->belongsTo(TesoCuentaBancaria::class, 'teso_cuenta_bancaria_id');
+    }
+
+    public function lineas_registros()
+    {
+        return $this->hasMany( TesoDocRegistro::class, 'teso_encabezado_id');
+    }
+
+    public function recontabilizar()
+    {
+        // Eliminar ontabilizacion anterior
+        ContabMovimiento::where([
+                                    ['core_tipo_transaccion_id', $this->core_tipo_transaccion_id],
+                                    ['core_tipo_doc_app_id', $this->core_tipo_doc_app_id],
+                                    ['consecutivo', $this->consecutivo]
+                                ])
+                        ->delete();
+
+        $lineas_registros = $this->lineas_registros;
+        foreach( $lineas_registros AS $linea_registro )
+        {
+            if ($linea_registro->teso_caja_id != 0)
+            {
+                $contab_cuenta_id = $linea_registro->caja->contab_cuenta_id;
+            }
+
+            if ($linea_registro->teso_cuenta_bancaria_id != 0)
+            {
+                $contab_cuenta_id = $linea_registro->cuenta_bancaria->contab_cuenta_id;
+            }
+
+            if ( $linea_registro->motivo->movimiento == 'entrada' )
+            {
+                $valor_debito = $linea_registro->valor;
+                $valor_credito = 0;
+            }else{
+                $valor_debito = 0;
+                $valor_credito = $linea_registro->valor * -1;
+            }
+
+            $datos = $this->toArray();
+            $datos['tipo_transaccion'] = 'causacion_tesoreria';
+            $datos['teso_caja_id'] = $linea_registro->teso_caja_id;
+            $datos['teso_cuenta_bancaria_id'] = $linea_registro->teso_cuenta_bancaria_id;
+
+            $movimiento_contable = new ContabMovimiento();
+            $detalle_operacion = 'Recontabilización ' . $this->tipo_transaccion->descripcion . ' ' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+            $movimiento_contable->contabilizar_linea_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
+        }
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
-        $transaccion_id = 43;
+        $core_tipo_transaccion_id = 43;
 
-        if ( $search == '' )
-        {
-            return TesoDocEncabezadoRecaudo::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+        $collection = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                                     ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                                    ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
+                                    ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                                     ->select(
-                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'),
-                                        'teso_doc_encabezados.fecha AS campo2',
+                                        'teso_doc_encabezados.fecha AS campo1',
+                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
                                         DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
                                         'teso_doc_encabezados.descripcion AS campo4',
                                         'teso_doc_encabezados.valor_total AS campo5',
@@ -44,47 +113,88 @@ class TesoDocEncabezadoTraslado extends Model
                                         'teso_doc_encabezados.id AS campo7'
                                     )
                                     ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-                                    ->paginate($nro_registros);
+                                    ->get();
+
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
+        }
+
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if ( empty($nuevaColeccion) )
+        {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                                                                    'path' => $request->url(),
+                                                                    'query' => $request->query(),
+                                                                ]);
         }
         
-        return TesoDocEncabezadoRecaudo::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
-            ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
-            ->select(
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo1'),
-                'teso_doc_encabezados.fecha AS campo2',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
-                'teso_doc_encabezados.descripcion AS campo4',
-                'teso_doc_encabezados.valor_total AS campo5',
-                'teso_doc_encabezados.estado AS campo6',
-                'teso_doc_encabezados.id AS campo7'
-            )
-            ->where(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-            ->paginate($nro_registros);
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo)
+        {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false)
+            {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
     public static function sqlString($search)
     {
-        $transaccion_id = 43;
-        $string = TesoDocEncabezadoRecaudo::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+        $core_tipo_transaccion_id = 43;
+        $string = TesoDocEncabezadoPago::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
             ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
+            ->where('teso_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->select(
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 'teso_doc_encabezados.fecha AS FECHA',
+                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
                 'teso_doc_encabezados.descripcion AS DETALLE',
                 'teso_doc_encabezados.valor_total AS VALOR_TOTAL',
                 'teso_doc_encabezados.estado AS ESTADO'
             )
-            ->where(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+            ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
             ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
@@ -97,7 +207,7 @@ class TesoDocEncabezadoTraslado extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE TRASLADOS DE EFECTIVO";
+        return "LISTADO DE PAGOS";
     }
 
 
@@ -118,7 +228,8 @@ class TesoDocEncabezadoTraslado extends Model
 
         $registros = json_decode($datos['lineas_registros']);
         $total = 0;
-        foreach ($registros as $item) {
+        foreach ($registros as $item)
+        {
             $motivo = explode('-', $item->teso_motivo_id);
             $aux = TesoMotivo::where([['teso_tipo_motivo', 'Traslado'], ['movimiento', $motivo[0]]])->first();
             $medio_recaudo = explode('-', $item->teso_medio_recaudo_id);
@@ -131,7 +242,8 @@ class TesoDocEncabezadoTraslado extends Model
             $teso_registro->teso_motivo_id = $aux->id;
             $teso_registro->teso_cuenta_bancaria_id = $cuenta[0];
             $teso_registro->core_tercero_id = $registro->core_tercero_id;
-            if ($medio_recaudo[1] != 'Tarjeta bancaria') {
+            if ($medio_recaudo[1] != 'Tarjeta bancaria')
+            {
                 $teso_registro->teso_caja_id = $caja[0];
                 $teso_registro->teso_cuenta_bancaria_id = 0;
             } else {
@@ -142,9 +254,10 @@ class TesoDocEncabezadoTraslado extends Model
             $teso_registro->valor = $valor[1];
             $teso_registro->estado = 'Activo';
             $teso_registro->detalle_operacion = 0;
-            $total = $total + abs($teso_registro->valor);
+            $total += abs($teso_registro->valor);
             $result = $teso_registro->save();
-            if ($result) {
+            if ($result)
+            {
                 $movimiento = new TesoMovimiento();
                 $movimiento->fecha = $registro->fecha;
                 $movimiento->core_empresa_id = $registro->core_empresa_id;
@@ -161,12 +274,11 @@ class TesoDocEncabezadoTraslado extends Model
                 $movimiento->save();
             }
 
-
-
             /*
                 **  Determinar la cuenta contable DB (CAJA O BANCOS)
             */
-            if ($teso_registro->teso_caja_id != 0) {
+            if ($teso_registro->teso_caja_id != 0)
+            {
                 $sql_contab_cuenta_id = TesoCaja::find($teso_registro->teso_caja_id);
                 $contab_cuenta_id = $sql_contab_cuenta_id->contab_cuenta_id;
             }
@@ -177,21 +289,16 @@ class TesoDocEncabezadoTraslado extends Model
             }
 
             $detalle_operacion = $datos['descripcion'];
-            $valor_debito = $teso_registro->valor;
-            $valor_credito = 0;
-
-            $this->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_registro->teso_caja_id, $teso_registro->teso_cuenta_bancaria_id);
-
-            // Como los motivos se ingresaron al momento de registrar cada medio de pago,
-            // Si es un Anticipo u Otro Recaudo se contabiliza la contrapartida de cada motivo Inmediatamente
-            /*
-                **  Determinar la cuenta contable desde el motivo
-            */
             $motivo = TesoMotivo::find($teso_registro->teso_motivo_id);
-            $contab_cuenta_id = $motivo->contab_cuenta_id;
 
-            $valor_debito = 0;
-            $valor_credito = $teso_registro->valor;
+            if ( $motivo->movimiento == 'entrada' )
+            {
+                $valor_debito = $teso_registro->valor;
+                $valor_credito = 0;
+            }else{
+                $valor_debito = 0;
+                $valor_credito = $teso_registro->valor * -1;
+            }
 
             $this->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
         }

@@ -62,6 +62,8 @@ Route::resource('tesoreria/traslado_efectivo', 'Tesoreria\TrasladoEfectivosContr
 Route::get('tesoreria/traslado_efectivo/prueba/ajax_get_fila', 'Tesoreria\TrasladoEfectivosController@ajax_get_fila');
 Route::get('tesoreria/traslado_efectivo/anular/{id}', 'Tesoreria\TrasladoEfectivosController@anular_traslado');
 Route::get('tesoreria/traslado_efectivo/traslado/imprimir/{id}', 'Tesoreria\TrasladoEfectivosController@imprimir');
+Route::get('teso_traslado_efectivo_recontabilizar/{doc_encabezado_id}', 'Tesoreria\TrasladoEfectivosController@recontabilizar');
+Route::get('teso_traslado_efectivo_recontabilizacion_masiva/{fecha_inicial}/{fecha_final}', 'Tesoreria\TrasladoEfectivosController@recontabilizacion_masiva');
 
 // RECAUDOS DE CXC
 Route::get('tesoreria/get_documentos_pendientes_cxc', 'Tesoreria\RecaudoCxcController@get_documentos_pendientes_cxc');

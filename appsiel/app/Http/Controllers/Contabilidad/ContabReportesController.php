@@ -1072,10 +1072,8 @@ class ContabReportesController extends Controller
                         ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
                         ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                         ->whereIn( 'contab_cuenta_id', $cuentas_tesoreria )
-                        ->where( 'teso_caja_id', 0 )
-                        ->where( 'teso_cuenta_bancaria_id', 0 )
                         ->select( 
-                                    'contab_movimientos.id AS contab_movimiento_id',
+                                    'contab_movimientos.id',
                                     DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
                                     'contab_movimientos.core_tipo_transaccion_id',
                                     'contab_movimientos.core_tipo_doc_app_id',
@@ -1094,47 +1092,19 @@ class ContabReportesController extends Controller
                                     'contab_movimientos.detalle_operacion' )
                         ->orderBy('contab_movimientos.fecha')
                         ->get();
-        
 
-        // Se filtran los registros del movimiento ontable que no están en el movimiento de tesorería
-        $registros = $movimiento->filter(function ($value, $key) {
-
+        // Se filtran los registros del movimiento contable que no están en el movimiento de tesorería
+        $registros = $movimiento->filter(function ($value, $key)
+        {
             return \App\Tesoreria\TesoMovimiento::where(
                                                         [ 
-                                                            'fecha' => $value->fecha, 
                                                             'core_tipo_transaccion_id' => $value->core_tipo_transaccion_id,
                                                             'core_tipo_doc_app_id' => $value->core_tipo_doc_app_id,
                                                             'consecutivo' => $value->consecutivo,
-                                                            'valor_movimiento' => $value->valor_saldo,
                                                         ]
                                                         )
                                                 ->get()->first() == null;
         });
-
-        /*
-        $cajas = \App\Tesoreria\TesoCaja::opciones_campo_select();
-
-        $motivos_tesoreria = \App\Tesoreria\TesoMotivo::select('id','descripcion','movimiento')->get();
-        
-        $motivos_tesoreria_salida = [];
-        foreach( $motivos_tesoreria as $fila )
-        {
-            if( $fila->movimiento == 'salida')
-            {
-                $motivos_tesoreria_salida[$fila->id] = $fila->descripcion;
-            }            
-        }
-        
-        
-        $motivos_tesoreria_entrada = [];
-        foreach( $motivos_tesoreria as $fila )
-        {
-            if( $fila->movimiento == 'entrada')
-            {
-                $motivos_tesoreria_entrada[$fila->id] = $fila->descripcion;
-            }            
-        }
-        */
 
         $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros') )->render();
 

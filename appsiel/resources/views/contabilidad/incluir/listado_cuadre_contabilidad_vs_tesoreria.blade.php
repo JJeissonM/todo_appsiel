@@ -1,15 +1,11 @@
 <br>
 <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Cuadrade de Contabilidad vs Tesorería 
-    <br> Estos documentos se generaron en el módulo de contabilidad y no se reflejan en el movimiento de Tesorería 
-    
-    <p style=" color: orange;"> 
-        NOTA: Solo se puede actualizar el movimiento de Tesorería en una Caja. Depués se puede hacer un traslado de efectivo en el módulo para mover los valores a Cuentas bancarias.
-    </p>
+    <br> Estos documentos se generaron en el módulo de contabilidad y no se reflejan en el movimiento de Tesorería
 </div>
 
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Fecha','Documento','Detalle operación','Cód. Cuenta','Mov. débito','Mov. crédito','Saldo','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_tercero_id','teso_caja_id','teso_motivo_id','valor_movimiento']) }}
+        {{ Form::bsTableHeader(['ID Mov. Contab.','Fecha','Documento','Detalle operación','Cód. Cuenta','Mov. débito','Mov. crédito','Saldo','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_tercero_id','teso_caja_id','teso_cuenta_bancaria_id','valor_movimiento']) }}
         <tbody>
             <?php 
             
@@ -20,14 +16,8 @@
             ?>
             @foreach($registros as $linea )
                 @if( $linea->valor_saldo < -1 || $linea->valor_saldo > 1)
-                    <?php 
-                        $motivo_id = 23; // Recaudo
-                        if( $linea->valor_saldo < 0 )
-                        {
-                            $motivo_id = 27; // Diversos - Otros
-                        }
-                    ?>
                     <tr data-linea="{{$linea}}">
+                        <td> {{ $linea->id }} </td>
                         <td> {{ $linea->fecha }} </td>
                         <td class="text-center"> {{ $linea->documento }} </td>
                         <td> {{ $linea->detalle_operacion }} </td>
@@ -39,16 +29,9 @@
                         <td> {{ $linea->core_tipo_doc_app_id }} </td>
                         <td class="text-center"> {{ $linea->consecutivo }} </td>
                         <td> {{ $linea->core_tercero_id }} </td>
-                        <td> 1 </td>
-                        <td> {{ $motivo_id }} </td>
+                        <td> {{ $linea->teso_caja_id }} </td>
+                        <td> {{ $linea->teso_cuenta_bancaria_id }} </td>
                         <td> {{ $linea->valor_saldo }} </td>
-                        <!--<td> 
-
-                             { { Form::select('motivo_id',$motivos, null, []) }}
-                            { { Form::select('caja_id',$cajas, 1, []) }}
-                            <button class="btn btn-primary btn-xs btn_actualizar_movimiento" onclick="actualizar_movimiento(this);" title="Agregar este registro"> <i class="fa fa-refresh"></i> </button>
-                            
-                        </td>-->
                     </tr>
                 @endif
                 
