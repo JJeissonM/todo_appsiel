@@ -322,7 +322,7 @@ class TiendaController extends Controller
             //crear_remision_desde_doc_venta
             $modelo_id = 139;
 
-            $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo.'\n';
+            $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
 
             if(str_contains($data['redirect_url'],'domicil')){
                 $tercero = Tercero::find($encabezado_doc_venta->core_tercero_id);
