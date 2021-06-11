@@ -149,7 +149,10 @@ class TrasladoEfectivosController extends TransaccionController
 
     public function recontabilizacion_masiva( $fecha_inicial, $fecha_final )
     {
-        $docs_encabezados = TesoDocEncabezadoTraslado::where('core_tipo_transaccion_id',43)
+        $docs_encabezados = TesoDocEncabezadoTraslado::where([
+                                                                ['core_tipo_transaccion_id',43],
+                                                                ['estado','Activo']
+                                                            ])
                                                     ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                                     ->get();
 
