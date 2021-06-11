@@ -25,7 +25,7 @@
 					@include('calificaciones.boletines.fila_area')
 
 					<tr style="background-color: #E8E8E8;">
-						<td> 
+						<td colspan="2"> 
 							<table width="100%" style="border: 0px;">
 								<tr>
 									<td style="border: 0px;">
@@ -42,7 +42,7 @@
 					</tr>
 
 					<tr style="font-size: {{$tam_letra}}mm;">
-						<td>
+						<td colspan="2">
 							<table width="100%" style="border: 0px;">
 								<tr>
 									<td style="border: 0px;">

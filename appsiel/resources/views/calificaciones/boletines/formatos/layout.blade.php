@@ -3,6 +3,12 @@
 <head>
     <title> Boletines curso {{ $curso->descripcion }} </title>
     <style type="text/css">
+
+		*{
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+		}
         
         body{
             font-family: Arial, Helvetica, sans-serif;
@@ -10,7 +16,7 @@
             /*margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px;*/
         }
 
-        /*@ page { margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px; }*/
+        @page{ margin: 60px 40px 20px 40px !important; }
         
         .page-break {
             page-break-after: always;
@@ -18,7 +24,8 @@
 
         table{
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse;	
+			margin: -1px 0;		
         }
 
         table.table-bordered, .table-bordered>tbody>tr>td{
@@ -37,11 +44,6 @@
 			border: 1px solid;
 		}
 
-		ul{
-			padding:0px;
-			margin:0px;
-		}
-
 		li{
 			list-style-type: none;
 		}
@@ -56,7 +58,7 @@
 
 		table.encabezado{
 			border: 1px solid gray;
-			padding-top: 0px;
+			padding: 0px;
 		}
 
 		table.encabezado>tr>td{
@@ -69,12 +71,10 @@
 		
 		span.etiqueta{
 			font-weight: bold;
-			display: inline-block;
 			width: 100px;
 			text-align:right;
 		}
 
-		html{margin: 60px 40px 20px 40px}
 
     </style>
 </head>
@@ -91,6 +91,6 @@
 	?>
 
 	@yield('contenido_formato')
-
+	
 </body>
 </html>
