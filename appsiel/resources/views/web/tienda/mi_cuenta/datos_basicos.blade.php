@@ -1,5 +1,5 @@
 <div class="page-title">
-    <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">EDITAR INFORMACIÓN DE LA CUENTA</font></font></h1>
+    <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Actualiza tus Datos</font></font></h1>
     @if(Session::has('flash_message'))
     <div class="container-fluid">
         <div class="alert alert-success">

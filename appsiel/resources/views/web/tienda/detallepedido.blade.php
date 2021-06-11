@@ -121,8 +121,9 @@
                         <tr>
                             <th><center>Cant.</center></th>
                             <th><center>Descripcion</center></th>
-                            <th><center>Precio Total</center></th>
                             <th><center>Desc.</center></th>
+                            <th><center>Precio Total</center></th>
+                            
                         </tr>
                     </thead>
                     <tbody>
@@ -135,8 +136,8 @@
                             <tr>
                                 <td class="text-center">{{ $producto->cantidad.' '.$producto->unidad_medida1 }}</td>
                                 <td>{{ $producto->producto_descripcion }}</td>
-                                <td class="text-right">$ {{ $producto->precio_total }}</td>
                                 <td class="text-right">$ {{ ($producto->precio_venta - $producto->valor_descuento) }}</td>
+                                <td class="text-right">$ {{ $producto->precio_total }}</td>                                
                             </tr>
                             <?php
                                 $total_pagar += $producto->precio_total;
@@ -156,6 +157,7 @@
                         $direccion_por_defecto = null;
                     ?>                
                     <h4 class="text-center">Forma de Envio</h4>
+                    @if($doc_encabezado->estado == 'Pendiente')
                     <div class="nav nav-pills w-100 bg-light" id="myTab" role="tablist">
                         @foreach( $direcciones AS $direccion )
                         @if($direccion->por_defecto == 1)
@@ -165,19 +167,21 @@
                         @endif        
                         @endforeach 
                         
-                        <a class="nav-link active" style="flex: 1 1 auto;" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">
-                            
-                                    Domicilio
-                                    
+                        <a class="nav-link active" style="flex: 1 1 auto;" data-toggle="pill" href="#domicilio" role="tab" aria-controls="domicilio" aria-selected="true">                            
+                                    Domicilio                                    
                                 </a>
                         
-                        <a class="nav-link" style="flex: 1 1 auto;" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
+                        <a class="nav-link" style="flex: 1 1 auto;" data-toggle="pill" href="#empresa" role="tab" aria-controls="empresa" aria-selected="false">
                                     Recoger en Tienda
                         </a>                        
                     </div>
+                    @else
+
+                    @endif
                     <div class="tab-content w-100" id="v-pills-tabContent">
-                            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                                <div class="border border-primary rounded position-relative">
+                        <div class="tab-pane fade show active" id="domicilio" role="tabpanel" aria-labelledby="domicilio-tab">
+                            <div class="border border-primary rounded position-relative">
+                                @if ($doc_encabezado->estado == 'Pendiente')
                                     <a id="cruddomicilio" class="btn pull-right bg-light rounded-circle" href="{{route('tienda.micuenta').'/nav-directorio-tab'}}">Agregar o Cambiar</a>
                                     @if ($direccion_por_defecto == null)
                                     <address>
@@ -187,142 +191,135 @@
                                         No ha establecido una dirección de envío predeterminada.
                                     </address>
                                     @else
-                                    <address id="addressdomicilio">
-                                        <div>
+                                    <address>
                                         <b>Domicilio: {{$direccion_por_defecto->nombre_contacto}}</b><br>
                                         {{$direccion_por_defecto->direccion1}}, {{$direccion_por_defecto->barrio}}<br>
                                         {{$direccion_por_defecto->ciudad->descripcion }}, {{ $direccion_por_defecto->ciudad->departamento->descripcion }}, {{$direccion_por_defecto->codigo_postal}}<br>
-                                        Tel.: {{$direccion_por_defecto->telefono1}}<br>    
-                                        </div>
-                                        
+                                        Tel.: {{$direccion_por_defecto->telefono1}}<br>                                           
                                     </address>
-                                    @endif  
-                                </div>
-                                <div class="contenido px-2">
-                                    <p>Subtotal</p>
-                                    <p id="subtotal">$ {{ number_format($subtotal,2,',','.') }}</p>
-                                </div>
-                                <div class="contenido px-2">
-                                    <p>IVA</p>
-                                    <p id="iva">$ {{ number_format($total_iva,2,',','.') }}</p>
-                                </div>
-                                <div class="contenido px-2">
-                                    <p>Envio a Domicilio</p>
-                                    <p id="iva">$ 5.000,00</p>
-                                </div>
-                                <div class="total_compra contenido px-2" >
-                                    <p>Total: </p>
-                                    <p><span style="color: green" id="total">$ {{ number_format($total_pagar+5000,2,',','.') }}</span></p>
-                                </div>
-                                <div class="acciones">
-                                    <div class="d-flex justify-content-center">
-                                        @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
-                                        <a class="btn text-light btn-secondary btn-block"  style="width: 162px" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
-                                        @else  
-                                            @if ($direccion_por_defecto != null)
-                                            <form>
-                                                <script
-                                                src="https://checkout.wompi.co/widget.js"
-                                                data-render="button"
-                                                data-public-key="{{ config('pagina_web.public_key_wompi') }}"
-                                                data-currency="COP"
-                                                data-amount-in-cents="{{ number_format(($total_pagar+5000),2,'','') }}"
-                                                data-reference="{{ $doc_encabezado->id }}"
-                                                data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
-                                                >
-                                                </script>
-                                            </form>   
-                                            @else   
-                                                <p class="text-danger">Agregue una dirección de envio para poder hacer el pago</p>
-                                            @endif                    
-                                        @endif                        
-                                    </div>     
-                                </div>
+                                    @endif
+                                @else
+                                    <?php echo $doc_encabezado->descripcion ?>
+                                @endif
                             </div>
-                            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                                <div class="border border-primary rounded">
-                                    <address id="addressempresa">
-                                        <div>
-                                        <b>{{ $empresa->descripcion }}</b><br>
-                                        {{ $empresa->direccion1 }}, {{ $empresa->barrio }}<br>
-                                        {{ $empresa->ciudad->descripcion }}, {{ $empresa->ciudad->departamento->descripcion }}, {{ $empresa->codigo_postal }}<br>
-                                        Tel.: {{$empresa->telefono1}}<br>     
-                                        </div>
-                                           
-                                    </address>
-                                </div>
-                                <div class="contenido px-2">
-                                    <p>Subtotal</p>
-                                    <p id="subtotal">$ {{ number_format($subtotal,2,',','.') }}</p>
-                                </div>
-
-                                <div class="contenido px-2">
-                                    <p>IVA</p>
-                                    <p id="iva">$ {{ number_format($total_iva,2,',','.') }}</p>
-                                </div>
-
-                                <div class="total_compra contenido px-2" >
-                                    <p>Total: </p>
-                                    <p><span style="color: green" id="total">$ {{ number_format($total_pagar,2,',','.') }}</span></p>
-                                </div>
-                                
-                                <div class="acciones">
-                                    <div class="d-flex align-items-center flex-column">
-                                        @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
-                                        <a class="btn text-light btn-secondary btn-block" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
-                                        @else  
+                            <div class="contenido px-2">
+                                <p>Subtotal</p>
+                                <p id="subtotal">$ {{ number_format($subtotal,2,',','.') }}</p>
+                            </div>
+                            <div class="contenido px-2">
+                                <p>IVA</p>
+                                <p id="iva">$ {{ number_format($total_iva,2,',','.') }}</p>
+                            </div>
+                            <div class="contenido px-2">
+                                <p>Envio a Domicilio</p>
+                                <p id="iva">$ 5.000,00</p>
+                            </div>
+                            <div class="total_compra contenido px-2" >
+                                <p>Total: </p>
+                                <p><span style="color: green" id="total">$ {{ number_format($total_pagar+5000,2,',','.') }}</span></p>
+                            </div>
+                            <div class="acciones">
+                                <div class="d-flex justify-content-center">
+                                    @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
+                                    <a class="btn text-light btn-secondary btn-block"  style="width: 162px" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
+                                    @else  
+                                        @if ($direccion_por_defecto != null)
                                         <form>
                                             <script
                                             src="https://checkout.wompi.co/widget.js"
                                             data-render="button"
                                             data-public-key="{{ config('pagina_web.public_key_wompi') }}"
                                             data-currency="COP"
-                                            data-amount-in-cents="{{ number_format($total_pagar,2,'','') }}"
+                                            data-amount-in-cents="{{ number_format(($total_pagar+5000),2,'','') }}"
                                             data-reference="{{ $doc_encabezado->id }}"
-                                            data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id }}"
+                                            data-redirect-url="{{ url('ecommerce/public/detallepedido').'/'.$doc_encabezado->id.'?compra=domicil' }}"
                                             >
                                             </script>
-                                        </form>    
-                                        <button type="button" style="width: 162px" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#exampleModal">
-                                            Pagar en Efectivo
-                                        </button>
-
-                                      <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                          <div class="modal-content">
-                                            <div class="modal-header">
-                                              <h5 class="modal-title" id="exampleModalLabel">Pago en Tienda</h5>
-                                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                              </button>
-                                            </div>
-                                            <div class="modal-body">
-                                              Se enviara a tu correo un comprobante con los detalles de tu pedido, el cual deberas llevar a la tienda para reclamarlo.
-                                            </div>
-                                            <div class="modal-footer">
-                                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                  <a href="{{ url('enviar_pedido_web_email').'/'.$doc_encabezado->id }}" class="btn btn-primary">Pagar en Efectivo</a>               
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>                      
-                                        @endif    
-
-                                    </div> 
-                                    
-                                </div>
-
+                                        </form>   
+                                        @else   
+                                            <p class="text-danger">Agregue una dirección de envio para poder hacer el pago</p>
+                                        @endif                    
+                                    @endif                        
+                                </div>     
                             </div>
-                            <div class="d-flex justify-content-center">
-                                <a class="btn btn-outline-primary" style="width: 162px" href="{{ config('pagina_web.main_page_tienda_online') }}">Volver a la tienda</a>
+                        </div>
+                        <div class="tab-pane fade" id="empresa" role="tabpanel" aria-labelledby="empresa-tab">
+                            <div class="border border-primary rounded">
+                                <address>
+                                    <b>{{ $empresa->descripcion }}</b><br>
+                                    {{ $empresa->direccion1 }}, {{ $empresa->barrio }}<br>
+                                    {{ $empresa->ciudad->descripcion }}, {{ $empresa->ciudad->departamento->descripcion }}, {{ $empresa->codigo_postal }}<br>
+                                    Tel.: {{$empresa->telefono1}}<br>                                              
+                                </address>
+                            </div>
+                            <div class="contenido px-2">
+                                <p>Subtotal</p>
+                                <p id="subtotal">$ {{ number_format($subtotal,2,',','.') }}</p>
+                            </div>
+
+                            <div class="contenido px-2">
+                                <p>IVA</p>
+                                <p id="iva">$ {{ number_format($total_iva,2,',','.') }}</p>
+                            </div>
+
+                            <div class="total_compra contenido px-2" >
+                                <p>Total: </p>
+                                <p><span style="color: green" id="total">$ {{ number_format($total_pagar,2,',','.') }}</span></p>
                             </div>
                             
-                        </div>                       
+                            <div class="acciones">
+                                <div class="d-flex align-items-center flex-column">
+                                    @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
+                                    <a class="btn text-light btn-secondary btn-block" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}" style="width: 162px">Ver pedidos</a>
+                                    @else  
+                                    <form>
+                                        <script
+                                        src="https://checkout.wompi.co/widget.js"
+                                        data-render="button"
+                                        data-public-key="{{ config('pagina_web.public_key_wompi') }}"
+                                        data-currency="COP"
+                                        data-amount-in-cents="{{ number_format($total_pagar,2,'','') }}"
+                                        data-reference="{{ $doc_encabezado->id }}"
+                                        data-redirect-url="{{ url('ecommerce/public/detallepedido/').'/'.$doc_encabezado->id.'?compra=empresa' }}"
+                                        >
+                                        </script>
+                                    </form>    
+                                    <button type="button" style="width: 162px" class="btn btn-secondary mt-2" data-toggle="modal" data-target="#exampleModal">
+                                        Pagar en Efectivo
+                                    </button>                                                          
+                                    @endif   
+                                </div>                                     
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary" style="width: 162px" href="{{ config('pagina_web.main_page_tienda_online') }}">Volver a la tienda</a>
+                        </div>                            
+                    </div>                       
                 </div>    
             </div>
         </div>
     </div>
 </main>
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Pago en Tienda (Sede Valledupar)</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">                                                
+            Enviamos el comprobante del pedido realizado a tu correo electrónico.
+            Productos para recoger en Tienda (sede Valledupar).
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+              <a href="{{ url('enviar_pedido_web_email').'/'.$doc_encabezado->id }}" class="btn btn-primary">Pagar en Efectivo</a>               
+        </div>
+      </div>
+    </div>
+  </div>  
 <div class="modal fade" id="succesCompra" tabindex="-1" role="dialog" aria-labelledby="succesCompraLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -333,10 +330,18 @@
           </button>
         </div>
         <div class="modal-body">
-          Tu compra ha sido completada con exito. Revisa tu correo para descargar tu factura.
+            <?php        
+            if (isset($_GET['compra'])) {
+                if($_GET['compra'] == "empresa"){
+                    echo 'Tu compra ha sido completada con éxito. Revisa tu correo electrónico para ver factura.<br>Productos para recoger en Tienda (sede Valledupar)';
+                }else{
+                    echo 'Tu compra ha sido completada con éxito. Revisa tu correo electrónico para ver factura.';
+                }
+            }        
+            ?>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
           <div class="d-flex justify-content-center">
             <a class="btn btn-outline-primary" style="width: 162px" href="{{ config('pagina_web.main_page_tienda_online') }}">Volver a la tienda</a>
         </div>
@@ -350,14 +355,18 @@
     </script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
     </script>
-    <?php
-        
+    <?php        
         if (isset($_GET['id'])) {
             echo '<script>';
             echo "$('#succesCompra').modal('show')";
             echo '</script>';
-        }
-        
+        }        
     ?>
+    <script>
+        $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
+            console.log(e.target.getAttribute("aria-controls"))  // newly activated tab
+            e.relatedTarget // previous active tab
+        })
+    </script>
 </body>
 </html>

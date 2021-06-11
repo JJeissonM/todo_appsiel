@@ -26,13 +26,13 @@ $configuracion = App\web\Configuraciones::all()->first();
                                 <div id="carrito">
                                     <table id="lista-carrito" class="u-full-width">
                                         <thead>
-                                        <tr>
-                                            <th>Imagen</th>
-                                            <th>Nombre</th>
-                                            <th>Cant.</th>
-                                            <th>Precio</th>                                            
-                                            <th></th>
-                                        </tr>
+                                            <tr>
+                                                <th class="text-center">Imagen</th>
+                                                <th class="text-center">Nombre</th>
+                                                <th class="text-center">Cant.</th>
+                                                <th class="text-center">Precio</th>                                            
+                                                <th></th>
+                                            </tr>
                                         </thead>
                                         <tbody></tbody>
                                     </table>

@@ -1,5 +1,5 @@
 <?php
-    $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
+    $ciudad = DB::table('core_ciudades')->where('id',$doc_encabezado->codigo_ciudad)->get()[0];
 ?>
 
 <html lang="es">
@@ -19,45 +19,56 @@
     </style>
 </head>
 <body>
-    <div style="position: absolute; left: 40mm; top: 63mm;">
-        {{ $doc_encabezado->tercero_nombre_completo }} 
-        @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
-            @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
-                / CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}
-            @endif
-        @endif
+    <div style="position: absolute; left: 40mm; top: 69mm;">
+        <b>{{ $doc_encabezado->tercero_nombre_completo }} 
+        
+        </b>
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 68mm;">
-        {{ $doc_encabezado->numero_identificacion}}
+    <div style="position: absolute; left: 40mm; top: 74mm;">
+        <b>{{ $doc_encabezado->numero_identificacion}}{{ $doc_encabezado->digito_verificacion }}</b>
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 73mm;">
-        {{ $empresa->direccion1 }}
+    <div style="position: absolute; left: 40mm; top: 79mm;">
+        <b>{{ $doc_encabezado->direccion1 }}</b>
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 80mm;">
-        {{ $ciudad->descripcion }} 
+    <div style="position: absolute; left: 40mm; top: 84mm;">
+        <b>{{ $ciudad->descripcion }}</b>
     </div>
 
-    <div style="position: absolute; right: 55mm; top: 38mm;">
-        <?php
+    <div style="position: absolute; right: 55mm; top: 36.5mm;">
+        <b><?php
                 $fecha = date_create($doc_encabezado->fecha);
                 $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");                       
                 $fecha_final = date_format($fecha,"d")." ".$meses[date_format($fecha,"n")-1]." ".date_format($fecha,"Y");
             ?>
-            {{ $fecha_final }}
+            {{ $fecha_final }}</b>
     </div>
 
-    <div style="position: absolute; left: 40mm; top: 92.5mm;font-size: 14px">
+    <div style="position: absolute; left: 40mm; top: 93.5mm;font-size: 14px">
         <b>CONSTANCIA DE ENTREGA DE OBRA FINALIZADA</b>
     </div>
     <div style="position: absolute; left: 25mm; top: 112mm; width: 180mm">
         <table width="100%">
             <tr>
                 <td width="10%"></td>
-                <td width="78%"><?php echo $doc_encabezado->descripcion ?></td>
-                <td width="12%"></td>
+                <td width="70%"><?php echo $doc_encabezado->descripcion ?>
+                    <br>
+                    <br>
+                    <b>
+                    @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+                        @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
+                            CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}<br>
+                        @endif
+                    @endif
+                    @if(!is_null( $doc_encabezado->documento_ventas_padre()->documento_ventas_padre() ))
+                        COTIZACIÓN NRO. {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->consecutivo }}<br>
+                        ORDEN DE COMPRAS: {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->orden_compras }}
+                    @endif
+                    </b>
+                </td>
+                <td width="20%"></td>
             </tr>   
         </table>         
     </div>

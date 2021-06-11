@@ -226,6 +226,16 @@
             $('#form_create').submit();
         });
 
+        $(document).on('click', '.btn_setdefault_direccion', function(e) {
+
+            e.preventDefault();
+
+            if ( confirm('¿Desea activar esta domicilio por defecto?') )
+            {
+                $(this.form).submit();
+            }            
+        });
+
         $(document).on('click', '.btn_delete_direccion', function(e) {
 
             e.preventDefault();
@@ -233,9 +243,7 @@
             if ( confirm('¿Realmente desea eliminar este domicilio del cliente?') )
             {
                 $(this.form).submit();
-            }
-
-            
+            }            
         });
 
         var control_requeridos; // es global para que se pueda usar dentro de la función each() de abajo

@@ -67,7 +67,7 @@ class DireccionEntregaController extends ModeloController
 
         $registro->actualizar_por_defecto( $request->por_defecto );
 
-        return redirect( 'ecommerce/public/account' )->with( 'flash_message','Domicilio CREADO correctamente.' );
+        return redirect( 'ecommerce/public/account/nav-directorio-tab' )->with( 'domi_message','Domicilio CREADO correctamente.' );
     }
 
     public function show($id)
@@ -105,6 +105,7 @@ class DireccionEntregaController extends ModeloController
 
     public function update(Request $request, $id)
     {
+        //dd($request);
         $modelo = Modelo::find($request->url_id_modelo);
         
         // Se obtinene el registro a modificar del modelo
@@ -115,7 +116,7 @@ class DireccionEntregaController extends ModeloController
 
         $registro->actualizar_por_defecto( $request->por_defecto );
 
-        return redirect( 'ecommerce/public/account' )->with( 'flash_message','Domicilio MODIFICADO correctamente.' );
+        return redirect( 'ecommerce/public/account/nav-directorio-tab' )->with( 'domi_message','Domicilio MODIFICADO correctamente.' );
     }
 
     public function destroy(Request $request, $id)
@@ -127,6 +128,6 @@ class DireccionEntregaController extends ModeloController
 
         $registro->delete();
 
-        return redirect( 'ecommerce/public/account' )->with( 'flash_message','Domicilio ELIMINADO correctamente.' );
+        return redirect( 'ecommerce/public/account/nav-directorio-tab' )->with( 'domi_message','Domicilio ELIMINADO correctamente.' );
     }
 }

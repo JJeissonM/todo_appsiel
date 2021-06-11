@@ -16,29 +16,36 @@
     height: 100%;            /* recommended */
     white-space: normal;     /* recommended */
 }
+#exampleSlider .MS-controls button {
+    position: absolute;      /* recommended */
+    top: 0px;
+    font-size: 25px;
+    padding: 0 10px;
+}
 @media (min-width: 768px) {
     #exampleSlider .MS-content .item {
         width: 33.3%;
+    }
+    #exampleSlider .MS-controls button {
+        padding: 0 5%;
     }
 }
 @media (min-width: 1200px) {
     #exampleSlider .MS-content .item {
         width: 20%;
     }
+    #exampleSlider .MS-controls button {
+        padding: 0 5%;
+    }
 }
 
-#exampleSlider .MS-controls button {
-    position: absolute;      /* recommended */
-    top: 0px;
-    font-size: 25px;
-}
 #exampleSlider .MS-controls .MS-left {
-    left: 10px;
+    left: 0px;
     border: none;
     height: 100%;
 }
 #exampleSlider .MS-controls .MS-right {
-    right: 10px;
+    right: 0px;
     border: none;
     height: 100%;
 }
@@ -49,7 +56,7 @@
 
 <div class="row"  class="font-oswald">
     <div class="col-left sidebar col-lg-12 col-md-12 col-sm-12 col-xs-12">
-        <div class="block block-layered-nav h-100">
+        <div class="block block-layered-nav h-100" style="padding: 10px 0px;">
             <div class="block-content">  
                     <div id="exampleSlider">      <!-- Give wrapper ID to target with jQuery & CSS -->
                         <div class="MS-content">

@@ -1,5 +1,5 @@
 <div class="page-title">
-    <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit; text-align: left !important;">MI TABLERO</font></font></h1>
+    <h1><font style="vertical-align: inherit;"><font style="vertical-align: inherit; text-align: left !important;">Datos de Cuenta</font></font></h1>
 </div>
 <div class="welcome-msg">
     <h1 class="hello"><font style="vertical-align: inherit; color:black; font-weight: bold">Hola {{ $cliente->nombre_completo }}</font></h1>

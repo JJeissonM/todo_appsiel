@@ -42,7 +42,7 @@ comprar.addEventListener('click',function (event) {
                   }
               }).catch(error => {
                const url =  document.getElementById('url_login').value;
-               toastr.error(`Hubo un error en la solicitud, Asegúrese de estar logeado al momento de realizar el pedido <a href='${url}' style="text-decoration:underline;">Iniciar Sesión</a>`,'',{timeOut: 0,extendedTimeOut: 0});
+               toastr.error(`Para seguir comprando, por favor <a href='${url}' style="text-decoration:underline;">Iniciar Sesión</a>`,'',{timeOut: 0,extendedTimeOut: 0});
           });
       }else{
           toastr.warning('La lista de productos en el carrito está vacía');
@@ -64,7 +64,7 @@ function leerLocalStorage() {
         const row = document.createElement('tr');
         row.innerHTML = /*html*/`
              <td>  
-                 <center><img src="${producto.imagen}" width=100></center> 
+                 <center><img onerror="imgError(this)" src="${producto.imagen}" width=100></center> 
              </td>
              <td style="padding-left: 3px">${producto.titulo}</td>
              <td style="white-space: nowrap" class="text-right">$ ${parseFloat(producto.precio).toFixed(2).toLocaleString("es-ES")}</td>
