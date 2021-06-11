@@ -58,7 +58,7 @@
 					@endif
 				</td>
 			@else
-				<td colspan="2"></td>
+				<td colspan="{{ $cant_columnas }}"></td>
 			@endif
 	</tr>
 @endif
