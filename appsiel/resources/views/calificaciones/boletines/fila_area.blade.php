@@ -57,6 +57,8 @@
 						<b> Cal. media: {!! $lbl_nota_original !!} </b> <span style="color:red;"> {!! $advertencia !!} </span>
 					@endif
 				</td>
+			@else
+				<td colspan="{{ $cant_columnas }}"></td>
 			@endif
 	</tr>
 @endif

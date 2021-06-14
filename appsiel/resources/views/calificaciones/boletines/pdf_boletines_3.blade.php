@@ -15,10 +15,10 @@
 		?>
 		
 		@include('calificaciones.boletines.encabezado_2')
-
+	<table class="table-bordered">
+			<tbody> 	
 		@foreach( $lineas_cuerpo_boletin as $linea )		
-		<table class=" table-bordered">
-			<tbody> 
+		
 				
 					<?php
 						$cant_columnas = 2;	
@@ -69,16 +69,16 @@
 					<?php 
 						$area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
 					?>
-						</tbody>
-					</table>
+						
+					
 				@endforeach
-				
-<table>
-	@include('calificaciones.boletines.formatos.fila_observaciones')
+	
+			@include('calificaciones.boletines.formatos.fila_observaciones')
 
-	@include('calificaciones.boletines.formatos.fila_etiqueta_final')
-</table>
-				
+			@include('calificaciones.boletines.formatos.fila_etiqueta_final')
+
+	</tbody>
+</table>			
 				
 			
 
