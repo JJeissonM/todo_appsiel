@@ -382,7 +382,7 @@ $(document).ready(function(){
 
     // Al modificar el precio de venta
     $('#precio_unitario').keyup(function(event){
-
+    	console.log( $(this).val() );
 		if( validar_input_numerico( $(this) ) )
 		{
 			precio_unitario = parseFloat( $(this).val() );

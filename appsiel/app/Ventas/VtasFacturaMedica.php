@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Core\ModeloEavValor;
 use App\Ventas\DocEncabezadoTieneFormulaMedica;
 
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -161,5 +162,11 @@ class VtasFacturaMedica extends VtasDocEncabezado
                 ]
             );
         }
+
+        // Almacenar datos del cajon
+        $modelo_padre_id = 221; //  Facturas Médicas
+
+        $modelo_eav = new ModeloEavValor();
+        $modelo_eav->almacenar_registros_eav( $datos, $modelo_padre_id, $doc_encabezado->id );
     }
 }

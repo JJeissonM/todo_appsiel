@@ -137,7 +137,7 @@ class VentaController extends TransaccionController
     {
 
         $datos = $request->all(); // Datos originales
-
+        
         $lineas_registros = json_decode($request->lineas_registros);
 
         $registros_medio_pago = new RegistrosMediosPago;
