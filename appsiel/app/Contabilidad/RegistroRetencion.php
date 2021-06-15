@@ -53,6 +53,7 @@ class RegistroRetencion extends Model
             RegistroRetencion::create( $datos );
 
             // Contabilizar Retención
+            $datos['tipo_transaccion'] = '';
             $retencion = Retencion::find( (int)$lineas_registros[$i]->contab_retencion_id );
             $movimiento_contable = new ContabMovimiento();
             switch ( $tipo )

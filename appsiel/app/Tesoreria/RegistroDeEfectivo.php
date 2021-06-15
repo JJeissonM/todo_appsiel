@@ -69,6 +69,7 @@ class RegistroDeEfectivo extends TesoDocEncabezado
             TesoMovimiento::create( $datos );
 
             // Contabilizar
+            $datos['tipo_transaccion'] = '';
             $caja = TesoCaja::find( (int)$lineas_registros[$i]->caja_id_efectivo );
             $movimiento_contable = new ContabMovimiento();
             $movimiento_contable->contabilizar_linea_registro( $datos, $caja->contab_cuenta_id, $tipo_operacion, $valor_debito, $valor_credito );

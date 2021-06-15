@@ -49,7 +49,8 @@ class RegistroDescuentoProntoPago extends Model
                     # code...
                     break;
             }
-
+            
+            $datos['tipo_transaccion'] = '';
             $movimiento_contable->contabilizar_linea_registro( $datos, $descuento->contab_cuenta_id, 'Descuento ' . $tipo, $valor_debito, $valor_credito );
         }
     }

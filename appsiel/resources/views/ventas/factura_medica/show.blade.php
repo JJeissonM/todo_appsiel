@@ -74,7 +74,7 @@
 		            <b>Fecha y hora de entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }} &nbsp;&nbsp; - &nbsp;&nbsp; {{ $doc_encabezado->hora_entrega }}
 		        </td>
 		        <td colspan="2" style="border: solid 1px #ddd;">
-		            <b>Caja de trabajo: &nbsp;&nbsp;</b> {{ \App\Core\ModeloEavValor::get_valor_campo( '221-10--1305' ) }}
+		            <b>Caja de trabajo: &nbsp;&nbsp;</b> {{ \App\Core\ModeloEavValor::get_valor_campo( '221-'.$id.'--1305' ) }}
 		        </td>
 		    </tr>
 		</table>

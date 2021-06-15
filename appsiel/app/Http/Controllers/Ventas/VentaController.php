@@ -62,6 +62,7 @@ use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\RegistrosMediosPago;
+use App\Tesoreria\TesoDocEncabezadoRecaudoCxc;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
@@ -135,7 +136,6 @@ class VentaController extends TransaccionController
      */
     public function store(Request $request)
     {
-
         $datos = $request->all(); // Datos originales
         
         $lineas_registros = json_decode($request->lineas_registros);
@@ -161,6 +161,25 @@ class VentaController extends TransaccionController
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         $modelo = Modelo::find( $request->url_id_modelo );
+
+        if( isset($request->abono) && $request->forma_pago == 'credito' )
+        {
+            $abono = (float)$request->abono;
+            if ( $abono != 0 )
+            {
+                $registro_cxc = CxcMovimiento::where( [
+                                                        'core_empresa_id'=>$doc_encabezado->core_empresa_id, 
+                                                        'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                                                        'consecutivo' => $doc_encabezado->consecutivo
+                                                    ] )
+                                                ->get()->first();
+
+                $recaudo_cxc = new TesoDocEncabezadoRecaudoCxc();
+                $request['lineas_registros'] = '[{"id_doc":"' . $registro_cxc->id . '","Cliente":"NA","Documento interno":"NA","Fecha":"NA","Fecha vencimiento":"NA","Valor Documento":"$0","Valor pagado":"$0","Saldo pendiente":"$0","abono":"' . $abono . '"},{"id_doc":"","Cliente":"","Documento interno":"$0","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
+                $recaudo_cxc->crear_documento( $request, 153 ); // 153 = Modelo: Recaudo de CxC
+            }            
+        }
 
         /*
             Tareas adicionales de almacenamiento (guardar en otras tablas, crear otros modelos, etc.)

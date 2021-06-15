@@ -32,8 +32,10 @@ Route::resource('consultorio_medico/formulas_opticas', 'Salud\FormulaOpticaContr
 Route::get('form_agregar_formula_factura', 'Salud\FormulaOpticaController@form_agregar_formula_factura');
 
 
-
 Route::resource('consultorio_medico/anamnesis', 'Salud\AnamnesisController');
+
+Route::post('ventas_anular_factura_medica', 'Ventas\FacturaMedicaController@anular_factura');
+Route::resource('factura_medica', 'Ventas\FacturaMedicaController');
 
 
 //		SALUD OCUPACIONAL

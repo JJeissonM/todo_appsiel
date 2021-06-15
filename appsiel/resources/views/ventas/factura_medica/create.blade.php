@@ -71,9 +71,6 @@
 
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 
-				<div id="popup_alerta"> </div>
-
-
 				<h4>Facturación de formula</h4>
 		        <hr>
 		        <button class="btn btn-primary btn-xs" id="agregar_examen"><i class="fa fa-btn fa-plus"></i> Agregar fórmula </button>
