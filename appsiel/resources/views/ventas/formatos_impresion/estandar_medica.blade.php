@@ -32,10 +32,18 @@
 @endsection
 
 @section('encabezado_datos_adicionales')
+    <?php 
+        $caja_trabajo = \App\Core\ModeloEavValor::get_valor_campo( '221-'.$doc_encabezado->id.'--1305' );
+    ?>
     <br>
     <b>Historia clínica No.: &nbsp;&nbsp;</b> {{ App\Salud\Paciente::where( 'core_tercero_id', $doc_encabezado->core_tercero_id )->value('codigo_historia_clinica') }}
     <br/>
     <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+    <br>
+    <b>Fecha y hora de entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }} &nbsp;&nbsp; - &nbsp;&nbsp; {{ $doc_encabezado->hora_entrega }}
+    @if( $caja_trabajo != '' )
+        &nbsp;&nbsp;&nbsp;&nbsp;  | &nbsp;&nbsp;&nbsp; <b>Caja de trabajo: &nbsp;&nbsp;</b> {{ $caja_trabajo }}
+    @endif
 @endsection
 
 @section('tabla_registros_1')
@@ -159,12 +167,11 @@
         </table>
         <br>
     @endif
-
-    <p style="width: 100%; text-align: center; font-weight: bold; font-size: 12px; padding: -10px;"> Items facturados</p>
     @include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
     <!-- @ include('ventas.incluir.factura_detalles_impuestos',compact('array_tasas')) -->
 @endsection
 
 @section('tabla_registros_2')
     @include('ventas.incluir.factura_medica_firma_totales')
+    @include('transaccion.auditoria')
 @endsection

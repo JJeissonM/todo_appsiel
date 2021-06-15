@@ -535,6 +535,7 @@ class VtasDocEncabezado extends Model
                 DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS fecha'),
                 DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_vencimiento,"%d-%m-%Y") AS fecha_vencimiento'),
                 DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha_entrega,"%d-%m-%Y") AS fecha_entrega'),
+                DB::raw('DATE_FORMAT(vtas_doc_encabezados.hora_entrega,"%H:%i %p") AS hora_entrega'),
                 'vtas_doc_encabezados.vendedor_id',
                 'vtas_doc_encabezados.descripcion',
                 'vtas_doc_encabezados.estado',

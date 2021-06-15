@@ -70,6 +70,7 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
             TesoMovimiento::create( $datos );
 
             // Contabilizar
+            $datos['tipo_transaccion'] = '';
             $cuenta_bancaria = TesoCuentaBancaria::find( (int)$lineas_registros[$i]->banco_id_tarjeta_debito );
             $movimiento_contable = new ContabMovimiento();
             $movimiento_contable->contabilizar_linea_registro( $datos, $cuenta_bancaria->contab_cuenta_id, $tipo_operacion, $valor_debito, $valor_credito );

@@ -5,9 +5,8 @@
             {{ Form::bsTableHeader(['Documento','Fecha','Detalle','Abono']) }}
             <tbody>
                 <?php 
-                
-                $total_abono = 0;
-
+                    //dd($abonos);
+                    $total_abono = 0;
                 ?>
                 @foreach($abonos as $linea )
                     <tr>

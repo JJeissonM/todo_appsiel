@@ -32,6 +32,11 @@ class TesoDocEncabezado extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Tercero', 'Detalle'];
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
     public function tipo_documento_app()
     {
         return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );

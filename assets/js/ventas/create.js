@@ -364,16 +364,16 @@ $(document).ready(function(){
 
 			if ( base_impuesto_unitario < costo_unitario)
 			{
-				$('#popup_alerta').show();
-				$('#popup_alerta').css('background-color','red');
-				$('#popup_alerta').text( 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA' );
+				$('#popup_alerta_danger').show();
+				$('#popup_alerta_danger').css('background-color','red');
+				$('#popup_alerta_danger').text( 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA' );
 				ok = false;
 			}else{
-				$('#popup_alerta').hide();
+				$('#popup_alerta_danger').hide();
 				ok = true;
 			}
 		}else{
-			$('#popup_alerta').hide();
+			$('#popup_alerta_danger').hide();
 			ok = true;
 		}					
 
@@ -382,7 +382,7 @@ $(document).ready(function(){
 
     // Al modificar el precio de venta
     $('#precio_unitario').keyup(function(event){
-
+    	console.log( $(this).val() );
 		if( validar_input_numerico( $(this) ) )
 		{
 			precio_unitario = parseFloat( $(this).val() );
@@ -679,16 +679,16 @@ $(document).ready(function(){
 
 			if ( parseFloat( $('#existencia_actual').val() ) < 0 ) 
 			{
-				$('#popup_alerta').show();
-				$('#popup_alerta').css('background-color','red');
-				$('#popup_alerta').text( 'Saldo negativo a la fecha.' );
+				$('#popup_alerta_danger').show();
+				$('#popup_alerta_danger').css('background-color','red');
+				$('#popup_alerta_danger').text( 'Saldo negativo a la fecha.' );
 				cantidad = 0;
 				$('#cantidad').val(0);
 				$('#cantidad').select();
 				return false;
 			}
 			
-			$('#popup_alerta').hide();
+			$('#popup_alerta_danger').hide();
 			return true;
 		}else{
 			return true;
@@ -702,9 +702,9 @@ $(document).ready(function(){
 	{
 		if ( !calcular_precio_total() )
 		{
-			$('#popup_alerta').show();
-			$('#popup_alerta').css('background-color','red');
-			$('#popup_alerta').text( 'Error en precio total. Por favor verifique' );
+			$('#popup_alerta_danger').show();
+			$('#popup_alerta_danger').css('background-color','red');
+			$('#popup_alerta_danger').text( 'Error en precio total. Por favor verifique' );
 			return false;
 		}
 
@@ -718,7 +718,7 @@ $(document).ready(function(){
 			return false;
 		}
 
-		$('#popup_alerta').hide();
+		$('#popup_alerta_danger').hide();
 
 		if( $('#url_id_transaccion').val() == 23 ) 
 		{ 
