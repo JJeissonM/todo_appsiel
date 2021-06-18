@@ -170,7 +170,6 @@ class Area extends Model
 
             if ( !empty($registro) )
             {
-                //dd([ $una_tabla->tabla, $una_tabla->llave_foranea, $id, $registro, $una_tabla->mensaje ] );
                 return $una_tabla->mensaje;
             }
         }

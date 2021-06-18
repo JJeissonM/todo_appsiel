@@ -10,4 +10,3 @@
 		{!! $examenes[$i] !!}
 	@endfor
 </div>
-<br>

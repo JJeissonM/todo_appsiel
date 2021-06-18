@@ -33,8 +33,6 @@
 	<br><br>
 	{!! $datos !!}
 
-	<br>
-	<br>
 @endforeach
-
-	
+	<br>
+	<br>

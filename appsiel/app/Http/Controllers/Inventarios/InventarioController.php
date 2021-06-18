@@ -293,7 +293,7 @@ class InventarioController extends TransaccionController
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         // Ahora mismo el campo inv_bodega_id se envía en el request, pero se debe tomar de cada línea de registro
         $datos = $request->all();
-        dd($lineas_registros);
+        
         $cantidad_registros = count($lineas_registros);
         for ($i = 0; $i < $cantidad_registros; $i++)
         {

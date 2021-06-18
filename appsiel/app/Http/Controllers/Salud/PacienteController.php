@@ -116,7 +116,7 @@ class PacienteController extends Controller
         // RELATIVO A CONSULTAS
         $modelo_consultas = Modelo::where('modelo','salud_consultas')->first(); // ID:96
         
-        $consultas = ConsultaMedica::where('paciente_id', $id)->orderBy('fecha','DESC')->get();
+        $consultas = ConsultaMedica::where('paciente_id', $id)->orderBy('created_at','DESC')->get();
 
         $modelo_formulas_opticas = Modelo::where('modelo','salud_formulas_opticas   ')->first();
         

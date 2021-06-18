@@ -247,7 +247,6 @@ class Calificacion extends Model
 
     public static function get_calificacion_promedio_estudiante_periodos($periodos_promediar, $curso_id, $estudiante_id)
     {
-        //dd($periodos_promediar, $curso_id, $estudiante_id);
         return Calificacion::whereIn('id_periodo', $periodos_promediar)
                             ->where([
                                 'curso_id' => $curso_id,

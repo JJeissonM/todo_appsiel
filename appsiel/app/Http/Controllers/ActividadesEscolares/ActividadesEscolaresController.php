@@ -367,6 +367,12 @@ class ActividadesEscolaresController extends ModeloController
         }else{
             // actualizar registro anterior
             $respuestas = RespuestaCuestionario::find($respuesta_id);
+
+            if( is_null( $respuestas )  )
+            {
+                return $respuesta_id;
+            }
+            
             $respuestas->fill( $datos );
             $respuestas->save();
         }

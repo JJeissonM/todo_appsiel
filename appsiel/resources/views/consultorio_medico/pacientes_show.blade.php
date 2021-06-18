@@ -4,6 +4,43 @@
 
 @extends('layouts.principal')
 
+@section('estilos_1')
+	<style type="text/css">
+			
+		/* Style the buttons that are used to open and close the accordion panel */
+		.accordion {
+		  background-color: #eee;
+		  color: #444;
+		  cursor: pointer;
+		  padding: 18px;
+		  width: 100%;
+		  text-align: left;
+		  border: none;
+		  outline: none;
+		  transition: 0.4s;
+		  font-weight: bold;
+		}
+
+		/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+		.active, .accordion:hover {
+		  background-color: #ccc;
+		}
+
+		/* Style the accordion panel. Note: hidden by default */
+		.panel {
+		  padding: 0 18px;
+		  background-color: white;
+		  display: none;
+		  overflow: hidden;
+		}
+
+		.tab-pane,.fade{
+			background-color: transparent;
+		}
+
+	</style>
+@endsection
+
 @section('content')
 
 	{{ Form::bsMigaPan($miga_pan) }}
@@ -56,79 +93,78 @@
 	        	@include('consultorio_medico.pacientes.datos_laborales')
 	        @endif
 
-			<div>
-				<ul class="nav nav-tabs">
-					<li class="active"><a data-toggle="tab" href="#home">Consultas Médicas</a></li>
-				</ul>
+			<div class="container-fluid">
+				
+				<h3>
+					Consultas Médicas
+					@can('salud_anamnesis_create')
+						&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( 'consultorio_medico_create_consulta?id='.Input::get('id').'&id_modelo='.$modelo_consultas->id.'&paciente_id='.$registro->id.'&profesional_salud_id='.Auth::user()->id . '&action=create' ) }}
+					@endcan
+				</h3>
 
-				<div class="tab-content">
-					<div id="home" class="tab-pane fade in active">
-						<br>
-						@can('salud_anamnesis_create')
-							&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( 'consultorio_medico/consultas/create?id='.Input::get('id').'&id_modelo='.$modelo_consultas->id.'&paciente_id='.$registro->id.'&profesional_salud_id='.Auth::user()->id ) }}
-						@endcan
-						<br><br>
-						<table class="table table-striped table-bordered">
-							@foreach($consultas as $consulta)
-								<tr>
-									<td>
-										@include( 'consultorio_medico.consultas.datos_consulta' )
+				<div class="container-fluid">
+					<?php
+						$es_el_primero = true;
+						
+					?>
+					@foreach($consultas as $consulta)
+						
+						<button class="accordion"> <h4> Consulta No. {{ $consulta->id }} </h4> <a href="#" class="close" data-dismiss="alert" aria-label="close">&plus;</a></button>
+						
+						<?php
+							if( $es_el_primero )
+							{
+								$clase = 'panel show';
+								$es_el_primero = false;
+							}else{
+								$clase = 'panel';
+							}	
+						?>
 
-						            	<div class="secciones_consulta">
-											<ul class="nav nav-tabs">
-												<?php $cont = 1; ?>
-												@foreach($secciones_consulta as $seccion)
-													@if( $seccion->activo )
-														<?php $HREF = "#tab_".$cont."_".$consulta->id; ?>
-														@if($cont == 1)
-															<li class="active"><a data-toggle="tab" href="{{$HREF}}">{{ $seccion->nombre_seccion }}</a></li>
-														@else
-															<li><a data-toggle="tab" href="{{$HREF}}">{{ $seccion->nombre_seccion }}</a></li>
-														@endif
-														<?php $cont++; ?>
-										            @endif
-										        @endforeach
-										    </ul>
+						<div class="{{$clase}}">
 
-										    <div class="tab-content">
-										    	<?php $cont = 1; ?>
-												@foreach($secciones_consulta as $seccion)
-													@if( $seccion->activo )
-														<?php $ID = "tab_".$cont."_".$consulta->id; ?>
-														@if($cont == 1)
-															<div id="{{$ID}}" class="tab-pane fade in active">
-											            		@include( $seccion->url_vista_show )
-											            	</div>
-											            @else
-											            	<div id="{{$ID}}" class="tab-pane fade">
-											            		@include( $seccion->url_vista_show )
-											            	</div>
-											            @endif
-														<?php $cont++; ?>
-										            @endif
-										        @endforeach
-										    </div>
-										</div> <!-- FIN secciones_consulta -->
-									</td>
-									<td>
-										@can('salud_consultas_edit')
-											{{ Form::bsBtnEdit( 'consultorio_medico/consultas/'.$consulta->id.'/edit?id='.Input::get('id').'&id_modelo='.$modelo_consultas->id.'&paciente_id='.$id ) }}
-											<br><br>
-										@endcan
-										@can('salud_consultas_print')
-											{{ Form::bsBtnPrint( 'consultorio_medico/consultas/'.$consulta->id.'/print?paciente_id='.$id ) }}
-											<br><br>
-										@endcan
-										@can('salud_consultas_delete')
-											{{ Form::bsBtnEliminar( 'consultorio_medico/consultas/'.$consulta->id.'/delete?id='.Input::get('id').'&id_modelo='.$modelo_consultas->id.'&paciente_id='.$id.'&modelo_pacientes_id='.Input::get('id_modelo') ) }}
-										@endcan
-									</td>
-								</tr>
-							@endforeach
-						</table>
-							
-					</div>
-				</div>
+								@include('consultorio_medico.pacientes_show_botones_accion')
+
+								@include( 'consultorio_medico.consultas.datos_consulta' )
+
+				            	<div class="secciones_consulta">
+									<ul class="nav nav-tabs">
+										<?php $cont = 1; ?>
+										@foreach($secciones_consulta as $seccion)
+											@if( $seccion->activo )
+												<?php $href = "#tab_".$cont."_".$consulta->id; ?>
+												@if($cont == 1)
+													<li class="active"><a data-toggle="tab" href="{{$href}}">{{ $seccion->nombre_seccion }}</a></li>
+												@else
+													<li><a data-toggle="tab" href="{{$href}}">{{ $seccion->nombre_seccion }}</a></li>
+												@endif
+												<?php $cont++; ?>
+								            @endif
+								        @endforeach
+								    </ul>
+
+								    <div class="tab-content">
+								    	<?php $cont = 1; ?>
+										@foreach($secciones_consulta as $seccion)
+											@if( $seccion->activo )
+												<?php $ID = "tab_".$cont."_".$consulta->id; ?>
+												@if($cont == 1)
+													<div id="{{$ID}}" class="tab-pane fade in active">
+									            		@include( $seccion->url_vista_show )
+									            	</div>
+									            @else
+									            	<div id="{{$ID}}" class="tab-pane fade">
+									            		@include( $seccion->url_vista_show )
+									            	</div>
+									            @endif
+												<?php $cont++; ?>
+								            @endif
+								        @endforeach
+								    </div>
+								</div> <!-- FIN secciones_consulta -->							
+						</div> <!-- FIN class panel accordion -->																		
+					@endforeach
+		    	</div>
 			</div>
 			<br><br>
 

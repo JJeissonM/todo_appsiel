@@ -16,6 +16,11 @@ use Input;
 use Storage;
 use View;
 
+use App\Sistema\Html\MigaPan;
+
+use App\Sistema\Aplicacion;
+use App\Sistema\TipoTransaccion;
+use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
 use App\Core\Empresa;
@@ -32,9 +37,13 @@ use App\Salud\FormulaOptica;
 
 class ConsultaController extends Controller
 {
+    protected $aplicacion, $modelo;
+
     public function __construct()
     {
         $this->middleware('auth');
+        $this->modelo = Modelo::find( Input::get('id_modelo') );
+        $this->aplicacion = Aplicacion::find( Input::get('id') );
     }
 
     /**
@@ -57,6 +66,31 @@ class ConsultaController extends Controller
         $general = new ModeloController();
 
         return $general->create();
+    }
+
+
+    public function create2()
+    {
+        $general = new ModeloController();
+
+        // Se obtienen los campos que el Modelo tiene asignados
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
+
+        $acciones = $general->acciones_basicas_modelo($this->modelo, '');
+
+        $form_create = [
+                            'url' => $acciones->store,
+                            'campos' => $lista_campos
+                        ];
+
+        $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Crear nueva. Paciente: ' . Paciente::find( Input::get('paciente_id') )->tercero->descripcion );
+
+        // Si el modelo tiene un archivo js particular
+        $archivo_js = app($this->modelo->name_space)->archivo_js;
+
+        $vista = 'consultorio_medico.consultas.crud';
+
+        return view( $vista, compact('form_create', 'miga_pan', 'archivo_js') );
     }
 
     /**
@@ -107,29 +141,21 @@ class ConsultaController extends Controller
         $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
 
         $form_create = [
-                        'url' => $modelo->url_form_create,
+                        'url' => $modelo->url_form_create . '/' . $id,
                         'campos' => $lista_campos
                     ];
-
         
         $paciente = Paciente::datos_basicos_historia_clinica( Input::get('paciente_id') );
 
-        //dd($lista_campos);
-
         $miga_pan = [
-                ['url'=>'consultorio_medico?id='.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
-                ['url'=>'consultorio_medico/pacientes/'.Input::get('paciente_id').'?id='.Input::get('id').'&id_modelo=95','etiqueta'=>'Historia Clínica ' . $paciente->nombres." ".$paciente->apellidos ],
-                ['url'=>'NO', 'etiqueta' => "Modificar consulta"]
-            ];
+                        ['url'=>'consultorio_medico?id='.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
+                        ['url'=>'consultorio_medico/pacientes/'.Input::get('paciente_id').'?id='.Input::get('id').'&id_modelo=95','etiqueta'=>'Historia Clínica ' . $paciente->nombres." ".$paciente->apellidos ],
+                        ['url'=>'NO', 'etiqueta' => "Modificar consulta"]
+                    ];
 
         $archivo_js = app($modelo->name_space)->archivo_js;
 
-        $url_action = 'web/'.$id;
-        if ($modelo->url_form_create != '') {
-            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        }
-
-        return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action')); 
+        return view( 'consultorio_medico.consultas.crud', compact('form_create','miga_pan','registro','archivo_js')); 
     }
 
     /**

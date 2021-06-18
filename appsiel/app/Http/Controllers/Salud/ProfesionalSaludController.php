@@ -196,9 +196,6 @@ class ProfesionalSaludController extends Controller
         $registro->telefono1 = $registro->tercero->telefono1;
         $registro->email = $registro->tercero->email;
         
-        //
-        //dd( array_merge(  $registro->getOriginal(), $registro->tercero->getOriginal() ) );
-        
         $form_create = [
                         'url' => $modelo->url_form_create,
                         'campos' => $lista_campos
@@ -208,8 +205,6 @@ class ProfesionalSaludController extends Controller
         if ($modelo->url_form_create != '') {
             $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
         }
-
-        //$miga_pan = $general->get_miga_pan($modelo,$registro->descripcion);
 
         $miga_pan = [
                         ['url'=>'consultorio_medico?'.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
@@ -231,11 +226,17 @@ class ProfesionalSaludController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $general = new ModeloController();
         $modelo = Modelo::find($request->url_id_modelo);
 
         // Se obtinene el registro a modificar del modelo
         $registro = app($modelo->name_space)->find($id);
 
+        $registro2 = '';
+        if (!empty($request->file())) {
+            // Copia identica del registro del modelo, pues cuando se almacenan los datos cambia la instancia
+            $registro2 = app($modelo->name_space)->find($id);
+        }
 
         /*
             No se stá actualizando el campo imagen, pues está en la tabla tercero
@@ -266,12 +267,44 @@ class ProfesionalSaludController extends Controller
         $registro->fill( $request->all() );
         $registro->save();
 
+        $descripcion = $request->nombre1 . ' ' . $request->otros_nombres . ' ' . $request->apellido1 . ' ' . $request->apellido2;
+
+        $usuario = User::find($registro->tercero->user_id);
+        if (is_null($usuario))
+        {
+            $name = $request->nombre1 . " " . $request->otros_nombres . " " . $request->apellido1 . " " . $request->apellido2;
+            $email = $request->email;
+            $password = str_random(8);
+            $usuario = User::crear_y_asignar_role($name, $email, 14, $password ); // 14 = Role "Profesional Salud"
+
+            if ( is_null( $usuario ) )
+            {
+                $mensaje = '<br> Si embargo no se pudo crear su usuario por ese email ya lo tiene otro usuario. <br> Email: ' . $request->email;
+                $usuario_id = 0;
+            }else{
+                $mensaje = '<br> Se creó un nuevo usuario para el profesional de la salud. <br> Puede acceder al sistema con los siguientes datos: <br> email: ' . $request->email . ' <br> Contraseña: ' . $password;
+                $usuario_id = $usuario->id;
+            }
+            
+
+        } else {
+            $usuario->name = $descripcion;
+            $usuario->email = $request->email;
+            $usuario->save();
+            $mensaje = '';
+            $usuario_id = $usuario->id;
+        }
+
 
         // Actualizar datos del Tercero
+        $request['descripcion'] = $descripcion;
+        $request['user_id'] = $usuario_id;
         $registro->tercero->fill( $request->all() );
         $registro->tercero->save();
 
-        return redirect('consultorio_medico/profesionales/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');
+        $general->almacenar_imagenes($request, 'fotos_terceros/', $registro->tercero, 'edit');
+
+        return redirect('consultorio_medico/profesionales/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.' . $mensaje);
     }
 
     /**

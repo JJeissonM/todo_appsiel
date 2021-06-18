@@ -55,6 +55,11 @@ class Tercero extends Model
         return $this->belongsTo('App\Contabilidad\ContabCuenta', 'contab_cxp_cta_id');
     }
 
+    public function usuario()
+    {
+        return $this->belongsTo('App\User', 'user_id');
+    }
+
     public function cliente()
     {
         return Cliente::where('core_tercero_id', $this->id)->get()->first();

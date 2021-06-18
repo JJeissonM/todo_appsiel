@@ -261,7 +261,6 @@ class Asignatura extends Model
             $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
             if (!empty($registro)) {
-                //dd([ $una_tabla->tabla, $una_tabla->llave_foranea, $id, $registro, $una_tabla->mensaje ] );
                 return $una_tabla->mensaje;
             }
         }
