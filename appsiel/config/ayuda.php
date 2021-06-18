@@ -35,7 +35,15 @@ return array(
         ],
         '2' => [
             'app' => 'tesoreria',
-            'urls' => array()
+            'urls' => array(
+                '0' => array(
+                    'label' => 'Cartera de Clientes Recaudos CxC',
+                    'preview' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Recaudos_De_Cuentas_por_Cobrar_cartera_de_clientes.jpg',
+                    'url' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Recaudos_De_Cuentas_por_Cobrar_cartera_de_clientes.mp4',
+                    'duracion' => '2:05',
+                    'publicacion' => '16 de Junio de 2021'
+                ),    
+            )
         ],
         '3' => [
             'app' => 'gestion_documental',

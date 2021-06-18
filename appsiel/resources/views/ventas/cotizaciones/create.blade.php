@@ -502,7 +502,7 @@
                 $('#forma_pago').val( forma_pago );
 
                 // Para llenar la fecha de vencimiento
-                var fecha = new Date( $('#fecha').val() );
+                var fecha = new Date( $('#fecha_vencimiento').val() );
 				fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 				
 				var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
@@ -872,7 +872,7 @@
                 $('#vendedor_id').val( '' );
                 $('#inv_bodega_id').val( '' );
                 $('#forma_pago').val( 'contado' );
-				$('#fecha_vencimiento').val( '' );
+				//$('#fecha_vencimiento').val( '' );
                 $('#lista_precios_id').val( '' );
                 $('#lista_descuentos_id').val( '' );
                 $('#liquida_impuestos').val( '' );
