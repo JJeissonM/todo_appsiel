@@ -119,7 +119,6 @@ class InformeFinalController extends BoletinController
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, $this->estado_matricula );
         
         $curso = Curso::find($request->curso_id);
-        //dd( $estudiantes );
 
         if( count($estudiantes) > 0 ){
             
@@ -236,25 +235,6 @@ class InformeFinalController extends BoletinController
 				ORDER BY promedioCalificaciones DESC";                
 		
 		$promedios = DB::select($query_1);
-
-        /*$promedios2 = Calificacion::where('id_colegio', $colegio->id)
-                                ->where('anio', $anio)
-                                ->whereIn('id_periodo', $request->periodos_promediar)
-                                ->where('curso_id', $request->curso_id)
-                                ->select( DB::raw('AVG(calificacion) AS promedioCalificaciones'), 'id_estudiante')
-                                ->groupBy('id_estudiante')
-                                ->orderBy('promedioCalificaciones')
-                                ->get();
-
-        $i = 0;
-        foreach ($promedios2 as $linea)
-        {
-            $promedios3[$i] = (object)($linea['original']);
-            $i++;
-        }
-
-        dd( [$promedios, $promedios3] );*/
-
 
 		$nom_curso = Curso::where('id','=',$request->curso_id)->value('descripcion');
 

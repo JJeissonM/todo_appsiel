@@ -119,7 +119,6 @@ class Conductor extends Model
                     break;
 
                 case 'tercero_id':
-                    //dd( $lista_campos[$i] );
                     $lista_campos[$i]['tipo'] = 'bsText';
                     $lista_campos[$i]['value'] = $tercero->descripcion;
                     break;

@@ -1,4 +1,4 @@
-<h3> Consulta No. {{ $consulta->id }} </h3>
+<br>
 <table class="table table-bordered">
 	<tr>
 		<td>
@@ -37,3 +37,4 @@
 		</td>
 	</tr>
 </table>
+<br>

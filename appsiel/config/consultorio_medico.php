@@ -27,7 +27,7 @@ return [
     							"2":{ 
     									"nombre_seccion":"Fórmula Óptica",
     									"url_vista_show":"consultorio_medico.consultas.formula_optica",
-    									"activo":0,
+    									"activo":1,
     									"orden":3
     								}, 
     							"3":{ 

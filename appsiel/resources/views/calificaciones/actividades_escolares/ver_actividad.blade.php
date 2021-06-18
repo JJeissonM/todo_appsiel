@@ -268,9 +268,13 @@
 				$.get( url, { respuesta_id: elemento_modificar.attr('data-respuesta_id'), estudiante_id: elemento_modificar.attr('data-estudiante_id'), actividad_id: elemento_modificar.attr('data-actividad_id'), campo: elemento_modificar.attr('data-campo'), valor_nuevo: valor_nuevo } )
 					.done(function( data ) {
 						
-						elemento_modificar.attr('data-respuesta_id', data)
-
-						mostrar_popup( 'Calificación actualizada correctamente.' );
+						elemento_modificar.attr('data-respuesta_id', data);
+						if ( data == 0 )
+						{
+							mostrar_popup( 'Anotación NO puso ser guardada. Por favor, recague la página e intente nuevamente.' );
+						}else{
+							mostrar_popup( 'Anotación actualizada correctamente.' );
+						}
 					});
 			}
 

@@ -10,6 +10,7 @@ Route::get('consultorio_medico/consultas/{consulta_id}/delete', 'Salud\ConsultaC
 
 
 
+Route::get('consultorio_medico_create_consulta', 'Salud\ConsultaController@create2');
 Route::resource('consultorio_medico/consultas', 'Salud\ConsultaController');
 
 Route::resource('consultorio_medico/profesionales', 'Salud\ProfesionalSaludController');

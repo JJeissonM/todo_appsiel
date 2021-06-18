@@ -267,7 +267,7 @@ class ModeloEavController extends ModeloController
             }     
         }            
 
-        $salida .= '</table>';
+        $salida .= '</table> <br>';
 
         return $salida;
     }

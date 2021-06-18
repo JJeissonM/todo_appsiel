@@ -125,8 +125,6 @@ class PreinformeAcademicoController extends ModeloController
         $id_anotacion = $request->id_anotacion;
         $anotacion_texto = $request->anotacion;
 
-        //dd( $request->all() );
-
         // Se verifica si la calificación ya existe
         $anotacion = PreinformeAcademico::find( $request->id_anotacion );
 

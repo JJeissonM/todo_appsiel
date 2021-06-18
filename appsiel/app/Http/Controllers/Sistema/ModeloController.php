@@ -395,7 +395,7 @@ class ModeloController extends Controller
                 $request[$key] = implode(",", $value);
             }
         }
-
+//dd($request->all());
         // Crear el nuevo registro
         return app($this->modelo->name_space)->create($request->all());
     }

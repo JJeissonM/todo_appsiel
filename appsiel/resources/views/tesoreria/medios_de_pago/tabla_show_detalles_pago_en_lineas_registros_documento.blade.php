@@ -8,7 +8,7 @@
             {{ Form::bsTableHeader(['Medio de pago','Caja/Cta. Bancaria','Valor']) }}
             <tbody>
                 @foreach ( $lineas_registros as $linea )
-                    <?php 
+                    <?php
                         $caja_banco = '';
                         if ( !is_null($linea->caja) )
                         {

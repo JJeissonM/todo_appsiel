@@ -37,9 +37,7 @@ class PlanClasesController extends ModeloController
     public function store(Request $request)
     {
     	$datos = $request->all(); // Datos originales
-
-        //dd( $datos );
-
+        
     	// Crear el encabezado
     	$registro = $this->crear_nuevo_registro( $request ); // Esta línea hace que la variable $request cambie (no se porqué   ¿¿¿???)
 

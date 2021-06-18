@@ -62,8 +62,7 @@ class ReporteController extends Controller
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, $request->periodo_id );
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo' );
-
-        //dd($estudiantes);
+        
         $curso = Curso::find($request->curso_id);
 
         $areas = Area::orderBy('orden_listados')->get();

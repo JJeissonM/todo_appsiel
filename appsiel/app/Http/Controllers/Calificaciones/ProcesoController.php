@@ -155,13 +155,7 @@ class ProcesoController extends ModeloController
 
 
             // Listado de estudiantes con matriculas activas en el curso y año indicados
-            $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, 'Activo' );
-            
-            /*if ($curso->id == 24 )
-            {
-                dd( [ $curso->descripcion, $asignaturas_del_curso_y_periodo_lectivo->count(), $estudiantes->count() ] );
-            }*/
-            
+            $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, 'Activo' );            
 
             foreach ($asignaturas_del_curso_y_periodo_lectivo as $asignatura)
             {

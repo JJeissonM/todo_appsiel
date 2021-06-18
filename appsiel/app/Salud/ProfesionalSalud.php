@@ -10,7 +10,7 @@ class ProfesionalSalud extends Model
 {
     protected $table = 'salud_profesionales';
 
-    protected $fillable = ['core_tercero_id', 'especialidad', 'numero_carnet_licencia', 'licencia_salud_ocupacional', 'estado'];
+    protected $fillable = [ 'core_tercero_id', 'especialidad', 'numero_carnet_licencia', 'licencia_salud_ocupacional', 'estado'];
     
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre completo', 'Especialidad', 'Registro médico', 'Estado'];
     
@@ -75,14 +75,12 @@ class ProfesionalSalud extends Model
 
     public static function opciones_campo_select()
     {
-        $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
-        $opciones = ProfesionalSalud::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_profesionales.core_tercero_id')
-            ->select('salud_profesionales.id', 'core_terceros.descripcion')
-            ->get();
+        $opciones = ProfesionalSalud::where('estado','Activo')->get();
 
         $vec[''] = '';
-        foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->descripcion;
+        foreach ($opciones as $opcion)
+        {
+            $vec[ $opcion->id ] = $opcion->tercero->descripcion;
         }
 
         return $vec;

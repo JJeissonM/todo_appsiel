@@ -153,8 +153,6 @@ class LogroController extends Controller
                 {
                     $ruta = 'academico_docente/revisar_logros/'.$logro->curso_id.'/'.$logro->asignatura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo;
                 }
-                
-                //dd($ruta);
 
                 return redirect( $ruta.'/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');
 

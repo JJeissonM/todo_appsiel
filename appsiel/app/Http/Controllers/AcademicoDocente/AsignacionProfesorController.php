@@ -76,8 +76,6 @@ class AsignacionProfesorController extends Controller
         
         $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $user_id, $periodo_lectivo->id );
 
-        //dd($listado_asignaciones);
-
         $periodos_lectivos = PeriodoLectivo::get_array_activos();
 
         $cursos = Curso::opciones_campo_select();
