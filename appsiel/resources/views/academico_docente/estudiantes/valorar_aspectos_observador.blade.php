@@ -14,9 +14,10 @@
 			{{Form::open(['url' => 'academico_docente/guardar_valoracion_aspectos','method'=>'post', 'id' => 'form_create', 'class'=>'form-horizontal']) }}
 
 				<div class="form-group">
-					<div class="alert alert-info">
-					  <strong>Convenciones!</strong> <br/> 
-					  S= Siempre &nbsp;&nbsp;&nbsp;&nbsp;   CS= Casi siempre  &nbsp;&nbsp;&nbsp;&nbsp;      AV= Algunas veces  &nbsp;&nbsp;&nbsp;&nbsp; N= Nunca
+					<div class="alert alert-success">
+					  <strong>Convenciones!</strong> <br/>
+					  @include('academico_docente.estudiantes.lbl_convenciones_valorar_aspectos_observador')
+					  
 					</div>
 				</div>
 
@@ -72,10 +73,10 @@
 										{{ Form::hidden('id_aspecto[]',$aspecto->id) }}
 										<td>{{ $aspecto->orden }}</td>
 										<td>{{ $aspecto->descripcion }}</td>
-										<td>{{ Form::text('valoracion_periodo1[]', $val_per1, ['size' => 1]) }}</td>
-										<td>{{ Form::text('valoracion_periodo2[]', $val_per2, ['size' => 1]) }}</td>
-										<td>{{ Form::text('valoracion_periodo3[]', $val_per3, ['size' => 1]) }}</td>
-										<td>{{ Form::text('valoracion_periodo4[]', $val_per4, ['size' => 1]) }}</td>
+										<td>{{ Form::text('valoracion_periodo1[]', $val_per1, ['size' => 3]) }}</td>
+										<td>{{ Form::text('valoracion_periodo2[]', $val_per2, ['size' => 3]) }}</td>
+										<td>{{ Form::text('valoracion_periodo3[]', $val_per3, ['size' => 3]) }}</td>
+										<td>{{ Form::text('valoracion_periodo4[]', $val_per4, ['size' => 3]) }}</td>
 									</tr>
 								@endforeach
 							@endforeach

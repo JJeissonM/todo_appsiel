@@ -11,6 +11,8 @@ use App\Sistema\Modelo;
 use Auth;
 use DB;
 
+use App\Matriculas\PeriodoLectivo;
+
 class Periodo extends Model
 {
     protected $table='sga_periodos';
@@ -18,6 +20,11 @@ class Periodo extends Model
     protected $fillable = ['periodo_lectivo_id','id_colegio','numero', 'descripcion','fecha_desde','fecha_hasta', 'periodo_de_promedios', 'estado', 'cerrado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Número', 'Descripcion', 'Fecha desde', 'Fecha hasta', 'Cerrado', 'Periodo de promedios', 'Estado'];
+
+    public function observaciones_boletin( $estudiante_id )
+    {
+        return $this->hasMany(ObservacionesBoletin::class,'id_periodo')->where('id_estudiante',$estudiante_id);
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -138,6 +145,11 @@ class Periodo extends Model
                             ->orderBy('sga_periodos_lectivos.id')
                             ->orderBy('sga_periodos.numero')
                             ->get();
+    }
+
+    public static function get_activos_periodo_lectivo_actual()
+    {
+        return Periodo::get_activos_periodo_lectivo( PeriodoLectivo::get_actual()->id );
     }
 
     public static function get_array_to_select($colegio_id,$cerrado)

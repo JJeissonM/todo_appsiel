@@ -109,9 +109,76 @@ div.recuadro{
 	text-align: center;
 }
 
-.page-break {
-    page-break-after: always;
-}
+table {
+		        width:100%;
+		        border-collapse: collapse;
+		    }
+
+		    table.encabezado{
+		        padding:5px;
+		        border: 1px solid gray;
+		    }
+
+		    table.banner{
+		        font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+		        font-style: italic;
+		        font-size: larger;
+		        border: 1px solid gray;
+		        padding: 0px;
+		    }
+
+		    table.contenido td {
+		        border: 1px solid gray;
+		    }
+
+		    th {
+		        background-color: #E0E0E0;
+		        border: 1px solid gray;
+		    }
+
+		    ul{
+		        padding:0px;
+		        margin:0px;
+		    }
+
+		    li{
+		        list-style-type: none;
+		    }
+
+		    span.etiqueta{
+		        font-weight: bold;
+		        display: inline-block;
+		        width: 100px;
+		        text-align:right;
+		    }
+
+		    .page-break {
+		        page-break-after: always;
+		    }
+
+
+		    .table
+		    {
+			    width: 100%;
+			}
+
+
+		    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th
+		    {
+			    line-height: 1.42857143;
+			    vertical-align: top;
+			    border-top: 1px solid gray;
+			}
+
+
+		    .table-bordered {
+			    border: 1px solid gray;
+			}
+
+			.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+			    border: 1px solid gray;
+			}
+			
 </style>
 
 <div class="container" style="width: 100%; border: 1px solid #333333;">
@@ -142,8 +209,7 @@ div.recuadro{
 	
 	<div class="page-break"></div>
 	
-	<br><br>
-	@include('matriculas.estudiantes.observador.novedades_y_anotaciones')
+	@include('matriculas.estudiantes.observador.novedades_y_anotaciones_tipo_historial')
 
 	@if( (int)config('matriculas.manejar_control_disciplinario') )
 		<div class="page-break"></div>
@@ -154,7 +220,7 @@ div.recuadro{
 	@if( (int)config('matriculas.manejar_matriz_dofa') )
 		<div class="page-break"></div>
 		
-		@include('matriculas.estudiantes.observador.analisis_foda_show')
+		@include('matriculas.estudiantes.observador.matriz_dofa_historial')
 	@endif
 	
 </div>

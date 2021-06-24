@@ -31,6 +31,71 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
+
+
+				<br>
+				<h4> Parámetros para el observador  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$formato_impresion_observador = 1;
+								if( isset($parametros['formato_impresion_observador'] ) )
+								{
+									$formato_impresion_observador = $parametros['formato_impresion_observador'];
+								}
+							?>
+							{{ Form::bsSelect('formato_impresion_observador', $formato_impresion_observador, 'Formato impresión del Observador', [ 1 => 'Estándar', 2 => 'Tipo Historial' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$convenciones_valoraciones_aspectos = 'S= Siempre      CS= Casi siempre      AV= Algunas veces      N= Nunca';
+								if( isset($parametros['convenciones_valoraciones_aspectos'] ) )
+								{
+									$convenciones_valoraciones_aspectos = $parametros['convenciones_valoraciones_aspectos'];
+								}
+							?>
+							{{ Form::bsSelect('convenciones_valoraciones_aspectos', $convenciones_valoraciones_aspectos, 'Convenciones valoraciones de aspectos', [ 1 => 'S= Siempre      CS= Casi siempre      AV= Algunas veces      N= Nunca', 2 => 'Db= Desempeño bajo      DB= Desempeño Básico      DA= Desempeño Alto      DS= Desempeño Superior' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$manejar_control_disciplinario = 0;
+								if( isset($parametros['manejar_control_disciplinario'] ) )
+								{
+									$manejar_control_disciplinario = $parametros['manejar_control_disciplinario'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_control_disciplinario', $manejar_control_disciplinario, 'Manejar control disciplinario', [ 'No', 'Si' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$manejar_matriz_dofa = 1;
+								if( isset($parametros['manejar_matriz_dofa'] ) )
+								{
+									$manejar_matriz_dofa = $parametros['manejar_matriz_dofa'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_matriz_dofa', $manejar_matriz_dofa, 'Manejar matriz DOFA', [ 'No', 'Si' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros de facturas de estudiantes  </h4>
 				<hr>
 				<div class="row">

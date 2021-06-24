@@ -174,12 +174,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -194,12 +194,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -214,12 +214,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -234,12 +234,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -254,12 +254,12 @@
 			if (elementos.length == 1) {
 				//ver uno
 				url = url.replace('id_fila', elementos[0]);
-				location.href = url.replace('&amp;', '&').replace('&amp;', '&');
+				location.href = url.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&');
 			} else {
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {
@@ -278,7 +278,7 @@
 				//ver muchos
 				elementos.forEach(function(item) {
 					let url2 = url.replace('id_fila', item);
-					window.open(url2.replace('&amp;', '&').replace('&amp;', '&'), '_blank');
+					window.open(url2.replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&').replace('&amp;', '&'), '_blank');
 				});
 			}
 		} else {

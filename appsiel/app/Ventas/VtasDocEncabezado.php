@@ -426,7 +426,7 @@ class VtasDocEncabezado extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE CLIENTES";
+        return "LISTADO DE FACTURAS DE VENTAS";
     }
 
     public static function consultar_registros2($nro_registros, $search)

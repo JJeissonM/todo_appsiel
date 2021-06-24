@@ -42,7 +42,7 @@ class DofaObservadorController extends Controller
 		$colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
         
         $registros = FodaEstudiante::get_foda_un_estudiante( Input::get('estudiante_id') );
-
+        
         $miga_pan = [
                     ['url'=>'academico_docente?id='.Input::get('id'),'etiqueta'=>'Académico docente'],
                     ['url'=>'academico_docente/revisar_estudiantes/curso_id/'.Input::get('curso_id').'/id_asignatura/'.Input::get('asignatura_id').'?id='.Input::get('id'),'etiqueta'=>'Estudiantes'],
