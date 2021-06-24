@@ -11,6 +11,7 @@
     <title> {{ $pagina->descripcion }} </title>
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/icon" href="{{asset( $pagina->favicon )}}" />
+    <meta property="og:image" content="{{asset( $pagina->favicon )}}" />
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->

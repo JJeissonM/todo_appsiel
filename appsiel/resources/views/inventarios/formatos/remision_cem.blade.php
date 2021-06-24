@@ -75,11 +75,12 @@
                         @if( !is_null( $doc_encabezado->documento_ventas_padre()->contacto_cliente ) )
                             CONTACTO: {{ $doc_encabezado->documento_ventas_padre()->contacto_cliente->tercero->descripcion }}<br>
                         @endif
+                        @if(!is_null( $doc_encabezado->documento_ventas_padre()->documento_ventas_padre() ))
+                            COTIZACIÓN NRO. {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->consecutivo }}<br>
+                            ORDEN DE COMPRAS: {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->orden_compras }}
+                        @endif
                     @endif
-                    @if(!is_null( $doc_encabezado->documento_ventas_padre()->documento_ventas_padre() ))
-                        COTIZACIÓN NRO. {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->consecutivo }}<br>
-                        ORDEN DE COMPRAS: {{ $doc_encabezado->documento_ventas_padre()->documento_ventas_padre()->orden_compras }}
-                    @endif
+                    
                     </b>
                 </td>
                 <td width="20%" style="text-align: center;"></td>

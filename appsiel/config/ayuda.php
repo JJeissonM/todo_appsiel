@@ -40,7 +40,7 @@ return array(
                     'label' => 'Cartera de Clientes Recaudos CxC',
                     'preview' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Recaudos_De_Cuentas_por_Cobrar_cartera_de_clientes.jpg',
                     'url' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Recaudos_De_Cuentas_por_Cobrar_cartera_de_clientes.mp4',
-                    'duracion' => '2:05',
+                    'duracion' => '7:37',
                     'publicacion' => '16 de Junio de 2021'
                 ),    
             )
