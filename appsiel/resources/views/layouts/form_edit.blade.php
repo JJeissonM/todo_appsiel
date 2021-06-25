@@ -28,9 +28,9 @@ use App\Http\Controllers\Sistema\VistaController;
 
 		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-		{{ Form::hidden('url_id',Input::get('id'))}}
-		{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
-		{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+		{{ Form::hidden( 'url_id', Input::get('id'), ['id'=>'url_id'] )}}
+		{{ Form::hidden( 'url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo'] ) }}
+		{{ Form::hidden( 'url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion'] ) }}
 
 		{{ Form::hidden('datos_registro', $registro,['id'=>'datos_registro'])}}
 

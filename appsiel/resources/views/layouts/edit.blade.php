@@ -27,6 +27,12 @@
 
 				$(this).parents('form:first').submit();
 			});/**/
+
+			// Inactivas enlaces de la miga de pan para Acádemico Docente
+			if ( $('#url_id').val() == 5 )
+			{
+				$('.breadcrumb-item').find('a').attr('href','#');
+			}
 		});
 	</script>
 	

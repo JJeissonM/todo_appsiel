@@ -32,7 +32,7 @@
 							<th>Dirección</th>
 							<th>Barrio</th>
 							<th>Teléfono</th>
-							<th>OBSERVADOR</th>
+							<th></th>
 						</tr>
 					</thead>
 
@@ -64,7 +64,7 @@
 
 									<?php
 								  		$select_crear = '<div class="dropdown" style="display:inline-block;">
-								            <button class="btn btn-warning btn-sm dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-scale"></i> Gestionar
+								            <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"><i class="fa fa-scale"></i> OBSERVADOR
 								            <span class="caret"></span></button>
 								            <ul class="dropdown-menu">';
 
@@ -89,6 +89,13 @@
 								          echo $select_crear;
 								  	?>								
 
+								  	@can('acdo_modificar_datos_estudiante')
+								  		<a class="btn btn-warning btn-xs" href="{{ url( 'matriculas/estudiantes/' . $estudiante->id_estudiante . '/edit?id=' . Input::get('id') . '&id_modelo=29&id_transaccion=' ) }}" title="Modificar datos del estudiante"><i class="fa fa-edit"></i> </a>
+								  	@endcan
+
+								  	@can('acdo_gestionar_responsables_estudiantes')
+								  		<a class="btn btn-success btn-xs" href="{{ url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=' . Input::get('id') . '&id_modelo=29&estudiante_id=' . $estudiante->id_estudiante ) }}" title="Gestionar responsables del estudiante"><i class="fa fa-arrow-right"></i> </a>
+								  	@endcan								  	
 								</td>
 							</tr>
 						@endforeach

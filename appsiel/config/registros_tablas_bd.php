@@ -7847,6 +7847,36 @@
       'created_at' => '2021-06-04 18:45:31',
       'updated_at' => '2021-06-04 18:45:51',
     ),
+    523 => 
+    array (
+      'id' => 549,
+      'core_app_id' => 5,
+      'modelo_id' => 29,
+      'name' => 'acdo_modificar_datos_estudiante',
+      'descripcion' => 'Modificar datos estudiante',
+      'url' => 'matriculas/estudiantes/id_fila/edit',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2021-06-25 10:53:54',
+      'updated_at' => '2021-06-25 10:55:46',
+    ),
+    524 => 
+    array (
+      'id' => 550,
+      'core_app_id' => 1,
+      'modelo_id' => 29,
+      'name' => 'acdo_gestionar_responsables_estudiantes',
+      'descripcion' => 'Gestionar responsables de estudiantes',
+      'url' => 'matriculas/estudiantes/gestionresponsables/estudiante_id',
+      'parent' => 0,
+      'orden' => 1,
+      'enabled' => 0,
+      'fa_icon' => '',
+      'created_at' => '2021-06-25 11:12:44',
+      'updated_at' => '2021-06-25 11:17:38',
+    ),
   ),
   'roles' => 
   array (
@@ -19661,6 +19691,18 @@
       'permission_id' => 548,
       'role_id' => 9,
     ),
+    1940 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 549,
+      'role_id' => 13,
+    ),
+    1941 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 550,
+      'role_id' => 13,
+    ),
   ),
   'sys_campos' => 
   array (
@@ -26017,8 +26059,8 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     394 => 
     array (
       'id' => 399,
-      'descripcion' => 'Profesional de la salud',
-      'tipo' => 'hidden',
+      'descripcion' => 'Atendido por',
+      'tipo' => 'select',
       'name' => 'profesional_salud_id',
       'opciones' => 'model_App\\Salud\\ProfesionalSalud',
       'value' => 'null',
@@ -26028,7 +26070,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 0,
       'unico' => 0,
       'created_at' => '2019-04-28 04:46:22',
-      'updated_at' => '2019-06-13 13:40:47',
+      'updated_at' => '2021-06-18 01:37:48',
     ),
     395 => 
     array (
@@ -40583,7 +40625,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'id' => 1306,
       'descripcion' => 'Fecha de entrega',
       'tipo' => 'fecha',
-      'name' => 'core_campo_id-ID',
+      'name' => 'fecha_entrega',
       'opciones' => ' ',
       'value' => 'null',
       'atributos' => '',
@@ -40592,14 +40634,14 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2021-06-05 08:56:46',
-      'updated_at' => '2021-06-05 08:56:57',
+      'updated_at' => '2021-06-14 18:51:08',
     ),
     1301 => 
     array (
       'id' => 1307,
       'descripcion' => 'Hora de entrega',
       'tipo' => 'hora',
-      'name' => 'core_campo_id-ID',
+      'name' => 'hora_entrega',
       'opciones' => ' ',
       'value' => 'null',
       'atributos' => '',
@@ -40608,7 +40650,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2021-06-05 08:57:16',
-      'updated_at' => '2021-06-05 08:57:26',
+      'updated_at' => '2021-06-14 18:51:25',
     ),
     1302 => 
     array (
@@ -52441,7 +52483,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     772 => 
     array (
       'id' => 829,
-      'orden' => 99,
+      'orden' => 6,
       'core_modelo_id' => 96,
       'core_campo_id' => 399,
     ),
@@ -52455,14 +52497,14 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     774 => 
     array (
       'id' => 831,
-      'orden' => 6,
+      'orden' => 8,
       'core_modelo_id' => 96,
       'core_campo_id' => 401,
     ),
     775 => 
     array (
       'id' => 832,
-      'orden' => 7,
+      'orden' => 10,
       'core_modelo_id' => 96,
       'core_campo_id' => 402,
     ),
@@ -52616,7 +52658,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     797 => 
     array (
       'id' => 854,
-      'orden' => 8,
+      'orden' => 12,
       'core_modelo_id' => 96,
       'core_campo_id' => 421,
     ),
