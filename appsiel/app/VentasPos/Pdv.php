@@ -24,6 +24,11 @@ class Pdv extends Model
         return $this->belongsTo( TesoCaja::class,'caja_default_id');
     }
 
+    public function cajero()
+    {
+        return $this->belongsTo( \App\User::class,'cajero_default_id');
+    }
+
     public function cliente()
     {
         return $this->belongsTo( Cliente::class,'cliente_default_id');
