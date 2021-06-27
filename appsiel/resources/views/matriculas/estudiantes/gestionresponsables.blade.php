@@ -362,7 +362,7 @@
 @section('scripts')
 <script type="text/javascript">
 	$(document).ready(function() {
-
+		$('.breadcrumb-item').find('a').attr('href','#');
 	});
 
 

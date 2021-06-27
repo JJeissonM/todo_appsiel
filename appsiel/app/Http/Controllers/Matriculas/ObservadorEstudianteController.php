@@ -64,8 +64,21 @@ class ObservadorEstudianteController extends TransaccionController
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
 
         $estudiante = Estudiante::get_datos_basicos( $id_estudiante );
+        
+        switch ( config('matriculas.formato_impresion_observador') ) {
+            case '1':
+                $vista_formato = 'matriculas.estudiantes.observador.vista_preliminar';
+                break;
 
-        return View::make('matriculas.estudiantes.observador.vista_preliminar', compact( 'colegio', 'estudiante' ) )->render();
+            case '2':
+                $vista_formato = 'matriculas.estudiantes.observador.tipo_historial';
+                break;
+
+            default:
+                break;
+        }
+        
+        return View::make( $vista_formato, compact( 'colegio', 'estudiante' ) )->render();
 
     }
 

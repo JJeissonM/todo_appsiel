@@ -8,7 +8,7 @@
 <div class="form-group">
 	<div class="alert alert-info">
 	  <strong>Convenciones</strong> <br/> 
-	  S= Siempre    CS= Casi siempre      AV= Algunas veces   N= Nunca
+	  @include('academico_docente.estudiantes.lbl_convenciones_valorar_aspectos_observador')
 	</div>
 </div>
 

@@ -108,6 +108,12 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();
 
         $pdv = Pdv::find(Input::get('pdv_id'));
+        
+        $validar = $this->verificar_datos_por_defecto( $pdv );
+        if ( $validar != 'ok' )
+        {
+            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
+        }
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
         $cantidad_campos = count($lista_campos);
@@ -192,6 +198,31 @@ class FacturaPosController extends TransaccionController
         $vendedores = Vendedor::where('estado','Activo')->get();
 
         return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores'));
+    }
+
+    public function verificar_datos_por_defecto( $pdv )
+    {
+        if ( is_null( $pdv->cliente ) ) {
+            return 'El punto de ventas NO tiene asociado un Cliente por defecto.';
+        }
+
+        if ( is_null( $pdv->bodega ) ) {
+            return 'El punto de ventas NO tiene asociada una Bodega por defecto.';
+        }
+
+        if ( is_null( $pdv->caja ) ) {
+            return 'El punto de ventas NO tiene asociada una Caja por defecto.';
+        }
+
+        if ( is_null( $pdv->cajero ) ) {
+            return 'El punto de ventas NO tiene asociado un Cajero por defecto.';
+        }
+
+        if ( is_null( $pdv->tipo_doc_app ) ) {
+            return 'El punto de ventas NO tiene asociado un Tipo de documento por defecto.';
+        }
+
+        return 'ok';
     }
 
     /**

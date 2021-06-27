@@ -62,7 +62,8 @@ class Campo extends Model
             'sys_campos.definicion AS DEFINICIÓN',
             'sys_campos.requerido AS REQUERIDO',
             'sys_campos.editable AS EDITABLE',
-            'sys_campos.unico AS ÚNICO'
+            'sys_campos.unico AS ÚNICO',
+            'sys_campos.id AS ID'
         )
             ->where("sys_campos.id", "LIKE", "%$search%")
             ->orWhere("sys_campos.tipo", "LIKE", "%$search%")
