@@ -76,7 +76,22 @@ return array(
             ],
             '8' => [
                 'app' => 'compras',
-                'urls' => array()
+                'urls' => array(
+                    '0' => array(
+                        'label' => 'CxP - Pagos o Abonos de Cuentas por Pagar',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_Pagos_o_Abonos_de_cuentas_por_pagar.png',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_Pagos_o_Abonos_de_cuentas_por_pagar.mp4',
+                        'duracion' => '6:36',
+                        'publicacion' => '28 de Marzo de 2021'
+                    ),
+                    '1' => array(
+                        'label' => 'CxP - Revision de Cuentas por Pagar',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_revision_de_cuentas_por_pagar.png',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_revision_de_cuentas_por_pagar.mp4',
+                        'duracion' => '2:10',
+                        'publicacion' => '28 de Marzo de 2021'
+                    )
+                )
             ],
             '9' => [
                 'app' => 'pagina_web',
@@ -219,7 +234,15 @@ return array(
             ],
             '12' => [
                 'app' => 'ventas',
-                'urls' => array()
+                'urls' => array(
+                    '0' => array(
+                        'label' => 'Manejo de Anticipo Clientes',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/manejo_de_anticipo_clientes.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/manejo_de_anticipo_clientes.mp4',
+                        'duracion' => '6:02',
+                        'publicacion' => '28 de Marzo de 2021'
+                    )
+                )
             ],
             '13' => [
                 'app' => 'contabilidad',
