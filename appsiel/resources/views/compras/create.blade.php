@@ -128,7 +128,7 @@
 
 	<script type="text/javascript">
 
-		var dias_plazo;
+		var dias_plazo, dias_plazo_original;
 
 		$.fn.actualizar_medio_recaudo = function(){
     
@@ -166,12 +166,19 @@
 			$("#proveedor_input").after('<div id="div_list_suggestions"> </div>');
 
 			$('#forma_pago').on('change',function (event){
+				
+				$('#fecha_vencimiento').val( actualizar_fecha_vencimiento( new Date( $('#fecha').val() ) ) );
+
 				if($('#forma_pago').val() == 'contado'){
 					$('#mostrar_medios_recaudos').removeAttr('style','display');
+					$('#fecha_vencimiento').attr( 'readonly','readonly' );
 				}else{
 					$('#mostrar_medios_recaudos').attr('style','display:none');
+					$('#fecha_vencimiento').removeAttr( 'readonly' );
 				}
+
 			});
+
 			$('#fecha').on('change',function(event){
 				var fecha = new Date( $(this).val() );
 				$('#fecha_vencimiento').val( actualizar_fecha_vencimiento( fecha ) );
@@ -618,7 +625,12 @@
 
                 var forma_pago = 'contado';
                 dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
-                if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
+                dias_plazo_original = parseInt( item_sugerencia.attr('data-dias_plazo') );
+                if ( dias_plazo > 0 )
+                { 
+                	forma_pago = 'credito';
+					$('#fecha_vencimiento').removeAttr( 'readonly' );
+                }
                 $('#forma_pago').val( forma_pago );
 
                 // Para llenar la fecha de vencimiento
@@ -641,11 +653,17 @@
             // Recibe objeto Date()
             function actualizar_fecha_vencimiento( fecha )
             {
+            	if ( $('#forma_pago').val() == 'contado' )
+            	{
+            		dias_plazo = 0;
+            	}else{
+            		dias_plazo = dias_plazo_original;
+            	}
 
             	fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 				
 				var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
-				var dia = fecha.getDate();// + 1; // Se le suma 1,
+				var dia = fecha.getDate();// Se le suma 1,
 
                 if( mes < 10 )
                 {
