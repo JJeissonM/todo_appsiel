@@ -98,7 +98,7 @@
                 <div class="checkoutHeader__safePurchase">
                     <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
                 </div>
-                @if(Auth::guest())
+                @if(!Auth::guest())
                 <div class="checkoutHeader__logoHeader align-self-center">
                     <p style="white-space: nowrap; margin: 0">
                         Hola, {{ $cliente->nombre1  }}<br>
