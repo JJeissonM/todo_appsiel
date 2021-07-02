@@ -146,11 +146,11 @@
                                     $url_imagen = $articulo->imagen;
                                 }
                                 ?>
-
+                                @if($articulo->imagen != '')
                                 <p style="text-align: center;width: 100%;">
                                     <img src="{{ asset( $url_imagen )}}" style=" max-height: 350px;object-fit: cover;">
                                 </p>
-
+                                @endif
                                 <h2 class="entry-title" style="width: 100%; text-align: center;"><a href="#">{{$articulo->titulo}}</a></h2>
                             </header>
 
