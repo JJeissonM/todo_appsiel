@@ -36,7 +36,7 @@ class TeamComponent implements IDrawComponent
             ],
             [
                 'url' => 'NO',
-                'etiqueta' => 'Componente Team (Equipo de trabajo)'
+                'etiqueta' => 'Componente Tarjetas'
             ]
         ];
         $widget = $this->widget;

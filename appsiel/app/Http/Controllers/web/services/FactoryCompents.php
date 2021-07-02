@@ -81,7 +81,7 @@ class FactoryCompents
             case "Login":
                 $component = new LoginComponent($this->widget);
                 break;
-            case "Team":
+            case "Tarjetas":
                 $component = new TeamComponent($this->widget);
                 break;
             case "Prices":

@@ -195,7 +195,7 @@ class ArticleController extends Controller
             }
         }
 
-        dd($as);
+        //dd($as);
         $result = $as->save();
         if ($result) {
             $message = 'La configuración de la sección fue modificada correctamente.';

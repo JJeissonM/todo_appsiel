@@ -35,7 +35,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-            <h4>.:: En ésta Sección: Team (Equipos de trabajo, tarjetas, etc) ::.</h4>
+            <h4>.:: En ésta Sección: Tarjetas ::.</h4>
         </div>
     </div>
 </div>
@@ -75,7 +75,7 @@
                     <input type='color' class='form-control' name='text_color' required>
                 </div>
                 <div class="form-group">
-                    <label>Imagen (410x291 px)</label>
+                    <label>Imagen (400x200 px)</label>
                     <span data-toggle="tooltip" title="Establece una imagen para la tarjeta."> <i class="fa fa-question-circle"></i></span>
                     <input name="imagen" type="file" required placeholder="Archivo de Imagen" class="form-control">
                 </div>
