@@ -78,6 +78,7 @@
 			@else 
 				{{ $doc_encabezado->numero_identificacion}} 
 			@endif
+			- {{ $doc_encabezado->tercero->digito_verificacion }}
 		</td>
 		<td style="border: solid 1px #ddd;">
 			@if( !is_null($doc_encabezado->contacto_cliente) )

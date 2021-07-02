@@ -291,7 +291,7 @@
                         @foreach($contacts as $c)
                         <tr>
                             <td>{{$c->names}}</td>
-                            <td>{{$c->email}}</td>
+                            <td><?php echo $c->email ?></td>
                             <td>{{$c->subject}}</td>
                             <td>@if($c->state=='READ') <label style="background-color: green; color:#FFF; padding: 5px;" class="label label-success">LEÍDO</label> @else <label style="background-color: red; color:#FFF; padding: 5px;" class="label label-success">SIN LEER</label> @endif</td>
                             <td>
