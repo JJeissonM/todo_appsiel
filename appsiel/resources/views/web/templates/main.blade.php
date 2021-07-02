@@ -212,7 +212,6 @@
 
     <script src="{{asset('js/owl.carousel.min.js')}}"></script>
     <script src="{{asset('js/mousescroll.js')}}"></script>
-    <script src="{{asset('js/smoothscroll.js')}}"></script>
     <script src="{{asset('js/jquery.prettyPhoto.js')}}"></script>
     <script src="{{asset('js/jquery.isotope.min.js')}}"></script>
     <script src="{{asset('js/jquery.inview.min.js')}}"></script>
