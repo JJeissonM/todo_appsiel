@@ -70,15 +70,14 @@
                                 echo "<p class='price-font' style='color: ".$item->text_color." !important;'>No hay información en este plan</p>";
                             }
                         ?>
-                        <a class="btn btn-default btn-block" style="margin-bottom: 30px; color: {{$item->text_color}} !important; border: 2px solid; border-color: {{$item->text_color}} !important;" role="button" data-toggle="collapse" href="#collapse_{{$item->id}}" aria-expanded="false" aria-controls="collapseExample">
-                        Ver todas las características <i class="fa fa-plus"></i></a>
+                        @if(count($lista) > 2)
                         <div class="collapse" id="collapse_{{$item->id}}">
                             <div class="well">
                                 <?php
                                 if ($item->lista_items != 'null') {
                                     $lista = json_decode($item->lista_items);
-                                    foreach($lista as $l){
-                                        echo "<p class='price-font' style='color: ".$item->text_color." !important;'><i style='color: ".$item->button_color." !important;' class='fa fa-".$l->icono."'></i> ".$l->item."</p>";
+                                    for ($i=3; $i < count($lista); $i++) { 
+                                        echo "<p class='price-font' style='color: ".$item->text_color." !important;'><i style='color: ".$item->button_color." !important;' class='fa fa-".$lista[$i]->icono."'></i> ".$lista[$i]->item."</p>";
                                     }
                                 }else{
                                     echo "<p class='price-font' style='color: ".$item->text_color." !important;'>No hay información en este plan</p>";
@@ -86,6 +85,10 @@
                                 ?>
                             </div>
                         </div>
+                        @endif
+                        <a class="btn btn-default btn-block" style="margin-bottom: 30px; color: {{$item->text_color}} !important; border: 2px solid; border-color: {{$item->text_color}} !important;" role="button" data-toggle="collapse" href="#collapse_{{$item->id}}" aria-expanded="false" aria-controls="collapseExample">
+                        Ver todas las características <i class="fa fa-plus"></i></a>
+                        
                         <a style="background-color: {{$item->button_color}} !important; border-color: {{$item->button2_color}} !important;" class="btn btn-primary animate btn-block price-font" href="{{$item->url}}">DESCUBRE EL PLAN...</a>
                     </div>
                 </div>
@@ -107,5 +110,12 @@
 </section>
 @endif
 <script type="text/javascript">
-    
+    document.addEventListener('DOMContentLoaded',function(){
+        $('#pirce .collapse').on('hidden.bs.collapse', function (event) {
+            event.target.parentElement.querySelector('a.btn').innerHTML = 'Ver todas las características <i class="fa fa-plus"></i>' ;
+        })
+        $('#price .collapse').on('shown.bs.collapse', function (event) {
+            event.target.parentElement.querySelector('a.btn').innerHTML = 'Ver menos características <i class="fa fa-minus"></i>' ;
+        })
+    })
 </script>
