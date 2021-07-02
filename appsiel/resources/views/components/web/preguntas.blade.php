@@ -114,7 +114,8 @@ if($pregunta!=null){
         background-image: -webkit-gradient(linear, left top, right top, from(rgb({{$r}}, {{$g}}, {{$b}})), to(rgb({{$r1}}, {{$g1}}, {{$b1}})));
         background-image: linear-gradient(90deg, rgb({{$r}}, {{$g}}, {{$b}}) 0%, rgb({{$r1}}, {{$g1}}, {{$b1}}) 100%);
         border-radius: 0 0 10px 10px;
-        padding: 0 30px 10px 30px
+        padding: 0 30px 10px 30px;
+        color: white;
     }
 
     .card.two .card-body {
@@ -142,7 +143,7 @@ if($pregunta!=null){
                     @if(count($pregunta->itempreguntas) > 0)
                     @foreach($pregunta->itempreguntas as $item)
                     <div class="card pregunta-font" style="opacity: 0.8 !important;">
-                        <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar(event)" onfocusout="agregar(event)">
+                        <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar('collapse{{$item->id}}')">
                             <h5 class="mb-0">
                                 <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false" aria-controls="collapse{{$item->id}}" class="collapsed pregunta-font">{{$item->pregunta}}</a>
                             </h5>
@@ -167,7 +168,15 @@ if($pregunta!=null){
 
 </section>
 <script type="text/javascript">
-    function agregar(event) {
+
+    document.addEventListener('DOMContentLoaded',function(){
+        $('#faq-area .collapse').on('hidden.bs.collapse', function (event) {
+            event.target.parentElement.querySelector('.card-header').classList = 'card-header';
+        })
+    })
+        
+
+    function agregar(name) {     
         event.target.parentElement.parentElement.classList.toggle('active');
     }
 </script>
