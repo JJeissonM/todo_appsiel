@@ -254,7 +254,7 @@ class TransaccionController extends Controller
     // CALCULAR EL COSTO PROMEDIO
     public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion)
     {
-        // WARNING: EL COSTO SE DEBE CALCULAR TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE DEBN TENER EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
+        // NOTA: EL COSTO SE CALCULA TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE TIENE EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
         $costo_prom = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
                                 ->where('inv_movimientos.inv_producto_id','=',$id_producto)
                                 ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
@@ -282,13 +282,17 @@ class TransaccionController extends Controller
             // Si ya existe el costo promedio para ese producto en esa bodega, se actualiza
             InvCostoPromProducto::where('inv_bodega_id',$id_bodega)
                         ->where('inv_producto_id',$id_producto)
-                        ->update(['costo_promedio' => $costo_prom]);
+                        ->update(['costo_promedio' => abs( $costo_prom ) ]);
         }else{
             // Armo el vector de almacenamiento
-            $datos = ['inv_bodega_id'=>$id_bodega,'inv_producto_id'=>$id_producto,'costo_promedio'=>$costo_prom];
+            $datos = [
+                        'inv_bodega_id'=>$id_bodega,
+                        'inv_producto_id'=>$id_producto,
+                        'costo_promedio'=> abs( $costo_prom )
+                    ];
                          
             // Almaceno en la base de datos
-            InvCostoPromProducto::create($datos);
+            InvCostoPromProducto::create( $datos );
         }
     }
 

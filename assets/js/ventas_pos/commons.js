@@ -76,6 +76,7 @@ $(document).ready(function () {
                     tasa_impuesto = producto.tasa_impuesto;
                     inv_producto_id = producto.id;
                     unidad_medida = producto.unidad_medida1;
+                    costo_unitario = producto.costo_promedio;
 
                     $(this).val(producto.descripcion);
                     $('#precio_unitario').val(get_precio(producto.id));
@@ -392,6 +393,11 @@ $(document).ready(function () {
 
     function agregar_la_linea() 
     {
+        if ( !validar_venta_menor_costo() )
+        { 
+            return false;
+        }
+
         $('#popup_alerta').hide();
 
         // Se escogen los campos de la fila ingresada
@@ -706,6 +712,7 @@ $(document).ready(function () {
 
     function calcular_precio_total()
     {
+
         precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 
         $('#precio_total').val(0);

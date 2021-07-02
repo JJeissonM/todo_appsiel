@@ -375,7 +375,7 @@ $(document).ready(function(){
 		}else{
 			$('#popup_alerta_danger').hide();
 			ok = true;
-		}					
+		}
 
 		return ok;
 	}

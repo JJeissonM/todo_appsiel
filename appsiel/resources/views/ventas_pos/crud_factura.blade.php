@@ -172,6 +172,8 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <div id="popup_alerta"></div>
 
+            <input type="hidden" name="permitir_venta_menor_costo" id="permitir_venta_menor_costo" value="{{ config('ventas.permitir_venta_menor_costo') }}">
+
             {{ Form::close() }}
 
             <hr>

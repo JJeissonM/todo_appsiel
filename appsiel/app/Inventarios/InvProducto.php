@@ -159,7 +159,7 @@ class InvProducto extends Model
         return "LISTADO DE PRODUCTOS";
     }
 
-    public static function get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar = null )
+    public static function get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar = null, $bodega_id = null )
     {
 
         $array_wheres = [ 
@@ -199,12 +199,20 @@ class InvProducto extends Model
                                             'inv_productos.mostrar_en_pagina_web',
                                             'inv_productos.codigo_barras',
                                             'inv_productos.inv_grupo_id')
-                                ->orderBy('inv_productos.inv_grupo_id','ASC')
+                                ->orderBy('inv_grupos.descripcion','ASC')
                                 ->get();
 
         foreach ($registros as $item)
         {
             $item->tasa_impuesto = Impuesto::get_tasa( $item->id, 0, 0 );
+
+            $costo_prom = $item->precio_compra;
+            if ( !is_null( $bodega_id ) )
+            {
+                $costo_prom = $item->get_costo_promedio( $bodega_id );
+            }
+
+            $item->costo_promedio = $costo_prom;
         }
 
         return $registros;

@@ -231,7 +231,12 @@ use App\Core\Tercero;
 </table>
 <hr>
 <h1>Condiciones:</h1>
-<div class="text-indent"><?php echo $otroscampos->terminos_y_condiciones ?></div>
+<div class="text-indent">
+    
+    <?php 
+        echo $otroscampos->terminos_y_condiciones ?>
+        
+    </div>
 <br>
 <div class="encabezado">
     <p style="text-align: right; font-size: 18px; padding-right: 30px">{{ $empresa->descripcion }}</p>

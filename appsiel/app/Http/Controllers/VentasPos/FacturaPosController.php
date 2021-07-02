@@ -169,7 +169,8 @@ class FacturaPosController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
 
-        $productos = InvProducto::get_datos_basicos('', 'Activo');
+        $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
+
         $productosTemp = null;
         foreach ($productos as $pr)
         {
@@ -535,7 +536,7 @@ class FacturaPosController extends TransaccionController
 
         $total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
 
-        $productos = InvProducto::get_datos_basicos('', 'Activo');
+        $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = null;
         foreach ($productos as $pr) {
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
@@ -1375,7 +1376,7 @@ class FacturaPosController extends TransaccionController
  
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
 
-        $productos = InvProducto::get_datos_basicos('', 'Activo');
+        $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = null;
         foreach ($productos as $pr){
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
@@ -1406,7 +1407,7 @@ class FacturaPosController extends TransaccionController
         $pdv = Pdv::find( $pdv_id );
         $datos = [
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
-                    'productos' => InvProducto::get_datos_basicos('', 'Activo'),
+                    'productos' => InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id),
                     'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
                     'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),
                     'clientes' => Cliente::where( 'estado', 'Activo' )->get(),

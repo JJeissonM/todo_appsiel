@@ -302,6 +302,7 @@ function mandar_codigo(item_id) {
 	tasa_impuesto = producto.tasa_impuesto;
 	inv_producto_id = producto.id;
 	unidad_medida = producto.unidad_medida1;
+	costo_unitario = producto.costo_promedio;
 
 	$('#inv_producto_id').val(producto.descripcion);
 	$('#precio_unitario').val(get_precio(producto.id));
@@ -317,6 +318,7 @@ function mandar_codigo2(item_id) {
 	tasa_impuesto = producto.tasa_impuesto;
 	inv_producto_id = producto.id;
 	unidad_medida = producto.unidad_medida1;
+	costo_unitario = producto.costo_promedio;
 
 	$('#inv_producto_id').val(producto.descripcion);
 	$('#precio_unitario').val(get_precio(producto.id));
@@ -338,6 +340,11 @@ function mandar_codigo2(item_id) {
 
 function agregar_la_linea2()
 {
+	if ( !validar_venta_menor_costo() )
+	{ 
+		return false;
+	}
+
 	$('#popup_alerta').hide();
 
 	// Se escogen los campos de la fila ingresada
@@ -501,7 +508,33 @@ function agregar_la_linea_ini() {
 }
 
 
-// LA CARGAR EL DOCUMENTO
+
+function validar_venta_menor_costo()
+{
+	if ( $("#permitir_venta_menor_costo").val() == 0 )
+	{
+		var ok = true;
+
+		if ( base_impuesto_unitario < costo_unitario )
+		{
+			$('#popup_alerta').show();
+			$('#popup_alerta').css('background-color','red');
+			$('#popup_alerta').text( 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA' );
+			ok = false;
+		}else{
+			$('#popup_alerta').hide();
+			ok = true;
+		}
+	}else{
+		$('#popup_alerta').hide();
+		ok = true;
+	}
+
+	return ok;
+}
+
+
+// AL CARGAR EL DOCUMENTO
 $(document).ready(function () {
 
 	$('#btn_guardar').hide();
