@@ -30,6 +30,18 @@
 		font-size: calc(1em + 3vw);
 		width: 550px;
 	}
+	.nav-tabs > li > a{
+		color: white
+	}
+	.nav-tabs > li.active > a{
+		color: white;
+	}
+	.nav-tabs > li.active{
+		background: #2196f3;
+	}
+	.nav-tabs > li.active > a:focus{
+		color: white;
+	}
 
 	video::-internal-media-controls-download-button {display:none}
 	video::-webkit-media-controls-enclosure {overflow:hidden}
@@ -41,18 +53,14 @@
 @section('content')
 <div id="div_contenido">
 
-	<div class="container col-sm-10 col-sm-offset-1">
-
-		<div class="row" align="center">
-			@include('banner')
-		</div>
-
+	<div class="container-fluid">
+		
 		@include('layouts.mensajes')
 		<div id="myDIV">
 			<div class="row">
 				<div class="panel panel-primary">
 					<div class="panel-heading" align="center" style="background: #574696;">
-						<h3 class="panel-title" style="font-size: 22px; padding: 10px;">SECCIÓN DE AYUDA</h3>
+						<h3 class="panel-title" style="font-size: 22px; padding: 10px;"> SECCIÓN DE AYUDA</h3>
 						<ul class="nav nav-tabs">
 							<li class="active"><a data-toggle="tab" href="#tvideos">TUTORIALES EN VIDEO</a></li>
 							<li><a data-toggle="tab" href="#tpdf">TUTORIALES EN PDF</a></li>
@@ -62,12 +70,12 @@
 						<div id="tvideos" class="tab-pane fade in active">
 							<div class="panel-body">
 								<div class="row">
-									<div class="col-md-7" id="video" style="height: 410px !important;">
-										<video width="100%" height="400" controls>
+									<div class="col-md-9" id="video" style="height: 660px !important;">
+										<video width="100%" height="660" controls>
 											Su navegador no soporta este formato de video.
 										</video>
 									</div>
-									<div class="col-md-5" style="height: 410px !important; overflow-y: scroll;">
+									<div class="col-md-3" style="height: 660px !important; overflow-y: scroll;">
 										<div class="accordion" id="accordionExample">
 											<?php $i = 0; ?>
 											@foreach( $videos as $key=>$value)
@@ -84,14 +92,17 @@
 														@if($value['total']>0)
 														@if($value['urls']!=null)
 														@foreach($value['urls'] as $url)
-														<div class="col-md-12" style="padding: 10px; cursor: pointer; margin-bottom: 5px; border-bottom: 1px #d8d7d7 solid;" id="{{$url['url']}}" onclick="verVideo(this.id)">
-															<div class="col-md-5" style="padding-right: 0px; padding-left: 0px;">
-																<img width="100%" src="{{$url['preview']}}">
+														<div class="col-md-12 col-xs-6" style="padding: 10px; cursor: pointer; margin-bottom: 5px; border-bottom: 1px #d8d7d7 solid;" id="{{$url['url']}}" onclick="verVideo(this.id)">
+															<div class="row">
+																<div class="col-xs-4" style="padding-right: 0px; padding-left: 0px;">
+																	<img width="100%" src="{{$url['preview']}}">
+																</div>
+																<div class="col-xs-8" style="padding-right: 0px; font-size: 12px !important;">
+																	<a style="font-size: 14px !important;">{{$url['label']}}</a>
+																	<p>Duración {{$url['duracion']}} <br>Publicación: {{$url['publicacion']}}</p>
+																</div>	
 															</div>
-															<div class="col-md-7" style="padding-right: 0px; font-size: 12px !important;">
-																<a style="font-size: 14px !important;">{{$url['label']}}</a>
-																<p>Duración {{$url['duracion']}} <br>Publicación: {{$url['publicacion']}}</p>
-															</div>
+															
 														</div>
 														@endforeach
 														@endif
@@ -110,10 +121,10 @@
 						</div>
 						<div id="tpdf" class="tab-pane fade">
 						  	<div class="panel-body">
-								<div class="col-md-7"  id="pdf" style="height: 410px !important;">
-									Su navegador no soporta este formato de documento.
+								<div class="col-md-9"  id="pdf" style="height: 660px !important;">
+									<div style="width: 100%; height: 660px; background-color: grey"></div>
 								</div>
-								<div class="col-md-5" style="height: 410px !important; overflow-y: scroll;">
+								<div class="col-md-3" style="height: 660px !important; overflow-y: scroll;">
 									<div class="accordion" id="accordionExample1">
 										<?php $i = 0; ?>
 										@foreach( $pdfs as $key=>$value)
@@ -125,13 +136,13 @@
 													</button>
 												</h2>
 											</div>
-											<div id="collapsePdf{{$i}}" class="collapsed" aria-labelledby="heading{{$i}}" data-parent="#accordionExample1">
+											<div id="collapsePdf{{$i}}" class="collapse" aria-labelledby="heading{{$i}}" data-parent="#accordionExample1">
 												<div class="card-body">
 													@if($value['total']>0)
 														@if($value['urls']!=null)
 															@foreach($value['urls'] as $url)
 															<div class="col-md-12" style="padding: 10px; cursor: pointer; margin-bottom: 5px; border-bottom: 1px #d8d7d7 solid;" id="{{$url['url']}}" onclick="verPdf(this.id)">
-																<div class="col-md-7" style="padding-right: 0px; font-size: 12px !important;">
+																<div style="padding-right: 0px; font-size: 12px !important;">
 																	<a style="font-size: 14px !important;">{{$url['label']}}</a>
 																	<p>Paginas {{$url['paginas']}} <br>Publicación: {{$url['publicacion']}}</p>
 																</div>
@@ -153,8 +164,12 @@
 						</div>
 					</div>					
 				</div>
+				<div class="row">
+					<a href="{{ url('/inicio') }}" class="btn btn-primary" style="float: left">Volver a al inicio</a>
+				</div>	
 			</div>
 		</div>
+		
 	</div>
 </div>
 @endsection
@@ -167,13 +182,13 @@
 
 	function verPdf(url) {
 		$("#pdf").html("");
-		$("#pdf").html(`<embed oncontextmenu='return false;' src="${url}#toolbar=0&navpanes=0" type="application/pdf" crossorigin width="100%" height="400" />`);
+		$("#pdf").html(`<embed oncontextmenu='return false;' src="${url}#view=fitH&toolbar=0&navpanes=0" type="application/pdf" allowfullscreen width="100%" height="660" />`);
 		$("#pdf").fadeIn();
 	}
 
 	function verVideo(url) {
 		$("#video").html("");
-		$("#video").html(`<video oncontextmenu='return false;' controlslist='nodownload' autoplay width='100%' height='400' controls><source src='${url}' type='video/mp4'>Su navegador no soporta este formato de video.</video>`);
+		$("#video").html(`<video oncontextmenu='return false;' controlslist='nodownload' autoplay width='100%' height='660' controls><source src='${url}' type='video/mp4'>Su navegador no soporta este formato de video.</video>`);
 		$("#video").fadeIn();
 	}
 </script>
