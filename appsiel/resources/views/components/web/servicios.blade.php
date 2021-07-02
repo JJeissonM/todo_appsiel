@@ -54,8 +54,20 @@
         <div id="visor_contenido_servicios">
 
         </div>
+        <?php
+            $estilo = "";
+            if ($servicios != null)
+            {
+                if ($servicios->tipo_fondo == 'COLOR')
+                {
+                    $estilo = "background-color: " . $servicios->fondo . ";";
+                }else {
+                    $estilo = "background: url('" . $servicios->fondo . "') " . $servicios->repetir . " center " . $servicios->direccion;
+                }
+            }
+        ?>
 
-        <div class="container" id="contenedor_seccion_servicios">
+        <div class=" py-md-4 py-sm-1" id="contenedor_seccion_servicios" style="{{ $estilo }}">
             @if( is_null($servicios) )
                 
                 <section class="img">
@@ -68,21 +80,10 @@
             @else
 
                 @if($servicios->disposicion == 'DEFAULT')
-                    <section id="services" class="img" >
+                    <section id="services" class="img container servicios-font" >
                 @else
-                    <?php
-                        $estilo = "";
-                        if ($servicios != null)
-                        {
-                            if ($servicios->tipo_fondo == 'COLOR')
-                            {
-                                $estilo = "background-color: " . $servicios->fondo . ";";
-                            }else {
-                                $estilo = "background: url('" . $servicios->fondo . "') " . $servicios->repetir . " center " . $servicios->direccion;
-                            }
-                        }
-                    ?>
-                    <section class="servicios-font" style="{{ $estilo }}">
+                    
+                    <section class="container servicios-font">
                 @endif
 
                 <div class="section-header">
