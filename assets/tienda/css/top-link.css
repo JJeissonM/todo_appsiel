@@ -5,7 +5,7 @@
 .top-link {
     position: fixed;
     width: 100%;
-    z-index: 99999;
+    z-index: 999;
     font-size: 10px;
     color: #eeeeee;
     background-color: #000;

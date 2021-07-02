@@ -15,16 +15,6 @@ body {
   color: #64686d;
   line-height: 26px;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 600;
-  font-family: 'Roboto', sans-serif;
-  color: #272727;
-}
 a {
   color: #45aed6;
   -webkit-transition: color 400ms, background-color 400ms;

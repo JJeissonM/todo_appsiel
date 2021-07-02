@@ -33,14 +33,41 @@ a:-webkit-any-link {
     cursor: pointer;
 }
 
+.checkoutHeader .checkoutHeader__safePurchase {
+    flex: 3;
+    white-space: nowrap;
+}
+
+.checkoutHeader .checkoutHeader__logoHeader {
+    text-align: center;
+    flex: 1;
+}
+
+.checkoutHeader .checkoutHeader__logoHeader:last-child {
+    text-align: right;
+}
+
+@media (max-width: 576px){
+    
+    .checkoutHeader .checkoutHeader__logoHeader:last-child {
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px){
+
+    .container {
+        max-width: 100%;        
+    }
+}
 @media (min-width: 768px){
+
     .checkoutHeader .checkoutHeader__safePurchase {
         background-color: #fff;
         border-top: none;
         display: inline-block;
-        width: 100%;
+        flex: 3;
         font-size: 18px;
-        text-indent: -85px;
     }
 
     .checkoutHeader .checkoutHeader__logoHeader {
