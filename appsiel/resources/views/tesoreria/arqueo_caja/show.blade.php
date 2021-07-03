@@ -32,9 +32,10 @@
         </div>
         <div class="col-md-4 text-center">
             <div class="btn-group">
-                Imprimir
-                {{ Form::bsBtnPrint( 'tesoreria/imprimir/'.$registro->id ) }}
-                {{--                Imprimir <a class="btn btn-info btn-xs btn-detail" href="http://localhost/Appsiel/todo_appsiel/tesoreria_pagos_cxp_imprimir/1?id=3&amp;id_modelo=150&amp;id_transaccion=33&amp;formato_impresion_id=estandar" title="Imprimir" id="btn_print" target="_blank" style="transform: rotate(0deg); border-spacing: 0px;"><i class="fa fa-btn fa-print"></i>&nbsp;</a>--}}
+                <!--Imprimir
+                {{ Form::bsBtnPrint( 'tesoreria/imprimir/'.$registro->id ) }}-->
+                Formato: {{ Form::select('formato_impresion_id',['0'=>'Estándar','1'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
+                {{ Form::bsBtnPrint( 'tesoreria/imprimir/'.$registro->id.'?formato_impresion_id=0' ) }}
             </div>
         </div>
         <div class="col-md-4">
@@ -226,6 +227,27 @@
             }
 
         });
+
+        $('#formato_impresion_id').on('change',function(){
+				var btn_print = $('#btn_print').attr('href');
+
+				n = btn_print.search('formato_impresion_id');
+				var url_aux = btn_print.substr(0,n);
+				var new_url = url_aux + 'formato_impresion_id=' + $(this).val();
+				
+				$('#btn_print').attr('href', new_url);
+
+
+
+				var btn_email = $('#btn_email').attr('href');
+
+				n = btn_email.search('formato_impresion_id');
+				var url_aux = btn_email.substr(0,n);
+				var new_url = url_aux + 'formato_impresion_id=' + $(this).val();
+				
+				$('#btn_email').attr('href', new_url);
+				
+			});
 
     </script>
 @endsection

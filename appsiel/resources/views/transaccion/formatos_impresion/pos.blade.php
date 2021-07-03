@@ -34,7 +34,7 @@
         <table border="0" style="margin-top: 12px !important;" width="100%">
             <tr>
                 <td width="15%">
-                    <img src="{{ $url_img }}" width="120px;" />
+                    <img src="{{ $url_img }}" width="80px;" />
                 </td>
                 <td>
                     <div style="text-align: center;">
