@@ -968,7 +968,8 @@ class ModeloController extends Controller
                 }
 
                 // Si se está editando un checkbox
-                if ($lista_campos[$i]['tipo'] == 'bsCheckBox') {
+                if ($lista_campos[$i]['tipo'] == 'bsCheckBox')
+                {
                     // Si el name del campo enviado tiene la palabra core_campo_id-ID, se trata de un campo Atributo de EAV
                     if (strpos($lista_campos[$i]['name'], "core_campo_id-") !== false) {
                         $lista_campos[$i]['value'] = ModeloEavValor::where(["modelo_padre_id" => Input::get('modelo_padre_id'), "registro_modelo_padre_id" => Input::get('registro_modelo_padre_id'), "modelo_entidad_id" => Input::get('modelo_entidad_id'), "core_campo_id" => $lista_campos[$i]['id']])->value('valor');

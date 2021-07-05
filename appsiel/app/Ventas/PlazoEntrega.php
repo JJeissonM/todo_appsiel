@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Salud;
+namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,36 +9,36 @@ use App\Core\ModeloEavValor;
 
 use DB;
 
-class EntidadRemisora extends Model
+class PlazoEntrega extends Model
 {
     protected $table = 'core_eav_valores';
 
     protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'registro_modelo_entidad_id', 'core_campo_id', 'valor'];
 
-    protected $crud_model_id = 223; // Es el mismo $modelo_padre_id, a variable no se puede usar en métodos estáticos
+    protected $crud_model_id = 302; // Plazos de entrega. Es el mismo $modelo_padre_id, a variable no se puede usar en métodos estáticos
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"no"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web"}';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'ID'];
 
     public static function consultar_registros($nro_registros, $search)
     {
-        $modelo_padre_id = 223; // Entidades Remisoras
-        return EntidadRemisora::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
+        $modelo_padre_id = 302; // Plazos de entrega
+        return PlazoEntrega::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
             ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
             ->select(
                 'core_eav_valores.valor AS campo1',
-                'core_eav_valores.id AS campo2'
+                'core_eav_valores.id AS campo2',
+                'core_eav_valores.id AS campo3'
             )
-            ->orWhere("core_eav_valores.valor", "LIKE", "%$search%")
             ->orderBy('core_eav_valores.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
-        $modelo_padre_id = 223; // Entidades Remisoras
-        $string = EntidadRemisora::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
+        $modelo_padre_id = 302; // Plazos de entrega
+        $string = PlazoEntrega::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
             ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
             ->select(
                 'core_eav_valores.valor AS DESCRIPCIÓN'
@@ -52,20 +52,20 @@ class EntidadRemisora extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE ENTIDADES REMISORAS";
+        return "LISTADO DE PLAZOS DE ENTREGA";
     }
 
 
     public static function opciones_campo_select()
     {
-        $modelo_padre_id = 223; // Entidades Remisoras
-        $opciones = EntidadRemisora::where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
-            ->orderBy('valor')
-            ->get();
+        $modelo_padre_id = 302; // Plazos de entrega
+        $opciones = PlazoEntrega::where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
+                                ->orderBy('valor')
+                                ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->modelo_padre_id . '-' . $opcion->registro_modelo_padre_id . '-' . $opcion->modelo_entidad_id . '-' . $opcion->core_campo_id] = $opcion->valor;
+            $vec[$opcion->id] = $opcion->valor;
         }
         return $vec;
     }
@@ -90,14 +90,14 @@ class EntidadRemisora extends Model
         // Con ModeloController se almacena un solo registro en la tabla EAV con datos vacíos
         // Se obtiene ese registro y se actualiza
         $registro_eav = ModeloEavValor::where(
-            [
-                "modelo_padre_id" => $registro->modelo_padre_id,
-                "registro_modelo_padre_id" => 0,
-                "core_campo_id" => 0
-            ]
-        )
-            ->get()
-            ->first();
+                                                [
+                                                    "modelo_padre_id" => $registro->modelo_padre_id,
+                                                    "registro_modelo_padre_id" => 0,
+                                                    "core_campo_id" => 0
+                                                ]
+                                            )
+                                        ->get()
+                                        ->first();
 
         $datos2 = array_shift($datos);
         $registro_eav->registro_modelo_padre_id = $registro->id;
@@ -193,7 +193,7 @@ class EntidadRemisora extends Model
     {
         $vec_ids_campos = explode('-', $string_ids_campos);
 
-        if (!isset($vec_ids_campos[1])) {
+        if (!isset($vec_ids_campos[1]) || !isset($vec_ids_campos[2]) || !isset($vec_ids_campos[3])) {
             return '';
         }
 

@@ -79,6 +79,8 @@ class CotizacionController extends TransaccionController
         $request['estado'] = 'Pendiente';
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
+        //$doc_encabezado->almacenar_plazo_entrega( $request->url_id_modelo, $doc_encabezado->id, $request->plazo_entrega );
+
         $campo_eav = new ModeloEavValor();
         $campo_eav->almacenar_registros_eav( $request->all(), $request->url_id_modelo, $doc_encabezado->id );
 
@@ -232,7 +234,7 @@ class CotizacionController extends TransaccionController
         }
         
         $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
-
+        
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 

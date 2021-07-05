@@ -10,7 +10,7 @@ class ModeloEavValor extends Model
 {
     protected $table = 'core_eav_valores';
     
-	protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'core_campo_id', 'valor'];
+	protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'registro_modelo_entidad_id', 'core_campo_id', 'valor'];
 
 	public $encabezado_tabla = ['Modelo Padre', 'Descripcion registro mod. padre', 'Entidad', 'Atributo', 'Valor', 'Acción'];
 
@@ -90,8 +90,8 @@ class ModeloEavValor extends Model
                                                     "core_campo_id" => $core_campo_id,
                                                     "valor" => $valor 
                                                 ] );
-                    }                        
-                }                    
+                    }
+                }
             }
         }
     }

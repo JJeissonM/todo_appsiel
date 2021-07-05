@@ -53,6 +53,11 @@
 	<b>Fecha vencimiento:</b> {{ date_format(date_create($doc_encabezado->fecha_vencimiento),'d-m-Y') }}
 	<br>
 	<b>Condición de ventas:</b> {{ $doc_encabezado->texto_condicion_venta() }}
+	<br>
+	<b>Plazo de entrega:</b> <!-- Modelo EAV -->
+	@if( !is_null( $doc_encabezado->plazo_entrega ) )
+		{{ $doc_encabezado->plazo_entrega->valor }}
+	@endif
 	
 	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
 		<br>
@@ -76,8 +81,9 @@
 			@if( config("configuracion.tipo_identificador") == 'NIT') 
 				{{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	
 			@else 
-				{{ $doc_encabezado->numero_identificacion}} 
+				{{ $doc_encabezado->numero_identificacion }} 
 			@endif
+			- {{ $doc_encabezado->digito_verificacion }}
 		</td>
 		<td style="border: solid 1px #ddd;">
 			@if( !is_null($doc_encabezado->contacto_cliente) )

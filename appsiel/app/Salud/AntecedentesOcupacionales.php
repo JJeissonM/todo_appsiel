@@ -15,7 +15,7 @@ class AntecedentesOcupacionales extends ModeloEavValor
 {
     protected $table = 'core_eav_valores';
 
-	protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'core_campo_id', 'valor'];
+	protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'registro_modelo_entidad_id', 'core_campo_id', 'valor'];
 	
 	protected $crud_model_id = 96; // Consultas
 
