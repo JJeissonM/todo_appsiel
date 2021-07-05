@@ -36,7 +36,7 @@ class ArqueoCajaController extends ModeloController
     }
 
     // Generar vista para SHOW  o IMPRIMIR
-    public function vista_preliminar($id)
+    public function vista_preliminar($id,$formato_impresion)
     {
         $registro = ArqueoCaja::find($id);
         $empresa = Empresa::find($registro->core_empresa_id);
@@ -71,7 +71,7 @@ class ArqueoCajaController extends ModeloController
 
         
         // Crear vista
-        $view = \View::make('tesoreria.arqueo_caja.print', compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
+        $view = \View::make('tesoreria.arqueo_caja.'.$formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
 
         return $view;
     }
@@ -147,15 +147,28 @@ class ArqueoCajaController extends ModeloController
 
     public function imprimir($id)
     {
-        $view = ArqueoCajaController::vista_preliminar($id);
-        //dd($view);
-        $orientacion = 'portrait';
-        $tam_hoja = 'Letter';
+        if(Input::get('formato_impresion_id') == 0){
+            $view = ArqueoCajaController::vista_preliminar($id,'print');
+            
+            $orientacion = 'portrait';
+            $tam_hoja = 'Letter';
 
-        // Crear PDF
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
-        return $pdf->stream('arqueocaja.pdf');//stream();
+            // Crear PDF
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
+            return $pdf->stream('arqueocaja.pdf');//stream();    
+        }else{
+            $view = ArqueoCajaController::vista_preliminar($id,'pos');
+            //dd($view);
+            $orientacion = 'portrait';
+            $tam_hoja = 'Letter';
+
+            // Crear PDF
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
+            return $pdf->stream('arqueocaja.pdf');//stream(); 
+        }
+        
 
 
         /*echo $view;*/

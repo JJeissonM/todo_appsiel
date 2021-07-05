@@ -27,6 +27,10 @@
             'id' => 0
         ];
     }*/
+    if (!Auth::guest()) {
+        $user = Auth::user();
+        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
+    }
 ?>
 <!doctype html>
 <html lang="es">
@@ -104,11 +108,24 @@
 <body>
 <header>
     <div class="checkoutHeader">
-        <div class="checkoutHeader__logoHeader">
-        </div>
-        <div class="checkoutHeader__safePurchase">
-            <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
-        </div>
+        <div class="container d-flex">
+            <div class="checkoutHeader__logoHeader">
+                <a href="{{ config('pagina_web.main_page_tienda_online') }}">
+                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: 60px; min-width:60px"> 
+                </a>
+            </div>
+            <div class="checkoutHeader__safePurchase">
+                <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
+            </div>
+            @if(!Auth::guest())
+                <div class="checkoutHeader__logoHeader align-self-center">
+                    <p style="white-space: nowrap; margin: 0">
+                        Hola, {{ $cliente->nombre1  }}<br>
+                        Ya casi terminas tu compra          
+                    </p>
+                </div>
+                @endif
+        </div>            
     </div>
 </header>
 <main>

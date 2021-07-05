@@ -122,10 +122,14 @@ del{
     width: 100%;
     z-index: 1;
 }
+.product-name::first-letter{
+    text-transform: uppercase;
+}
 
 .product-name {
     line-height: 1;
     clear: both;
+    text-transform: lowercase;
 }
 
 h2 {

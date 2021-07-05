@@ -72,17 +72,6 @@ a:focus {
 	text-decoration: none;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	font-family: 'Raleway', sans-serif;
-	font-weight: 700;
-	margin-top: 0;
-}
-
 h1 {
 	font-size: 38px;
 }
@@ -2949,9 +2938,6 @@ a:focus,
 		margin-top: 10px;
 	}
 
-	.mu-navbar-nav li {
-		margin-bottom: 10px;
-	}
 
 	.mu-navbar .navbar-toggler {
 		color: #fff;

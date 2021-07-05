@@ -12,14 +12,14 @@
 
 </style>
 <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
-<div class="container-wrapper contactenos-font" style="padding-top: 100px; padding-bottom: 100px;">
+<div class="container-wrapper contactenos-font  p-md-4 p-sm-1">
     <div class="container">
         @if($contactenos != null)
         <div class="row contactenos-font">
             <div class="col-md-12">
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown contactenos-font">CONTÁCTENOS</h2>
-                    <p class="text-center wow fadeInDown contactenos-font" style="font-weight: bold; font-size: 20px; color: #000;">¡Escríbenos para tener el gusto de atenderte!</p>
+                    <p class="text-center wow fadeInDown contactenos-font" style="font-weight: bold; font-size: 20px; color: #000;">¡Escríbenos para tener el gusto de atenderte y trabajar juntos!</p>
                 </div>
             </div>
             <div class="col-md-3"></div>
@@ -80,11 +80,12 @@
 
 <script src="{{asset('js/sweetAlert2.min.js')}}"></script>
 <script type="text/javascript">
+'use strict'
     function guardar() {
         var nam = $("#names").val();
         var asu = $("#subject").val();
         var ntel = $("#numtel").val();
-        var corr = $("#email").val()+" | "+ntel;
+        var corr = "<a href='mailto:"+$("#email").val()+"'>"+$("#email").val()+"<&#47;a> | "+ntel;
         var msj = $("#message").val();
         if (nam.length <= 0 || asu.length <= 0 || corr.length <= 0 || msj.length <= 0 || ntel.length <= 0) {
             alert("Complete los campos.");

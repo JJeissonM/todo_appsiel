@@ -40,7 +40,7 @@ class TeamController extends Controller
             ],
             [
                 'url' => 'seccion/' . $widget . '?id=' . Input::get('id'),
-                'etiqueta' => 'Componente Team (Equipo de trabajo)'
+                'etiqueta' => 'Componente Tarjetas'
             ],
             [
                 'url' => 'NO',
@@ -121,7 +121,7 @@ class TeamController extends Controller
             ],
             [
                 'url' => 'seccion/' . $item->team->widget_id . '?id=' . Input::get('id'),
-                'etiqueta' => 'Componente Team (Equipo de trabajo)'
+                'etiqueta' => 'Componente Tarjetas'
             ],
             [
                 'url' => 'NO',

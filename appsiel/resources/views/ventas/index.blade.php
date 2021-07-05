@@ -110,9 +110,10 @@
 			<div class="marco_formulario">
 				<div class="row">					
 					<div class="col-md-12">						
-						<div class="card" style="border: 2px solid #ffcd39">
+						<div class="card" style="border: 2px solid #ffcd39;">
 							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">Pedidos por Entregar</h4>
 							@if($pedidos_de_la_semana!=null)
+							<div style=" overflow-x: scroll">
 							<table class="table table-bordered table-responsive">
 								<thead>
 									<tr style="background-color: #eee">
@@ -159,7 +160,9 @@
 										@endforeach
 									</tr>
 								</tbody>
-							</table>
+							</table>	
+							</div>
+							
 							@else
 							<p>No hay pedidos pendientes esta semana</p>
 							@endif

@@ -78,14 +78,35 @@
     </style>
 
 </head>
+<?php 
+    $empresa = App\Core\Empresa::find(1);
+    $configuracion = App\web\Configuraciones::all()->first();
+    if (!Auth::guest()) {
+        $user = Auth::user();
+        $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
+    }
+?>
 <body>
     <header>
         <div class="checkoutHeader">
-            <div class="checkoutHeader__logoHeader">
-            </div>
-            <div class="checkoutHeader__safePurchase">
-                <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
-            </div>
+            <div class="container d-flex flex-wrap">
+                <div class="checkoutHeader__logoHeader">
+                    <a href="{{ config('pagina_web.main_page_tienda_online') }}">
+                        <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: 60px; min-width:60px"> 
+                    </a>
+                </div>
+                <div class="checkoutHeader__safePurchase">
+                    <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
+                </div>
+                @if(!Auth::guest())
+                <div class="checkoutHeader__logoHeader align-self-center">
+                    <p style="white-space: nowrap; margin: 0">
+                        Hola, {{ $cliente->nombre1  }}<br>
+                        Ya casi terminas tu compra          
+                    </p>
+                </div>
+                @endif
+            </div>            
         </div>
     </header>
 <main>
@@ -129,7 +150,7 @@
 
                 <div class="terminos">
                     <input class="select" type="checkbox" id="contrato">
-                    <a href="" class="my-1" style="line-height: normal">Acepto haber leído los Términos y Condiciones y la Política de Privacidad para hacer esta compra</a>
+                    <a href="{{ config('pagina_web.tyc_page_tienda_online') }}" class="my-1" style="line-height: normal">Acepto haber leído los Términos y Condiciones y la Política de Privacidad para hacer esta compra</a>
                 </div>
 
                 <div class="acciones">                    

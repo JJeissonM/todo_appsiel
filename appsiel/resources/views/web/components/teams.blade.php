@@ -86,7 +86,7 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-            <h4>.:: En ésta Sección: Team (Equipos de trabajo, tarjetas, etc) ::.</h4>
+            <h4>.:: En ésta Sección: Tarjetas ::.</h4>
         </div>
     </div>
 </div>

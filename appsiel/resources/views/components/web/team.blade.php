@@ -3,7 +3,6 @@
     #team {
         position: relative;
         z-index: 80 !important;
-        padding: 100px 0 100px;
         <?php
         if ($team != null) {
             if ($team->tipo_fondo == 'COLOR') {
@@ -134,9 +133,10 @@
     }
 
     .frontside .cardTeam .cardTeam-body img {
-        width: 180px;
+        max-width: 400px;
         height: 180px;
-        border-radius: 10%;
+        object-fit: contain;
+        border-radius: 20px;
     }
 
     .cardTeam-title {
@@ -166,7 +166,7 @@
     }
 </style>
 @if($team!=null)
-<section id="team" class="team-font">
+<section id="team" class="team-font py-md-4 py-sm-1">
     <div id="visor_contenido_servicios">
 
     </div>
@@ -176,7 +176,7 @@
             <h2 class="section-title text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown; color: {{$team->title_color}} !important;">{{$team->title}}</h2>
             <p class="text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown; color: {{$team->description_color}} !important;">{{$team->description}}</p>
         </div>
-        <div class="row">
+        <div class="row justify-content-center align-content-center">
             @if(count($team->teamitems) > 0)
             @foreach($team->teamitems as $item)
             <!-- Team member -->

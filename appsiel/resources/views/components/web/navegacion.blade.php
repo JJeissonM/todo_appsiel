@@ -167,15 +167,20 @@ if (is_null($nav)) {
 
     #myHeader .dropdown-menu {
         background-color: <?php echo $fondos['background_1'];
-        ?> !important;
+        ?> !important;        
         border-radius: 0 !important;
+        padding: 0 10px 10px 10px;
         border: 1px solid !important;
         border-color: <?php echo $fondos['background_1'];
         ?> !important;
     }
-
+    
     #myHeader .dropdown-item:hover {
-        background-color: <?php echo $fondos['background_0'];
+        background-color: <?php echo $fondos['background_1'];
+        ?> !important;
+    }
+    #myHeader .dropdown-item.active{
+        background-color: <?php echo $fondos['background_1'];
         ?> !important;
     }
 /*
@@ -224,7 +229,7 @@ if (is_null($nav)) {
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             @foreach($item->subMenus() as $subItems)
                             <a style="color: {{$textcolor}}; text-transform: none !important; font-weight: 100;"
-                                class="dropdown-item" href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}"
+                                class="dropdown-item {{request()->url() == $subItems->enlace ? 'active':''}}" href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}"
                                     style="font-size: 20px;"></i>{{' '.$subItems->titulo}}</a>
                             @endforeach
                         </div>
