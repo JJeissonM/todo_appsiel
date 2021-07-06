@@ -77,7 +77,7 @@
     </tr>
     <tr>
         <td style="border: solid 1px #ddd;">
-            <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+            <b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}
         </td>
         <td style="border: solid 1px #ddd; width: 20%;">
             <b>Doc. Soporte: &nbsp;&nbsp;</b> {{ $doc_encabezado->documento_soporte }}
