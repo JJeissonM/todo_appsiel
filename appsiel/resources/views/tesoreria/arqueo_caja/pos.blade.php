@@ -68,22 +68,32 @@
                         </tr>
                     </table>    
                 </div>
-                
-                <hr>
-                <h1 class="card-inside-title">Datos de la fecha {{$registro->fecha}}</h1>                
                         <table class="table-bordered">
                             <tbody>
                                 <thead>
-                            <tr>
-                                <td colspan="3">
-                                    <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
-                                </td>
-                            </tr>
-                            <tr class="read">
-                                <th class="contact"><b>EFECTIVO</b></td>
-                                <th class="subject"><b>UNIDADES</b></td>
-                                <th class="subject"><b>VALOR</b></td>
-                            </tr>        
+                                    <tr>
+                                        <td colspan="3">
+                                            <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="color: black;">
+                                            SALDO INICIAL
+                                        </td>
+                                        <td class="subject" style="color: black;">
+                                            ${{ number_format($registro->base,'0',',','.') }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <center><strong>CONTEO DE EFECTIVO</strong></center>
+                                        </td>
+                                    </tr>
+                                    <tr class="read">
+                                        <th class="contact"><b>EFECTIVO</b></td>
+                                        <th class="subject"><b>UNIDADES</b></td>
+                                        <th class="subject"><b>VALOR</b></td>
+                                    </tr>        
                                 </thead>
                             
                             @foreach($registro->billetes_contados as $key => $value)
@@ -175,6 +185,9 @@
                                     ${{number_format($registro->total_saldo,'0',',','.')}}</td>
                             </tr>
                             </tbody>
-                        </table>        
+                        </table>
+
+                    <br><br>
+                    {!! generado_por_appsiel() !!}     
 </body>
 </html>

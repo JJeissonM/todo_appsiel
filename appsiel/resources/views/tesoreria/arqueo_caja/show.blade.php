@@ -88,11 +88,6 @@
                                     <br/>
                                 </td>
                             </tr>
-                            <tr>
-                                <td colspan="2" style="border: solid 1px #ddd;">
-                                    <b>Base: &nbsp;&nbsp;</b> ${{number_format($registro->base,'0',',','.')}}
-                                </td>
-                            </tr>
                         </table>
                     </div>
                     <hr>
@@ -105,6 +100,19 @@
                                     <tr>
                                         <td colspan="3">
                                             <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            SALDO INICIAL
+                                        </td>
+                                        <td class="subject">
+                                            ${{ number_format($registro->base,'0',',','.') }}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
+                                            <center><strong>CONTEO DE EFECTIVO</strong></center>
                                         </td>
                                     </tr>
                                     <tr class="read">
@@ -143,8 +151,8 @@
                                         <td class="subject"></td>
                                         <td class="subject">${{number_format($registro->total_monedas,'0',',','.')}}</td>
                                     </tr>
-                                    <tr class="read">
-                                        <td class="contact"><b>Total Efectivo</b></td>
+                                    <tr class="read" style="background-color: #ddd;">
+                                        <td class="contact"><b>Total efectivo del día</b></td>
                                         <td class="subject"></td>
                                         <td class="subject">
                                             ${{number_format($registro->lbl_total_efectivo,'0',',','.')}}</td>
@@ -185,8 +193,8 @@
                                         <td class="subject">
                                             ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
                                     </tr>
-                                    <tr class="read">
-                                        <td class="contact"><b>Total Saldo en el Sistema</b></td>
+                                    <tr class="read" style="background-color: #ddd;">
+                                        <td class="contact"><b>Saldo en sistema del día</b></td>
                                         <td class="subject"></td>
                                         <td class="subject">
                                             ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
@@ -194,8 +202,9 @@
                                     <tr class="read">
                                         <td class="contact"><b>Diferencia</b></td>
                                         <td class="subject"></td>
-                                        <td class="subject">
-                                            ${{number_format($registro->total_saldo,'0',',','.')}}</td>
+                                        <td class="subject" style="color:{{ $registro->total_saldo < 0?'red':'black'}}">
+                                            ${{number_format($registro->total_saldo,'0',',','.')}}
+                                        </td>
                                     </tr>
                                     </tbody>
                                 </table>
