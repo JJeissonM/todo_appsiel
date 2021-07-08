@@ -25,7 +25,7 @@ class FacturaEntradaPendienteController extends CompraController
     public function store( Request $request )
     {
         $datos = $request->all();
-
+        
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 

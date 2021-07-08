@@ -9,7 +9,7 @@
 	<?php
 
 	//$aplicaciones_inactivas_demo = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 6];
-	$aplicaciones_inactivas_demo = [17];
+	$aplicaciones_inactivas_demo = [];
 	$app = App\Sistema\Aplicacion::find(Input::get('id'));
 	$modelo = App\Sistema\Modelo::find(Input::get('id_modelo'));
 

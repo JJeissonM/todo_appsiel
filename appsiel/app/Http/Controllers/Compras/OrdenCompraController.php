@@ -162,7 +162,7 @@ class OrdenCompraController extends TransaccionController
     public function entrada_almacen(Request $request)
     {
         //Modifico la orden
-        $orden = OrdenCompra::find($request->id);
+        $orden = OrdenCompra::find($request->orden_compra_id);
         $orden->estado = "Cumplida";
         // Llamar a los parámetros del archivo de configuración
         $parametros = config('compras');
@@ -173,7 +173,7 @@ class OrdenCompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
 
         $lineas_registros = json_decode($request->lineas_registros);
-
+        
         $request['core_tipo_transaccion_id'] = $ea_tipo_transaccion_id;
         $request['core_tipo_doc_app_id'] = $ea_tipo_doc_app_id;
         $request['estado'] = 'Pendiente';

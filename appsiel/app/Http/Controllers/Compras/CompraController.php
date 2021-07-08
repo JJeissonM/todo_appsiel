@@ -372,6 +372,10 @@ class CompraController extends TransaccionController
         
         if ( $forma_pago == 'contado')
         {
+            if (!isset($datos['registros_medio_pago']) )
+            {
+                $datos['registros_medio_pago'] = [];
+            }
             $teso_movimiento = new TesoMovimiento();
             $teso_movimiento->almacenar_registro_pago_contado( $datos, $datos['registros_medio_pago'], 'salida', $total_documento );
         }
