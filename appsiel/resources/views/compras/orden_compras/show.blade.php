@@ -84,11 +84,14 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 
 @section('documento_vista')
 <div>
-	<form id="entrada_almacen" action="{{route('almacen.entrada')}}" method="post">
+	<!-- <form id="entrada_almacen" action="{ {route('almacen.entrada')}}" method="post"> -->
+	{{ Form::open( [ 'url' => 'orden_compra/entrada_almacen?id=9&id_modelo=165&id_transaccion=35', 'id' => 'entrada_almacen', 'files' => true ] ) }}
 		{{ csrf_field() }}
-		<input type="hidden" name="id" value="{{$doc_encabezado->id}}" />
+		<input type="hidden" name="orden_compra_id" value="{{$doc_encabezado->id}}" />
 		<input type="hidden" name="lineas_registros" id="lineas_registros" />
 		<input type="hidden" name="url_id" value="{{Input::get('id')}}" />
+		<input type="hidden" name="url_id_modelo" value="165" />
+		<input type="hidden" name="url_id_transaccion" value="35" />
 		<input type="hidden" name="inv_bodega_id" value="{{$proveedor->inv_bodega_id}}" />
 
 		<div class="table-responsive">
@@ -107,15 +110,23 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 						<td class="text-center"> {{ $linea->producto_id }} </td>
 						<td> {{ $linea->producto_descripcion }} </td>
 						@if($doc_encabezado->estado=='Cumplida')
-						<td class="text-right"> $ {{$linea->precio_unitario}}</td>
-						<td class="text-center"> {{$linea->tasa_impuesto}} %</td>
-						<td class="text-center"> {{$linea->cantidad}}</td>
-						<td class="text-right"> $ {{$linea->precio_total}}</td>
+							<td class="text-right"> $ {{$linea->precio_unitario}}</td>
+							<td class="text-center"> {{$linea->tasa_impuesto}} %</td>
+							<td class="text-center"> {{$linea->cantidad}}</td>
+							<td class="text-right"> $ {{$linea->precio_total}}</td>
 						@else
-						<td> <input class="preciou" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->precio_unitario}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" /> </td>
-						<td> <input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" /> </td>
-						<td> <input class="cant" type="text" onkeyup="calcular(this.id)" id="{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" /> </td>
-						<td> <input class="total" type="text" id="{{$linea->id}}" value="{{$linea->precio_total}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly> </td>
+							<td> 
+								<input class="preciou" type="text" onkeyup="calcular(this.id)" id="preciou{{$linea->id}}" value="{{$linea->precio_unitario}}" style="width: 100%" name="dpreciounitario_{{$linea->id}}" />
+							</td>
+							<td>
+								<input readonly class="imp" type="text" onkeyup="calcular(this.id)" id="imp{{$linea->id}}" value="{{$linea->tasa_impuesto}}" style="width: 100%" name="dimpuesto_{{$linea->id}}" />
+							</td>
+							<td>
+								<input class="cant" type="text" onkeyup="calcular(this.id)" id="cant{{$linea->id}}" value="{{$linea->cantidad}}" style="width: 100%" name="dcantidad_{{$linea->id}}" />
+							</td>
+							<td>
+								<input class="total" type="text" id="total{{$linea->id}}" value="{{$linea->precio_total}}" style="width: 100%" name="dpreciototal_{{$linea->id}}" readonly data-doc_registro_id="{{$linea->id}}">
+							</td>
 						@endif
 					</tr>
 					<?php
@@ -157,7 +168,6 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 	$(document).ready(function() {
 
 		array_registros = <?php echo json_encode($doc_registros); ?>;
-
 		$(".btn_editar_registro").click(function(event) {
 			$('#contenido_modal').html('');
 			$("#myModal").modal({
@@ -253,7 +263,6 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 					} else {
 						$('.btn_save_modal').off('click');
 						$('#form_edit').submit();
-						//console.log('a guardar');
 						$('#popup_alerta_danger').hide();
 					}
 				});
@@ -336,7 +345,8 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 	function enviar() {
 		var linea_reg = [];
 		$(".total").each(function() {
-			var prod = $(this).parent('td').prev().children('input').attr('id');
+			//var prod = $(this).parent('td').prev().children('input').attr('id');
+			var prod = $(this).attr('data-doc_registro_id');
 			linea_reg.push(llenar_objeto(prod));
 		});
 		$('#lineas_registros').val(JSON.stringify(linea_reg));

@@ -44,7 +44,7 @@
 		          @can($fila['name'])
 
 			          
-			          <div class="col-sm-{{12/$cant_cols}}">
+			          <div class="col-sm-{{12/$cant_cols}}" style="text-align: center;">
 			          		<a href="{{url($url)}}">
 			          			<h1><i class="fa fa-{{$fila['fa_icon']}}"></i></h1>
 				                {{$fila['descripcion']}}

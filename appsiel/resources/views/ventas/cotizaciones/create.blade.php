@@ -475,8 +475,7 @@
 			
 
 		    function seleccionar_cliente(item_sugerencia)
-            {
-            	
+            {            	
 				// Asignar descripción al TextInput
                 $('#cliente_input').val( item_sugerencia.html() );
                 $('#cliente_input').css( 'background-color','white ' );
@@ -502,7 +501,7 @@
                 $('#forma_pago').val( forma_pago );
 
                 // Para llenar la fecha de vencimiento
-                var fecha = new Date( $('#fecha_vencimiento').val() );
+                var fecha = new Date( $('#fecha').val() );
 				fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 				
 				var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
@@ -517,6 +516,8 @@
                 {
                 	dia = '0' + dia;
                 }
+                console.log( fecha.getFullYear() + '-' +  mes + '-' + dia );
+
                 $('#fecha_vencimiento').val( fecha.getFullYear() + '-' +  mes + '-' + dia );
 
 

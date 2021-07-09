@@ -23,6 +23,7 @@ use Artisan;
 use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
+use App\Sistema\Permiso;
 use App\Matriculas\Matriculas;
 
 use App\Http\Requests\ExcelRequest;
@@ -40,11 +41,10 @@ class ConfiguracionController extends ModeloController
      */
     public function index()
     {
-		$permisos=Permission::where('core_app_id',Input::get('id'))
+		$permisos = Permiso::where('core_app_id',Input::get('id'))
                                 ->where('parent',0)
                                 ->orderBy('orden','ASC')
-                                ->get()
-                                ->toArray();
+                                ->get();
 
         return view('core.index',compact('permisos'));
     }

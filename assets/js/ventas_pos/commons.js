@@ -926,7 +926,6 @@ $(document).ready(function () {
             alert('No ha ingresado una valor para la transacción.');
             return false;
         }
-
         
         // Desactivar el click del botón
         $( this ).off( event );

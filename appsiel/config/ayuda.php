@@ -78,13 +78,20 @@ return array(
                 'app' => 'compras',
                 'urls' => array(
                     '0' => array(
+                        'label' => 'Crear facturas de compras',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Compras/Crear_facturas_de_compras.png',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Compras/Crear_facturas_de_compras.mp4',
+                        'duracion' => '5:53',
+                        'publicacion' => '28 de Junio de 2021'
+                    ),
+                    '1' => array(
                         'label' => 'CxP - Pagos o Abonos de Cuentas por Pagar',
                         'preview' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_Pagos_o_Abonos_de_cuentas_por_pagar.png',
                         'url' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_Pagos_o_Abonos_de_cuentas_por_pagar.mp4',
                         'duracion' => '6:36',
                         'publicacion' => '28 de Marzo de 2021'
                     ),
-                    '1' => array(
+                    '2' => array(
                         'label' => 'CxP - Revision de Cuentas por Pagar',
                         'preview' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_revision_de_cuentas_por_pagar.png',
                         'url' => 'https://appsiel.com.co/Ayudas/Videos/Compras/CxP_-_revision_de_cuentas_por_pagar.mp4',

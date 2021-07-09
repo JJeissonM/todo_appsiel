@@ -13,24 +13,24 @@ class GrupoSanguineo extends Model
 {
     protected $table = 'core_eav_valores';
 
-    protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'core_campo_id', 'valor'];
+    protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'registro_modelo_entidad_id', 'core_campo_id', 'valor'];
 
-    protected $crud_model_id = 224; // Es el mismo $modelo_padre_id, a variable no se puede usar en métodos estáticos
+    protected $crud_model_id = 224; // Grupos Sanguineos. Es el mismo $modelo_padre_id, a variable no se puede usar en métodos estáticos
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"no"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web"}';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'ID'];
 
     public static function consultar_registros($nro_registros, $search)
     {
         $modelo_padre_id = 224; // Grupos Sanguineos
-        return EntidadRemisora::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
+        return GrupoSanguineo::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
             ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
             ->select(
                 'core_eav_valores.valor AS campo1',
-                'core_eav_valores.id AS campo2'
+                'core_eav_valores.id AS campo2',
+                'core_eav_valores.id AS campo3'
             )
-            ->orWhere("core_eav_valores.valor", "LIKE", "%$search%")
             ->orderBy('core_eav_valores.created_at', 'DESC')
             ->paginate($nro_registros);
     }
@@ -38,7 +38,7 @@ class GrupoSanguineo extends Model
     public static function sqlString($search)
     {
         $modelo_padre_id = 224; // Grupos Sanguineos
-        $string = EntidadRemisora::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
+        $string = GrupoSanguineo::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
             ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
             ->select(
                 'core_eav_valores.valor AS DESCRIPCIÓN'
@@ -59,7 +59,7 @@ class GrupoSanguineo extends Model
     public static function opciones_campo_select()
     {
         $modelo_padre_id = 224; // Grupos Sanguineos
-        $opciones = EntidadRemisora::where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
+        $opciones = GrupoSanguineo::where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
             ->orderBy('valor')
             ->get();
 

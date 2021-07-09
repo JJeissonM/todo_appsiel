@@ -5,7 +5,7 @@
     <div class="container-fluid">
         <div class="col-md-6">
             <div class="form-group">
-                <label class="control-label col-sm-3" for="base">Base</label>
+                <label class="control-label col-sm-3" for="base"> <a href="#" data-toggle="tooltip" data-placement="right" title="Resta al efectivo del día"> <i class="fa fa-question-circle"></i> </a>Saldo anterior:</label>
                 <div class="col-sm-8">
                     <input type="number" id="base" min="0" autocomplete="off" class="form-control col-md-8" name="base" placeholder="$" value="{{$registro->base}}" required="required">
                 </div>
@@ -139,7 +139,7 @@
         </table>
 
         <div class="well">
-            <h1>Total efectivo físico:
+            <h1>Total efectivo físico (del día):
                 <div id="lbl_total_efectivo" style="display: inline;"> ${{$registro->lbl_total_efectivo}}</div>
             </h1>
             <input type="hidden" id="total_efectivo" name="lbl_total_efectivo" value="{{$registro->lbl_total_efectivo}}">
@@ -179,7 +179,7 @@
         </div>
 
         <div class="well">
-            <h1>Saldo en el sistema:
+            <h1>Saldo en sistema (del día):
                 <div id="lbl_total_sistema" style="display: inline;"> ${{$registro->lbl_total_sistema}}</div>
             </h1>
             <input type="hidden" id="total_sistema" name="lbl_total_sistema" value="{{$registro->lbl_total_sistema}}">
@@ -280,7 +280,7 @@
                     otros_saldos = parseFloat($('#otros_saldos').val());
                 }
 
-                var total_efectivo = parseFloat($('#total_billetes').val()) + parseFloat($('#base').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
+                var total_efectivo = parseFloat($('#total_billetes').val()) - parseFloat($('#base').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
                 $('#total_efectivo').val(total_efectivo);
                 $('#lbl_total_efectivo').text('$' + new Intl.NumberFormat("de-DE").format(total_efectivo));
             }

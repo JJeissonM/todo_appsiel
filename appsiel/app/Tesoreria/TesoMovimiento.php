@@ -231,7 +231,13 @@ class TesoMovimiento extends Model
 
     public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null)
     {
-        $array_wheres = [ ['teso_motivos.movimiento' ,'=', $tipo_movimiento ] ];
+        $operador = '>';
+        if( $tipo_movimiento == 'salida' )
+        {
+            $operador = '<';
+        }
+
+        $array_wheres = [ ['teso_movimientos.valor_movimiento' , $operador, 0 ] ];
         
         if ( !is_null($teso_caja_id) ) 
         {

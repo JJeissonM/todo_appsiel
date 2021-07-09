@@ -24,19 +24,23 @@
 				$i=$cant_cols;
 		      ?>
 		        @foreach($permisos as $fila)
-		          
+		        
+		          @if( $fila->descripcion == $fila->aplicacion->descripcion )
+		            @php continue; @endphp
+		          @endif
+
 		          @if($i % $cant_cols == 0)
 		            <div class="row">
 		          @endif
 		          
 		          <?php
-		          		$url=$fila['url'].'?id='.Input::get('id').'&id_modelo='.$fila['modelo_id'];
+		          		$url=$fila->url.'?id='.Input::get('id').'&id_modelo='.$fila->modelo_id;
 		          ?>
-		          @can($fila['name'])
+		          @can($fila->name)
 			          <div class="col-sm-{{12/$cant_cols}}">
 			          		<a href="{{url($url)}}">
 			          			<h1><i class="fa fa-{{$fila['fa_icon']}}"></i></h1>
-				                {{$fila['descripcion']}}
+				                {{$fila->descripcion}}
 				            </a>
 			          </div>
 			     @endcan

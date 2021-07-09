@@ -226,17 +226,19 @@ use App\Core\Tercero;
     </tr>
     <tr>
         <td width="30%"><b>Plazo de entrega:</b></td>
-        <td>A convenir</td>
+        <td>
+            @if( !is_null( $doc_encabezado->plazo_entrega ) )
+                {{ $doc_encabezado->plazo_entrega->valor }}
+            @endif
+        </td>
     </tr>
 </table>
 <hr>
 <h1>Condiciones:</h1>
 <div class="text-indent">
-    
-    <?php 
-        echo $otroscampos->terminos_y_condiciones ?>
-        
-    </div>
+    @if( !is_null( $otroscampos ) )
+        {!! $otroscampos->terminos_y_condiciones !!}
+    @endif
 <br>
 <div class="encabezado">
     <p style="text-align: right; font-size: 18px; padding-right: 30px">{{ $empresa->descripcion }}</p>

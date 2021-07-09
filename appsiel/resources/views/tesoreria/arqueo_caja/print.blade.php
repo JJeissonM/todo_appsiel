@@ -4,6 +4,9 @@
     <title>Arqueo de Caja</title>
     
     <style>
+
+        @page{ margin: 60px 40px 20px 40px !important; }
+        
         .marco_formulario h4 {
             color: gray;
         }
@@ -124,9 +127,9 @@
             <div class="container">
                 <table class="table">
                     <tr>
-                        <td width="50%">
+                        <td width="70%">
                             <div class="headempresa">
-                                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'show' ] )
+                                @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
                             </div>                            
                         </td>
                         <td>
@@ -139,8 +142,7 @@
 
                             </div>
                         </td>
-                    </tr>
-                   
+                    </tr>                   
                 </table>
                 <div class="subhead">
                     <table>
@@ -157,15 +159,10 @@
                             </td>                                               
                         </tr>
                         <tr>
-                            <td colspan="2">
-                                <b>Base: &nbsp;&nbsp;</b> ${{number_format($registro->base,'0',',','.')}}
-                            </td>
                         </tr>
                     </table>    
                 </div>
-                
-                <hr>
-                <h1 class="card-inside-title">Datos de la fecha {{$registro->fecha}}</h1>
+            
                 <div class="row clearfix">
                     <div class="col-md-12">
                         <table class="table table-hover">
@@ -173,6 +170,19 @@
                             <tr>
                                 <td colspan="3">
                                     <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    SALDO INICIAL
+                                </td>
+                                <td class="subject">
+                                    ${{ number_format($registro->base,'0',',','.') }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    <center><strong>CONTEO DE EFECTIVO</strong></center>
                                 </td>
                             </tr>
                             <tr class="read">
@@ -268,7 +278,8 @@
                             </tbody>
                         </table>
                     </div>
-                    <blockquote>Formato generado por Appsiel</blockquote>
+                    <br><br>
+                    {!! generado_por_appsiel() !!}
                 </div>
             </div>
         </div>
