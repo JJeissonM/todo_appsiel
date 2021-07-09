@@ -217,6 +217,9 @@
 			bottom: 70px;
 			position: fixed;
 			display: none;
+			width: 300px;
+			height: auto;
+			text-align: center;
 		}
 
 		#btnPaula {
@@ -224,16 +227,6 @@
 			bottom: 15px;
 			position: fixed;
 			z-index: 1000;
-		}
-
-		.paula {
-			background-color: #fff;
-			width: 300px;
-			height: auto;
-			text-align: center;
-			-webkit-box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
-			-moz-box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
-			box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
 		}
 	</style>
 
@@ -263,14 +256,14 @@
 		@endif
 	</div>
 
-	<div id="paula" class="paula">
-		<div class="col-md-12">
-			<img width="220px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
-		</div>
-		<div class="col-md-12" style="margin-bottom: 20px; margin-top: 20px;">
-			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary">Tutoriales en Video <i
+	<div id="paula" style="background-size: 100%; background-position: 100% 100%; background-image: url('{{asset('assets/images/ayuda.png')}}'); height: 305px; width: 332px">
+		<div class="paula" style="position: absolute; right: 25px; bottom: -10px;">
+			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary my-2">Tutoriales <i
 					class="fa fa-arrow-right"></i></a>
 		</div>
+			
+		
+			
 	</div>
 	<div id="btnPaula">
 		<button onclick="paula()" style="border-radius: 50%;" class="btn btn-danger">¿Ayuda?</button>
