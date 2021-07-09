@@ -12,9 +12,14 @@ use Illuminate\Support\Facades\Auth;
 
 class AyudaController extends Controller
 {
+    
     //muestra la vista de videos de ayuda
     public function videos()
     {
+        $miga_pan = [
+            ['url' => 'NO', 'etiqueta' => 'Sección de Ayuda']
+        ];
+
         $modelo_empresa_id = 41;
         $aplicaciones = Aplicacion::where('estado', 'Activo')->orderBy('orden', 'ASC')->get();
         $empresa = Empresa::find(Auth::user()->empresa_id);
@@ -87,6 +92,6 @@ class AyudaController extends Controller
             }
         }
         //pdfs---------------------
-        return view('ayuda.videos', compact('aplicaciones', 'empresa', 'logo', 'videos','pdfs'));
+        return view('ayuda.videos', compact('aplicaciones', 'empresa', 'logo', 'videos','pdfs','miga_pan'));
     }
 }
