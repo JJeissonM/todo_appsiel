@@ -23,6 +23,6 @@
 				<b style="color: #50B794;">{{ $empresa->descripcion }}</b>
 			</div>-->
 			@if(config('configuracion.usuario_en_mora') == 'true')			
-			<p style="color: red; margin-bottom: 0;">Señor usuario, su cuenta esta en mora. </p>
+			<p style="color: red; margin-bottom: 0;">Estimado/a Cliente, le recordamos que tiene un saldo vencido.</p>
 			@endif
 </div>
