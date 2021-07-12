@@ -256,7 +256,7 @@
 		@endif
 	</div>
 
-	<div id="paula" style="background-size: 100%; background-position: 100% 100%; background-image: url('{{asset('assets/images/ayuda.png')}}'); height: 305px; width: 332px">
+	<div id="paula" style="background-size: 100%; background-position: 100% 100%; background-image: url('{{asset('assets/images/ayuda.png')}}'); height: 153px; width: 167px">
 		<div class="paula" style="position: absolute; right: 25px; bottom: -10px;">
 			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary my-2">Tutoriales <i
 					class="fa fa-arrow-right"></i></a>
