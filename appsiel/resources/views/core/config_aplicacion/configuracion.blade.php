@@ -236,7 +236,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								if( isset($parametros['usuario_en_mora'] ) )
+								{
+									$usar_mensajes_internos = $parametros['usuario_en_mora'];
+								}else{
+									$usar_mensajes_internos = false;
+								}
+							?>
+							{{ Form::bsSelect('usuario_en_mora', $usar_mensajes_internos, 'Usuario en Mora', ['false'=>'No','true'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

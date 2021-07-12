@@ -92,3 +92,18 @@
         </div>
     </nav>
 @endif
+@if(config('configuracion.usuario_en_mora') == 'true')		
+<div class="alert alert-danger alert-dismissible mora" role="alert">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    Señor usuario, su cuenta esta en mora. 
+    <style>
+        .navbar{
+            margin-bottom: 0;
+        }
+        .mora{
+            margin: 2px 8px;
+        }
+    </style>
+</div>	
+
+@endif
