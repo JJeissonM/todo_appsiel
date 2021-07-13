@@ -217,6 +217,9 @@
 			bottom: 70px;
 			position: fixed;
 			display: none;
+			width: 300px;
+			height: auto;
+			text-align: center;
 		}
 
 		#btnPaula {
@@ -224,16 +227,6 @@
 			bottom: 15px;
 			position: fixed;
 			z-index: 1000;
-		}
-
-		.paula {
-			background-color: #fff;
-			width: 300px;
-			height: auto;
-			text-align: center;
-			-webkit-box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
-			-moz-box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
-			box-shadow: -10px 10px 10px 0px rgba(0, 0, 0, 0.41);
 		}
 	</style>
 
@@ -262,18 +255,15 @@
 		@include('layouts.demo_pagina_bloqueo_aplicaciones')
 		@endif
 	</div>
-
-	<div id="paula" class="paula">
-		<div class="col-md-12">
-			<img width="220px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
-		</div>
-		<div class="col-md-12" style="margin-bottom: 20px; margin-top: 20px;">
-			<a href="{{route('ayuda.videos')}}" class="btn btn-block btn-primary">Tutoriales en Video <i
-					class="fa fa-arrow-right"></i></a>
-		</div>
+<a href="{{route('ayuda.videos')}}">
+	<div id="paula" style="background-size: 100% 100%; background-image: url('{{asset('assets/images/ayuda.png')}}'); height: 160px; width: 174px">
+		<div class="paula" style="font-size: 13px; color: #574696;border: 1px solid #574696; position: absolute; right: 0px; bottom: -6px; border-radius: 10px; background-color: white; padding: 2px 4px">
+			Tutoriales <i class="fa fa-arrow-right"></i>
+		</div>	
 	</div>
+	</a>
 	<div id="btnPaula">
-		<button onclick="paula()" style="border-radius: 50%;" class="btn btn-danger">¿Ayuda?</button>
+		<button onclick="paula()" style="border-radius: 50px;" class="btn btn-danger">¿Ayuda?</button>
 	</div>
 	<!--<div id="paula">
 			<img width="230px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
@@ -359,12 +349,12 @@
 		function paula() {
 			if (verPaula) {
 				//ver paula
-				$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50%;' onclick='paula()'>Ocultar Paula</button>");
+				$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50px;' onclick='paula()'>Ocultar Paula</button>");
 				$("#paula").fadeIn();
 				verPaula = false;
 			} else {
 				//ocultar paula
-				$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50%;' onclick='paula()'>¿Ayuda?</button>");
+				$("#btnPaula").html("<button class='btn btn-danger' style='border-radius: 50px;' onclick='paula()'>¿Ayuda?</button>");
 				$("#paula").fadeOut();
 				verPaula = true;
 			}

@@ -127,6 +127,9 @@ if($pregunta!=null){
         max-width: 350px;
         margin-left: 130px;
     }
+    .collapse{
+        display: none;
+    }
 </style>
 
 <section id="faq-area" class="bg-1 pregunta-font">
@@ -141,20 +144,44 @@ if($pregunta!=null){
                 <div id="accordion" role="tablist">
                     <!--start faq single-->
                     @if(count($pregunta->itempreguntas) > 0)
-                    @foreach($pregunta->itempreguntas as $item)
+                    <?php $ne = count($pregunta->itempreguntas) < 5 ? count($pregunta->itempreguntas) : 5; ?>
+                    @for($i = 0; $i < $ne; $i++)
                     <div class="card pregunta-font" style="opacity: 0.8 !important;">
-                        <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$item->id}}" onclick="agregar('collapse{{$item->id}}')">
+                        <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$pregunta->itempreguntas[$i]->id}}" onclick="agregar('collapse{{$pregunta->itempreguntas[$i]->id}}')">
                             <h5 class="mb-0">
-                                <a data-toggle="collapse" href="#collapse{{$item->id}}" aria-expanded="false" aria-controls="collapse{{$item->id}}" class="collapsed pregunta-font">{{$item->pregunta}}</a>
+                                <a data-toggle="collapse" href="#collapse{{$pregunta->itempreguntas[$i]->id}}" aria-expanded="false" aria-controls="collapse{{$pregunta->itempreguntas[$i]->id}}" class="collapsed pregunta-font">{{$pregunta->itempreguntas[$i]->pregunta}}</a>
                             </h5>
                         </div>
-                        <div id="collapse{{$item->id}}" class="collapse" role="tabpanel" aria-labelledby="faq{{$item->id}}" data-parent="#accordion" style="">
+                        <div id="collapse{{$pregunta->itempreguntas[$i]->id}}" class="collapse" role="tabpanel" aria-labelledby="faq{{$pregunta->itempreguntas[$i]->id}}" data-parent="#accordion">
                             <div class="card-body pregunta-font">
-                                <?php echo $item->respuesta ?>
+                                <?php echo $pregunta->itempreguntas[$i]->respuesta ?>
                             </div>
                         </div>
                     </div>
-                    @endforeach
+                    @endfor
+                    @if (count($pregunta->itempreguntas) > 4)   
+                        @for($i = 5; $i < count($pregunta->itempreguntas); $i++)
+                        <div class="colsh card pregunta-font collapse" style="opacity: 0.8 !important;" role="tabpanel" aria-labelledby="faqsm">
+                            <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$pregunta->itempreguntas[$i]->id}}" onclick="agregar('collapse{{$pregunta->itempreguntas[$i]->id}}')">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" href="#collapse{{$pregunta->itempreguntas[$i]->id}}" aria-expanded="false" aria-controls="collapse{{$pregunta->itempreguntas[$i]->id}}" class="collapsed pregunta-font">{{$pregunta->itempreguntas[$i]->pregunta}}</a>
+                                </h5>
+                            </div>
+                            <div id="collapse{{$pregunta->itempreguntas[$i]->id}}" class="collapse" role="tabpanel" aria-labelledby="faq{{$pregunta->itempreguntas[$i]->id}}" data-parent="#accordion">
+                                <div class="card-body pregunta-font">
+                                    <?php echo $pregunta->itempreguntas[$i]->respuesta ?>
+                                </div>
+                            </div>
+                        </div>
+                        @endfor 
+                        <div class="card pregunta-font" style="opacity: 0.8 !important;">
+                            <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faqsm" onclick="agregar('collapseshowmore')">
+                                <h5 class="mb-0">
+                                    <a data-toggle="collapse" href=".colsh.card" aria-expanded="false" aria-controls="collapsesm" class="collapsed pregunta-font">Mostrar Mas / Mostrar Menos</a>
+                                </h5>
+                            </div>
+                        </div>                    
+                    @endif
                     @endif
                 </div>
             </div>

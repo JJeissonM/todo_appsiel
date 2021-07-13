@@ -207,6 +207,25 @@
 							{{ Form::bsText('tyc_page_tienda_online', $main_page_tienda_online, 'Términos y Condiciones tienda online', [], ['class'=>'form-control']) }}
 						</div>
 					</div>
+					
+				</div>
+				<br>
+				<h4> Parámetros por defecto otras secciones  </h4>
+				<hr>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row" style="padding:5px;">
+							<?php
+							if( isset($parametros['mensaje_de_contectenos'] ) )
+							{
+								$main_page_tienda_online = $parametros['mensaje_de_contectenos'];
+							}else{
+								$main_page_tienda_online = '¡Escríbenos para tener el gusto de atenderte y trabajar juntos!';
+							}
+							?>
+							{{ Form::bsText('mensaje_de_contectenos', $main_page_tienda_online, 'Mensaje de Sección contactenos', [], ['class'=>'form-control']) }}
+						</div>
+					</div>
 				</div>
 				</div>
 			</div>

@@ -92,3 +92,18 @@
         </div>
     </nav>
 @endif
+@if(config('configuracion.usuario_en_mora') == 'true')		
+<div class="alert alert-danger alert-dismissible mora" role="alert">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    Estimado/a Cliente, le recordamos que tiene un saldo vencido. Lo invitamos a poner su cuenta al día. Para más información escriba al +57 321 300 2639
+    <style>
+        .navbar{
+            margin-bottom: 0;
+        }
+        .mora{
+            margin: 2px 8px;
+        }
+    </style>
+</div>	
+
+@endif

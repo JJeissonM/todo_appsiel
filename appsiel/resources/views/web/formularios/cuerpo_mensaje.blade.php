@@ -14,7 +14,7 @@
         
         Saludos {{$empresa->descripcion}}
         <br> 
-        Alguien dej&oacute; un comentario desde la p&aacute;gina web. 
+        Alguien dej&oacute; un comentario para soporte. 
         <br><br>
         
         @foreach( $campos AS $fila )

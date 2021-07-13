@@ -19,7 +19,7 @@
             <div class="col-md-12">
                 <div class="section-header">
                     <h2 class="section-title text-center wow fadeInDown contactenos-font">CONTÁCTENOS</h2>
-                    <p class="text-center wow fadeInDown contactenos-font" style="font-weight: bold; font-size: 20px; color: #000;">¡Escríbenos para tener el gusto de atenderte y trabajar juntos!</p>
+                    <p class="text-center wow fadeInDown contactenos-font" style="font-weight: bold; font-size: 20px; color: #000;">{{ config('pagina_web.mensaje_de_contectenos') }}</p>
                 </div>
             </div>
             <div class="col-md-3"></div>
