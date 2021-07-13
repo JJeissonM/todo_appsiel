@@ -6,11 +6,14 @@
 
 @section('botones_acciones')	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
-		    
-	    
-	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-btn fa-money"></i> Hacer abono </a>
+	
+	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 
-	    <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
+	    <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+
+        @can('vtas_recontabilizar')
+        	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
+        @endcan
         
 	@endif
 	

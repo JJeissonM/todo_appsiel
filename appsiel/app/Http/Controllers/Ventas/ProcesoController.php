@@ -109,7 +109,7 @@ class ProcesoController extends Controller
     public static function get_lineas_medios_recaudos($documento)
     {
         $registro = TesoMovimiento::get_registros_un_documento($documento->core_tipo_transaccion_id, $documento->core_tipo_doc_app_id, $documento->consecutivo)->first();
-
+        
         $medio_recaudo = 'Efectivo'; // MUY MANUAL
         $motivo = '1-Recaudo clientes'; // MUY MANUAL
         $caja = (object)['descripcion' => ''];
