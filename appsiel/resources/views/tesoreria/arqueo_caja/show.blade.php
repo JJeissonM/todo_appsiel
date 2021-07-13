@@ -112,6 +112,48 @@
                                     </tr>
                                     <tr>
                                         <td colspan="3">
+                                            <center><strong>MOVIMIENTOS DEL SISTEMA</strong></center>
+                                        </td>
+                                    </tr>
+                                    <tr class="read">
+                                        <td class="contact"><b>MOTIVO</b></td>
+                                        <td class="subject"><b>MOVIMIENTO</b></td>
+                                        <td class="subject"><b>VALOR</b></td>
+                                    </tr>
+                                    @foreach($registro->detalles_mov_entradas as $item)
+                                        <tr class="read">
+                                        <td class="contact"><b>{{$item->motivo}}</b></td>
+                                        <td class="subject">{{strtoupper($item->movimiento)}}</td>
+                                        <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
+                                        </tr>
+                                    @endforeach
+                                    @foreach($registro->detalles_mov_salidas as $item)
+                                        <tr class="read">
+                                        <td class="contact"><b>{{$item->motivo}}</b></td>
+                                        <td class="subject">{{strtoupper($item->movimiento)}}</td>
+                                        <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
+                                        </tr>
+                                    @endforeach
+                                    <tr class="read">
+                                        <td class="contact"><b>Total Entrada de Caja</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">
+                                            ${{number_format($registro->total_mov_entradas,'0',',','.')}}</td>
+                                    </tr>
+                                    <tr class="read">
+                                        <td class="contact"><b>Total Salida de Caja</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">
+                                            ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
+                                    </tr>
+                                    <tr class="read" style="background-color: #ddd;">
+                                        <td class="contact"><b>Saldo esperado</b></td>
+                                        <td class="subject"></td>
+                                        <td class="subject">
+                                            ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3">
                                             <center><strong>CONTEO DE EFECTIVO</strong></center>
                                         </td>
                                     </tr>
@@ -152,52 +194,10 @@
                                         <td class="subject">${{number_format($registro->total_monedas,'0',',','.')}}</td>
                                     </tr>
                                     <tr class="read" style="background-color: #ddd;">
-                                        <td class="contact"><b>Total efectivo del día</b></td>
+                                        <td class="contact"><b>Total efectivo</b></td>
                                         <td class="subject"></td>
                                         <td class="subject">
                                             ${{number_format($registro->lbl_total_efectivo,'0',',','.')}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="3">
-                                            <center><strong>MOVIMIENTOS DEL SISTEMA</strong></center>
-                                        </td>
-                                    </tr>
-                                    <tr class="read">
-                                        <td class="contact"><b>MOTIVO</b></td>
-                                        <td class="subject"><b>MOVIMIENTO</b></td>
-                                        <td class="subject"><b>VALOR</b></td>
-                                    </tr>
-                                    @foreach($registro->detalles_mov_entradas as $item)
-                                        <tr class="read">
-                                        <td class="contact"><b>{{$item->motivo}}</b></td>
-                                        <td class="subject">{{strtoupper($item->movimiento)}}</td>
-                                        <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
-                                        </tr>
-                                    @endforeach
-                                    @foreach($registro->detalles_mov_salidas as $item)
-                                        <tr class="read">
-                                        <td class="contact"><b>{{$item->motivo}}</b></td>
-                                        <td class="subject">{{strtoupper($item->movimiento)}}</td>
-                                        <td class="subject">${{number_format($item->valor_movimiento,'0',',','.')}}</td>
-                                        </tr>
-                                    @endforeach
-                                    <tr class="read">
-                                        <td class="contact"><b>Total Entrada de Caja</b></td>
-                                        <td class="subject"></td>
-                                        <td class="subject">
-                                            ${{number_format($registro->total_mov_entradas,'0',',','.')}}</td>
-                                    </tr>
-                                    <tr class="read">
-                                        <td class="contact"><b>Total Salida de Caja</b></td>
-                                        <td class="subject"></td>
-                                        <td class="subject">
-                                            ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
-                                    </tr>
-                                    <tr class="read" style="background-color: #ddd;">
-                                        <td class="contact"><b>Saldo en sistema del día</b></td>
-                                        <td class="subject"></td>
-                                        <td class="subject">
-                                            ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
                                     </tr>
                                     <tr class="read">
                                         <td class="contact"><b>Diferencia</b></td>

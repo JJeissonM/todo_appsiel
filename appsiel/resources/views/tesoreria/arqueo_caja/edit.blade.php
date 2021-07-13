@@ -1,22 +1,25 @@
 @extends('layouts.edit')
 
-@section('campos_adicionales')
+@section('campos_adicionales')    
+    <?php 
+        $valor_base = $registro->base;
+    ?>
     <br>
+    
     <div class="container-fluid">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label class="control-label col-sm-3" for="base"> <a href="#" data-toggle="tooltip" data-placement="right" title="Resta al efectivo del día"> <i class="fa fa-question-circle"></i> </a>Saldo anterior:</label>
-                <div class="col-sm-8">
-                    <input type="number" id="base" min="0" autocomplete="off" class="form-control col-md-8" name="base" placeholder="$" value="{{$registro->base}}" required="required">
-                </div>
-            </div>
-        </div>
+        
+        <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
+        <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
+
         <br><br>
-        <h2><i class="fa fa-money"></i>Conteo de efectivo y equivalentes</h2>
+
+        @include('tesoreria.arqueo_caja.seccion_movimientos_del_sistema')
+
+        <h4><i class="fa fa-money"></i> Conteo de efectivo y equivalentes</h4>
         <hr>
         <div class="row">
             <div class="col-md-6">
-                <h3 style="text-align: center;">Billetes</h3>
+                <h5 style="text-align: center;">Billetes</h5>
                 <?php
                 $array_billetes = [100000, 50000, 20000, 10000, 5000, 2000, 1000];
                 ?>
@@ -30,8 +33,6 @@
                     </thead>
                     <tbody>
                     @foreach($registro->billetes_contados as $key => $value)
-
-                        <!--                            --><?php // if($value != "")dd($key*$value); ?>
                         <tr>
                             <td class="col-md-2">
                                 ${{ number_format($key,'0',',','.') }}
@@ -62,7 +63,7 @@
             </div>
 
             <div class="col-md-6">
-                <h3 style="text-align: center;">Monedas</h3>
+                <h5 style="text-align: center;">Monedas</h5>
                 <?php
                 $array_monedas = [1000, 500, 200, 100, 50, '', ''];
                 ?>
@@ -115,7 +116,7 @@
             </div>
         </div>
 
-        <table class="table table-striped table-bordered table-hover table-condensed">
+        <table class="table table-bordered">
             <thead>
             <tr>
                 <th colspan="2">Saldo en bonos, recibos, pagarés y otros documentos</th>
@@ -125,7 +126,7 @@
             <tr>
                 <td class="col-md-6">
                     <b>Saldo Total</b>
-                    <br>
+                    <br><br>
                     <input type="text" min="0" class="form-control otros_saldos" id="otros_saldos"
                            autocomplete="off" name="otros_saldos" placeholder="$" value="{{$registro->otros_saldos}}">
                 </td>
@@ -139,57 +140,17 @@
         </table>
 
         <div class="well">
-            <h1>Total efectivo físico (del día):
+            <h4> <a href="#" data-toggle="tooltip" data-placement="right" title="Conteo" style="text-decoration: none;"> <i class="fa fa-question-circle"></i> </a> Total efectivo físico:
                 <div id="lbl_total_efectivo" style="display: inline;"> ${{$registro->lbl_total_efectivo}}</div>
-            </h1>
+            </h4>
             <input type="hidden" id="total_efectivo" name="lbl_total_efectivo" value="{{$registro->lbl_total_efectivo}}">
-        </div>
-
-        <h2><i class="fa fa-money"></i>Movimientos del sistema </h2>
-        <hr>
-        <div class="row">
-            <div class="col-md-6">
-
-                <div class="well">
-                    <h3 style="text-align: center;"> Mov. de entradas de efectivo <small> <a class="btn btn-xs btn-primary" id="btn_get_mov_entrada"> Obtener </a> </small>
-                        <small> <a class="btn btn-xs btn-info" id="btn_reset_mov_entrada"> Reset </a> </small></h3>
-                    <div id="div_mov_entrada">
-
-                    </div>
-                    <input type="hidden" id="movimientos_entradas" value="0" name="movimientos_entradas">
-                    <input type="hidden" id="total_mov_entradas" value="0" name="total_mov_entradas">
-                </div>
-
-            </div>
-
-            <div class="col-md-6">
-
-                <div class="well">
-                    <h3 style="text-align: center;"> Mov. de salidas de efectivo <small> <a
-                                    class="btn btn-xs btn-primary" id="btn_get_mov_salida"> Obtener </a> </small>
-                        <small> <a class="btn btn-xs btn-info" id="btn_reset_mov_salida"> Reset </a> </small></h3>
-                    <div id="div_mov_salida">
-
-                    </div>
-                    <input type="hidden" id="movimientos_salidas" value="0" name="movimientos_salidas">
-                    <input type="hidden" id="total_mov_salidas" value="0" name="total_mov_salidas">
-                </div>
-
-            </div>
-        </div>
-
-        <div class="well">
-            <h1>Saldo en sistema (del día):
-                <div id="lbl_total_sistema" style="display: inline;"> ${{$registro->lbl_total_sistema}}</div>
-            </h1>
-            <input type="hidden" id="total_sistema" name="lbl_total_sistema" value="{{$registro->lbl_total_sistema}}">
         </div>
 
         <div style="display: none;">
             <div class="well">
-                <h1>Diferencia:
+                <h4>Diferencia:
                     <div id="lbl_total_saldo" style="display: inline;"> ${{$registro->total_saldo}}</div>
-                </h1>
+                </h4>
                 <input type="hidden" id="total_saldo" name="total_saldo" value="{{$registro->total_saldo}}">
             </div>
         </div>
@@ -258,7 +219,7 @@
 
             $('#base').on('keyup', function () {
                 if (validar_input_numerico($(this))) {
-                    calcular_total_efectivo();
+                    calcular_total_sistema();
                     calcular_total_saldo();
                 } else {
                     $(this).select();
@@ -280,7 +241,7 @@
                     otros_saldos = parseFloat($('#otros_saldos').val());
                 }
 
-                var total_efectivo = parseFloat($('#total_billetes').val()) - parseFloat($('#base').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
+                var total_efectivo = parseFloat($('#total_billetes').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
                 $('#total_efectivo').val(total_efectivo);
                 $('#lbl_total_efectivo').text('$' + new Intl.NumberFormat("de-DE").format(total_efectivo));
             }
@@ -377,26 +338,24 @@
 
 
             function calcular_total_sistema() {
-                var total_sistema = parseFloat($('#total_mov_entradas').val()) - parseFloat($('#total_mov_salidas').val());
+                var total_sistema = parseFloat($('#total_mov_entradas').val()) + parseFloat($('#base').val()) - parseFloat($('#total_mov_salidas').val());
 
                 var color_fondo = 'transparent';
-                var color_letra = 'black';
+                var color_letra = '#444444';
                 var signo = '$';
                 if (total_sistema < 0) {
-                    color_fondo = 'red';
-                    color_letra = 'white';
+                    color_letra = 'red';
                     signo = '-$';
                     total_sistema = total_sistema * -1; // para una mejor visualización del signo
                 } else {
                     if (total_sistema > 0) {
-                        color_fondo = 'green';
-                        color_letra = 'white';
+                        color_letra = 'green';
                     }
                 }
 
 
                 $('#total_sistema').val(total_sistema);
-                $('#lbl_total_sistema').html('<span style=" background-color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(total_sistema) + '</span>');
+                $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(total_sistema) + '</span>');
 
                 //$('#lbl_total_sistema').text( '$' + new Intl.NumberFormat("de-DE").format( total_sistema ) );
             }
@@ -411,17 +370,15 @@
                 $('#total_saldo').val(total_saldo);
 
                 var color_fondo = 'transparent';
-                var color_letra = 'black';
+                var color_letra = '#444444';
                 var signo = '$';
                 if (total_saldo < 0) {
-                    color_fondo = 'red';
-                    color_letra = 'white';
+                    color_letra = 'red';
                     signo = '-$';
                     total_saldo = total_saldo * -1; // para una mejor visualización del signo
                 } else {
                     if (total_saldo > 0) {
-                        color_fondo = 'orange';
-                        color_letra = 'white';
+                        color_letra = 'orange';
                     }
                 }
 

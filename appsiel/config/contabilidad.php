@@ -4,6 +4,6 @@
   'transaccion_default_cierre_ejercicio' => '9',
   'tipo_documento_cierre_ejercicio' => '43',
   'tercero_default_cierre_ejercicio' => '173',
-  'cuenta_ganancias_perdidas_ejercicio' => '411',
+  'cuenta_ganancias_perdidas_ejercicio' => '228',
   'url_id_modelo' => '0',
 ) ;
