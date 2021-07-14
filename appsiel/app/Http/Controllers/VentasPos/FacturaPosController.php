@@ -747,6 +747,17 @@ class FacturaPosController extends TransaccionController
         // 5to. Se marcan como anulados los registros del documento
         DocRegistro::where('vtas_pos_doc_encabezado_id', $factura->id)->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
+        // Si la factura se hizo desde un pedido
+        $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
+        if( !is_null($pedido) )
+        {
+            $pedido->estado = "Pendiente";
+            $pedido->ventas_doc_relacionado_id = 0;
+            $pedido->save();
+
+            self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
+        }
+
         // 6to. Se marca como anulado el documento
         $factura->update(['estado' => 'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
 
