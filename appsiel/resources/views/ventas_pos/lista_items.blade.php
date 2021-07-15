@@ -5,6 +5,7 @@
 				<tr>
 					<th>Cód.</th>
 					<th>Producto (U.M.)</th>
+					<th>Costo Prom.</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -16,6 +17,8 @@
 							</button>
 						</td>
 						<td class="table-text"><div>{{ $item->descripcion }}</div></td>
+						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio, 0, ',', '.' ) }}</div></td>
+						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio, 0, ',', '.' ) }}</div></td>
 					</tr>
 				@endforeach
 			</tbody>

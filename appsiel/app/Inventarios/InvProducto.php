@@ -161,7 +161,6 @@ class InvProducto extends Model
 
     public static function get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar = null, $bodega_id = null )
     {
-
         $array_wheres = [ 
                             ['inv_productos.core_empresa_id' ,'=', Auth::user()->empresa_id],
                             ['inv_productos.estado' ,'=', $estado ]

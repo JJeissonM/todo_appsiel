@@ -900,6 +900,7 @@ class FacturaPosController extends TransaccionController
 
             $parametros_items_cosumir = ItemDesarmeAutomatico::where( 'item_producir_id', $parametro_item_producir->item_producir_id )->get();
 
+            // Por cada item (consumir) de los que componen al item que se vende (producir)
             $costo_total_items_consumo = 0;
             foreach( $parametros_items_cosumir AS $parametro_item_consumo )
             {
