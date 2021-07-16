@@ -101,7 +101,7 @@ $.fn.getCookie = function (cname) {
 };
 
 $.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
-	if ( !redondear_centena )
+	if ( redondear_centena == 0 )
 	{
 		return numero.toFixed(0);
 	}
@@ -199,7 +199,7 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
-	celdas[num_celda] = '<td> <div class="lbl_precio_unitario" style="display: inline;">' + '$ ' + new Intl.NumberFormat("de-DE").format(precio_unitario) + '</div></td>';
+	celdas[num_celda] = '<td> <div class="lbl_precio_unitario" style="display: inline;">' + '$' + new Intl.NumberFormat("de-DE").format(precio_unitario) + '</div></td>';
 
 	num_celda++;
 
@@ -207,12 +207,12 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
-	celdas[num_celda] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">' + tasa_impuesto + '%</div></td>';
+	celdas[num_celda] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">' + tasa_impuesto + '</div></td>';
 
 	num_celda++;
 
 	var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-	celdas[num_celda] = '<td> <div class="lbl_precio_total" style="display: inline;">' + '$ ' + new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)) + ' </div> </td> <td>' + btn_borrar + '</td>';
+	celdas[num_celda] = '<td> <div class="lbl_precio_total" style="display: inline;">' + '$' + new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)) + ' </div> </td> <td>' + btn_borrar + '</td>';
 
 	var cantidad_celdas = celdas.length;
 	var string_celdas = '';

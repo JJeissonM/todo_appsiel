@@ -27,6 +27,35 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$plantilla_factura_pos_default = 'plantilla_factura';
+								if( isset($parametros['plantilla_factura_pos_default'] ) )
+								{
+									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
+								}
+							?>
+							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tamanio_fuente_factura = '12';
+								if( isset($parametros['tamanio_fuente_factura'] ) )
+								{
+									$tamanio_fuente_factura = $parametros['tamanio_fuente_factura'];
+								}
+							?>
+							{{ Form::bsText('tamanio_fuente_factura', $tamanio_fuente_factura, 'Tamaño letra', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								if( isset($parametros['redondear_centena'] ) )
 								{
 									$redondear_centena = $parametros['redondear_centena'];
@@ -41,23 +70,6 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								if( isset($parametros['plantilla_factura_pos_default'] ) )
-								{
-									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
-								}else{
-									$plantilla_factura_pos_default = 'plantilla_factura';
-								}
-							?>
-							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho'], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-				</div>
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
 								if( isset($parametros['permite_facturacion_con_archivo_plano'] ) )
 								{
 									$permite_facturacion_con_archivo_plano = $parametros['permite_facturacion_con_archivo_plano'];
@@ -66,12 +78,6 @@
 								}
 							?>
 							{{ Form::bsSelect('permite_facturacion_con_archivo_plano', $permite_facturacion_con_archivo_plano, 'Permite facturación con archivo plano', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
 						</div>
 					</div>
 

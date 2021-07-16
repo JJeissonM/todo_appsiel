@@ -891,9 +891,9 @@ class FacturaPosController extends TransaccionController
                 $existencia_item_facturado = 0;
             }
 
-            $cantidad_producir = $cantidad_facturada - $existencia_item_facturado;
+            $cantidad_a_ingresar = $cantidad_facturada - $existencia_item_facturado;
 
-            if ( $cantidad_producir <= 0 )
+            if ( $cantidad_a_ingresar <= 0 )
             {
                 continue;
             }
@@ -909,20 +909,20 @@ class FacturaPosController extends TransaccionController
                 {
                     $cantidad_proporcional = 1;
                 }
-                
-                $cantidad_consumir = $cantidad_producir * $cantidad_proporcional;
+
+                $cantidad_a_sacar = intdiv( $cantidad_a_ingresar, $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
 
                 $costo_unitario_item_consumo = $parametro_item_consumo->item_consumir->get_costo_promedio( $bodega_default_id );
                 
-                $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_consumo->item_consumir->id . '","Producto":"' . $parametro_item_consumo->item_consumir->id . ' ' . $parametro_item_consumo->item_consumir->descripcion . ' (' . $parametro_item_consumo->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_consumo . '","cantidad":"' . $cantidad_consumir . ' UND","costo_total":"$' . ($cantidad_consumir * $costo_unitario_item_consumo) . '"}';
+                $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_consumo->item_consumir->id . '","Producto":"' . $parametro_item_consumo->item_consumir->id . ' ' . $parametro_item_consumo->item_consumir->descripcion . ' (' . $parametro_item_consumo->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_consumo . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_consumo) . '"}';
 
-                $costo_total_items_consumo += ($cantidad_consumir * $costo_unitario_item_consumo);
+                $costo_total_items_consumo += ($cantidad_a_sacar * $costo_unitario_item_consumo);
             }
 
-            $costo_unitario_item_producir = $costo_total_items_consumo / $cantidad_producir;
+            $costo_unitario_item_producir = $costo_total_items_consumo / $cantidad_a_ingresar;
 
             $lineas_desarme .= ',';
-            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_producir . ' UND","costo_total":"$' . $costo_total_items_consumo . '"}';
+            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . $costo_total_items_consumo . '"}';
             $hay_productos++;
         }
 
