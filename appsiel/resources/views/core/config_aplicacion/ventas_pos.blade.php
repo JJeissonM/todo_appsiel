@@ -48,7 +48,7 @@
 									$plantilla_factura_pos_default = 'plantilla_factura';
 								}
 							?>
-							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

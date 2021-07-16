@@ -35,19 +35,20 @@
     ?>
     <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
         <tr>
-            <td width="15%">
-                <img src="{{ $url_img }}" width="120px;" />
-            </td>
-            <td>
+            <td style="text-align: center;">
+                <img src="{{ $url_img }}" style="max-height: 110px; width: 390px;" />
+                <br>
                 <div style="text-align: center;">
-                    <br/>
-                    <b>{{ $empresa->descripcion }}</b><br/>
-                    <b>{{ $empresa->nombre1 }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b><br/>
+                    <b>{{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b>
+                    <br>
                     <b>{{ config("configuracion.tipo_identificador") }}:
                         @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
                     {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
-                    Teléfono(s): {{ $empresa->telefono1 }}<br/>
-                    <b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b><br/>
+                    Teléfono(s): {{ $empresa->telefono1 }}
+                    @if( $empresa->pagina_web != '' )
+                        <br/>
+                        <b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b><br/>
+                    @endif
                 </div>
             </td>
         </tr>
