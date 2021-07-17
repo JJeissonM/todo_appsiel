@@ -175,7 +175,13 @@ class FacturaPosController extends TransaccionController
         $productosTemp = null;
         foreach ($productos as $pr)
         {
-            $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
+            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+            if ( is_null($grupo_inventario) )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
+            }
+
+            $pr->categoria = $grupo_inventario->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
         $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
@@ -368,7 +374,7 @@ class FacturaPosController extends TransaccionController
                 $empresa->email = $doc_encabezado->pdv->email;
             }
         }
-        
+
         $id_transaccion = $this->transaccion->id;
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
