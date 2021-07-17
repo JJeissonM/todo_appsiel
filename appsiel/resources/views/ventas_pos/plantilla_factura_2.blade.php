@@ -62,15 +62,7 @@
                 <img src="{{ $url_img }}" width="120px;" />
             </td>
             <td>
-                <div style="text-align: center;">
-                    <br/>
-                    <b>{{ $empresa->descripcion }}</b><br/>
-                    <b>{{ config("configuracion.tipo_identificador") }}: @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
-
-                    {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
-                    Teléfono(s): {{ $empresa->telefono1 }}<br/>
-                    <b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b><br/>
-                </div>
+                @include('ventas_pos.plantilla_factura_datos_encabezado')
             </td>
         </tr>
     </table>

@@ -390,6 +390,16 @@ class VentaController extends TransaccionController
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
         $empresa = $this->empresa;
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
+        
         $id_transaccion = $this->transaccion->id;
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
@@ -490,6 +500,15 @@ class VentaController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
         $empresa = $this->empresa;
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last();
 

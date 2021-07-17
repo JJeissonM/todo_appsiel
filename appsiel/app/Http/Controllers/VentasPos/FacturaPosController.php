@@ -359,6 +359,16 @@ class FacturaPosController extends TransaccionController
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados($doc_encabezado);
         $empresa = $this->empresa;
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
+        
         $id_transaccion = $this->transaccion->id;
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
@@ -415,6 +425,16 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
+
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)->where('estado', 'Activo')->get()->last();
 
         $etiquetas = $this->get_etiquetas();
@@ -431,6 +451,12 @@ class FacturaPosController extends TransaccionController
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
 
         $empresa = $this->empresa;
+        if ( $pdv->direccion != '' )
+        {
+            $empresa->direccion1 = $pdv->direccion;
+            $empresa->telefono1 = $pdv->telefono;
+            $empresa->email = $pdv->email;
+        }
 
         $etiquetas = $this->get_etiquetas();
 
