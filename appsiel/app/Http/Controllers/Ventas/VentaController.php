@@ -766,7 +766,7 @@ class VentaController extends TransaccionController
 
         // Linea crear nuevo registro
         $modelo_id = 138; // App\Ventas\Clientes
-        $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

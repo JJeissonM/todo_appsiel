@@ -1088,9 +1088,6 @@ class ModeloController extends Controller
             $nuevo_registro->imagen = '';
         }
 
-        $nuevo_registro = $registro->replicate();
-
-
         $nuevo_registro->save();
 
         return redirect('web/' . $nuevo_registro->id . '/edit?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Registro DUPLICADO correctamente.');

@@ -39,6 +39,7 @@ use App\Inventarios\InvCostoPromProducto;
 use App\Compras\ComprasDocEncabezado;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
+use App\VentasPos\DocRegistro;
 
 use App\Contabilidad\ContabMovimiento;
 
@@ -1159,7 +1160,11 @@ class InventarioController extends TransaccionController
         $cantidad = InvMovimiento::where('inv_producto_id', $inv_producto_id)
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->count();
-        if ($cantidad != 0) {
+
+        // Verificación 2: Está en una factura de Ventas POS
+        $cantidad2 = DocRegistro::where('inv_producto_id', $inv_producto_id)->count();
+
+        if ($cantidad != 0 || $cantidad2 != 0) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Item NO puede ser eliminado. Tiene movimientos.');
         }
 
