@@ -842,38 +842,7 @@ class InventarioController extends TransaccionController
             case 'codigo_barras':
                 $operador = '=';
                 $texto_busqueda = Input::get('texto_busqueda');
-                break;
-            case 'descripcion':
-                $operador = 'LIKE';
-                $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
-                break;
-            case 'id':
-                $operador = 'LIKE';
-                $texto_busqueda = Input::get('texto_busqueda') . '%';
-                break;
-
-            default:
-                # code...
-                break;
-        }
-
-        //$producto = InvProducto::where('estado', 'Activo')->where($campo_busqueda, $operador, $texto_busqueda)->get()->take(7);
-
-
-        if ( $campo_busqueda == 'descripcion')
-        {
-            $producto = InvProducto::where('estado', 'Activo')
-                                ->having('nueva_cadena', $operador, $texto_busqueda)
-                                ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
-                                            'id',
-                                            'categoria_id',
-                                            'unidad_medida1',
-                                            'unidad_medida2' )
-                                ->get()
-                                ->take(7);
-        }else{
-            $producto = InvProducto::where('estado', 'Activo')
+                $producto = InvProducto::where('estado', 'Activo')
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
@@ -883,8 +852,41 @@ class InventarioController extends TransaccionController
                                             'unidad_medida2' )
                                     ->get()
                                     ->take(7);
-        }/**/
-            
+                                    //dd($campo_busqueda,$operador,$texto_busqueda,$producto);
+                break;
+            case 'descripcion':
+                $operador = 'LIKE';
+                $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
+                $producto = InvProducto::where('estado', 'Activo')
+                                ->having('nueva_cadena', $operador, $texto_busqueda)
+                                ->select( 
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            'id',
+                                            'categoria_id',
+                                            'unidad_medida1',
+                                            'unidad_medida2' )
+                                ->get()
+                                ->take(7);
+                break;
+            case 'id':
+                $operador = 'LIKE';
+                $texto_busqueda = Input::get('texto_busqueda') . '%';
+                $producto = InvProducto::where('estado', 'Activo')
+                                    ->where($campo_busqueda, $operador, $texto_busqueda)
+                                    ->select( 
+                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            'id',
+                                            'categoria_id',
+                                            'unidad_medida1',
+                                            'unidad_medida2' )
+                                    ->get()
+                                    ->take(7);
+                break;
+
+            default:
+                # code...
+                break;
+        }            
 
         $html = '<div class="list-group">';
         $es_el_primero = true;

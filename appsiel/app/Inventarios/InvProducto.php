@@ -25,7 +25,7 @@ class InvProducto extends Model
     // tipo = { producto | servicio }
     protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por', 'detalle'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Grupo inventario', 'IVA', 'Tipo', 'Mostrar en Página Web', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Grupo inventario', 'IVA', 'Tipo', 'Mostrar en Página Web', 'Cod. Barras', 'Estado'];
 
     public function grupo_inventario()
     {
@@ -90,8 +90,9 @@ class InvProducto extends Model
                 'contab_impuestos.tasa_impuesto AS campo6',
                 'inv_productos.tipo AS campo7',
                 'inv_productos.mostrar_en_pagina_web AS campo8',
-                'inv_productos.estado AS campo9',
-                'inv_productos.id AS campo10'
+                'inv_productos.codigo_barras AS campo9',
+                'inv_productos.estado AS campo10',
+                'inv_productos.id AS campo11'
             )
             ->where("inv_productos.id", "LIKE", "%$search%")
             ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
@@ -101,6 +102,7 @@ class InvProducto extends Model
             ->orWhere("inv_productos.precio_venta", "LIKE", "%$search%")
             ->orWhere("contab_impuestos.tasa_impuesto", "LIKE", "%$search%")
             ->orWhere("inv_productos.tipo", "LIKE", "%$search%")
+            ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
             ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -137,6 +139,7 @@ class InvProducto extends Model
                 'inv_productos.precio_venta AS PRECIO_VENTA',
                 'contab_impuestos.tasa_impuesto AS IVA',
                 'inv_productos.tipo AS TIPO',
+                'inv_productos.codigo_barras AS CODIGO_BARRAS',
                 'inv_productos.estado AS ESTADO'
             )
             ->where("inv_productos.id", "LIKE", "%$search%")
@@ -148,6 +151,7 @@ class InvProducto extends Model
             ->orWhere("contab_impuestos.tasa_impuesto", "LIKE", "%$search%")
             ->orWhere("inv_productos.tipo", "LIKE", "%$search%")
             ->orWhere("inv_productos.estado", "LIKE", "%$search%")
+            ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
@@ -327,6 +331,15 @@ class InvProducto extends Model
         return $vec;
     }
     
+
+    public static function store_adicional($datos, $registro)
+    {
+        if ( $registro->codigo_barras == '' )
+        {
+            $registro->codigo_barras = $registro->id;
+            $registro->save();
+        }
+    }
 
     public static function get_cuenta_inventarios( $producto_id )
     {

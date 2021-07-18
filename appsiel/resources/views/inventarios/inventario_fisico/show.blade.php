@@ -9,7 +9,7 @@
     
     {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inv_fisico/id_fila/edit'.$variables_url ),'Editar') }}
 
-	<a class="btn btn-info btn-xs btn-detail" href="{{ url('inv_fisico_hacer_ajuste?id=8&id_modelo=25&id_transaccion=28&doc_inv_fisico_id='.$id) }}" target="_blank"><i class="fa fa-btn fa-cog"></i> Hacer Ajuste </a>
+	<a class="btn-gmail" href="{{ url('inv_fisico_hacer_ajuste?id=8&id_modelo=25&id_transaccion=28&doc_inv_fisico_id='.$id) }}" target="_blank" title="Hacer Ajuste"><i class="fa fa-btn fa-cog"></i></a>
 @endsection
 
 @section('botones_imprimir_email')
