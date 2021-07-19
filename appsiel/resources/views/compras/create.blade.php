@@ -411,8 +411,9 @@
 						
 							if( item.attr('data-producto_id') === undefined )
 							{
-								alert('El producto ingresado no existe.');
-								reset_linea_ingreso_default();
+								//alert('El producto ingresado no existe.');
+								//reset_linea_ingreso_default();
+								$('#inv_producto_id').select();
 							}else{
 								seleccionar_producto( item );
 			                	consultar_existencia( $('#inv_bodega_id').val(), item.attr('data-producto_id') );
