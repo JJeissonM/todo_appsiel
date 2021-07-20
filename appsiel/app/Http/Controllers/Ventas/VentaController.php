@@ -33,7 +33,7 @@ use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
 use App\Core\EncabezadoDocumentoTransaccion;
-
+use App\Core\TransaccionOtrosCampos;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -52,6 +52,7 @@ use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\NotaCredito;
+
 
 use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
@@ -518,7 +519,9 @@ class VentaController extends TransaccionController
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados' ) )->render();
+        $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos' ) )->render();
     }
 
     /**
