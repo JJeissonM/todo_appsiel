@@ -11,6 +11,10 @@
   'cta_por_pagar_default' => '131',
   'cta_anticipo_proveedores_default' => '29',
   'cta_ingresos_default' => '230',
+  'cta_gastos_default' => '366',
+  'cta_impuestos_default' => '182',
+  'cta_inventarios_default' => '73',
   'usar_mensajes_internos' => '0',
+  'usuario_en_mora' => 'false',
   'url_id_modelo' => '0',
 ) ;

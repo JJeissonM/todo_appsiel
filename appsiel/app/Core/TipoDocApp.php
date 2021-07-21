@@ -12,7 +12,7 @@ class TipoDocApp extends Model
 
     protected $fillable = ['prefijo', 'descripcion', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Prefijo', 'Descripción', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'Prefijo', 'Descripción', 'Estado'];
 
     public function resolucion_facturacion()
     {
@@ -22,10 +22,11 @@ class TipoDocApp extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = TipoDocApp::select(
-            'core_tipos_docs_apps.prefijo AS campo1',
-            'core_tipos_docs_apps.descripcion AS campo2',
-            'core_tipos_docs_apps.estado AS campo3',
-            'core_tipos_docs_apps.id AS campo4'
+            'core_tipos_docs_apps.id AS campo1',
+            'core_tipos_docs_apps.prefijo AS campo2',
+            'core_tipos_docs_apps.descripcion AS campo3',
+            'core_tipos_docs_apps.estado AS campo4',
+            'core_tipos_docs_apps.id AS campo5'
         )
             ->where("core_tipos_docs_apps.id", "LIKE", "%$search%")
             ->orWhere("core_tipos_docs_apps.prefijo", "LIKE", "%$search%")
@@ -40,6 +41,7 @@ class TipoDocApp extends Model
     public static function sqlString($search)
     {
         $string = TipoDocApp::select(
+            'core_tipos_docs_apps.id AS ID',
             'core_tipos_docs_apps.prefijo AS PREFIJO',
             'core_tipos_docs_apps.descripcion AS DESCRIPCIÓN',
             'core_tipos_docs_apps.estado AS ESTADO'

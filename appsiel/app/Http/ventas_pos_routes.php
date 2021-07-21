@@ -28,6 +28,9 @@ Route::get('pos_revisar_pedidos_ventas/{pdv_id}', 'VentasPos\ReporteController@r
 
 
 // Proceso especial
+
+Route::get('factura_pos_recontabilizar/{id}', 'VentasPos\FacturaPosController@recontabilizar_factura');
+
 // Generar remisiones para documentos ya acumulados
 Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosController@generar_remisiones');
 

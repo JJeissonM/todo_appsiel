@@ -37,10 +37,9 @@
     ?>
     <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
         <tr>
-            <td width="15%">
-                <img src="{{ $url_img }}" width="120px;" />
-            </td>
-            <td>                
+            <td style="text-align: center;">
+                <img src="{{ $url_img }}" style="max-height: 110px; width: 390px;" />
+                <br>                
                 @include('ventas_pos.plantilla_factura_datos_encabezado')
             </td>
         </tr>

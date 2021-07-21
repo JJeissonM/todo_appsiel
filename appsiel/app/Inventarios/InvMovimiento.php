@@ -345,17 +345,20 @@ class InvMovimiento extends Model
 
     public static function get_existencia_producto( $producto_id, $bodega_id, $fecha_corte )
     {
-        return InvMovimiento::leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
-                    ->where('inv_doc_encabezados.fecha','<=',$fecha_corte)
-                    ->where('inv_movimientos.inv_bodega_id',$bodega_id)
+        $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
+
+        return InvMovimiento::where('inv_movimientos.inv_bodega_id',$bodega_id)
                     ->where('inv_movimientos.inv_producto_id',$producto_id)
                     ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                    ->where('inv_movimientos.fecha','<=',$fecha_corte)
                     ->select( DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),DB::raw('sum(inv_movimientos.costo_total) as Costo'))
                     ->get()[0];
     }
 
     public static function get_existencia_actual( $producto_id, $bodega_id, $fecha_corte )
     {
+        $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
+        
         $existencia_actual = InvMovimiento::where('inv_bodega_id','=',$bodega_id)
                                 ->where('inv_producto_id','=',$producto_id)
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)

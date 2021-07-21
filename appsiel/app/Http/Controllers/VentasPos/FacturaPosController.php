@@ -22,6 +22,7 @@ use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Ventas\VentaController;
+use App\Http\Controllers\Ventas\ProcesoController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Ventas\ReportesController;
@@ -174,7 +175,13 @@ class FacturaPosController extends TransaccionController
         $productosTemp = null;
         foreach ($productos as $pr)
         {
-            $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
+            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+            if ( is_null($grupo_inventario) )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
+            }
+
+            $pr->categoria = $grupo_inventario->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
         $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
@@ -358,6 +365,16 @@ class FacturaPosController extends TransaccionController
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados($doc_encabezado);
         $empresa = $this->empresa;
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
+
         $id_transaccion = $this->transaccion->id;
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
@@ -414,6 +431,16 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
+
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)->where('estado', 'Activo')->get()->last();
 
         $etiquetas = $this->get_etiquetas();
@@ -430,6 +457,12 @@ class FacturaPosController extends TransaccionController
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
 
         $empresa = $this->empresa;
+        if ( $pdv->direccion != '' )
+        {
+            $empresa->direccion1 = $pdv->direccion;
+            $empresa->telefono1 = $pdv->telefono;
+            $empresa->email = $pdv->email;
+        }
 
         $etiquetas = $this->get_etiquetas();
 
@@ -746,6 +779,17 @@ class FacturaPosController extends TransaccionController
         // 5to. Se marcan como anulados los registros del documento
         DocRegistro::where('vtas_pos_doc_encabezado_id', $factura->id)->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
+        // Si la factura se hizo desde un pedido
+        $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
+        if( !is_null($pedido) )
+        {
+            $pedido->estado = "Pendiente";
+            $pedido->ventas_doc_relacionado_id = 0;
+            $pedido->save();
+
+            self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
+        }
+
         // 6to. Se marca como anulado el documento
         $factura->update(['estado' => 'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
 
@@ -879,15 +923,16 @@ class FacturaPosController extends TransaccionController
                 $existencia_item_facturado = 0;
             }
 
-            $cantidad_producir = $cantidad_facturada - $existencia_item_facturado;
+            $cantidad_a_ingresar = $cantidad_facturada - $existencia_item_facturado;
 
-            if ( $cantidad_producir <= 0 )
+            if ( $cantidad_a_ingresar <= 0 )
             {
                 continue;
             }
 
             $parametros_items_cosumir = ItemDesarmeAutomatico::where( 'item_producir_id', $parametro_item_producir->item_producir_id )->get();
 
+            // Por cada item (consumir) de los que componen al item que se vende (producir)
             $costo_total_items_consumo = 0;
             foreach( $parametros_items_cosumir AS $parametro_item_consumo )
             {
@@ -896,20 +941,20 @@ class FacturaPosController extends TransaccionController
                 {
                     $cantidad_proporcional = 1;
                 }
-                
-                $cantidad_consumir = $cantidad_producir * $cantidad_proporcional;
+
+                $cantidad_a_sacar = intdiv( $cantidad_a_ingresar, $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
 
                 $costo_unitario_item_consumo = $parametro_item_consumo->item_consumir->get_costo_promedio( $bodega_default_id );
                 
-                $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_consumo->item_consumir->id . '","Producto":"' . $parametro_item_consumo->item_consumir->id . ' ' . $parametro_item_consumo->item_consumir->descripcion . ' (' . $parametro_item_consumo->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_consumo . '","cantidad":"' . $cantidad_consumir . ' UND","costo_total":"$' . ($cantidad_consumir * $costo_unitario_item_consumo) . '"}';
+                $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_consumo->item_consumir->id . '","Producto":"' . $parametro_item_consumo->item_consumir->id . ' ' . $parametro_item_consumo->item_consumir->descripcion . ' (' . $parametro_item_consumo->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_consumo . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_consumo) . '"}';
 
-                $costo_total_items_consumo += ($cantidad_consumir * $costo_unitario_item_consumo);
+                $costo_total_items_consumo += ($cantidad_a_sacar * $costo_unitario_item_consumo);
             }
 
-            $costo_unitario_item_producir = $costo_total_items_consumo / $cantidad_producir;
+            $costo_unitario_item_producir = $costo_total_items_consumo / $cantidad_a_ingresar;
 
             $lineas_desarme .= ',';
-            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_producir . ' UND","costo_total":"$' . $costo_total_items_consumo . '"}';
+            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . $costo_total_items_consumo . '"}';
             $hay_productos++;
         }
 
@@ -1417,5 +1462,37 @@ class FacturaPosController extends TransaccionController
                 ];
         
         return response()->json( $datos );
+    }
+
+    // Recontabilizar un documento dada su ID
+    public static function recontabilizar_factura( $documento_id )
+    {
+        $documento = FacturaPos::find($documento_id);
+
+        // Eliminar registros contables actuales
+        ContabMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+                        ->where('consecutivo', $documento->consecutivo)
+                        ->delete();
+
+        // Obtener líneas de registros del documento
+        $registros_documento = DocRegistro::where('vtas_pos_doc_encabezado_id', $documento->id)->get();
+
+        $total_documento = 0;
+        $n = 1;
+        foreach ($registros_documento as $linea)
+        {
+            $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
+            VentaController::contabilizar_movimiento_credito($documento->toArray() + $linea->toArray(), $detalle_operacion);
+            $total_documento += $linea->precio_total;
+            $n++;
+        }
+
+        $forma_pago = $documento->forma_pago;
+
+        $datos = $documento->toArray();
+        FacturaPosController::contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $documento->pdv->caja_default_id);
+
+        return redirect( 'pos_factura/' . $documento->id . '?id=20&id_modelo=230&id_transaccion=47' )->with('flash_message', 'Documento Recontabilizado.');
     }
 }

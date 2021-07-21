@@ -6,6 +6,7 @@
     <style type="text/css">
         body{
             font-family: Arial, Helvetica, sans-serif;
+            font-size: {{ config('ventas_pos.tamanio_fuente_factura') . 'px'  }};
         }
 
         @page {
@@ -49,7 +50,8 @@
     </style>
 </head>
 <body>
-    <?php        
+    <?php
+        $tamanino_fuente_2 = '0.9em';
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where( 'id', $empresa->codigo_ciudad )->get()[0];
@@ -60,15 +62,7 @@
                 <img src="{{ $url_img }}" width="120px;" />
             </td>
             <td>
-                <div style="text-align: center;">
-                    <br/>
-                    <b>{{ $empresa->descripcion }}</b><br/>
-                    <b>{{ config("configuracion.tipo_identificador") }}: @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
-
-                    {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
-                    Teléfono(s): {{ $empresa->telefono1 }}<br/>
-                    <b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b><br/>
-                </div>
+                @include('ventas_pos.plantilla_factura_datos_encabezado')
             </td>
         </tr>
     </table>
@@ -83,7 +77,7 @@
         </table>
     @endif
 
-    <table border="0" style="margin-top: 12px !important; font-size: 10px;" width="100%">
+    <table border="0" style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
             <tr>
                 <td>
                     <b>{{ $pdv->tipo_doc_app->descripcion }} No.</b> 
@@ -115,7 +109,7 @@
     </div>
 
     <div style="border: solid 1px #ddd;">
-        <table width="100%" style=" font-size: 10px;">
+        <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
             <tr>
                 <td>
                     <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
@@ -148,13 +142,13 @@
         </table>        
     </div>
 
-    <table style="width: 100%; font-size: 10px;" id="tabla_productos_facturados">
+    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
         {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
         <tbody>
         </tbody>
     </table>
 
-    <table style="width: 100%; font-size: 10px;" id="tabla_totales">
+    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_totales">
         <tbody>
             <tr style="font-weight: bold; background-color: #eaeaea;">
                 <td style="text-align: right;"> Total factura: </td>

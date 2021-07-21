@@ -18,9 +18,9 @@
 
 					{{ Form::bsBtnEdit2( 'contabilidad/'.$id.'/edit'.$variables_url,'Editar') }}
 					
-					<a class="btn btn-default btn-xs" id="btn_duplicar" href="{{ url( 'contab_duplicar_documento/'.$id.$variables_url ) }}"><i class="fa fa-btn fa-clone"></i> Duplicar </a>
+					<a class="btn-gmail" id="btn_duplicar" href="{{ url( 'contab_duplicar_documento/'.$id.$variables_url ) }}" title="Duplicar"><i class="fa fa-btn fa-clone"></i></a>
 
-				    <button class="btn btn-danger btn-xs" id="btn_anular"><i class="fa fa-btn fa-close"></i> Anular </button>
+				    <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
 				    
 				@endif
 				

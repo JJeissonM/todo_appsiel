@@ -50,6 +50,7 @@
 
 			<h4>Nuevo registro</h4>
 			<hr>
+			
 			{{ Form::open([ 'url' => $form_create['url'], 'id'=>'form_create']) }}
 				<?php
 				  if (count($form_create['campos'])>0) {
@@ -84,12 +85,17 @@
 				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 
 			{{ Form::close() }}
-
 			<br/>
 
 			@include('compras.incluir.elementos_entradas_pendientes')
 
 			<br/>
+
+			<!-- -->
+			<div class="container-fluid"> 
+				<label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso"><i class="fa fa-barcode"></i> <i>Activar ingreso por código de barras</i></label>
+			</div>
+		
 
 			<div id="div_ingreso_registros">
 
@@ -372,20 +378,54 @@
 				}
 
 				var codigo_tecla_presionada = event.which || event.keyCode;
+				
+				// 27 = ESC
+				if( codigo_tecla_presionada == 27 )
+		    	{
+					terminar++;
+					$('#suggestions').html('');
+                	$('#suggestions').hide();
+
+                	if ( terminar == 2 ){ 
+                		terminar = 0;
+                		$('#btn_guardar').focus(); 
+                	}
+                	return false;
+		    	}
+
+				if( $('#modo_ingreso').is(':checked') )
+		    	{
+		    		// Manejo códigos de barra
+		    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
+		    		// Realizar consulta y mostar sugerencias
+
+			    	var url = '../inv_consultar_productos';
+
+					$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+						.done(function( data ) {
+							//Escribimos las sugerencias que nos manda la consulta
+			                $('#suggestions').show().html(data);
+			                $('.list-group-item-productos:first').focus();
+
+			                var item = $('a.list-group-item.active');
+						
+							if( item.attr('data-producto_id') === undefined )
+							{
+								//alert('El producto ingresado no existe.');
+								//reset_linea_ingreso_default();
+								$('#inv_producto_id').select();
+							}else{
+								seleccionar_producto( item );
+			                	consultar_existencia( $('#inv_bodega_id').val(), item.attr('data-producto_id') );
+			                	return false;
+							}
+
+						});
+					return false;
+		    	}
 
 		    	switch( codigo_tecla_presionada )
 		    	{
-		    		case 27:// 27 = ESC
-						terminar++;
-						$('#suggestions').html('');
-	                	$('#suggestions').hide();
-
-	                	if ( terminar == 2 ){ 
-	                		terminar = 0;
-	                		$('#btn_guardar').focus(); 
-	                	}
-		    			break;
-
 		    		case 40:// Flecha hacia abajo
 		    			var item_activo = $("a.list-group-item.active");
 
@@ -437,7 +477,7 @@
 
 		    		default :
 		    			if( $.isNumeric( $(this).val() ) ){
-				    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
+					    	var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
 				    	}else{
 				    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
 
@@ -1008,7 +1048,6 @@
 
 		 		// Se envía el formulario
 				$('#form_create').submit();
-					
 			});
 
 			function validar_todo()
@@ -1197,6 +1236,20 @@
 		        $('#modo_ingreso').val( "false" );
 			  }
 			}
+
+			// Al Activar/Inactivar modo de ingreso
+		    $('#modo_ingreso').on('click',function(){
+
+		    	if( $(this).val() == "true" ){
+		    		$(this).val( "false" );
+		    		setCookie("modo_ingreso_codigo_de_barra", "false", 365);
+		    	}else{
+		    		$(this).val( "true" );
+		    		setCookie("modo_ingreso_codigo_de_barra", "true", 365);
+		    	}
+		    	
+		    	$('#inv_producto_id').select();
+		    });
 
 			function consultar_entradas_pendientes()
 			{

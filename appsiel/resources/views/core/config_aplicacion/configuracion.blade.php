@@ -196,11 +196,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$cta_ingresos_default = 229;
 								if( isset($parametros['cta_ingresos_default'] ) )
 								{
 									$cta_ingresos_default = $parametros['cta_ingresos_default'];
-								}else{
-									$cta_ingresos_default = 229;
 								}
 							?>
 							{{ Form::bsSelect('cta_ingresos_default', $cta_ingresos_default, 'Cta. ingresos (ventas)', $array_cuentas, ['class'=>'combobox']) }}
@@ -209,7 +208,44 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$cta_gastos_default = 229;
+								if( isset($parametros['cta_gastos_default'] ) )
+								{
+									$cta_gastos_default = $parametros['cta_gastos_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_gastos_default', $cta_gastos_default, 'Cta. Gastos', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_impuestos_default = 229;
+								if( isset($parametros['cta_impuestos_default'] ) )
+								{
+									$cta_impuestos_default = $parametros['cta_impuestos_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_impuestos_default', $cta_impuestos_default, 'Cta. Impuestos', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_inventarios_default = 229;
+								if( isset($parametros['cta_inventarios_default'] ) )
+								{
+									$cta_inventarios_default = $parametros['cta_inventarios_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_inventarios_default', $cta_inventarios_default, 'Cta. Inventarios', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 

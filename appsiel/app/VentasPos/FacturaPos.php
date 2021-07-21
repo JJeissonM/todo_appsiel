@@ -48,6 +48,11 @@ class FacturaPos extends Model
         return $this->belongsTo('App\Ventas\Vendedor', 'vendedor_id');
     }
 
+    public function pdv()
+    {
+        return $this->belongsTo(Pdv::class, 'pdv_id');
+    }
+
     public function lineas_registros()
     {
         return $this->hasMany(DocRegistro::class, 'vtas_pos_doc_encabezado_id');

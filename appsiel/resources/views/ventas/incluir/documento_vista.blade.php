@@ -81,7 +81,6 @@
             </tr>
         </tfoot>
     </table>
-
 </div>
 
 @include('ventas.incluir.factura_firma_totales')

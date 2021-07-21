@@ -17,8 +17,6 @@ use App\Http\Controllers\Controller;
 use App\Inventarios\InvProducto;
 use App\Sistema\Html\MigaPan;
 
-
-
 class ProductoController extends  Controller {
 
     public function create_ficha($id){

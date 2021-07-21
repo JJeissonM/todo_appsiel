@@ -12,7 +12,7 @@ use App\Core\TipoDocApp;
 class Pdv extends Model
 {
     protected $table = 'vtas_pos_puntos_de_ventas';		
-	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'creado_por', 'modificado_por', 'estado'];
+	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'direccion', 'telefono', 'email', 'creado_por', 'modificado_por', 'estado'];
 
     public function bodega()
     {

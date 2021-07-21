@@ -194,6 +194,12 @@ use App\Core\Tercero;
         </tr>
     </tfoot>
 </table>
+
+
+@if( !is_null( $otroscampos ) )
+    {!! $otroscampos->terminos_y_condiciones !!}
+@endif
+    
 @include('ventas.incluir.factura_firma_totales')
 <hr>
 <h3>Detalles</h3>

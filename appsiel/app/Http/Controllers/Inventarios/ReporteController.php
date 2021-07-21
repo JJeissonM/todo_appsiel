@@ -145,6 +145,17 @@ class ReporteController extends Controller
 
         $productos = InvMovimiento::get_movimiento_corte( $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id);
 
+        /*
+                AGREGAR ITEMS SIN MOVIMIENTO
+
+        $items = InvProducto::where('estado','Activo')->orderBy('descripcion')->get();
+        foreach ($items as $item )
+        {
+            // code...
+        }
+        
+        dd($ids_con_mov);*/
+
         $bodega = InvBodega::find($mov_bodega_id);
 
         if ( is_null($bodega) ) {

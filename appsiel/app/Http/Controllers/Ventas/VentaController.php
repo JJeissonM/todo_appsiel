@@ -33,7 +33,7 @@ use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
 use App\Core\EncabezadoDocumentoTransaccion;
-
+use App\Core\TransaccionOtrosCampos;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -52,6 +52,7 @@ use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\NotaCredito;
+
 
 use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
@@ -390,6 +391,16 @@ class VentaController extends TransaccionController
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
         $empresa = $this->empresa;
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
+        
         $id_transaccion = $this->transaccion->id;
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
@@ -490,6 +501,15 @@ class VentaController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
         $empresa = $this->empresa;
+        if ( !is_null($doc_encabezado->pdv) )
+        {
+            if ( $doc_encabezado->pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
+                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
+                $empresa->email = $doc_encabezado->pdv->email;
+            }
+        }
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last();
 
@@ -499,7 +519,9 @@ class VentaController extends TransaccionController
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados' ) )->render();
+        $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos' ) )->render();
     }
 
     /**
@@ -766,7 +788,7 @@ class VentaController extends TransaccionController
 
         // Linea crear nuevo registro
         $modelo_id = 138; // App\Ventas\Clientes
-        $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

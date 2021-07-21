@@ -16,32 +16,32 @@
                 $total_documento_dif = 0;
                 ?>
                 @foreach($doc_registros as $linea )
-                            <?php
+                    <?php
 
-                                $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
+                        $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
 
-                                if( $linea->item->unidad_medida2 != '' )
-                                {
-                                    $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
-                                }
+                        if( $linea->item->unidad_medida2 != '' )
+                        {
+                            $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
+                        }
 
-                                $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 0);
+                        $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 0);
 
-                                $diferencia_costo = $linea->costo_total - $linea->costo_total_sistema;
+                        $diferencia_costo = $linea->costo_total - $linea->costo_total_sistema;
 
-                                if ( $diferencia > 0 )
-                                {
-                                    $resultado = '<span style="color:green;">Sobrante</span>';
-                                }else{
-                                    $resultado = '<span style="color:red;">Faltante</span>';
-                                }
+                        if ( $diferencia > 0 )
+                        {
+                            $resultado = '<span style="color:green;">Sobrante</span>';
+                        }else{
+                            $resultado = '<span style="color:red;">Faltante</span>';
+                        }
 
-                                if (  (-0.0001 < $diferencia) && ($diferencia < 0.0001 ) )
-                                {
-                                    $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
-                                    $diferencia_costo = 0;
-                                }
-                            ?>
+                        if (  (-0.0001 < $diferencia) && ($diferencia < 0.0001 ) )
+                        {
+                            $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
+                            $diferencia_costo = 0;
+                        }
+                    ?>
                     <tr>
                         <td class="text-center"> {{ $linea->producto_id }} </td>
                         <td> {{ $descripcion_item }} </td>
