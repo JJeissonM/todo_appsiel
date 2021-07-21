@@ -1,5 +1,5 @@
 <div class="col-md-4 col-sm-6 wow fadeInUp animated service-info" data-wow-duration="300ms" data-wow-delay="0ms" style="visibility: visible; animation-duration: 300ms; animation-delay: 0ms; animation-name: fadeInUp; margin-bottom: 20px;">
-    <a style="border-radius: 20px !important;cursor: pointer; color: #64686d"  href="{{$item->url}}">
+    <a style="border-radius: 20px !important;cursor: pointer; color: black"  href="{{$item->url}}">
         
         <div style="background-color: #fff; border-top-right-radius: 20px !important; border-top-left-radius: 20px !important;">
             <img style="width: 100%; border-radius: 20px 20px 0 0" src="{{asset($item->icono)}}">
