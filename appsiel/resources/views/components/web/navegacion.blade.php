@@ -195,56 +195,58 @@ if (is_null($nav)) {
 
 <header id="myHeader">
     <div class="">
-        <nav id="nav" class="navbar navbar-expand-lg navbar-light justify-content-between align-items-center container" style="height: 66px">
+        <nav id="nav" class="navbar navbar-expand-lg navbar-light justify-content-between align-items-center container-fluid" style="height: 66px">
             <!-- mu-navbar  d-flex -->
+            <div class="container">
+                <!-- Text based logo -->
+                @if( !is_null($nav) )
+                <a style="height: 50px;" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
+                    <img src="{{asset( $logo['imagen_logo'] )}}" style="position: absolute; z-index: 11000">
+                </a>
+                @else
+                <a style="height: 50px;" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
+                    <h1>logo</h1>
+                </a>
+                @endif
 
-            <!-- Text based logo -->
-            @if( !is_null($nav) )
-            <a style="height: 50px;" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
-                <img src="{{asset( $logo['imagen_logo'] )}}" style="position: absolute; z-index: 11000">
-            </a>
-            @else
-            <a style="height: 50px;" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
-                <h1>logo</h1>
-            </a>
-            @endif
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fa fa-bars" style="color: {{$textcolor}}"></span>
+                </button>
+                <div class="collapse navbar-collapse ml-auto navegacion-font" id="navbarSupportedContent">
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="fa fa-bars" style="color: {{$textcolor}}"></span>
-            </button>
-            <div class="collapse navbar-collapse ml-auto navegacion-font" id="navbarSupportedContent">
-
-                <ul class="navbar-nav mu-navbar-nav">
-                    @if(!is_null($nav))
-                    @foreach($nav->menus as $item)
-                    @if($item->parent_id == 0)
-                    @if($item->subMenus()->count()>0)
-                    <li class="nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}">
-                        <a class="dropdown-toggle"
-                            style="color: {{$textcolor}}; text-transform: none !important; font-weight: 100;"
-                            href="{{$item->enlace}}" role="button" id="navbarDropdown" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false"><i class="fa fa-{{$item->icono}}"
-                                style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            @foreach($item->subMenus() as $subItems)
-                            <a style="color: {{$textcolor}}; text-transform: none !important; font-weight: 100;"
-                                class="dropdown-item {{request()->url() == $subItems->enlace ? 'active':''}}" href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}"
-                                    style="font-size: 20px;"></i>{{' '.$subItems->titulo}}</a>
-                            @endforeach
-                        </div>
-                    </li>
-                    @else
-                    <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
-                            style="text-transform: none !important; font-weight: 100;"><i
-                                class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
-                    </li>
-                    @endif
-                    @endif
-                    @endforeach
-                    @endif
-                </ul>
+                    <ul class="navbar-nav mu-navbar-nav">
+                        @if(!is_null($nav))
+                        @foreach($nav->menus as $item)
+                        @if($item->parent_id == 0)
+                        @if($item->subMenus()->count()>0)
+                        <li class="nav-item dropdown {{request()->url() == $item->enlace ? 'active':''}}">
+                            <a class="dropdown-toggle"
+                                style="color: {{$textcolor}}; text-transform: none !important; font-weight: 100;"
+                                href="{{$item->enlace}}" role="button" id="navbarDropdown" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"><i class="fa fa-{{$item->icono}}"
+                                    style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                @foreach($item->subMenus() as $subItems)
+                                <a style="color: {{$textcolor}}; text-transform: none !important; font-weight: 100;"
+                                    class="dropdown-item {{request()->url() == $subItems->enlace ? 'active':''}}" href="{{$subItems->enlace}}"><i class="fa fa-{{$subItems->icono}}"
+                                        style="font-size: 20px;"></i>{{' '.$subItems->titulo}}</a>
+                                @endforeach
+                            </div>
+                        </li>
+                        @else
+                        <li class="nav-item {{request()->url() == $item->enlace ? 'active':''}}"><a href="{{$item->enlace}}"
+                                style="text-transform: none !important; font-weight: 100;"><i
+                                    class="fa fa-{{$item->icono}}" style="font-size: 20px;"></i>{{' '.$item->titulo}}</a>
+                        </li>
+                        @endif
+                        @endif
+                        @endforeach
+                        @endif
+                    </ul>
+                </div>    
             </div>
+            
             
         </nav>
     </div>
