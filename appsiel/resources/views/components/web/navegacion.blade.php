@@ -115,7 +115,7 @@ if (is_null($nav)) {
         ?>px;
         /*width: <?php echo $logo['anchura_logo'];
         ?>px;*/
-        filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+        /*filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));*/
     }
 
 
@@ -126,7 +126,7 @@ if (is_null($nav)) {
         max-height: 80px;
         width: auto;
         animation-name: img-fixed;
-        animation-duration: 1s;
+        animation-duration: .3s;
         animation-timing-function: ease;
         animation-fill-mode: both;
     }
@@ -195,16 +195,16 @@ if (is_null($nav)) {
 
 <header id="myHeader">
     <div class="">
-        <nav id="nav" class="navbar navbar-expand-lg navbar-light justify-content-between align-items-center pl-md-5" style="height: 66px">
+        <nav id="nav" class="navbar navbar-expand-lg navbar-light justify-content-between align-items-center container" style="height: 66px">
             <!-- mu-navbar  d-flex -->
 
             <!-- Text based logo -->
             @if( !is_null($nav) )
-            <a style="height: 50px" class="navbar-brand p-0 icono ml-md-5 pl-md-5" href="{{url('/')}}" style="position: relative">
+            <a style="height: 50px;" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
                 <img src="{{asset( $logo['imagen_logo'] )}}" style="position: absolute; z-index: 11000">
             </a>
             @else
-            <a style="height: 50px" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
+            <a style="height: 50px;" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
                 <h1>logo</h1>
             </a>
             @endif
