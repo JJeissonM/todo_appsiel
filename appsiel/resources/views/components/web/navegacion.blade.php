@@ -195,12 +195,12 @@ if (is_null($nav)) {
 
 <header id="myHeader">
     <div class="">
-        <nav id="nav" class="navbar navbar-expand-lg navbar-light justify-content-between align-items-center" style="height: 66px">
+        <nav id="nav" class="navbar navbar-expand-lg navbar-light justify-content-between align-items-center pl-md-5" style="height: 66px">
             <!-- mu-navbar  d-flex -->
 
             <!-- Text based logo -->
             @if( !is_null($nav) )
-            <a style="height: 50px" class="navbar-brand p-0 icono" href="{{url('/')}}" style="position: relative">
+            <a style="height: 50px" class="navbar-brand p-0 icono ml-md-5 pl-md-5" href="{{url('/')}}" style="position: relative">
                 <img src="{{asset( $logo['imagen_logo'] )}}" style="position: absolute; z-index: 11000">
             </a>
             @else
@@ -245,6 +245,7 @@ if (is_null($nav)) {
                     @endif
                 </ul>
             </div>
+            
         </nav>
     </div>
 </header>
