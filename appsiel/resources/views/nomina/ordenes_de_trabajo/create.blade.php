@@ -60,7 +60,7 @@
 						$id_transaccion = 3;
 						$motivos = \App\Inventarios\InvMotivo::get_motivos_transaccion($id_transaccion);
 					?>
-					<div class="row" style="background-color: rgb(212, 203, 247) !important;">
+					<div class="container-fluid col-md-6" style="background-color: #ddd !important;">
 						{{ Form::bsSelect('inv_bodega_id', null, 'Bodega', \App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
 					</div>
 					
@@ -529,6 +529,7 @@
 					}
 
 					$('#ingreso_productos').find('tbody:last').append('<tr id="'+producto.val()+'">'+
+																	'<td style="display:none;"></td>'+
 																	'<td class="text-center">'+producto.val()+'</td>'+
 																	'<td class="nom_prod">'+nombre_producto+'</td>'+
 																	'<td><span style="color:white;">'+mov[0]+'-</span><span '+estilo+'>'+motivo+'</span><input type="hidden" class="movimiento" value="'+mov[1]+'"></td>'+

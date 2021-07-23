@@ -1,9 +1,9 @@
 <div>
 
-    IF = Inventario Físico
+    IF = Inventario Físico <a class="btn btn-success btn-xs" id="btn_excel_v2" title="inventario_fisico"><i class="fa fa-file-excel-o"></i></a>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped" id="tbDatos">
             {{ Form::bsTableHeader(['Cód.','Producto','Cantidad IF','Costo Total IF','Cantidad sistema','Costo Total sistema','DIF. Cantidad','DIF. Total sistema','']) }}
             <tbody>
                 <?php 
@@ -25,7 +25,7 @@
                             $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
                         }
 
-                        $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 0);
+                        $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 2);
 
                         $diferencia_costo = $linea->costo_total - $linea->costo_total_sistema;
 
@@ -36,7 +36,7 @@
                             $resultado = '<span style="color:red;">Faltante</span>';
                         }
 
-                        if (  (-0.0001 < $diferencia) && ($diferencia < 0.0001 ) )
+                        if (  (-1 < $diferencia) && ($diferencia < 1 ) )
                         {
                             $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
                             $diferencia_costo = 0;
@@ -69,8 +69,8 @@
                         $total_documento += $linea->costo_total;
                         $total_cantidad_sistema += $linea->cantidad_sistema;
                         $total_documento_sistema += $linea->costo_total_sistema;
-                        $total_cantidad_dif += ( $linea->cantidad - $linea->cantidad_sistema);
-                        $total_documento_dif += ( $linea->costo_total - $linea->costo_total_sistema);
+                        $total_cantidad_dif += $diferencia;
+                        $total_documento_dif += $diferencia_costo;
                     ?>
                 @endforeach
             </tbody>
@@ -84,7 +84,7 @@
                                     $resultado = '<span style="color:red;">Faltante</span>';
                                 }
 
-                                if (  (-0.0001 < $total_cantidad_dif) &&  ($total_cantidad_dif < 0.0001) )
+                                if (  (-1 < $total_cantidad_dif) &&  ($total_cantidad_dif < 1) )
                                 {
                                     $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
                                     $total_documento_dif = 0;
@@ -92,11 +92,11 @@
                             ?>
 
                     <td colspan="2">&nbsp;</td>
-                    <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format($total_documento, 0, ',', '.') }} </td>
-                    <td class="text-center"> {{ number_format($total_cantidad_sistema, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad_sistema, 2, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format($total_documento_sistema, 0, ',', '.') }} </td>
-                    <td class="text-center"> {{ number_format($total_cantidad_dif, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad_dif, 2, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format($total_documento_dif, 0, ',', '.') }} </td>
                         <td> 
                             <?php

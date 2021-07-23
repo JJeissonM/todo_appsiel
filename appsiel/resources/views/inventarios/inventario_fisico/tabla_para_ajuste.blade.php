@@ -4,7 +4,7 @@
     foreach($doc_registros as $linea )
     {
         $ajustar = true;
-        $cantidad_dif = $linea->cantidad - $linea->cantidad_sistema;
+        $cantidad_dif = round( $linea->cantidad - $linea->cantidad_sistema , 2);
 
         // WARNING: MOTIVOS ASIGNADOS MANUALMENTE
         if ( $cantidad_dif > 0 )
@@ -17,7 +17,7 @@
 
         $costo_total = $linea->costo_prom_sistema * $cantidad_dif;
 
-        if (  (-0.0001 < $cantidad_dif) && ($cantidad_dif < 0.0001 ) )
+        if (  (-1 < $cantidad_dif) && ($cantidad_dif < 1 ) )
         {
             $ajustar = false;
         }

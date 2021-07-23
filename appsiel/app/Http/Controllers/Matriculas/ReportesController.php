@@ -116,8 +116,6 @@ class ReportesController extends Controller
             $matriculado = false;
         }
         
-
-
         $curso = Curso::find( $request->curso_id );
 
         $tam_hoja = $request->tam_hoja;

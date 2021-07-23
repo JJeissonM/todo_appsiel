@@ -304,6 +304,9 @@ class RecaudoController extends TransaccionController
         if(Input::get('formato_impresion_id') == 'estandar2'){
             $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir2', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
         }
+        if(Input::get('formato_impresion_id') == 'pos'){
+            $documento_vista = View::make( 'tesoreria.recaudos.pos', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
         
        
         // Se prepara el PDF
