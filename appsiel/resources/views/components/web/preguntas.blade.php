@@ -13,7 +13,6 @@ if($pregunta!=null){
 
 <style>
     #faq-area {
-        margin: 50px 0 100px;
         <?php
         if ($pregunta != null) {
             if ($pregunta->tipo_fondo == 'COLOR') {
