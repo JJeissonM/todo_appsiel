@@ -134,7 +134,12 @@
 			            <tr>
 							<th> Ítem </th>
 							<th> Cant. </th>
-							<th> Costo Prom. </th>
+							@if( $sumar_iva )
+								<th> Tasa IVA </th>
+								<th> Costo Prom. (IVA incluido) </th>
+							@else
+								<th> Costo Prom. </th>
+							@endif
 							<th> Costo Total </th>
 			            </tr>
 			        </thead>
@@ -157,7 +162,16 @@
 				                	{
 				                		$valor_promedio = $costo_total / $cantidad;
 				                	}
+
+				                	if ( $sumar_iva )
+				                	{
+				                		$valor_promedio = $valor_promedio * ( 1 + $item->tasa_impuesto() / 100 );
+				                		$costo_total = $costo_total * ( 1 + $item->tasa_impuesto() / 100 );
+				                	}
 				            	?>
+				            	@if( $sumar_iva )
+				            		<td align="center"> {{ $item->tasa_impuesto() }}% </td>
+				            	@endif
 			                	<td align="right"> $ {{ number_format( abs($valor_promedio), 2, ',','.') }} </td>
 			                	<td align="right"> $ {{ number_format( abs($costo_total), 2, ',','.') }} </td>
 			                </tr>
@@ -170,7 +184,10 @@
 			        <tfoot>
 						<tr style="background: #4a4a4a; color: white;">
 							<td> Totales </td>
-							<td align="center"> {{ number_format( abs($gran_total_cantidades), 2, ',','.')  }} </td> 
+							<td align="center"> {{ number_format( abs($gran_total_cantidades), 2, ',','.')  }} </td>
+							@if( $sumar_iva )
+			            		<td> </td>
+			            	@endif
 							<td> </td>
 			        		<td align="right"> $ {{ number_format( abs($gran_total_costo), 2, ',','.')  }} </td>
 			        	</tr>

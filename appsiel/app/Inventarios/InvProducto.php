@@ -42,6 +42,18 @@ class InvProducto extends Model
         return $this->hasMany(InvFichaProducto::class, 'producto_id', 'id');
     }
 
+    public function tasa_impuesto()
+    {
+        $impuesto = $this->impuesto;
+        
+        if( is_null( $impuesto ) )
+        {
+            return 0;
+        }
+
+        return $impuesto->tasa_impuesto;
+    }
+
     public function get_costo_promedio( $bodega_id )
     {
         $costo_prom = InvCostoPromProducto::where([

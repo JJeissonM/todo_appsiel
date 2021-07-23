@@ -1072,6 +1072,7 @@ class ReporteController extends Controller
     {
         $nom_contrato_id = (int)$request->nom_contrato_id;
         $nom_concepto_id = (int)$request->nom_concepto_id;
+        $sumar_iva = (int)$request->sumar_iva;
 
         $detalla_empleados = $request->detalla_empleados;
 
@@ -1101,7 +1102,7 @@ class ReporteController extends Controller
 
         $items = InvProducto::whereIn( 'id', array_keys( $movimiento_inventario->groupBy('inv_producto_id')->toArray() ) )->get();
 
-        $view = View::make('nomina.reportes.costos_por_proyecto', compact( 'movimiento', 'conceptos', 'empleados', 'documento_nomina', 'detalla_empleados', 'movimiento_inventario', 'items') )->render();
+        $view = View::make('nomina.reportes.costos_por_proyecto', compact( 'movimiento', 'conceptos', 'empleados', 'documento_nomina', 'detalla_empleados', 'movimiento_inventario', 'items', 'sumar_iva') )->render();
 
         $vista_pdf = View::make('layouts.pdf3', compact( 'view' ) )->render();
 
