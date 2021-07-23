@@ -79,7 +79,7 @@
 
     }
 </style>
-<div class="aboutus about-font p-md-4 p-sm-1" id="aboutus">
+<div class="aboutus about-font p-md-5 p-sm-2" id="aboutus">
 
     <div id="visor_contenido_aboutus">
 

@@ -73,7 +73,7 @@
 
 
 </style>
-<section id="main-slider" class="slider-font" >
+<section id="main-slider" class="slider-font pb-md-5 pb-sm-2" >
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)

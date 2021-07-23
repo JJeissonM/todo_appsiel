@@ -38,7 +38,7 @@
     }
 </style>
 
-<section id="blog" class="article-font p-md-4 p-sm-1">
+<section id="blog" class="article-font p-md-5 p-sm-2">
 
     {{ Form::Spin(128) }}
 

@@ -7,7 +7,7 @@
 
     
 </style>
-<section id="parallax" class="parallax p-md-4 p-sm-1" style="@if($parallax!=null) @if($parallax->modo=='COLOR') background-color: {{ $parallax->fondo }}; @else background: url('img/parallax/{{$parallax->fondo}}') repeat-y center 0; background-size: auto 100%; @endif @endif" >
+<section id="parallax" class="parallax p-md-5 p-sm-2" style="@if($parallax!=null) @if($parallax->modo=='COLOR') background-color: {{ $parallax->fondo }}; @else background: url('img/parallax/{{$parallax->fondo}}') repeat-y center 0; background-size: auto 100%; @endif @endif" >
     <div class="container h-100">
         <div class="row flex-column justify-content-between align-items-center h-100 " id="contenedor_seccion_servicios">
         @if($parallax!=null)
