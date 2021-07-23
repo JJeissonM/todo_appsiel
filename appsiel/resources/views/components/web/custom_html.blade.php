@@ -5,7 +5,7 @@
         }	*/
 </style>
 
-<div class="custom_html">
+<div class="custom_html p-md-4 p-sm-1">
   <div class="container">
     @if($registro!=null)
       {!! str_replace( '_el_token_csrf_', csrf_field(), $registro->contenido ) !!}

@@ -2,7 +2,6 @@
     #Price {
         position: relative;
         z-index: 80 !important;
-        padding: 100px 0 75px;
 
         <?php
         if ($Price != null) {
@@ -37,7 +36,7 @@
     }
 </style>
 @if($Price!=null)
-<section id="Price" class="price-font">
+<section id="Price" class="price-font p-md-4 p-sm-1">
     <div id="visor_contenido_servicios">
 
     </div>

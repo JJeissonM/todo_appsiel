@@ -1,7 +1,6 @@
 <style>
 
     #blog {
-        padding-top: 100px !important;
         position: relative;
         z-index: 80 !important;
 
@@ -39,7 +38,7 @@
     }
 </style>
 
-<section id="blog" class="article-font">
+<section id="blog" class="article-font p-md-4 p-sm-1">
 
     {{ Form::Spin(128) }}
 

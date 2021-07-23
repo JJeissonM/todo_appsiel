@@ -79,7 +79,7 @@
 
     }
 </style>
-<div class="aboutus about-font" id="aboutus" style="padding-top: 100px;">
+<div class="aboutus about-font p-md-4 p-sm-1" id="aboutus">
 
     <div id="visor_contenido_aboutus">
 
