@@ -25,7 +25,7 @@
                             $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
                         }
 
-                        $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 0);
+                        $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 2);
 
                         $diferencia_costo = $linea->costo_total - $linea->costo_total_sistema;
 
@@ -36,7 +36,7 @@
                             $resultado = '<span style="color:red;">Faltante</span>';
                         }
 
-                        if (  (-0.0001 < $diferencia) && ($diferencia < 0.0001 ) )
+                        if (  (-1 < $diferencia) && ($diferencia < 1 ) )
                         {
                             $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
                             $diferencia_costo = 0;
