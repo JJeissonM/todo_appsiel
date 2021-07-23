@@ -67,7 +67,7 @@
             }
         ?>
 
-        <div class=" py-md-4 py-sm-1" id="contenedor_seccion_servicios" style="{{ $estilo }}">
+        <div class="p-md-4 p-sm-1" id="contenedor_seccion_servicios" style="{{ $estilo }}">
             @if( is_null($servicios) )
                 
                 <section class="img">

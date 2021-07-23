@@ -32,7 +32,7 @@
 
 </style>
 
-<div id="pqrform" class="container-wrapper pqrform-font py-md-4 py-sm-1">
+<div id="pqrform" class="container-wrapper pqrform-font p-md-4 p-sm-1">
     <div class="container">
         <div class="row justify-content-center" style="border-radius: 10px; background-color: white; ">
             <div class="col-md-6" style="max-width: 800px;">
