@@ -159,7 +159,7 @@ if($pregunta!=null){
                         </div>
                     </div>
                     @endfor
-                    @if (count($pregunta->itempreguntas) > 4)   
+                    @if (count($pregunta->itempreguntas) > 5)   
                         @for($i = 5; $i < count($pregunta->itempreguntas); $i++)
                         <div class="colsh card pregunta-font collapse" style="opacity: 0.8 !important;" role="tabpanel" aria-labelledby="faqsm">
                             <div style="opacity: 0.8 !important;" class="card-header" role="tab" id="faq{{$pregunta->itempreguntas[$i]->id}}" onclick="agregar('collapse{{$pregunta->itempreguntas[$i]->id}}')">

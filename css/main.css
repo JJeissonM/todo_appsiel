@@ -12,7 +12,7 @@ body {
   background: #fff;
   font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  color: #64686d;
+  color: black;
   line-height: 26px;
 }
 a {
@@ -45,8 +45,8 @@ hr {
   margin-bottom: 50px;
 }
 .section-header .section-title {
-  font-size: 44px;
-  color: #272727;
+  font-size: 22px;
+  color: black;
   text-transform: uppercase;
   position: relative;
   padding-top: 40px;
@@ -275,7 +275,7 @@ hr {
   position: relative;
   z-index: 999;
   width: 100%;
-  background: rgba(0, 0, 0, 0.1);
+  /*background: rgba(0, 0, 0, 0.1);*/
 }
 #cta {
   padding: 50px 0;

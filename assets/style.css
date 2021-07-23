@@ -46,7 +46,7 @@ html {
 body {
 	font-family: 'Raleway', sans-serif;
 	color: #666666;
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 400;
 }
 
@@ -74,27 +74,33 @@ a:focus {
 
 h1 {
 	font-size: 38px;
+	font-weight: bold;
 }
 
 h2 {  
 	font-size: 32px; 
 	line-height: 1.13; 
+	font-weight: bold;
 }
 
 h3 {  
 	font-size: 26px;  
+	font-weight: bold;
 }
 
 h4 {  
 	font-size: 22px;  
+	font-weight: bold;
 }
 
 h5 {  
 	font-size: 20px;  
+	font-weight: bold;
 }
 
 h6 {  
 	font-size: 18px;  
+	font-weight: bold;
 }
 
 img {
