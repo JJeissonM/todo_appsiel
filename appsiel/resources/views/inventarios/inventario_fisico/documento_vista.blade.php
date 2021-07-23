@@ -1,9 +1,9 @@
 <div>
 
-    IF = Inventario Físico
+    IF = Inventario Físico <a class="btn btn-success btn-xs" id="btn_excel_v2" title="inventario_fisico"><i class="fa fa-file-excel-o"></i></a>
 
     <div class="table-responsive">
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped" id="tbDatos">
             {{ Form::bsTableHeader(['Cód.','Producto','Cantidad IF','Costo Total IF','Cantidad sistema','Costo Total sistema','DIF. Cantidad','DIF. Total sistema','']) }}
             <tbody>
                 <?php 

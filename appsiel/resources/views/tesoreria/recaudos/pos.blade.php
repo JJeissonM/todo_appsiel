@@ -16,7 +16,7 @@
 @section('tabla_registros_1')   
 
     <div class="row" align="center" style="text-align: center; font-style: oblique;">
-        <b><u>Conceptos pagados</u></b>
+        <b><u>Conceptos recibidos</u></b>
     </div>
 
     <?php
@@ -42,7 +42,7 @@
         ?>
     @endforeach
     <div class="row" align="center">
-        <b>Total pagado: </b> $ {{ number_format($total_abono, 0, ',', '.') }}
+        <b>Total recaudo: </b> $ {{ number_format($total_abono, 0, ',', '.') }}
     </div>
 @endsection
 
