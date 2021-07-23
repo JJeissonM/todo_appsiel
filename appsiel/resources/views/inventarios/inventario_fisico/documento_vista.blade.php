@@ -69,8 +69,8 @@
                         $total_documento += $linea->costo_total;
                         $total_cantidad_sistema += $linea->cantidad_sistema;
                         $total_documento_sistema += $linea->costo_total_sistema;
-                        $total_cantidad_dif += ( $linea->cantidad - $linea->cantidad_sistema);
-                        $total_documento_dif += ( $linea->costo_total - $linea->costo_total_sistema);
+                        $total_cantidad_dif += $diferencia;
+                        $total_documento_dif += $diferencia_costo;
                     ?>
                 @endforeach
             </tbody>
@@ -84,7 +84,7 @@
                                     $resultado = '<span style="color:red;">Faltante</span>';
                                 }
 
-                                if (  (-0.0001 < $total_cantidad_dif) &&  ($total_cantidad_dif < 0.0001) )
+                                if (  (-1 < $total_cantidad_dif) &&  ($total_cantidad_dif < 1) )
                                 {
                                     $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
                                     $total_documento_dif = 0;
@@ -92,11 +92,11 @@
                             ?>
 
                     <td colspan="2">&nbsp;</td>
-                    <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format($total_documento, 0, ',', '.') }} </td>
-                    <td class="text-center"> {{ number_format($total_cantidad_sistema, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad_sistema, 2, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format($total_documento_sistema, 0, ',', '.') }} </td>
-                    <td class="text-center"> {{ number_format($total_cantidad_dif, 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format($total_cantidad_dif, 2, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format($total_documento_dif, 0, ',', '.') }} </td>
                         <td> 
                             <?php
