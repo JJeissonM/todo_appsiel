@@ -63,7 +63,7 @@
     }
 </style>
 @if($clientes!=null)
-<section id="clientes" style="padding: 80px 0 10px 0;" class="clientes-font">
+<section id="clientes" class="clientes-font p-md-5 p-sm-2">
     <div class="container" id="contenedor_seccion_clientes2">
         @if($clientes!=null)
         <div class="section-header">

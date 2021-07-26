@@ -32,8 +32,8 @@
 
 </style>
 
-<div id="pqrform" class="container-wrapper pqrform-font py-md-4 py-sm-1">
-    <div class="container-fluid">
+<div id="pqrform" class="container-wrapper pqrform-font p-md-5 p-sm-2">
+    <div class="container">
         <div class="row justify-content-center" style="border-radius: 10px; background-color: white; ">
             <div class="col-md-6" style="max-width: 800px;">
 

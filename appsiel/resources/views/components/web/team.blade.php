@@ -166,7 +166,7 @@
     }
 </style>
 @if($team!=null)
-<section id="team" class="team-font py-md-4 py-sm-1">
+<section id="team" class="team-font p-md-5 p-sm-2">
     <div id="visor_contenido_servicios">
 
     </div>

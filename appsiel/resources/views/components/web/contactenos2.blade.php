@@ -12,7 +12,7 @@
 
 </style>
 <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
-<div class="container-wrapper contactenos-font  p-md-4 p-sm-1">
+<div class="container-wrapper contactenos-font  p-md-5 p-sm-2">
     <div class="container">
         @if($contactenos != null)
         <div class="row contactenos-font">
