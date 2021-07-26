@@ -6,7 +6,7 @@
 @extends('transaccion.show')
 
 @section('botones_acciones')
-	@if( $doc_encabezado->estado != 'Anulado' )
+	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
 
 		@if( !$docs_relacionados[1] )
 			{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'ventas/id_fila/edit'.$variables_url ),'Editar') }}

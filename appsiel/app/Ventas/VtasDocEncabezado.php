@@ -235,6 +235,34 @@ class VtasDocEncabezado extends Model
         }
     }
 
+    public function almacenar_lineas_registros( array $lineas_registros )
+    {
+        $cantidad_registros = count($lineas_registros);
+        for ($i=0; $i < $cantidad_registros; $i++) 
+        {
+            $linea_datos = [ 'vtas_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id ] +
+                            [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
+                            [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +
+                            [ 'cantidad' => (float)$lineas_registros[$i]->cantidad ] +
+                            //[ 'cantidad_pendiente' => (float)$lineas_registros[$i]->cantidad_pendiente ] +
+                            //[ 'cantidad_devuelta' => (float)$lineas_registros[$i]->cantidad_devuelta ] +
+                            [ 'precio_total' => (float)$lineas_registros[$i]->precio_total ] +
+                            [ 'base_impuesto' => (float)$lineas_registros[$i]->base_impuesto ] +
+                            [ 'tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto ] +
+                            [ 'valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto ] +
+                            [ 'base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total ] +
+                            [ 'tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento ] +
+                            [ 'valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento ] +
+                            [ 'creado_por' => Auth::user()->email ] +
+                            [ 'estado' => 'Activo' ];
+
+            VtasDocRegistro::create( 
+                                        [ 'vtas_doc_encabezado_id' => $this->id ] +
+                                        $linea_datos
+                                    );
+        }       
+    }
+
     public function crear_movimiento_ventas()
     {
         $lineas_registros = $this->lineas_registros;

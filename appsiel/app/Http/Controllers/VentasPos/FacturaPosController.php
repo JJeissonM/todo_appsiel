@@ -109,6 +109,8 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();
 
         $pdv = Pdv::find(Input::get('pdv_id'));
+
+        $cliente = $pdv->cliente;
         
         $validar = $this->verificar_datos_por_defecto( $pdv );
         if ( $validar != 'ok' )
@@ -159,9 +161,10 @@ class FacturaPosController extends TransaccionController
         $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
         
         $form_create = [
-            'url' => $acciones->store,
-            'campos' => $lista_campos
-        ];
+                            'url' => $acciones->store,
+                            'campos' => $lista_campos
+                        ];
+
         $id_transaccion = 8; // 8 = Recaudo cartera
         $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
         $medios_recaudo = RecaudoController::get_medios_recaudo();
@@ -188,8 +191,6 @@ class FacturaPosController extends TransaccionController
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
-
-        $cliente = $pdv->cliente;
 
         $pedido_id = 0;
 
@@ -448,8 +449,6 @@ class FacturaPosController extends TransaccionController
         return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas'))->render();
     }
 
-
-
     public function generar_plantilla_factura($pdv)
     {
         $this->set_variables_globales();
@@ -479,6 +478,8 @@ class FacturaPosController extends TransaccionController
         // Se obtiene el registro a modificar del modelo
         $registro = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
 
+        $pdv = Pdv::find($registro->pdv_id);
+
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro, 'edit');
 
         $doc_encabezado = FacturaPos::get_registro_impresion($id);
@@ -487,11 +488,11 @@ class FacturaPosController extends TransaccionController
 
         $eid = '';
 
-			if( config("configuracion.tipo_identificador") == 'NIT') { 
-                $eid = number_format( $doc_encabezado->numero_identificacion, 0, ',', '.');
-            }	else { 
-                $eid = $doc_encabezado->numero_identificacion;
-            }
+		if( config("configuracion.tipo_identificador") == 'NIT') { 
+            $eid = number_format( $doc_encabezado->numero_identificacion, 0, ',', '.');
+        }else { 
+            $eid = $doc_encabezado->numero_identificacion;
+        }
 
         // Agregar al comienzo del documento
         array_unshift($lista_campos, [
@@ -520,12 +521,43 @@ class FacturaPosController extends TransaccionController
             "unico" => 0
         ]);
 
+        //dd( $doc_encabezado );
+        //Personalización de la lista de campos
+        foreach ($lista_campos as $key => $value)
+        {
+            switch ($value['name']){
 
-        foreach ($lista_campos as $key => $value) {
+                case 'cliente_input':
+                    $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
+                    break;
+
+                case 'vendedor_id':
+                    $lista_campos[$key]['value'] = [$doc_encabezado->vendedor_id];
+                    break;
+
+                case 'forma_pago':
+                    $lista_campos[$key]['value'] = $doc_encabezado->condicion_pago;
+                    break;
+
+                case 'fecha_vencimiento':
+                    $lista_campos[$key]['value'] = $doc_encabezado->fecha_vencimiento;
+                    break;
+
+                case 'inv_bodega_id':
+                    $lista_campos[$key]['opciones'] = [$pdv->bodega_default_id => $pdv->bodega->descripcion];
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+
+        /*foreach ($lista_campos as $key => $value)
+        {
             if ($value['name'] == 'cliente_input') {
                 $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
             }
-        }
+        }*/
 
         $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
 
@@ -539,8 +571,6 @@ class FacturaPosController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Modificar: ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo);
 
         $archivo_js = app($this->modelo->name_space)->archivo_js;
-
-        $pdv = Pdv::find($registro->pdv_id);
 
         $motivos = ['10-salida' => 'Ventas POS'];
         $inv_motivo_id  = 10;
