@@ -16,7 +16,7 @@
       'fa_icon' => '',
       'created_at' => '2018-02-28 14:01:07',
       'updated_at' => '2018-11-20 03:57:21',
-    ), 
+    ),
     1 => 
     array (
       'id' => 2,
@@ -40828,6 +40828,38 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-07-17 06:24:32',
       'updated_at' => '2021-07-17 06:24:41',
     ),
+    1307 => 
+    array (
+      'id' => 1313,
+      'descripcion' => 'Sumar IVA',
+      'tipo' => 'select',
+      'name' => 'sumar_iva',
+      'opciones' => '{"0":"No","1":"Si"}',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-07-23 09:43:11',
+      'updated_at' => '2021-07-23 09:44:15',
+    ),
+    1308 => 
+    array (
+      'id' => 1314,
+      'descripcion' => 'Fecha corte',
+      'tipo' => 'date',
+      'name' => 'fecha_corte',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '{"class":"form-control"}',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-07-26 15:16:21',
+      'updated_at' => '2021-07-27 04:01:29',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -66376,6 +66408,18 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 2,
       'core_reporte_id' => 46,
       'core_campo_id' => 1263,
+    ),
+    146 => 
+    array (
+      'orden' => 14,
+      'core_reporte_id' => 46,
+      'core_campo_id' => 1313,
+    ),
+    147 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 28,
+      'core_campo_id' => 1314,
     ),
   ),
   'sys_tipos_transacciones' => 
