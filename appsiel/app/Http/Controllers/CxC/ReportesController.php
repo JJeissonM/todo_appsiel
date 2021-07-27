@@ -36,6 +36,7 @@ class ReportesController extends Controller
     public function documentos_pendientes(Request $request) {
         $operador = '=';
         $cadena = $request->core_tercero_id;
+        $fecha_corte = $request->fecha_corte;
 
         if ( $request->core_tercero_id == '' )
         {
@@ -45,9 +46,9 @@ class ReportesController extends Controller
 
         if ( $request->clase_cliente_id != '' )
         {
-            $movimiento = DocumentosPendientes::get_documentos_pendientes_clase_cliente($request->clase_cliente_id);
+            $movimiento = DocumentosPendientes::get_documentos_pendientes_clase_cliente( $request->clase_cliente_id, $fecha_corte );
         }else{
-            $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena );
+            $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena, $fecha_corte );
         }
 
         if (count($movimiento) > 0)

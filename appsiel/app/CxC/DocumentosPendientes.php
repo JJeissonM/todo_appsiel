@@ -42,13 +42,22 @@ class DocumentosPendientes extends Model
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/compras/cxc_docuemntos_pendientes.js';
 
-    public static function get_documentos_referencia_tercero($operador, $cadena) 
+    public static function get_documentos_referencia_tercero($operador, $cadena, $fecha_corte = null ) 
     {
-        return DocumentosPendientes::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
+        $array_wheres = [
+                            [ 'cxc_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
+                            [ 'cxc_movimientos.core_tercero_id', $operador, $cadena]
+                        ];
+
+        if( $fecha_corte != '' && !is_null($fecha_corte) )
+        {
+            $array_wheres = array_merge($array_wheres, [[ 'cxc_movimientos.fecha', '<=', $fecha_corte]]);
+        }
+
+        $movimiento = DocumentosPendientes::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
-                                    ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                    ->where('cxc_movimientos.core_tercero_id', $operador, $cadena)
-                                    ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
+                                    ->where( $array_wheres )
+                                    ->whereNotBetween( 'cxc_movimientos.saldo_pendiente', [-10,10] )
                                     ->select(
                                                 'cxc_movimientos.id',
                                                 'cxc_movimientos.core_tipo_transaccion_id',
@@ -64,17 +73,45 @@ class DocumentosPendientes extends Model
                                                 'cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')
                                     ->get()->toArray();
+
+        foreach( $movimiento as $key => $value )
+        {
+            $array_wheres2 = [
+                                ['doc_cxc_transacc_id', '=', $movimiento[$key]['core_tipo_transaccion_id'] ],
+                                ['doc_cxc_tipo_doc_id', '=', $movimiento[$key]['core_tipo_doc_app_id'] ],
+                                ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ]
+                            ];
+            if( $fecha_corte != '' )
+            {
+                $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
+            }
+            
+            $abonos = CxcAbono::where( $array_wheres2)->sum('abono');
+
+            $movimiento[$key]['valor_pagado'] = $abonos;
+            $movimiento[$key]['saldo_pendiente'] = $movimiento[$key]['valor_documento'] - $abonos;
+        }
+
+        return $movimiento;
     }
 
-    public static function get_documentos_pendientes_clase_cliente($clase)
+    public static function get_documentos_pendientes_clase_cliente( $clase, $fecha_corte )
     {
-        return DocumentosPendientes::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
+        $array_wheres = [
+                            [ 'cxc_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
+                            [ 'vtas_clientes.clase_cliente_id', '=', $clase]
+                        ];
+
+        if( $fecha_corte != '' )
+        {
+            $array_wheres = array_merge($array_wheres, [[ 'cxc_movimientos.fecha', '<=', $fecha_corte]]);
+        }
+
+        $movimiento = DocumentosPendientes::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
                                     ->leftJoin('vtas_clientes', 'vtas_clientes.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
-                                    ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                    ->where('cxc_movimientos.core_tercero_id', 'LIKE', '%%')
-                                    ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
-                                    ->where('vtas_clientes.clase_cliente_id', '=', $clase)
+                                    ->where( $array_wheres )
+                                    ->whereNotBetween( 'cxc_movimientos.saldo_pendiente', [-10,10] )
                                     ->select(
                                             'cxc_movimientos.id',
                                             'cxc_movimientos.core_tipo_transaccion_id',
@@ -91,6 +128,26 @@ class DocumentosPendientes extends Model
                                             'cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')
                                     ->get()->toArray();
+
+        foreach( $movimiento as $key => $value )
+        {
+            $array_wheres2 = [
+                                ['doc_cxc_transacc_id', '=', $movimiento[$key]['core_tipo_transaccion_id'] ],
+                                ['doc_cxc_tipo_doc_id', '=', $movimiento[$key]['core_tipo_doc_app_id'] ],
+                                ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ]
+                            ];
+            if( $fecha_corte != '' )
+            {
+                $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
+            }
+            
+            $abonos = CxcAbono::where( $array_wheres2)->sum('abono');
+
+            $movimiento[$key]['valor_pagado'] = $abonos;
+            $movimiento[$key]['saldo_pendiente'] = $movimiento[$key]['valor_documento'] - $abonos;
+        }
+
+        return $movimiento;
     }
 
 }
