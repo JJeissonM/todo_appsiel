@@ -81,6 +81,7 @@
 <?php 
     $empresa = App\Core\Empresa::find(1);
     $configuracion = App\web\Configuraciones::all()->first();
+    $cliente = null;
     if (!Auth::guest()) {
         $user = Auth::user();
         $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
@@ -98,7 +99,7 @@
                 <div class="checkoutHeader__safePurchase">
                     <p><img src="{{asset('img/carrito/ico_beneficio_seguridad.jpeg')}}" alt="Compra segura"> Tu compra es <strong>100% segura</strong></p>
                 </div>
-                @if(!Auth::guest())
+                @if($cliente != null)
                 <div class="checkoutHeader__logoHeader align-self-center">
                     <p style="white-space: nowrap; margin: 0">
                         Hola, {{ $cliente->nombre1  }}<br>
