@@ -66418,6 +66418,12 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     147 => 
     array (
       'orden' => 6,
+      'core_reporte_id' => 22,
+      'core_campo_id' => 1314,
+    ),
+    148 => 
+    array (
+      'orden' => 6,
       'core_reporte_id' => 28,
       'core_campo_id' => 1314,
     ),

@@ -57,7 +57,6 @@ class DocumentosPendientes extends Model
         $movimiento = DocumentosPendientes::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
                                     ->where( $array_wheres )
-                                    ->whereNotBetween( 'cxc_movimientos.saldo_pendiente', [-10,10] )
                                     ->select(
                                                 'cxc_movimientos.id',
                                                 'cxc_movimientos.core_tipo_transaccion_id',
@@ -82,6 +81,7 @@ class DocumentosPendientes extends Model
                                 ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ],
                                 ['core_tercero_id', '=', $movimiento[$key]['core_tercero_id'] ]
                             ];
+
             if( $fecha_corte != '' )
             {
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
@@ -112,7 +112,6 @@ class DocumentosPendientes extends Model
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
                                     ->leftJoin('vtas_clientes', 'vtas_clientes.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->where( $array_wheres )
-                                    ->whereNotBetween( 'cxc_movimientos.saldo_pendiente', [-10,10] )
                                     ->select(
                                             'cxc_movimientos.id',
                                             'cxc_movimientos.core_tipo_transaccion_id',
@@ -138,7 +137,7 @@ class DocumentosPendientes extends Model
                                 ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ],
                                 ['core_tercero_id', '=', $movimiento[$key]['core_tercero_id'] ]
                             ];
-                            
+
             if( $fecha_corte != '' )
             {
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );

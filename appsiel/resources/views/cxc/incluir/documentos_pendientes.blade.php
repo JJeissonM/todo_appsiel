@@ -24,15 +24,18 @@
 
             $cantidad = count($movimiento);
 
-            for($i=0; $i<$cantidad; $i++)
-            { 
         ?>
-                    
-                
+        @for($i=0; $i<$cantidad; $i++)                    
+            
             @if($movimiento[$i]['id'] != 0)
 
                 <?php
 
+                    if ( $movimiento[$i]['saldo_pendiente'] > -10 && $movimiento[$i]['saldo_pendiente'] < 10 )
+                    {
+                        continue;
+                    }
+                    
                     $factura_ventas = App\Ventas\VtasDocEncabezado::where('consecutivo',(int)explode(" ", $movimiento[$i]['documento'])[1] )
                                                         ->where('core_tipo_transaccion_id','23')
                                                         ->where('core_tipo_doc_app_id','18')
@@ -94,16 +97,16 @@
                     <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['sub_total']}}"><strong> ${{ number_format($movimiento[$i]['sub_total'], 2, ',', '.') }} </strong></td>
                 </tr>
             @endif
-         <?php
-            $j++;
-            if ($j==3) {
-                $j=1;
-            }
-            $total_valor_documento += $movimiento[$i]['valor_documento'];
-            $total_valor_pagado += $movimiento[$i]['valor_pagado'];
-            $total_saldo_pendiente += $movimiento[$i]['saldo_pendiente'];
-        } // END FOR
-        ?>
+             <?php
+                $j++;
+                if ($j==3) {
+                    $j=1;
+                }
+                $total_valor_documento += $movimiento[$i]['valor_documento'];
+                $total_valor_pagado += $movimiento[$i]['valor_pagado'];
+                $total_saldo_pendiente += $movimiento[$i]['saldo_pendiente'];
+            ?>
+        @endfor
 
         <tr  class="fila-{{$j}}" >
             <td style="display: none;"> &nbsp; </td>
