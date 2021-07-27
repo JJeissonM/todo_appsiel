@@ -47,8 +47,6 @@
 
 @section('datos_adicionales_encabezado')
 	<br/>
-	<span style="color:{{$color}}"><b>Estado: </b> {{ $doc_encabezado->estado }}</span>
-	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
 @endsection
 

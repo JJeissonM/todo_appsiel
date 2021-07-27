@@ -91,10 +91,12 @@ class FacturaController extends TransaccionController
 
     	// Paso 2
     	$datos['creado_por'] = Auth::user()->email;
-    	$datos['remision_doc_encabezado_id'] = $documento_remision->id;        
+    	$datos['remision_doc_encabezado_id'] = $documento_remision->id;
+        $datos['estado'] = 'Sin enviar';
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_factura = $encabezado_documento->crear_nuevo( $datos );
 
+        /*
         // Paso 3 ( este falta refactorizar: separa la creación de lineas de registros de la contabilización y del registro del recaudo )
         $registros_medio_pago = new RegistrosMediosPago;
         $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $datos['lineas_registros_medios_recaudo'] );
@@ -106,14 +108,23 @@ class FacturaController extends TransaccionController
         // Paso 4 (Se está haciendo en el Paso 3)
         //$this->contabilizar( $encabezado_documento );
 
+        */
+
+        //
+
+        $lineas_registros = json_decode( $request->lineas_registros );
+        $encabezado_factura->almacenar_lineas_registros( $lineas_registros );
+
+        $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento almacenado creado correctamente.' ];
+
         // Paso 5.0 : Validar Resolución (secuenciales) del documento antes del envío 
         if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
         {
-            $encabezado_factura->estado = 'Sin enviar';
-            $encabezado_factura->save();
-
-            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento de factura no tiene resolución asociada. La factura electrónica no pudo ser enviada.');
+            $mensaje->tipo = 'mensaje_error';
+            $mensaje->contenido .= ' NOTA: El documento de factura no tiene resolución asociada.';
         }
+
+        /*
         
         // Paso 5: Enviar factura electrónica
         $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
@@ -130,8 +141,9 @@ class FacturaController extends TransaccionController
         	$encabezado_factura->estado = 'Enviada';
         }
         $encabezado_factura->save();
+        */
 
-    	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido);
+    	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido );
 
     }
 
@@ -161,6 +173,11 @@ class FacturaController extends TransaccionController
     public function enviar_factura_electronica( $id )
     {
         $encabezado_factura = Factura::find( $id );
+
+        if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
+        {
+            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El pefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
+        }
 
         $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
 

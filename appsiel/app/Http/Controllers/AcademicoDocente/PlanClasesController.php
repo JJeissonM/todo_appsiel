@@ -193,7 +193,12 @@ class PlanClasesController extends ModeloController
     {
     	PlanClaseEncabezado::find( $encabezado_id )->delete();
 
-    	PlanClaseRegistro::where( 'plan_clase_encabezado_id', $encabezado_id )->delete();
+        $registros_planes_clases = PlanClaseRegistro::where( 'plan_clase_encabezado_id', $encabezado_id )->get();
+        
+        if ( !empty( $registros_planes_clases->toArray() ) )
+        {
+            $registros_planes_clases->delete();
+        }
 
     	return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro ELIMINADO correctamente.' );
     }

@@ -309,7 +309,7 @@
 			    $('#valor_total_resumen_medios_pagos').text( '$ ' + new Intl.NumberFormat("de-DE").format( nuevo_valor_resumen_medios_pagos.toFixed(2) ) );
 				$('#input_valor_total_resumen_medios_pagos').val( nuevo_valor_resumen_medios_pagos );
 
-				var valor_diferencia = parseFloat( $('#input_valor_total_resumen_medios_pagos').val() ) - parseFloat( $('#input_valor_total_resumen_operaciones').val() );
+				var valor_diferencia = Math.round( parseFloat( $('#input_valor_total_resumen_medios_pagos').val() ) - parseFloat( $('#input_valor_total_resumen_operaciones').val() ) );
 				$('#valor_diferencia').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_diferencia.toFixed(2) ) );
 				$('#input_valor_diferencia').val( valor_diferencia );
 
