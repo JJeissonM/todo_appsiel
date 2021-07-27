@@ -79,7 +79,8 @@ class DocumentosPendientes extends Model
             $array_wheres2 = [
                                 ['doc_cxc_transacc_id', '=', $movimiento[$key]['core_tipo_transaccion_id'] ],
                                 ['doc_cxc_tipo_doc_id', '=', $movimiento[$key]['core_tipo_doc_app_id'] ],
-                                ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ]
+                                ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ],
+                                ['core_tercero_id', '=', $movimiento[$key]['core_tercero_id'] ]
                             ];
             if( $fecha_corte != '' )
             {
@@ -134,8 +135,10 @@ class DocumentosPendientes extends Model
             $array_wheres2 = [
                                 ['doc_cxc_transacc_id', '=', $movimiento[$key]['core_tipo_transaccion_id'] ],
                                 ['doc_cxc_tipo_doc_id', '=', $movimiento[$key]['core_tipo_doc_app_id'] ],
-                                ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ]
+                                ['doc_cxc_consecutivo', '=', $movimiento[$key]['consecutivo'] ],
+                                ['core_tercero_id', '=', $movimiento[$key]['core_tercero_id'] ]
                             ];
+                            
             if( $fecha_corte != '' )
             {
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
