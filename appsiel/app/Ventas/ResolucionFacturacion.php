@@ -9,7 +9,9 @@ use DB;
 class ResolucionFacturacion extends Model
 {
 	protected $table = 'vtas_resoluciones_facturacion';
+	
 	protected $fillable = ['core_empresa_id', 'sucursal_id', 'tipo_doc_app_id', 'numero_resolucion', 'numero_fact_inicial', 'numero_fact_final', 'fecha_expedicion', 'fecha_expiracion', 'modalidad', 'prefijo', 'tipo_solicitud', 'estado'];
+
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Tipo de documento', 'Prefijo', 'Número Resolución', 'Número desde', 'Número hasta', 'Fecha expedición', 'Fecha expiración', 'Modalidad', 'Tipo solicitud', 'Estado'];
 
 	public static function consultar_registros($nro_registros, $search)

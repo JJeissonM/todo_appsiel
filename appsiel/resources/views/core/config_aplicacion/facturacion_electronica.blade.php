@@ -27,14 +27,69 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+								$proveedor_tecnologico_default = 'DATAICO';
+								if( isset($parametros['proveedor_tecnologico_default'] ) )
+								{
+									$proveedor_tecnologico_default = $parametros['proveedor_tecnologico_default'];
+								}else{
+								}
+							?>
+							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'TFHKA' => 'The Fatory HKA'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$WSDL = '';
 								if( isset($parametros['WSDL'] ) )
 								{
 									$WSDL = $parametros['WSDL'];
-								}else{
-									$WSDL = '';
 								}
 							?>
-							{{ Form::bsText('WSDL', $WSDL, 'URL Servicio Emisión', ['class'=>'form-control']) }}
+							{{ Form::bsText('WSDL', $WSDL, 'URL Servicio Emisión facturas', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_notas_credito = '';
+								if( isset($parametros['url_notas_credito'] ) )
+								{
+									$url_notas_credito = $parametros['url_notas_credito'];
+								}
+							?>
+							{{ Form::bsText('url_notas_credito', $url_notas_credito, 'URL Servicio Emisión Notas crédito', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_notas_debito = '';
+								if( isset($parametros['url_notas_debito'] ) )
+								{
+									$url_notas_debito = $parametros['url_notas_debito'];
+								}
+							?>
+							{{ Form::bsText('url_notas_debito', $url_notas_debito, 'URL Servicio Emisión Notas débito', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -90,7 +145,7 @@
 									$tokenEmpresa = '';
 								}
 							?>
-							{{ Form::bsText('tokenEmpresa', $tokenEmpresa, 'Token Empresa', ['class'=>'form-control']) }}
+							{{ Form::bsText('tokenEmpresa', $tokenEmpresa, 'Token Empresa (Account Id)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -104,7 +159,7 @@
 									$tokenPassword = '';
 								}
 							?>
-							{{ Form::bsText('tokenPassword', $tokenPassword, 'Token Password', ['class'=>'form-control']) }}
+							{{ Form::bsText('tokenPassword', $tokenPassword, 'Token Password (Auth Token)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -72,7 +72,7 @@
                 ?>
                 <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
                     <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
-                    <td> {{ $movimiento[$i]['tercero'] }} {!! $lbl_estudiante !!} </td>
+                    <td> {{ $movimiento[$i]['numero_identificacion'] }} {{ $movimiento[$i]['tercero'] }} {!! $lbl_estudiante !!} </td>
                     <td> {{ $movimiento[$i]['documento'] }} </td>
                     <td> {{ $movimiento[$i]['fecha'] }} </td>
                     <td> {{ $movimiento[$i]['fecha_vencimiento'] }} </td>

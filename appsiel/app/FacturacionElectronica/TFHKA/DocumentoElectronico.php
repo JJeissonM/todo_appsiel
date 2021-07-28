@@ -60,7 +60,7 @@ class DocumentoElectronico
 		$direccion->ciudad = $tercero->ciudad->descripcion;
 		$direccion->codigoDepartamento = substr($tercero->codigo_ciudad, 3, 2);
 		$direccion->correccionHusoHorario = "";
-		$direccion->departamento = $tercero->departamento()->descripcion;
+		$direccion->departamento = $tercero->ciudad->departamento->descripcion;
 		$direccion->departamentoOrg = "";
 		$direccion->direccion = $tercero->direccion1;
 		$direccion->habitacion = "";

@@ -34,6 +34,8 @@ use App\FacturacionElectronica\Factura;
 
 use App\FacturacionElectronica\ResultadoEnvio;
 
+use App\FacturacionElectronica\DATAICO\FacturaGeneral;
+
 class FacturaController extends TransaccionController
 {
     protected $documento_factura;
@@ -96,52 +98,19 @@ class FacturaController extends TransaccionController
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_factura = $encabezado_documento->crear_nuevo( $datos );
 
-        /*
-        // Paso 3 ( este falta refactorizar: separa la creación de lineas de registros de la contabilización y del registro del recaudo )
-        $registros_medio_pago = new RegistrosMediosPago;
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $datos['lineas_registros_medios_recaudo'] );
-        $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
-        $lineas_registros = json_decode( $request->lineas_registros );
-        VentaController::crear_registros_documento( $request, $encabezado_factura, $lineas_registros );
-
-        // Paso 4 (Se está haciendo en el Paso 3)
-        //$this->contabilizar( $encabezado_documento );
-
-        */
-
-        //
-
         $lineas_registros = json_decode( $request->lineas_registros );
         $encabezado_factura->almacenar_lineas_registros( $lineas_registros );
+        
+        // NOTA: No se crea el movimiento de ventas.
 
         $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento almacenado creado correctamente.' ];
 
-        // Paso 5.0 : Validar Resolución (secuenciales) del documento antes del envío 
+        // Paso 3: Validar Resolución (secuenciales) del documento
         if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
         {
             $mensaje->tipo = 'mensaje_error';
             $mensaje->contenido .= ' NOTA: El documento de factura no tiene resolución asociada.';
         }
-
-        /*
-        
-        // Paso 5: Enviar factura electrónica
-        $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
-
-        // Paso 6: Almacenar resultado en base de datos para Auditoria
-        $obj_resultado = new ResultadoEnvio;
-        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_factura->id );
-
-        if ( $mensaje->tipo == 'mensaje_error' )
-        {
-        	$encabezado_factura->estado = 'Sin enviar';
-        	
-        }else{
-        	$encabezado_factura->estado = 'Enviada';
-        }
-        $encabezado_factura->save();
-        */
 
     	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido );
 
@@ -179,11 +148,26 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El pefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
         }
 
-        $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
+        switch ( config('facturacion_electronica.proveedor_tecnologico_default') )
+        {
+            case 'DATAICO':
+                $factura_dataico = new FacturaGeneral( $encabezado_factura, 'factura' );
+                $mensaje = $factura_dataico->procesar_envio_factura();
+                break;
+            
+            case 'TFHKA':
+                $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
 
-        // Almacenar resultado en base de datos para Auditoria
-        $obj_resultado = new ResultadoEnvio;
-        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_factura->id );
+                // Almacenar resultado en base de datos para Auditoria
+                $obj_resultado = new ResultadoEnvio;
+                $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_factura->id );
+                break;
+            
+            default:
+                // code...
+                break;
+        }
+                
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {

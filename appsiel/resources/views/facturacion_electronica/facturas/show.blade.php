@@ -17,20 +17,20 @@
 
 @section('botones_acciones')
 	@if( $doc_encabezado->estado != 'Anulado' )
-	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn btn-success btn-xs"><i class="fa fa-btn fa-money"></i> Hacer abono </a>
+	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 	@endif
 
 	@if( !$docs_relacionados[1] && $doc_encabezado->estado != 'Sin enviar' )
-    	<a class="btn btn-warning btn-xs" href="{{ url( 'fe_nota_credito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=245&id_transaccion=53') }}"><i class="fa fa-file-o"></i> Nota crédito </a>
+    	<a class="btn-gmail" href="{{ url( 'fe_nota_credito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=245&id_transaccion=53') }}" title="Nota crédito"><i class="fa fa-file"></i></a>
 
-    	<a class="btn btn-info btn-xs" href="{{ url( 'fe_nota_debito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=246&id_transaccion=54') }}"><i class="fa fa-file-o"></i> Nota Débito </a>
+    	<a class="btn-gmail" href="{{ url( 'fe_nota_debito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=246&id_transaccion=54') }}" title="Nota Débito"><i class="fa fa-file-o"></i></a>
 	@endif
 
 	@if( $doc_encabezado->estado == 'Sin enviar' )
 		<?php 
 			$color = 'red';
 		?>
-		<a class="btn btn-warning btn-xs btn-detail" href="{{ url( 'fe_factura_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i> Enviar </a>
+		<a class="btn-gmail" href="{{ url( 'fe_factura_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar"><i class="fa fa-btn fa-send"></i></a>
 	@endif
 
 @endsection

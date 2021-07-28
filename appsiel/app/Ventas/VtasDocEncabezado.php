@@ -19,6 +19,7 @@ use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvMovimiento;
+use App\Ventas\ResolucionFacturacion;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -300,6 +301,11 @@ class VtasDocEncabezado extends Model
     public function datos_auxiliares_estudiante()
     {
         return $this->hasOne(FacturaAuxEstudiante::class, 'vtas_doc_encabezado_id');
+    }
+
+    public function resolucion_facturacion()
+    {
+        return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )->where('estado','Activo')->get()->last();
     }
 
     public function contabilizar_movimiento_debito( $caja_banco_id = null )
