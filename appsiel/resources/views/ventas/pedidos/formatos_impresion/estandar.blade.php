@@ -58,7 +58,7 @@
     </table>
     
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Item','Producto','Cantidad']) }}
+        {{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
         <tbody>
             <?php 
             $i = 1;
@@ -72,7 +72,11 @@
                 <tr>
                     <td width="12.5%" class="text-center"> {{ $i }} </td>
                     <td> {{ $linea->producto_descripcion }} </td>
-                    <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                    <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
+                    <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
+                    <td class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                 </tr>
                 <?php
                     $i++;
@@ -111,23 +115,21 @@
             @endforeach
         </tbody>
     </table>
-
+    <br>
     <table class="table table-bordered">
         <tr>
-            <td width="75%"> <b> &nbsp; </b> <br> </td>
+            <td width="75%" rowspan="3"> <b> &nbsp; </b> <br> </td>
             <td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td>
             <td style="text-align: right; font-weight: bold;"> $ {{ number_format($subtotal, 2, ',', '.') }} </td>
         </tr>
 
         @foreach( $array_tasas as $key => $value )
             <tr>
-                <td width="75%"> <b> &nbsp; </b> <br> </td>
                 <td style="text-align: right; font-weight: bold;"> {{ $value['tipo'] }} </td>
                 <td style="text-align: right; font-weight: bold;"> ${{ number_format( $value['valor_impuesto'], 0, ',', '.') }} </td>
             </tr>
         @endforeach
         <tr>
-            <td width="75%"> <b> &nbsp; </b> <br> </td>
             <td style="text-align: right; font-weight: bold;"> Total pedido: &nbsp; </td>
             <td style="text-align: right; font-weight: bold;"> $ {{ number_format($total_factura, 2, ',', '.') }} </td>
         </tr>
