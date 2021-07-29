@@ -50,7 +50,7 @@ hr {
 }
 .section-header .section-title {
   font-size: 22px;
-  color: black;
+  color: var(--color-primario);
   text-transform: uppercase;
   position: relative;
   /*padding-top: 40px;*/
