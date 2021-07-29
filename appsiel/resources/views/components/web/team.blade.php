@@ -166,14 +166,14 @@
     }
 </style>
 @if($team!=null)
-<section id="team" class="team-font p-md-5 p-sm-2">
+<section id="team" class="team-font p-md-5 p-2">
     <div id="visor_contenido_servicios">
 
     </div>
     <div class="container" id="contenedor_seccion_servicios">
         @if($team!=null)
         <div class="section-header">
-            <h2 class="section-title text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown; color: {{$team->title_color}} !important;">{{$team->title}}</h2>
+            <h2 class="section-title text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown;">{{$team->title}}</h2>
             <p class="text-center wow fadeInDown animated team-font" style="visibility: visible; animation-name: fadeInDown; color: {{$team->description_color}} !important;">{{$team->description}}</p>
         </div>
         <div class="row justify-content-center align-content-center">

@@ -131,7 +131,7 @@ if($pregunta!=null){
     }
 </style>
 
-<section id="faq-area" class="bg-1 pregunta-font p-md-5 p-sm-2">
+<section id="faq-area" class="bg-1 pregunta-font p-md-5 p-2">
     <div class="container">
         <div class="section-header">
             <h2 class="section-title text-center wow fadeInDown animated pregunta-font" style="visibility: visible; animation-name: fadeInDown;">{{$pregunta->titulo}}</h2>

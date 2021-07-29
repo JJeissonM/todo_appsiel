@@ -36,7 +36,7 @@
     }
 </style>
 @if($Price!=null)
-<section id="Price" class="price-font p-md-5 p-sm-2">
+<section id="Price" class="price-font p-md-5 p-2">
     <div id="visor_contenido_servicios">
 
     </div>
