@@ -7,8 +7,8 @@
                 <i class="fa fa-{{$item->icono}}"></i>
             </div>
             <div class="media-body">
-                <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{ strlen($item->titulo) >= 45 ? str_limit($item->titulo,45) : $item->titulo }}</h4>
-                <p class="servicios-font">{!! strlen($item->descripcion) >= 70 ? str_limit($item->descripcion,70) : $item->descripcion !!} </p>
+                <h4 class="media-heading servicios-font text-center" style="margin-top: 0px;">{{ strlen($item->titulo) >= 90 ? str_limit($item->titulo,90) : $item->titulo }}</h4>
+                <p class="servicios-font text-center">{!! strlen($item->descripcion) >= 147 ? str_limit($item->descripcion,147) : $item->descripcion !!} </p>
             </div>
         </div>
         
