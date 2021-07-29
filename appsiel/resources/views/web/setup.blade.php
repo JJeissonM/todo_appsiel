@@ -129,24 +129,22 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-            <h4>.:: Bienvenido {{Auth::user()->name}} | Configuraciones Globales ::.</h4>
-        </div>
-        <div class="col-md-12">
-            <div style="margin-top:20px; margin-bottom: 40px; width:100%; border:1px solid #e9ecef; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
-                <h1 style="width: 180px; font-size:18px; margin-top:-12px; margin-left:20px; text-align: center; background:white;">Accesos Rápidos</h1>
-                <div class="col-md-12" style="padding: 20px;">
-                    <a href="{{url('').'/web'.$variables_url.'&id_modelo=77'}}" class="btn btn-primary">Categorías de Artículos</a>
-                    <a href="{{route('articles.index').$variables_url}}" class="btn btn-primary">Artículos</a>
-                </div>
-            </div>
+            <h4>.:: Bienvenido {{Auth::user()->name}} | Panel Principal Página WEB ::.</h4>
         </div>
     </div>
 </div>
 <div class="card">
     <div class="card-body d-flex justify-content-between flex-wrap">
         <div id="wrapper">
-            <h4 class="column-title" style="padding: 10px;">Configuraciones Globales</h4>
+            <h4 class="column-title" style="padding: 10px;">Configuraciones Globales y Accesos Rapidos</h4>
             <div class="col-md-12">
+                <div style="margin-top:20px; margin-bottom: 40px; width:100%; border:1px solid #e9ecef; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
+                    <h1 style="width: 180px; font-size:18px; margin-top:-12px; margin-left:20px; text-align: center; background:white;">Accesos Rápidos</h1>
+                    <div class="col-md-12" style="padding: 20px;">
+                        <a href="{{url('').'/web'.$variables_url.'&id_modelo=77'}}" class="btn btn-primary">Categorías de Artículos</a>
+                        <a href="{{route('articles.index').$variables_url}}" class="btn btn-primary">Artículos</a>
+                    </div>
+                </div>
                 <div id="accordion">
                     <div class="card">
                         <div class="card-header" id="headingOne">

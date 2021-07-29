@@ -243,7 +243,22 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#myTable').DataTable();
+            $('#myTable').DataTable({
+                "language": {
+					            "search": "Buscar",
+					            "zeroRecords": "Ningún registro encontrado.",
+					            "info": "Mostrando página _PAGE_ de _PAGES_",
+					            "infoEmpty": "Tabla vacía.",
+					            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                                paginate: {
+                                    first:      "Primero",
+                                    previous:   "Anterior",
+                                    next:       "Siguiente",
+                                    last:       "Ultimo"
+                                },
+                                lengthMenu:    "Mostrar _MENU_ elementos",
+					        }
+            });
             $('#myTableContact').DataTable( {
                 dom: 'Bfrtip',
                 buttons: [
