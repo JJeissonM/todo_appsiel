@@ -13,8 +13,7 @@
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <!-- Slick slider -->
     <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
     <!-- Gallery Lightbox -->
@@ -37,6 +36,10 @@
     <!-- Google Fonts Open sans -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700,800" rel="stylesheet">
 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.7.1/css/buttons.bootstrap4.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.3/css/select.bootstrap4.min.css"/>
+
     <link href="{{asset('css/animate.min.css')}}" rel="stylesheet">
     <link href="{{asset('css/owl.carousel.css')}}" rel="stylesheet">
     <link href="{{asset('css/owl.transitions.css')}}" rel="stylesheet">
@@ -51,6 +54,8 @@
 -->
 
 
+ 
+ 
 
     <link rel="stylesheet" href="{{ asset('assets/css/spectrum.css') }}" />
 
@@ -145,35 +150,35 @@
 
     @if (!Auth::guest())
 
-    <nav class="navbar navbar-inverse navbar-static-top" style="background-color: #3d6983;">
-        <div class="container-fluid">
-            <nav class="navbar navbar-expand-lg navbar-light mu-navbar d-flex">
-                <!-- Text based logo -->
-                <a class="navbar-brand" href="{{ url('/inicio') }}">
-                    <img src="{{ asset('assets/img/logo_appsiel.png') }}" height="60px" width="100px">
-                </a>
-                <!-- image based logo -->
-                <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="fa fa-bars"></span>
-                </button>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #3d6983;">
+        <!-- Text based logo -->
+        <a class="navbar-brand" href="{{ url('/inicio') }}" style="height: 60px; padding-top: 0px;">
+            <img src="{{ asset('assets/img/logo_appsiel.png') }}" height="60px">
+        </a>
+        <!-- image based logo -->
+        <!-- <a class="navbar-brand mu-logo" href="index.html"><img src="assets/images/logo.png" alt="logo"></a> -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="fa fa-bars"></span>
+        </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav navbar-right mu-navbar-nav">
-                        @foreach ($menus as $key => $item)
-
-                        @if ($item['parent'] != 0)
-                        @break
-                        @endif
-
-                        @include('web.templates.menu', ['item' => $item])
-
-                        @endforeach
-                    </ul>
-                </div>
-            </nav>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto mu-navbar-nav">
+                @foreach ($menus as $key => $item)
+                @if ($item['parent'] != 0)
+                @break
+                @endif
+                @include('web.templates.menu', ['item' => $item])
+                @endforeach
+                <!--<li class="nav-item">
+                    <a href="{{url('pagina_web/icons/view?id='.$id)}}"><i
+                            class="fa fa-exclamation-circle"></i> Íconos</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{url('pagina_web/nube/view?id='.$id)}}"><i class="fa fa-cloud"></i> Nube</a>
+                </li>-->
+            </ul>
         </div>
     </nav>
     @endif
@@ -191,13 +196,10 @@
 
     <!-- JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{asset('js/jquery.js')}}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
-    </script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
     <!-- Slick slider -->
     <script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
     <!-- Progress Bar -->
@@ -218,14 +220,13 @@
     <script src="{{asset('js/wow.min.js')}}"></script>
     <script src="{{asset('js/main.js')}}"></script>
     <!-- DataTable -->
-    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.2/js/dataTables.buttons.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.flash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.html5.min.js"></script>
-    <script src="https://cdn.datatables.net/buttons/1.5.2/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.bootstrap4.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.7.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
 
 
     <script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
@@ -241,15 +242,49 @@
     @yield('script')
 
     <script type="text/javascript">
-        $(function() {
-            $('#myTable').DataTable({
+        $(document).ready(function() {
+            $('#myTable').DataTable();
+            $('#myTableContact').DataTable( {
                 dom: 'Bfrtip',
-                buttons: [],
-                order: [
-                    [0, 'desc']
-                ]
-            });
-        });
+                buttons: [
+                    {extend: 'excel',className: 'btn-excel btn-gmail',text: '<i class="fa fa-file-excel-o"></i>'}
+                ],                
+                initComplete: function () {
+                    this.api().columns([2,3]).every( function () {
+                        var column = this;
+                        var select = $('<select class="form-control"><option value=""></option></select>')
+                            .appendTo( $(column.footer()).empty() )
+                            .on( 'change', function () {
+                                var val = $.fn.dataTable.util.escapeRegex(
+                                    $(this).val()
+                                );
+        
+                                column
+                                    .search( val ? '^'+val+'$' : '', true, false )
+                                    .draw();
+                            } );
+        
+                        column.data().unique().sort().each( function ( d, j ) {
+                            select.append( '<option value="'+d+'">'+d+'</option>' )
+                        } );
+                    } );
+                },
+				"language": {
+					            "search": "Buscar",
+					            "zeroRecords": "Ningún registro encontrado.",
+					            "info": "Mostrando página _PAGE_ de _PAGES_",
+					            "infoEmpty": "Tabla vacía.",
+					            "infoFiltered": "(filtrado de _MAX_ registros totales)",
+                                paginate: {
+                                    first:      "Primero",
+                                    previous:   "Anterior",
+                                    next:       "Siguiente",
+                                    last:       "Ultimo"
+                                },
+					        }
+                
+            } );
+        } );
     </script>
 
     <script type="text/javascript">
