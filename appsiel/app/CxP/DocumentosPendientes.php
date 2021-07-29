@@ -92,7 +92,22 @@ class DocumentosPendientes extends Model
 						        ->where('cxp_movimientos.core_empresa_id',Auth::user()->empresa_id)
 						        ->where('cxp_movimientos.core_tercero_id', $operador, $cadena)
                                 ->where('cxp_movimientos.saldo_pendiente', '<>', 0)
-						        ->select('cxp_movimientos.id','cxp_movimientos.core_tipo_transaccion_id','cxp_movimientos.core_tipo_doc_app_id','cxp_movimientos.consecutivo','core_terceros.descripcion AS tercero',DB::raw($select_raw),'cxp_movimientos.fecha','cxp_movimientos.fecha_vencimiento','cxp_movimientos.doc_proveedor_prefijo','cxp_movimientos.doc_proveedor_consecutivo','cxp_movimientos.valor_documento','cxp_movimientos.valor_pagado','cxp_movimientos.saldo_pendiente','cxp_movimientos.core_tercero_id')
+						        ->select(
+                                            'cxp_movimientos.id',
+                                            'cxp_movimientos.core_tipo_transaccion_id',
+                                            'cxp_movimientos.core_tipo_doc_app_id',
+                                            'cxp_movimientos.consecutivo',
+                                            'core_terceros.descripcion AS tercero',
+                                            'core_terceros.numero_identificacion',
+                                            DB::raw($select_raw),
+                                            'cxp_movimientos.fecha',
+                                            'cxp_movimientos.fecha_vencimiento',
+                                            'cxp_movimientos.doc_proveedor_prefijo',
+                                            'cxp_movimientos.doc_proveedor_consecutivo',
+                                            'cxp_movimientos.valor_documento',
+                                            'cxp_movimientos.valor_pagado',
+                                            'cxp_movimientos.saldo_pendiente',
+                                            'cxp_movimientos.core_tercero_id')
                                 ->orderBy('cxp_movimientos.fecha')
 						        ->get()->toArray(); 
     }
