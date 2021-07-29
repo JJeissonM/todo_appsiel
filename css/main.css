@@ -8,6 +8,9 @@ Author URL: http://shapebootstrap.net
 /*************************
 *******Typography******
 **************************/
+html{
+  scroll-behavior: smooth;
+}
 body {
   background: #fff;
   font-family: 'Roboto', sans-serif;
@@ -15,6 +18,7 @@ body {
   color: black;
   line-height: 26px;
 }
+
 a {
   color: #45aed6;
   -webkit-transition: color 400ms, background-color 400ms;
@@ -31,6 +35,9 @@ hr {
   border-top: 1px solid #e5e5e5;
   border-bottom: 1px solid #fff;
 }
+.text-center{
+  text-align: center;
+}
 .gradiant {
   background-image: -moz-linear-gradient(90deg, #2caab3 0%, #2c8cb3 100%);
   background-image: -webkit-linear-gradient(90deg, #2caab3 0%, #2c8cb3 100%);
@@ -41,15 +48,12 @@ hr {
   background-image: -webkit-linear-gradient(4deg, #2caab3 0%, #2c8cb3 100%);
   background-image: -ms-linear-gradient(4deg, #2caab3 0%, #2c8cb3 100%);
 }
-.section-header {
-  margin-bottom: 50px;
-}
 .section-header .section-title {
   font-size: 22px;
   color: black;
   text-transform: uppercase;
   position: relative;
-  padding-top: 40px;
+  /*padding-top: 40px;*/
   padding-bottom: 20px;
   margin: 0 0 20px;
 }
@@ -79,6 +83,34 @@ hr {
   border-width: 0;
   border-bottom-width: 3px;
   border-radius: 3px;
+}
+.btn-gmail {
+  color: #574696;
+  font-size: 20px;
+  background-color: #e0e0e0 !important;
+  padding: 10px;
+  border-radius: 50%;
+  text-align: center;
+  cursor: pointer;
+  border: none !important;
+}
+.btn-gmail i {
+  width: 25px;
+  height: 25px;
+  text-align: center;
+}
+.btn-gmail:hover{
+  background-color: #574696;
+  color: #ffffff;
+
+}
+.btn-excel{
+  color: #50B794 !important;
+}
+
+.btn-excel:hover{
+  background-color: #50B794 !important;
+  color: #ffffff !important;
 }
 .btn.btn-primary {
   background: #45aed6;
