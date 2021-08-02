@@ -18,6 +18,10 @@
 		#existencia_actual, #tasa_impuesto, #tasa_descuento{
 			width: 40px;
 		}
+
+		.alert .close {
+		    color: #574696 !important;
+		}
 	</style>
 @endsection
 

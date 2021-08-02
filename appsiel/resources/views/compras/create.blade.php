@@ -36,6 +36,10 @@
     		padding: 5px;
     		opacity: 0.7;
 		}
+
+		.alert .close {
+		    color: #574696 !important;
+		}
 	</style>
 @endsection
 

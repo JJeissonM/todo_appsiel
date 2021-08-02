@@ -101,7 +101,7 @@ class FacturaController extends TransaccionController
         $lineas_registros = json_decode( $request->lineas_registros );
         $encabezado_factura->almacenar_lineas_registros( $lineas_registros );
         
-        // NOTA: No se crea el movimiento de ventas.
+        // NOTA: No se crea el movimiento de ventas, ni de tesoreria, ni de contabilidad
 
         $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento almacenado creado correctamente.' ];
 

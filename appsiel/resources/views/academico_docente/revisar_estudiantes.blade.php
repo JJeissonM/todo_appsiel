@@ -11,7 +11,7 @@
 	<div class="row">
 		<div class="col-lg-10 col-lg-offset-1">
 			<div align="center">
-				<a class="btn btn-primary btn-sm" href="{{ url('/academico_docente/listar_estudiantes/curso_id/'.$curso->id.'/id_asignatura/'.$asignatura->id) }}"><i class="fa fa-btn fa-print"></i> Imprimir planilla</a>
+				<a class="btn btn-primary btn-sm" href="{{ url('/academico_docente/listar_estudiantes/curso_id/'.$curso->id.'/id_asignatura/'.$asignatura->id) }}" target="_blank"><i class="fa fa-btn fa-print"></i> Imprimir planilla</a>
 			</div>
 
 			<br/>

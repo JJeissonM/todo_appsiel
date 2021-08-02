@@ -332,6 +332,8 @@ class AcademicoDocenteController extends Controller
         return view('academico_docente.revisar_estudiantes', compact('estudiantes', 'curso', 'asignatura', 'miga_pan'));
     }
 
+
+
     public function listar_estudiantes($curso_id, $id_asignatura)
     {
         // Se obtienen los estudiantes con matriculas activas en el curso y año indicado
@@ -339,15 +341,33 @@ class AcademicoDocenteController extends Controller
 
         $curso = Curso::find($curso_id);
         $asignatura = Asignatura::find($id_asignatura);
-        $docente = Auth::user()->name;
+        $usuario = Auth::user();
+        $docente = $usuario->name;
 
-        $view =  View::make('academico_docente.pdf_estudiantes1', compact('estudiantes', 'curso', 'asignatura', 'docente'))->render();
+        $colegio = Colegio::where('empresa_id', $usuario->empresa_id)->get()->first();
+        $calificaciones = Calificacion::get_calificaciones_boletines( $colegio->id, $curso_id, null, null );
+
+        $periodo_lectivo = PeriodoLectivo::get_actual();
+
+        $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $periodo_lectivo->id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima; 
+        
+        $periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo->id );
+        // Excluir el periodo final
+        foreach ($periodos as $key => $value)
+        {
+            if ( $value->periodo_de_promedios )
+            {
+                unset( $periodos[$key] );
+            }
+        }
+
+        $view =  View::make( 'academico_docente.pdf_estudiantes1', compact('estudiantes', 'curso', 'asignatura', 'docente', 'periodos', 'calificaciones', 'tope_escala_valoracion_minima') )->render();
         $orientacion = 'landscape';
 
         //crear PDF
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper('Letter', $orientacion);
-        return $pdf->download('listado_estudiantes.pdf');
+        return $pdf->stream('listado_estudiantes.pdf');
     }
 
     // FORMULARIOS PARA ACTUALIZAR  ASPECTOS

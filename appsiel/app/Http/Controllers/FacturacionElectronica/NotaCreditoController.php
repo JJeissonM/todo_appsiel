@@ -83,7 +83,7 @@ class NotaCreditoController extends TransaccionController
             return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
         }
 
-        if ( $this->movimiento_cxc->saldo_pendiente == 0 )
+        if ( $this->movimiento_cxc->saldo_pendiente == 0 && $factura->forma_pago == 'credito' )
         {
             return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
         }
