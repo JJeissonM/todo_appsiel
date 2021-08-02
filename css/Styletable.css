@@ -9,7 +9,7 @@
 .btn-gmail{
     color: #574696;
     font-size: 20px;
-    background-color: #ececec;
+    background-color: #e0e0e0;
     padding: 10px;
     border-radius: 50%;
     text-align: center;
@@ -22,6 +22,11 @@
 
 .btn-excel{
     color: #50B794 !important;
+}
+
+.btn-excel:hover{
+    background-color: #50B794 !important;
+    color: #ffffff !important;
 }
 
 .btn-gmail > i{
@@ -41,10 +46,7 @@
     color: #ffffff !important;
 }
 
-.btn-excel:hover{
-    background-color: #50B794 !important;
-    color: #ffffff !important;
-}
+
 
 .btn-gmail-check{
     width: 100% !important;

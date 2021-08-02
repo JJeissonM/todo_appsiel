@@ -6,8 +6,8 @@
         </div>
         
         <div style="background-color: #fff; padding: 20px; border-bottom-right-radius: 20px !important; border-bottom-left-radius: 20px !important;">
-            <h4 class="media-heading servicios-font" style="margin-top: 0px;">{{ strlen($item->titulo) >= 45 ? str_limit($item->titulo,45) : $item->titulo }}</h4>
-            <p class="servicios-font">{!! strlen($item->descripcion) >= 140 ? str_limit($item->descripcion,140) : $item->descripcion !!} </p>
+            <h4 class="media-heading servicios-font text-center" style="margin-top: 0px;">{{ strlen($item->titulo) >= 90 ? str_limit($item->titulo,90) : $item->titulo }}</h4>
+            <p class="servicios-font text-center">{!! $item->descripcion !!} </p>
             <!--<div class="pull-right">
                 @if($item->url!='')
                     <a class="btn btn-primary animate btn-sm servicios-font" href="{{$item->url}}" style="cursor: pointer; color: #fff;">Ver <i class="fa fa-plus"></i></a>

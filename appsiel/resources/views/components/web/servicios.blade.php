@@ -67,7 +67,7 @@
             }
         ?>
 
-        <div class="p-md-5 p-sm-2" id="contenedor_seccion_servicios" style="{{ $estilo }}">
+        <div class="p-md-5 p-2" id="contenedor_seccion_servicios" style="{{ $estilo }}">
             @if( is_null($servicios) )
                 
                 <section class="img">

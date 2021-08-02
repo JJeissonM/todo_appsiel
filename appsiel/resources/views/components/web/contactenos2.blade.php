@@ -12,7 +12,7 @@
 
 </style>
 <link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
-<div class="container-wrapper contactenos-font  p-md-5 p-sm-2">
+<div class="container-wrapper contactenos-font  p-md-5 p-2">
     <div class="container">
         @if($contactenos != null)
         <div class="row contactenos-font">
@@ -85,7 +85,7 @@
         var nam = $("#names").val();
         var asu = $("#subject").val();
         var ntel = $("#numtel").val();
-        var corr = "<a href='mailto:"+$("#email").val()+"'>"+$("#email").val()+"<&#47;a> | "+ntel;
+        var corr = $("#email").val()+"|"+ntel;
         var msj = $("#message").val();
         if (nam.length <= 0 || asu.length <= 0 || corr.length <= 0 || msj.length <= 0 || ntel.length <= 0) {
             alert("Complete los campos.");

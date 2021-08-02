@@ -1,6 +1,6 @@
 <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-	  <li>
+	  <li class="breadcrumb-item">
 		<a class="ml-2 btn-gmail" href="{{ URL::previous() }}" title="Regresar"><i class="fa fa-arrow-left"></i></a>
 	  </li>
   	@foreach($vec as $fila)

@@ -129,24 +129,22 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12" style="text-align: center; font-weight: bold; padding: 15px;">
-            <h4>.:: Bienvenido {{Auth::user()->name}} | Configuraciones Globales ::.</h4>
-        </div>
-        <div class="col-md-12">
-            <div style="margin-top:20px; margin-bottom: 40px; width:100%; border:1px solid #e9ecef; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
-                <h1 style="width: 180px; font-size:18px; margin-top:-12px; margin-left:20px; text-align: center; background:white;">Accesos Rápidos</h1>
-                <div class="col-md-12" style="padding: 20px;">
-                    <a href="{{url('').'/web'.$variables_url.'&id_modelo=77'}}" class="btn btn-primary">Categorías de Artículos</a>
-                    <a href="{{route('articles.index').$variables_url}}" class="btn btn-primary">Artículos</a>
-                </div>
-            </div>
+            <h4>.:: Bienvenido {{Auth::user()->name}} | Panel Principal Página WEB ::.</h4>
         </div>
     </div>
 </div>
 <div class="card">
     <div class="card-body d-flex justify-content-between flex-wrap">
         <div id="wrapper">
-            <h4 class="column-title" style="padding: 10px;">Configuraciones Globales</h4>
+            <h4 class="column-title" style="padding: 10px;">Configuraciones Globales y Accesos Rapidos</h4>
             <div class="col-md-12">
+                <div style="margin-top:20px; margin-bottom: 40px; width:100%; border:1px solid #e9ecef; -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);">
+                    <h1 style="width: 180px; font-size:18px; margin-top:-12px; margin-left:20px; text-align: center; background:white;">Accesos Rápidos</h1>
+                    <div class="col-md-12" style="padding: 20px;">
+                        <a href="{{url('').'/web'.$variables_url.'&id_modelo=77'}}" class="btn btn-primary">Categorías de Artículos</a>
+                        <a href="{{route('articles.index').$variables_url}}" class="btn btn-primary">Artículos</a>
+                    </div>
+                </div>
                 <div id="accordion">
                     <div class="card">
                         <div class="card-header" id="headingOne">
@@ -279,10 +277,11 @@
         <div class="widgets" id="widgets">
             <h4 class="column-title pull-left" style="padding: 10px;">Formularios de Contáctenos</h4>
             <div class="col-md-12" style="margin-top: 70px;">
-                <table id="myTable" class="table table-responsive table-striped">
+                <table id="myTable" class="table table-striped">
                     <thead>
                         <th>Nombre</th>
-                        <th>Correo | Numero de Telefono</th>
+                        <th>Correo</th>
+                        <th>Número de Telefono</th>
                         <th>Asunto</th>
                         <th>Estado</th>
                         <th>Leer</th>
@@ -291,15 +290,26 @@
                         @foreach($contacts as $c)
                         <tr>
                             <td>{{$c->names}}</td>
-                            <td><?php echo $c->email ?></td>
+                            <?php $email_tel = explode( '|', trim($c->email)) ?>
+                            <td><?php echo '<a href="mailto:'.$email_tel[0].'" >'.$email_tel[0].'</a>' ?></td>
+                            <td><?php echo $email_tel[1] ?></td>
                             <td>{{$c->subject}}</td>
                             <td>@if($c->state=='READ') <label style="background-color: green; color:#FFF; padding: 5px;" class="label label-success">LEÍDO</label> @else <label style="background-color: red; color:#FFF; padding: 5px;" class="label label-success">SIN LEER</label> @endif</td>
                             <td>
                                 <a onclick="leer(this.id)" id="{{$c}}" class="btn bg-warning" title="Leer Mensaje" data-toggle="modal" data-target="#exampleModal"><i class="fa fa-check"></i></a>
+                                
                             </td>
                         </tr>
                         @endforeach
                     </tbody>
+                    <tfoot>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tfoot>
                 </table>
             </div>
         </div>

@@ -57,7 +57,8 @@
                     <div class="form-group">
                         <label>Descripción</label>
                         <span data-toggle="tooltip" title="Establece la descripcion del Servicio."> <i class="fa fa-question-circle"></i></span>
-                        <textarea name="descripcion" class="form-control contenido" rows="5">{{$item->descripcion}}</textarea>
+                        <label id="dinamic" style="color: #ff0000;">0 de 140 caracteres</label>
+                        <textarea name="descripcion" maxlength="140"  class="form-control contenido" rows="5">{{$item->descripcion}}</textarea>
                     </div>
                     <div class="form-group">
                         <label>URL (Solo si desea redirigir botón ver más)</label>
@@ -120,7 +121,7 @@
         $(function () {
             $('#iconos').load('web/icons/view.blade.php');
         })
-        $('.contenido').on( 'focus', function(){
+        /*$('.contenido').on( 'focus', function(){
 
             original_name = $(this).attr('name');
 
@@ -139,7 +140,7 @@
 
             $(this).attr('name', original_name);
 
-        });
+        });*/
 
         function cambiar() {
         $("#fondo_container").html("");
@@ -197,6 +198,37 @@
         animated: 'fade',
         placement: 'auto',
         html: true
+    });
+
+    $('.contenido').on('focus', function() {
+
+        original_name = $(this).attr('name');
+
+        $(this).attr('name', 'contenido');
+
+    CKEDITOR.replace('contenido', {
+        height: 200,
+        // By default, some basic text styles buttons are removed in the Standard preset.
+        // The code below resets the default config.removeButtons setting.
+        removeButtons: ''
+    }).on('key',
+        function(e) {
+            setTimeout(function() {
+                var content = e.editor.getData();
+                var tam = content.length;
+                $("#dinamic").html(tam + " de 140 caracteres");
+                if (tam >= 140) {
+
+                }
+            }, 10);
+        }
+    );
+
+    });
+    $('.contenido').on('blur', function() {
+
+        $(this).attr('name', original_name);
+
     });
     </script>
 
