@@ -30,6 +30,10 @@
         z-index: 1000;
     }
 
+    #contenedor_seccion_servicios a:hover{
+        -webkit-box-shadow: 1px 1px 100px var(--color-terciario); -moz-box-shadow: 1px 1px 100px var(--color-terciario); box-shadow: 1px 1px 100px var(--color-terciario);
+    }
+
 
     .ilustracion {
         position: absolute;
