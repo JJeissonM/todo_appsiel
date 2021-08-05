@@ -133,7 +133,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
                 if ( !is_null( $acudiente->tercero->cliente() ) )
                 {
-                    $descripcion_acudiente = $acudiente->tercero->descripcion . ': Responsable financiero NO tiene correctamente los datos de Dirección y Correo electrónico. Puede ctualizar sus datos aquí: <a href="' . url( 'web/'.$acudiente->tercero->id.'/edit?id=3&id_modelo=7&id_transaccion=' ) . '" target="_blank" title="Crear tercero como cliente" class="btn btn-primary btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
+                    $descripcion_acudiente = $acudiente->tercero->descripcion . ': Responsable financiero NO tiene sus datos básicos creados correctamente (ciudad, direccion, teléfono, email, etc.). Puede actualizar sus datos aquí: <a href="' . url( 'web/'.$acudiente->tercero->id.'/edit?id=3&id_modelo=7&id_transaccion=' ) . '" target="_blank" title="Crear tercero como cliente" class="btn btn-primary btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
 
                     $esta_bien_la_info = true;
 
@@ -143,6 +143,11 @@ class FacturaMasivaEstudianteController extends TransaccionController
                     }
 
                     if ( $acudiente->tercero->email == '' || gettype( filter_var($acudiente->tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
+                    {
+                        $esta_bien_la_info = false;
+                    }
+
+                    if ( $acudiente->tercero->telefono1 == '' || !is_numeric( $acudiente->tercero->telefono1 ) )
                     {
                         $esta_bien_la_info = false;
                     }
