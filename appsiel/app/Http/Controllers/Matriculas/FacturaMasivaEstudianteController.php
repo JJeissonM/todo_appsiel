@@ -113,6 +113,11 @@ class FacturaMasivaEstudianteController extends TransaccionController
         $estudiante_anterior_id = 0;
         foreach ( $planes_pagos as $registro_plan_pagos )
         {
+            if ( $registro_plan_pagos->valor_cartera == 0 )
+            {
+                continue;
+            }
+            
             $clase_danger = 'danger';
             $linea_plan_pago_id = 0;
 
