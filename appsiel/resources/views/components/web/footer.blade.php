@@ -301,7 +301,7 @@
         </div>
         <div class="row footer-font mt-5" style="background-color: {{$footer->background2}};">
             <div id="div1" class="col-md-12 col-sm-12 d-flex justify-content-between flex-wrap" style="margin-top: 20px; float: left;">
-                <p class="footer-font" style="font-size: 15px; color: {{$footer->color}}; width: 80%; padding-left: 20px;">
+                <p class="footer-font" style="font-size: 14px; color: {{$footer->color}}; width: 80%; padding-left: 20px;">
                     &copy; {{$footer->texto.' '.$footer->copyright}}
                 </p>
                 <ul class="d-flex justify-content-between">
