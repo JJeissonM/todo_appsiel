@@ -40,7 +40,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$fe_ambiente = 'PRUEBAS';
+								if( isset($parametros['fe_ambiente'] ) )
+								{
+									$fe_ambiente = $parametros['fe_ambiente'];
+								}else{
+								}
+							?>
+							{{ Form::bsSelect('fe_ambiente', $fe_ambiente, 'Ambiente', ['PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

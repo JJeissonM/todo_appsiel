@@ -1,6 +1,5 @@
 <?php  
     $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
-    $color = 'black';
 ?>
 
 @extends('transaccion.show')
@@ -18,12 +17,8 @@
     @endif
 
     @if( $doc_encabezado->estado == 'Sin enviar' )
-		<?php 
-			$color = 'red';
-		?>
-		<a class="btn-gmail" href="{{ url( 'fe_nota_credito_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar por correo" id="btn_email"><i class="fa fa-btn fa-envelope"></i></a>
+		<a class="btn-gmail" href="{{ url( 'fe_nota_credito_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar" id="btn_email"><i class="fa fa-send"></i></a>
 	@endif
-
 @endsection
 
 @section('botones_imprimir_email')
@@ -36,8 +31,6 @@
 @endsection
 
 @section('datos_adicionales_encabezado')
-	<br/>
-	<span style="color:{{$color}}"><b>Estado: </b> {{ $doc_encabezado->estado }}</span>
 	<br/>
 	<b>Devolución: </b> {!! $docs_relacionados[0] !!}
 @endsection

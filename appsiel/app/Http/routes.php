@@ -59,6 +59,8 @@ Route::resource('web', 'Sistema\ModeloController');
 // Ver lo modelos a los que pertence un campo
 
 
+Route::get('prueba_directa', 'Core\PruebasController@prueba_directa');
+
 Route::get('config', 'Core\ConfiguracionController@config_form');
 
 Route::post('guardar_config', 'Core\ConfiguracionController@guardar_config');

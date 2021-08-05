@@ -4,6 +4,8 @@ namespace App\FacturacionElectronica\DATAICO;
 
 use GuzzleHttp\Client;
 
+use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
+
 // declaramos factura
 class FacturaGeneral
 {
@@ -11,10 +13,12 @@ class FacturaGeneral
    protected $url_emision;
    protected $invoice_type_code;
    protected $cantidadDecimales;
+   protected $tipo_transaccion;
 
    function __construct( $doc_encabezado, $tipo_transaccion )
    {
       $this->doc_encabezado = $doc_encabezado;
+      $this->tipo_transaccion = $tipo_transaccion;
       switch ( $tipo_transaccion )
       {
          case 'factura':
@@ -24,12 +28,10 @@ class FacturaGeneral
          
          case 'nota_credito':
             $this->url_emision = config('facturacion_electronica.url_notas_credito');
-            $this->invoice_type_code = 'FACTURA_VENTA'; // **************    PENDIENTE
             break;
          
          case 'nota_debito':
             $this->url_emision = config('facturacion_electronica.url_notas_debito');
-            $this->invoice_type_code = 'FACTURA_VENTA'; //  **************   PENDIENTE
             break;
          
          default:
@@ -38,38 +40,80 @@ class FacturaGeneral
       }
          
       $this->cantidadDecimales = config('facturacion_electronica.cantidadDecimales');
-      $this->env = 'PRUEBAS'; //'PRODUCCION'
+      $this->env = config('facturacion_electronica.fe_ambiente'); //'PRUEBAS' || 'PRODUCCION'
    }
 
-   public function procesar_envio_factura()
+   public function procesar_envio_factura( $factura_doc_encabezado = null )
    {
-      $json = $this->preparar_cadena_json();
 
-      //dd( $json );
+      switch ( $this->tipo_transaccion )
+      {
+         case 'factura':
+            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura();
+            break;
+         
+         case 'nota_credito':
+            $json_doc_electronico_enviado = $this->preparar_cadena_json_nota_credito( $factura_doc_encabezado );
+            break;
+         
+         case 'nota_debito':
+            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura();
+            break;
+         
+         default:
+            // code...
+            break;
+      }
 
-      $client = new Client(['base_uri' => $this->url_emision]);
+      /*
+dd($json_doc_electronico_enviado);
+      
+      $consecutivo = 105;
+      $json_doc_electronico_enviado = '{"actions": {"send_dian": true,"send_email": false,"email": "ing.adalbertoperez@gmail.com"},"invoice": {"env": "PRUEBAS","dataico_account_id": "a2532b03-a8bf-4514-a4e8-5fd7ec0499e9","number":'.$consecutivo.',"issue_date": "2021-07-31","payment_date": "2021-07-31","invoice_type_code": "FACTURA_VENTA","payment_means_type": "CREDITO","payment_means": "MUTUAL_AGREEMENT","numbering":{"resolution_number":"18760000001","prefix":"SETT","flexible":true}, "customer": {"email": "ing.adalbertoperez@gmail.com","phone": "06 50 27 98 72","party_type": "PERSONA_NATURAL","company_name": "HODGES DILLON HADASSAH","first_name":"HADASSAH","family_name":"HODGES","party_identification": "163506063","tax_level_code": "SIMPLIFICADO","regimen": "ORDINARIO","department": "CESAR","city": "VALLEDUPAR","address_line": "Apartado núm.: 297, 6199 Ullamcorper Ctra."},"items": [{"sku": "6","description": "ARROZ DIANA 3 KL","quantity": 2,"price": 7500,"taxes": [  {    "tax_rate": 0,"tax_category": "IVA"}]},{"sku": "8","description": "LANGOSTINO","quantity": 1.5,"price": 46500,"discount_rate": 7,"taxes": [  {    "tax_rate": 0,"tax_category": "IVA"}]},{"sku": "43","description": "LANGOSTA GRANDE","quantity": 3.23,"price": 40840.3361,"discount_rate": 10,"taxes": [  {    "tax_rate": 19,"tax_category": "IVA"}]}],"charges": []}}';
+*/
+      //dd(json_decode( $json_doc_electronico_enviado )->invoice);
+      try {
+         $client = new Client(['base_uri' => $this->url_emision]);
 
-      $response = $client->post( $this->url_emision, [
-          // un array con la data de los headers como tipo de peticion, etc.
-          'headers' => [
-                        'content-type' => 'application/json',
-                        'auth-token' => config('facturacion_electronica.tokenPassword')
-                     ],
-          // array de datos del formulario
-          'json' => json_decode( $json )
-      ]);
+         $response = $client->post( $this->url_emision, [
+             // un array con la data de los headers como tipo de peticion, etc.
+             'headers' => [
+                           'content-type' => 'application/json',
+                           'auth-token' => config('facturacion_electronica.tokenPassword')
+                        ],
+             // array de datos del formulario
+             'json' => json_decode( $json_doc_electronico_enviado )
+         ]);
+      } catch (\GuzzleHttp\Exception\RequestException $e) {
+          $response = $e->getResponse();
+      }
 
-      dd( $response );
+      $array_respuesta = json_decode( (string) $response->getBody(), true );
+      $array_respuesta['codigo'] = $response->getStatusCode();
+
+      //dd( $array_respuesta );
+
+      $obj_resultado = new ResultadoEnvio;
+      $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );
+
+      return $mensaje;
    }
 
-   public function preparar_cadena_json()
+   public function preparar_cadena_json_factura()
    {
       $send_dian = 'true';
       $send_email = 'false';
-      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $this->doc_encabezado->cliente->tercero->email . '"},"invoice": {' . $this->get_encabezado_documento() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $this->doc_encabezado->cliente->tercero->email . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
    }
 
-   public function get_encabezado_documento()
+   public function preparar_cadena_json_nota_credito( $factura_doc_encabezado )
+   {
+      $send_dian = 'true';
+      $send_email = 'false';
+      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $this->doc_encabezado->cliente->tercero->email . '"},"credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+   }
+
+   public function get_encabezado_factura()
    {
       $payment_means_type = 'DEBITO'; // Contado
       if ( $this->doc_encabezado->forma_pago == 'credito' )
@@ -88,9 +132,33 @@ class FacturaGeneral
 
       $flexible = 'true';
 
-      $this->doc_encabezado->consecutivo = 101;
+      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente();
+   }
 
-      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . $this->doc_encabezado->fecha . '","payment_date": "' . $this->doc_encabezado->fecha_vencimiento . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente();
+   public function get_encabezado_nota_credito( $factura_doc_encabezado )
+   {
+
+      $factura_dataico = new FacturaGeneral( $factura_doc_encabezado, 'factura' );
+      $invoice_id = $factura_dataico->consultar_documento()->uuid;
+
+      $payment_means_type = 'CREDITO';
+
+      $payment_means = 'CREDITO'; //  Medio de pago
+
+      if ( $this->env == 'PRODUCCION' )
+      {
+         $resolucion = $this->doc_encabezado->resolucion_facturacion();
+      }else{
+         $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
+      }
+
+      $flexible = 'true';
+      $reason = 'DEVOLUCION'; /**********  List [ "DEVOLUCION", "ANULACION", "REBAJA", "DESCUENTO", "RECISION", "OTROS" ]    PENDIENTE    ******/
+      $issue_date = date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y');
+      $fecha_vencimiento = date_create( $this->doc_encabezado->fecha_vencimiento );
+      $payment_date = date_format( date_add( $fecha_vencimiento, date_interval_create_from_date_string("1 month")),'d/m/Y');
+
+      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","issue_date": "' . $issue_date . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","payment_date": "' . $payment_date . '","reason": "' . $reason . '","invoice_id": "' . $invoice_id . '","number":'.$this->doc_encabezado->consecutivo.',"numbering":{"prefix":"' . $this->doc_encabezado->tipo_documento_app->prefijo . '","flexible":' . $flexible . '}';
    }
 
    public function get_datos_cliente()
@@ -124,12 +192,49 @@ class FacturaGeneral
             $string_items .= ',';
          }
 
-         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . $linea->item->descripcion . '","quantity": ' . $linea->cantidad . ',"price": ' . $linea->base_impuesto . ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "IVA"}]}';
+         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . $linea->item->descripcion . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
+
+         if ( $linea->tasa_descuento != 0 )
+         {
+            $string_items .= ',"discount_rate": ' . $linea->tasa_descuento;
+         } 
+
+         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "IVA"}]}';
          $es_primera_linea = false;
       }
 
       $string_items .= ']';
 
       return $string_items;
+   }
+
+
+
+   public function consultar_documento()
+   {
+      if ( $this->env == 'PRODUCCION' )
+      {
+         $resolucion = $this->doc_encabezado->resolucion_facturacion();
+      }else{
+         $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
+      }      
+         
+      try {
+         $client = new Client(['base_uri' => $this->url_emision]);
+
+         $response = $client->get( $this->url_emision . '?number=' .$resolucion->prefijo . $this->doc_encabezado->consecutivo, [
+             // un array con la data de los headers como tipo de peticion, etc.
+             'headers' => [
+                           'content-type' => 'application/json',
+                           'auth-token' => config('facturacion_electronica.tokenPassword')
+                        ]
+         ]);
+      } catch (\GuzzleHttp\Exception\RequestException $e) {
+          $response = $e->getResponse();
+      }  /**/      
+
+      $json = json_decode( (string) $response->getBody() );
+
+      return $json->invoice;
    }
 }

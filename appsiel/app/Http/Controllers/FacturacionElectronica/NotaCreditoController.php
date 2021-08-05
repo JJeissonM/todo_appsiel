@@ -43,6 +43,8 @@ use App\FacturacionElectronica\ResultadoEnvio;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\NotaCredito;
 
+use App\FacturacionElectronica\DATAICO\FacturaGeneral;
+
 class NotaCreditoController extends TransaccionController
 {
     protected $documento_nota_credito;
@@ -83,7 +85,7 @@ class NotaCreditoController extends TransaccionController
             return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
         }
 
-        if ( $this->movimiento_cxc->saldo_pendiente == 0 )
+        if ( $this->movimiento_cxc->saldo_pendiente == 0 && $factura->forma_pago == 'credito' )
         {
             return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
         }
@@ -203,7 +205,8 @@ class NotaCreditoController extends TransaccionController
     	// Paso 2
     	$datos['creado_por'] = Auth::user()->email;
         $datos['remision_doc_encabezado_id'] = $documento_devolucion->id;
-        $datos['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura       
+        $datos['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
+        $datos['forma_pago'] = 'credito';
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_nota_credito = $encabezado_documento->crear_nuevo( $datos );
 
@@ -213,33 +216,47 @@ class NotaCreditoController extends TransaccionController
         // Paso 4 (Se está haciendo en el Paso 3)
         //$this->contabilizar( $encabezado_documento );
 
-        // Paso 5: Enviar factura electrónica
-        if ( empty( $encabezado_nota_credito->tipo_documento_app->resolucion_facturacion->toArray() ) )
-        {
-        	$encabezado_nota_credito->estado = 'Sin enviar';
-        	$encabezado_nota_credito->save();
-
-        	return redirect( 'fe_nota_credito/'.$encabezado_nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', 'El documento no tiene resolución asociada. Por tanto no pudo ser enviado.');
-        }
-
-        // Paso 5: Enviar factura electrónica
-        $resultado_original = $this->procesar_envio_factura( $encabezado_nota_credito );
-
-        // Paso 6: Almacenar resultado en base de datos para Auditoria
-        $obj_resultado = new ResultadoEnvio;
-        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_nota_credito, $encabezado_nota_credito->id );
-
-        if ( $mensaje->tipo == 'mensaje_error' )
-        {
-        	$encabezado_nota_credito->estado = 'Sin enviar';
-        	
-        }else{
-        	$encabezado_nota_credito->estado = 'Enviada';
-        }
-        $encabezado_nota_credito->save();
+        // Paso 5: Enviar nota electrónica
+        $mensaje = $this->enviar_nota_credito_electronica( $encabezado_nota_credito->id, $factura );
 
     	return redirect( 'fe_nota_credito/'.$encabezado_nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido);
 
+    }
+
+    public function enviar_nota_credito_electronica( $id, $factura_doc_encabezado )
+    {
+        $encabezado_nota_credito = Factura::find( $id );
+
+        switch ( config('facturacion_electronica.proveedor_tecnologico_default') )
+        {
+            case 'DATAICO':
+                $factura_dataico = new FacturaGeneral( $encabezado_nota_credito, 'nota_credito' );
+                $mensaje = $factura_dataico->procesar_envio_factura( $factura_doc_encabezado );
+                break;
+            
+            case 'TFHKA':
+                $resultado_original = $this->procesar_envio_factura( $encabezado_nota_credito );
+
+                // Almacenar resultado en base de datos para Auditoria
+                $obj_resultado = new ResultadoEnvio;
+                $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_nota_credito->id );
+                break;
+            
+            default:
+                // code...
+                break;
+        }
+
+        if ( $mensaje->tipo == 'mensaje_error' )
+        {
+            $encabezado_nota_credito->estado = 'Sin enviar';
+            
+        }else{
+            $encabezado_nota_credito->estado = 'Enviada';
+        }
+        $encabezado_nota_credito->save();
+
+        return $mensaje;
     }
 
     public function procesar_envio_factura( $encabezado_nota_credito, $adjuntos = 0 )
@@ -518,19 +535,11 @@ class NotaCreditoController extends TransaccionController
 
     public function enviar( $id )
     {
-    	$encabezado_nota_credito = NotaCredito::find( $id );
 
-        $resultado_original = $this->procesar_envio_factura( $encabezado_nota_credito );
+        $encabezado_nota_credito = NotaCredito::find( $id );
+        $factura = Factura::find( $encabezado_nota_credito->ventas_doc_relacionado_id );
 
-        // Almacenar resultado en base de datos para Auditoria
-        $obj_resultado = new ResultadoEnvio;
-        $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_nota_credito, $encabezado_nota_credito->id );
-
-        if ( $mensaje->tipo != 'mensaje_error' )
-        {
-        	$encabezado_nota_credito->estado = 'Enviada';
-        	$encabezado_nota_credito->save();
-        }
+        $mensaje = $this->enviar_nota_credito_electronica( $id, $factura );
 
     	return redirect( 'fe_nota_credito/'.$encabezado_nota_credito->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
     }

@@ -76,6 +76,11 @@ class DocumentosPendientes extends Model
 
         foreach( $movimiento as $key => $value )
         {
+            /*
+
+                        = = = = = = ERROR AQUI - REVISAR
+
+            */
             $array_wheres2 = [
                                 ['doc_cxc_transacc_id', '=', $movimiento[$key]['core_tipo_transaccion_id'] ],
                                 ['doc_cxc_tipo_doc_id', '=', $movimiento[$key]['core_tipo_doc_app_id'] ],
@@ -145,7 +150,7 @@ class DocumentosPendientes extends Model
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
             }
             
-            $abonos = CxcAbono::where( $array_wheres2)->sum('abono');
+            $abonos = CxcAbono::where( $array_wheres2 )->sum('abono');
 
             $movimiento[$key]['valor_pagado'] = $abonos;
             $movimiento[$key]['saldo_pendiente'] = $movimiento[$key]['valor_documento'] - $abonos;

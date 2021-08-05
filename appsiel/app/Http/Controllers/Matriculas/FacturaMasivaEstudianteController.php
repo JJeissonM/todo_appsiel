@@ -119,7 +119,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             $estudiante = $registro_plan_pagos->estudiante;
 
             $acudiente = $estudiante->responsable_financiero();
-            
+
             $descripcion_acudiente = 'Sin responsable financiero. Asignar responsable aquí: <a href="' . url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' . $estudiante->id ) . '" target="_blank" title="Gestionar Responsables" class="btn btn-success btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
             
             if ( !is_null( $acudiente ) )
@@ -128,9 +128,35 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
                 if ( !is_null( $acudiente->tercero->cliente() ) )
                 {
-                    $clase_danger = '';
-                    $linea_plan_pago_id = $registro_plan_pagos->id;
-                    $descripcion_acudiente = $acudiente->tercero->descripcion;
+                    $descripcion_acudiente = $acudiente->tercero->descripcion . ': Responsable financiero NO tiene correctamente los datos de Dirección y Correo electrónico. Puede ctualizar sus datos aquí: <a href="' . url( 'web/'.$acudiente->tercero->id.'/edit?id=3&id_modelo=7&id_transaccion=' ) . '" target="_blank" title="Crear tercero como cliente" class="btn btn-primary btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
+
+                    $esta_bien_la_info = true;
+
+                    if ( $acudiente->tercero->direccion1 == '' || strlen( $acudiente->tercero->direccion1 ) < 10 )
+                    {
+                        $esta_bien_la_info = false;
+                    }
+
+                    if ( $acudiente->tercero->email == '' || gettype( filter_var($acudiente->tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
+                    {
+                        $esta_bien_la_info = false;
+                    }
+
+                    if ( (int)$request->generar_fact_electronica )
+                    {
+                        if ( $esta_bien_la_info )
+                        {
+                            // SI TODO BIEN
+                            $clase_danger = '';
+                            $linea_plan_pago_id = $registro_plan_pagos->id;
+                            $descripcion_acudiente = $acudiente->tercero->descripcion;
+                        }
+                    }else{
+                        // SI TODO BIEN
+                        $clase_danger = '';
+                        $linea_plan_pago_id = $registro_plan_pagos->id;
+                        $descripcion_acudiente = $acudiente->tercero->descripcion;
+                    }
                 }
             }
 
@@ -140,7 +166,15 @@ class FacturaMasivaEstudianteController extends TransaccionController
             {
                 continue;
             }
-            
+
+            if ( is_null( $registro_plan_pagos->concepto ) )
+            {
+                $tbody .= '<tr class="'.$clase_danger.'">
+                        <td style="display:none;" colspan="10"> Error en concepto con la libreta de pago ID='. $registro_plan_pagos->id_libreta .'
+                        </td>
+                    </tr>';
+            }
+                
             $tbody .= '<tr class="'.$clase_danger.'">
                         <td style="display:none;">' . $linea_plan_pago_id . '</td>
                         <td style="display:none;" class="valor">' . $registro_plan_pagos->valor_cartera . '</td>
@@ -192,6 +226,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
+        //dd( $request->all() );
         $lote = uniqid();
         $tbody = '';
         $precio_total = 0;
@@ -210,13 +245,36 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
             $registro_plan_pagos = TesoPlanPagosEstudiante::find( $linea->linea_plan_pago_id );
             
-            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote );
+            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, (int)$request->generar_fact_electronica );
+
+            $mensaje_alerta_fact_elect = '';
+            $url_factura = 'ventas/' . $factura->id . '?id=13&id_modelo=139&id_transaccion=' . config('matriculas.transaccion_id_factura_estudiante');
+
+            if ( (int)$request->generar_fact_electronica )
+            {
+                $url_factura = 'fe_factura/' . $factura->id . '?id=21&id_modelo=244&id_transaccion=52';
+
+                if ( empty( $factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
+                {
+                    $mensaje_alerta_fact_elect = '<br><i class="fa fa-warning"></i>La factura no fue enviada hacia el proveedor tecnológico. El pefijo ' . $factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.';
+                }
+
+                $mensaje = $factura->enviar_al_proveedor_tecnologico();
+                
+                $mensaje_alerta_fact_elect = $mensaje->contenido;
+
+                if ( $mensaje->tipo != 'mensaje_error' )
+                {                
+                    $factura->estado = 'Enviada';
+                    $factura->save();
+                }
+            }                
 
             $tbody .= '<tr>
                         <td>' . $registro_plan_pagos->estudiante->tercero->descripcion . '</td>
                         <td>' . $registro_plan_pagos->estudiante->responsable_financiero()->tercero->descripcion . '</td>
-                        <td> <a href="' . url( 'vtas_imprimir/' . $factura->id . '?id=13&id_modelo=139&id_transaccion=' . config('matriculas.transaccion_id_factura_estudiante') . '&formato_impresion_id=estandar' ) . '" target="_blank" title="Vista previa">' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo . '</a> </td>
-                        <td>' . number_format( $factura->valor_total, 0, ',', '.' ) . '</td>
+                        <td> <a href="' . url( $url_factura ) . '" target="_blank" title="Vista previa">' . $factura->tipo_documento_app->prefijo . ' ' . $factura->consecutivo . '</a> </td>
+                        <td>' . number_format( $factura->valor_total, 0, ',', '.' ) . $mensaje_alerta_fact_elect . '</td>
                     </tr>';
 
             $precio_total += $factura->valor_total;
@@ -257,9 +315,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
         dd( VtasDocEncabezado::find( 105 )->tipo_documento_app );
     }
 
-    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote )
+    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, $generar_fact_electronica )
     {
-        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $lote );
+        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica );
 
         $request['remision_doc_encabezado_id'] = 0;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -279,10 +337,16 @@ class FacturaMasivaEstudianteController extends TransaccionController
     }
 
 
-    public function preparar_datos_factura_estudiante( $registro_plan_pagos, $lote )
+    public function preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica )
     {
         $id_modelo = config('matriculas.modelo_id_factura_estudiante'); // Factura de Estudiantes
         $id_transaccion = config('matriculas.transaccion_id_factura_estudiante'); // Factura de Ventas
+
+        if( $generar_fact_electronica )
+        {
+            $id_modelo = 244; // Factura Electrónica de Ventas
+            $id_transaccion = 52; // Factura Electrónica de Ventas
+        }
 
         $tipo_transaccion = TipoTransaccion::find( $id_transaccion );
         
