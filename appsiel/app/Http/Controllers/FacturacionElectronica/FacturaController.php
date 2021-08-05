@@ -132,13 +132,16 @@ class FacturaController extends TransaccionController
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {
-            $encabezado_factura->crear_movimiento_ventas();
+            if ( $encabezado_factura->estado != 'Contabilizado - Sin enviar')
+            {
+                $encabezado_factura->crear_movimiento_ventas();
 
-            // Contabilizar
-            $encabezado_factura->contabilizar_movimiento_debito();
-            $encabezado_factura->contabilizar_movimiento_credito();
+                // Contabilizar
+                $encabezado_factura->contabilizar_movimiento_debito();
+                $encabezado_factura->contabilizar_movimiento_credito();
 
-            $encabezado_factura->crear_registro_pago();
+                $encabezado_factura->crear_registro_pago();
+            }
             
             $encabezado_factura->estado = 'Enviada';
             $encabezado_factura->save();

@@ -136,36 +136,40 @@ class FacturaMasivaEstudianteController extends TransaccionController
                     $descripcion_acudiente = $acudiente->tercero->descripcion . ': Responsable financiero NO tiene sus datos básicos creados correctamente (ciudad, direccion, teléfono, email, etc.). Puede actualizar sus datos aquí: <a href="' . url( 'web/'.$acudiente->tercero->id.'/edit?id=3&id_modelo=7&id_transaccion=' ) . '" target="_blank" title="Crear tercero como cliente" class="btn btn-primary btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
 
                     $esta_bien_la_info = true;
+                    $error_esta_en = '';
 
                     if ( $acudiente->tercero->direccion1 == '' || strlen( $acudiente->tercero->direccion1 ) < 10 )
                     {
                         $esta_bien_la_info = false;
+                        $error_esta_en .= ' - Revisar dirección';
                     }
 
                     if ( $acudiente->tercero->email == '' || gettype( filter_var($acudiente->tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
                     {
                         $esta_bien_la_info = false;
+                        $error_esta_en .= ' - Revisar email - ';
                     }
 
                     if ( $acudiente->tercero->telefono1 == '' || !is_numeric( $acudiente->tercero->telefono1 ) )
                     {
                         $esta_bien_la_info = false;
+                        $error_esta_en .= ' - Revisar teléfono - ';
                     }
 
                     if ( (int)$request->generar_fact_electronica )
                     {
                         if ( $esta_bien_la_info )
                         {
-                            // SI TODO BIEN
+                            // SI, TODO BIEN
                             $clase_danger = '';
                             $linea_plan_pago_id = $registro_plan_pagos->id;
-                            $descripcion_acudiente = $acudiente->tercero->descripcion;
+                            $descripcion_acudiente = $acudiente->tercero->numero_identificacion . ' ' . $acudiente->tercero->descripcion;
                         }
                     }else{
-                        // SI TODO BIEN
+                        // SI, TODO BIEN
                         $clase_danger = '';
                         $linea_plan_pago_id = $registro_plan_pagos->id;
-                        $descripcion_acudiente = $acudiente->tercero->descripcion;
+                        $descripcion_acudiente = $acudiente->tercero->numero_identificacion . ' ' . $acudiente->tercero->descripcion;
                     }
                 }
             }
@@ -189,7 +193,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
                         <td style="display:none;">' . $linea_plan_pago_id . '</td>
                         <td style="display:none;" class="valor">' . $registro_plan_pagos->valor_cartera . '</td>
                         <td>' . $estudiante->tercero->descripcion . '</td>
-                        <td>' . $descripcion_acudiente . '</td>
+                        <td>' . $descripcion_acudiente . $error_esta_en . '</td>
                         <td>' . $registro_plan_pagos->concepto->descripcion . '</td>
                         <td>' . $registro_plan_pagos->fecha_vencimiento . '</td>
                         <td>$'. number_format( $registro_plan_pagos->valor_cartera, 0, ',', '.') . '</td>
@@ -276,6 +280,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
                 if ( $mensaje->tipo != 'mensaje_error' )
                 {                
                     $factura->estado = 'Enviada';
+                    $factura->save();
+                }else{
+                    $factura->estado = 'Contabilizado - Sin enviar';
                     $factura->save();
                 }
             }                
