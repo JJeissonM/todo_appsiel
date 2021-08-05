@@ -121,7 +121,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             $clase_danger = 'danger';
             $linea_plan_pago_id = 0;
 
-            $registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
+            //$registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
 
             $estudiante = $registro_plan_pagos->estudiante;
 
@@ -263,7 +263,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             
             $registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
             $registro_plan_pagos->fecha = $request->fecha;
-            
+
             $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, (int)$request->generar_fact_electronica );
 
             $mensaje_alerta_fact_elect = '';
