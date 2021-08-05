@@ -76,6 +76,11 @@ class DocumentosPendientes extends Model
 
         foreach( $movimiento as $key => $value )
         {
+            /*
+
+                        = = = = = = ERROR AQUI - REVISAR
+
+            */
             $array_wheres2 = [
                                 ['doc_cxc_transacc_id', '=', $movimiento[$key]['core_tipo_transaccion_id'] ],
                                 ['doc_cxc_tipo_doc_id', '=', $movimiento[$key]['core_tipo_doc_app_id'] ],

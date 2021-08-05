@@ -86,6 +86,12 @@ class VtasDocEncabezado extends Model
         return $this->hasMany(VtasMovimiento::class);
     }
 
+    public function actualizar_valor_total()
+    {
+        $this->valor_total = $this->lineas_registros->sum('precio_total');
+        $this->save();
+    }
+
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {
@@ -315,7 +321,6 @@ class VtasDocEncabezado extends Model
 
         $movimiento_contable = new ContabMovimiento();
         $detalle_operacion = 'Contabilización ' . $this->tipo_transaccion->descripcion . ' ' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
-
         if ( $this->forma_pago == 'credito')
         {
             // La cuenta de CARTERA se toma de la clase del cliente
@@ -424,6 +429,7 @@ class VtasDocEncabezado extends Model
             $datos['valor_pagado'] = 0;
             $datos['saldo_pendiente'] = $this->valor_total;
             $datos['estado'] = 'Pendiente';
+
             CxcMovimiento::create( $datos );
         }
 

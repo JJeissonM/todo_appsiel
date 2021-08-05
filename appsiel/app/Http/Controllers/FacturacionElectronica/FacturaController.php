@@ -101,6 +101,8 @@ class FacturaController extends TransaccionController
         $lineas_registros = json_decode( $request->lineas_registros );
         $encabezado_factura->almacenar_lineas_registros( $lineas_registros );
         
+        $encabezado_factura->actualizar_valor_total();
+        
         // NOTA: No se crea el movimiento de ventas, ni de tesoreria, ni de contabilidad
 
         $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento almacenado creado correctamente.' ];
@@ -116,28 +118,6 @@ class FacturaController extends TransaccionController
 
     }
 
-    public function procesar_envio_factura( $encabezado_factura, $adjuntos = 0 )
-    {
-        // Paso 1: Prepara documento electronico
-    	$documento = new DocumentoElectronico();
-    	$this->documento_factura = $documento->preparar_objeto_documento( $encabezado_factura );
-        $this->documento_factura->tipoOperacion = "10"; // Para facturas: Estándar
-    	$this->documento_factura->tipoDocumento = "01"; //Facturas
-
-        // Paso 2: Preparar parámetros para envío
-		$params = array(
-				         'tokenEmpresa' =>  config('facturacion_electronica.tokenEmpresa'),
-				         'tokenPassword' => config('facturacion_electronica.tokenPassword'),
-				         'factura' => $this->documento_factura,
-				         'adjuntos' => $adjuntos 
-				     	);
-
-		// Paso 3: Enviar Objeto Documento Electrónico
-		$resultado_original = $documento->WebService->enviar( config('facturacion_electronica.WSDL'), $documento->options, $params );
-
-		return $resultado_original;
-    }
-
     // Llamado directamente
     public function enviar_factura_electronica( $id )
     {
@@ -148,26 +128,7 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El pefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
         }
 
-        switch ( config('facturacion_electronica.proveedor_tecnologico_default') )
-        {
-            case 'DATAICO':
-                $factura_dataico = new FacturaGeneral( $encabezado_factura, 'factura' );
-                $mensaje = $factura_dataico->procesar_envio_factura();
-                break;
-            
-            case 'TFHKA':
-                $resultado_original = $this->procesar_envio_factura( $encabezado_factura );
-
-                // Almacenar resultado en base de datos para Auditoria
-                $obj_resultado = new ResultadoEnvio;
-                $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_factura->id );
-                break;
-            
-            default:
-                // code...
-                break;
-        }
-                
+        $mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();                
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {

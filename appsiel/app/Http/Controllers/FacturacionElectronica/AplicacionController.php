@@ -36,11 +36,9 @@ class AplicacionController extends Controller
             
 
         $factura_dataico = new FacturaGeneral( $encabezado_doc, $tipo_operacion );
-        $pdf_url = $factura_dataico->consultar_documento();
+        $pdf_url = $factura_dataico->consultar_documento()->pdf_url;
     	
         return Redirect::away( $pdf_url );
-
-        //return view('facturacion_electronica.consultar_documentos_emitidos');
     }
 
 }

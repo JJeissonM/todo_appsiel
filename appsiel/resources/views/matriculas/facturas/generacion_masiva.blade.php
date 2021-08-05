@@ -25,7 +25,25 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-				{{ Form::bsSelect( 'concepto_id', null, 'Concepto a facturar', [ '' => '', config('matriculas.inv_producto_id_default_matricula') => 'Matrícula', config('matriculas.inv_producto_id_default_pension') => 'Pensión' ], [] ) }}
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="form-group">
+								{{ Form::bsSelect( 'concepto_id', null, 'Concepto a facturar', [ '' => '', config('matriculas.inv_producto_id_default_matricula') => 'Matrícula', config('matriculas.inv_producto_id_default_pension') => 'Pensión' ], [] ) }}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="form-group">
+								{{ Form::bsSelect( 'generar_fact_electronica', null, 'Enviar facturas electrónicas', [ '0' => 'No', '1' => 'Si' ], [] ) }}
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				
 
 				<br><br>
 

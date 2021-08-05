@@ -33,6 +33,8 @@ class ResultadoEnvio
         $resultado_almacenar['vtas_doc_encabezado_id'] = $encabezado_factura_id;
         $resultado_almacenar['nombre'] = json_encode( $obj_documento_enviado ); // CONVERTIR A STRING
 
+        $resultado_almacenar["codigo"] = $resultado['codigo'];
+
         $resultado_almacenar["fechaRespuesta"] = '';
         $resultado_almacenar["reglasNotificacionDIAN"] = '';
 
@@ -52,36 +54,49 @@ class ResultadoEnvio
         /* 201: La solicitud se ha cumplido y ha dado lugar a la creación de un nuevo recurso, la factura fue creada satisfactoriamente.*/
         if ( $resultado['codigo'] == 201 ) // 
         {
+            $resultado_almacenar['consecutivoDocumento'] = $resultado['number'];
         	$resultado_almacenar['cufe'] = $resultado['cufe'];
-        	$resultado_almacenar['consecutivoDocumento'] = $resultado['number'];
 
         	$resultado_almacenar['fechaRespuesta'] = $resultado['issue_date'];
 
         	$resultado_almacenar['esValidoDian'] = 1;
         	$resultado_almacenar['fechaAceptacionDIAN'] = $resultado['issue_date'];
+            $resultado_almacenar['resultado'] = 'Procesado';
+
         	if ( $resultado['dian_status'] != 'DIAN_ACEPTADO' )
         	{
         		$resultado_almacenar['esValidoDian'] = 0;
-        		$resultado_almacenar['fechaAceptacionDIAN'] = $resultado['issue_date'];
+        		$resultado_almacenar['fechaAceptacionDIAN'] = '';
+                $resultado_almacenar["reglasNotificacionDIAN"] = 'Por favor ingrese a la plataforma del proveedor tecnológico para validar los errores de envío. También puede anular la nota y crear otra nuevamente.';
+                $resultado_almacenar['resultado'] = 'Rechazado por la DIAN';
         	}
 
         	$resultado_almacenar['hash'] = $resultado['uuid'];
         	$resultado_almacenar['qr'] = $resultado['qrcode'];
         	$resultado_almacenar['xml'] = $resultado['xml'];
-        	$resultado_almacenar['resultado'] = 'Procesado';
 
         }
 
         if ( $resultado['codigo'] == 500 ) // 
         {
-			$mensaje = '<br>Notificaciones DIAN<br>';
-			$errores = $resultado['errors'];
-        	foreach ( $errores as $linea_resultado )
-        	{
-        		//dd($linea_resultado);
-				$mensaje .= $linea_resultado['error'] . '\n';
-        	}
-        	$resultado_almacenar["reglasNotificacionDIAN"] = $mensaje;
+            if( gettype($resultado['errors']) == "string" )
+            {
+                $mensaje = '<br>Notificaciones DIAN<br>' . $resultado['errors'];
+            }else{
+    			$mensaje = '<br>Notificaciones DIAN<br>';
+    			$errores = $resultado['errors'];
+            	foreach ( $errores as $linea_resultado )
+            	{
+                    $mensaje .= $linea_resultado['error'] . '\n';
+            		$detalles_error = $linea_resultado['path'];
+                    $mensaje .= ' Ruta: ';
+                    foreach ( $detalles_error as $key => $detalle )
+                    {
+                        $mensaje .= $detalle . ' ';
+                    }
+            	}
+            }
+            $resultado_almacenar["reglasNotificacionDIAN"] = $mensaje;
         }
 
 		return $resultado_almacenar;
@@ -95,9 +110,21 @@ class ResultadoEnvio
 
     	switch ( $resultado["codigo"] ) {
     		case '201':
-    			$mensaje->tipo = 'flash_message';
-    			$mensaje->contenido = '<h3>Documento enviado correctamente hacia el proveedor tecnológico</h3>';
-    			$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Consecutivo:  " .$resultado["consecutivoDocumento"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Hash:  " .$resultado["hash"] ."</br>Reglas de validación DIAN:  " .$resultado["reglasNotificacionDIAN"] ."</br>Resultado:  " .$resultado["resultado"];
+
+                if ( $resultado['esValidoDian'] )
+                {
+                    $mensaje->tipo = 'flash_message';
+                    $mensaje->contenido = '<h3>Documento enviado correctamente hacia la DIAN</h3>';
+                    $mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Consecutivo:  " .$resultado["consecutivoDocumento"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Hash:  " .$resultado["hash"] ."</br>Reglas de validación DIAN:  " .$resultado["reglasNotificacionDIAN"] ."</br>Resultado:  " .$resultado["resultado"];
+                }else{
+                    $mensaje->tipo = 'mensaje_error';
+
+                    $mensaje->contenido = '<h3><i class="fa fa-check"></i>Documento fue enviado hacia el proveedor tecnológico correctamente... SIN EMBARGO fue rechazado por la DIAN.</h3>';
+                    $mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  ";
+
+                    $mensaje->contenido .= "</br>" . $resultado["reglasNotificacionDIAN"];
+                }
+        			
     			break;
     		
     		default:
