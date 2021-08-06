@@ -102,15 +102,29 @@ dd($json_doc_electronico_enviado);
    public function preparar_cadena_json_factura()
    {
       $send_dian = 'true';
-      $send_email = 'false';
-      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $this->doc_encabezado->cliente->tercero->email . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+      $send_email = config('facturacion_electronica.enviar_email_clientes');
+
+      $lista_emails = $this->doc_encabezado->cliente->tercero->email;
+      if ( config('facturacion_electronica.enviar_email_clientes') != '' )
+      {
+         $lista_emails .= ';' . config('facturacion_electronica.enviar_email_clientes');
+      }
+
+      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
    }
 
    public function preparar_cadena_json_nota_credito( $factura_doc_encabezado )
    {
       $send_dian = 'true';
-      $send_email = 'false';
-      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $this->doc_encabezado->cliente->tercero->email . '"},"credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+      $send_email = config('facturacion_electronica.enviar_email_clientes');
+
+      $lista_emails = $this->doc_encabezado->cliente->tercero->email;
+      if ( config('facturacion_electronica.enviar_email_clientes') != '' )
+      {
+         $lista_emails .= ';' . config('facturacion_electronica.enviar_email_clientes');
+      }
+
+      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
    }
 
    public function get_encabezado_factura()

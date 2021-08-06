@@ -54,6 +54,46 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$enviar_email_clientes = 'false';
+								if( isset($parametros['enviar_email_clientes'] ) )
+								{
+									$enviar_email_clientes = $parametros['enviar_email_clientes'];
+								}else{
+								}
+							?>
+							{{ Form::bsSelect('enviar_email_clientes', $enviar_email_clientes, 'Enviar facturas por email al cliente', ['false' => 'No', 'true' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$email_copia_factura = '';
+								if( isset($parametros['email_copia_factura'] ) )
+								{
+									$email_copia_factura = $parametros['email_copia_factura'];
+								}
+							?>
+							{{ Form::bsText('email_copia_factura', $email_copia_factura, 'Enviar copia de la factura del cliente a este E-mail', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="row">
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+				</div>
 
 				<div class="row">
 
