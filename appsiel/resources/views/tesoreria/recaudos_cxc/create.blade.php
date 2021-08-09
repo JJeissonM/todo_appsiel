@@ -308,14 +308,19 @@
 				var nuevo_valor_resumen_medios_pagos = actual_valor_resumen_medios_pagos + valor_linea;
 			    $('#valor_total_resumen_medios_pagos').text( '$ ' + new Intl.NumberFormat("de-DE").format( nuevo_valor_resumen_medios_pagos.toFixed(2) ) );
 				$('#input_valor_total_resumen_medios_pagos').val( nuevo_valor_resumen_medios_pagos );
-
-				var valor_diferencia = Math.round( parseFloat( $('#input_valor_total_resumen_medios_pagos').val() ) - parseFloat( $('#input_valor_total_resumen_operaciones').val() ) );
-				$('#valor_diferencia').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_diferencia.toFixed(2) ) );
+				//Math.round
+				var valor_diferencia = ( parseFloat( $('#input_valor_total_resumen_medios_pagos').val() ) - parseFloat( $('#input_valor_total_resumen_operaciones').val() ) );
+				$('#valor_diferencia').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_diferencia.toFixed(2) ) ); // .toFixed(2)
 				$('#input_valor_diferencia').val( valor_diferencia );
 
-				if ( valor_diferencia == 0 )
+				$.fn.validar_diferencia( valor_diferencia );
+			};
+
+			$.fn.validar_diferencia = function( valor_diferencia )
+			{
+				if ( valor_diferencia.toFixed(2) == 0 )
 				{
-					$('#btn_guardar').show();
+					$('#btn_guardar').show(); // ok
 					$('#div_documento_descuadrado').hide();
 					$('#valor_diferencia').removeAttr('style');
 				}else{
@@ -323,7 +328,7 @@
 					$('#div_documento_descuadrado').show();
 					$('#valor_diferencia').attr('style','background-color: #ffa3a3;');
 				}
-			};
+			}
 
 			$.fn.actualizar_total_resumen_operaciones = function ( valor_linea )
 			{
@@ -337,17 +342,7 @@
 				$('#valor_diferencia').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_diferencia.toFixed(2) ) );
 				$('#input_valor_diferencia').val( valor_diferencia );
 
-				if ( valor_diferencia == 0 )
-				{
-					$('#btn_guardar').show();
-					$('#div_documento_descuadrado').hide();
-					$('#valor_diferencia').removeAttr('style');
-				}else{
-					$('#btn_guardar').hide();
-					$('#div_documento_descuadrado').show();
-					$('#valor_diferencia').attr('style','background-color: #ffa3a3;');
-				}
-
+				$.fn.validar_diferencia( valor_diferencia );
 			};
 		});
 
