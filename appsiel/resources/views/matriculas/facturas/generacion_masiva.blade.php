@@ -42,8 +42,20 @@
 					</div>
 				</div>
 
-
-				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="form-group">
+								{{ Form::bsFecha( 'fecha_vencimiento', date('Y-m-d'), 'Fecha vencimiento factura', [], [] ) }}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+				</div>				
 
 				<br><br>
 
