@@ -14,13 +14,12 @@
 	.page-break {
 		page-break-after: always;
 	}
-    @page { margin: 40px 25px; }
+    @page { margin: 40px 25px 100px; }
     header { 
     	position: fixed; 
     	top: -60px; 
     	left: 0px; 
     	right: 0px; 
-    	background-color: lightblue; 
     	height: 50px; 
     }
 
@@ -29,7 +28,6 @@
     	bottom: -70px; 
     	left: 0px; 
     	right: 0px; 
-    	background-color: lightblue; 
     	height: 40px;
     	text-align: center;
     }
@@ -74,20 +72,23 @@
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
+		<footer>			
+			<div style="border-top: 4px solid firebrick; height: 10px; margin: 0 4rem"></div>
+			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
+			<div style="text-align: center">{{ $colegio->ciudad }}</div>
+		</footer>
 <table width="100%">
 	<tr>
-		<td>
+		<td width="120px">
 			<img src="{{ $url }}" width="150px"/>
 		</td>
-		<td colspan="4">
-			<div align="center" style="font-size: 1.1em;">
-				<b>{{ $colegio->descripcion }}</b><br/>
-				<b style="padding-top: -10px;">Educación básica primaria</b><br/>
-				Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
-				{{ $colegio->ciudad }}<br/>
-			</div>
+		<td colspan="4" style="text-align: center; font-size: 1.1em;">
+			<b>{{ $colegio->descripcion }}</b><br/>
+			<b style="padding-top: -10px;">Educación básica primaria</b><br/>
+			Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
+			{{ $colegio->ciudad }}<br/>
 		</td>
-		<td>
+		<td width="120px">
 			<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Coat_of_arms_of_Colombia.svg/250px-Coat_of_arms_of_Colombia.svg.png" width="150px"/>			
 		</td>
 	</tr>
@@ -146,7 +147,6 @@
 					_____________________________
 				@endif
 				<br><br><br>
-				{{ '$firma_autorizada_1->tercero->descripcion' }} 
 				<br>
 				{{ $firma_autorizada_1->titulo_tercero }}
 			</div>
@@ -165,7 +165,6 @@
 					_____________________________
 				@endif
 				<br><br><br>
-				{{ '$firma_autorizada_2->tercero->descripcion' }} 
 				<br>
 				{{ $firma_autorizada_2->titulo_tercero }}
 			</div>
@@ -173,10 +172,6 @@
 		</div>
 		
 		<div style="clear: both"></div>
-		<div style="border-top: 4px solid firebrick; height: 10px; margin: 0 4rem"></div>
-		<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
-		<div style="text-align: center">{{ $colegio->ciudad }}</div>
-
 		<div class="page-break"></div>	
 		</td>
 	</tr>
