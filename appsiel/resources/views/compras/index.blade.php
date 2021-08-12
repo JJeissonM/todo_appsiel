@@ -1,13 +1,19 @@
 <?php
 
-use App\Http\Controllers\Calificaciones\ReporteController;
-use App\Http\Controllers\Compras\ReportesController;
+	use App\Http\Controllers\Calificaciones\ReporteController;
+	use App\Http\Controllers\Compras\ReportesController;
 
-$fecha_hoy = date('Y-m-d');
-$tabla = ReportesController::grafica_compras_diarias(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
-$vencidas = ReportesController::ordenes_vencidas();
-$futuras = ReportesController::ordenes_futuras();
-$semana = ReportesController::ordenes_semana();
+	$fecha_hoy = date('Y-m-d');
+	$tabla = ReportesController::grafica_compras_diarias(date("Y-m-d", strtotime($fecha_hoy . "- 30 days")), $fecha_hoy);
+	$vencidas = ReportesController::ordenes_vencidas();
+	$futuras = ReportesController::ordenes_futuras();
+	$semana = ReportesController::ordenes_semana();
+
+
+	$entradas = ReportesController::entradas_pendientes_por_facturar();
+
+	//dd($entradas);
+
 ?>
 @section('estilos_2')
 <style>
@@ -49,7 +55,40 @@ $semana = ReportesController::ordenes_semana();
 @include('layouts.mensajes')
 
 <div class="container-fluid">
+
+	@if( !empty( $entradas->toArray() ) )
+		<div class="marco_formulario">
+
+				<div class="row">
+					<div class="col-md-12">
+						<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">Entradas pendientes por facturar</h4>
+						<table class="table table-bordered table-responsive">
+							<thead>
+								<tr>
+									<th>Fecha</th>
+									<th>Doc.</th>
+									<th>Proveedor</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach($entradas as $entrada )
+									<tr>
+					                    <td>{{ $entrada->fecha }}</td>
+					                    <td>{!! $entrada->enlace_show_documento() !!}</td>
+					                    <td>{{ number_format( $entrada->tercero->numero_identificacion, 0, ',', '.' ) }} / {{ $entrada->tercero->descripcion }}</td>
+									</tr>
+								@endforeach
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+
+		</div>
+	@endif
+
 	<div class="marco_formulario">
+
 		<div class="row">
 			<div class="col-md-12">
 				<div class="card"  style="border: 2px solid #ffcd39">

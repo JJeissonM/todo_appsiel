@@ -24,6 +24,8 @@ use App\CxP\DocumentosPendientes;
 
 use App\Contabilidad\Impuesto;
 
+use App\Inventarios\InvDocEncabezado;
+
 
 class ReportesController extends Controller
 {
@@ -266,6 +268,15 @@ class ReportesController extends Controller
             'fecha' => date_format(date_create($o->fecha), 'd-m-Y'),
         ];
         return $orden;
+    }
+
+    public static function entradas_pendientes_por_facturar()
+    {
+        return InvDocEncabezado::where([
+                                        ['estado','Pendiente'],
+                                        ['core_tipo_transaccion_id',35]
+                                    ])
+                                ->get();
     }
 
 }

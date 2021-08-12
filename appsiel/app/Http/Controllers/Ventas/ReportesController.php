@@ -21,6 +21,7 @@ use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvDocEncabezado;
 
 use App\Contabilidad\Impuesto;
 
@@ -299,5 +300,14 @@ class ReportesController extends Controller
         return $pedidos;
     }
 
+
+    public static function remisiones_pendientes_por_facturar()
+    {
+        return InvDocEncabezado::where([
+                                        ['estado','Pendiente'],
+                                        ['core_tipo_transaccion_id',24]
+                                    ])
+                                ->get();
+    }
 
 }

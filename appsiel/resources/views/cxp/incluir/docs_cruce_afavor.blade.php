@@ -27,7 +27,7 @@
             $ocultar = '';
 
         ?>
-        @if( $movimiento[$i]['saldo_pendiente'] < 0)
+        @if( $movimiento[$i]['saldo_pendiente'] <= -0.1 )
             <tr id="{{ $id }}" class="{{$class_advertencia}}">
                 <td class="text-center"> {{ $movimiento[$i]['documento'] }} </td>
                 <td> {{ $movimiento[$i]['fecha'] }} </td>

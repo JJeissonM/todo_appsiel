@@ -26,10 +26,17 @@
                         $tercero_descripcion = $linea->tercero->descripcion;
                     }
 
+                    $cuenta_codigo = '';
+                    $cuenta_descripcion = 'Error en la cuenta. ID MOV. = ' . $linea->id;
+                    if ( !is_null( $linea->cuenta ) )
+                    {
+                        $cuenta_codigo = $linea->cuenta->codigo;
+                        $cuenta_descripcion = $linea->cuenta->descripcion;
+                    }
                 ?>
                 <tr>
                     <td> {{ $linea->fecha }}</td>
-                    <td class="text-center"> {{ $linea->cuenta->codigo }} {{ $linea->cuenta->descripcion }}</td>
+                    <td class="text-center"> {{ $cuenta_codigo }} {{ $cuenta_descripcion }}</td>
                     <td class="text-center"> {{ $tercero_numero_identificacion }} {{ $tercero_descripcion }}</td>
                     <td> {{ $linea->tipo_documento_app->prefijo }} {{ $linea->consecutivo }}</td>
                     <td> {{ $linea->detalle_operacion }}</td>
