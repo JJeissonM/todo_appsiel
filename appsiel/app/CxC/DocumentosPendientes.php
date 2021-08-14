@@ -70,6 +70,7 @@ class DocumentosPendientes extends Model
                                                 'cxc_movimientos.valor_documento',
                                                 'cxc_movimientos.valor_pagado',
                                                 'cxc_movimientos.saldo_pendiente',
+                                                'cxc_movimientos.estado',
                                                 'cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')
                                     ->get()->toArray();
@@ -131,6 +132,7 @@ class DocumentosPendientes extends Model
                                             'cxc_movimientos.valor_documento',
                                             'cxc_movimientos.valor_pagado',
                                             'cxc_movimientos.saldo_pendiente',
+                                            'cxc_movimientos.estado',
                                             'vtas_clientes.clase_cliente_id',
                                             'cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')

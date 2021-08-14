@@ -107,7 +107,8 @@ class DocumentosPendientes extends Model
                                             'cxp_movimientos.valor_documento',
                                             'cxp_movimientos.valor_pagado',
                                             'cxp_movimientos.saldo_pendiente',
-                                            'cxp_movimientos.core_tercero_id')
+                                            'cxp_movimientos.core_tercero_id',
+                                            'cxp_movimientos.estado')
                                 ->orderBy('cxp_movimientos.fecha')
 						        ->get()->toArray(); 
     }
