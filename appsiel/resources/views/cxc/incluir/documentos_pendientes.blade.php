@@ -31,7 +31,6 @@
 
                 <?php
 
-                    dd($movimiento[$i]);
                     // Para saltar los decimales
                     if ( $movimiento[$i]['saldo_pendiente'] > -0.1 && $movimiento[$i]['saldo_pendiente'] < 0.1 && $movimiento[$i]['id'] != 0 )
                     {
