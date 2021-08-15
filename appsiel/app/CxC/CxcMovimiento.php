@@ -122,6 +122,7 @@ class CxcMovimiento extends Model
                 'cxc_movimientos.valor_documento',
                 'cxc_movimientos.valor_pagado',
                 'cxc_movimientos.saldo_pendiente',
+                'cxc_movimientos.estado',
                 'cxc_movimientos.core_tercero_id')
       ->orderBy('cxc_movimientos.core_tercero_id')
       ->orderBy('cxc_movimientos.fecha')
@@ -147,7 +148,8 @@ class CxcMovimiento extends Model
                               'cxc_movimientos.fecha_vencimiento',
                               'cxc_movimientos.valor_documento',
                               'cxc_movimientos.valor_pagado',
-                              'cxc_movimientos.saldo_pendiente'
+                              'cxc_movimientos.saldo_pendiente',
+                              'cxc_movimientos.estado'
                             )
                             ->orderBy('cxc_movimientos.fecha')
                             ->get()->toArray();
