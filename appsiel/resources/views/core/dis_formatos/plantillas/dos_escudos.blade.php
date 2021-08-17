@@ -14,7 +14,7 @@
 	.page-break {
 		page-break-after: always;
 	}
-    @page { margin: 40px 25px 100px; }
+    @page { margin: 40px 25px 100px 25px; }
     header { 
     	position: fixed; 
     	top: -60px; 
@@ -72,15 +72,15 @@
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
-		<footer>			
-			<div style="border-top: 4px solid firebrick; height: 10px; margin: 0 4rem"></div>
+		<footer style="border:none">			
+			<div style="border-top: 4px solid rgb(0, 0, 0); height: 10px; margin: 0 4rem"></div>
 			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
 			<div style="text-align: center">{{ $colegio->ciudad }}</div>
 		</footer>
 <table width="100%">
 	<tr>
-		<td width="120px">
-			<img src="{{ $url }}" width="150px"/>
+		<td>
+			<img src="{{ $url }}" width="100px" />
 		</td>
 		<td colspan="4" style="text-align: center; font-size: 1.1em;">
 			<b>{{ $colegio->descripcion }}</b><br/>
@@ -88,18 +88,17 @@
 			Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
 			{{ $colegio->ciudad }}<br/>
 		</td>
-		<td width="120px">
-			<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Coat_of_arms_of_Colombia.svg/250px-Coat_of_arms_of_Colombia.svg.png" width="150px"/>			
+		<td  style=" text-align: right">
+			<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Coat_of_arms_of_Colombia.svg/250px-Coat_of_arms_of_Colombia.svg.png" width="100px" />			
 		</td>
 	</tr>
 	<tr>
 		<td colspan="6">
-			<div style="border-top: 4px solid firebrick;border-bottom: 2px solid dodgerblue; height: 10px; margin: 0 4rem"></div>
+			<div style="border-bottom: 2px solid rgb(0, 0, 0);margin: 0 4rem"></div>
 			<br>
 			<div align="center">
 				EL DIRECTOR(A) GENERAL DE {{ $colegio->descripcion }}
 			</div>		
-			<br>
 			<div align="center">
 				CERTIFICA QUE:
 			</div>

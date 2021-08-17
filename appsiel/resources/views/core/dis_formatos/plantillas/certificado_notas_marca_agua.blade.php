@@ -72,7 +72,7 @@
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
-		<footer>
+		<footer style="border: none">
 			<hr>
 			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
 			<div style="text-align: center">{{ $colegio->ciudad }}</div>
@@ -80,8 +80,8 @@
 
 <table width="100%">
 	<tr>
-		<td width="120px">
-			<img src="{{ $url }}" width="150px"/>
+		<td>
+			<img src="{{ $url }}" width="120px"/>
 		</td>
 		<td colspan="4" style="text-align: center; font-size: 1.1em;">
 				<b>{{ $colegio->descripcion }}</b><br/>
@@ -89,7 +89,8 @@
 				Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
 				{{ $colegio->ciudad }}<br/>
 		</td>
-		<td  width="120px">
+		<td>
+			<div style="width: 100px"></div>
 		</td>
 	</tr>
 	<tr>
@@ -98,7 +99,6 @@
 			<div align="center">
 				EL DIRECTOR(A) GENERAL DE {{ $colegio->descripcion }}
 			</div>		
-			<br>
 			<div align="center">
 				CERTIFICA QUE:
 			</div>
