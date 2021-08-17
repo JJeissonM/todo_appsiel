@@ -20,6 +20,11 @@
 
             for($i=0; $i<$cantidad; $i++)
             { 
+
+                if ( $movimiento[$i]['saldo_pendiente'] > -0.1 && $movimiento[$i]['saldo_pendiente'] < 0.1 )
+                {
+                    continue;
+                }
         ?>
                     
                 

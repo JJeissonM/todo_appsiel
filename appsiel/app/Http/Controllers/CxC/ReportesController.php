@@ -79,7 +79,8 @@ class ReportesController extends Controller
                     "saldo_pendiente" => 0.0,
                     "sub_total" => $sum,
                     "clase_cliente_id" => '',
-                    "core_tercero_id" => ''
+                    "core_tercero_id" => '',
+                    "estado" => ''
                 ];
                 $collection[]=$obj;
             }

@@ -16,6 +16,9 @@
 	{
 		$vendedor_id = $vendedor->id;
 	}
+
+
+	$remisiones = ReportesController::remisiones_pendientes_por_facturar();
 ?>
 
 
@@ -107,6 +110,37 @@
 		</div>
 	@else
 		<div class="container-fluid">
+
+		@if( !empty( $remisiones->toArray() ) )
+			<div class="marco_formulario">
+
+					<div class="row">
+						<div class="col-md-12">
+							<h4 class="card-header" style="text-align: center; width: 100%; background-color: #ddd; color: #636363;">Remisiones pendientes por facturar</h4>
+							<table class="table table-bordered table-responsive">
+								<thead>
+									<tr>
+										<th>Fecha</th>
+										<th>Doc.</th>
+										<th>Cliente</th>
+									</tr>
+								</thead>
+								<tbody>
+									@foreach($remisiones as $remision )
+										<tr>
+						                    <td>{{ $remision->fecha }}</td>
+						                    <td>{!! $remision->enlace_show_documento() !!}</td>
+						                    <td>{{ number_format( $remision->tercero->numero_identificacion, 0, ',', '.' ) }} / {{ $remision->tercero->descripcion }}</td>
+										</tr>
+									@endforeach
+								</tbody>
+							</table>
+
+						</div>
+					</div>
+
+			</div>
+		@endif
 			<div class="marco_formulario">
 				<div class="row">					
 					<div class="col-md-12">						

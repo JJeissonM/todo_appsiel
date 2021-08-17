@@ -27,6 +27,15 @@
 
                 for($i=0; $i<$cantidad; $i++)
                 { 
+                    if ( $movimiento[$i]['saldo_pendiente'] > -0.1 && $movimiento[$i]['saldo_pendiente'] < 0.1 && $movimiento[$i]['id'] != 0 )
+                    {
+                        continue;
+                    }
+
+                    if ( $movimiento[$i]['estado'] == 'Pagado' )
+                    {
+                        continue;
+                    }
             ?>                    
                     
                 @if($movimiento[$i]['id'] != 0)
@@ -47,6 +56,11 @@
                         </td>
                     </tr>
                 @else
+                    <?php 
+                        if ( $movimiento[$i]['sub_total'] > -0.1 && $movimiento[$i]['sub_total'] < 0.1 ) {
+                            continue;
+                        }
+                    ?>
                     <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}" style="background: #4a4a4a; color: white;">
                         <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
                         <td></td>
