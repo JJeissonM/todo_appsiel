@@ -212,7 +212,7 @@ $(document).ready(function(){
 
 				item_activo.next().attr('class','list-group-item list-group-item-productos active');
 				item_activo.attr('class','list-group-item list-group-item-productos');
-				$('#inv_producto_id').val( item_activo.html() );
+				//$('#inv_producto_id').val( item_activo.html() );
     			break;
 
     		case 38: // Flecha hacia arriba
@@ -227,7 +227,7 @@ $(document).ready(function(){
 									
 				item_activo.prev().attr('class','list-group-item list-group-item-productos active');
 				item_activo.attr('class','list-group-item list-group-item-productos');
-				$('#inv_producto_id').val( item_activo.html() );
+				//$('#inv_producto_id').val( item_activo.html() );
     			break;
 
     		case 13: // Al presionar Enter
@@ -288,7 +288,7 @@ $(document).ready(function(){
     			break;
     	}
 
-    });		    
+    });
 
     //Al hacer click en alguna de las sugerencias (escoger un producto)
     $(document).on('click','.list-group-item-productos', function(){
