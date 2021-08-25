@@ -38,6 +38,7 @@ use App\Sistema\Campo;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
 
+use App\VentasPos\Services\ServiciosInventarios;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -830,9 +831,47 @@ class FacturaPosController extends TransaccionController
         return redirect('pos_factura/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Factura de ventas ANULADA correctamente.');
     }
 
+    /*
+        VALIDAR EXISTENCIAS
+        => Hacer desarme automático de productos
+        => Validar existencias de Items
+    */
+    public function validar_existencias( $pdv_id )
+    {
+
+        $pdv = Pdv::find($pdv_id);
+
+        $encabezados_documentos = FacturaPos::where('pdv_id', $pdv_id)->where('estado', 'Pendiente')->get();
+
+        if ( is_null($encabezados_documentos) )
+        {
+            return 'No hay documentos pendientes.';
+        }
+
+        // Un documento de desarme (MK) por acumulación
+        $this->hacer_desarme_automatico( $pdv_id, $encabezados_documentos->last()->fecha ); // Con la fecha de la última factura
+
+        if ( !(int)config( 'ventas_pos.validar_existencias_al_acumular' ) )
+        {
+            return 1;
+        }
+        $lista_items_aux = $this->resumen_cantidades_facturadas($pdv->id)->toArray();
+        
+        $lista_items = [];
+        foreach( $lista_items_aux AS $linea )
+        {
+            $lista_items[$linea['inv_producto_id']] = $linea['cantidad_facturada'];
+        }
+
+        return ServiciosInventarios::tabla_items_existencias_negativas( $pdv->bodega_default_id, $encabezados_documentos->last()->fecha, $lista_items );
+
+    }
+
 
     /*
         ACUMULAR
+        => Hacer desarme automático de productos
+        => Validar existencias de Items
         => Genera movimiento de ventas
         => Genera Documentos de Remisión y movimiento de inventarios
         => Genera Movimiento de Tesorería O CxC
@@ -849,9 +888,6 @@ class FacturaPosController extends TransaccionController
         {
             return 1;
         }
-
-        // Un documento de desarme (MK) por acumulación
-        $this->hacer_desarme_automatico( $pdv_id, $encabezados_documentos->last()->fecha ); // Con la fecha de la última factura
 
         foreach ($encabezados_documentos as $factura)
         {

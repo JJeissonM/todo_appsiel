@@ -274,6 +274,8 @@ class TransaccionController extends Controller
     // Almacenar el costo promedio en la tabla de la BD
     public static function set_costo_promedio($id_bodega,$id_producto,$costo_prom)
     {
+        $costo_prom = round( $costo_prom, 2 );
+        
         $existe = InvCostoPromProducto::where('inv_bodega_id',$id_bodega)
                                 ->where('inv_producto_id',$id_producto)
                                 ->value('id');                  
@@ -294,6 +296,11 @@ class TransaccionController extends Controller
             // Almaceno en la base de datos
             InvCostoPromProducto::create( $datos );
         }
+
+        // Se actualiza el costo estándar del Item
+        $item = InvProducto::find( $id_producto );
+        $item->precio_compra = abs( $costo_prom );
+        $item->save();
     }
 
     public function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)

@@ -5,5 +5,6 @@
   'tamanio_fuente_factura' => '12',
   'redondear_centena' => '0',
   'permite_facturacion_con_archivo_plano' => '0',
+  'validar_existencias_al_acumular' => '1',
   'url_id_modelo' => '0',
 ) ;
