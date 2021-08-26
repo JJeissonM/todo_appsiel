@@ -84,7 +84,7 @@
 		</footer>
 		<div style="position: absolute; width: 100%">
 			<img src="{{ $url }}" width="80px" style="float: left"/>
-			<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Coat_of_arms_of_Colombia.svg/250px-Coat_of_arms_of_Colombia.svg.png" width="80px" style="float: right"/>	
+			<img src="{{ asset('assets/img/escudo_colombia.png') }}" width="80px" style="float: right"/>	
 		</div>
 <table width="100%">
 	<tr>
