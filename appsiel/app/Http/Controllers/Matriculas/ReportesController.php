@@ -128,10 +128,11 @@ class ReportesController extends Controller
             $fecha = explode('-', $request->fecha_expedicion );
             $array_fecha = [ $fecha[2], ConfiguracionController::nombre_mes( $fecha[1] ), $fecha[0] ];            
         }
+        
+        $firma_autorizada_datos_1 = FirmaAutorizada::get_datos( $request->firma_autorizada_1 );
+        $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
 
-        $firma_autorizada_1 = FirmaAutorizada::get_datos( $request->firma_autorizada_1 );
-
-        $vista = View::make( 'core.dis_formatos.plantillas.constancia_estudios_estudiante', compact( 'estudiante', 'curso', 'periodo_lectivo', 'array_fecha', 'firma_autorizada_1', 'tam_hoja', 'libreta_pago', 'detalla_valores_matricula_pension', 'matriculado' )  )->render();
+        $vista = View::make( 'core.dis_formatos.plantillas.constancia_estudios_estudiante', compact( 'estudiante', 'curso', 'periodo_lectivo', 'array_fecha', 'firma_autorizada_1','firma_autorizada_datos_1', 'tam_hoja', 'libreta_pago', 'detalla_valores_matricula_pension', 'matriculado' )  )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

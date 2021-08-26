@@ -5,9 +5,6 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 	<style>
 	@font-face {
 		font-family: Arial, sans-serif;
@@ -153,12 +150,10 @@
 				?>
 				@if( $url_firma != '')
 					<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
-				@else
-					_____________________________
 				@endif
 				<br><br><br>
 				<br>
-				{{ $firma_autorizada_1->titulo_tercero }}
+				<p style="border-top: 1px solid black; margin: 0 50px;">{{ $firma_autorizada_1->titulo_tercero }}</p>
 			</div>
 
 			<div style="float: left; width: 50%; text-align: center;">
@@ -171,12 +166,10 @@
 				?>
 				@if( $url_firma != '')
 					<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
-				@else
-					_____________________________
 				@endif
 				<br><br><br>
 				<br>
-				{{ $firma_autorizada_2->titulo_tercero }}
+				<p style="border-top: 1px solid black; margin: 0 50px;">{{ $firma_autorizada_2->titulo_tercero }}</p>
 			</div>
 			
 		</div>

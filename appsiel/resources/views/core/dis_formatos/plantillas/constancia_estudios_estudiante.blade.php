@@ -1,10 +1,5 @@
 <style>
 
-	img {
-		padding-left:30px;
-	}
-
-	
 	.page-break {
 		page-break-after: always;
 	}
@@ -126,14 +121,27 @@
 		Atentamente,
 
 	</div>
-
-	<br><br><br>
-
-	{{ $firma_autorizada_1->tercero_nombre }} 
+<br><br><br>
+	<?php
+		$url_firma = '';
+		if ( $firma_autorizada_1->imagen != '' )
+		{
+			$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_1->imagen;
+			$img = getimagesize($url_firma);
+		}
+	?>
+	@if( $url_firma != '')
+	<div style="position: relative;">
+		<img src="{{ $url_firma }}" width="250px" style="margin: 0; padding: 0"/>
+	</div>
+	@endif
+	_____________________________<br><br>
+	{{ $firma_autorizada_datos_1->tercero_nombre }}
 	<br>
-	{{ $firma_autorizada_1->tercero_tipo_doc_identidad }} {{ number_format( $firma_autorizada_1->tercero_numero_identificacion, 0, ',', '.' ) }}
+	{{ $firma_autorizada_datos_1->tercero_tipo_doc_identidad }} {{ number_format( $firma_autorizada_datos_1->tercero_numero_identificacion, 0, ',', '.' ) }}
 	<br>
-	{{ $firma_autorizada_1->tercero_titulo }} 
+	{{ $firma_autorizada_1->titulo_tercero }} 
+
 
 @else
 	<h2>Estudiante no tiene matrículas para este Año Lectivo: {{ $periodo_lectivo->descripcion }}</h2>
