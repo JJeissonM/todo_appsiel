@@ -11,7 +11,7 @@
 </style>
 
 <style>
-    @page { margin: 100px 75px; }
+    @page { margin: 60px 75px 100px ; }
     header { 
     	position: fixed; 
     	top: -60px; 
@@ -21,15 +21,6 @@
     	height: 50px; 
     }
 
-    footer { 
-    	position: fixed; 
-    	bottom: -70px; 
-    	left: 0px; 
-    	right: 0px; 
-    	background-color: lightblue; 
-    	height: 40px;
-    	text-align: center;
-    }
 
     p { page-break-after: always; }
     p:last-child { page-break-after: never; }
@@ -55,7 +46,14 @@
 		margin:auto;
 		width: 95%;
 	}
-
+	footer { 
+    	position: fixed; 
+    	bottom: -70px; 
+    	left: 0px; 
+    	right: 0px; 
+    	height: 40px;
+    	text-align: center;
+    }
  </style>
 
 <?php    
@@ -75,14 +73,18 @@
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
+		<footer style="border: none">
+			<hr>
+			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
+			<div style="text-align: center">{{ $colegio->ciudad }}</div>
+		</footer>
 
 			<br><br>
 			
 		<div align="center" style="font-size: 1.1em;">
-			<b>{{ $colegio->descripcion }}</b><br/>
-			<b style="padding-top: -10px;">Educación básica primaria</b><br/>
-			Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
-			{{ $colegio->ciudad }}<br/>
+				<b>{{ $colegio->descripcion }}</b><br/>
+				{{ $colegio->resolucion }}. <br> Expedida por Secretaria de Educación Municipal <br/>
+				{{ $colegio->ciudad }}<br/><hr>
 		</div>
 
 		<br><br><br>

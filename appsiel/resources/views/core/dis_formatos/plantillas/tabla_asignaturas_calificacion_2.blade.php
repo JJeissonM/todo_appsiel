@@ -1,8 +1,8 @@
 
         <tr>
             <td  colspan="2" style="border: 1px solid grey;background-color: #E0E0E0; width:400px;">Asignaturas</td>
-            <td style="border: 1px solid grey;background-color: #E0E0E0; width:30px;">I.H.</td>
-            <td colspan="3" style="border: 1px solid grey;background-color: #E0E0E0;">Calificaciones</td>
+            <td style="border: 1px solid grey;background-color: #E0E0E0; width:30px; text-align: center">I.H.</td>
+            <td colspan="3" style="border: 1px solid grey;background-color: #E0E0E0; text-align: center">Calificaciones</td>
         </tr>
     @foreach($asignaturas as $asignatura)
 

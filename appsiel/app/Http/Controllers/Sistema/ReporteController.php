@@ -66,12 +66,11 @@ class ReporteController extends Controller
         {
             $orientacion = Input::get('orientacion');
         }
-
-
         $pdf = \App::make('dompdf.wrapper');
 
         $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
-
-        return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
+        //$pdf->setOptions(['defaultFont' => 'Arial']);
+        //return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
+        return $pdf->stream();
     }
 }

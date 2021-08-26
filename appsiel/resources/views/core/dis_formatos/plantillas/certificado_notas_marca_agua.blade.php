@@ -5,8 +5,13 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
-	<style>
-
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+	<style>	
+	#body *{
+		font-family: 'Open Sans', sans-serif;
+	}
 	img {
 		padding-left:30px;
 	}
@@ -25,10 +30,8 @@
 
     footer { 
     	position: fixed; 
-    	bottom: -70px; 
     	left: 0px; 
     	right: 0px; 
-    	height: 40px;
     	text-align: center;
     }
 
@@ -59,11 +62,11 @@
 
 	</style>
 </head>
-<body  style="font-size: 17px;">
+<body id="body" style="font-size: 17px;">
 
 <?php    
     $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
-
+	$cont = 0;
 	$url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
 ?>
 
@@ -80,18 +83,20 @@
 
 <table width="100%">
 	<tr>
-		<td>
+		<!--<td>
 			<img src="{{ $url }}" width="120px"/>
-		</td>
-		<td colspan="4" style="text-align: center; font-size: 1.1em;">
+		</td>-->
+		<td colspan="6" style="text-align: center; font-size: 1.1em;">
+			<div style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px; padding-top: 10px">
 				<b>{{ $colegio->descripcion }}</b><br/>
-				<b style="padding-top: -10px;">Educación básica primaria</b><br/>
-				Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
-				{{ $colegio->ciudad }}<br/>
+				<br/>
+				{{ $colegio->resolucion }}. <br> Expedida por Secretaria de Educación Municipal <br/>
+				{{ $colegio->ciudad }}<br/><hr>
+			</div>
 		</td>
-		<td>
+		<!--<td>
 			<div style="width: 100px"></div>
-		</td>
+		</td>-->
 	</tr>
 	<tr>
 		<td colspan="6">
@@ -115,7 +120,6 @@
 	{!! View::make( 'core.dis_formatos.plantillas.tabla_asignaturas_calificacion_2', compact( 'asignaturas','colegio','estudiante','curso', 'periodo_id' ) )->render() !!}	
 	<tr>
 		<td colspan="6">
-				<br>
 			<div style="text-align: justify;">
 				Observaciones: APROBÓ( &nbsp;&nbsp; )  &nbsp;&nbsp;&nbsp;&nbsp;    REPROBÓ( &nbsp;&nbsp; )    &nbsp;&nbsp;&nbsp;&nbsp;    APLAZÓ( &nbsp;&nbsp; )
 				<br>
@@ -125,7 +129,7 @@
 			<div style="text-align: justify;">
 				Para mayor constancia, se firma la presente en la ciudad de {{ $colegio->ciudad }} a los {{ $array_fecha[0] }} días del mes de {{ $array_fecha[1] }} de {{ $array_fecha[2] }}.
 			</div>
-			<br><br>			
+			<br>			
 		</td>
 	</tr>
 	<tr>
@@ -145,7 +149,7 @@
 				@else
 					_____________________________
 				@endif
-				<br><br><br>
+				<br><br>
 				<br>
 				{{ $firma_autorizada_1->titulo_tercero }}
 			</div>
@@ -163,22 +167,22 @@
 				@else
 					_____________________________
 				@endif
-				<br><br><br>
+				<br><br>
 				<br>
 				{{ $firma_autorizada_2->titulo_tercero }}
 			</div>
 			
 		</div>
 		
-		<div style="clear: both"></div>
-		
-		
-		
-
-		<div class="page-break"></div>	
 		</td>
 	</tr>
-</table>		
+</table>
+<?php	
+	if($cont > 0){
+		echo '<div class="page-break"></div>';
+	}
+	$cont++;
+?>
 @endforeach
 </body>
 </html>

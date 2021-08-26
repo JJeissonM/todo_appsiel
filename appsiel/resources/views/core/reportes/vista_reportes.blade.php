@@ -50,10 +50,12 @@
 @section('contenido')
 		<div class="col-md-12 marco_formulario">
 			<br/>
-			{{ Form::bsBtnExcel( $reporte->descripcion ) }}
+			<!--{  { Form::bsBtnExcel( $reporte->descripcion ) }}-->
 			{{ Form::bsBtnPdf( $reporte->descripcion ) }}
 			{{ Form::Spin( 42 ) }}
 			{{ Form::hidden( 'reporte_id', $reporte->id, ['id'=>'reporte_id'] ) }}
+
+			<embed id="vistaprevia" oncontextmenu='return false;' src="" type="application/pdf" allowfullscreen width="100%" height="620" />
 			
 			<div class="table-responsive" id="table_content">
 				<div id="resultado_consulta">
@@ -85,6 +87,7 @@
 				$('#resultado_consulta').html( "" );
 				$('#btn_excel').hide();
 				$('#btn_pdf').hide();
+				$('#vistaprevia').hide();
 
 				$('#btn_pdf').attr('href', url_pdf_ori);
 
@@ -104,11 +107,12 @@
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
 					$('#div_spin').hide();
-					$('#resultado_consulta').html(respuesta);
+					//$('#resultado_consulta').html(respuesta);
 
 					$('.columna_oculta').show();
-					$('#btn_excel').show(500);
-					$('#btn_pdf').show(500);
+					/*$('#btn_excel').show(500);
+					$('#btn_pdf').show(500);*/
+					$('#vistaprevia').show(0);
 
 					var url_pdf = $('#btn_pdf').attr('href');
 					var n = url_pdf.search('a3p0');
@@ -117,7 +121,7 @@
 					}
 					
 					$('#btn_pdf').attr('href', new_url);
-
+					$('#vistaprevia').attr('src', new_url);
 				});
 			});
 
