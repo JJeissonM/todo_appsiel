@@ -8,6 +8,13 @@ return array(
                 'url' => 'https://appsiel.com.co/Ayudas/Videos/Generales/1_Ingresar_al_sistema.mp4',
                 'duracion' => '1:15',
                 'publicacion' => '1 de Marzo de 2021'
+            ),
+            '1' => array(
+                'label' => 'Ingresar al sistema (otra forma)',
+                'preview' => 'https://appsiel.com.co/Ayudas/Videos/Generales/Ingreso_al_sistema_(otra_forma).jpg',
+                'url' => 'https://appsiel.com.co/Ayudas/Videos/Generales/Ingreso_al_sistema_(otra_forma).mp4',
+                'duracion' => '1:50',
+                'publicacion' => '26 de Agosto de 2021'
             )
         ),
         'videos_apps' => array(
@@ -72,7 +79,29 @@ return array(
             ],
             '7' => [
                 'app' => 'inventarios',
-                'urls' => array()
+                'urls' => array(                    
+                    '0' => array(
+                        'label' => 'Crear Bodega',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Bodega.png',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Bodega.mp4',
+                        'duracion' => '1:52',
+                        'publicacion' => '26 de Agosto de 2021'
+                    ),
+                    '1' => array(
+                        'label' => 'Crear Entrada Almacen',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Entrada_almacen.png',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Entrada_almacen.mp4',
+                        'duracion' => '3:47',
+                        'publicacion' => '26 de Agosto de 2021'
+                    ),
+                    '2' => array(
+                        'label' => 'Crear Producto',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Producto.png',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Producto.mp4',
+                        'duracion' => '4:17',
+                        'publicacion' => '26 de Agosto de 2021'
+                    )
+                )
             ],
             '8' => [
                 'app' => 'compras',
