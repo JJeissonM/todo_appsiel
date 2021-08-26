@@ -24,11 +24,12 @@ class ItemDesarmeAutomatico extends Model
 
     // item_consumir_id: el que se compra
     // item_producir_id: el que se vende
+    // cantidad_proporcional: cantidad a producir por cada unidad (1) de item a consumir
     protected $fillable = [ 'item_consumir_id', 'item_producir_id', 'cantidad_proporcional', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Item a consumir (SE COMPRA)', 'Item a producir (SE VENDE)', 'Cantidad proporcional', 'Estado'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
     public function item_consumir()
     {

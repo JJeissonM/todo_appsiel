@@ -14,7 +14,10 @@ Route::get('pos_hacer_desarme_automatico/{pdv_id}/{fecha}', 'VentasPos\FacturaPo
 // Anular factura que no esté acumulada
 Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_pos');
 
+Route::get('pos_factura_validar_existencias/{pdv_id}', 'VentasPos\FacturaPosController@validar_existencias');
+
 Route::get('pos_factura_acumular/{pdv_id}', 'VentasPos\FacturaPosController@acumular');
+
 Route::get('pos_factura_contabilizar/{pdv_id}', 'VentasPos\FacturaPosController@contabilizar');
 
 Route::get('ventas_pos_form_registro_ingresos_gastos/{pdv_id}/{id_modelo}/{id_transaccion}', 'VentasPos\FacturaPosController@form_registro_ingresos_gastos');

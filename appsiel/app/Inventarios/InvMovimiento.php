@@ -514,4 +514,26 @@ class InvMovimiento extends Model
 
         return $saldo_original_a_la_fecha;
     }
+
+
+    // ***********   NUEVO: AGOSTO DE 2021    ***********
+
+    public static function get_cantidad_existencia_item( $item_id, $bodega_id, $fecha_corte )
+    {
+        $array_wheres = [
+                            [ 'core_empresa_id', '=', Auth::user()->empresa_id ],
+                            [ 'inv_producto_id', '=', $item_id ],
+                            [ 'inv_bodega_id', '=', $bodega_id ],
+                            [ 'fecha', '<=', $fecha_corte ]
+                        ];
+        
+        $existencia_actual = InvMovimiento::where( $array_wheres )->sum('cantidad');
+
+        if ( is_null($existencia_actual) )
+        {
+            $existencia_actual = 0;
+        }
+
+        return $existencia_actual;
+    }
 }

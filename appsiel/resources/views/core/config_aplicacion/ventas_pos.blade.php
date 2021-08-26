@@ -20,7 +20,7 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
-				<h4> Parámetros por defecto creación de clientes  </h4>
+				<h4> Parámetros Generales  </h4>
 				<hr>
 				<div class="row">
 
@@ -51,6 +51,7 @@
 					</div>
 
 				</div>
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -78,6 +79,31 @@
 								}
 							?>
 							{{ Form::bsSelect('permite_facturacion_con_archivo_plano', $permite_facturacion_con_archivo_plano, 'Permite facturación con archivo plano', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Parámetros de la acumulación  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$validar_existencias_al_acumular = '0';
+								if( isset($parametros['validar_existencias_al_acumular'] ) )
+								{
+									$validar_existencias_al_acumular = $parametros['validar_existencias_al_acumular'];
+								}
+							?>
+							{{ Form::bsSelect('validar_existencias_al_acumular', $validar_existencias_al_acumular, 'Validar existencias en la acumulación', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 

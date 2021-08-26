@@ -6,19 +6,17 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
 
+use App\Inventarios\Services\ValidacionExistencias;
+
 class PruebasController extends Controller
 {
 
     public function prueba_directa()
     {
-        $encabezado_factura = \App\Ventas\VtasDocEncabezado::find(152);
-
-        //$encabezado_factura->actualizar_valor_total();
-
-		//$encabezado_factura->contabilizar_movimiento_debito();
-        //$encabezado_factura->contabilizar_movimiento_credito();
-
-       // $encabezado_factura->crear_registro_pago();
+        
+        $obj = new ValidacionExistencias( 1, date('Y-m-d') );
+        dd( $obj->lista_items_con_existencias_negativas( [ 104=>23, 105=>3, 101=>34.5 ] ) );
+        //echo 'Cantidad existencia: ' . $obj->set_item( 105 )->get_existencia_item();
     }
 
 }

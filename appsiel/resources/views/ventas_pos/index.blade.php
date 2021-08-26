@@ -81,7 +81,7 @@
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
-		        		$btn_acumular = '<button class="btn btn-xs btn-warning btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
+		        		$btn_acumular = '<button class="btn btn-xs btn-warning" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
 
 		        		$btn_hacer_arqueo = '<a href="'.url( '/web/create' . '?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id='.$pdv->caja_default_id ) .'" class="btn btn-xs btn-info" id="btn_hacer_arqueo"> Hacer arqueo </a>';
 
@@ -201,12 +201,11 @@
 	<script type="text/javascript">
 		
 		var pdv_id;
+		var continuar = true;
 
 		$(document).ready(function(){
 
-			$(".btn_acumular").click(function(event){
-
-				pdv_id = $(this).attr('data-pdv_id');
+			$("#btn_acumular").click(function(event){
 
 		        $("#myModal").modal({backdrop: "static"});
 		        $("#div_spin").show();
@@ -215,36 +214,81 @@
 		        $(".btn_edit_modal").hide();
 		        $(".btn_save_modal").hide();
 
-		        $('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Acumulando facturas POS... </h1>' );
 
-		        var url = "{{url('pos_factura_acumular')}}" + "/" + pdv_id;
+		        validar_existencias().then( acumular ).then( contabilizar ).then(function() {
 
-				$.get( url )
-					.done(function( data ) {
-							
-						$('#contenido_modal').html( '<h1 style="text-align:center;">  <small>Por favor espere</small> <br> Acumulación completada exitosamente. <i class="fa fa-check"></i> <br> Contabilizando documentos... </h1>' );
+		        	if ( !continuar )
+					{
+		        		$(".btn_close_modal").show();
+						return 0;
+					}else{
+					    $("#div_spin").hide();
+					    location.reload();						
+					}
 
-						/**/
-						// Nueva petición AJAX
-						var url_2 = "{{url('pos_factura_contabilizar')}}" + "/" + pdv_id;
-
-						$.get( url_2 )
-							.done(function( data ) {
-									
-								$('#contenido_modal').html( '<h1 style="text-align:center;">  <small>Por favor espere</small> <br> Acumulación completada exitosamente. <i class="fa fa-check"></i> <br> Contabilización completada exitosamente. <i class="fa fa-check"></i> </h1>' );
-								
-				                $("#div_spin").hide();
-
-				                location.reload();
-
-							});
-						
-					}).fail(function(data, textStatus, xhr) {
-						$('#contenido_modal').html( '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error </small> <br> Code: ' + data.status + '  <br> Status: ' + textStatus + " - " + xhr + ' </h1>' );
-		        		$(".btn_close_modal").fadeIn(1000);
-		            });
-
+				}, function( error ) { //, data, textStatus, xhr
+				    $('#contenido_modal').html( error );
+		        	$(".btn_close_modal").fadeIn(1000);
+				});
 		    });
+
+
+			function validar_existencias()
+			{
+				$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Validando Existencias... </h1>' );
+				pdv_id = $("#btn_acumular").attr('data-pdv_id');
+		        var url_0 = "{{url('pos_factura_validar_existencias')}}" + "/" + pdv_id;
+
+				return $.get( url_0 ).then(function( data ) {
+					if ( data != 1 ) // Cuando falla la validacion.
+					{
+						continuar = false;
+						$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias: <i class="fa fa-remove"></i> </h1>' + data );
+					}else{
+						continuar = true;
+						$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i> <br> Acumulando facturas POS... </h1>' );
+					}
+
+						
+			    }, function( data, textStatus, xhr ) {
+			        return '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error en Validacion de existencias. </small> <br> Code: ' + data.status + '  <br> Status: ' + textStatus + " - " + xhr + ' </h1>';
+			    });
+			}
+
+			function acumular()
+			{
+				if ( !continuar )
+				{
+					return 0;
+				}
+
+				pdv_id = $("#btn_acumular").attr('data-pdv_id');
+		        var url_1 = "{{url('pos_factura_acumular')}}" + "/" + pdv_id;
+
+				return $.get( url_1 ).then(function( data ) {
+					$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i> <br> Acumulación completada exitosamente: <i class="fa fa-check"></i> <br> Contabilizando documentos... </h1>' );
+
+			    }, function( data, textStatus, xhr ) {
+			        return '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error en Acumulación. </small> <br> Code: ' + data.status + '  <br> Status: ' + textStatus + " - " + xhr + ' </h1>';
+			    });
+			}
+
+			function contabilizar()
+			{
+				if ( !continuar )
+				{
+					return 0;
+				}
+
+				pdv_id = $("#btn_acumular").attr('data-pdv_id');
+		        var url_2 = "{{url('pos_factura_contabilizar')}}" + "/" + pdv_id;
+
+				return $.get( url_2 ).then(function( data ) {
+					$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i> <br> Acumulación completada exitosamente: <i class="fa fa-check"></i> <br> Contabilización completada exitosamente: <i class="fa fa-check"></i> </h1>' );
+			    }, function( data, textStatus, xhr ) {
+			        return '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error en Contabilización. </small> <br> Code: ' + data.status + '  <br> Status: ' + textStatus + " - " + xhr + ' </h1>';
+			    });
+			}
 
 			$(document).on('click',".btn_consultar_facturas",function(event){
 				event.preventDefault();

@@ -65,6 +65,19 @@ class InvCostoPromProducto extends Model
         return "LISTADO DE COSTO PROMEDIO DE ITEMS";
     }
 
+    public static function store_adicional($datos, $registro)
+    {
+        $item = InvProducto::find( $registro->inv_producto_id );
+        $item->precio_compra = round( $datos['costo_promedio'], 2 );
+        $item->save();
+    }
+
+    public function update_adicional( $datos, $id )
+    {
+        $item = InvProducto::find( $datos['inv_producto_id'] );
+        $item->precio_compra = round( $datos['costo_promedio'], 2 );
+        $item->save();      
+    }
 
     public static function get_costo_promedio( $bodega_id, $producto_id )
     {

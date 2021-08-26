@@ -351,7 +351,7 @@
 					var item_activo = $("a.list-group-item.active");					
 					item_activo.next().attr('class','list-group-item list-group-item-productos active');
 					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#cliente_input').val( item_activo.html() );
+					//$('#cliente_input').val( item_activo.html() );
 					return false;
 
 				}
@@ -361,7 +361,7 @@
 					var item_activo = $("a.list-group-item.active");					
 					item_activo.prev().attr('class','list-group-item list-group-item-productos active');
 					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#cliente_input').val( item_activo.html() );
+					//$('#cliente_input').val( item_activo.html() );
 					return false;
 				}
 

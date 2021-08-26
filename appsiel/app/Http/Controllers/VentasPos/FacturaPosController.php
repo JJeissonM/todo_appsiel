@@ -38,6 +38,7 @@ use App\Sistema\Campo;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
 
+use App\VentasPos\Services\ServiciosInventarios;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -537,6 +538,8 @@ class FacturaPosController extends TransaccionController
 
                 case 'forma_pago':
                     $lista_campos[$key]['value'] = $doc_encabezado->condicion_pago;
+                    $lista_campos[$key]['editable'] = 1;
+                    $lista_campos[$key]['atributos'] = [];
                     break;
 
                 case 'fecha_vencimiento':
@@ -686,6 +689,8 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = FacturaPos::find($id);
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->forma_pago = $request->forma_pago;
+        $doc_encabezado->fecha_vencimiento = $request->fecha_vencimiento;
         $doc_encabezado->vendedor_id = $request->vendedor_id;
         $doc_encabezado->lineas_registros_medios_recaudos = $request->lineas_registros_medios_recaudos;
         $doc_encabezado->valor_total = $this->get_total_campo_lineas_registros($lineas_registros, 'precio_total');
@@ -826,9 +831,47 @@ class FacturaPosController extends TransaccionController
         return redirect('pos_factura/' . $request->factura_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('flash_message', 'Factura de ventas ANULADA correctamente.');
     }
 
+    /*
+        VALIDAR EXISTENCIAS
+        => Hacer desarme automático de productos
+        => Validar existencias de Items
+    */
+    public function validar_existencias( $pdv_id )
+    {
+
+        $pdv = Pdv::find($pdv_id);
+
+        $encabezados_documentos = FacturaPos::where('pdv_id', $pdv_id)->where('estado', 'Pendiente')->get();
+
+        if ( is_null($encabezados_documentos) )
+        {
+            return 'No hay documentos pendientes.';
+        }
+
+        // Un documento de desarme (MK) por acumulación
+        $this->hacer_desarme_automatico( $pdv_id, $encabezados_documentos->last()->fecha ); // Con la fecha de la última factura
+
+        if ( !(int)config( 'ventas_pos.validar_existencias_al_acumular' ) )
+        {
+            return 1;
+        }
+        $lista_items_aux = $this->resumen_cantidades_facturadas($pdv->id)->toArray();
+        
+        $lista_items = [];
+        foreach( $lista_items_aux AS $linea )
+        {
+            $lista_items[$linea['inv_producto_id']] = $linea['cantidad_facturada'];
+        }
+
+        return ServiciosInventarios::tabla_items_existencias_negativas( $pdv->bodega_default_id, $encabezados_documentos->last()->fecha, $lista_items );
+
+    }
+
 
     /*
         ACUMULAR
+        => Hacer desarme automático de productos
+        => Validar existencias de Items
         => Genera movimiento de ventas
         => Genera Documentos de Remisión y movimiento de inventarios
         => Genera Movimiento de Tesorería O CxC
@@ -845,8 +888,6 @@ class FacturaPosController extends TransaccionController
         {
             return 1;
         }
-
-        $this->hacer_desarme_automatico($pdv_id, $encabezados_documentos->last()->fecha); // Con la fecha de la última factura
 
         foreach ($encabezados_documentos as $factura)
         {
@@ -926,21 +967,56 @@ class FacturaPosController extends TransaccionController
     // item_producir_id: el que se vende
     public function hacer_desarme_automatico($pdv_id, $fecha)
     {
-        $bodega_default_id = Pdv::find($pdv_id)->bodega_default_id;
+        $bodega_default_id = Pdv::find($pdv_id)->bodega_default_id;        
 
+        $parametros_config_inventarios = config( 'inventarios' );
+
+        $lineas_desarme = $this->get_lineas_registros_desarme( $pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha );
+
+        if ( gettype( $lineas_desarme ) == "integer" )
+        {
+            return 0;
+        }
+
+        $request = new Request;
+        $user = Auth::user();
+        $modelo_id = 25;
+        $request["core_empresa_id"] = $user->empresa_id;
+        $request["core_tipo_transaccion_id"] = (int)$parametros_config_inventarios['core_tipo_transaccion_id'];
+        $request["core_tipo_doc_app_id"] = (int)$parametros_config_inventarios['core_tipo_doc_app_id'];
+        $request["fecha"] = $fecha;
+        $request["core_tercero_id"] = (int)$parametros_config_inventarios['core_tercero_id'];
+        $request["descripcion"] = "";
+        $request["documento_soporte"] = "";
+        $request["inv_bodega_id"] = $bodega_default_id;
+        $request["movimiento"] = $lineas_desarme;
+        $request["consecutivo"] = "";
+        $request["hay_productos"] = "1";
+        $request["creado_por"] = $user->email;
+        $request["modificado_por"] = "0";
+        $request["estado"] = "Activo";
+        $request["url_id"] = "8";
+        $request["url_id_modelo"] = $modelo_id;
+        $request["url_id_transaccion"] = (int)$parametros_config_inventarios['core_tipo_transaccion_id'];
+
+        $lineas_registros = InventarioController::preparar_array_lineas_registros($request->movimiento, $request->modo_ajuste);
+
+        InventarioController::crear_documento($request, $lineas_registros, $modelo_id);
+
+        return 1;
+    }
+
+
+    public function get_lineas_registros_desarme( $pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha )
+    {
         $cantidades_facturadas = $this->resumen_cantidades_facturadas($pdv_id);
-
         $ids_items_facturados = $cantidades_facturadas->pluck('inv_producto_id')->all();
 
         $parametros_items_producir = ItemDesarmeAutomatico::whereIn('item_producir_id', $ids_items_facturados)->groupBy('item_producir_id')->get();
-        
-        $parametros = config( 'inventarios' );
-        $motivo_salida = InvMotivo::find( (int)$parametros['motivo_salida_id'] );
-        $motivo_entrada = InvMotivo::find( (int)$parametros['motivo_entrada_id'] );
 
         $lineas_desarme = '[{"inv_producto_id":"","Producto":"","motivo":"","costo_unitario":"","cantidad":"","costo_total":""}';
 
-        // Por cada item vendido
+        // Por cada item vendido con parametros de desarme
         $hay_productos = 0;
         foreach ($parametros_items_producir as $parametro_item_producir)
         {
@@ -953,74 +1029,58 @@ class FacturaPosController extends TransaccionController
                 $existencia_item_facturado = 0;
             }
 
-            $cantidad_a_ingresar = $cantidad_facturada - $existencia_item_facturado;
+            $cantidad_requerida_a_producir = $cantidad_facturada - $existencia_item_facturado;
 
-            if ( $cantidad_a_ingresar <= 0 )
+            if ( $cantidad_requerida_a_producir <= 0 )
             {
                 continue;
             }
 
-            $parametros_items_cosumir = ItemDesarmeAutomatico::where( 'item_producir_id', $parametro_item_producir->item_producir_id )->get();
-
-            // Por cada item (consumir) de los que componen al item que se vende (producir)
-            $costo_total_items_consumo = 0;
-            foreach( $parametros_items_cosumir AS $parametro_item_consumo )
+            $cantidad_proporcional = $parametro_item_producir->cantidad_proporcional;
+            if ($cantidad_proporcional == null || $cantidad_proporcional == 0)
             {
-                $cantidad_proporcional = $parametro_item_consumo->cantidad_proporcional;
-                if ($cantidad_proporcional == null || $cantidad_proporcional == 0)
-                {
-                    $cantidad_proporcional = 1;
-                }
-
-                $cantidad_a_sacar = intdiv( $cantidad_a_ingresar, $cantidad_proporcional) + 1; // La parte entera de la división más 1 unidad adicional
-
-                $costo_unitario_item_consumo = $parametro_item_consumo->item_consumir->get_costo_promedio( $bodega_default_id );
-                
-                $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_consumo->item_consumir->id . '","Producto":"' . $parametro_item_consumo->item_consumir->id . ' ' . $parametro_item_consumo->item_consumir->descripcion . ' (' . $parametro_item_consumo->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_consumo . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_consumo) . '"}';
-
-                $costo_total_items_consumo += ($cantidad_a_sacar * $costo_unitario_item_consumo);
+                $cantidad_proporcional = 1;
             }
 
-            $costo_unitario_item_producir = $costo_total_items_consumo / $cantidad_a_ingresar;
+            $cantidad_a_sacar = 1;
+            if ( $cantidad_proporcional > 1 )
+            {
+                $parte_entera_requerida = intdiv( $cantidad_requerida_a_producir, $cantidad_proporcional);
+                if ( $cantidad_requerida_a_producir % $cantidad_proporcional != 0 )
+                {
+                    $cantidad_a_sacar = $parte_entera_requerida + 1;
+                }
+            }else{
+                // $cantidad_a_sacar = 1
+                $cantidad_a_sacar = $cantidad_requerida_a_producir;
+            }
+            
+            $cantidad_a_ingresar = $cantidad_a_sacar * $cantidad_proporcional;
+
+            $costo_unitario_item_a_consumir = $parametro_item_producir->item_consumir->get_costo_promedio( $bodega_default_id );
+
+            $motivo_salida = InvMotivo::find( (int)$parametros_config_inventarios['motivo_salida_id'] );
+            $motivo_entrada = InvMotivo::find( (int)$parametros_config_inventarios['motivo_entrada_id'] );
+
+            $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_producir->item_consumir->id . '","Producto":"' . $parametro_item_producir->item_consumir->id . ' ' . $parametro_item_producir->item_consumir->descripcion . ' (' . $parametro_item_producir->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_a_consumir . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_a_consumir) . '"}';
+
+            $costo_unitario_item_producir = $costo_unitario_item_a_consumir / $cantidad_proporcional;
 
             $lineas_desarme .= ',';
-            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . $costo_total_items_consumo . '"}';
+
+            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . ($cantidad_a_ingresar * $costo_unitario_item_producir) . '"}';
+
             $hay_productos++;
         }
 
         if ( $hay_productos == 0 )
         {
-            return 0;
+            return 99;
         }
 
         $lineas_desarme .= ',{"inv_producto_id":"","Producto":"00.00","motivo":"$00.00","costo_unitario":""},{"inv_producto_id":"Agregar productos","Producto":"Agregar productos","motivo":"Agregar productos","costo_unitario":"Agregar productos","cantidad":"Agregar productos","costo_total":"Calcular costos"}]';
 
-        $request = new Request;
-        $user = Auth::user();
-        $modelo_id = 25;
-        $request["core_empresa_id"] = $user->empresa_id;
-        $request["core_tipo_transaccion_id"] = (int)$parametros['core_tipo_transaccion_id'];
-        $request["core_tipo_doc_app_id"] = (int)$parametros['core_tipo_doc_app_id'];
-        $request["fecha"] = $fecha;
-        $request["core_tercero_id"] = (int)$parametros['core_tercero_id'];
-        $request["descripcion"] = "";
-        $request["documento_soporte"] = "";
-        $request["inv_bodega_id"] = $bodega_default_id;
-        $request["movimiento"] = $lineas_desarme;
-        $request["consecutivo"] = "";
-        $request["hay_productos"] = "1";
-        $request["creado_por"] = $user->email;
-        $request["modificado_por"] = "0";
-        $request["estado"] = "Activo";
-        $request["url_id"] = "8";
-        $request["url_id_modelo"] = $modelo_id;
-        $request["url_id_transaccion"] = (int)$parametros['core_tipo_transaccion_id'];
-
-        $lineas_registros = InventarioController::preparar_array_lineas_registros($request->movimiento, $request->modo_ajuste);
-
-        InventarioController::crear_documento($request, $lineas_registros, $modelo_id);
-
-        return 1;
+        return $lineas_desarme;
     }
 
     /*
