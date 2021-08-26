@@ -146,12 +146,10 @@
 				?>
 				@if( $url_firma != '')
 					<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
-				@else
-					_____________________________
 				@endif
-				<br><br>
+				<br><br><br>
 				<br>
-				{{ $firma_autorizada_1->titulo_tercero }}
+				<p style="border-top: 1px solid black; margin: 0 50px;">{{ $firma_autorizada_1->titulo_tercero }}</p>
 			</div>
 
 			<div style="float: left; width: 50%; text-align: center;">
@@ -164,16 +162,15 @@
 				?>
 				@if( $url_firma != '')
 					<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
-				@else
-					_____________________________
 				@endif
-				<br><br>
+				<br><br><br>
 				<br>
-				{{ $firma_autorizada_2->titulo_tercero }}
+				<p style="border-top: 1px solid black; margin: 0 50px;">{{ $firma_autorizada_2->titulo_tercero }}</p>
 			</div>
 			
 		</div>
 		
+		<div style="clear: both"></div>	
 		</td>
 	</tr>
 </table>
