@@ -105,7 +105,7 @@
 			
 			<br>
 			<div align="center">
-				EL DIRECTOR(A) GENERAL DE {{ $colegio->descripcion }}
+				EL PRESENTE RECTOR(A) DE: {{ $colegio->descripcion }}
 			</div>		
 			<div align="center">
 				CERTIFICA QUE:

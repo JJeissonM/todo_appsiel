@@ -85,13 +85,13 @@
 		<br><br><br>
 
 		<div align="center">
-			LA SUSCRITA RECTORA DE {{ $colegio->descripcion }}
+			EL PRESENTE RECTOR(A) DE: {{ $colegio->descripcion }}
 		</div>
 		
 		<br><br>
 
 		<div align="center">
-			HACE CONSTAR:
+			HACE CONSTAR QUE:
 		</div>
 
 
@@ -99,7 +99,7 @@
 		<br><br><br>
 
 		<div style="text-align: justify;">
-			Que el estudiante <b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->abreviatura }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, se encuentra matriculado en el grado <b>{{ $curso->grado->descripcion }}</b> de Educación Básica {{ $curso->nivel->descripcion }} en nuestra institución educativa en el {{ $periodo_lectivo->descripcion }}.
+			Él estudiante <b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->abreviatura }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, se encuentra matriculado en el grado <b>{{ $curso->grado->descripcion }}</b> de Educación Básica {{ $curso->nivel->descripcion }} en nuestra institución educativa en el {{ $periodo_lectivo->descripcion }}.
 		</div>		
 
 		<br><br>
