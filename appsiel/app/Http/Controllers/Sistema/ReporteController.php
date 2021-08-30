@@ -52,25 +52,5 @@ class ReporteController extends Controller
     /*
       * Generar documento PDF con la vista almacenada en Cache, según el nombre de listado que se genera en los reportes automáticos
     */
-    public function generar_pdf( $reporte_id )
-    {
-        $tam_hoja = 'Letter';
-        $orientacion = 'Portrait';
-
-        if ( !is_null( Input::get('tam_hoja') ) ) 
-        {
-            $tam_hoja = Input::get('tam_hoja');
-        }
-
-        if ( !is_null( Input::get('orientacion') ) ) 
-        {
-            $orientacion = Input::get('orientacion');
-        }
-        $pdf = \App::make('dompdf.wrapper');
-
-        $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
-        //$pdf->setOptions(['defaultFont' => 'Arial']);
-        //return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
-        return $pdf->stream();
-    }
+    
 }
