@@ -61,7 +61,7 @@
 			  <div class="tab-content">
 				<div id="home" class="tab-pane fade in active">
 					<embed id="vistaprevia" oncontextmenu='return false;' src="" type="application/pdf" allowfullscreen width="100%" height="620" />
-					  
+					<iframe  src="" style="width:100%; height:620px;" frameborder="0" ></iframe>
 				</div>
 				<div id="menu1" class="tab-pane fade">
 					<div class="table-responsive" id="table_content">
@@ -132,7 +132,8 @@
 					}
 					
 					$('#btn_pdf').attr('href', new_url);
-					$('#vistaprevia').attr('src', new_url);
+					$('#vistaprevia').attr('src', 'http://docs.google.com/gview?url='+encodeURIComponent(new_url)+'&embedded=true');
+					//$('#vistaprevia').attr('src', encodeURIComponent(new_url));
 				});
 			});
 
