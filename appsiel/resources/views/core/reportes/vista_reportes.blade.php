@@ -133,7 +133,7 @@
 					
 					$('#btn_pdf').attr('href', new_url);
 					$('#vistaprevia').attr('src', 'http://docs.google.com/gview?url='+encodeURIComponent(new_url)+'&embedded=true');
-					//$('#vistaprevia').attr('src', encodeURIComponent(new_url));
+					//$('#vistaprevia').attr('src', new_url);
 				});
 			});
 
