@@ -60,8 +60,8 @@
 			  
 			  <div class="tab-content">
 				<div id="home" class="tab-pane fade in active">
-					<embed id="vistaprevia" oncontextmenu='return false;' src="" type="application/pdf" allowfullscreen width="100%" height="620" />
-					<iframe  src="" style="width:100%; height:620px;" frameborder="0" ></iframe>
+					
+					<iframe id="vistaprevia" src="" style="width:100%; height:620px;" frameborder="0" ></iframe>
 				</div>
 				<div id="menu1" class="tab-pane fade">
 					<div class="table-responsive" id="table_content">
