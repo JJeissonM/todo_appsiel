@@ -55,7 +55,15 @@ return array(
             ],
             '3' => [
                 'app' => 'gestion_documental',
-                'urls' => array()
+                'urls' => array(                    
+                    '0' => array(
+                        'label' => 'Instructivo Gestion Documental',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Gestion_Documental/instructivo_gestion_documental.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Gestion_Documental/instructivo_gestion_documental.mp4',
+                        'duracion' => '4:24',
+                        'publicacion' => '31 de Agosto de 2021'
+                    )
+                )
             ],
             '4' => [
                 'app' => 'academico_docente',
