@@ -7,10 +7,13 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Input;
 use Form;
 use Auth;
 use View;
 use DB;
+
+use Cache;
 
 use App\Sistema\Campo;
 use App\Core\Empresa;
@@ -26,7 +29,27 @@ class VistaController extends Controller
         En el campo numerico se indica la cantidad y el campo select se determina la unidad de medida (DIA, MES, AÑO)
         A través de Javascript se transforman estos campos a una fecha específica. 
     */
+    public function generar_pdf( $reporte_id )
+    {
+        $tam_hoja = 'Letter';
+        $orientacion = 'Portrait';
 
+        if ( !is_null( Input::get('tam_hoja') ) ) 
+        {
+            $tam_hoja = Input::get('tam_hoja');
+        }
+
+        if ( !is_null( Input::get('orientacion') ) ) 
+        {
+            $orientacion = Input::get('orientacion');
+        }
+        $pdf = \App::make('dompdf.wrapper');
+
+        $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
+        //$pdf->setOptions(['defaultFont' => 'Arial']);
+        return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
+        //return $pdf->stream();
+    }
 
     public function dibujar_vista($tipo_vista)
     {

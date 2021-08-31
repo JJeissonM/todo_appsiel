@@ -49,17 +49,30 @@
 
 @section('contenido')
 		<div class="col-md-12 marco_formulario">
-			<br/>
-			{{ Form::bsBtnExcel( $reporte->descripcion ) }}
-			{{ Form::bsBtnPdf( $reporte->descripcion ) }}
+			
+			<!--{ { Form::bsBtnPdf( $reporte->descripcion ) }}-->
+			<div style="display: flex; justify-content: flex-end"><span>{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}</span></div> 
 			{{ Form::Spin( 42 ) }}
 			{{ Form::hidden( 'reporte_id', $reporte->id, ['id'=>'reporte_id'] ) }}
-			
-			<div class="table-responsive" id="table_content">
-				<div id="resultado_consulta">
-
+			<ul class="nav nav-tabs">
+				<li class="active">{{ Form::bsBtnPdf( $reporte->descripcion ) }}</li>
+			</ul>
+			  
+			  <div class="tab-content">
+				<div id="home" class="tab-pane fade in active">
+					
+					<iframe id="vistaprevia" src="" style="width:100%; height:620px;" frameborder="0" ></iframe>
 				</div>
-			</div>
+				<div id="menu1" class="tab-pane fade">
+					<div class="table-responsive" id="table_content">
+						<div id="resultado_consulta">
+
+						</div>
+					</div>					  
+				</div>
+			  </div>
+			<br/>			
+			
 		</div>
 @endsection
 
@@ -85,6 +98,7 @@
 				$('#resultado_consulta').html( "" );
 				$('#btn_excel').hide();
 				$('#btn_pdf').hide();
+				$('#vistaprevia').hide();
 
 				$('#btn_pdf').attr('href', url_pdf_ori);
 
@@ -108,7 +122,8 @@
 
 					$('.columna_oculta').show();
 					$('#btn_excel').show(500);
-					$('#btn_pdf').show(500);
+					//$('#btn_pdf').show(500);
+					$('#vistaprevia').show(0);
 
 					var url_pdf = $('#btn_pdf').attr('href');
 					var n = url_pdf.search('a3p0');
@@ -117,7 +132,8 @@
 					}
 					
 					$('#btn_pdf').attr('href', new_url);
-
+					$('#vistaprevia').attr('src', 'http://docs.google.com/gview?url='+encodeURIComponent(new_url)+'&embedded=true');
+					//$('#vistaprevia').attr('src', new_url);
 				});
 			});
 

@@ -1,17 +1,12 @@
 <style>
 
-	img {
-		padding-left:30px;
-	}
-
-	
 	.page-break {
 		page-break-after: always;
 	}
 </style>
 
 <style>
-    @page { margin: 100px 75px; }
+    @page { margin: 60px 75px 100px ; }
     header { 
     	position: fixed; 
     	top: -60px; 
@@ -21,15 +16,6 @@
     	height: 50px; 
     }
 
-    footer { 
-    	position: fixed; 
-    	bottom: -70px; 
-    	left: 0px; 
-    	right: 0px; 
-    	background-color: lightblue; 
-    	height: 40px;
-    	text-align: center;
-    }
 
     p { page-break-after: always; }
     p:last-child { page-break-after: never; }
@@ -55,7 +41,14 @@
 		margin:auto;
 		width: 95%;
 	}
-
+	footer { 
+    	position: fixed; 
+    	bottom: -70px; 
+    	left: 0px; 
+    	right: 0px; 
+    	height: 40px;
+    	text-align: center;
+    }
  </style>
 
 <?php    
@@ -75,26 +68,30 @@
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
+		<footer style="border: none">
+			<hr>
+			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
+			<div style="text-align: center">{{ $colegio->ciudad }}</div>
+		</footer>
 
 			<br><br>
 			
 		<div align="center" style="font-size: 1.1em;">
-			<b>{{ $colegio->descripcion }}</b><br/>
-			<b style="padding-top: -10px;">Educación básica primaria</b><br/>
-			Aprobado según resolución No. {{ $colegio->resolucion }}<br/>
-			{{ $colegio->ciudad }}<br/>
+				<b>{{ $colegio->descripcion }}</b><br/>
+				{{ $colegio->resolucion }}. <br> Expedida por Secretaria de Educación Municipal <br/>
+				{{ $colegio->ciudad }}<br/><hr>
 		</div>
 
 		<br><br><br>
 
 		<div align="center">
-			LA SUSCRITA RECTORA DE {{ $colegio->descripcion }}
+			EL PRESENTE RECTOR(A) DE: {{ $colegio->descripcion }}
 		</div>
 		
 		<br><br>
 
 		<div align="center">
-			HACE CONSTAR:
+			HACE CONSTAR QUE:
 		</div>
 
 
@@ -102,7 +99,7 @@
 		<br><br><br>
 
 		<div style="text-align: justify;">
-			Que el estudiante <b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->abreviatura }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, se encuentra matriculado en el grado <b>{{ $curso->grado->descripcion }}</b> de Educación Básica {{ $curso->nivel->descripcion }} en nuestra institución educativa en el {{ $periodo_lectivo->descripcion }}.
+			Él estudiante <b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->abreviatura }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, se encuentra matriculado en el grado <b>{{ $curso->grado->descripcion }}</b> de Educación Básica {{ $curso->nivel->descripcion }} en nuestra institución educativa en el {{ $periodo_lectivo->descripcion }}.
 		</div>		
 
 		<br><br>
@@ -124,14 +121,27 @@
 		Atentamente,
 
 	</div>
-
-	<br><br><br>
-
-	{{ $firma_autorizada_1->tercero_nombre }} 
+<br><br><br>
+	<?php
+		$url_firma = '';
+		if ( $firma_autorizada_1->imagen != '' )
+		{
+			$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_1->imagen;
+			$img = getimagesize($url_firma);
+		}
+	?>
+	@if( $url_firma != '')
+	<div style="position: relative;">
+		<img src="{{ $url_firma }}" width="250px" style="margin: 0; padding: 0"/>
+	</div>
+	@endif
+	_____________________________<br><br>
+	{{ $firma_autorizada_datos_1->tercero_nombre }}
 	<br>
-	{{ $firma_autorizada_1->tercero_tipo_doc_identidad }} {{ number_format( $firma_autorizada_1->tercero_numero_identificacion, 0, ',', '.' ) }}
+	{{ $firma_autorizada_datos_1->tercero_tipo_doc_identidad }} {{ number_format( $firma_autorizada_datos_1->tercero_numero_identificacion, 0, ',', '.' ) }}
 	<br>
-	{{ $firma_autorizada_1->tercero_titulo }} 
+	{{ $firma_autorizada_1->titulo_tercero }} 
+
 
 @else
 	<h2>Estudiante no tiene matrículas para este Año Lectivo: {{ $periodo_lectivo->descripcion }}</h2>
