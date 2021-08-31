@@ -63,7 +63,7 @@ return [
     							"8":{ 
     									"nombre_seccion":"Revisión por Sistemas",
     									"url_vista_show":"consultorio_medico.consultas.revision_por_sistemas",
-    									"activo":0,
+    									"activo":1,
     									"orden":9
     								}, 
     							"9":{ 

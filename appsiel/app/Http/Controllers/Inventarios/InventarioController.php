@@ -66,7 +66,7 @@ class InventarioController extends TransaccionController
         $movimientos = [];
 
         // Existencias por bodegas
-        $bodegas = InvBodega::take(3)->get();
+        $bodegas = InvBodega::take(10)->get();
         $i = 0;
         $cantidad_graficas = 0;
         $titulos = [];

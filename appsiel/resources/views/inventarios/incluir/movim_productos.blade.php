@@ -20,7 +20,7 @@
     }
 ?>
 {{ Form::bsBtnExcel('movimiento_inventarios') }}
-<h3>Movimiento de inventarios</h3>
+<h3>Movimiento de inventarios <small>{{ $bodega->descripcion }}</small></h3>
 <div class="table-responsive">
     <table class="table table-striped table-bordered tabla_pdf">
         <thead>

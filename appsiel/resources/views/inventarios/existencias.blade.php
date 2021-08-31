@@ -5,12 +5,21 @@
 	{{ Form::open(['url'=>'ajax_existencias','id'=>'form_consulta']) }}
 		{{ Form::label('fecha_corte','Fecha corte') }}
 		{{ Form::date('fecha_corte',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_corte']) }}
-
+<br>
 		{{ Form::label('mov_bodega_id','Bodega') }}
 		{{ Form::select('mov_bodega_id',$bodegas,null,['class'=>'form-control','id'=>'mov_bodega_id']) }}
-
-		{{ Form::label('grupo_inventario_id','Grupo') }}
+<br>
+		{{ Form::label('grupo_inventario_id','Grupo de inventarios') }}
 		{{ Form::select('grupo_inventario_id',$grupo_inventario,null,['class'=>'form-control','id'=>'grupo_inventario_id']) }}
+<br>
+		{{ Form::label('item_id','Producto') }}
+		{{ Form::select('item_id',$items,null,['class'=>'combobox','id'=>'item_id']) }}
+<br>
+		{{ Form::label('detallar_bodega','Detallar bodega',['class'=>'form-control','style' => 'display:none']) }}
+		{{ Form::select('detallar_bodega',["No","Si"],null,['class'=>'form-control','id'=>'detallar_bodega', 'style' => 'display:none']) }}
+<br>
+		{{ Form::label('mostrar_sin_existencia','Mostar producto sin existencias') }}
+		{{ Form::select('mostrar_sin_existencia',["No","Si"],null,['class'=>'form-control','id'=>'mostrar_sin_existencia']) }}
 
 		{{ Form::label('mostrar_costo','Mostar costo') }}
 		{{ Form::select('mostrar_costo',[true=>"Si",false=>"No"],null,['class'=>'form-control','id'=>'mostrar_costo']) }}

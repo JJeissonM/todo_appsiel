@@ -16,8 +16,8 @@
             	<!-- @ if($productos[$i]['Cantidad']!=0) -->
     	            <tr>
     	                <td class="text-center">{{ $productos[$i]['id'] }}</td>
-    	                <td>{{ $productos[$i]['descripcion'] }}</td>
-    	                <td class="text-center">{{ number_format($productos[$i]['Cantidad'], 0, ',', '.') }} {{ $productos[$i]['unidad_medida1'] }}</td>
+    	                <td>{{ $productos[$i]['descripcion'] }} {{ $productos[$i]['unidad_medida1'] }} </td>
+    	                <td class="text-center">{{ number_format($productos[$i]['Cantidad'], 0, ',', '.') }}</td>
     	                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo']/$productos[$i]['Cantidad'], 0, ',', '.') }}</td>
     	                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo'], 0, ',', '.') }}</td>
     	            </tr>

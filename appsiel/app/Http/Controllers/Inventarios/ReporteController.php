@@ -59,6 +59,7 @@ class ReporteController extends Controller
     public function inv_existencias()
     {
         $bodegas = InvBodega::opciones_campo_select();
+        $items = InvProducto::opciones_campo_select();
         $grupo_inventario = InvGrupo::opciones_campo_select();
 
         $miga_pan = [
@@ -66,13 +67,14 @@ class ReporteController extends Controller
                 ['url'=>'NO','etiqueta'=>'Existencias']
             ];
 
-        return view('inventarios.existencias',compact('bodegas','grupo_inventario','miga_pan'));
+        return view('inventarios.existencias',compact('bodegas','items','grupo_inventario','miga_pan'));
     }
 
     public function ajax_existencias(Request $request)
     {
         $fecha_corte = $request->fecha_corte;
         $mostrar_costo = $request->mostrar_costo;
+        $mostrar_sin_existencia = $request->mostrar_sin_existencia;
 
         if ( $request->mov_bodega_id == '') {
           $mov_bodega_id = '%'.$request->mov_bodega_id.'%';
@@ -139,7 +141,6 @@ class ReporteController extends Controller
         return $pdf->download('Existencias.pdf');
     }
 
-
     public function get_vista_inv_movimiento_corte(  $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id, $mostrar_costo, $mostrar_cantidad )
     {
 
@@ -193,13 +194,13 @@ class ReporteController extends Controller
     public function ajax_movimiento(Request $request)
     {
         $id_producto = $request->mov_producto_id;
-        $id_bodega = $request->mov_bodega_id;
+        $bodega_id = $request->mov_bodega_id;
         $fecha_inicial = $request->fecha_inicial;
         $fecha_final = $request->fecha_final;
 
-        $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial );
+        $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial );
 
-        $sql_productos = InvMovimiento::get_movimiento($id_producto, $id_bodega, $fecha_inicial, $fecha_final );
+        $sql_productos = InvMovimiento::get_movimiento($id_producto, $bodega_id, $fecha_inicial, $fecha_final );
 
         $cantidad_saldo = 0;
         $costo_total_saldo = 0;  
@@ -281,7 +282,9 @@ class ReporteController extends Controller
             $i++;
         }
 
-        $view = View::make('inventarios.incluir.movim_productos',compact('productos'));
+        $bodega = InvBodega::find($bodega_id);
+
+        $view = View::make('inventarios.incluir.movim_productos',compact('productos','bodega'));
 
         return $view;
     }
