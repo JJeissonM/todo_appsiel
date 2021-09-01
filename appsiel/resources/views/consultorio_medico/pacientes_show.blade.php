@@ -26,13 +26,7 @@
 		  background-color: #ccc;
 		}
 
-		/* Style the accordion panel. Note: hidden by default */
-		.panel {
-		  padding: 0 18px;
-		  background-color: white;
-		  display: none;
-		  overflow: hidden;
-		}
+		/* Style the accordion panel. Note: hidden by default */		
 
 		.tab-pane,.fade{
 			background-color: transparent;
@@ -93,7 +87,7 @@
 	        	@include('consultorio_medico.pacientes.datos_laborales')
 	        @endif
 
-			<div class="container-fluid">
+			<div class="container-fluid" >
 				
 				<h3>
 					Consultas Médicas
@@ -102,27 +96,33 @@
 					@endcan
 				</h3>
 
-				<div class="container-fluid">
+				<div class="panel-group" id="accordion">
 					<?php
-						$es_el_primero = true;
-						
+						$es_el_primero = true;						
 					?>
 					@foreach($consultas as $consulta)
+					<div class="panel panel-default">	
+						<div class="panel-heading">
+							<a class="well well-lg" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ $consulta->id }}" style="display: block; margin: 0;background-color: #f5f5f5">
+								<h3 class="panel-title" style="font-size: 24px">
+									Consulta No. {{ $consulta->id }} <span class="close">&plus;</span>
+								</h3>
+							</a>
+						</div>
 						
-						<button class="accordion"> <h4> Consulta No. {{ $consulta->id }} </h4> <a href="#" class="close" data-dismiss="alert" aria-label="close">&plus;</a></button>
 						
 						<?php
 							if( $es_el_primero )
 							{
-								$clase = 'panel show';
+								$clase = 'collapse in';
 								$es_el_primero = false;
 							}else{
-								$clase = 'panel';
+								$clase = 'collapse';
 							}	
 						?>
 
-						<div class="{{$clase}}">
-
+						<div id="collapse{{ $consulta->id }}" class="panel-collapse {{$clase}}">
+							<div class="panel-body">
 								@include('consultorio_medico.pacientes_show_botones_accion')
 
 								@include( 'consultorio_medico.consultas.datos_consulta' )
@@ -161,8 +161,11 @@
 								            @endif
 								        @endforeach
 								    </div>
-								</div> <!-- FIN secciones_consulta -->							
-						</div> <!-- FIN class panel accordion -->																		
+								</div> <!-- FIN secciones_consulta -->		
+							</div>
+													
+						</div> <!-- FIN class panel accordion -->			
+					</div>
 					@endforeach
 		    	</div>
 			</div>
