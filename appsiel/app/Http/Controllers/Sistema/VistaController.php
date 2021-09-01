@@ -47,8 +47,8 @@ class VistaController extends Controller
 
         $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
         //$pdf->setOptions(['defaultFont' => 'Arial']);
-        return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
-        //return $pdf->stream();
+        //return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
+        return $pdf->stream();
     }
 
     public function dibujar_vista($tipo_vista)
