@@ -50,8 +50,8 @@
 @section('contenido')
 		<div class="col-md-12 marco_formulario">
 			
-			<!--{ { Form::bsBtnPdf( $reporte->descripcion ) }}-->
-			<div style="display: flex; justify-content: flex-end"><span>{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}</span></div> 
+			
+			<div style="display: flex; justify-content: flex-end"><span>{{ Form::bsBtnPdf( $reporte->descripcion ) }}{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}</span></div> 
 			{{ Form::Spin( 42 ) }}
 			{{ Form::hidden( 'reporte_id', $reporte->id, ['id'=>'reporte_id'] ) }}
 			<ul class="nav nav-tabs">
@@ -122,7 +122,7 @@
 
 					$('.columna_oculta').show();
 					$('#btn_excel').show(500);
-					//$('#btn_pdf').show(500);
+					$('#btn_pdf').show(500);
 					$('#vistaprevia').show(0);
 
 					var url_pdf = $('#btn_pdf').attr('href');
@@ -132,8 +132,8 @@
 					}
 					
 					$('#btn_pdf').attr('href', new_url);
-					$('#vistaprevia').attr('src', 'http://docs.google.com/gview?url='+encodeURIComponent(new_url)+'&embedded=true');
-					//$('#vistaprevia').attr('src', new_url);
+					//$('#vistaprevia').attr('src', 'http://docs.google.com/gview?url='+encodeURIComponent(new_url)+'&embedded=true');
+					$('#vistaprevia').attr('src', new_url);
 				});
 			});
 
