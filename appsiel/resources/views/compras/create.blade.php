@@ -95,17 +95,17 @@
 
 			<br/>
 
-			<!-- -->
-			<div class="container-fluid"> 
-				<label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso"><i class="fa fa-barcode"></i> <i>Activar ingreso por código de barras</i></label>
-			</div>
-		
-
 			<div id="div_ingreso_registros">
+
+				<div class="container-fluid"> 
+					<label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso"><i class="fa fa-barcode"></i> <i>Activar ingreso por código de barras</i></label>
+				</div>
 
 			    {!! $tabla->dibujar() !!}
 
 			    Productos ingresados: <span id="numero_lineas"> 0 </span>
+
+			</div>
 				
 				<div style="text-align: right;">
 					<div id="total_cantidad" style="display: none;"> 0 </div>
@@ -124,8 +124,6 @@
 	            		</tr>
 	            	</table>
 				</div>
-
-			</div>
 			<div id="mostrar_medios_recaudos">
 			@include('tesoreria.incluir.medios_recaudos')
 		</div>
@@ -1258,6 +1256,8 @@
 			function consultar_entradas_pendientes()
 			{
 				$('#div_entradas_pendientes').hide();
+				$('#listado_entradas_seleccionadas').hide();
+				$('#tabla_registros_documento').find('tbody').html( '' );
 				url = '../compras_consultar_entradas_pendientes';
 				$.get( url, { core_tercero_id: $('#core_tercero_id').val() } )
 					.done(function( data ) {
@@ -1302,6 +1302,20 @@
 				$('#listado_entradas_seleccionadas').show();
 				$(this).hide();
 				$('#tabla_registros_documento').find('tbody:last').append( $(this).closest("tr") );
+
+				var total_factura = 0.0;
+				$('#tabla_registros_documento tr').each(function()
+				{
+					var valor = $(this).find('td').eq(6).text().replace(" ","").replace("$","").replace(".","").replace(".","").replace(".","").replace(",",".");
+					if ( valor != '' )
+					{
+					    total_factura += parseFloat( valor );
+					    console.log( valor );						
+					}
+				});
+				// Total factura  (Sumatoria de precio_total)
+				$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura.toFixed(2) ) );
+
 				hay_productos = 1;
 			});
 			
