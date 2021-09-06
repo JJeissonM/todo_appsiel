@@ -18,7 +18,6 @@ class InvMovimiento extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Producto', 'Bodega', 'Motivo', 'Movimiento', 'Costo unit.', 'Cantidad', 'Costo total', '&nbsp;'];
 
     public $vistas = '{"index":"layouts.index3"}';
-
     
     public function producto()
     {

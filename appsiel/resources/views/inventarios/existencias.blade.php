@@ -18,9 +18,10 @@
 		{{ Form::label('detallar_bodega','Detallar bodega',['class'=>'form-control','style' => 'display:none']) }}
 		{{ Form::select('detallar_bodega',["No","Si"],null,['class'=>'form-control','id'=>'detallar_bodega', 'style' => 'display:none']) }}
 <br>
-		{{ Form::label('mostrar_sin_existencia','Mostar producto sin existencias') }}
-		{{ Form::select('mostrar_sin_existencia',["No","Si"],null,['class'=>'form-control','id'=>'mostrar_sin_existencia']) }}
-
+<!--
+		{ { Form::label('mostrar_sin_existencia','Mostar producto sin existencias') }}
+		{ { Form::select('mostrar_sin_existencia',["No","Si"],null,['class'=>'form-control','id'=>'mostrar_sin_existencia']) }}
+-->
 		{{ Form::label('mostrar_costo','Mostar costo') }}
 		{{ Form::select('mostrar_costo',[true=>"Si",false=>"No"],null,['class'=>'form-control','id'=>'mostrar_costo']) }}
 
@@ -84,8 +85,9 @@
 				}
 
 				//$('#btn_print').hide();
+				$('#resultado_consulta').html('');
 				$('#div_cargando').show();
-				//$('#spin').show();
+				$('#div_spin').show();
 
 				// Preparar datos de los controles para enviar formulario
 				var form_consulta = $('#form_consulta');
@@ -93,7 +95,7 @@
 				var datos = form_consulta.serialize()  + "&accion=consultar";
 
 				$.post(url,datos,function(respuesta){
-					//$('#spin').hide();
+					$('#div_spin').hide();
 					$('#div_cargando').hide();
 					$('#resultado_consulta').html(respuesta);
 
@@ -103,12 +105,8 @@
 					var url_pdf = $('#btn_pdf').attr('href');
 					var n = url_pdf.search('a3p0');
 					if ( n > 0) {
-						var new_url = url_pdf.replace('a3p0','inv_pdf_existencias?'+datos);
-					}else{
-						n = url_pdf.search('inv_pdf_existencias');
-						var url_aux = url_pdf.substr(0,n);
-						var new_url = url_aux + 'inv_pdf_existencias?' + datos;
-					}					
+						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/inv_existencias_corte?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
+					}
 					
 					$('#btn_pdf').attr('href', new_url);
 				});

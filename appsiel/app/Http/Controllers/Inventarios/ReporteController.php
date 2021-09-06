@@ -23,6 +23,8 @@ use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\MinStock;
 
+use App\Inventarios\Services\FiltroMovimientos;
+
 use App\Compras\ComprasMovimiento;
 
 class ReporteController extends Controller
@@ -43,7 +45,6 @@ class ReporteController extends Controller
 
         $productos = InvMovimiento::get_movimiento_corte( $fecha_corte, '=', $id, 'LIKE', '%%');
       
-
         $bodega = InvBodega::find($id);
 
         $miga_pan = [
@@ -72,96 +73,77 @@ class ReporteController extends Controller
 
     public function ajax_existencias(Request $request)
     {
-        $fecha_corte = $request->fecha_corte;
-        $mostrar_costo = $request->mostrar_costo;
-        $mostrar_sin_existencia = $request->mostrar_sin_existencia;
-
-        if ( $request->mov_bodega_id == '') {
-          $mov_bodega_id = '%'.$request->mov_bodega_id.'%';
-          $operador1 = 'LIKE';
-        }else{
-          $mov_bodega_id = $request->mov_bodega_id;
-          $operador1 = '=';
-        }
-
-        if ( $request->grupo_inventario_id == '') {
-          $grupo_inventario_id = '%'.$request->grupo_inventario_id.'%';
-          $operador2 = 'LIKE';
-        }else{
-          $grupo_inventario_id = $request->grupo_inventario_id;
-          $operador2 = '=';
-        }
-
-        $view = $this->get_vista_inv_movimiento_corte(  $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id, $mostrar_costo, $request->mostrar_cantidad );
-
-        if ($request->accion=='consultar') {
-            return $view;
-        }else{
-            // Esto no funciona, ,uestra el pdf como carateres raros en la div de resultados del ajax.
-            // Se prepara el PDF
-            $orientacion='portrait';
-            $tam_hoja='Letter';
-
-            $pdf = \App::make('dompdf.wrapper');
-            $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
-
-            $pdf->stream();
-        }
-    }
-
-    public function inv_pdf_existencias()
-    {
-        $fecha_corte = Input::get('fecha_corte');
-        $mostrar_costo = Input::get('mostrar_costo');
-
-        if ( Input::get('mov_bodega_id') == '') {
-          $mov_bodega_id = '%'.Input::get('mov_bodega_id').'%';
-          $operador1 = 'LIKE';
-        }else{
-          $mov_bodega_id = Input::get('mov_bodega_id');
-          $operador1 = '=';
-        }
-
-        if ( Input::get('grupo_inventario_id') == '') {
-          $grupo_inventario_id = '%'.Input::get('grupo_inventario_id').'%';
-          $operador2 = 'LIKE';
-        }else{
-          $grupo_inventario_id = Input::get('grupo_inventario_id');
-          $operador2 = '=';
-        }
-
-        $view = $this->get_vista_inv_movimiento_corte(  $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id, $mostrar_costo, Input::get('mostrar_cantidad') );
-
-        $orientacion='portrait';
-        $tam_hoja='Letter';
-
-        $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
-
-        return $pdf->download('Existencias.pdf');
-    }
-
-    public function get_vista_inv_movimiento_corte(  $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id, $mostrar_costo, $mostrar_cantidad )
-    {
-
-        $productos = InvMovimiento::get_movimiento_corte( $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id);
-
-        /*
-                AGREGAR ITEMS SIN MOVIMIENTO
-
-        $items = InvProducto::where('estado','Activo')->orderBy('descripcion')->get();
-        foreach ($items as $item )
-        {
-            // code...
-        }
+        $obj = new FiltroMovimientos();
         
-        dd($ids_con_mov);*/
+        $movin_filtrado = $obj->aplicar_filtros( null, $request->fecha_corte, $request->mov_bodega_id, $request->grupo_inventario_id, $request->item_id );
 
-        $bodega = InvBodega::find($mov_bodega_id);
+        $view = $this->get_vista_inv_movimiento_corte( $movin_filtrado, $request->mostrar_costo, $request->mostrar_cantidad, $request->fecha_corte );
 
-        if ( is_null($bodega) ) {
-            $bodega = "TODAS";
+        Cache::put( 'pdf_reporte_inv_existencias_corte', $view, 720 ); // 720 minutos = 12 horas
+        
+        return $view;
+    }
+
+    public function get_vista_inv_movimiento_corte( $movin_filtrado, $mostrar_costo, $mostrar_cantidad, $fecha_corte )
+    {
+
+        $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->toArray() );
+        $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
+        //dd($lista_items, $lista_bodegas);
+        
+        $productos = [];
+        $i = 0;
+        foreach ( $lista_items as $key => $item_id )
+        {
+            $item = InvProducto::find( $item_id );
+
+            $total_cantidad_item = 0;
+            $total_costo_item = 0;
+            foreach ( $lista_bodegas as $key2 => $bodega_id )
+            {
+                $productos[$i]['id'] = $item_id;
+                $productos[$i]['descripcion'] = $item->descripcion;
+                $productos[$i]['unidad_medida1'] = $item->unidad_medida1;
+                $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
+                $bodega = InvBodega::find( $bodega_id );
+                $productos[$i]['bodega'] = $bodega->descripcion;
+
+                $productos[$i]['Cantidad'] = $movin_filtrado->where('inv_producto_id',$item_id)->where('inv_bodega_id',$bodega_id)->sum('cantidad');
+
+                $productos[$i]['Costo'] = $movin_filtrado->where('inv_producto_id',$item_id)->where('inv_bodega_id',$bodega_id)->sum('costo_total');
+
+                $total_cantidad_item += $productos[$i]['Cantidad'];
+                $total_costo_item += $productos[$i]['Costo'];
+            
+                $i++;
+            }
+
+            $productos[$i]['id'] = 0;
+            $productos[$i]['descripcion'] = '';
+            $productos[$i]['unidad_medida1'] = '';
+            $productos[$i]['unidad_medida2'] = '';
+            $productos[$i]['bodega'] = '';
+
+            $productos[$i]['Cantidad'] = $total_cantidad_item;
+
+            $productos[$i]['Costo'] = $total_costo_item;
+            $i++;
         }
+
+        switch( count($lista_bodegas) )
+        {
+            case '0':
+                $bodega = "NINGUNA";
+                break;
+            case '1':
+                $bodega = $bodega->descripcion;
+                break;
+            default:
+                $bodega = "VARIAS";
+                break;
+        }
+
+        //dd( $bodega );
 
         $view_1 = View::make('inventarios.incluir.existencias_encabezado',compact('bodega','fecha_corte'));
 
@@ -301,8 +283,6 @@ class ReporteController extends Controller
 
         $productos = MinStock::leftJoin('inv_productos','inv_productos.id','=','inv_min_stocks.inv_producto_id')->where('inv_bodega_id', $bodega_id)->select('inv_productos.id','inv_productos.descripcion','inv_productos.unidad_medida1','inv_min_stocks.inv_bodega_id','inv_min_stocks.stock_minimo')->orderBy('inv_productos.descripcion')->get();
 
-        //dd($productos);
-
         foreach ($productos as $producto) 
         {
             $producto->cantidad = InvMovimiento::get_existencia_producto($producto->id, $producto->inv_bodega_id, $fecha_corte )->Cantidad;
@@ -332,7 +312,7 @@ class ReporteController extends Controller
 
         $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar') )->render();
 
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
         return $vista;
 
@@ -357,7 +337,7 @@ class ReporteController extends Controller
 
         $vista = View::make( 'inventarios.reportes.balance_inventarios', compact('items', 'mostrar_items_sin_movimiento', 'saldos_items', 'movimientos_entradas', 'movimientos_salidas', 'fecha_desde', 'fecha_hasta', 'inv_bodega_id' ) )->render();
 
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
         return $vista;
 
@@ -392,7 +372,7 @@ class ReporteController extends Controller
       
         $vista = View::make( 'inventarios.incluir.existencias_tabla_con_talla', compact('productos') )->render();
         
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
         return $vista;
 

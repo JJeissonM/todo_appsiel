@@ -24,7 +24,7 @@ class ValidacionExistencias
 		return $this;
 	}
 
-    public function get_existencia()
+    private function get_existencia()
     {        
         return InvMovimiento::get_cantidad_existencia_item( $this->item_id, $this->bodega_id, $this->fecha_corte );
     }

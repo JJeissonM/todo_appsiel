@@ -59,8 +59,6 @@ Route::get('inv_consultar_existencias/{bodega_id}', 'Inventarios\ReporteControll
 
 Route::post('ajax_existencias', 'Inventarios\ReporteController@ajax_existencias');
 
-Route::get('inv_pdf_existencias', 'Inventarios\ReporteController@inv_pdf_existencias');
-
 Route::get('inv_stock_minimo', 'Inventarios\ReporteController@inv_stock_minimo');
 
 

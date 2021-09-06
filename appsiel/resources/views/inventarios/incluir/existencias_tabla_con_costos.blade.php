@@ -2,15 +2,12 @@
     <table class="table table-bordered table-striped" style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%" id="myTable">
 
             <tr style="background: #ccc; font-weight: bold; text-align: center;">
-                @if( $bodega == 'TODAS')
-                    <td> Bodega </td>
-                @endif
                 <td> Cód. </td>
                 <td> Producto </td>
+                <td> Bodega </td>
                 <td> Cantidad </td>
                 <td> Costo Prom. </td>
                 <td> Costo Total </td>
-                <td> Costo Prom. ponderado </td>
             </tr>
 
             <?php 
@@ -37,34 +34,35 @@
                         $alerta = '<i class="fa fa-warning" title="Direfencia de $'.number_format( $diferencia_costo_prom, 2, ',', '.').'"></i>';
                     }
                 ?>
-            	<!-- @ if($productos[$i]['Cantidad']!=0) -->
+                @if( $productos[$i]['id'] != 0 )
     	            <tr>
-                        @if( $bodega == 'TODAS')
-                            <td> {{ $productos[$i]['bodega'] }} </td>
-                        @endif
     	                <td>{{ $productos[$i]['id'] }}</td>
     	                <td>{{ $productos[$i]['descripcion'] }} ({{ $productos[$i]['unidad_medida1'] }})</td>
+                        <td> {{ $productos[$i]['bodega'] }} </td>
     	                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
-                        <td>{{ '$'.number_format( $costo_promedio, 2, ',', '.') }}</td>
-                        <td>{{ '$'.number_format( $productos[$i]['Costo'], 2, ',', '.') }}</td>
-                        <td> <!-- { { '$'.number_format( $productos[$i]['costo_promedio_ponderado'], 2, ',', '.') }} { !! $alerta !!} --></td>
+                        <td>${{ number_format( $costo_promedio, 2, ',', '.') }}</td>
+                        <td>${{ number_format( $productos[$i]['Costo'], 2, ',', '.') }}</td>
     	            </tr>
-                <!-- @ endif -->
+                @else
+                    <tr style="background: #4a4a4a; color: white;">
+                        <td colspan="3"> &nbsp; </td>
+                        <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
+                        <td>${{ number_format( $costo_promedio, 2, ',', '.') }}</td>
+                        <td>${{ number_format( $productos[$i]['Costo'], 2, ',', '.') }}</td>
+                    </tr>
+                @endif
             <?php 
-                $total_cantidad+= $productos[$i]['Cantidad'];
-                $total_costo_total+= $productos[$i]['Costo'];
+                if( $productos[$i]['id'] != 0 )
+                {
+                    $total_cantidad+= $productos[$i]['Cantidad'];
+                    $total_costo_total+= $productos[$i]['Costo'];
+                }
             } ?>
             <tr>
-                @if( $bodega == 'TODAS')
-                    <td colspan="3"> &nbsp; </td>
-                @else
-                    <td colspan="2"> &nbsp; </td>
-                @endif
-                
+                <td colspan="3"> &nbsp; </td>
                 <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
                 <td> {{ number_format($total_costo_total, 2, ',', '.') }} </td>
-                <td> &nbsp; </td>
             </tr>
     </table>
 </div>

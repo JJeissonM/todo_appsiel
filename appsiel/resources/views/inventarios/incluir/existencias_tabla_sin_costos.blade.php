@@ -1,11 +1,9 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped" style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%">
         <tr style="background: #ccc; font-weight: bold; text-align: center;">
-            @if( $bodega == 'TODAS')
-                <td> Bodega </td>
-            @endif
             <td> Cód. </td>
             <td> Producto </td>
+            <td> Bodega </td>
             <td> Cantidad física </td>
             @if($mostrar_cantidad)
                 <td> Cantidad Sistema </td>
@@ -17,13 +15,11 @@
         $total_cantidad=0;
         $total_costo_total=0;
         for($i=0;$i<count($productos);$i++){ ?>
-        	<!-- @ if($productos[$i]['Cantidad']!=0) -->
+            @if( $productos[$i]['id'] != 0 )
 	            <tr>
-                    @if( $bodega == 'TODAS')
-                        <td> {{ $productos[$i]['bodega'] }} </td>
-                    @endif
-	                <td>{{ $productos[$i]['id'] }}</td>
+                    <td>{{ $productos[$i]['id'] }}</td>
 	                <td>{{ $productos[$i]['descripcion'] }} ({{ $productos[$i]['unidad_medida1'] }})</td>
+                    <td> {{ $productos[$i]['bodega'] }} </td>
 
                     <td> &nbsp; </td>
 
@@ -33,18 +29,24 @@
                     @endif
 	                
 	            </tr>
-            <!-- @ endif -->
+            @else
+                <tr style="background: #4a4a4a; color: white;">
+                    <td colspan="3"> &nbsp; </td>
+
+                    <td> &nbsp; </td>
+
+                    @if($mostrar_cantidad)
+                        <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }}</td>
+                        <td> &nbsp; </td>
+                    @endif
+                </tr>
+            @endif
         <?php 
             $total_cantidad+= $productos[$i]['Cantidad'];
             $total_costo_total+= $productos[$i]['Costo'];
         } ?>
-        <tr>
-            @if( $bodega == 'TODAS')
-                <td colspan="3"> &nbsp; </td>
-            @else
-                <td colspan="2"> &nbsp; </td>
-            @endif
-            
+        <tr>            
+            <td colspan="3"> &nbsp; </td>
             <td> &nbsp; </td>
 
             @if($mostrar_cantidad)
