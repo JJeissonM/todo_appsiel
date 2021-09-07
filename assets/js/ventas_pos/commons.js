@@ -5,6 +5,11 @@ var productos, precios, descuentos, clientes, cliente_default, forma_pago_defaul
 $('#btn_nuevo').hide();
 $('#btnPaula').hide();
 
+function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+{
+    $('.text_input_sugerencias').select();
+}
+
 $(document).ready(function () {
 
     $('#fecha').val( get_fecha_hoy() );
@@ -569,7 +574,7 @@ $(document).ready(function () {
 
         $('.linea_registro').each(function( ){
 
-            linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' (' + $(this).find('.lbl_precio_unitario').text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+            linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
             if( parseFloat( $(this).find('.valor_total_descuento').text() ) != 0 )
             {
@@ -712,7 +717,6 @@ $(document).ready(function () {
 
     function calcular_precio_total()
     {
-
         precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 
         $('#precio_total').val(0);
@@ -730,22 +734,25 @@ $(document).ready(function () {
 
     function calcular_totales() 
     {
-        var cantidad = 0.0;
+        var total_cantidad = 0.0;
         var subtotal = 0.0;
         var valor_total_descuento = 0.0;
         var total_impuestos = 0.0;
         total_factura = 0.0;
 
         $('.linea_registro').each(function() {
-            cantidad += parseFloat( $(this).find('.cantidad').text() );
-            subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
+            var cantidad_linea = parseFloat( $(this).find('.elemento_modificar').eq(0).text() );
+            total_cantidad += cantidad_linea;
+            //precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
+            //cantidad += parseFloat( $(this).find('.cantidad').text() );
+            subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * cantidad_linea;
             valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
-            total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
+            total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
             total_factura += parseFloat( $(this).find('.precio_total').text() );
 
         });
 
-        $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(cantidad));
+        $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(total_cantidad));
 
         // Subtotal (Sumatoria de base_impuestos por cantidad)
         //var valor = ;
@@ -833,6 +840,7 @@ $(document).ready(function () {
 
     });
 
+
     $(document).on('click', ".btn_registrar_ingresos_gastos", function (event) {
         event.preventDefault();
 
@@ -848,6 +856,8 @@ $(document).ready(function () {
         $("#myModal2 .btn_edit_modal").hide();
         $("#myModal2 .btn-danger").hide();
         $("#myModal2 .btn_save_modal").show();
+
+        $("#myModal2 .btn_save_modal").removeAttr('disabled');        
 
         var url = url_raiz + "/" + "ventas_pos_form_registro_ingresos_gastos" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
 
@@ -928,7 +938,7 @@ $(document).ready(function () {
         }
         
         // Desactivar el click del botón
-        $( this ).off( event );
+        $( this ).hide();
         $( this ).attr( 'disabled', 'disabled' );
 
         var url = $("#form_registrar_ingresos_gastos").attr('action');
@@ -1005,8 +1015,6 @@ $(document).ready(function () {
         elemento_modificar.html(valor_nuevo);
         elemento_modificar.show();
 
-        cantidad = parseFloat(valor_nuevo);
-
         $('#inv_producto_id').focus();
 
         calcular_precio_total_lbl(fila);
@@ -1020,12 +1028,19 @@ $(document).ready(function () {
 
     function calcular_precio_total_lbl(fila) 
     {
-        precio_unitario = parseFloat(fila.find('.precio_unitario').text());
-        base_impuesto_unitario = parseFloat(fila.find('.base_impuesto').text());
-        tasa_descuento = parseFloat(fila.find('.tasa_descuento').text());
+        //precio_unitario = parseFloat(fila.find('.precio_unitario').text());
+        //base_impuesto_unitario = parseFloat(fila.find('.base_impuesto').text());
+        tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
+        cantidad = parseFloat( fila.find('.elemento_modificar').eq(0).text() );
+        precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
+
+        var tasa_impuesto = parseFloat( fila.find('.lbl_tasa_impuesto').text() );
 
         valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
         valor_total_descuento = valor_unitario_descuento * cantidad;
+
+        var precio_venta = precio_unitario - valor_unitario_descuento;
+        base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
 
         precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 
