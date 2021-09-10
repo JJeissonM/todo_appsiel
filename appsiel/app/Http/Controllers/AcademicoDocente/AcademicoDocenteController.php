@@ -157,7 +157,7 @@ class AcademicoDocenteController extends Controller
         $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
         $modelo = Modelo::find( Input::get('id_modelo') );
-
+        
         $registros = app($modelo->name_space)->get_logros($colegio->id, $curso_id, $asignatura_id, null, $nro_registros, $search);
         $sqlString = app($modelo->name_space)->sqlString2($colegio->id, $curso_id, $asignatura_id, null, $search);
         $tituloExport = app($modelo->name_space)->tituloExport();

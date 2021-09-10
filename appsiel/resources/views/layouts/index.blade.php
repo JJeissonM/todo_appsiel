@@ -67,7 +67,33 @@
 			<a class="btn-gmail btn-excel" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>
 		</form>
 		<div class="search">
-			<form class="form-horizontal" role="search" method="get" action="@if($source=='INDEX2') {{route('calificaciones.index2')}} @elseif($source=='BOLETIN') {{url('calificaciones/observaciones_boletin')}} @elseif($source=='INDEX3') {{url('academico_docente/asistencia_clases')}} @elseif($source=='INDEX4') {{url('academico_docente/revisar_calificaciones/curso_id').'/'.$curso->id.'/'.$asignatura->id}} @elseif($source=='INDEX5') {{url('sga_notas_nivelaciones_revisar').'/'.$curso->id.'/'.$asignatura->id}} @elseif($source=='INDEX6') {{url('academico_docente/revisar_logros').'/'.$curso->id.'/'.$asignatura->id}} @elseif($source=='INDEX7') {{url('academico_docente/revisar_metas').'/'.$curso->id.'/'.$asignatura->id}} @else {{route('web.index')}} @endif">
+			<?php
+
+				$accion = route('web.index');
+
+				if($source=='INDEX2'){
+					$accion = route('calificaciones.index2');
+				}
+				elseif($source=='BOLETIN'){
+					$accion = url('calificaciones/observaciones_boletin');
+				}
+				elseif($source=='INDEX3'){
+					$accion = url('academico_docente/asistencia_clases');
+				}
+				elseif($source=='INDEX4'){
+					$accion = url('academico_docente/revisar_calificaciones/curso_id').'/'.$curso->id.'/'.$asignatura->id;
+				}
+				elseif($source=='INDEX5'){
+					$accion = url('sga_notas_nivelaciones_revisar').'/'.$curso->id.'/'.$asignatura->id;
+				}
+				elseif($source=='INDEX6'){
+					$accion = url('academico_docente/revisar_logros').'/'.$curso->id.'/'.$asignatura->id;
+				}
+				elseif($source=='INDEX7'){
+					url('academico_docente/revisar_metas').'/'.$curso->id.'/'.$asignatura->id;
+				}
+			?>
+			<form class="form-horizontal" role="search" method="get" action="{{ $accion }}">
 				<input type="hidden" name="id" value="{{$id_app}}" />
 				<input type="hidden" name="id_modelo" value="{{$id_modelo}}" />
 				@if(isset($url_complemento))

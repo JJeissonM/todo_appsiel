@@ -43,6 +43,9 @@ Route::resource('factura_medica', 'Ventas\FacturaMedicaController');
 Route::get('salud_imprimir_historia_medica_ocupacional/{consulta_id}', 'Salud\SaludOcupacionalController@imprimir_historia_medica_ocupacional');
 Route::get('salud_imprimir_certificado_aptitud/{consulta_id}', 'Salud\SaludOcupacionalController@imprimir_certificado_aptitud');
 
+//		ODONTOLOGIA
+Route::get('salud_imprimir_historia_clinica_odontologica/{consulta_id}', 'Salud\OdontologiaController@imprimir_historia_clinica');
+
 
 //CITAS MEDICAS
 Route::resource('citas_medicas', 'Salud\CitasController');

@@ -10,4 +10,6 @@
 			{{ Form::bsBtnEliminar( 'consultorio_medico/consultas/'.$consulta->id.'/delete?id='.Input::get('id').'&id_modelo='.$modelo_consultas->id.'&paciente_id='.$id.'&modelo_pacientes_id='.Input::get('id_modelo') ) }}
 		@endcan
 	</div>
+
+	Imprimir: {{ Form::select( 'formato_impresion_id', [ 'datos_consulta' => 'Datos consulta', 'historial_completo' => 'Historial completo' ], null, [ 'id' =>'formato_impresion_id', 'class' =>'form-control' ]) }}
 </div>

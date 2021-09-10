@@ -101,71 +101,70 @@
 						$es_el_primero = true;						
 					?>
 					@foreach($consultas as $consulta)
-					<div class="panel panel-default">	
-						<div class="panel-heading">
-							<a class="well well-lg" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ $consulta->id }}" style="display: block; margin: 0;background-color: #f5f5f5">
-								<h3 class="panel-title" style="font-size: 24px">
-									Consulta No. {{ $consulta->id }} <span class="close">&plus;</span>
-								</h3>
-							</a>
-						</div>
-						
-						
-						<?php
-							if( $es_el_primero )
-							{
-								$clase = 'collapse in';
-								$es_el_primero = false;
-							}else{
-								$clase = 'collapse';
-							}	
-						?>
-
-						<div id="collapse{{ $consulta->id }}" class="panel-collapse {{$clase}}">
-							<div class="panel-body">
-								@include('consultorio_medico.pacientes_show_botones_accion')
-
-								@include( 'consultorio_medico.consultas.datos_consulta' )
-
-				            	<div class="secciones_consulta">
-									<ul class="nav nav-tabs">
-										<?php $cont = 1; ?>
-										@foreach($secciones_consulta as $seccion)
-											@if( $seccion->activo )
-												<?php $href = "#tab_".$cont."_".$consulta->id; ?>
-												@if($cont == 1)
-													<li class="active"><a data-toggle="tab" href="{{$href}}">{{ $seccion->nombre_seccion }}</a></li>
-												@else
-													<li><a data-toggle="tab" href="{{$href}}">{{ $seccion->nombre_seccion }}</a></li>
-												@endif
-												<?php $cont++; ?>
-								            @endif
-								        @endforeach
-								    </ul>
-
-								    <div class="tab-content">
-								    	<?php $cont = 1; ?>
-										@foreach($secciones_consulta as $seccion)
-											@if( $seccion->activo )
-												<?php $ID = "tab_".$cont."_".$consulta->id; ?>
-												@if($cont == 1)
-													<div id="{{$ID}}" class="tab-pane fade in active">
-									            		@include( $seccion->url_vista_show )
-									            	</div>
-									            @else
-									            	<div id="{{$ID}}" class="tab-pane fade">
-									            		@include( $seccion->url_vista_show )
-									            	</div>
-									            @endif
-												<?php $cont++; ?>
-								            @endif
-								        @endforeach
-								    </div>
-								</div> <!-- FIN secciones_consulta -->		
+						<div class="panel panel-default">
+							
+							<div class="panel-heading">
+								<a class="well well-lg" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ $consulta->id }}" style="display: block; margin: 0;background-color: #f5f5f5">
+									<h3 class="panel-title" style="font-size: 24px">
+										Consulta No. {{ $consulta->id }} <span class="close">&plus;</span>
+									</h3>
+								</a>
 							</div>
-													
-						</div> <!-- FIN class panel accordion -->			
-					</div>
+							
+							
+							<?php
+								if( $es_el_primero )
+								{
+									$clase = 'collapse';
+									$es_el_primero = false;
+								}else{
+									$clase = 'collapse';
+								}	
+							?>
+
+							<div id="collapse{{ $consulta->id }}" class="panel-collapse {{$clase}}">
+								<div class="panel-body">								
+
+					            	<div class="secciones_consulta">
+										<ul class="nav nav-tabs">
+											<?php $cont = 1; ?>
+											@foreach($secciones_consulta as $seccion)
+												@if( $seccion->activo )
+													<?php $href = "#tab_".$cont."_".$consulta->id; ?>
+													@if($cont == 1)
+														<li class="active"><a data-toggle="tab" href="{{$href}}">{{ $seccion->nombre_seccion }}</a></li>
+													@else
+														<li><a data-toggle="tab" href="{{$href}}">{{ $seccion->nombre_seccion }}</a></li>
+													@endif
+													<?php $cont++; ?>
+									            @endif
+									        @endforeach
+									    </ul>
+
+									    <div class="tab-content">
+									    	<?php $cont = 1; ?>
+											@foreach($secciones_consulta as $seccion)
+												@if( $seccion->activo )
+													<?php $ID = "tab_".$cont."_".$consulta->id; ?>
+													@if($cont == 1)
+														<div id="{{$ID}}" class="tab-pane fade in active">
+										            		@include( $seccion->url_vista_show )
+										            	</div>
+										            @else
+										            	<div id="{{$ID}}" class="tab-pane fade">
+										            		@include( $seccion->url_vista_show )
+										            	</div>
+										            @endif
+													<?php $cont++; ?>
+									            @endif
+									        @endforeach
+									    </div>
+									</div> <!-- FIN secciones_consulta -->		
+								</div>
+														
+							</div> <!-- FIN class panel accordion -->			
+						</div>
+						<br>
 					@endforeach
 		    	</div>
 			</div>
