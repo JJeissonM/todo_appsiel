@@ -12,6 +12,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
 use Input;
 use DB;
+use View;
 
 use App\Sistema\Modelo;
 use App\Core\ModeloEavValor;
@@ -152,7 +153,16 @@ class ModeloEavController extends ModeloController
 
         $registro = new $modelo->name_space;
 
-        return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action'));
+        if ( Input::get('modo_peticion') == 'ajax' )
+        {
+            $accion = 'edit';
+            $title = 'Actualizar ' .  $modelo->descripcion;
+            $form_create['url'] = 'core_eav_update_db';
+            return View::make( 'layouts.formulario_ajax_update_eav', compact( 'form_create', 'accion', 'registro', 'title') )->render();
+        }else{
+            return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action'));
+        }
+        
     }
 
     /**
@@ -163,6 +173,16 @@ class ModeloEavController extends ModeloController
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
+    {
+        $this->update_db($request);
+
+        $url = $request->session()->get('url_anterior');
+        $request->session()->forget('url_anterior');
+
+        return redirect( $url )->with( 'flash_message','Registro creado correctamente.' );
+    }
+
+    public function update_db(Request $request)
     {
         // Registro del Modelo Entidad en EAV
         $modelo = Modelo::find($request->modelo_entidad_id);
@@ -217,10 +237,18 @@ class ModeloEavController extends ModeloController
             }
         }
 
-        $url = $request->session()->get('url_anterior');
-        $request->session()->forget('url_anterior');
+        $datos = 1;
+        if ( $request->modo_peticion == 'ajax')
+        {
+            $datos = self::show_datos_entidad( $request->modelo_padre_id, $request->registro_modelo_padre_id, $request->modelo_entidad_id );            
+        }
 
-        return redirect( $url )->with( 'flash_message','Registro creado correctamente.' );
+        return $datos;
+    }
+
+    public function cancelar_update_db(Request $request)
+    {
+        return self::show_datos_entidad( $request->modelo_padre_id, $request->registro_modelo_padre_id, $request->modelo_entidad_id );   
     }
 
     /**

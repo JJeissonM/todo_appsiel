@@ -197,7 +197,8 @@
 			    </div>
 
 			  </div>
-			</div>    
+			</div>
+
 		</div> <!-- Marco -->
 	</div>
 	<br/><br/>
@@ -296,8 +297,6 @@
 			    $(".btn_save_examen").hide();
 			    $(".btn_edit_examen").show();
 			  });
-
-
 	
 			function getParameterByName(name) {
 			    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

@@ -223,7 +223,7 @@
 						return 0;
 					}else{
 					    $("#div_spin").hide();
-					    location.reload();						
+					    location.reload();
 					}
 
 				}, function( error ) { //, data, textStatus, xhr

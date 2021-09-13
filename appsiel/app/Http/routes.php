@@ -40,7 +40,6 @@ Route::get('modelo/eliminar/{id_registro}', 'Sistema\ModeloController@eliminar_r
 
 Route::get('core_create_registro_modelo/{modelo_id}', 'Sistema\ModeloController@create_registro_modelo');
 
-
 Route::auth();
 
 //          C O R E
@@ -53,6 +52,10 @@ Route::get('web_eliminar/{id}', 'Sistema\CrudController@eliminar_registro');
 
 Route::resource('web', 'Sistema\ModeloController');
 
+//  CRUD AJAX
+
+Route::get('formulario_ajax_modelo/{modelo_id}/{registro_id}/{accion}', 'Sistema\CrudAjaxController@formulario_ajax_modelo');
+Route::resource('web_ajax', 'Sistema\CrudAjaxController');
 
 //Configuraciones
 
@@ -129,6 +132,8 @@ Route::resource('get_eventos', 'Core\EventoController@get_eventos');
 
 // MODELO EAV
 Route::post('core/eliminar_registros_eav', 'Core\ModeloEavController@eliminar_registros_eav');
+Route::post('core_eav_update_db', 'Core\ModeloEavController@update_db');
+Route::post('core_eav_cancelar_update_db', 'Core\ModeloEavController@cancelar_update_db');
 Route::resource('core/eav', 'Core\ModeloEavController');
 
 

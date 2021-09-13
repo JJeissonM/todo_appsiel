@@ -63,7 +63,7 @@ class ProductoController extends  Controller {
 
     }
 
-    public function  detalle_producto($id){
+    public function detalle_producto($id){
 
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();

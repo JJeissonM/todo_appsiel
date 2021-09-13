@@ -30,7 +30,7 @@ Route::post('aboutus/store', 'web\AboutusController@store')->name('aboutus.store
 Route::put('aboutus/updated/{id}', 'web\AboutusController@updated')->name('aboutus.updated');
 Route::get('/aboutus/{id}/institucional/leer', 'web\AboutusController@leer_institucional')->name('aboutus.leer_institucional');
 
-//GALERIA
+//////////////////////// GALERIA
 Route::get('galeria/create/{widget}', 'web\GaleriaController@create');
 Route::get('galeria/edit/{album}', 'web\GaleriaController@edit');
 Route::post('galeria/guardar/seccion', 'web\GaleriaController@guardarseccion')->name('galeria.guardar');
@@ -45,6 +45,8 @@ Route::get('/galeria/{id}/ver/album/index', 'web\GaleriaController@veralbum')->n
 Route::get('/galeria/crear/', 'web\GaleriaController@importar')->name('galeria.importar');
 
 Route::get('galeria_ver_album_carousel/{album_id}', 'web\GaleriaController@ver_album_carousel')->name('galeria.veralbumcarousel');
+/////////////////////////////////////
+
 
 Route::resource('sociales', 'web\RedesSocialesController');
 Route::resource('footer', 'web\FooterController');

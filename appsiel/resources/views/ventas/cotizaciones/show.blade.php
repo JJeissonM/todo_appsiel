@@ -95,6 +95,11 @@
 			@endif
 		</td>
 	</tr>
+	<tr>
+		<td colspan="2">
+			<b>Detalle: </b> {!! $doc_encabezado->descripcion !!}
+		</td>
+	</tr>
 @endsection
 
 @section('div_advertencia_anulacion')

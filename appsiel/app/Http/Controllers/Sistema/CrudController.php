@@ -276,4 +276,32 @@ class CrudController extends Controller
         return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('flash_message','Registro ELIMINADO correctamente.');
     }
 
+
+    // FORMULARIO de un Modelo con sus Campos
+    // $accion = { create | edit }
+    public function formulario_ajax_modelo( $modelo_id, $registro_id, $accion)
+    {   
+        $modelo = Modelo::find( $modelo_id );
+        // Se obtiene el registro a modificar del modelo
+        $registro = app($modelo->name_space)->find($registro_id);
+
+        $lista_campos = $this->get_campos_modelo($modelo,$registro,$accion);
+        
+        $url_action = 'web_ajax/'.$id;
+
+
+        $form_create = [
+                        'url' => $modelo->url_form_create,
+                        'campos' => $lista_campos
+                    ];
+
+        
+        if ($modelo->url_form_create != '')
+        {
+            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
+        }
+
+        return view('layouts.formulario_ajax_modelo',compact('form_create','miga_pan','registro','archivo_js','url_action'));        
+    }
+
 }
