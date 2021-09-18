@@ -116,8 +116,8 @@
               <a class="dropdown-toggle" type="button" id="menu{{$n}}-{{ $consulta->id }}" data-toggle="dropdown">
                   <div id="_{{$n}}-{{ $consulta->id }}" style="position: relative">
                   <div class="text-center" style="width: 50px">{{$n}}</div>
-                  <img src="{{ asset("assets/img/odontolograma") }}/diente.svg" alt="" width="50px">
-                  <img class="all" height="50" width="50" style="position: absolute;bottom: 0; left:0;z-index: 1; border:none" src="{{ asset("assets/img/odontolograma") }}/white.svg" alt="diente${n}">
+                  <img src="{{ asset("assets/img/odontograma") }}/diente.svg" alt="" width="50px">
+                  <img class="all" height="50" width="50" style="position: absolute;bottom: 0; left:0;z-index: 1; border:none" src="{{ asset("assets/img/odontograma") }}/white.svg" alt="diente${n}">
           
                   <svg viewBox="0 0 52.916666 52.916668" height="50" width="50" style="position: absolute;bottom: 0; left:0;">        
                       <g transform="translate(0,-244.08332)">
@@ -149,47 +149,47 @@
               </a>
               <ul class="dropdown-menu" role="menu" aria-labelledby="menu{{$n}}-{{ $consulta->id }}">    
                   <li>
-                  <a class="trigger right-caret"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries</a>
+                  <a class="trigger right-caret"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries</a>
                   <ul class="dropdown-menu sub-menu">
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'bucal',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries bucal</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'lingual',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries lingual</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'distal',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries distal</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'mesial',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries mesial</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'oclusal',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries oclusal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'bucal',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries bucal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'lingual',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries lingual</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'distal',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries distal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'mesial',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries mesial</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'oclusal',feat:'caries'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries oclusal</a></li>
                   </ul>
                   </li>
                   <li>
-                  <a class="trigger right-caret"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina</a>
+                  <a class="trigger right-caret"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina</a>
                   <ul class="dropdown-menu sub-menu">
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'bucal',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina bucal</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'lingual',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina lingual</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'distal',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina distal</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'mesial',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina mesial</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'oclusal',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina oclusal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'bucal',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina bucal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'lingual',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina lingual</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'distal',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina distal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'mesial',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina mesial</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'oclusal',feat:'resina'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina oclusal</a></li>
                   </ul>
                   </li>
                   <li>
-                  <a class="trigger right-caret"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama</a>
+                  <a class="trigger right-caret"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama</a>
                   <ul class="dropdown-menu sub-menu">
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'bucal',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama bucal</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'lingual',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama lingual</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'distal',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama distal</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'mesial',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama mesial</a></li>
-                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'oclusal',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama oclusal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'bucal',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama bucal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'lingual',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama lingual</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'distal',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama distal</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'mesial',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama mesial</a></li>
+                      <li><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'oclusal',feat:'amalgama'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama oclusal</a></li>
                   </ul>
                   </li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'sellante'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/sellante.svg" alt=""></span>Sellante</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'sellanteindicado'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/sellanteindicado.svg" alt=""></span>Sellante Indicado</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'extraccionindicada'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/extraccionindicada.svg" alt=""></span>Extraccion Indicada</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'conendodoncia'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/conendodoncia.svg" alt=""></span>Con endodoncia</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'protesis'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/protesis.svg" alt=""></span>Protesis</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'necrosispulpar'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/necrosispulpar.svg" alt=""></span>Necrosis Pulpar</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'protesisindicada'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/protesisindicada.svg" alt=""></span>Protesis Indicada</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'clinicamenteausente'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/clinicamenteausente.svg" alt=""></span>Clinicamente Ausente</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'coronadesadaptada'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/coronadesadaptada.svg" alt=""></span>Corona desadaptada</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'reseciongingival'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/reseciongingival.svg" alt=""></span>Resecion gingival</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'sano'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/sano.svg" alt=""></span>Sano</a></li>
-                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'corona'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/corona.svg" alt=""></span>Corona</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'sellante'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/sellante.svg" alt=""></span>Sellante</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'sellanteindicado'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/sellanteindicado.svg" alt=""></span>Sellante Indicado</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'extraccionindicada'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/extraccionindicada.svg" alt=""></span>Extraccion Indicada</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'conendodoncia'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/conendodoncia.svg" alt=""></span>Con endodoncia</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'protesis'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/protesis.svg" alt=""></span>Protesis</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'necrosispulpar'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/necrosispulpar.svg" alt=""></span>Necrosis Pulpar</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'protesisindicada'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/protesisindicada.svg" alt=""></span>Protesis Indicada</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'clinicamenteausente'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/clinicamenteausente.svg" alt=""></span>Clinicamente Ausente</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'coronadesadaptada'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/coronadesadaptada.svg" alt=""></span>Corona desadaptada</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'reseciongingival'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/reseciongingival.svg" alt=""></span>Resecion gingival</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'sano'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/sano.svg" alt=""></span>Sano</a></li>
+                  <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'corona'})"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/corona.svg" alt=""></span>Corona</a></li>
                   <li class="presentation"><a role="menuitem" tabindex="-1" href="javascript:grama{{ $consulta->id }}({n:{{$n}},nombre:'all',feat:'white'})">Reset</a></li>
               </ul>
               </div>
@@ -206,21 +206,21 @@
         </div>
         <div class="panel-body">
           <ul class="list-group">
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/caries.svg" alt=""></span>Caries</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/resina.svg" alt=""></span>Resina</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/amalgama.svg" alt=""></span>Amalgama</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/sellante.svg" alt=""></span>Sellante</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/sellanteindicado.svg" alt=""></span>Sellante Indicado</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/extraccionindicada.svg" alt=""></span>Extraccion Indicada</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/conendodoncia.svg" alt=""></span>Con endodoncia</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/protesis.svg" alt=""></span>Protesis</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/necrosispulpar.svg" alt=""></span>Necrosis Pulpar</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/protesisindicada.svg" alt=""></span>Protesis Indicada</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/clinicamenteausente.svg" alt=""></span>Clinicamente Ausente</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/coronadesadaptada.svg" alt=""></span>Corona desadaptada</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/reseciongingival.svg" alt=""></span>Resecion gingival</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/sano.svg" alt=""></span>Sano</li>
-            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontolograma") }}/corona.svg" alt=""></span>Corona</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/caries.svg" alt=""></span>Caries</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/resina.svg" alt=""></span>Resina</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/amalgama.svg" alt=""></span>Amalgama</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/sellante.svg" alt=""></span>Sellante</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/sellanteindicado.svg" alt=""></span>Sellante Indicado</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/extraccionindicada.svg" alt=""></span>Extraccion Indicada</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/conendodoncia.svg" alt=""></span>Con endodoncia</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/protesis.svg" alt=""></span>Protesis</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/necrosispulpar.svg" alt=""></span>Necrosis Pulpar</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/protesisindicada.svg" alt=""></span>Protesis Indicada</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/clinicamenteausente.svg" alt=""></span>Clinicamente Ausente</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/coronadesadaptada.svg" alt=""></span>Corona desadaptada</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/reseciongingival.svg" alt=""></span>Resecion gingival</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/sano.svg" alt=""></span>Sano</li>
+            <li class="list-group-item"><span class="badge-icon"><img src="{{ asset("assets/img/odontograma") }}/corona.svg" alt=""></span>Corona</li>
           </ul>    
         </div>
       </div>
