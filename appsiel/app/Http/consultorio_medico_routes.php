@@ -4,6 +4,7 @@ Route::resource('consultorio_medico', 'Salud\ConsultorioMedicoController', ['exc
 Route::post('consultorio_medico/eliminar_paciente', 'Salud\PacienteController@eliminar');
 Route::resource('consultorio_medico/pacientes', 'Salud\PacienteController');
 
+Route::resource('consultorio_medico/odontograma', 'Salud\OdontogramaController');
 
 Route::get('consultorio_medico/consultas/{consulta_id}/print', 'Salud\ConsultaController@imprimir');
 Route::get('consultorio_medico/consultas/{consulta_id}/delete', 'Salud\ConsultaController@delete');
