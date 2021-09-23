@@ -395,6 +395,18 @@ class EstudianteController extends ModeloController
         return $opciones;
     }
 
+    public static function get_todos_estudiantes_matriculados($periodo_lectivo_id, $curso_id)
+    {
+        $registros = Matricula::todos_estudiantes_matriculados($curso_id, $periodo_lectivo_id);
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $opcion) {
+            $opciones .= '<option value="' . $opcion->id . '">' . $opcion->nombre_completo . '</option>';
+        }
+
+        return $opciones;
+    }
+
     //presenta la vista index para gestionar la información de los responsables de un estudiante
     public function gestionresponsables()
     {

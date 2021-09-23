@@ -130,10 +130,9 @@
         //dd($doc_encabezados);
         if($doc_encabezados[0]->estado == 'Pendiente'){
             echo 'pedidop = true;';
-        }     
+        }
     
     ?>
-    
 
     if(pedidop){
         toastr.info(`Pulsa aqui para continuar tu ultima compra`,"",{closeButton: true,timeOut: 0,extendedTimeOut: 0, onclick: function (){window.location.href = "{{url('/ecommerce/public/detallepedido').'/'.$doc_encabezados[0]->id}}"} });

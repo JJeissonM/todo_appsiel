@@ -27,8 +27,8 @@ class InvProductoCalzado extends Model
     public static function consultar_registros($nro_registros, $search)
     {
         $array_wheres = [
-            ['inv_productos.core_empresa_id', Auth::user()->empresa_id]
-        ];
+                            ['inv_productos.core_empresa_id', Auth::user()->empresa_id]
+                        ];
 
         return InvProductoCalzado::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
             ->where($array_wheres)

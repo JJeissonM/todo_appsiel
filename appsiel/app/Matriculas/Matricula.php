@@ -176,6 +176,57 @@ class Matricula extends Model
             ->get();
     }
 
+    public static function todos_estudiantes_matriculados( $curso_id, $periodo_lectivo_id)
+    {
+        $array_wheres = [['sga_matriculas.id', '>', 0]];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_matriculas.curso_id' => $curso_id]);
+        }
+
+        if ($periodo_lectivo_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_matriculas.periodo_lectivo_id' => $periodo_lectivo_id]);
+        }
+
+        return Matricula::where($array_wheres)
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
+            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
+                'sga_matriculas.id AS matricula_id',
+                'sga_matriculas.id',
+                'sga_matriculas.codigo',
+                'sga_matriculas.fecha_matricula',
+                'sga_matriculas.id_colegio',
+                'sga_matriculas.id_estudiante',
+                'sga_matriculas.id_estudiante AS id',
+                'sga_matriculas.acudiente',
+                'sga_matriculas.curso_id',
+                'sga_matriculas.periodo_lectivo_id',
+                'sga_matriculas.estado',
+                'sga_cursos.descripcion AS curso_descripcion',
+                'sga_estudiantes.genero',
+                'sga_estudiantes.imagen',
+                'sga_estudiantes.fecha_nacimiento',
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad'),
+                'core_tipos_docs_id.abreviatura as tipo_documento',
+                'core_terceros.nombre1',
+                'core_terceros.otros_nombres',
+                'core_terceros.apellido1',
+                'core_terceros.apellido2',
+                'core_terceros.id_tipo_documento_id',
+                'core_terceros.numero_identificacion',
+                'core_terceros.direccion1',
+                'core_terceros.barrio',
+                'core_terceros.telefono1',
+                'core_terceros.email'
+            )
+            ->OrderBy('core_terceros.apellido1', 'ASC')
+            ->get();
+    }
+
     public static function get_matriculas_un_estudiante($estudiante_id, $estado = null)
     {
         $array_wheres = [['sga_matriculas.id_estudiante', $estudiante_id]];
