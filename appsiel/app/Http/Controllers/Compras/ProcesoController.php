@@ -201,7 +201,14 @@ class ProcesoController extends Controller
                 {
                     foreach ( $lineas_registros_entrada as $linea_entrada )
                     {
+                        // Si no son el mismo producto
                         if( $linea_entrada->inv_producto_id != $linea_factura->inv_producto_id )
+                        {
+                            continue;
+                        }
+
+                        // Si no tienen las mismas cantidades
+                        if( $linea_entrada->cantidad != $linea_factura->cantidad )
                         {
                             continue;
                         }
