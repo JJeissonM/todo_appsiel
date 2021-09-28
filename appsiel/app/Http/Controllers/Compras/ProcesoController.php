@@ -161,4 +161,79 @@ class ProcesoController extends Controller
 
         echo '<br>Se actualizaron '.($i-1).' documentos.';
     }
+
+
+    /*
+        Reparar Entradas de Almacén descuadradas por Procesos de recontabilización
+    */
+    public function recalcular_entradas_almacen_recosteadas()
+    {
+        $docs_encabezado_compra = ComprasDocEncabezado::where([
+                                                                ['entrada_almacen_id','<>',0],
+                                                                ['entrada_almacen_id','<>','']
+                                                            ])
+                                                        ->get();
+
+        $i = 0;
+        foreach ( $docs_encabezado_compra as $factura_compra )
+        {
+            $array_entradas_almacen = explode(',', $factura_compra->entrada_almacen_id);
+            
+            foreach ($array_entradas_almacen as $key => $entrada_almacen_id)
+            {
+                $entrada_almacen = InvDocEncabezado::find( (int)$entrada_almacen_id  );
+
+                if( is_null($entrada_almacen))
+                {
+                    dd( $factura_compra );
+                }
+
+                $lineas_registros_entrada = $entrada_almacen->lineas_registros;
+
+                if ( $factura_compra->valor_total == $lineas_registros_entrada->sum('costo_total') )
+                {
+                    continue;
+                }
+
+                $lineas_registros_factura = $factura_compra->lineas_registros;
+                $entrada_id_recontabilizar = 0;
+                foreach ( $lineas_registros_factura as $linea_factura )
+                {
+                    foreach ( $lineas_registros_entrada as $linea_entrada )
+                    {
+                        if( $linea_entrada->inv_producto_id != $linea_factura->inv_producto_id )
+                        {
+                            continue;
+                        }
+
+                        $base_impuesto = $linea_factura->precio_unitario / (1 + $linea_factura->tasa_impuesto / 100 );
+                        if( round( $linea_entrada->costo_unitario, 0) == round($base_impuesto, 0) )
+                        {
+                            // Todo bien
+                            continue;
+                        }else{
+                            //dd( [ $linea_entrada->costo_unitario, $base_impuesto, $entrada_almacen] );
+                            /*
+                                    OJO!!!
+                                    NO SE TIENE EN CUENTA EL descuento
+                            */
+                            $linea_entrada->costo_total = $base_impuesto * $linea_factura->cantidad;
+                            $linea_entrada->costo_unitario = $base_impuesto;
+                            $linea_entrada->save();
+
+                            $entrada_id_recontabilizar = $entrada_almacen->id;
+                        }
+                    }
+                }
+
+                if( $entrada_id_recontabilizar != 0 )
+                {
+                    InvProcesoController::recontabilizar_documento($entrada_id_recontabilizar);
+                    $i++;
+                }
+            }
+        }
+
+        echo '<br>Se actualizaron ' . $i . ' documentos.';
+    }
 }
