@@ -5,6 +5,8 @@ namespace App\Calificaciones;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Calificaciones\EscalaValoracion;
+use App\Calificaciones\Periodo;
+use App\Calificaciones\Calificacion;
 
 class NotaNivelacion extends Model
 {
@@ -192,4 +194,53 @@ class NotaNivelacion extends Model
 			->toSql();
 		return str_replace('?', '"%' . $search . '%"', $string);
 	}
+
+    public static function get_la_calificacion($periodo_id, $curso_id, $estudiante_id, $asignatura_id)
+    {
+        $periodo = Periodo::find($periodo_id);
+
+        $calificacion = NotaNivelacion::where([
+									            'periodo_id' => $periodo_id,
+									            'curso_id' => $curso_id,
+									            'estudiante_id' => $estudiante_id,
+									            'asignatura_id' => $asignatura_id
+									        ])
+								            ->get()
+								            ->first();
+
+        $la_calificacion = (object)[
+                                        'valor' => 0,
+                                        'escala_id' => 0,
+                                        'escala_descripcion' => '-',
+                                        'escala_abreviatura' => '-',
+                                        'escala_nacional' => '-',
+                                        'logros' => ''
+                                    ];
+
+        if (!is_null($calificacion)) {
+            $escala = EscalaValoracion::get_escala_segun_calificacion($calificacion->calificacion, $periodo->periodo_lectivo_id);
+
+            if (!is_null($escala)) {
+                $la_calificacion = (object)[
+                                            'valor' => $calificacion->calificacion,
+                                            'escala_id' => $escala->id,
+                                            'escala_descripcion' => $escala->nombre_escala,
+                                            'escala_abreviatura' => $escala->sigla,
+                                            'escala_nacional' => $escala->nombre_escala,
+                                            'logros' => $calificacion->logros
+                                        ];
+            } else {
+                $la_calificacion = (object)[
+                                            'valor' => $calificacion->calificacion,
+                                            'escala_id' => 0,
+                                            'escala_descripcion' => '-',
+                                            'escala_abreviatura' => '-',
+                                            'escala_nacional' => '-',
+                                            'logros' => ''
+                                        ];
+            }
+        }
+
+        return $la_calificacion;
+    }
 }

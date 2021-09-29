@@ -197,10 +197,17 @@ class ProcesoController extends Controller
 
                 $lineas_registros_factura = $factura_compra->lineas_registros;
                 $entrada_id_recontabilizar = 0;
+                $ids_lineas_entrada_ya_actualizadas = [];
                 foreach ( $lineas_registros_factura as $linea_factura )
                 {
                     foreach ( $lineas_registros_entrada as $linea_entrada )
                     {
+                        // Si ya esa linea de la entrada fue actualizada
+                        if( in_array( $entrada_almacen->id, $ids_lineas_entrada_ya_actualizadas ) )
+                        {
+                            continue;
+                        }
+
                         // Si no son el mismo producto
                         if( $linea_entrada->inv_producto_id != $linea_factura->inv_producto_id )
                         {
@@ -213,8 +220,8 @@ class ProcesoController extends Controller
                             continue;
                         }
 
-                        $base_impuesto = $linea_factura->precio_unitario / (1 + $linea_factura->tasa_impuesto / 100 );
-                        if( round( $linea_entrada->costo_unitario, 0) == round($base_impuesto, 0) )
+                        //$base_impuesto = $linea_factura->base_impuesto / $linea_factura->cantidad;
+                        if( $linea_entrada->costo_total == $linea_factura->base_impuesto )
                         {
                             // Todo bien
                             continue;
@@ -224,11 +231,12 @@ class ProcesoController extends Controller
                                     OJO!!!
                                     NO SE TIENE EN CUENTA EL descuento
                             */
-                            $linea_entrada->costo_total = $base_impuesto * $linea_factura->cantidad;
-                            $linea_entrada->costo_unitario = $base_impuesto;
+                            $linea_entrada->costo_total = $linea_factura->base_impuesto;
+                            $linea_entrada->costo_unitario = $linea_factura->base_impuesto / $linea_factura->cantidad;
                             $linea_entrada->save();
 
                             $entrada_id_recontabilizar = $entrada_almacen->id;
+                                    $ids_lineas_entrada_ya_actualizadas[] = $entrada_almacen->id;
                         }
                     }
                 }
