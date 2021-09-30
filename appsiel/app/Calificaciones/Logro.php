@@ -11,6 +11,9 @@ use DB;
 use App\Calificaciones\Periodo;
 use App\Matriculas\PeriodoLectivo;
 
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+
 class Logro extends Model
 {
     protected $table = 'sga_logros';
@@ -145,7 +148,7 @@ class Logro extends Model
 
         $select_raw = 'CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")") AS campo6';
 
-        $registros = Logro::where($array_wheres)
+        $collection = Logro::where($array_wheres)
             ->where('sga_logros.escala_valoracion_id', '<>', 0)
             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_logros.periodo_id')
             ->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_periodos.periodo_lectivo_id')
@@ -163,18 +166,67 @@ class Logro extends Model
                 'sga_logros.estado AS campo8',
                 'sga_logros.id AS campo9'
             )
-            ->orWhere("sga_logros.codigo", "LIKE", "%$search%")
-            ->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(sga_escala_valoracion.nombre_escala," (",sga_escala_valoracion.calificacion_minima,"-",sga_escala_valoracion.calificacion_maxima,")")'), "LIKE", "%$search%")
-            ->orWhere("sga_logros.descripcion", "LIKE", "%$search%")
-            ->orWhere("sga_logros.estado", "LIKE", "%$search%")
             ->orderBy('sga_logros.codigo', 'DESC')
-            ->paginate($nro_registros);
+            ->get();
 
-        return $registros;
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0) {
+            if (strlen($search) > 0) {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
+        }
+
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if (empty($nuevaColeccion)) {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]);
+        }
+
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo) {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false) {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 
     public static function sqlString2($id_colegio, $curso_id, $asignatura_id, $periodo_id = null, $search)

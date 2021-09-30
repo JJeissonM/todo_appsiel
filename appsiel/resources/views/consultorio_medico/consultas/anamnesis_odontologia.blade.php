@@ -6,7 +6,7 @@
     $modelo_padre_id = 96; // Consultas Médicas
     $registro_modelo_padre_id = $consulta->id;
 
-    $ids_modelos_relacionados = [ 304, 305, 306, 307, 308 ];
+    $ids_modelos_relacionados = [ 304, 305, 306, 307 ];//, 308
 
 ?>
 <br>
@@ -33,7 +33,7 @@
 		?>
 
 		<li class="{{$class_active}}">
-				<a data-toggle="tab" href="{{$href}}">{{ $modelo_entidad->descripcion }}</a>
+			<a data-toggle="tab" href="{{$href}}">{{ $modelo_entidad->descripcion }}</a>
 		</li>
 		<?php $cont++; ?>
 	@endforeach

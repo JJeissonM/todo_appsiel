@@ -34,7 +34,7 @@
 		<br><br><br>
 		<br>
 		<p style="border-top: 1px solid black; margin: 0 50px;">
-			{{ $firma_autorizada_1->tercero->descripcion }}
+			{{ $firma_autorizada_2->tercero->descripcion }}
 			<br>
 			{{ $firma_autorizada_2->titulo_tercero }}
 		</p>

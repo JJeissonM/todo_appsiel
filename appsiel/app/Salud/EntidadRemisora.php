@@ -17,7 +17,7 @@ class EntidadRemisora extends Model
 
     protected $crud_model_id = 223; // Es el mismo $modelo_padre_id, a variable no se puede usar en métodos estáticos
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"no"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web"}';
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción'];
 

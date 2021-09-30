@@ -217,7 +217,8 @@ class CalificacionController extends Controller
         if ($parametros['permitir_calificaciones_sin_logros'] == 'No')
         {
             $logros = Logro::get_logros($this->colegio->id, $request->curso_id, $request->id_asignatura, $request->id_periodo, $nro_registros, $search);
-            if (empty($logros))
+            
+            if ( $logros->count() == 0 )
             {
                 return redirect(url()->previous())->with('mensaje_error', 'No se permite ingresar calificaciones para las asignaturas que aún no tienen logros en el periodo seleccionado.');
             }
