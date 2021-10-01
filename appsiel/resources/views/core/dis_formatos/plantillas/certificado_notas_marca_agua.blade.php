@@ -40,18 +40,22 @@
 
     .watermark-letter {
 	    position: fixed;
-	    top: 7%;
+	    top: 12%;
+	    left: 15%;
 	    text-align: center;
 	    opacity: .2;
 	    z-index: -1000;
+	    width: 70%;
 	  }
 
     .watermark-folio {
 	    position: fixed;
-	    top: 15%;
+	    top: 20%;
+	    left: 15%;
 	    text-align: center;
 	    opacity: .2;
 	    z-index: -1000;
+	    width: 70%;
 	  }
 
 	.escudo img{
@@ -85,7 +89,7 @@
 
 	</style>
 </head>
-<body id="body" style="font-size: 17px;">
+<body id="body" style="font-size: 15px;">
 
 	<?php    
 	    $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
@@ -106,7 +110,7 @@
 
 		<table width="100%">
 			<tr>
-				<td colspan="6" style="text-align: center; font-size: 1.1em;">
+				<td colspan="6" style="text-align: center; font-size: 1em;">
 					<div style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px; padding-top: 10px">
 						@include('core.dis_formatos.plantillas.cetificados_notas_texto_encabezado')
 					</div>

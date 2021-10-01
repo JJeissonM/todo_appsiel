@@ -97,7 +97,11 @@ $colegio = App\Core\Colegio::where('id','=',Auth::user()->id_colegio)->get();
 	                    <td width="20px" align="center">
 	                        @php 
 	                            // Calcular calificacion promedio del estudiante en la Collection calificaciones
-	                            $prom = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)->whereLoose('periodo_id',$periodo->id)->avg('calificacion');//->all();//
+	                            $prom = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)
+	                            			->whereLoose('periodo_id',$periodo->id)
+	                            			->avg('calificacion');
+
+	                            //dd( $calificaciones, $estudiante->id_estudiante, $periodo->id,  $prom );
 	                            $text_prom = '';
 	                            $color_text = 'black';
 	                            /**/if ( !is_null($prom) ) 

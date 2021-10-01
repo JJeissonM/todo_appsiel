@@ -11,7 +11,7 @@
 		@if( $url_firma != '')
 			<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
 		@endif
-		<br><br><br>
+		<br><br>
 		<br>
 		<p style="border-top: 1px solid black; margin: 0 50px;">
 			{{ $firma_autorizada_1->tercero->descripcion }}
@@ -31,7 +31,7 @@
 		@if( $url_firma != '')
 			<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
 		@endif
-		<br><br><br>
+		<br><br>
 		<br>
 		<p style="border-top: 1px solid black; margin: 0 50px;">
 			{{ $firma_autorizada_2->tercero->descripcion }}
@@ -41,5 +41,3 @@
 	</div>
 	
 </div>
-
-<div style="clear: both"></div>
