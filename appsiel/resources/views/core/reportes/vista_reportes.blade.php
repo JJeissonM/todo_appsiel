@@ -160,7 +160,7 @@
 
 		    		$('#div_cargando').show();
 
-					var url = "{{ url('get_estudiantes_matriculados') }}" + "/" + $('#periodo_lectivo_id').val() + "/" + $('#curso_id').val();
+					var url = "{{ url('get_todos_estudiantes_matriculados') }}" + "/" + $('#periodo_lectivo_id').val() + "/" + $('#curso_id').val();
 
 					$.ajax({
 			        	url: url,

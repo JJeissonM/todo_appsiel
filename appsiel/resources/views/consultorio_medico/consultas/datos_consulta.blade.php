@@ -24,7 +24,6 @@
 			<b>Atendido por:</b> {{ $profesional_salud->name }}
 		</td>
 	</tr>
-<!---->
 	<tr>
 		<td>
 			<b>Nombre acompañante:</b> {{ $consulta->nombre_acompañante }}

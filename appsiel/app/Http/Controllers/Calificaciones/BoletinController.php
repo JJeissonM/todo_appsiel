@@ -78,6 +78,19 @@ class BoletinController extends Controller
 
         // Listado de estudiantes con matriculas activas en el curso y año indicados
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo'  );
+
+        if ( $request->tipo_informe[0] == 'preinforme' )
+        {
+            $html = '<br>';
+            foreach ($estudiantes as $estudiante )
+            {
+                $html .= $this->consultar_preinforme( $request->id_periodo, $request->curso_id, $estudiante->id_estudiante);
+
+                $html .= '<hr>';
+            }
+
+            return $html;
+        }
 			
 		// Seleccionar asignaturas del curso
 		$asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, $periodo->periodo_lectivo_id );
@@ -90,6 +103,20 @@ class BoletinController extends Controller
 
         return View::make('calificaciones.boletines.revisar2',compact('estudiantes','asignaturas','colegio','periodo','anio','calificaciones','escala_valoracion','observaciones'))->render();
 		
+    }
+
+    public function consultar_preinforme($periodo_id, $curso_id, $estudiante_id)
+    {
+        $periodo = Periodo::find($periodo_id);
+        $anio = PeriodoLectivo::find($periodo->periodo_lectivo_id)->descripcion;
+
+        $estudiante = Estudiante::get_datos_basicos($estudiante_id);
+
+        $curso = Curso::find($curso_id);
+
+        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso($curso_id, null, null, null);
+
+        return View::make('academico_estudiante.preinforme_academico', compact('estudiante', 'periodo', 'anio', 'curso', 'asignaturas'))->render();
     }
 	
 	/**
@@ -224,6 +251,11 @@ class BoletinController extends Controller
                 {
                     $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion, $periodo->periodo_lectivo_id );
                     $cuerpo_boletin->lineas[$a]->escala_valoracion = $escala_valoracion;
+
+                    if( is_null( $escala_valoracion ) )
+                    {
+                        dd( 'Por favor corrija la calificacion. No hay configurada una Escala de valoracion para la calificacion ' . $calificacion->calificacion . '. Curso: ' . $curso->descripcion . '. Asignatura: ' . $asignacion->asignatura->descripcion . '. Estudiante: ' . $matricula->estudiante->tercero->descripcion );
+                    }
 
                     $cuerpo_boletin->lineas[$a]->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id, $escala_valoracion->id );
 

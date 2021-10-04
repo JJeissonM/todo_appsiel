@@ -40,18 +40,22 @@
 
     .watermark-letter {
 	    position: fixed;
-	    top: 7%;
+	    top: 12%;
+	    left: 15%;
 	    text-align: center;
 	    opacity: .2;
 	    z-index: -1000;
+	    width: 70%;
 	  }
 
     .watermark-folio {
 	    position: fixed;
-	    top: 15%;
+	    top: 20%;
+	    left: 15%;
 	    text-align: center;
 	    opacity: .2;
 	    z-index: -1000;
+	    width: 70%;
 	  }
 
 	.escudo img{
@@ -60,18 +64,41 @@
 		width: 95%;
 	}
 
+
+    .table
+    {
+	    width: 100%;
+	}
+
+
+    .table>tbody>tr>td, .table>tbody>tr>th, .table>tfoot>tr>td, .table>tfoot>tr>th, .table>thead>tr>td, .table>thead>tr>th
+    {
+	    line-height: 1.42857143;
+	    vertical-align: top;
+	    border-top: 1px solid gray;
+	}
+
+
+    .table-bordered {
+	    border: 1px solid gray;
+	}
+
+	.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+	    border: 1px solid gray;
+	}
+
 	</style>
 </head>
-<body id="body" style="font-size: 17px;">
+<body id="body" style="font-size: 15px;">
 
-<?php    
-    $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
-	$cont = 0;
-	$url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
-?>
+	<?php    
+	    $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+		$cont = 0;
+		$url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
+	?>
 
-@foreach($estudiantes as $estudiante)
-    
+	@foreach($estudiantes as $estudiante)
+	    
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
@@ -81,105 +108,44 @@
 			<div style="text-align: center">{{ $colegio->ciudad }}</div>
 		</footer>
 
-<table width="100%">
-	<tr>
-		<!--<td>
-			<img src="{{ $url }}" width="120px"/>
-		</td>-->
-		<td colspan="6" style="text-align: center; font-size: 1.1em;">
-			<div style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px; padding-top: 10px">
-				<b>{{ $colegio->descripcion }}</b><br/>
-				<br/>
-				{{ $colegio->resolucion }}. <br> Expedida por Secretaria de Educación Municipal <br/>
-				{{ $colegio->ciudad }}<br/><hr>
-			</div>
-		</td>
-		<!--<td>
-			<div style="width: 100px"></div>
-		</td>-->
-	</tr>
-	<tr>
-		<td colspan="6">
-			<br>
-			<div align="center">
-				EL PRESENTE RECTOR(A) DE: {{ $colegio->descripcion }}
-			</div>		
-			<div align="center">
-				CERTIFICA QUE:
-			</div>
-			<br>
-			<div style="text-align: justify;">
-			<b>{{ $estudiante->nombre_completo }}</b>,
-			Cursó en esta institución educativa el grado <b>{{ $curso->grado->descripcion }}</b>, según pensum oficial. Habiendo obtenido en el {{ $periodo_lectivo->descripcion }} las calificaciones que a continuación se registran:
-			</div>		
+		<table width="100%">
+			<tr>
+				<td colspan="6" style="text-align: center; font-size: 1em;">
+					<div style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px; padding-top: 10px">
+						@include('core.dis_formatos.plantillas.cetificados_notas_texto_encabezado')
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6">
+					@include('core.dis_formatos.plantillas.cetificados_notas_texto_introduccion')
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6">
+					@include('core.dis_formatos.plantillas.tabla_asignaturas_calificacion_2')
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6">
+					@include('core.dis_formatos.plantillas.cetificados_notas_texto_final')			
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6">
+					@include('core.dis_formatos.plantillas.cetificados_notas_seccion_firmas_autorizadas')
+				</td>
+			</tr>
+		</table>
 
-			<br>
-				
-		</td>
-	</tr>
-	{!! View::make( 'core.dis_formatos.plantillas.tabla_asignaturas_calificacion_2', compact( 'asignaturas','colegio','estudiante','curso', 'periodo_id' ) )->render() !!}	
-	<tr>
-		<td colspan="6">
-			<div style="text-align: justify;">
-				Observaciones: APROBÓ( &nbsp;&nbsp; )  &nbsp;&nbsp;&nbsp;&nbsp;    REPROBÓ( &nbsp;&nbsp; )    &nbsp;&nbsp;&nbsp;&nbsp;    APLAZÓ( &nbsp;&nbsp; )
-				<br>
-				{{ $observacion_adicional }}
-			</div>
-			<br><br>
-			<div style="text-align: justify;">
-				Para mayor constancia, se firma la presente en la ciudad de {{ $colegio->ciudad }} a los {{ $array_fecha[0] }} días del mes de {{ $array_fecha[1] }} de {{ $array_fecha[2] }}.
-			</div>
-			<br>			
-		</td>
-	</tr>
-	<tr>
-		<td colspan="6">
-		<div style="width: 100%;">
-			
-			<div style="float: left; width: 50%; text-align: center;">
-				<?php
-					$url_firma = '';
-					if ( $firma_autorizada_1->imagen != '' )
-					{
-						$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_1->imagen;
-					}
-				?>
-				@if( $url_firma != '')
-					<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
-				@endif
-				<br><br><br>
-				<br>
-				<p style="border-top: 1px solid black; margin: 0 50px;">{{ $firma_autorizada_1->titulo_tercero }}</p>
-			</div>
-
-			<div style="float: left; width: 50%; text-align: center;">
-				<?php
-					$url_firma = '';
-					if ( $firma_autorizada_2->imagen != '' )
-					{
-						$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_2->imagen;
-					}
-				?>
-				@if( $url_firma != '')
-					<img src="{{ $url_firma }}" width="250px" height="70px" style="left: 30px;position: absolute; z-index: 1;"/>
-				@endif
-				<br><br><br>
-				<br>
-				<p style="border-top: 1px solid black; margin: 0 50px;">{{ $firma_autorizada_2->titulo_tercero }}</p>
-			</div>
-			
-		</div>
+		@if($cont > 0)
+			<div class="page-break"></div>
+		@endif
 		
-		<div style="clear: both"></div>	
-		</td>
-	</tr>
-</table>
-<?php	
-	if($cont > 0){
-		echo '<div class="page-break"></div>';
-	}
-	$cont++;
-?>
-@endforeach
+		<?php
+			$cont++;
+		?>	
+	@endforeach
+
 </body>
 </html>

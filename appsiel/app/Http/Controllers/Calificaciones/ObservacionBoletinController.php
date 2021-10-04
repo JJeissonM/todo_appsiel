@@ -87,9 +87,11 @@ class ObservacionBoletinController extends Controller
         $url_estado = '';
         $url_eliminar = '';
 
+        $curso = new Curso();
+        $asignatura = new Asignatura();
         $source = "BOLETIN";
 
-        return view('layouts.index', compact('registros', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
+        return view('layouts.index', compact('registros', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'id_app', 'id_modelo', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar', 'curso', 'asignatura'));
     }
 
     /**

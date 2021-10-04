@@ -188,8 +188,10 @@ class ProcesoController extends Controller
 
         // Obtener TODOS los documentos de inventarios entre las fechas indicadas
         // No se DEBEN recostear los documentos de Ensambles (Fabricación)
+        // Tampoco los documentos de Entradas de Almacén por compras (ID=35)
         $documentos = InvDocEncabezado::where( 'estado', '<>', 'Anulado')
                                     ->where( 'core_tipo_transaccion_id', '<>', 4)
+                                    ->where( 'core_tipo_transaccion_id', '<>', 35)
                                     ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
                                     ->get();
 

@@ -369,7 +369,7 @@ class ReporteController extends Controller
 
     public function certificado_notas( Request $request )
     {
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, 'Activo' );
+        $estudiantes = Matricula::todos_estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id );
         
         if( $request->estudiante_id != '' )
         {
@@ -383,6 +383,8 @@ class ReporteController extends Controller
 
         $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
 
+        $maxima_escala_valoracion = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','DESC')->first()->calificacion_maxima;
+
         $periodo_id = $request->periodo_id;
         $observacion_adicional = $request->observacion_adicional;
         $tam_hoja = $request->tam_hoja;
@@ -395,10 +397,12 @@ class ReporteController extends Controller
             $array_fecha = [ $fecha[2], ConfiguracionController::nombre_mes( $fecha[1] ), $fecha[0] ];            
         }
 
+        $periodo = Periodo::find( $periodo_id );
+
         $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
         $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
 
-        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja' )  )->render();
+        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja', 'maxima_escala_valoracion', 'periodo' )  )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

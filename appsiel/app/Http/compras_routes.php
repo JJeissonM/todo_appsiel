@@ -49,5 +49,7 @@ Route::post('compras_precio_compra_por_producto', 'Compras\ReportesController@pr
 // PROCESOS
 Route::get('actualizar_valor_total_compras_encabezados_doc', 'Compras\ProcesoController@actualizar_valor_total_compras_encabezados_doc');
 
+Route::get('recalcular_entradas_almacen_recosteadas', 'Compras\ProcesoController@recalcular_entradas_almacen_recosteadas');
+
 Route::get('recontabilizar_documentos_compras', 'Compras\ProcesoController@recontabilizar_documentos_compras');
 Route::get('compras_recontabilizar_nota/{id}', 'Compras\ProcesoController@recontabilizar_documento_nota_credito');

@@ -20,6 +20,14 @@
 			<div class="row" style="padding:5px;">
 				{{ Form::bsSelect('curso_id','','Seleccionar curso',$cursos,['required'=>'required']) }}
 			</div>
+
+			@if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
+				<div class="row" style="padding:5px;">
+					{{ Form::bsRadioBtn('tipo_informe','boletin','Tipo de informe a consultar','{"boletin":"Boletín","preinforme":"Pre-Informe"}',['required'=>'required']) }}
+				</div>
+			@else
+				<input type="hidden" name="tipo_informe" value="boletin">
+			@endif
 								
 			<div class="form-group">
 				<div class="col-sm-offset-3 col-sm-6">

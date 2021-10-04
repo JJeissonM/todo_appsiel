@@ -345,7 +345,7 @@ class AcademicoDocenteController extends Controller
         $docente = $usuario->name;
 
         $colegio = Colegio::where('empresa_id', $usuario->empresa_id)->get()->first();
-        $calificaciones = Calificacion::get_calificaciones_boletines( $colegio->id, $curso_id, null, null );
+        $calificaciones = Calificacion::get_calificaciones_boletines( $colegio->id, $curso_id, $id_asignatura, null );
 
         $periodo_lectivo = PeriodoLectivo::get_actual();
 
