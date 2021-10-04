@@ -72,7 +72,11 @@ class OdontogramaController extends Controller
             $odontograma = Odontograma::where('id_consultas',$id)->get()->first();
         }else{
             $odontograma = Odontograma::orderBy('id_consultas', 'desc')->first();
-            $odontograma->id = "";
+            if($odontograma == null){
+                $odontograma = 'sin-datos';
+            }else{
+                $odontograma->id = "";    
+            }            
         }
         
         return $odontograma;

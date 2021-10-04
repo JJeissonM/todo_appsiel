@@ -270,18 +270,21 @@
       $.get(url, function (datos) {
           //odontograma_id{{ $consulta->id }}
           console.log(datos)
-          var data = JSON.parse(datos.odontograma_data)
-          for (const prop in data) {
-            //console.log(`obj.${prop} = ${data[prop]}`);
-            for (const propi in data[prop]) {
-              console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);
-              let ms = data[prop][propi];
-              grama{{ $consulta->id }}({n:prop,nombre:propi,feat:ms});
+          if(datos != 'sin-datos'){
+            var data = JSON.parse(datos.odontograma_data)
+            for (const prop in data) {
+              //console.log(`obj.${prop} = ${data[prop]}`);
+              for (const propi in data[prop]) {
+                console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);              
+                let ms = data[prop][propi];
+                grama{{ $consulta->id }}({n:prop,nombre:propi,feat:ms});              
+              }
             }
+            if(datos.id != 0){
+              $('#odontograma_id{{ $consulta->id }}').val(datos.id);
+            }   
           }
-          if(datos.id != 0){
-            $('#odontograma_id{{ $consulta->id }}').val(datos.id);
-          }            
+                     
       });
 
 
@@ -336,19 +339,6 @@
     
     }
 
-/*
-fetch('data.json')
-.then(response => response.json())
-.then(data => {
-  for (const prop in data) {
-    //console.log(`obj.${prop} = ${data[prop]}`);
-    for (const propi in data[prop]) {
-      console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);
-      let ms = data[prop][propi];
-      grama({n:prop,nombre:propi,feat:ms});
-    }
-  }
-});*/
 </script>  
 
   @section('scripts2')
