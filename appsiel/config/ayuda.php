@@ -50,7 +50,14 @@ return array(
                         'url' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Recaudos_De_Cuentas_por_Cobrar_cartera_de_clientes.mp4',
                         'duracion' => '7:37',
                         'publicacion' => '16 de Junio de 2021'
-                    ),    
+                    ),  
+                    '1' => array(
+                        'label' => 'Pagos de CxP',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Pagos_de_cxp.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Tesoreria/Pagos_de_cxp.mp4',
+                        'duracion' => '4:40',
+                        'publicacion' => '04 Octubre 2021'
+                    ),      
                 )
             ],
             '3' => [
@@ -108,6 +115,20 @@ return array(
                         'url' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/Crear_Producto.mp4',
                         'duracion' => '4:17',
                         'publicacion' => '26 de Agosto de 2021'
+                    ),
+                    '3' => array(
+                        'label' => 'Transferencia De Productos Entre Bodegas',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/transferencia_de_productos_entre_bodegas.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/transferencia_de_productos_entre_bodegas.mp4',
+                        'duracion' => '3:39',
+                        'publicacion' => '04 Octubre 2021'
+                    ),
+                    '4' => array(
+                        'label' => 'Conteo de Productos',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/conteo_de_productos.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Inventarios/conteo_de_productos.mp4',
+                        'duracion' => '3:13',
+                        'publicacion' => '04 Octubre 2021'
                     )
                 )
             ],

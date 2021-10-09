@@ -251,7 +251,44 @@
     </form>
     
   </div>  
- 
+<script>
+  'use strict'
+
+    document.addEventListener('DOMContentLoaded', function(){
+    let odontograma{{ $consulta->id }} = document.querySelector(".odontograma{{ $consulta->id }}");
+
+    document.querySelector('#formulario_odontograma{{ $consulta->id }}').addEventListener('submit', function(evt){
+      evt.preventDefault();
+      var url = "{{ url('consultorio_medico/odontograma') }}"
+      var data = $('#formulario_odontograma{{ $consulta->id }}').serialize();
+      $.post(url, data, function (datos) {
+          //odontograma_id{{ $consulta->id }}
+          let dato = datos;
+          $('#odontograma_id{{ $consulta->id }}').val(dato);
+      });
+    })
+    
+      var url = `{{ url('consultorio_medico/odontograma') }}/{{ $consulta->id }}`
+      $.get(url, function (datos) {
+          //odontograma_id{{ $consulta->id }}
+          console.log(datos)
+          if(datos != 'sin-datos'){
+            var data = JSON.parse(datos.odontograma_data)
+            for (const prop in data) {
+              //console.log(`obj.${prop} = ${data[prop]}`);
+              for (const propi in data[prop]) {
+                console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);              
+                let ms = data[prop][propi];
+                grama{{ $consulta->id }}({n:prop,nombre:propi,feat:ms});              
+              }
+            }
+            if(datos.id != 0){
+              $('#odontograma_id{{ $consulta->id }}').val(datos.id);
+            }   
+          }
+                     
+      });
+
 
 @section('scripts7')
   <script type="text/javascript">
@@ -290,7 +327,7 @@
         });
       });  
 
-      let dientes{{ $consulta->id }} = {};
+</script>  
 
       function grama{{ $consulta->id }}({n,nombre,feat}){
           if(nombre == 'all'){
