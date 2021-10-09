@@ -44,7 +44,7 @@ class Campo extends Model
                             ->orWhere("sys_campos.requerido", "LIKE", "%$search%")
                             ->orWhere("sys_campos.editable", "LIKE", "%$search%")
                             ->orWhere("sys_campos.unico", "LIKE", "%$search%")
-                            ->orderBy('sys_campos.created_at', 'DESC')
+                            ->orderBy('sys_campos.id', 'DESC')
                             ->paginate($nro_registros);
 
         return $registros;

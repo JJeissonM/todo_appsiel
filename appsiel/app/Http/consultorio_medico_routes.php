@@ -47,6 +47,12 @@ Route::get('salud_imprimir_certificado_aptitud/{consulta_id}', 'Salud\SaludOcupa
 //		ODONTOLOGIA
 Route::get('salud_imprimir_historia_clinica_odontologica/{consulta_id}', 'Salud\OdontologiaController@imprimir_historia_clinica');
 
+Route::resource('salud_endodoncia', 'Salud\EndodonciaController');
+Route::resource('salud_diagnostico_cie', 'Salud\DiagnosticoCieController');
+Route::resource('salud_procedimiento_cups', 'Salud\ProcedimientoCupsController');
+Route::resource('salud_rips', 'Salud\RipsController');
+
+
 
 //CITAS MEDICAS
 Route::resource('citas_medicas', 'Salud\CitasController');

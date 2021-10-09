@@ -5,6 +5,7 @@ namespace App\Nomina;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
+use App\Nomina\EquivalenciaContable;
 
 class NomConcepto extends Model
 {
@@ -18,7 +19,7 @@ class NomConcepto extends Model
     */
     protected $fillable = ['modo_liquidacion_id', 'naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Agrupación', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Parte del básico', 'Agrupación', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
@@ -30,6 +31,22 @@ class NomConcepto extends Model
     public function agrupacion()
     {
         return $this->belongsTo(AgrupacionConcepto::class, 'nom_agrupacion_id');
+    }
+
+    public function equivalencia_contable( $nom_grupo_empleado_id )
+    {
+        $equivalencias_del_concepto = EquivalenciaContable::where( 'nom_concepto_id', $this->id )
+                                                        ->get();
+        
+        foreach ($equivalencias_del_concepto as $equivalecia )
+        {
+            if ( $equivalecia->nom_grupo_empleado_id == $nom_grupo_empleado_id )
+            {
+                return $equivalecia;
+            }
+        }
+
+        return $equivalencias_del_concepto->first();
     }
 
     public function get_valor_hora_porcentaje_sobre_basico($salario_x_hora, $cantidad_horas)
@@ -58,9 +75,10 @@ class NomConcepto extends Model
                 'nom_conceptos.porcentaje_sobre_basico AS campo4',
                 'nom_conceptos.valor_fijo AS campo5',
                 'nom_conceptos.naturaleza AS campo6',
-                'nom_agrupaciones_conceptos.descripcion AS campo7',
-                'nom_conceptos.estado AS campo8',
-                'nom_conceptos.id AS campo9'
+                DB::raw('IF(nom_conceptos.forma_parte_basico=0,REPLACE(nom_conceptos.forma_parte_basico,0,"No"),REPLACE(nom_conceptos.forma_parte_basico,1,"Si")) AS campo7'),
+                'nom_agrupaciones_conceptos.descripcion AS campo8',
+                'nom_conceptos.estado AS campo9',
+                'nom_conceptos.id AS campo10'
             )
             ->where("nom_modos_liquidacion.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_conceptos.descripcion", "LIKE", "%$search%")

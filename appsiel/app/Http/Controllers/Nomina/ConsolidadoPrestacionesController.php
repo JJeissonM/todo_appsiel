@@ -102,6 +102,44 @@ class ConsolidadoPrestacionesController extends TransaccionController
                     continue;
                 }
 
+                if( $parametros_prestacion->nom_concepto_id == 0 )
+                {
+                    $lista_consolidados[] = (object)[
+                                                        'tercero' => (object)[ 'descripcion' => $empleado->tercero->descripcion, 'numero_identificacion' => $empleado->tercero->numero_identificacion],
+                                                        'tipo_prestacion'=> $prestacion,
+                                                        'fecha_fin_mes' => $fecha_final_promedios,
+                                                        'valor_acumulado_mes_anterior' => 0,
+                                                        'valor_pagado_mes' => 0,
+                                                        'valor_consolidado_mes' => 0,
+                                                        'dias_consolidado_mes' => 0,
+                                                        'valor_acumulado' => 0,
+                                                        'dias_acumulados' => 0,
+                                                        'observacion' => '',
+                                                        'dias_totales_laborados' => 0,
+                                                        'estado' => 'Error. La prestación no tiene asociado un concepto para su liquidación.'
+                                                    ];
+                    continue;
+                }
+
+                if( $parametros_prestacion->nom_agrupacion_id == 0 )
+                {
+                    $lista_consolidados[] = (object)[
+                                                        'tercero' => (object)[ 'descripcion' => $empleado->tercero->descripcion, 'numero_identificacion' => $empleado->tercero->numero_identificacion],
+                                                        'tipo_prestacion'=> $prestacion,
+                                                        'fecha_fin_mes' => $fecha_final_promedios,
+                                                        'valor_acumulado_mes_anterior' => 0,
+                                                        'valor_pagado_mes' => 0,
+                                                        'valor_consolidado_mes' => 0,
+                                                        'dias_consolidado_mes' => 0,
+                                                        'valor_acumulado' => 0,
+                                                        'dias_acumulados' => 0,
+                                                        'observacion' => '',
+                                                        'dias_totales_laborados' => 0,
+                                                        'estado' => 'Error. La prestación no tiene asociada una agrupación de conceptos para su cálculo.'
+                                                    ];
+                    continue;
+                }
+
                 $fecha_inicial = PrestacionSocial::get_fecha_inicial_promedios_un_mes( $fecha_final_promedios, $empleado, 1 );
 
                 $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final_promedios );

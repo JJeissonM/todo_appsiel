@@ -1,8 +1,3 @@
-<br><br>
-diagnostico VA AQUÍ. CIE10.
-
-Maximo 4 Dx (1 principal, 3 adicionales)
-
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
 
@@ -15,10 +10,6 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 
 <br>
 
-<div class="div_spin" style="width: 100%; display: none; text-align: center;">
-    <img src="{{ asset( 'img/spinning-wheel.gif') }}" width="64px">
-</div>
-
 <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="mensaje_alerta">
 </div>
 
@@ -27,19 +18,18 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 		<thead>
 			<tr>
 				<th>Diagnóstico principal</th>
-				<th>Código</th>
-				<th>Tipo</th>
+				<th>Código CIE</th>
+				<th>Tipo de diagnóstico</th>
 				<th>Observaciones</th>
-				<th>Acción</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach( $datos AS $linea )
 				<tr>
-					<td> {{ $linea->es_diagnostico_principal }} </td>
-					<td> {{ $linea->codigo_cie }} </td>
-					<td> {{ $linea->tipo_diagnostico_principal }} </td>
-					<td> {{ $linea->observaciones }} </td>
+					<td> {{ $linea->es_diagnostico_principal}} </td>
+					<td> {{ $linea->codigo_cie}} </td>
+					<td> {{ $linea->tipo_diagnostico_principal}} </td>
+					<td> {{ $linea->observaciones}} </td>
 					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_diagnostico_cie'><i class='glyphicon glyphicon-trash'></i></button> </td>
 				</tr>
 			@endforeach
@@ -47,46 +37,42 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 		<tfoot>
             <tr>
                 <td colspan="5">
-                    <button style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus btn_nuevo_registro_diagnostico_cie"></i> Agregar registro</button>
+                    <button style="background-color: transparent; color: #3394FF; border: none;" class="btn_nuevo_registro_diagnostico_cie"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
                 </td>
             </tr>
         </tfoot>
 	</table>
 </div>
 
-
-@section('scripts8')
+@section('scripts9')
 
 	<script type="text/javascript">
 
 		$(document).ready(function(){
 
-			var LineaNum = 0;
+			$(".btn_nuevo_registro_diagnostico_cie").click(function(event){
 
-			$(".btn_nuevo_registro_endodoncia").click(function(event){
 				event.preventDefault();
-		        nueva_linea_ingreso_datos();
-		    });		    
+				console.log('hi');
+				
+		        $("#myModal2").modal({backdrop: "static"});
 
+		        $("#myModal2").attr('style','font-size>: 0.8em;');
 
-		    function nueva_linea_ingreso_datos()
-		    {
-		    	var form = $('#div_linea_form_ingreso').find('linea_form_ingreso');
-		    	console.log(form);
-		        $(this).parent('table').find('tbody:last').append( form );
-		    }
+		        $("#div_cargando").show();
 
-			$(document).on('click', '.btn_confirmar', function(event) {
-				event.preventDefault();
-				LineaNum++;
-				var fila = $(this).closest("tr");
-		       	fila.remove();
-		       	nueva_linea_ingreso_datos();
-            
-				// Bajar el Scroll hasta el final de la página
-				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+		        $("#myModal2 .modal-title").html('Ingreso registro de Diagnóstico');
+		        
+		        $(".btn_edit_modal").hide();
 
-			});
+		        var url = "{{ url('salud_diagnostico_cie/create?id_modelo=309') }}";
+
+				$.get( url, function( data ) {
+			        $('#div_cargando').hide();
+
+		            $('#contenido_modal2').html(data);
+				});		        
+		    });
 
 			$(document).on('click', '.btn_eliminar', function(event) {
 				event.preventDefault();
@@ -133,6 +119,6 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 					
 			});
 
+		});
 	</script>
 @endsection
-

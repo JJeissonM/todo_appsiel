@@ -125,7 +125,7 @@
 <script>
 	document.addEventListener("DOMContentLoaded", function(event) {
     //código a ejecutar cuando el DOM está listo para recibir acciones
-	console.log(event)
+	//console.log(event)
 	document.getElementsByClassName("buttons-excel")[0].classList.add("btn-gmail","btn-excel");
 	document.getElementsByClassName("buttons-excel")[0].innerHTML = '<i class="fa fa-file-excel-o"></i>';
 	document.getElementsByClassName("buttons-pdf")[0].classList.add("btn-gmail","btn-pdf");

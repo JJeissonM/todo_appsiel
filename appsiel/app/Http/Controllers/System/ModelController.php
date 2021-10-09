@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Sistema;
+namespace App\Http\Controllers\System;
 
-use App\Calificaciones\Asignatura;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -13,66 +12,36 @@ use PDF;
 use Auth;
 use Storage;
 use View;
-use Yajra\Datatables\Facades\Datatables;
 
-
-use App\Sistema\Html\Boton;
-use App\Sistema\Html\MigaPan;
-
-use App\Sistema\Aplicacion;
-use App\Sistema\TipoTransaccion;
-use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\ModeloEavValor;
-use App\User;
-
-use App\Calificaciones\Logro;
-
-use App\Inventarios\InvBodega;
-use App\Matriculas\Curso;
-use App\Tesoreria\TesoMedioRecaudo;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
-
-class ModeloController extends Controller
+class ModelController extends Controller
 {
-    protected $aplicacion, $modelo, $datos;
-
     public function __construct()
     {
-        // Se obtiene el modelo
-        if (!is_null(Input::get('id_modelo'))) {
-            
-            $this->modelo = Modelo::find(Input::get('id_modelo'));
-            
-            /*$this->modelo = Modelo::where('name',$model)
-                                    ->get()
-                                    ->first();*/
-        }
-
-        // No requiere autenticación para el CRUD del modelo ClienteWeb (id_modelo=218)
-        if (!is_null($this->modelo)) {
-            if ($this->modelo->id != 218) {
-                $this->middleware('auth');
-            }
-        } else {
-            //$this->middleware('auth');
-        }
-
-
-        $this->aplicacion = Aplicacion::find(Input::get('id'));
+        $this->middleware('auth');
     }
 
-
-    public function trigger( $app, $model, $action, $view )
+    public function index()
     {
+
+        $id_modelo = Input::get('id_modelo');
+        $id_app = Input::get('id');
+
+        // Ejecutar la accion del usuario
+
+        echo Input::get('saludo') . ' mundo';
+
+        // Validar permisos del usuario
+
+        // Llamar datos del modelo: campos, urls de acciones, registros
+
+        // Enviar la respuesta (dibujar un vista)
 
     }
 
     /*
         * Muestra una tabla con los registros de un modelo
     */
-    public function index()
+    public function index2()
     {
         $miga_pan = MigaPan::get_array($this->aplicacion, $this->modelo, 'Listado');
 
@@ -163,17 +132,17 @@ class ModeloController extends Controller
     {
         // Acciones predeterminadas
         $acciones = (object)[
-            'index' => 'web' . $parametros_url,
-            'create' => '',
-            'edit' => '',
-            'store' => 'web',
-            'update' => 'web/id_fila',
-            'show' => 'web/id_fila' . $parametros_url,
-            'imprimir' => '',
-            'eliminar' => '',
-            'cambiar_estado' => '',
-            'otros_enlaces' => ''
-        ];
+                            'index' => 'web' . $parametros_url,
+                            'create' => '',
+                            'edit' => '',
+                            'store' => 'web',
+                            'update' => 'web/id_fila',
+                            'show' => 'web/id_fila' . $parametros_url,
+                            'imprimir' => '',
+                            'eliminar' => '',
+                            'cambiar_estado' => '',
+                            'otros_enlaces' => ''
+                        ];
 
 
         // Se agregan los enlaces que tiene el modelo en la base de datos (ESTO DEBE DESAPARECER, PERO PRIMERO SE DEBEN MIGRAR LOS MODELOS ANTIGUOS)
@@ -288,7 +257,7 @@ class ModeloController extends Controller
     public function create()
     {
         // Se obtienen los campos que el Modelo tiene asignados
-        $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
+        $lista_campos = ModelController::get_campos_modelo($this->modelo, '', 'create');
 
         /*
             Agregar campos adicionales 
@@ -620,7 +589,7 @@ class ModeloController extends Controller
         $registro = app($this->modelo->name_space)->find($id);
 
         if (is_null($registro)) {
-            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'ModeloController@show() > El registro que quiere consultar ha sido eliminado.');
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'ModelController@show() > El registro que quiere consultar ha sido eliminado.');
             //echo 'No existe el registro con ID: ' . $id . ' para el modelo: ' . $this->modelo->modelo;
             //die();
         }
@@ -684,7 +653,7 @@ class ModeloController extends Controller
         }
 
         // Para lo modelos que tienen otro modelo relacionado. Ejemplo, El modelo Modelo tiene Campos. El modelo Cuestionario, tiene Preguntas
-        $respuesta = ModeloController::get_tabla_relacionada($this->modelo, $registro);
+        $respuesta = ModelController::get_tabla_relacionada($this->modelo, $registro);
 
         $tabla = $respuesta['tabla'];
         $opciones = $respuesta['opciones'];
@@ -830,10 +799,10 @@ class ModeloController extends Controller
         // Se obtienen los campos asociados a ese modelo
         $lista_campos1 = $modelo->campos()->orderBy('orden')->get();
 
-        $lista_campos = ModeloController::ajustar_valores_lista_campos($lista_campos1->toArray());
+        $lista_campos = ModelController::ajustar_valores_lista_campos($lista_campos1->toArray());
 
         // Ajustar los valores según la acción
-        $lista_campos = ModeloController::ajustar_valores_lista_campos_segun_accion($lista_campos, $registro, $modelo, $accion);
+        $lista_campos = ModelController::ajustar_valores_lista_campos_segun_accion($lista_campos, $registro, $modelo, $accion);
 
         return $lista_campos;
     }
@@ -1173,7 +1142,7 @@ class ModeloController extends Controller
         }
 
         $form_create = [
-            'url' => 'web', // Siempre se almacenará con ModeloController@store()
+            'url' => 'web', // Siempre se almacenará con ModelController@store()
             'campos' => $lista_campos
         ];
 

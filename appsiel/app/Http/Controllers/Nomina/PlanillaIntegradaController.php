@@ -438,7 +438,7 @@ class PlanillaIntegradaController extends Controller
         $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final );// + 10;// $10 para que alcance la siguiente decena más cercana
 
         $this->cantidad_dias_laborados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
-
+        
         $this->validar_ibc_mayor_al_minimino_legal();
 
         $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
@@ -655,7 +655,7 @@ class PlanillaIntegradaController extends Controller
                 }
             }
             
-            $conceptos_licencia_maternidad = [59, 33]; // O Paternidad
+            $conceptos_licencia_maternidad = [59, 33]; // y de Paternidad
             foreach ($conceptos_licencia_maternidad as $key => $value)
             {
                 if ( $linea_empleado_planilla->nom_concepto_id == $value )

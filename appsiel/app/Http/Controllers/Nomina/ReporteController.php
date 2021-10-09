@@ -284,12 +284,11 @@ class ReporteController extends Controller
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $entidades = NomEntidad::where('tipo_entidad','EPS')->get()->pluck('id')->toArray();
-        $movimientos_entidades_salud = NomDocRegistro::movimientos_entidades_salud( $fecha_desde, $fecha_hasta, $entidades);
-        
+        $entidades_salud = NomEntidad::where('tipo_entidad','EPS')->get()->pluck('id')->toArray();
+        $movimientos_entidades_salud = NomDocRegistro::movimientos_entidades_salud( $fecha_desde, $fecha_hasta, $entidades_salud);
 
-        $entidades = NomEntidad::where('tipo_entidad','AFP')->get()->pluck('id')->toArray();
-        $movimientos_entidades_afp = NomDocRegistro::movimientos_entidades_afp( $fecha_desde, $fecha_hasta, $entidades);
+        $entidades_afp = NomEntidad::where('tipo_entidad','AFP')->get()->pluck('id')->toArray();
+        $movimientos_entidades_afp = NomDocRegistro::movimientos_entidades_afp( $fecha_desde, $fecha_hasta, $entidades_afp);
 
         $gran_total = $movimientos_entidades_salud->sum('valor_deduccion') + $movimientos_entidades_afp->sum('valor_deduccion');
 
@@ -334,20 +333,28 @@ class ReporteController extends Controller
     public function crear_coleccion_movimientos_entidades( $entidades_con_movimiento )
     {
         $movimientos = collect([]);
-
+        
         foreach ($entidades_con_movimiento as $entidad_id => $registro)
         {
             $entidad = NomEntidad::find($entidad_id);
-            if( config("configuracion.tipo_identificador") == 'NIT'){
-                $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / '.config("configuracion.tipo_identificador").'. '. number_format($entidad->tercero->numero_identificacion,'0',',','.') . ')', 'movimiento'=>$registro ]; 
-            }else{
-                $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / '.config("configuracion.tipo_identificador").'. '. $entidad->tercero->numero_identificacion . ')', 'movimiento'=>$registro ];
+
+            if ( is_null($entidad->tercero) ) {
+                dd( 'Alerta! Esta entidad no tiene un terero relacionado: ' . $entidad->descripcion );
             }
+            
+            $label_person_number_id = $entidad->tercero->numero_identificacion;
+
+            if( config("configuracion.tipo_identificador") == 'NIT')
+            {
+                $label_person_number_id = number_format($entidad->tercero->numero_identificacion,'0',',','.'); 
+            }
+
+            $movimientos[] = (object)[ 'entidad_id'=> $entidad_id, 'entidad'=> '<b>' . $entidad->descripcion . '</b> / '.config("configuracion.tipo_identificador").'. '. $label_person_number_id . ')', 'movimiento'=>$registro ];
+        }
             
         $sorted = $movimientos->sortBy('entidad');
 
         return $sorted->values()->all();
-        }
     }
 
     public function crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento )

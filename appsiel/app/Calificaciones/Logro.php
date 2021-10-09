@@ -37,7 +37,6 @@ class Logro extends Model
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","store":"calificaciones_logros","update":"calificaciones_logros/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"calificaciones_eliminar_logro/id_fila"}';
 
 
-
     /**
      * Obtener cada logro que pertenece a la calificación.
      */

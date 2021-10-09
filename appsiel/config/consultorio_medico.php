@@ -110,13 +110,13 @@ return [
                                     },
                                 "16":{ 
                                         "nombre_seccion":"Diagnóstico",
-                                        "url_vista_show":"consultorio_medico.odontologia.diagnostico",
+                                        "url_vista_show":"consultorio_medico.diagnostico_cie",
                                         "activo":1,
                                         "orden":4
                                     }, 
                                 "17":{ 
                                         "nombre_seccion":"Tratamiento",
-                                        "url_vista_show":"consultorio_medico.odontologia.tratamiento",
+                                        "url_vista_show":"consultorio_medico.procedimiento_cups",
                                         "activo":1,
                                         "orden":5
                                     }, 
@@ -129,6 +129,12 @@ return [
                                 "19":{ 
                                         "nombre_seccion":"Evolución",
                                         "url_vista_show":"consultorio_medico.odontologia.evolucion",
+                                        "activo":1,
+                                        "orden":0
+                                    }, 
+                                "20":{ 
+                                        "nombre_seccion":"RIPS",
+                                        "url_vista_show":"consultorio_medico.rips",
                                         "activo":1,
                                         "orden":0
                                     }

@@ -1,8 +1,3 @@
-<br><br>
-diagnostico VA AQUÍ. CIE10.
-
-Maximo 4 Dx (1 principal, 3 adicionales)
-
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
 
@@ -15,10 +10,6 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 
 <br>
 
-<div class="div_spin" style="width: 100%; display: none; text-align: center;">
-    <img src="{{ asset( 'img/spinning-wheel.gif') }}" width="64px">
-</div>
-
 <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="mensaje_alerta">
 </div>
 
@@ -27,66 +18,66 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 		<thead>
 			<tr>
 				<th>Diagnóstico principal</th>
-				<th>Código</th>
-				<th>Tipo</th>
-				<th>Observaciones</th>
-				<th>Acción</th>
+				<th>Diagnóstico relacionado</th>
+				<th>Núm. autorización</th>
+				<th>Código procedimiento</th>
+				<th>Ambito de realización del procedimiento</th>
+				<th>Finalidad del procedimiento</th>
+				<th>Valor del procedimiento</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach( $datos AS $linea )
 				<tr>
-					<td> {{ $linea->es_diagnostico_principal }} </td>
-					<td> {{ $linea->codigo_cie }} </td>
-					<td> {{ $linea->tipo_diagnostico_principal }} </td>
-					<td> {{ $linea->observaciones }} </td>
-					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_diagnostico_cie'><i class='glyphicon glyphicon-trash'></i></button> </td>
+					<td> {{ $linea->diagnostico_cie_principal_id }} </td>
+					<td> {{ $linea->diagnostico_cie_relacionado_id }} </td>
+					<td> {{ $linea->numero_autorizacion }} </td>
+					<td> {{ $linea->codigo_cups }} </td>
+					<td> {{ $linea->ambito_realizacion_procedimiento }} </td>
+					<td> {{ $linea->finalidad_procedimiento }} </td>
+					<td> {{ $linea->valor_procedimiento }} </td>
+					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_procedimiento_cups'><i class='glyphicon glyphicon-trash'></i></button> </td>
 				</tr>
 			@endforeach
 		</tbody>
 		<tfoot>
             <tr>
                 <td colspan="5">
-                    <button style="background-color: transparent; color: #3394FF; border: none;"><i class="fa fa-btn fa-plus btn_nuevo_registro_diagnostico_cie"></i> Agregar registro</button>
+                    <button style="background-color: transparent; color: #3394FF; border: none;" class="btn_nuevo_registro_procedimiento_cups"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
                 </td>
             </tr>
         </tfoot>
 	</table>
 </div>
 
-
-@section('scripts8')
+@section('scripts10')
 
 	<script type="text/javascript">
 
 		$(document).ready(function(){
 
-			var LineaNum = 0;
+			$(".btn_nuevo_registro_procedimiento_cups").click(function(event){
 
-			$(".btn_nuevo_registro_endodoncia").click(function(event){
 				event.preventDefault();
-		        nueva_linea_ingreso_datos();
-		    });		    
+				
+		        $("#myModal2").modal({backdrop: "static"});
 
+		        $("#myModal2").attr('style','font-size>: 0.8em;');
 
-		    function nueva_linea_ingreso_datos()
-		    {
-		    	var form = $('#div_linea_form_ingreso').find('linea_form_ingreso');
-		    	console.log(form);
-		        $(this).parent('table').find('tbody:last').append( form );
-		    }
+		        $("#div_cargando").show();
 
-			$(document).on('click', '.btn_confirmar', function(event) {
-				event.preventDefault();
-				LineaNum++;
-				var fila = $(this).closest("tr");
-		       	fila.remove();
-		       	nueva_linea_ingreso_datos();
-            
-				// Bajar el Scroll hasta el final de la página
-				$("html, body").animate( { scrollTop: $(document).height()+"px"} );
+		        $("#myModal2 .modal-title").html('Ingreso registro de Procedimiento');
+		        
+		        $(".btn_edit_modal").hide();
 
-			});
+		        var url = "{{ url('salud_procedimiento_cups/create?id_modelo=310') }}";
+
+				$.get( url, function( data ) {
+			        $('#div_cargando').hide();
+
+		            $('#contenido_modal2').html(data);
+				});		        
+		    });
 
 			$(document).on('click', '.btn_eliminar', function(event) {
 				event.preventDefault();
@@ -133,6 +124,6 @@ Maximo 4 Dx (1 principal, 3 adicionales)
 					
 			});
 
+		});
 	</script>
 @endsection
-

@@ -13,9 +13,9 @@ use DB;
 
 class Endodoncia extends ModeloEavValor
 {
-    protected $table = 'core_eav_valores';
+    protected $table = 'salud_endodoncia';
 
-	protected $fillable = ['modelo_padre_id', 'registro_modelo_padre_id', 'modelo_entidad_id', 'registro_modelo_entidad_id', 'core_campo_id', 'valor'];
+	protected $fillable = ['paciente_id', 'consulta_id', 'numero_diente', 'frio', 'caliente', 'percusion_horizontal', 'percusion_vertical', 'observaciones'];
 	
 	protected $crud_model_id = 308; // Es el mismo $modelo_padre_id, la variable no se puede usar en métodos estáticos
 

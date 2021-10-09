@@ -68,13 +68,13 @@ class OdontogramaController extends Controller
     {
         //
                
-        if(Odontograma::where('id_consultas',$id)->exists()){
+        if( Odontograma::where('id_consultas',$id)->exists() )
+        {
             $odontograma = Odontograma::where('id_consultas',$id)->get()->first();
         }else{
-            $odontograma = Odontograma::orderBy('id_consultas', 'desc')->first();
-            $odontograma->id = "";
+            $odontograma = new Odontograma();
         }
-        
+
         return $odontograma;
     }
 

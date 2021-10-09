@@ -226,7 +226,8 @@
       </div>
       
     </div>  
-  </div>
+</div>
+
   <div class="row">
     <div class="panel panel-default">
       <div class="panel-heading">Detalles:</div>
@@ -236,7 +237,8 @@
         </div>    
       </div>
     </div>      
-  </div>  
+  </div>
+
   <div class="row">
     <form id="formulario_odontograma{{ $consulta->id }}" action="{{ url('consultorio_medico/odontograma') }}" method="POST">
       <input type="hidden" name="_token"  value="{{@csrf_token()}}">
@@ -249,128 +251,108 @@
     </form>
     
   </div>  
-<script>
-  'use strict'
+ 
 
-    document.addEventListener('DOMContentLoaded', function(){
-    let odontograma{{ $consulta->id }} = document.querySelector(".odontograma{{ $consulta->id }}");
+@section('scripts7')
+  <script type="text/javascript">
+      'use strict';
 
-    document.querySelector('#formulario_odontograma{{ $consulta->id }}').addEventListener('submit', function(evt){
-      evt.preventDefault();
-      var url = "{{ url('consultorio_medico/odontograma') }}"
-      var data = $('#formulario_odontograma{{ $consulta->id }}').serialize();
-      $.post(url, data, function (datos) {
-          //odontograma_id{{ $consulta->id }}
-          let dato = datos;
-          $('#odontograma_id{{ $consulta->id }}').val(dato);
-      });
-    })
-    
-      var url = `{{ url('consultorio_medico/odontograma') }}/{{ $consulta->id }}`
-      $.get(url, function (datos) {
-          //odontograma_id{{ $consulta->id }}
-          console.log(datos)
-          var data = JSON.parse(datos.odontograma_data)
-          for (const prop in data) {
-            //console.log(`obj.${prop} = ${data[prop]}`);
-            for (const propi in data[prop]) {
-              console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);
-              let ms = data[prop][propi];
-              grama{{ $consulta->id }}({n:prop,nombre:propi,feat:ms});
-            }
-          }
-          if(datos.id != 0){
-            $('#odontograma_id{{ $consulta->id }}').val(datos.id);
-          }            
-      });
+      document.addEventListener('DOMContentLoaded', function(){
+        let odontograma{{ $consulta->id }} = document.querySelector(".odontograma{{ $consulta->id }}");
 
-
-    });  
-
-    let dientes{{ $consulta->id }} = {}
-
-    function grama{{ $consulta->id }}({n,nombre,feat}){
-        if(nombre == 'all'){
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.bucal`).classList = "bucal"
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.lingual`).classList = "lingual"
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.distal`).classList = "distal"
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.mesial`).classList = "mesial"
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.oclusal`).classList = "oclusal"
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.all`).setAttribute('src',`{{ asset("assets/img/odontograma") }}/${feat}.svg`)    
-            dientes{{ $consulta->id }}[`${n}`] = {all: feat}
-            document.querySelector("#datails{{ $consulta->id }}").innerHTML = `${n} ${dientes{{ $consulta->id }}[`${n}`]['all']}`
-        }else{
-            dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], all: ""}
-            delete dientes{{ $consulta->id }}[`${n}`].all    
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.all`).setAttribute('src',`{{ asset("assets/img/odontograma") }}/white.svg`)  
-            document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.${nombre}`).classList.toggle(`${feat}`)
-            var detalles = ""
-            if(nombre == "bucal"){
-                dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], bucal: `${feat}`}
-            }
-            if(nombre == "lingual"){
-                dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], lingual: `${feat}`}
-            }
-            if(nombre == "distal"){
-                dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], distal: `${feat}`}
-            }
-            if(nombre == "mesial"){
-                dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], mesial: `${feat}`}
-            }
-            if(nombre == "oclusal"){
-                dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], oclusal: `${feat}`}
-            }
-            
-            detalles += dientes{{ $consulta->id }}[`${n}`].bucal != undefined ? `${n} bucal ${dientes{{ $consulta->id }}[`${n}`].bucal} <br>` : ''
-            detalles += dientes{{ $consulta->id }}[`${n}`].lingual != undefined ? `${n} lingual ${dientes{{ $consulta->id }}[`${n}`].lingual} <br>` : ''
-            detalles += dientes{{ $consulta->id }}[`${n}`].distal != undefined ? `${n} distal ${dientes{{ $consulta->id }}[`${n}`].distal} <br>` : ''
-            detalles += dientes{{ $consulta->id }}[`${n}`].mesial != undefined ? `${n} mesial ${dientes{{ $consulta->id }}[`${n}`].mesial} <br>` : ''
-            detalles += dientes{{ $consulta->id }}[`${n}`].oclusal != undefined ? `${n} oclusal ${dientes{{ $consulta->id }}[`${n}`].oclusal} <br>` : ''
-            document.querySelector("#datails{{ $consulta->id }}").innerHTML = detalles    
-        }
-            if(feat == "white"){
-                delete dientes{{ $consulta->id }}[`${n}`]
-            }
-            document.querySelector('#odontograma_data{{ $consulta->id }}').value = JSON.stringify(dientes{{ $consulta->id }});
-            
-    
-    }
-
-/*
-fetch('data.json')
-.then(response => response.json())
-.then(data => {
-  for (const prop in data) {
-    //console.log(`obj.${prop} = ${data[prop]}`);
-    for (const propi in data[prop]) {
-      console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);
-      let ms = data[prop][propi];
-      grama({n:prop,nombre:propi,feat:ms});
-    }
-  }
-});*/
-</script>  
-
-  @section('scripts2')
-  <script>
-
-    $(function(){
-    $(".dropdown-menu > li > a.trigger").on("click",function(e){
-        var current=$(this).next();
-        var grandparent=$(this).parent().parent();
-        if($(this).hasClass('left-caret')||$(this).hasClass('right-caret'))
-            $(this).toggleClass('right-caret left-caret');
-        grandparent.find('.left-caret').not(this).toggleClass('right-caret left-caret');
-        grandparent.find(".sub-menu:visible").not(current).hide();
-        current.toggle();
-        e.stopPropagation();
-    });
-    $(".dropdown-menu > li > a:not(.trigger)").on("click",function(){
-        var root=$(this).closest('.dropdown');
-        root.find('.left-caret').toggleClass('right-caret left-caret');
-        root.find('.sub-menu:visible').hide();
-    });
-    });     
-  </script>
+        document.querySelector('#formulario_odontograma{{ $consulta->id }}').addEventListener('submit', function(evt){
+          evt.preventDefault();
+          var url = "{{ url('consultorio_medico/odontograma') }}"
+          var data = $('#formulario_odontograma{{ $consulta->id }}').serialize();
+          $.post(url, data, function (datos) {
+              //odontograma_id{{ $consulta->id }}
+              let dato = datos;
+              $('#odontograma_id{{ $consulta->id }}').val(dato);
+          });
+        });
       
-  @endsection
+        var url = "{{ url('consultorio_medico/odontograma') . '/' . $consulta->id }}";
+        $.get(url, function (datos) {
+            //odontograma_id{ { $consulta->id }}
+            //console.log(datos);
+            var data = JSON.parse(datos.odontograma_data);
+            for (const prop in data) {
+              //console.log(`obj.${prop} = ${data[prop]}`);
+              for (const propi in data[prop]) {
+                //console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);
+                let ms = data[prop][propi];
+                grama{{ $consulta->id }}({n:prop,nombre:propi,feat:ms});
+              }
+            }
+            if(datos.id != 0){
+              $('#odontograma_id{{ $consulta->id }}').val(datos.id);
+            }            
+        });
+      });  
+
+      let dientes{{ $consulta->id }} = {};
+
+      function grama{{ $consulta->id }}({n,nombre,feat}){
+          if(nombre == 'all'){
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.bucal`).classList = "bucal"
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.lingual`).classList = "lingual"
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.distal`).classList = "distal"
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.mesial`).classList = "mesial"
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.oclusal`).classList = "oclusal"
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.all`).setAttribute('src',`{{ asset("assets/img/odontograma") }}/${feat}.svg`)    
+              dientes{{ $consulta->id }}[`${n}`] = {all: feat}
+              document.querySelector("#datails{{ $consulta->id }}").innerHTML = `${n} ${dientes{{ $consulta->id }}[`${n}`]['all']}`
+          }else{
+              dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], all: ""}
+              delete dientes{{ $consulta->id }}[`${n}`].all    
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.all`).setAttribute('src',`{{ asset("assets/img/odontograma") }}/white.svg`)  
+              document.querySelector(`#_${n}-{{ $consulta->id }}`).querySelector(`.${nombre}`).classList.toggle(`${feat}`)
+              var detalles = ""
+              if(nombre == "bucal"){
+                  dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], bucal: `${feat}`}
+              }
+              if(nombre == "lingual"){
+                  dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], lingual: `${feat}`}
+              }
+              if(nombre == "distal"){
+                  dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], distal: `${feat}`}
+              }
+              if(nombre == "mesial"){
+                  dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], mesial: `${feat}`}
+              }
+              if(nombre == "oclusal"){
+                  dientes{{ $consulta->id }}[`${n}`] = {...dientes{{ $consulta->id }}[`${n}`], oclusal: `${feat}`}
+              }
+              
+              detalles += dientes{{ $consulta->id }}[`${n}`].bucal != undefined ? `${n} bucal ${dientes{{ $consulta->id }}[`${n}`].bucal} <br>` : ''
+              detalles += dientes{{ $consulta->id }}[`${n}`].lingual != undefined ? `${n} lingual ${dientes{{ $consulta->id }}[`${n}`].lingual} <br>` : ''
+              detalles += dientes{{ $consulta->id }}[`${n}`].distal != undefined ? `${n} distal ${dientes{{ $consulta->id }}[`${n}`].distal} <br>` : ''
+              detalles += dientes{{ $consulta->id }}[`${n}`].mesial != undefined ? `${n} mesial ${dientes{{ $consulta->id }}[`${n}`].mesial} <br>` : ''
+              detalles += dientes{{ $consulta->id }}[`${n}`].oclusal != undefined ? `${n} oclusal ${dientes{{ $consulta->id }}[`${n}`].oclusal} <br>` : ''
+              document.querySelector("#datails{{ $consulta->id }}").innerHTML = detalles    
+          }
+              if(feat == "white"){
+                  delete dientes{{ $consulta->id }}[`${n}`];
+              }
+              document.querySelector('#odontograma_data{{ $consulta->id }}').value = JSON.stringify(dientes{{ $consulta->id }});
+      }
+
+      $(function(){
+        $(".dropdown-menu > li > a.trigger").on("click",function(e){
+            var current=$(this).next();
+            var grandparent=$(this).parent().parent();
+            if($(this).hasClass('left-caret')||$(this).hasClass('right-caret'))
+                $(this).toggleClass('right-caret left-caret');
+            grandparent.find('.left-caret').not(this).toggleClass('right-caret left-caret');
+            grandparent.find(".sub-menu:visible").not(current).hide();
+            current.toggle();
+            e.stopPropagation();
+        });
+        $(".dropdown-menu > li > a:not(.trigger)").on("click",function(){
+            var root=$(this).closest('.dropdown');
+            root.find('.left-caret').toggleClass('right-caret left-caret');
+            root.find('.sub-menu:visible').hide();
+        });
+      });
+  </script>
+@endsection

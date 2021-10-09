@@ -46,6 +46,12 @@ Route::get('nom_retirar_retefuente/{doc_encabezado_id}', 'Nomina\RetefuenteContr
 
 Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteController@calcular_porcentaje_fijo_retefuente');
 
+
+// 				CONTABILIZACIÓN
+Route::post('nom_contabilizar_documento_nomina', 'Nomina\ContabilizacionDocumentoController@contabilizar');
+Route::get('nom_retirar_contabilizacion_documento_nomina/{doc_encabezado_id}', 'Nomina\ContabilizacionDocumentoController@retirar');
+
+
 //		ORDENES DE TRABAJO
 Route::get('nom_get_tabla_empleados_ingreso_registros', 'Nomina\OrdenDeTrabajoController@get_tabla_empleados_ingreso_registros');
 Route::get('nom_ordenes_trabajo_imprimir/{orden_trabajo_id}', 'Nomina\OrdenDeTrabajoController@imprimir');

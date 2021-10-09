@@ -36,7 +36,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<div class="form-group">
-								{{ Form::bsSelect( 'generar_fact_electronica', null, 'Enviar facturas electrónicas', [ '0' => 'No', '1' => 'Si' ], [] ) }}
+								{{ Form::bsSelect( 'generar_fact_electronica', null, '*Enviar facturas electrónicas', [ '' => '', '1' => 'Si', '0' => 'No' ], [ 'required' => 'required' ] ) }}
 							</div>
 						</div>
 					</div>

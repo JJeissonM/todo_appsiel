@@ -32,8 +32,8 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'empresa_id', 'name', 'email', 'password',
-    ];
+                            'empresa_id', 'name', 'email', 'password',
+                        ];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -44,9 +44,7 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    /*public function roles(){
-        return $this->hasMany(UserHasRole::class,'user_id','id');
-    }*/
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","store":"core/usuarios","update":"core/usuarios/id_fila","change_password":"user/change_password/user_id"}';
 
     public function empresa()
     {

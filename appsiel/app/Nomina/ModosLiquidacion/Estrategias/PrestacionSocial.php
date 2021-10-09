@@ -127,7 +127,6 @@ class PrestacionSocial
 
     public static function get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $nom_agrupacion_id, $fecha_inicial, $fecha_final )
     {
-
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
 
         $vec_conceptos = [];
