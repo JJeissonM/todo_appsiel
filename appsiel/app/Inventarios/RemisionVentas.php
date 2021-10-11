@@ -14,7 +14,7 @@ class RemisionVentas extends InvDocEncabezado
 {
     protected $table = 'inv_doc_encabezados';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Bodega', 'Tercero', 'Detalle', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Bodega', 'Tercero', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -29,10 +29,9 @@ class RemisionVentas extends InvDocEncabezado
                                     DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                                     'inv_bodegas.descripcion AS campo3',
-                                    'core_terceros.descripcion AS campo4',
-                                    'inv_doc_encabezados.descripcion AS campo5',
-                                    'inv_doc_encabezados.estado AS campo6',
-                                    'inv_doc_encabezados.id AS campo7'
+                                    'inv_doc_encabezados.descripcion AS campo4',
+                                    'inv_doc_encabezados.estado AS campo5',
+                                    'inv_doc_encabezados.id AS campo6'
                                 )
                                 ->orderBy('inv_doc_encabezados.created_at', 'DESC')
                                 ->get();

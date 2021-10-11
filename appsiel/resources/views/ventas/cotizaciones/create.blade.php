@@ -101,13 +101,13 @@
 	<script type="text/javascript">
 
 		var producto_id, precio_total, costo_total, base_impuesto_total, valor_impuesto_total, tasa_impuesto, tasa_descuento, valor_total_descuento, cantidad, inv_producto_id, inv_bodega_id, inv_motivo_id;
-			var costo_unitario = 0;
-			var precio_unitario = 0;
-			var base_impuesto_unitario = 0;
-			var valor_impuesto_unitario = 0;
-			var valor_unitario_descuento = 0;
+		var costo_unitario = 0;
+		var precio_unitario = 0;
+		var base_impuesto_unitario = 0;
+		var valor_impuesto_unitario = 0;
+		var valor_unitario_descuento = 0;
 
-			var hay_productos = 0;
+		var hay_productos = 0;
 
 		$(document).ready(function(){
 
