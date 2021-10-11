@@ -45,8 +45,6 @@ class ReportesController extends Controller
         $servicio = new DocumentosPendientesCxC();
 
         $movimiento = $servicio->get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id );
-        
-        //dd($movimiento);
 
         foreach ( $movimiento as $linea_movimiento )
         {
@@ -60,7 +58,10 @@ class ReportesController extends Controller
             $linea_movimiento->lbl_estudiante = $this->get_estudiante_relacionado( $linea_movimiento->core_tipo_transaccion_id, $linea_movimiento->core_tipo_doc_app_id, $linea_movimiento->consecutivo, $linea_movimiento->core_tercero_id );
         }
 
-        $vista = View::make('cxc.reportes.documentos_pendientes_cxc', compact('movimiento'))->render();
+        $mostrar_columna_tercero = 1;
+
+        $vista = '<h3 style="width: 100%; text-align: center;"> Documentos pendientes de Cuentas por Cobrar </h3>
+<hr>' . View::make('cxc.reportes.documentos_pendientes_cxc', compact('movimiento','mostrar_columna_tercero'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -106,52 +107,39 @@ class ReportesController extends Controller
         return $lbl_estudiante;
     }
 
-    public function estado_de_cuenta(Request $request) {
-        $operador = '=';
-        $cadena = $request->core_tercero_id;
+    public function estado_de_cuenta(Request $request)
+    {
 
-        if ( $request->core_tercero_id == '' )
+        $core_tercero_id = $request->core_tercero_id;
+        $fecha_corte = $request->fecha_corte;
+        $clase_cliente_id = '';
+
+        if ( $core_tercero_id == '' )
         {
             return '<h4 style="color:red;">Debe seleccionar un cliente.</h4>';
         }
 
-        $movimiento = DocumentosPendientesCxC::get_documentos_referencia_tercero( $operador, $cadena );
-        
-        if (count($movimiento) > 0) {
-            $movimiento = collect($movimiento);
-            $group = $movimiento->groupBy('core_tercero_id');
-            $collection = null;
-            $collection = collect($collection);
-            foreach ($group as $key => $item) {
-                $aux = $item->pluck('saldo_pendiente');
-                $sum = $aux->sum();
-                foreach ($item as $value){
-                    $collection[] = $value;
-                }
-                $obj = ["id" => 0,
-                    "core_tipo_transaccion_id" => '',
-                    "core_tipo_doc_app_id" => '',
-                    "consecutivo" => '',
-                    "tercero" => '',
-                    "documento" => '',
-                    "fecha" => '',
-                    "fecha_vencimiento" => '',
-                    "valor_documento" => 0,
-                    "valor_pagado" => 0.0,
-                    "saldo_pendiente" => 0.0,
-                    "sub_total" => $sum,
-                    "clase_cliente_id" => '',
-                    "core_tercero_id" => ''
-                ];
-                $collection[]=$obj;
+        $servicio = new DocumentosPendientesCxC();
+
+        $movimiento = $servicio->get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id );
+
+        foreach ( $movimiento as $linea_movimiento )
+        {
+            $linea_movimiento->show = 1;
+            // Para NO mostrar saldos con decimales pequeños. Esto se debe corregir al hacer los abonos
+            if ( $linea_movimiento->saldo_pendiente > -0.1 && $linea_movimiento->saldo_pendiente < 0.1 && $linea_movimiento->id != 0 )
+            {
+                $linea_movimiento->show = 0;
             }
-            $movimiento = $collection;
+
+            $linea_movimiento->lbl_estudiante = $this->get_estudiante_relacionado( $linea_movimiento->core_tipo_transaccion_id, $linea_movimiento->core_tipo_doc_app_id, $linea_movimiento->consecutivo, $linea_movimiento->core_tercero_id );
         }
 
         $empresa = Auth::user()->empresa;
-        $cliente = Cliente::where('core_tercero_id',$request->core_tercero_id)->get()->first();
+        $cliente = Cliente::where('core_tercero_id',$core_tercero_id)->get()->first();
 
-        $vista = View::make('cxc.incluir.estado_de_cuenta', compact('movimiento','empresa','cliente'))->render();
+        $mostrar_columna_tercero = 0;
+        $vista = View::make('cxc.incluir.estado_de_cuenta', compact('movimiento','empresa','cliente','mostrar_columna_tercero'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

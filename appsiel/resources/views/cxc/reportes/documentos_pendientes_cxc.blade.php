@@ -1,10 +1,9 @@
-<h3 style="width: 100%; text-align: center;"> Documentos pendientes de Cuentas por Cobrar </h3>
-<hr>
-
 <table id="myTable" class="table table-striped">
     <thead>
         <tr>
-            <th> Tercero </th>
+            @if( $mostrar_columna_tercero )
+                <th> Tercero </th>
+            @endif
             <th> Documento </th>
             <th> Fecha </th>
             <th> Fecha vencimiento </th>
@@ -29,6 +28,15 @@
             $es_primer_registro = true;
             $iteracion = 1;
             $hay_mas_registros = true;
+
+            $colspan1 = 7;
+            $colspan2 = 4;
+            if($mostrar_columna_tercero == 0)
+            {
+                $colspan1 -= 1;
+                $colspan2 -= 1;
+            }
+            //dd( $mostrar_columna_tercero, $colspan1, $colspan2 );
         ?>
 
         @foreach( $movimiento AS $linea_movimiento )
@@ -46,7 +54,7 @@
 
                 @if( !$es_primer_registro )
                     @include( 'cxc.reportes.documentos_pendientes_cxc_linea_subtotales_tabla' )
-                    <tr style="background-color: white;"><td colspan="7">&nbsp;</td></tr>
+                    
                     <?php
                         $total_valor_documento_tercero = 0;
                         $total_valor_pagado_tercero = 0;
@@ -97,21 +105,22 @@
         @endforeach
 
         @include( 'cxc.reportes.documentos_pendientes_cxc_linea_subtotales_tabla' )
-        <tr style="background-color: white;"><td colspan="7">&nbsp;</td></tr>
 
-        <tr style="background: #4a4a4a; color: white;">
-            <td colspan="4">
-                <strong>Total movimiento</strong>
-            </td>
-            <td>
-                <strong> ${{ number_format($total_valor_documento_movimiento, 2, ',', '.') }} </strong>
-            </td>
-            <td>
-                <strong> ${{ number_format($total_valor_pagado_movimiento, 2, ',', '.') }} </strong>
-            </td>
-            <td>
-                <strong> ${{ number_format($total_saldo_pendiente_movimiento, 2, ',', '.') }} </strong>
-            </td>
-        </tr>
+        @if($mostrar_columna_tercero == 1)
+            <tr style="background: #4a4a4a; color: white;">
+                <td colspan="{{$colspan2}}">
+                    <strong>Total movimiento</strong>
+                </td>
+                <td>
+                    <strong> ${{ number_format($total_valor_documento_movimiento, 2, ',', '.') }} </strong>
+                </td>
+                <td>
+                    <strong> ${{ number_format($total_valor_pagado_movimiento, 2, ',', '.') }} </strong>
+                </td>
+                <td>
+                    <strong> ${{ number_format($total_saldo_pendiente_movimiento, 2, ',', '.') }} </strong>
+                </td>
+            </tr>
+        @endif
     </tbody>
 </table>

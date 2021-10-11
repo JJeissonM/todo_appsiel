@@ -1,5 +1,5 @@
 <tr style="background: #4a4a4a; color: white;">
-    <td colspan="4">
+    <td colspan="{{$colspan2}}">
         <strong>Sub-total</strong>
     </td>
     <td>
@@ -12,3 +12,4 @@
         <strong> ${{ number_format($total_saldo_pendiente_tercero, 2, ',', '.') }} </strong>
     </td>
 </tr>
+<tr style="background-color: white;"><td colspan="{{$colspan1}}">&nbsp;</td></tr>

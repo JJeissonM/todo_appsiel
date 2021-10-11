@@ -22,12 +22,13 @@ class DocumentosPendientesCxC extends Model
 
         if( $fecha_corte != '' )
         {
+            $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
             $array_wheres = array_merge($array_wheres, [ [ 'cxc_movimientos.fecha', '<=', $fecha_corte] ] );
         }
 
         if( $core_tercero_id != '' )
         {
-            $array_wheres = array_merge($array_wheres, [ [ 'cxc_movimientos.core_tercero_id', '=', $core_tercero_id ] ] );
+            $array_wheres = array_merge($array_wheres, [ [ 'cxc_movimientos.core_tercero_id', '=', (int)$core_tercero_id ] ] );
         }
 
         if( $clase_cliente_id != '' )
@@ -58,13 +59,13 @@ class DocumentosPendientesCxC extends Model
                                     ->orderBy('cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')
                                     ->get();
-
+                                    
         foreach( $movimiento as $linea_movimiento )
         {
             $array_wheres2 = [
                                 ['doc_cxc_transacc_id', '=', $linea_movimiento->core_tipo_transaccion_id ],
                                 ['doc_cxc_tipo_doc_id', '=', $linea_movimiento->core_tipo_doc_app_id ],
-                                ['doc_cxc_consecutivo', '=', $linea_movimiento->consecutivo ],
+                                ['doc_cxc_consecutivo', '=', (int)$linea_movimiento->consecutivo ],
                                 ['core_tercero_id', '=', $linea_movimiento->core_tercero_id ]
                             ];
 
@@ -72,7 +73,7 @@ class DocumentosPendientesCxC extends Model
             {
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
             }
-            
+
             $abonos = CxcAbono::where( $array_wheres2 )->sum('abono');
 
             $linea_movimiento->valor_pagado = $abonos;

@@ -1,10 +1,12 @@
 <tr>
-    <td> 
-        {{ $linea_movimiento->numero_identificacion }} {{ $linea_movimiento->tercero }}
-        @if( $linea_movimiento->lbl_estudiante != '' )
-            <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estudiante: </b> {{ $linea_movimiento->lbl_estudiante }}
-        @endif
-    </td>
+    @if( $mostrar_columna_tercero )
+        <td>
+            {{ $linea_movimiento->numero_identificacion }} {{ $linea_movimiento->tercero }}
+            @if( $linea_movimiento->lbl_estudiante != '' )
+                <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estudiante: </b> {{ $linea_movimiento->lbl_estudiante }}
+            @endif
+        </td>
+    @endif
     <td> {{ $linea_movimiento->documento }} </td>
     <td> {{ $linea_movimiento->fecha }} </td>
     <td> {{ $linea_movimiento->fecha_vencimiento }} </td>
