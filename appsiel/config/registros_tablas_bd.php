@@ -41982,6 +41982,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-10-07 08:00:27',
       'updated_at' => '2021-10-07 16:53:33',
     ),
+    1366 => 
+    array (
+      'id' => 1372,
+      'descripcion' => 'Presupuesto',
+      'tipo' => 'bsText',
+      'name' => 'presupuesto',
+      'opciones' => 'null',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-10-11 17:20:37',
+      'updated_at' => '2021-10-11 17:20:37',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -66893,6 +66909,13 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 16,
       'core_modelo_id' => 312,
       'core_campo_id' => 1371,
+    ),
+    2612 => 
+    array (
+      'id' => 3016,
+      'orden' => 9,
+      'core_modelo_id' => 90,
+      'core_campo_id' => 1372,
     ),
   ),
   'sys_reportes' => 
