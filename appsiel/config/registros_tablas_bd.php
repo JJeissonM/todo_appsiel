@@ -68272,6 +68272,12 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_reporte_id' => 28,
       'core_campo_id' => 1314,
     ),
+    152 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 44,
+      'core_campo_id' => 1314,
+    ),
   ),
   'sys_tipos_transacciones' => 
   array (
