@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
-use App\CxC\CxCMovimiento;
+use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
 class DocumentosPendientesCxC extends Model
@@ -17,7 +17,7 @@ class DocumentosPendientesCxC extends Model
     {
         $array_wheres = [
                             [ 'cxc_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
-                            //[ 'cxc_movimientos.estado', '=', 'Pendiente']
+                            [ 'cxc_movimientos.estado', '=', 'Pendiente']
                         ];
 
         if( $fecha_corte != '' )
@@ -35,7 +35,7 @@ class DocumentosPendientesCxC extends Model
             $array_wheres = array_merge($array_wheres, [ [ 'vtas_clientes.clase_cliente_id', '=', $clase_cliente_id ] ] );
         }
 
-        $movimiento = CxCMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
+        $movimiento = CxcMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
                                     ->leftJoin('vtas_clientes', 'vtas_clientes.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->where( $array_wheres )
