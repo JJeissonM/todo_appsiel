@@ -1,6 +1,6 @@
 <?php
 
-Route::post('compras_doc_registro_guardar', 'CompraController@doc_registro_guardar');
+Route::post('compras_doc_registro_guardar', 'Compras\CompraController@doc_registro_guardar');
 
 /*
 
