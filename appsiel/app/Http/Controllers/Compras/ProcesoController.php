@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Inventarios\ProcesoController as InvProcesoController;
 
-use App\Http\Controllers\Compras\ComprasController;
+use App\Http\Controllers\Compras\CompraController;
 use App\Http\Controllers\Compras\NotaCreditoController;
 
 
