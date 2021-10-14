@@ -26,27 +26,6 @@
             text-align: center;
             font-size: 2em;
         }
-
-        #tabla_productos_facturados,#tabla_totales
-        {
-            border-collapse: collapse;
-        }
-
-        #tabla_productos_facturados tbody tr td
-        {
-            border: 1px solid gray;
-        }
-
-        #tabla_productos_facturados thead tr th
-        {
-            border: 1px solid gray;
-            background-color: #eaeaea;
-        }
-
-        #tabla_totales td
-        {
-            border: 1px solid gray;
-        }
     </style>
 </head>
 <body>
@@ -58,11 +37,10 @@
     ?>
     <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
         <tr>
-            <td width="15%">
-                <img src="{{ $url_img }}" width="120px;" />
-            </td>
-            <td>
-                @include('ventas_pos.plantilla_factura_datos_encabezado')
+            <td style="text-align: center;">
+                <img src="{{ $url_img }}" style="max-height: 110px; width: 390px;" />
+                <br>
+                @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
             </td>
         </tr>
     </table>
@@ -116,9 +94,9 @@
                 </td>
                 <td>
                     <b>{{ config("configuracion.tipo_identificador") }}/CC:</b> <div class="lbl_cliente_nit" style="display: inline;">
-                        @if( config("configuracion.tipo_identificador") == 'NIT') 
-                        {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}	
-                        @else {{ $pdv->cliente->tercero->numero_identificacion}} @endif </div> 
+					@if( config("configuracion.tipo_identificador") == 'NIT') 
+                    {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}	
+                    @else {{ $pdv->cliente->tercero->numero_identificacion}} @endif </div> 
                 </td>
             </tr>
             <tr>
@@ -148,9 +126,9 @@
         </tbody>
     </table>
 
-    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_totales">
+    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};">
         <tbody>
-            <tr style="font-weight: bold; background-color: #eaeaea;">
+            <tr style="font-weight: bold;">
                 <td style="text-align: right;"> Total factura: </td>
                 <td style="text-align: right;">
                     <div class="lbl_total_factura" style="display: inline; margin-right: 15px;"> </div>
@@ -164,7 +142,7 @@
                     <div class="lbl_total_recibido" style="display: inline; margin-right: 15px;"> </div>
                 </td>
             </tr>
-            <tr style="font-weight: bold; background-color: #eaeaea;">
+            <tr style="font-weight: bold;">
                 <td style="text-align: right;"> Cambio: </td>
                 <td style="text-align: right;">
                     <div class="lbl_total_cambio" style="display: inline; margin-right: 15px;"> </div>
@@ -172,6 +150,8 @@
             </tr>
         </tbody>
     </table>
+
+    @include('ventas_pos.formatos_impresion.tabla_medios_pago')
 
     <table style="width: 100%; font-size: 11px;" class="table table-bordered">
         <!-- <thead>
@@ -215,6 +195,9 @@
                 </td>
             </tr>
         @endif
+        <tr>
+            <td align="right"><div id="lbl_creado_por_fecha_y_hora"></div></td>
+        </tr>
     </table>
     
     <br><br>

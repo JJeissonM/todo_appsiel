@@ -37,10 +37,11 @@
     ?>
     <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
         <tr>
-            <td style="text-align: center;">
-                <img src="{{ $url_img }}" style="max-height: 110px; width: 390px;" />
-                <br>                
-                @include('ventas_pos.plantilla_factura_datos_encabezado')
+            <td width="15%">
+                <img src="{{ $url_img }}" width="120px;" />
+            </td>
+            <td>
+                @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
             </td>
         </tr>
     </table>
@@ -150,6 +151,8 @@
             </tr>
         </tbody>
     </table>
+
+    @include('ventas_pos.formatos_impresion.tabla_medios_pago')
 
     <table style="width: 100%; font-size: 11px;" class="table table-bordered">
         <!-- <thead>

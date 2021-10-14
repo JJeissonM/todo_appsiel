@@ -13,7 +13,7 @@
 <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="mensaje_alerta">
 </div>
 
-<div id="contenido_seccion_modelo_{{$ID}}" class="contenido_seccion_modelo">
+<div id="tabla_registros_endodoncia">
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
@@ -51,6 +51,9 @@
             </tr>
         </tfoot>
 	</table>
+
+	@include('consultorio_medico.odontologia.endodoncia.modal')
+
 </div>
 
 @section('scripts8')
@@ -63,13 +66,11 @@
 
 				event.preventDefault();
 				
-		        $("#myModal2").modal({backdrop: "static"});
+		        $("#modal_endodoncia").modal({backdrop: "static"});
 
-		        $("#myModal2").attr('style','font-size>: 0.8em;');
+		        $("#modal_endodoncia").attr('style','font-size>: 0.8em;');
 
 		        $("#div_cargando").show();
-
-		        $("#myModal2 .modal-title").html('Ingreso registro de endodoncia');
 		        
 		        $(".btn_edit_modal").hide();
 
@@ -92,26 +93,19 @@
 
 
 			// GUARDAR 
-			$(document).on("click",".btn_save_modal",function(event){
+			$(document).on("click","#btn_save_modal_endodoncia",function(event){
 
 		    	event.preventDefault();
-
-		        /*panel_id = $(this).parent('div').parent('div').parent('div').parent('div').attr('id');
-				
-				$( "#" + panel_id + " .div_spin").show();
 		        
-				$('#contenido_seccion_modelo_' + panel_id ).html( '' );*/
-		        
-		        formulario = $(this).prev('form');
+		        formulario = $("#modal_endodoncia")..find('form');
 
 		        var url = formulario.attr('action');
 		        var data = formulario.serialize();
 				
-				console.log([formulario,url]);
+				//console.log([formulario,url]);
 
 		        $.post(url, data, function (datos) {
-		        	$( "#" + panel_id).find('.div_spin').hide();
-					$('#contenido_seccion_modelo_' + panel_id ).html( datos );
+					$('#tabla_registros_endodoncia').find('tbody:last').append( "<tr><td>" + datos + "</td></tr>" );
 		        });
 		    });
 

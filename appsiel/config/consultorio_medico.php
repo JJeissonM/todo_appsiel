@@ -93,49 +93,49 @@ return [
                                 "13":{ 
                                         "nombre_seccion":"Revisión por sistemas",
                                         "url_vista_show":"consultorio_medico.consultas.anamnesis_odontologia",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":2
                                     }, 
                                 "14":{ 
                                         "nombre_seccion":"Odontograma",
                                         "url_vista_show":"consultorio_medico.odontologia.odontograma",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":3
                                     },
                                 "15":{ 
                                         "nombre_seccion":"Endodoncia",
-                                        "url_vista_show":"consultorio_medico.odontologia.endodoncia",
+                                        "url_vista_show":"consultorio_medico.odontologia.endodoncia.index",
                                         "activo":1,
                                         "orden":4
                                     },
                                 "16":{ 
                                         "nombre_seccion":"Diagnóstico",
                                         "url_vista_show":"consultorio_medico.diagnostico_cie",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":4
                                     }, 
                                 "17":{ 
                                         "nombre_seccion":"Tratamiento",
                                         "url_vista_show":"consultorio_medico.procedimiento_cups",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":5
                                     }, 
                                 "18":{ 
                                         "nombre_seccion":"Fórmula médica",
                                         "url_vista_show":"consultorio_medico.odontologia.formula_medica",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":0
                                     }, 
                                 "19":{ 
                                         "nombre_seccion":"Evolución",
                                         "url_vista_show":"consultorio_medico.odontologia.evolucion",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":0
                                     }, 
                                 "20":{ 
                                         "nombre_seccion":"RIPS",
                                         "url_vista_show":"consultorio_medico.rips",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":0
                                     }
     						}',

@@ -87,43 +87,6 @@
 				calcular_totales();
 			});
 
-
-			// GUARDAR 
-			$('#btn_guardar').click(function(event){
-				event.preventDefault();
-
-				if ( !validar_requeridos() )
-				{
-					return false;	
-				}
-				
-				var valor_total = parseFloat( $('#valor_total').val() );
-
-				var total_valor = parseFloat( $('#total_valor').text().substring(1) );
-
-				if ( valor_total != total_valor) {
-					alert('El VALOR TOTAL PAGO no coincide con el valor total de los registros ingresados.');
-					return false;
-				}
-
-				// Se obtienen todos los datos del formulario y se envían
-
-						// Desactivar el click del botón
-						$( this ).off( event );
-
-						// Eliminar fila(s) de ingreso de registro vacia
-						$('.linea_ingreso_default').remove();						
-
-						// Se asigna la tabla de ingreso de registros a un campo hidden
-						var tabla_registros_documento = $('#ingreso_registros').tableToJSON();
-						$('#tabla_registros_documento').val( JSON.stringify(tabla_registros_documento) );
-
-						// Enviar formulario
-						habilitar_campos_form_create();
-						$('#form_create').submit();	
-					
-			});
-
 		});
 	</script>
 @endsection

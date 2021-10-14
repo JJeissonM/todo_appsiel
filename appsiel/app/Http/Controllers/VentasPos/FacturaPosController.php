@@ -172,7 +172,7 @@ class FacturaPosController extends TransaccionController
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
+        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
 
@@ -466,7 +466,7 @@ class FacturaPosController extends TransaccionController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make('ventas_pos.' . config('ventas_pos.plantilla_factura_pos_default'), compact('empresa', 'resolucion', 'etiquetas', 'pdv'))->render();
+        return View::make('ventas_pos.formatos_impresion.' . config('ventas_pos.plantilla_factura_pos_default'), compact('empresa', 'resolucion', 'etiquetas', 'pdv'))->render();
     }
 
     /**
@@ -571,7 +571,7 @@ class FacturaPosController extends TransaccionController
             'campos' => $lista_campos
         ];
 
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Modificar: ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo);
+        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion . '.' . ' Modificar: ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo);
 
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
@@ -1509,7 +1509,7 @@ class FacturaPosController extends TransaccionController
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
  
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Crear: ' . $this->transaccion->descripcion);
+        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion . '. Creación desde pedido.');
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = null;

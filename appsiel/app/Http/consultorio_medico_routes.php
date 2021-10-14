@@ -1,8 +1,9 @@
 <?php
 
+Route::resource('consultorio_medico/pacientes', 'Salud\PacienteController');
+
 Route::resource('consultorio_medico', 'Salud\ConsultorioMedicoController', ['except' => ['show']]);
 Route::post('consultorio_medico/eliminar_paciente', 'Salud\PacienteController@eliminar');
-Route::resource('consultorio_medico/pacientes', 'Salud\PacienteController');
 
 Route::resource('consultorio_medico/odontograma', 'Salud\OdontogramaController');
 
