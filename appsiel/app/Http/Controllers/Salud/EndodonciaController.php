@@ -48,6 +48,7 @@ class EndodonciaController extends ModeloController
     {
         $modelo = Modelo::find( $request->modelo_entidad_id );
         $record_created = app( $modelo->name_space )->create( $request->all() );
+        //dd($record_created);
         return response()->json( $record_created->toArray() );
     }
     

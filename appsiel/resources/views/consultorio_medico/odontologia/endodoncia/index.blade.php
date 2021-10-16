@@ -68,18 +68,16 @@
 				
 		        $("#modal_endodoncia").modal({backdrop: "static"});
 
-		        $("#modal_endodoncia").attr('style','font-size>: 0.8em;');
+		        //$("#modal_endodoncia").attr('style','font-size>: 0.8em;');
 
 		        $("#div_cargando").show();
-		        
-		        $(".btn_edit_modal").hide();
 
 		        var url = "{{ url('salud_endodoncia/create?id_modelo=308') }}";
 
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
 
-		            $('#contenido_modal2').html(data);
+		            $('#contenido_modal_endodoncia').html(data);
 				});		        
 		    });
 
@@ -97,15 +95,16 @@
 
 		    	event.preventDefault();
 		        
-		        formulario = $("#modal_endodoncia")..find('form');
+		        formulario = $("#modal_endodoncia").find('form');
 
 		        var url = formulario.attr('action');
 		        var data = formulario.serialize();
 				
 				//console.log([formulario,url]);
 
-		        $.post(url, data, function (datos) {
-					$('#tabla_registros_endodoncia').find('tbody:last').append( "<tr><td>" + datos + "</td></tr>" );
+		        $.post(url, data, function (respuesta) {
+		        	console.log(respuesta);
+					$('#tabla_registros_endodoncia').find('tbody:last').append( "<tr><td>" + respuesta + "</td></tr>" );
 		        });
 		    });
 
