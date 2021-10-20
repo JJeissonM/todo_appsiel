@@ -131,7 +131,8 @@ class CalificacionController extends Controller
 
     public function index2()
     {
-        if (!is_null($this->colegio)) {
+        if (!is_null($this->colegio))
+        {
             //determinar la cantidad de registros a mostrar
             $nro_registros = 10;
             $temp = Input::get('nro_registros');
