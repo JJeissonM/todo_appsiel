@@ -536,10 +536,10 @@ class MatriculaController extends ModeloController
         // Verificadion 2: Calificaciones y observaciones
         $cant_calificaciones = 0;
         $cant_calificaciones = Calificacion::where([
-            'id_colegio' => $registro->id_colegio,
-            'codigo_matricula' => $registro->codigo
-        ])
-            ->count();
+                                                    'id_colegio' => $registro->id_colegio,
+                                                    'codigo_matricula' => $registro->codigo
+                                                ])
+                                            ->count();
         if ($cant_calificaciones != 0)
         {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. El estudiante tiene CALIFICACIONES resgistradas.');
@@ -554,7 +554,8 @@ class MatriculaController extends ModeloController
                                     )
                                     ->count();
 
-        if ($cant_calificaciones != 0) {
+        if ($cant_calificaciones != 0)
+        {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula NO puede ser eliminada. El estudiante tiene OBSERVACIONES de boletín resgistradas.');
         }
 
@@ -584,7 +585,6 @@ class MatriculaController extends ModeloController
         
         //Borrar Matrícula
         $registro->delete();
-
 
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Matrícula ELIMINADA correctamente. Código: ' . $registro->codigo);
     }

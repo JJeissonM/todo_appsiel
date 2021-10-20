@@ -105,7 +105,7 @@ class Matricula extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE ESTUIANTES MATRICULADOS";
+        return "LISTADO DE ESTUDIANTES MATRICULADOS";
     }
 
     public function get_segun_periodo_lectivo_y_curso( $periodo_lectivo_id, $curso_id )
