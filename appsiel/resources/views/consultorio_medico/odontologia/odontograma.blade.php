@@ -269,13 +269,13 @@
       var url = `{{ url('consultorio_medico/odontograma') }}/{{ $consulta->id }}`
       $.get(url, function (datos) {
           //odontograma_id{{ $consulta->id }}
-          console.log(datos)
+          //console.log(datos)
           if(datos != 'sin-datos'){
             var data = JSON.parse(datos.odontograma_data)
             for (const prop in data) {
               //console.log(`obj.${prop} = ${data[prop]}`);
               for (const propi in data[prop]) {
-                console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);              
+                //console.log(`n.${prop} pd.${propi} feat.${data[prop][propi]}`);              
                 let ms = data[prop][propi];
                 grama{{ $consulta->id }}({n:prop,nombre:propi,feat:ms});              
               }

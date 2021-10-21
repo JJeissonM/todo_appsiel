@@ -203,6 +203,9 @@
 	</div>
 	<br/><br/>
 
+
+	@include('components.design.ventana_modal2',['titulo2'=>'Editar registro','texto_mensaje2'=>''])
+
 @endsection
 
 

@@ -653,6 +653,7 @@
 	@yield('scripts8')
 	@yield('scripts9')
 	@yield('scripts10')
+	@yield('odontograma')
 
 	<script src="https://www.gstatic.com/charts/loader.js"></script>
 	<script>

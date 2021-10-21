@@ -26,20 +26,17 @@ $datos = [
 ];
 ?>
 
-<ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#home">Medios de Pago/Recaudo</a></li>
-</ul>
-
-<div class="tab-content">
-
-    <div id="home" class="tab-pane fade in active">
+<div class="container-fluid">
+    <div class="marco_formulario">
+        <h5>Medios de Pago</h5>
+        <hr>
         <div id="div_ingreso_registros_medios_recaudo">
             <br>
             <div class="table-responsive" id="table_contentenido">
                 <table class="table table-striped" id="ingreso_registros_medios_recaudo">
                     <thead>
                     <tr>
-                        <th data-override="teso_medio_recaudo_id">MEDIO DE PAGO/RECAUDO</th>
+                        <th data-override="teso_medio_recaudo_id">MEDIO DE PAGO</th>
                         <th data-override="teso_motivo_id">MOTIVO</th>
                         <th data-override="teso_caja_id">CAJA</th>
                         <th data-override="teso_cuenta_bancaria_id">CTA. BANCARIA</th>

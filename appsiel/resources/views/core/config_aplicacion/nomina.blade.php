@@ -279,6 +279,38 @@
 
 				</div>
 
+				<h4> Parámetros de contabilización  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cuenta_id_salarios_por_pagar = 206;
+								if( isset($parametros['cuenta_id_salarios_por_pagar'] ) )
+								{
+									$cuenta_id_salarios_por_pagar = $parametros['cuenta_id_salarios_por_pagar'];
+								}
+							?>
+							{{ Form::bsSelect('cuenta_id_salarios_por_pagar', $cuenta_id_salarios_por_pagar, 'Cuenta por defecto de salarios por pagar', App\Contabilidad\ContabCuenta::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tercero_id_salarios_por_pagar = 1;
+								if( isset($parametros['tercero_id_salarios_por_pagar'] ) )
+								{
+									$tercero_id_salarios_por_pagar = $parametros['tercero_id_salarios_por_pagar'];
+								}
+							?>
+							{{ Form::bsSelect('tercero_id_salarios_por_pagar', $tercero_id_salarios_por_pagar, 'Cuenta por defecto de salarios por pagar', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">
@@ -293,10 +325,6 @@
 	</div>
 	<br/><br/>
 
-
-
-
-	<div id="div_cargando">Cargando...</div>
 @endsection
 
 @section('scripts')

@@ -41,7 +41,7 @@
         </tr>
         <tr>
             <td>
-                @include('cxc.incluir.estado_de_cuenta_tabla_registros')
+                @include('cxc.reportes.documentos_pendientes_cxc')
             </td>                
         </tr>
     </tbody>

@@ -1,0 +1,113 @@
+<?php
+	use App\Http\Controllers\Sistema\VistaController;
+
+	$datos = App\Salud\Endodoncia::where( [
+											['consulta_id', '=', $consulta->id]
+										] )
+									->get();
+	//dd($datos);
+?>
+
+<br>
+
+<div class="alert alert-success alert-dismissible fade in" style="display: none;" id="mensaje_alerta">
+</div>
+
+<div id="tabla_registros_endodoncia">
+	<table class="table table-bordered table-striped">
+		<thead>
+			<tr>
+				<th rowspan="2">Diente</th>
+				<th colspan="2">Pruebas de sensibilidad a la pulpa dental</th>
+				<th colspan="2">Pruebas de sensibilidad periodontal</th>
+				<th rowspan="2">Observaciones</th>
+				<th rowspan="2">Acción</th>
+			</tr>
+			<tr>
+				<th>Frio</th>
+				<th>Caliente</th>
+				<th>Percusión horizontal</th>
+				<th>Percusión vertical</th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach( $datos AS $linea )
+				<tr>
+					<td> {{ $linea->numero_diente}} </td>
+					<td> {{ $linea->frio}} </td>
+					<td> {{ $linea->caliente}} </td>
+					<td> {{ $linea->percusion_horizontal}} </td>
+					<td> {{ $linea->percusion_vertical}} </td>
+					<td> {{ $linea->observaciones}} </td>
+					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_endodoncia'><i class='glyphicon glyphicon-trash'></i></button> </td>
+				</tr>
+			@endforeach
+		</tbody>
+		<tfoot>
+            <tr>
+                <td colspan="5">
+                    <button style="background-color: transparent; color: #3394FF; border: none;" class="btn_nuevo_registro_endodoncia"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
+                </td>
+            </tr>
+        </tfoot>
+	</table>
+
+	@include('consultorio_medico.odontologia.endodoncia.modal')
+
+</div>
+
+@section('scripts8')
+
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+
+			$(".btn_nuevo_registro_endodoncia").click(function(event){
+
+				event.preventDefault();
+				
+		        $("#modal_endodoncia").modal({backdrop: "static"});
+
+		        //$("#modal_endodoncia").attr('style','font-size>: 0.8em;');
+
+		        $("#div_cargando").show();
+
+		        var url = "{{ url('salud_endodoncia/create?id_modelo=308') }}";
+
+				$.get( url, function( data ) {
+			        $('#div_cargando').hide();
+
+		            $('#contenido_modal_endodoncia').html(data);
+				});		        
+		    });
+
+			$(document).on('click', '.btn_eliminar', function(event) {
+				event.preventDefault();
+				var fila = $(this).closest("tr");
+				fila.remove();
+				$('#btn_nuevo').show();
+				calcular_totales();
+			});
+
+
+			// GUARDAR 
+			$(document).on("click","#btn_save_modal_endodoncia",function(event){
+
+		    	event.preventDefault();
+		        
+		        formulario = $("#modal_endodoncia").find('form');
+
+		        var url = formulario.attr('action');
+		        var data = formulario.serialize();
+				
+				//console.log([formulario,url]);
+
+		        $.post(url, data, function (respuesta) {
+		        	console.log(respuesta);
+					$('#tabla_registros_endodoncia').find('tbody:last').append( "<tr><td>" + respuesta + "</td></tr>" );
+		        });
+		    });
+
+		});
+	</script>
+@endsection

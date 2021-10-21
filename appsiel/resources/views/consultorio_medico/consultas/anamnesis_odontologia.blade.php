@@ -9,12 +9,6 @@
     $ids_modelos_relacionados = [ 304, 305, 306, 307 ];//, 308
 
 ?>
-<br>
-
-<a class="btn btn-info" href="{{ url( 'salud_imprimir_historia_clinica_odontologica/' . $consulta->id ) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i> Anamnésis </a>
-<!-- &nbsp;&nbsp;&nbsp;&nbsp;
-<a class="btn btn-info" href="{ { url( 'salud_imprimir_certificado_aptitud/' . $consulta->id ) }}" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i> Certificado </a>
--->
 
 <br><br>
 

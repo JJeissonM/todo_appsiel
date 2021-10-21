@@ -117,7 +117,7 @@ class HistoriaMedicaOcupacionalController extends Controller
 
         $modelo_formulas_opticas = Modelo::where('modelo','salud_formulas_opticas   ')->first();
         
-        return view('consultorio_medico.pacientes_show',compact('secciones_consulta','miga_pan','registro','url_crear','url_edit','reg_anterior','reg_siguiente','consultas','modelo_consultas','datos_historia_clinica','modelo_formulas_opticas','id'));
+        return view('consultorio_medico.pacientes.show',compact('secciones_consulta','miga_pan','registro','url_crear','url_edit','reg_anterior','reg_siguiente','consultas','modelo_consultas','datos_historia_clinica','modelo_formulas_opticas','id'));
     }
 
 

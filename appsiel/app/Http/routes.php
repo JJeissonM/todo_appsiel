@@ -50,7 +50,16 @@ Route::get('actualizar_campos_modelos_relacionados', 'Sistema\ModeloController@a
 Route::get('duplicar/{id}', 'Sistema\ModeloController@duplicar');
 Route::get('web_eliminar/{id}', 'Sistema\CrudController@eliminar_registro');
 
+
+// Sistema de rutas #1
 Route::resource('web', 'Sistema\ModeloController');
+
+
+// Sistema de rutas #2
+Route::resource('web20', 'System\ModelController');
+/*
+Route::get('/web/{app}/{model}/{accion}/{vista}', '...\ModelController@trigger');
+*/
 
 //  CRUD AJAX
 

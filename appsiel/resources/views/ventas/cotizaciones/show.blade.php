@@ -24,26 +24,33 @@
 
 @section('cabecera')
 	@if( is_null( $doc_encabezado->documento_ventas_hijo() ) && $doc_encabezado->estado == 'Pendiente' )
-		<div class="col-md-12">
-			<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
-				<input type="hidden" name="url" value="vtas_cotizacion/{{$doc_encabezado->id.$variables_url}}" />
-				<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
-				<input type="hidden" name="source" value="COTIZACION" />
-				{{ csrf_field() }}
-				<label class="control-label">Genere de forma automática su pedido <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
-				<div class="row">
-					<div class="col-md-6 col-lg-6 col-xl-2">
-							{{ Form::bsFecha('fecha_entrega',date('Y-m-d'),'Fecha de Entrega', null,[]) }}
+		<div class="container-fluid">
+			<div class="marco_formulario">
+				<form class="form-control" method="post" action="{{route('ventas.conexion_procesos')}}">
+					<input type="hidden" name="url" value="vtas_cotizacion/{{$doc_encabezado->id.$variables_url}}" />
+					<input type="hidden" name="modelo" value="{{$doc_encabezado->id}}" />
+					<input type="hidden" name="source" value="COTIZACION" />
+					<input type="hidden" name="generar" value="1" />
+					{{ csrf_field() }}
+					<label class="control-label">Genere de forma automática su pedido <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
+					<div class="row">
+						<div class="col-md-6 col-lg-6 col-xl-2">
+							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha de generación', null,[]) }}
+						</div>
+						<div class="col-md-6 col-lg-6 col-xl-2">
+							{{ Form::bsFecha('fecha_entrega',date('Y-m-d'),'Fecha de entrega', null,[]) }}
+						</div>
 					</div>
-					<div class="col-md-2">
-						{{ Form::select('generar',['1'=>'Pedido'],null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+					<div class="row">
+						<div class="col-md-12 col-lg-12" style="text-align: center;">
+							<button type="submit" class="btn btn-primary btn-bg">GENERAR</button>
+						</div>
+						<br>
 					</div>
-					<div class="col-md-1 col-lg-2">
-						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
-					</div>
-				</div>
-				
-			</form>
+				</form>
+
+					<br><br><br><br><br>
+			</div>
 		</div>
 	@endif
 @endsection

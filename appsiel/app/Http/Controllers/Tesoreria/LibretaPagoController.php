@@ -495,7 +495,12 @@ class LibretaPagoController extends ModeloController
         $plan_pagos = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
         
         $responsable_financiero = $matricula_estudiante->estudiante->responsable_financiero();
-        $documentos_anticipos = CxcMovimiento::get_documentos_tercero( $responsable_financiero->tercero->id, date('Y-m-d') );
+        
+        $documentos_anticipos = [];
+        if( !is_null($responsable_financiero) )
+        {
+            $documentos_anticipos = CxcMovimiento::get_documentos_tercero( $responsable_financiero->tercero->id, date('Y-m-d') );
+        }            
 
         $miga_pan = [
                 ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],

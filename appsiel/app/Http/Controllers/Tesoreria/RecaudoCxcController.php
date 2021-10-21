@@ -332,6 +332,7 @@ class RecaudoCxcController extends Controller
             // Actualizar registro del documento pendiente
             $documento_cxc_pendiente->valor_pagado = $nuevo_valor_pagado;
             $documento_cxc_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
+            $documento_cxc_pendiente->estado = 'Pendiente';
             $documento_cxc_pendiente->save();
 
             // Se elimina el abono

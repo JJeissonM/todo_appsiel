@@ -1,4 +1,4 @@
-<div id="div_resumen_totales">
+<div id="div_resumen_totales" style="font-size:13px;">
     
 
     <h5 style="width: 100%; text-align: center;">Totales</h5>

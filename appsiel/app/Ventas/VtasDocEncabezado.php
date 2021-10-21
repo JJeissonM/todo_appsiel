@@ -37,7 +37,7 @@ class VtasDocEncabezado extends Model
 
     protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'hora_entrega', 'plazo_entrega_id', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'O.C.', 'Valor total', 'Forma de pago', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Valor ingresos (sin iva)', 'Total factura', 'Forma de pago', 'Estado'];
 
     public $vistas = '{"index":"layouts.index3"}';
 
@@ -440,6 +440,14 @@ class VtasDocEncabezado extends Model
         }
     }
 
+    /*
+        Movimiento de Tesoreria o Cartera de clientes (CxC)
+    */
+    public function get_valor_base_iva_total_documento()
+    {
+        return $this->lineas_registros->sum('base_impuesto_total');
+    }
+
     public static function sqlString($search)
     {
         $core_tipo_transaccion_id = 23; // Facturas
@@ -486,7 +494,7 @@ class VtasDocEncabezado extends Model
                 DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
                 'core_terceros.descripcion AS campo3',
-                'vtas_doc_encabezados.orden_compras AS campo4',
+                'vtas_doc_encabezados.valor_total AS campo4',
                 'vtas_doc_encabezados.valor_total AS campo5',
                 'vtas_doc_encabezados.forma_pago AS campo6',
                 'vtas_doc_encabezados.estado AS campo7',
@@ -498,8 +506,10 @@ class VtasDocEncabezado extends Model
 
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
-        if (count($collection) > 0) {
-            if (strlen($search) > 0) {
+        if (count($collection) > 0)
+        {
+            if (strlen($search) > 0)
+            {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
                     if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
                         return $c;
@@ -508,6 +518,14 @@ class VtasDocEncabezado extends Model
             } else {
                 $nuevaColeccion = $collection;
             }
+        }
+
+        foreach( $nuevaColeccion AS $register_collect )
+        {
+            $doc_venta = VtasDocEncabezado::find( $register_collect->campo8 );
+            $register_collect->campo4 = '$' . number_format( $doc_venta->get_valor_base_iva_total_documento(), 0, ',', '.' );
+
+            $register_collect->campo5 = '$' . number_format( $register_collect->campo5, 0, ',', '.' );
         }
 
         $request = request(); //obtenemos el Request para obtener la url y la query builder

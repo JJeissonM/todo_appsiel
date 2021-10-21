@@ -32,6 +32,8 @@ class CxpMovimiento extends Model
     $this->valor_pagado = $nuevo_valor_pagado;
     $this->saldo_pendiente = $nuevo_saldo;
 
+    $this->estado = 'Pendiente';
+    
     if ( $nuevo_saldo == 0)
     {
       $this->estado = 'Pagado';

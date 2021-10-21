@@ -17,6 +17,9 @@
 			$iteracion = 1;
 			$cantidad_registros = count( $movimiento->toArray() );
 			$etiqueta_dibujada = false;
+			$descripcion_entidad = '';
+			$codigo_arl = 'NNN';
+			$nit = '';
 			foreach($movimiento AS $registro)
 			{
 				$entidad_actual = $registro->entidad();

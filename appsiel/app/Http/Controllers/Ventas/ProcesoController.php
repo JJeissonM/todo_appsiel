@@ -277,7 +277,7 @@ class ProcesoController extends Controller
         $core_tipo_doc_app_id = 41;
         $modelo_id = 175;
 
-        $pedido = $cotizacion->clonar_encabezado( date('Y-m-d'), $core_tipo_transaccion_id, $core_tipo_doc_app_id, $cotizacion->descripcion, $modelo_id );
+        $pedido = $cotizacion->clonar_encabezado( $request->fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $cotizacion->descripcion, $modelo_id );
 
         $pedido->fecha_entrega = $request->fecha_entrega;
         $pedido->fecha_vencimiento = $request->fecha_entrega;

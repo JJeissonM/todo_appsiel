@@ -196,12 +196,43 @@
 			</div>
 
 			<div class="table-responsive">
-				<div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Gastos totales</div>
+				<div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">GASTOS TOTALES</div>
 			    <table class="table table-striped">
 			        <tbody>
 						<tr style="background: #4a4a4a; color: white;">
 							<td> Totales </td>
 			        		<td align="right"> $ {{ number_format( abs($gran_total_conceptos) + abs($gran_total_costo), 2, ',','.') }} </td>
+			        	</tr>
+			        </tbody>
+			    </table>
+			</div>
+
+			<div class="table-responsive">
+				<div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">RENTABILIDAD</div>
+			    <table class="table table-striped">
+			        <tbody>
+						<tr>
+							<td> Presupuesto </td>
+			        		<td align="right"> $ {{ number_format( $documento_nomina->presupuesto, 2, ',','.') }} </td>
+			        	</tr>
+			        	<?php 
+			        		$total_gastos = abs($gran_total_conceptos) + abs($gran_total_costo);
+			        		$renta = $documento_nomina->presupuesto - $total_gastos;
+			        		$porcentaje_renta = $renta / $total_gastos * 100;
+
+			        		$class = 'success';
+			        		if ( $renta < 0)
+			        		{
+			        			$class = 'danger';
+			        		}
+			        	?>
+						<tr class="{{$class}}">
+							<td> Rentab. económica </td>
+			        		<td align="right"> $ {{ number_format( $renta , 2, ',','.') }} </td>
+			        	</tr>
+						<tr class="{{$class}}">
+							<td> Rentab. porcentual </td>
+			        		<td align="right"> {{ number_format( $porcentaje_renta , 2, ',','.') }}% </td>
 			        	</tr>
 			        </tbody>
 			    </table>

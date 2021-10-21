@@ -48,7 +48,6 @@
 	<div class="row">
 		@yield('cabecera')
 	</div>
-	<hr>
 
 	@include('layouts.mensajes')
 

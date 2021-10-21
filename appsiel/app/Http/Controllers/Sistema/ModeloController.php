@@ -42,7 +42,12 @@ class ModeloController extends Controller
     {
         // Se obtiene el modelo
         if (!is_null(Input::get('id_modelo'))) {
+            
             $this->modelo = Modelo::find(Input::get('id_modelo'));
+            
+            /*$this->modelo = Modelo::where('name',$model)
+                                    ->get()
+                                    ->first();*/
         }
 
         // No requiere autenticación para el CRUD del modelo ClienteWeb (id_modelo=218)
@@ -56,6 +61,12 @@ class ModeloController extends Controller
 
 
         $this->aplicacion = Aplicacion::find(Input::get('id'));
+    }
+
+
+    public function trigger( $app, $model, $action, $view )
+    {
+
     }
 
     /*
@@ -123,6 +134,7 @@ class ModeloController extends Controller
             $sqlString = app($this->modelo->name_space)->sqlString($search);
             $tituloExport = app($this->modelo->name_space)->tituloExport();
         }
+
         $vista = 'layouts.index';
         $vistas = json_decode(app($this->modelo->name_space)->vistas);
         if (!is_null($vistas)) {
@@ -1149,8 +1161,6 @@ class ModeloController extends Controller
         }
         return $randomString;
     }
-
-
 
     public function create_registro_modelo($modelo_id)
     {

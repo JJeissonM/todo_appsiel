@@ -97,17 +97,6 @@ class ModeloEavController extends ModeloController
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
@@ -249,17 +238,6 @@ class ModeloEavController extends ModeloController
     public function cancelar_update_db(Request $request)
     {
         return self::show_datos_entidad( $request->modelo_padre_id, $request->registro_modelo_padre_id, $request->modelo_entidad_id );   
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 
     public static function show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id )

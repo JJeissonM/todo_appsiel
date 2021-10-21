@@ -222,6 +222,11 @@ class InventarioController extends TransaccionController
         {
             $linea_pedido = VtasDocRegistro::find( $linea_remision->linea_registro_doc_origen_id );
             
+            if(is_null($linea_pedido) )
+            {
+                continue;
+            }
+            
             if ( $operacion == 'restar' )
             {
                 $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente - abs($linea_remision->cantidad);

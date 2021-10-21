@@ -178,9 +178,14 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <hr>
 
+
+
+    <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
+
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-md-8 well">
+                    <div class="col-md-8 well"><div class="container-fluid">
+    <div class="marco_formulario">
                         <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
                         {!! str_replace("<tbody>
                 
@@ -188,7 +193,7 @@ use App\Http\Controllers\Sistema\VistaController;
 
                         Productos ingresados: <span id="numero_lineas"> 0 </span>
                         <br/><br/>
-
+</div></div>
                         @if( Input::get('action') == 'edit' )
                             {!! $vista_medios_recaudo !!}
                         @else
@@ -198,8 +203,12 @@ use App\Http\Controllers\Sistema\VistaController;
                         {!! $vista_categorias_productos !!}
                     </div>
 
-                    <div class="col-md-4 well" style="font-size: 1.2em;">                        
-                        @include('ventas_pos.crud_factura_resumen_totales')
+                    <div class="col-md-4 well" style="font-size: 1.2em;">
+                        <div class="container-fluid">
+                            <div class="marco_formulario">                       
+                                @include('ventas_pos.crud_factura_resumen_totales')
+                            </div>
+                        </div>
                     </div>
 
                 </div>

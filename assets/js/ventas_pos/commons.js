@@ -12,12 +12,15 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 
 $(document).ready(function () {
 
-    $('#fecha').val( get_fecha_hoy() );
-
     if ( $('#action').val() != 'create' )
     {
         reset_efectivo_recibido();
         $('#efectivo_recibido').attr( 'readonly', 'readonly');
+    }
+
+    if ( $('#action').val() != 'edit' )
+    {
+        $('#fecha').val( get_fecha_hoy() );
     }
 
     //Al hacer click en alguna de las sugerencias (escoger un producto)
@@ -596,11 +599,10 @@ $(document).ready(function () {
         $('.lbl_condicion_pago').text( $('#forma_pago').val() );
         $('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
 
+        $('#tr_fecha_vencimiento').hide();
         if ($('#forma_pago').val() == 'credito')
         {
             $('#tr_fecha_vencimiento').show();
-        }else{
-        	$('#tr_fecha_vencimiento').hide();
         }
 
         $('#lbl_fecha').text( $('#fecha').val() );
@@ -616,6 +618,46 @@ $(document).ready(function () {
         
         $('.lbl_descripcion_doc_encabezado').text( $('#descripcion').val() );
 
+        llenar_resumen_medios_recaudo();        
+
+    }
+
+    function llenar_resumen_medios_recaudo()
+    {
+        if ($('#forma_pago').val() == 'credito')
+        {
+            $('#div_resumen_medios_pago').hide();
+            return 0;
+        }
+
+        $('#div_resumen_medios_pago').show();
+
+        if( $('#total_valor_total').html() == '$ 0' )
+        {
+            $('#div_resumen_medios_pago').find('#lbl_medio_pago').text('Efectivo');
+
+            $('#teso_caja_id').val( $('#caja_pdv_default_id').val() );
+            
+            var lbl_caja_default_pdv = $('#teso_caja_id option:selected').text();
+            $('#div_resumen_medios_pago').find('#lbl_caja_banco').text(lbl_caja_default_pdv);
+            
+            var valor_medio_pago = $('#total_efectivo_recibido').val() - $
+            ('#valor_total_cambio').val(); 
+
+            $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_medio_pago.toFixed(2)) );
+        }else{
+
+            // Se esta suponiendo UN solo medio de pago
+            var array_celdas =  $('#ingreso_registros_medios_recaudo tr').find('td');
+
+            var lbl_medio_pago =  array_celdas.eq(0).find('span').eq(1).text();
+            var lbl_caja_banco =  array_celdas.eq(2).find('span').eq(1).text() + '' + array_celdas.eq(3).find('span').eq(1).text();
+            var lbl_valor_medio_pago =  array_celdas.eq(4).text();
+
+            $('#div_resumen_medios_pago').find('#lbl_medio_pago').text(lbl_medio_pago);
+            $('#div_resumen_medios_pago').find('#lbl_caja_banco').text(lbl_caja_banco);
+            $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text(lbl_valor_medio_pago);
+        }
     }
 
     function get_hora(i)

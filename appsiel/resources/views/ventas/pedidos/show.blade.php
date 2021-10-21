@@ -26,34 +26,43 @@
 
 @section('cabecera')
 	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
-		<div class="col-md-12">
-			{{ Form::open(['url' => 'vtas_form_crear_remision_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' . $doc_encabezado->id,'id'=>'form_create','files' => true]) }}
-				<input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
-				<input type="hidden" name="doc_encabezado_id" value="{{$doc_encabezado->id}}" />
-				<input type="hidden" name="doc_encabezado_cotizacion_id" id="doc_encabezado_cotizacion_id" value="{{$doc_encabezado->ventas_doc_relacionado_id}}" />
-				<input type="hidden" name="source" value="PEDIDO" />
-				{{ csrf_field() }}
-				<label class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
-				<div class="row">
-					<div class="col-md-3 col-lg-3 col-xl-1">
-							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
-					</div>
-					<div class="col-md-2">
-						@if( $doc_encabezado->enlaces_remisiones_hijas() == '' )
-							{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-						@else
-							{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-						@endif
-					</div>
-					<div class="col-md-1 col-lg-2">
-						<button type="submit" class="btn btn-primary btn-block">GENERAR</button>
-					</div>
-				</div>
+		<div class="container-fluid">
+			<div class="marco_formulario">
+				{{ Form::open(['url' => 'vtas_form_crear_remision_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' . $doc_encabezado->id,'id'=>'form_create','files' => true]) }}
+					<input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
+					<input type="hidden" name="doc_encabezado_id" value="{{$doc_encabezado->id}}" />
+					<input type="hidden" name="doc_encabezado_cotizacion_id" id="doc_encabezado_cotizacion_id" value="{{$doc_encabezado->ventas_doc_relacionado_id}}" />
+					<input type="hidden" name="source" value="PEDIDO" />
+					{{ csrf_field() }}
 					
-			{{ Form::close() }}
-		</div>
-		<div id="div_advertencia_factura" style="display: none; color: red;" class="container-fluid">
-			Nota: La condición de pago (Crédito o Contado) de la factura será tomada de los datos del cliente.
+					<label class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
+
+					<div class="row">
+						<div class="col-md-6 col-lg-6 col-xl-2">
+							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
+						</div>
+						<div class="col-md-6 col-lg-6 col-xl-2">
+							@if( $doc_encabezado->enlaces_remisiones_hijas() == '' )
+								{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+							@else
+								{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+							@endif
+						</div>
+					</div>
+					<div class="row">
+						<br>
+						<div class="col-md-12 col-lg-12" style="text-align: center;">
+							<button type="submit" class="btn btn-primary btn-bg">GENERAR</button>
+						</div>
+						<br>
+					</div>
+				</form>
+				<div id="div_advertencia_factura" style="display: none; color: red;" class="container-fluid">
+					Nota: La condición de pago (Crédito o Contado) de la factura será tomada de los datos del cliente.
+				</div>
+
+				<br>
+			</div>
 		</div>
 	@endif
 @endsection

@@ -26,13 +26,17 @@
 				<b> Curso: </b>{{ $descripcion_curso }}
 			</td>
 			<td>
-				<b> Nombre: </b> {{ $estudiante->responsable_financiero()->tercero->descripcion }}
-				<br>
-				<b> Cédula: </b> {{ number_format( $estudiante->responsable_financiero()->tercero->numero_identificacion, 0, ',', '.' ) }}
-				<br>
-				<b> Dirección: </b> {{ $estudiante->responsable_financiero()->tercero->direccion1 }}
-				<br>
-				<b> Teléfono: </b> {{ $estudiante->responsable_financiero()->tercero->telefono1 }}
+				@if( !is_null( $estudiante->responsable_financiero() ) )
+					<b> Nombre: </b> {{ $estudiante->responsable_financiero()->tercero->descripcion }}
+					<br>
+					<b> Cédula: </b> {{ number_format( $estudiante->responsable_financiero()->tercero->numero_identificacion, 0, ',', '.' ) }}
+					<br>
+					<b> Dirección: </b> {{ $estudiante->responsable_financiero()->tercero->direccion1 }}
+					<br>
+					<b> Teléfono: </b> {{ $estudiante->responsable_financiero()->tercero->telefono1 }}
+				@else
+					<span style="color: red;"> NOTA: El estudiante no tiene responsable financiero asociado. </span>
+				@endif
 			</td>
 		</tr>
 	</tbody>

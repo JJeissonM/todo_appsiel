@@ -1,6 +1,24 @@
 <?php
 
 Route::post('compras_doc_registro_guardar', 'Compras\CompraController@doc_registro_guardar');
+
+/*
+
+Route::post('ventas_doc_registro_guardar', 'VentasController@doc_registro_guardar');
+
+Route::post('contabilidad_doc_registro_guardar', 'CotabilidadController@doc_registro_guardar');
+
+
+Route::post('/web/{app}/{model}/{accion}/{vista}', '...\ModelController@trigger');
+
+
+Route::post('/web/{compras}/{factura_de_compras}/{store}/{show_list}', '...\ModelController@trigger');
+
+Route::post('/web/{ventas}/{factura_de_ventas}/{store}/{show_list}', '...\ModelController@trigger');
+
+*/
+
+
 Route::get('compras_get_formulario_edit_registro', 'Compras\CompraController@get_formulario_edit_registro');
 Route::get('compras_consultar_entradas_pendientes', 'Compras\CompraController@consultar_entradas_pendientes');
 
