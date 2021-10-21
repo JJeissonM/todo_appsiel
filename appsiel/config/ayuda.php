@@ -306,6 +306,20 @@ return array(
                         'url' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/manejo_de_anticipo_clientes.mp4',
                         'duracion' => '6:02',
                         'publicacion' => '28 de Marzo de 2021'
+                    ),
+                    '1' => array(
+                        'label' => 'Cotización y Pedidos',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/Cotizacion_y_pedidos.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/Cotizacion_y_pedidos.mp4',
+                        'duracion' => '7:12',
+                        'publicacion' => '21 de Octubre de 2021'
+                    ),
+                    '2' => array(
+                        'label' => 'Factura de Ventas',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/factura_de_ventas.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Ventas/factura_de_ventas.mp4',
+                        'duracion' => '3:31',
+                        'publicacion' => '21 de Octubre de 2021'
                     )
                 )
             ],
