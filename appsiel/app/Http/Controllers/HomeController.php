@@ -38,7 +38,9 @@ class HomeController extends Controller
     public function inicio()
     {
     	if( Auth::user()->hasRole('Cliente') )
+    	{
             return redirect( config('pagina_web.main_page_tienda_online') );
+    	}
             
     	$modelo_empresa_id = 41;
 

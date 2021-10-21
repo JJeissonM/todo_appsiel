@@ -740,7 +740,7 @@ class ModeloController extends Controller
         return $lista_campos;
     }
 
-    public static function personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, $accion, $tipo_tranferencia = null)
+    public static function personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, $accion )
     {
         $opciones = [];
         // Se crea un select SOLO con las opciones asignadas a la transacción
@@ -805,22 +805,6 @@ class ModeloController extends Controller
             }
         }
 
-        // Si es una transferencia se agrega un nuevo campo para la bodega destino
-        if ($id_transaccion == $tipo_tranferencia) {
-            $lista_campos[$i]['id'] = 0;
-            $lista_campos[$i]['tipo'] = 'select';
-            $lista_campos[$i]['name'] = 'bodega_destino_id';
-            $lista_campos[$i]['descripcion'] = 'Bodega destino';
-            $bodegas = InvBodega::where('estado', 'Activo')
-                ->get();
-            foreach ($bodegas as $fila) {
-                $vec_b[$fila->id] = $fila->descripcion;
-            }
-            $lista_campos[$i]['opciones'] = $vec_b;
-            $lista_campos[$i]['value'] = null;
-            $lista_campos[$i]['atributos'] = [];
-            $lista_campos[$i]['requerido'] = true;
-        }
         return $lista_campos;
     }
 

@@ -165,7 +165,7 @@ class VtasDocEncabezado extends Model
                 break;
             
             default:
-                # code...
+                $url = 'ventas/';
                 break;
         }
 

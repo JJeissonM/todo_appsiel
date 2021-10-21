@@ -132,15 +132,13 @@ class InventarioController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        $tipo_tranferencia = 2;
-
         $id_transaccion = $this->transaccion->id;
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
         $cantidad_campos = count($lista_campos);
 
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $this->transaccion, $lista_campos, $cantidad_campos, 'create', $tipo_tranferencia);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $this->transaccion, $lista_campos, $cantidad_campos, 'create' );
 
         $modelo_controller = new ModeloController;
         $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
@@ -281,6 +279,7 @@ class InventarioController extends TransaccionController
     {
         $request['creado_por'] = Auth::user()->email;
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
+        //dd( $request->all() );
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
         InventarioController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
@@ -382,44 +381,7 @@ class InventarioController extends TransaccionController
             // Cuando es una transaferencia, se deben guardar los registros de la bodega destino
             if ($request->core_tipo_transaccion_id == $tipo_transferencia) 
             {
-                $motivo_entrada_transferencia = 9;
-                $cantidad = (float) $cantidad * -1;
-                $costo_total = (float) $costo_total * -1;
-
-                // Se cambia el valor de la bodega principal del request
-                $datos['inv_bodega_id'] = $request->bodega_destino_id;
-
-                $linea_datos = ['inv_doc_encabezado_id' => $doc_encabezado->id] +
-                    ['inv_motivo_id' => $motivo_entrada_transferencia] +
-                    ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
-                    ['costo_unitario' => $costo_unitario] +
-                    ['cantidad' => $cantidad] +
-                    ['costo_total' => $costo_total];
-
-                InvDocRegistro::create(
-                    $datos +
-                        $linea_datos
-                );
-
-                InvMovimiento::create(
-                    $datos +
-                        $linea_datos
-                );
-
-                InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, abs($costo_total), 0);
-
-                // Para transferencias, la cuenta contrapartida es la misma de inventarios
-                InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, $detalle_operacion, 0, abs($costo_total) );
-
-                // PARA LA BODEGA DESTINO
-                // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-                $costo_prom = TransaccionController::calcular_costo_promedio($request->bodega_destino_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha);
-
-                // Actualizo/Almaceno el costo promedio
-                TransaccionController::set_costo_promedio($request->bodega_destino_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
-
-                // Se vuelve a colocar el valor del request a la bodega principal
-                $datos['inv_bodega_id'] = $request->inv_bodega_id;
+                self::guardar_registros_bodega_destino_transferencia( $datos, $doc_encabezado->id, $request->bodega_destino_id, $lineas_registros[$i]->inv_producto_id, $cantidad, $costo_unitario, $costo_total, $cta_inventarios_id, $request->fecha );
             }
 
             // Si es una entrada, se calcula el costo promedio por bodega y producto
@@ -433,6 +395,45 @@ class InventarioController extends TransaccionController
                 TransaccionController::set_costo_promedio( $request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
             }
         }
+    }
+
+    public static function guardar_registros_bodega_destino_transferencia( $datos, $inv_doc_encabezado_id, $bodega_destino_id, $inv_producto_id, $cantidad, $costo_unitario, $costo_total, $cta_inventarios_id, $fecha )
+    {
+        $motivo_entrada_transferencia = 9;
+        $cantidad = (float) $cantidad * -1;
+        $costo_total = (float) $costo_total * -1;
+
+        // Se cambia el valor de la bodega principal del request
+        $datos['inv_bodega_id'] = $bodega_destino_id;
+
+        $linea_datos = ['inv_doc_encabezado_id' => $inv_doc_encabezado_id ] +
+            ['inv_motivo_id' => $motivo_entrada_transferencia] +
+            ['inv_producto_id' => $inv_producto_id] +
+            ['costo_unitario' => $costo_unitario] +
+            ['cantidad' => $cantidad] +
+            ['costo_total' => $costo_total];
+
+        InvDocRegistro::create(
+            $datos +
+                $linea_datos
+        );
+
+        InvMovimiento::create(
+            $datos +
+                $linea_datos
+        );
+
+        InventarioController::contabilizar_registro_inv($datos + $linea_datos, $cta_inventarios_id, '', abs($costo_total), 0);
+
+        // Para transferencias, la cuenta contrapartida es la misma de inventarios
+        InventarioController::contabilizar_registro_inv( $datos + $linea_datos, $cta_inventarios_id, '', 0, abs($costo_total) );
+
+        // PARA LA BODEGA DESTINO
+        // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
+        $costo_prom = TransaccionController::calcular_costo_promedio($bodega_destino_id, $inv_producto_id, $costo_unitario, $fecha);
+
+        // Actualizo/Almaceno el costo promedio
+        TransaccionController::set_costo_promedio( $bodega_destino_id, $inv_producto_id, $costo_prom);
     }
 
     public static function crear_encabezado_remision_ventas( $datos, $estado = null )
@@ -715,14 +716,12 @@ class InventarioController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        $tipo_tranferencia = 2;
-
         $id_transaccion = $this->transaccion->id;
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'edit');
         $cantidad_campos = count($lista_campos);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $this->transaccion, $lista_campos, $cantidad_campos, 'edit', $tipo_tranferencia);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $this->transaccion, $lista_campos, $cantidad_campos, 'edit');
 
         $modelo_controller = new ModeloController;
         $acciones = $modelo_controller->acciones_basicas_modelo( $this->modelo, '' );
@@ -774,15 +773,20 @@ class InventarioController extends TransaccionController
             {
                 $lista_campos[$key]['value'] = $doc_encabezado->documento_soporte;
             }
+
+            if ($value['name'] == 'bodega_destino_id')
+            {
+                $lista_campos[$key]['value'] = $doc_encabezado->bodega_destino_id;
+            }
         }
         
         $url_action = str_replace('id_fila', $id, $acciones->update);
 
         $form_create = [
-                        'url' => $url_action,
-                        'campos' => $lista_campos,
-                        'modo' => 'edit'
-                    ];
+                            'url' => $url_action,
+                            'campos' => $lista_campos,
+                            'modo' => 'edit'
+                        ];
         $registro_id = $id;
         return view( 'inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas', 'registro_id'));
     }

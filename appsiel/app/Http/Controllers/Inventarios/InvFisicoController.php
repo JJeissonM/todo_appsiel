@@ -43,7 +43,6 @@ class InvFisicoController extends TransaccionController
      */
     public function create()
     {
-        $tipo_tranferencia=2;
 
         $id_transaccion = Input::get('id_transaccion');
 
@@ -56,7 +55,7 @@ class InvFisicoController extends TransaccionController
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',$tipo_tranferencia);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create' );
 
         $url_form_create = 'web';
 
@@ -249,7 +248,6 @@ class InvFisicoController extends TransaccionController
 
     public function hacer_ajuste()
     {
-        $tipo_tranferencia=2;
 
         $id_transaccion = Input::get('id_transaccion');
 
@@ -261,7 +259,7 @@ class InvFisicoController extends TransaccionController
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',$tipo_tranferencia);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create' );
 
         $productos = $this->get_productos('r');
         $servicios = $this->get_productos('servicio');
@@ -329,7 +327,6 @@ class InvFisicoController extends TransaccionController
      */
     public function edit($id)
     {
-        $tipo_tranferencia=2;
 
         $id_transaccion = Input::get('id_transaccion');
 
@@ -342,7 +339,7 @@ class InvFisicoController extends TransaccionController
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create',$tipo_tranferencia);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion,$tipo_transaccion,$lista_campos,$cantidad_campos,'create' );
 
         $registro = InvDocEncabezado::get_registro_impresion( $id );
 
