@@ -10,6 +10,7 @@ use Input;
 
 use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
+use App\Tesoreria\TesoMovimiento;
 
 class FacturaPos extends Model
 {
@@ -131,13 +132,54 @@ class FacturaPos extends Model
                 break;
             
             default:
-                # code...
+                $url = 'ventas/';
                 break;
         }
 
         $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
+    }
+
+    // SOLO PARA UN MOVIMIENTO. No funciona Si se paga con varios medios de pago
+    public function movimiento_tesoreria()
+    {
+        return TesoMovimiento::where( [
+                                        ['core_tipo_transaccion_id', $this->core_tipo_transaccion_id ],
+                                        ['core_tipo_doc_app_id', $this->core_tipo_doc_app_id ],
+                                        ['consecutivo', $this->consecutivo ]
+                                    ] 
+                                )
+                                ->get()
+                                ->first();
+    }
+
+    public function medio_pago()
+    {
+        $lineas_registros_medios_recaudos = $this->lineas_registros_medios_recaudos;
+
+        $linea_medio_pago = json_decode($lineas_registros_medios_recaudos)[0];
+
+        return explode('-', $linea_medio_pago->teso_medio_recaudo_id)[1];
+    }
+
+    public function caja_banco()
+    {
+        $lineas_registros_medios_recaudos = $this->lineas_registros_medios_recaudos;
+
+        $linea_medio_pago = json_decode($lineas_registros_medios_recaudos)[0];
+
+        $caja = explode('-', $linea_medio_pago->teso_caja_id);
+        if ( $caja[0] != 0 )
+        {
+            return $caja[1];
+        }
+
+        $cuenta_bancaria = explode('-', $linea_medio_pago->teso_cuenta_bancaria_id);
+        if ( $cuenta_bancaria[0] != 0 )
+        {
+            return $cuenta_bancaria[1];
+        }
     }
 
     public static function consultar_registros($nro_registros, $search)

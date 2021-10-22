@@ -1,13 +1,9 @@
 @extends('transaccion.formatos_impresion.estandar')
 
 @section('documento_datos_adicionales')
-    @if( $doc_encabezado->condicion_pago == 'credito' )
         <td colspan="2">
-            <b>Condición de pago:</b> <span style="font-size: 1.3em;">Crédito</span>
-            <br>
-            <b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
+            @include('ventas.incluir.metodo_y_condicion_pago')
         </td>
-    @endif
 @endsection
 
 @section('documento_transaccion_prefijo_consecutivo')

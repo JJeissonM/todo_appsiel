@@ -314,6 +314,59 @@ class VtasDocEncabezado extends Model
         return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )->where('estado','Activo')->get()->last();
     }
 
+    // SOLO PARA UN MOVIMIENTO. No funciona Si se paga con varios medios de pago
+    public function movimiento_tesoreria()
+    {
+        return TesoMovimiento::where( [
+                                        ['core_tipo_transaccion_id', $this->core_tipo_transaccion_id ],
+                                        ['core_tipo_doc_app_id', $this->core_tipo_doc_app_id ],
+                                        ['consecutivo', $this->consecutivo ]
+                                    ] 
+                                )
+                                ->get()
+                                ->first();
+    }
+
+    public function medio_pago()
+    {
+        $movimiento_tesoreria = $this->movimiento_tesoreria();
+
+        if ( is_null($movimiento_tesoreria) )
+        {
+            return 'No definido';
+        }
+
+        $medio_pago = $movimiento_tesoreria->medio_pago;
+        if ( is_null($medio_pago) )
+        {
+            return 'No definido';
+        }
+
+        return $medio_pago->descripcion;
+    }
+
+    public function caja_banco()
+    {
+        $movimiento_tesoreria = $this->movimiento_tesoreria();
+
+        if ( is_null($movimiento_tesoreria) )
+        {
+            return 'No definido';
+        }
+
+        $caja = $movimiento_tesoreria->caja;
+        if ( !is_null($caja) )
+        {
+            return $caja->descripcion;
+        }
+
+        $cuenta_bancaria = $movimiento_tesoreria->cuenta_bancaria;
+        if ( !is_null($cuenta_bancaria) )
+        {
+            return 'Cuenta ' . $cuenta_bancaria->tipo_cuenta . ' ' . $cuenta_bancaria->entidad_financiera->descripcion . ' No. ' . $cuenta_bancaria->descripcion;
+        }
+    }
+
     public function contabilizar_movimiento_debito( $caja_banco_id = null )
     {
         $datos = $this->toArray();
