@@ -1,7 +1,7 @@
 <?php 
 	$periodos = \App\Calificaciones\Periodo::get_activos_periodo_lectivo_actual();
 ?>
-<h4 style="width: 100%; text-align: center;">OBSERVACIONE DE DESEMPEÑO PERIODO A PERIODO</h4>
+<h4 style="width: 100%; text-align: center;">OBSERVACIONES DE DESEMPEÑO PERIODO A PERIODO</h4>
 <hr>
 
 @foreach( $periodos AS $periodo )
@@ -41,15 +41,25 @@
 				@include('terceros.analisis_dofa.dibujar_lista_elementos', ['tipo_caracteristica' => 'Debilidad', 'lista_items' => $registros_analisis])
 			</td>
 			<td>
-				
+				<?php
+					$calificaciones_asignaturas_perdidas = $periodo->calificaciones_asignaturas_perdidas( $estudiante->id );
+				?>
+				<ul class="list-group">
+					@foreach( $calificaciones_asignaturas_perdidas AS $calificacion )
+						<li class="list-group-item"> {{ $calificacion->asignatura->descripcion }} / Cal. {{ $calificacion->calificacion }}</li>
+					@endforeach
+				</ul>
+					
 			</td>
 			<td>
 				<?php
 					$observaciones_boletin = $periodo->observaciones_boletin( $estudiante->id );
 				?>
-				@foreach( $observaciones_boletin AS $observacion )
-					{{ $observacion->descripcion }}
-				@endforeach
+				<ul class="list-group">
+					@foreach( $observaciones_boletin AS $observacion )
+						<li class="list-group-item"> {{ $observacion->observacion }} </li>
+					@endforeach
+				</ul>
 			</td>
 		</tr>
 	</table>

@@ -115,6 +115,25 @@ class EscalaValoracion extends Model
         return [ $escala_valoracion->first()->calificacion_minima, $escala_valoracion->last()->calificacion_maxima];
     }
 
+    public static function get_rango_minimo( $periodo_lectivo_id = null )
+    {
+        if ( $periodo_lectivo_id == null)
+        {
+            $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
+        }
+        
+        $escala_valoracion = EscalaValoracion::where('periodo_lectivo_id', $periodo_lectivo_id )
+                                            ->orderBy('calificacion_minima','ASC')
+                                            ->get();
+                                            
+        if ( empty( $escala_valoracion->toArray() ) )
+        {
+            return [ 0, 0];
+        }
+
+        return [ $escala_valoracion->first()->calificacion_minima, $escala_valoracion->first()->calificacion_maxima];
+    }
+
     public static function get_escala_segun_calificacion( $calificacion, $periodo_lectivo_id = null )
     {
         if ( is_null( $periodo_lectivo_id ) )

@@ -23,7 +23,21 @@ class Periodo extends Model
 
     public function observaciones_boletin( $estudiante_id )
     {
-        return $this->hasMany(ObservacionesBoletin::class,'id_periodo')->where('id_estudiante',$estudiante_id);
+        return ObservacionesBoletin::where([
+                                    ['id_periodo','=', $this->id ],
+                                    ['id_estudiante','=', $estudiante_id ]
+                                ])->get();
+    }
+
+    public function calificaciones_asignaturas_perdidas( $estudiante_id )
+    {
+        $escala_valoracion = EscalaValoracion::get_rango_minimo();
+        
+        return Calificacion::where([
+                                    ['calificacion','<=',$escala_valoracion[1] ],
+                                    ['id_periodo','=', $this->id ],
+                                    ['id_estudiante','=', $estudiante_id ]
+                                ])->get();
     }
 
     public static function consultar_registros($nro_registros, $search)
