@@ -11,7 +11,7 @@
 			
 			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', ['estudiante' => $estudiante ])
 
-			<p style="color: red;">Nota: Solo se muestra la última libreta de pagos.</p>
+			<p style="color: red;">Nota: Solo se muestra la libreta de pagos del año lectivo actual.</p>
 
 			@if( !is_null($libreta) )
 				<h3>

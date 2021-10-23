@@ -23,67 +23,79 @@
 				<div style="background-color: #d2d2d2; padding: 10px; border-radius: 5px;">
 					<h3>Calificaciones por periodo</h3>
 					<hr>
-					{{ Form::open(['url'=>'academico_estudiante/ajax_calificaciones','id'=>'form_consulta']) }}
-						<div class="row">
-							<div class="col-sm-2">
-								{{ Form::label('periodo_id','Seleccionar periodo') }}
-								{{ Form::select('periodo_id',$periodos,null,['class'=>'form-control','id'=>'periodo_id']) }}
-							</div>
-							<div class="col-sm-2">
-							</div>
-							<div class="col-sm-3">
-							</div>
-							<div class="col-sm-3">
-							</div>
-							<div class="col-sm-2">
-								{{ Form::label(' ','.') }}
-								<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Consultar</a>
-							</div>
-						</div>
 
-						{{ Form::hidden('curso_id',$curso->id) }}
+					@if( $mensaje_facturas_vencidas->mensaje == '' )
+						{{ Form::open(['url'=>'academico_estudiante/ajax_calificaciones','id'=>'form_consulta']) }}
+							<div class="row">
+								<div class="col-sm-2">
+									{{ Form::label('periodo_id','Seleccionar periodo') }}
+									{{ Form::select('periodo_id',$periodos,null,['class'=>'form-control','id'=>'periodo_id']) }}
+								</div>
+								<div class="col-sm-2">
+								</div>
+								<div class="col-sm-3">
+								</div>
+								<div class="col-sm-3">
+								</div>
+								<div class="col-sm-2">
+									{{ Form::label(' ','.') }}
+									<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Consultar</a>
+								</div>
+							</div>
+
+							{{ Form::hidden('curso_id',$curso->id) }}
+							
+						{{ Form::close() }}
+						<!--	<button id="btn_ir">ir</button>	-->
+
+
+						{{ Form::open( [ 'url' => 'calificaciones/boletines/generarPDF', 'files' => true, 'id' => 'formulario_boletin'] ) }}
+
+							<input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
+							<input type="hidden" name="periodo_id" value="0" id="boletin_periodo_id">
+							<input type="hidden" name="curso_id" value="{{ $curso->id }}">
+							<input type="hidden" name="formato" value="{{ config('calificaciones.formato_boletin_default') }}">
+							<input type="hidden" name="mostrar_areas" value="Si">
+							<input type="hidden" name="mostrar_nombre_docentes" value="Si">
+							<input type="hidden" name="mostrar_etiqueta_final" value="No">
+							<input type="hidden" name="mostrar_escala_valoracion" value="Si">
+							<input type="hidden" name="mostrar_fallas" value="1">
+							<input type="hidden" name="tam_hoja" value="folio">
+							<input type="hidden" name="tam_letra" value="4">
+							<input type="hidden" name="convetir_logros_mayusculas" value="No">
+							<input type="hidden" name="mostrar_usuarios_estudiantes" value="No">
+
+						{{Form::close()}}
 						
-					{{ Form::close() }}
-					<!--	<button id="btn_ir">ir</button>	-->
+						<input type="hidden" name="fecha_hoy" id="fecha_hoy" value="{{ date('Y-m-d') }}">
 
+						<hr>
 
-					{{ Form::open( [ 'url' => 'calificaciones/boletines/generarPDF', 'files' => true, 'id' => 'formulario_boletin'] ) }}
+						@include('layouts.mensajes')
 
-						<input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
-						<input type="hidden" name="periodo_id" value="0" id="boletin_periodo_id">
-						<input type="hidden" name="curso_id" value="{{ $curso->id }}">
-						<input type="hidden" name="formato" value="{{ config('calificaciones.formato_boletin_default') }}">
-						<input type="hidden" name="mostrar_areas" value="Si">
-						<input type="hidden" name="mostrar_nombre_docentes" value="Si">
-						<input type="hidden" name="mostrar_etiqueta_final" value="No">
-						<input type="hidden" name="mostrar_escala_valoracion" value="Si">
-						<input type="hidden" name="mostrar_fallas" value="1">
-						<input type="hidden" name="tam_hoja" value="folio">
-						<input type="hidden" name="tam_letra" value="4">
-						<input type="hidden" name="convetir_logros_mayusculas" value="No">
-						<input type="hidden" name="mostrar_usuarios_estudiantes" value="No">
+						{{ Form::bsBtnExcel('calificaciones') }}
 
-					{{Form::close()}}
-					
-					<input type="hidden" name="fecha_hoy" id="fecha_hoy" value="{{ date('Y-m-d') }}">
+						@if( config('calificaciones.permitir_imprimir_boletin_a_estudiantes') == 'Si' )
+							<a class="btn-gmail" id="btn_imprimir" target="_blank" style="display: none;" title="Imprimir">
+								<i class="fa fa-btn fa-print"></i>
+							</a>
+						@endif
 
-					<hr>
+						<br><br>
+						
+						<div id="resultado_consulta" style="background-color: white; padding: 15px; border-radius: 5px;">
 
-					@include('layouts.mensajes')
-
-					{{ Form::bsBtnExcel('calificaciones') }}
-
-					@if( config('calificaciones.permitir_imprimir_boletin_a_estudiantes') == 'Si' )
-						<a class="btn-gmail" id="btn_imprimir" target="_blank" style="display: none;" title="Imprimir">
-							<i class="fa fa-btn fa-print"></i>
-						</a>
+						</div>
+					@else
+						<div class="alert alert-danger">
+						  <strong>¡Notificación!</strong>
+						  <br>
+						  {{ $mensaje_facturas_vencidas->mensaje }}
+						</div>
+						<div class="alert alert-info">
+						  Consulte su libreta de pagos <a href="{{ url( $mensaje_facturas_vencidas->enlace_libreta ) }}">AQUÍ</a>.
+						</div>
 					@endif
-
-					<br><br>
-					
-					<div id="resultado_consulta" style="background-color: white; padding: 15px; border-radius: 5px;">
-
-					</div>
 				</div>
 
 			</div>
