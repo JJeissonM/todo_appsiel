@@ -234,7 +234,6 @@ use App\Core\Tercero;
     </tr>
 </table>
 <hr>
-<h1>Condiciones:</h1>
 <div class="text-indent">
     @if( !is_null( $otroscampos ) )
         {!! $otroscampos->terminos_y_condiciones !!}

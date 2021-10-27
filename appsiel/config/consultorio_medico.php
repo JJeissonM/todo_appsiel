@@ -110,8 +110,8 @@ return [
                                     },
                                 "16":{ 
                                         "nombre_seccion":"Diagnóstico",
-                                        "url_vista_show":"consultorio_medico.diagnostico_cie",
-                                        "activo":0,
+                                        "url_vista_show":"consultorio_medico.diagnostico_cie.index",
+                                        "activo":1,
                                         "orden":4
                                     }, 
                                 "17":{ 
@@ -135,7 +135,7 @@ return [
                                 "20":{ 
                                         "nombre_seccion":"RIPS",
                                         "url_vista_show":"consultorio_medico.rips",
-                                        "activo":0,
+                                        "activo":1,
                                         "orden":0
                                     }
     						}',

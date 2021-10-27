@@ -1,19 +1,16 @@
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
 
-	$datos = App\Salud\Endodoncia::where( [
+	$records_list = App\Salud\Endodoncia::where( [
 											['consulta_id', '=', $consulta->id]
 										] )
 									->get();
-	//dd($datos);
+	//dd( $data );
 ?>
 
 <br>
 
-<div class="alert alert-success alert-dismissible fade in" style="display: none;" id="mensaje_alerta">
-</div>
-
-<div id="tabla_registros_endodoncia">
+<div id="tabla_registros_endodoncia_{{$consulta->id}}">
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
@@ -31,28 +28,34 @@
 			</tr>
 		</thead>
 		<tbody>
-			@foreach( $datos AS $linea )
+			@foreach( $records_list AS $record )
+				<?php
+					//dd( $record->get_fields_to_show() );
+				?>
 				<tr>
-					<td> {{ $linea->numero_diente}} </td>
-					<td> {{ $linea->frio}} </td>
-					<td> {{ $linea->caliente}} </td>
-					<td> {{ $linea->percusion_horizontal}} </td>
-					<td> {{ $linea->percusion_vertical}} </td>
-					<td> {{ $linea->observaciones}} </td>
-					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_endodoncia'><i class='glyphicon glyphicon-trash'></i></button> </td>
+					<td> {{ $record->get_fields_to_show()->numero_diente->value }} </td>
+					<td> {{ $record->get_fields_to_show()->frio->value }} </td>
+					<td> {{ $record->get_fields_to_show()->caliente->value }} </td>
+					<td> {{ $record->get_fields_to_show()->percusion_horizontal->value }} </td>
+					<td> {{ $record->get_fields_to_show()->percusion_vertical->value }} </td>
+					<td> {{ $record->get_fields_to_show()->observaciones->value }} </td>
+					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_registro_endodoncia' data-consulta_id="{{ $consulta->id }}" data-paciente_id="{{ $record->get_fields_to_show()->paciente_id->value }}" data-id="{{ $record->get_fields_to_show()->id }}"><i class='glyphicon glyphicon-trash'></i></button> </td>
 				</tr>
 			@endforeach
 		</tbody>
 		<tfoot>
             <tr>
                 <td colspan="5">
-                    <button style="background-color: transparent; color: #3394FF; border: none;" class="btn_nuevo_registro_endodoncia"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
+                    <button style="background-color: transparent; color: #3394FF; border: none;" class="btn_nuevo_registro_endodoncia">
+                    	<i class="fa fa-btn fa-plus"></i> Agregar registro
+                    	<span data-consulta_id="{{ $consulta->id }}"></span>
+                    </button>
                 </td>
             </tr>
         </tfoot>
 	</table>
 
-	@include('consultorio_medico.odontologia.endodoncia.modal')
+	@include('consultorio_medico.odontologia.endodoncia.modal', [ 'consulta_id' => $consulta->id ])
 
 </div>
 
@@ -65,46 +68,69 @@
 			$(".btn_nuevo_registro_endodoncia").click(function(event){
 
 				event.preventDefault();
+		        
+		        var consulta_id = $(this).children('span').attr('data-consulta_id');
 				
-		        $("#modal_endodoncia").modal({backdrop: "static"});
-
-		        //$("#modal_endodoncia").attr('style','font-size>: 0.8em;');
+		        $( '#modal_endodoncia_' + consulta_id ).modal({backdrop: "static"});
 
 		        $("#div_cargando").show();
+		        
+		        var modelo_id = 308;
 
-		        var url = "{{ url('salud_endodoncia/create?id_modelo=308') }}";
+		        var url = "{{ url('salud_endodoncia/create') }}" + "?id_modelo=" + modelo_id + "&paciente_id=" + paciente_id + "&consulta_id=" + consulta_id;
 
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
-
-		            $('#contenido_modal_endodoncia').html(data);
+		            $('#contenido_modal_endodoncia_' + consulta_id).html(data);
 				});		        
 		    });
 
-			$(document).on('click', '.btn_eliminar', function(event) {
+			$(document).on('click', '.btn_eliminar_registro_endodoncia', function(event) {
 				event.preventDefault();
 				var fila = $(this).closest("tr");
-				fila.remove();
-				$('#btn_nuevo').show();
-				calcular_totales();
+
+				if ( confirm('¿Desea eliminar el registro de endodoncia para el diente # ' + fila.find('td').eq(0).html() ) )
+				{
+					$('#div_cargando').show();
+	            	var url = "{{ url('salud_endodoncia/delete') }}" + "/" + $(this).attr('data-id');
+
+					$.get( url )
+						.done(function( respuesta ) {
+							$('#div_cargando').hide();
+							fila.remove();
+						});
+				}
 			});
 
 
 			// GUARDAR 
-			$(document).on("click","#btn_save_modal_endodoncia",function(event){
+			$(document).on("click",".btn_save_modal_endodoncia",function(event){
 
 		    	event.preventDefault();
 		        
-		        formulario = $("#modal_endodoncia").find('form');
+		        $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
+		        $(this).attr( 'disabled', 'disabled' );
+
+		        var consulta_id = $(this).children('span').attr('data-consulta_id');
+		        formulario = $('#modal_endodoncia_' + consulta_id).find('form');
 
 		        var url = formulario.attr('action');
 		        var data = formulario.serialize();
-				
-				//console.log([formulario,url]);
 
 		        $.post(url, data, function (respuesta) {
-		        	console.log(respuesta);
-					$('#tabla_registros_endodoncia').find('tbody:last').append( "<tr><td>" + respuesta + "</td></tr>" );
+
+		        	var fila = '<tr id="ultima_fila" style="display:none;"> <td> ' + respuesta.numero_diente.value + ' </td> <td> ' + respuesta.frio.value + ' </td> <td> ' + respuesta.caliente.value + ' </td> <td> ' + respuesta.percusion_horizontal.value + ' </td> <td> ' + respuesta.percusion_vertical.value + ' </td> <td> ' + respuesta.observaciones.value + ' </td> <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_registro_endodoncia" data-consulta_id="' + respuesta.consulta_id.value + '" data-paciente_id="' + respuesta.paciente_id.value + '" data-id="' + respuesta.id + '"><i class="glyphicon glyphicon-trash"></i></button> </td> </tr>';
+
+		        	$('#tabla_registros_endodoncia_' + consulta_id).find('tbody:last').append( fila );
+
+					$('#ultima_fila').fadeIn(1000);
+					$('#ultima_fila').removeAttr('id');
+
+		        	$('#modal_endodoncia_' + consulta_id).modal('hide');
+		            $('#contenido_modal_endodoncia_' + consulta_id).html('');
+
+			        $('#modal_endodoncia_' + consulta_id).find('.btn_save_modal_endodoncia').children('.fa-spinner').attr('class','fa fa-save');
+			        $('#modal_endodoncia_' + consulta_id).find('.btn_save_modal_endodoncia').removeAttr( 'disabled' );
 		        });
 		    });
 

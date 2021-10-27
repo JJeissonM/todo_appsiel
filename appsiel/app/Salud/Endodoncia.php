@@ -5,19 +5,17 @@ namespace App\Salud;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Sistema\Modelo;
-use App\Core\ModeloEavValor;
-
-use App\Salud\ConsultaMedica;
+use App\Sistema\Services\FieldsList;
 
 use DB;
 
-class Endodoncia extends ModeloEavValor
+class Endodoncia extends Modelo
 {
     protected $table = 'salud_endodoncia';
 
 	protected $fillable = ['paciente_id', 'consulta_id', 'numero_diente', 'frio', 'caliente', 'percusion_horizontal', 'percusion_vertical', 'observaciones'];
 	
-	protected $crud_model_id = 308; // Es el mismo $modelo_padre_id, la variable no se puede usar en métodos estáticos
+	protected $crud_model_id = 308;
 
 	public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"consultorio_medico/pacientes/id_fila","update":"core/eav/id_fila"}';
 
@@ -25,43 +23,14 @@ class Endodoncia extends ModeloEavValor
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Campo', 'Valor'];
 
-    public static function consultar_registros($nro_registros)
+    public function get_fields_to_show()
     {
-        $modelo_padre_id = 308; // Endodoncia
-        return Endodoncia::leftJoin('sys_campos', 'sys_campos.id', '=', 'core_eav_valores.core_campo_id')
-            ->where('core_eav_valores.modelo_padre_id', $modelo_padre_id)
-            ->select(
-                'sys_campos.descripcion AS campo1',
-                'core_eav_valores.valor AS campo2',
-                'core_eav_valores.id AS campo3'
-            )
-            ->orderBy('core_eav_valores.created_at', 'DESC')
-            ->paginate($nro_registros);
+        $fields_list = new FieldsList( $this->crud_model_id, $this );
+        return $fields_list->get_list_to_show();
     }
     
     public function store_adicional( $datos, $registro )
     {
-    	// Con ModeloController se almacena un solo registro en la tabla EAV
-    	// Se elimina ese registro para crear los nuevos desde aquí
-    	ModeloEavValor::where(
-                                [ 
-                                    "modelo_padre_id" => $datos['modelo_padre_id'],
-                                    "registro_modelo_padre_id" => $datos['registro_modelo_padre_id'],
-                                    "modelo_entidad_id" => $datos['modelo_entidad_id'],
-                                    "core_campo_id" => 0,
-                                    "valor" => ''
-                                ]
-                            )
-                        ->delete();
-
-
-
-        $datos2 = array_shift($datos); // Eliminar primer campo del request: _token
-
-        $this->almacenar_registros_eav( $datos );
-
-        $id_modelo = 95; // Pacientes
-        $consulta = ConsultaMedica::find( $datos['registro_modelo_padre_id'] );
-        return 'consultorio_medico/pacientes/' . $consulta->paciente->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $id_modelo;
+    	// 
     }
 }
