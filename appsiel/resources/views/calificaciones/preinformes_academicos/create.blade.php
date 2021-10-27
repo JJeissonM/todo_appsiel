@@ -205,6 +205,17 @@
 
 						$(item).attr('data-id_anotacion',respuesta[0]);
 						$(item).attr('data-anotacion_texto',respuesta[1]);
+					}).fail(function( respuesta_error ) {
+			    
+				    	$('#popup_alerta_danger').show();
+						$('#popup_alerta_danger').css('background-color','red');
+						$('#popup_alerta_danger').text( 'Error. Algunos datos no se pudieron almacenar. Por favor actualice la información e intente nuevamente.' );
+
+					    if( respuesta_error.status == 401 )
+					    {
+							$('#popup_alerta_danger').text( 'Error. Su sesión ha terminado de manera inesperada. La información no se pudo almacenar.' );
+							document.location.href = "{ { url()->previous() }}";
+					    }
 					});
 
 					linea++;

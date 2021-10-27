@@ -8,7 +8,11 @@
 	{{ Form::bsBtnCreate( 'inventarios/create'.$variables_url ) }}
     <!-- @ if( in_array($id_transaccion, [1, 2, 3, 4, 27, 28, 35]) ) -->
         @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) )
-            {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inventarios/id_fila/edit'.$variables_url ),'Editar') }}
+
+            @if( $id_transaccion != 4 ) <!-- No se pueden editar documentos de Ensambles  -->
+                {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inventarios/id_fila/edit'.$variables_url ),'Editar') }}
+            @endif
+            
             <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
         @endif
         

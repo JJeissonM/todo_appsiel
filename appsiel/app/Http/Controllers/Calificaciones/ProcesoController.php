@@ -110,7 +110,6 @@ class ProcesoController extends ModeloController
 
     public function calcular_promedio_notas_periodo_final( $periodo_lectivo_id )
     {
-
         $usuario_email = Auth::user()->email;
 
         $periodo_lectivo = PeriodoLectivo::find( $periodo_lectivo_id );
@@ -152,7 +151,6 @@ class ProcesoController extends ModeloController
         foreach ($cursos_del_periodo_lectivo as $curso)
         {
             $asignaturas_del_curso_y_periodo_lectivo = Asignatura::asignadas_al_curso( $periodo_lectivo_id, $curso->id );
-
 
             // Listado de estudiantes con matriculas activas en el curso y año indicados
             $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, 'Activo' );            

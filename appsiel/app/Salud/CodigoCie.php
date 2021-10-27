@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CodigoCie extends Model
 {
-    protected $table = 'salud_cie10';
+    protected $table = 'salud_cie10'; // model_App\Salud\CodigoCie
 	
 	protected $fillable = ['codigo', 'descripcion', 'estado'];
 
@@ -47,5 +47,25 @@ class CodigoCie extends Model
     public static function tituloExport()
     {
         return "LISTADO DE Códigos CIE10";
+    }
+
+    public static function opciones_campo_select()
+    {
+        $opciones = CodigoCie::where('estado','=','Activo')
+                        ->orderBy('descripcion')
+                        ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->codigo . ' ' . $opcion->descripcion;
+        }
+        
+        return $vec;
+    }
+
+    public function get_label_to_show()
+    {
+        return $this->codigo . ' ' . $this->descripcion;
     }
 }

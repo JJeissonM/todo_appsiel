@@ -11,7 +11,7 @@ use App\Salud\ConsultaMedica;
 
 use DB;
 
-class ProcedimientosCups extends ModeloEavValor
+class ProcedimientosCups extends Model
 {
     protected $table = 'salud_procedimientos_cups_consultas';
 
@@ -22,6 +22,14 @@ class ProcedimientosCups extends ModeloEavValor
     public $vista_imprimir = 'consultorio_medico.salud_ocupacional.examen_fisico';
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Campo', 'Valor'];
+    
+    protected $crud_model_id = 310;
+
+    public function get_fields_to_show()
+    {
+        $fields_list = new FieldsList( $this->crud_model_id, $this );
+        return $fields_list->get_list_to_show();
+    }
 
     public static function consultar_registros($nro_registros)
     {

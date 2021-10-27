@@ -39,63 +39,62 @@ class NovedadObservadorController extends Controller
      */
     public function index()
     {
-		  $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        $modelo = Modelo::find( 17 );
+        $registros = NovedadesObservador::get_novedades_un_estudiante( (int)Input::get('estudiante_id'), 10, '' );
 
-      $modelo = Modelo::find( 17 );
-      $registros = NovedadesObservador::get_novedades_un_estudiante( Input::get('estudiante_id') );
-
-      $miga_pan = [
+        $miga_pan = [
                   ['url'=>'academico_docente?id='.Input::get('id'),'etiqueta'=>'Académico docente'],
                   ['url'=>'academico_docente/revisar_estudiantes/curso_id/'.Input::get('curso_id').'/id_asignatura/'.Input::get('asignatura_id').'?id='.Input::get('id'),'etiqueta'=>'Estudiantes'],
                   ['url'=>'NO','etiqueta'=>'Novedades Observador']
               ];
 
-      $encabezado_tabla = app($modelo->name_space)->encabezado_tabla;
+        $encabezado_tabla = app($modelo->name_space)->encabezado_tabla;
 
-      // Se le asigna a cada variable url, su valor en el modelo correspondiente
-      $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&curso_id='.Input::get('curso_id').'&asignatura_id='.Input::get('asignatura_id').'&estudiante_id='.Input::get('estudiante_id');
+        // Se le asigna a cada variable url, su valor en el modelo correspondiente
+        $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&curso_id='.Input::get('curso_id').'&asignatura_id='.Input::get('asignatura_id').'&estudiante_id='.Input::get('estudiante_id');
 
-      $url_crear = 'academico_docente/novedad_observador/create'.$variables_url;
+        $url_crear = 'academico_docente/novedad_observador/create'.$variables_url;
 
-      $url_edit = 'academico_docente/novedad_observador/id_fila/edit'.$variables_url;
+        $url_edit = 'academico_docente/novedad_observador/id_fila/edit'.$variables_url;
 
-      $url_ver = 'academico_docente/novedad_observador/id_fila'.$variables_url;
+        $url_ver = 'academico_docente/novedad_observador/id_fila'.$variables_url;
 
-      $url_eliminar = 'academico_docente/novedad_observador/eliminar/id_fila'.$variables_url;
-      $url_estado = '';
-      $url_print = ''; 
+        $url_eliminar = 'academico_docente/novedad_observador/eliminar/id_fila'.$variables_url;
+        $url_estado = '';
+        $url_print = ''; 
 
-      $source = "INDEX1";
-      $curso = new Curso();
-      $asignatura = new Asignatura();
+        $source = "INDEX1";
+        $curso = new Curso();
+        $asignatura = new Asignatura();
 
-      //determinar la cantidad de registros a mostrar
-      $nro_registros = 10;
-      $temp = Input::get('nro_registros');
-      if ($temp != null) {
+        //determinar la cantidad de registros a mostrar
+        $nro_registros = 10;
+        $temp = Input::get('nro_registros');
+        if ($temp != null) {
           $nro_registros = $temp;
-      }
-      $sqlString = "";
-      $tituloExport = "";
-      //determinar la busqueda
-      $search = "";
-      $temp2 = Input::get('search');
-      if ($temp2 != null) {
+        }
+        $sqlString = "";
+        $tituloExport = "";
+        //determinar la busqueda
+        $search = "";
+        $temp2 = Input::get('search');
+        if ($temp2 != null) {
           $search = trim($temp2);
-      }
+        }
 
-      $id_modelo = Input::get('id_modelo');
-      $id_app = Input::get('id');
+        $id_modelo = Input::get('id_modelo');
+        $id_app = Input::get('id');
 
-      if ( method_exists( app($modelo->name_space), 'consultar_registros'))
-      {
+        /*
+        if ( method_exists( app($modelo->name_space), 'consultar_registros'))
+        {
 
           $registros = app($modelo->name_space)->consultar_registros($nro_registros, $search);
           $sqlString = app($modelo->name_space)->sqlString($search);
           $tituloExport = app($modelo->name_space)->tituloExport();
-      }
+        }*/
 
-      return view( 'layouts.index', compact('registros','miga_pan','url_crear','encabezado_tabla','url_edit','url_eliminar', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'curso', 'asignatura', 'id_modelo', 'id_app', 'url_ver', 'url_estado', 'url_print' ) );
+        return view( 'layouts.index', compact('registros','miga_pan','url_crear','encabezado_tabla','url_edit','url_eliminar', 'tituloExport', 'sqlString', 'search', 'source', 'nro_registros', 'curso', 'asignatura', 'id_modelo', 'id_app', 'url_ver', 'url_estado', 'url_print' ) );
     }
 
     /**

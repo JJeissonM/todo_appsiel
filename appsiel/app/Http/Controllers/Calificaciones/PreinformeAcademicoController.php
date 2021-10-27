@@ -51,7 +51,7 @@ class PreinformeAcademicoController extends ModeloController
         $periodo_lectivo = PeriodoLectivo::find( $periodo->periodo_lectivo_id );
 
         // Se obtienen los estudiantes con matriculas activas en el curso y el periodo lectivo
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo'  );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo' );
 
         // Warning!!! No usar funciones de Eloquent en el controller (acoplamiento al framework) 
         $curso = Curso::find($request->curso_id);

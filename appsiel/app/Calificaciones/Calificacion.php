@@ -11,6 +11,8 @@ use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Periodo;
 use App\Calificaciones\NotaNivelacion;
 
+use App\Calificaciones\Asignatura;
+
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -20,6 +22,11 @@ class Calificacion extends Model
 
     // logros es un string donde se almacenan códigos de logros separados por coma (usado para logros adicionales)
     protected $fillable = [ 'codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros', 'creado_por', 'modificado_por'];
+
+    public function asignatura()
+    {
+        return $this->belongsTo(Asignatura::class,'id_asignatura');
+    }
 
     public function nota_nivelacion()
     {
@@ -63,8 +70,8 @@ class Calificacion extends Model
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_calificaciones.calificacion AS campo6',
-                'sga_calificaciones.id AS campo8'
-            )
+                'sga_calificaciones.id AS campo7')
+            ->orderBy('sga_calificaciones.created_at','DESC')
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -72,7 +79,7 @@ class Calificacion extends Model
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7], $search)) {
                         return $c;
                     }
                 });

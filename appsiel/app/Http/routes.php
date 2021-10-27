@@ -55,12 +55,6 @@ Route::get('web_eliminar/{id}', 'Sistema\CrudController@eliminar_registro');
 Route::resource('web', 'Sistema\ModeloController');
 
 
-// Sistema de rutas #2
-Route::resource('web20', 'System\ModelController');
-/*
-Route::get('/web/{app}/{model}/{accion}/{vista}', '...\ModelController@trigger');
-*/
-
 //  CRUD AJAX
 
 Route::get('formulario_ajax_modelo/{modelo_id}/{registro_id}/{accion}', 'Sistema\CrudAjaxController@formulario_ajax_modelo');

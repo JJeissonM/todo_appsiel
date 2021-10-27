@@ -60,12 +60,9 @@
         </td>
         <td style="border: solid 1px #ddd;">
             <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
-            <br/>
-            <b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
-            <br/>
-            <b>Fecha vencimiento: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_vencimiento }}
-            <br/>
-            <b>Orden de compras: &nbsp;&nbsp;</b> {{ $doc_encabezado->orden_compras }}
+            <br>
+            @include('ventas.incluir.metodo_y_condicion_pago')
+	        
         </td>
     </tr>
     <tr>        

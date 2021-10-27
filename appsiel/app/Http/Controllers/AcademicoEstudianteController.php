@@ -125,6 +125,8 @@ class AcademicoEstudianteController extends Controller
     {
         $estudiante = $this->estudiante;
 
+        $mensaje_facturas_vencidas = (object)[ 'mensaje' => '', 'enlace_libreta' => ''];
+
         $libreta_pago = $estudiante->matricula_activa()->libretas_pagos->where('estado', 'Activo')->first();
 
         if (!is_null($libreta_pago))
@@ -133,7 +135,7 @@ class AcademicoEstudianteController extends Controller
 
             if ($cantidad_facturas_vencidas > config('matriculas.cantidad_facturas_vencidas_permitidas'))
             {
-                return redirect('academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6')->with('mensaje_error', 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y Boletines.');
+                $mensaje_facturas_vencidas = (object)[ 'mensaje' => 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y Boletines.', 'enlace_libreta' => 'academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6'];
             }
         }
 
@@ -157,7 +159,7 @@ class AcademicoEstudianteController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Calificaciones']
         ];
 
-        return view('academico_estudiante.calificaciones', compact('miga_pan', 'periodos', 'estudiante', 'curso', 'codigo_matricula'));
+        return view('academico_estudiante.calificaciones', compact('miga_pan', 'periodos', 'estudiante', 'curso', 'codigo_matricula', 'mensaje_facturas_vencidas'));
     }
 
     public function ajax_calificaciones(Request $request)

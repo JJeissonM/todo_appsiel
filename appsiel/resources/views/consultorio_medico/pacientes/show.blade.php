@@ -102,7 +102,7 @@
 					?>
 					@foreach($consultas as $consulta)
 						<div class="panel panel-default">
-							
+							<span class="consulta_id" data-consulta_id="{{ $consulta->id }}"></span>
 							<div class="panel-heading">
 								<a class="well well-lg" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ $consulta->id }}" style="display: block; margin: 0;background-color: #f5f5f5">
 									<h3 class="panel-title" style="font-size: 24px">
@@ -211,6 +211,7 @@
 
 @section('scripts')
 	<script>
+		var paciente_id = "{{$id}}";
 		$(document).ready(function(){
 
 			$(".btn_eliminar_datos_modelo").click(function(event){

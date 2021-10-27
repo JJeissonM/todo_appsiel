@@ -13,15 +13,13 @@
 @endsection
 
 @section('fila_datos_adicionales')
-    @if( $doc_encabezado->condicion_pago == 'credito' )
-        <tr>
-            <td colspan="2">
-                <b>Condición de pago:</b> <span style="font-size: 1.3em;">Crédito</span>
-                <br>
-                <b>Fecha vencimiento:</b> {{ $doc_encabezado->fecha_vencimiento }}
-            </td>
-        </tr>
-    @endif
+    <tr>
+        <td colspan="2">
+            
+            @include('ventas.incluir.metodo_y_condicion_pago')
+
+        </td>
+    </tr>
 @endsection
 
 @section('documento_transaccion_prefijo_consecutivo')

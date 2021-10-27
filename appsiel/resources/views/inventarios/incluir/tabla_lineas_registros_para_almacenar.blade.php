@@ -1,5 +1,11 @@
 @foreach( $lineas_registros as $linea )
     <?php
+
+        if( $linea->motivo->id == 9 )
+        {
+            continue;
+        }
+
         $etiqueta_producto = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
 
         if ( $linea->item->unidad_medida2 != '')
