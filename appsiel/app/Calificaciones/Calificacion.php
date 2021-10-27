@@ -70,7 +70,7 @@ class Calificacion extends Model
                 DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_calificaciones.calificacion AS campo6',
-                'sga_calificaciones.id AS campo8')
+                'sga_calificaciones.id AS campo7')
             ->orderBy('sga_calificaciones.created_at','DESC')
             ->get();
 
@@ -79,7 +79,7 @@ class Calificacion extends Model
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7], $search)) {
                         return $c;
                     }
                 });

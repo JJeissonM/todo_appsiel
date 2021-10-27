@@ -238,7 +238,7 @@ class EstudianteController extends ModeloController
                 $curso = Curso::find($fila_curso->id);
                 $estudiantes[$i]['curso'] = $curso->descripcion;
 
-                $estudiantes[$i]['listado'] = Matricula::estudiantes_matriculados( $curso->id, $request->periodo_lectivo_id );
+                $estudiantes[$i]['listado'] = Matricula::estudiantes_matriculados( $curso->id, $request->periodo_lectivo_id, null );
                 $i++;
             }
         }

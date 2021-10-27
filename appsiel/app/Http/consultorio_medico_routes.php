@@ -49,8 +49,14 @@ Route::get('salud_imprimir_certificado_aptitud/{consulta_id}', 'Salud\SaludOcupa
 Route::get('salud_imprimir_historia_clinica_odontologica/{consulta_id}', 'Salud\OdontologiaController@imprimir_historia_clinica');
 
 Route::resource('salud_endodoncia', 'Salud\EndodonciaController');
+Route::get('salud_endodoncia/delete/{id}', 'Salud\EndodonciaController@delete');
+
 Route::resource('salud_diagnostico_cie', 'Salud\DiagnosticoCieController');
+Route::get('salud_diagnostico_cie/delete/{id}', 'Salud\DiagnosticoCieController@delete');
+
 Route::resource('salud_procedimiento_cups', 'Salud\ProcedimientoCupsController');
+Route::get('salud_procedimiento_cups/delete/{id}', 'Salud\ProcedimientoCupsController@delete');
+
 Route::resource('salud_rips', 'Salud\RipsController');
 
 

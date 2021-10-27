@@ -9,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use View;
-use Datatables;
+use Input;
 
 use App\Sistema\Modelo;
 use App\Salud\Endodoncia;
@@ -24,9 +24,15 @@ class EndodonciaController extends ModeloController
         for ($i = 0; $i <  $cantida_campos; $i++)
         {
             switch ( $lista_campos[$i]['name'] )
-            {                
+            {
                 case 'modelo_entidad_id':
                     $lista_campos[$i]['value'] = $this->modelo->id;
+                    break;
+                case 'paciente_id':
+                    $lista_campos[$i]['value'] = Input::get('paciente_id');
+                    break;
+                case 'consulta_id':
+                    $lista_campos[$i]['value'] = Input::get('consulta_id');
                     break;
                 default:
                     # code...
@@ -47,14 +53,15 @@ class EndodonciaController extends ModeloController
     public function store(Request $request)
     {
         $modelo = Modelo::find( $request->modelo_entidad_id );
+        
         $record_created = app( $modelo->name_space )->create( $request->all() );
-        //dd($record_created);
-        return response()->json( $record_created->toArray() );
+        
+        return response()->json( $record_created->get_fields_to_show() );
     }
-    
-    /*public function create()
+
+    public function delete( $id )
     {
-        return View::make('consultorio_medico.odontologia.endodoncia_linea_ingreso_registro')->render();
+        Endodoncia::where('id',$id)->delete();
+        return 1;
     }
-    */
 }   

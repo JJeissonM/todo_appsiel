@@ -31,7 +31,7 @@ class ResultadoExamenMedicoController extends ModeloController
      */
     public function create()
     {
-        $general = new ModeloController();
+        //$general = new ModeloController();
 
         // Se obtiene el modelo según la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
@@ -39,10 +39,20 @@ class ResultadoExamenMedicoController extends ModeloController
         // Se obtienen los campos que tiene ese modelo
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
 
-        $organos = ExamenTieneOrganos::leftJoin('salud_organos_del_cuerpo','salud_organos_del_cuerpo.id','=','salud_examen_tiene_organos.organo_id')->where('examen_id', Input::get('examen_id'))->select('salud_organos_del_cuerpo.id','salud_organos_del_cuerpo.descripcion')->orderBy('salud_examen_tiene_organos.orden')->get();
+        $examen_id = Input::get('examen_id');
+
+        $organos = ExamenTieneOrganos::leftJoin('salud_organos_del_cuerpo','salud_organos_del_cuerpo.id','=','salud_examen_tiene_organos.organo_id')
+                                        ->where('examen_id', $examen_id)
+                                        ->select('salud_organos_del_cuerpo.id','salud_organos_del_cuerpo.descripcion')
+                                        ->orderBy('salud_examen_tiene_organos.orden')
+                                        ->get();
 
         //Agregar campos de las variables asociadas al exámen
-        $variables = ExamenTieneVariables::leftJoin('salud_catalogo_variables_examenes','salud_catalogo_variables_examenes.id','=','salud_examen_tiene_variables.variable_id')->where('examen_id', Input::get('examen_id'))->select('salud_catalogo_variables_examenes.id','salud_catalogo_variables_examenes.descripcion','salud_examen_tiene_variables.tipo_campo')->orderBy('salud_examen_tiene_variables.orden')->get();
+        $variables = ExamenTieneVariables::leftJoin('salud_catalogo_variables_examenes','salud_catalogo_variables_examenes.id','=','salud_examen_tiene_variables.variable_id')
+                                        ->where('examen_id', $examen_id)
+                                        ->select('salud_catalogo_variables_examenes.id','salud_catalogo_variables_examenes.descripcion','salud_examen_tiene_variables.tipo_campo')
+                                        ->orderBy('salud_examen_tiene_variables.orden')
+                                        ->get();
 
         $form_create = [
                         'url' => $modelo->url_form_create,
@@ -58,7 +68,7 @@ class ResultadoExamenMedicoController extends ModeloController
 
         $miga_pan = $this->get_miga_pan($modelo,'Crear nuevo');
 
-        $examen = ExamenMedico::find( Input::get('examen_id') );
+        $examen = ExamenMedico::find( $examen_id );
 
         // Si el modelo tiene un archivo js particular
         $archivo_js = app($modelo->name_space)->archivo_js;
