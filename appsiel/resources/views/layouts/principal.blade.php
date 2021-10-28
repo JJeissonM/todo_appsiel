@@ -141,6 +141,10 @@
 			padding: 5px 10px;
 		}
 
+		.ui-front{
+			z-index: 1100;
+		}
+
 		#div_cargando {
 			display: none;
 			/**/
@@ -436,63 +440,7 @@
 			obj_input.parent().prev('label').text(texto_lbl);
 		}
 
-
-		var email_inicial = $("#email").val();
-
-		$(document).ready(function() {
-
-			// Para Autocompletar
-			var campo_busqueda_texto;
-			var campo_busqueda_numerico;
-			var url_consulta;
-
-			$('#myTable').DataTable({
-				dom: 'Bfrtip',
-				"paging": false,
-				buttons: [
-					'excel', 'pdf'
-				],
-				order: [
-					[0, 'desc']
-				],
-				"language": {
-					            "search": "Buscar",
-					            "zeroRecords": "Ningún registro encontrado.",
-					            "info": "Mostrando página _PAGE_ de _PAGES_",
-					            "infoEmpty": "Tabla vacía.",
-					            "infoFiltered": "(filtrado de _MAX_ registros totales)"
-					        }
-			});
-
-
-			// !!!! Solo valida en la tabla core_terceros
-			$('#email').keyup(function() {
-
-				var email = $("#email").val();
-
-				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
-
-				console.log(url_2);
-
-				$.get(url_2, function(datos) {
-					if (datos != '') {
-						if (datos == email_inicial) {
-							// No hay problema
-							$('#bs_boton_guardar').show();
-						} else {
-							alert("Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro.");
-							$('#bs_boton_guardar').hide();
-						}
-
-					} else {
-						// Número de identificación
-						$('#bs_boton_guardar').show();
-					}
-
-				});
-			});
-
-			$(function() {
+		function cargarCombobox(){
 				$.widget("custom.combobox", {
 					_create: function() {
 						this.wrapper = $("<span>")
@@ -502,8 +450,9 @@
 						this.element.hide();
 						this._createAutocomplete();
 						this._createShowAllButton();
+						console.log('object')
 					},
-
+					
 					_createAutocomplete: function() {
 						var selected = this.element.children(":selected"),
 							value = selected.val() ? selected.text() : "";
@@ -622,14 +571,74 @@
 						this.element.show();
 					}
 				});
-
+				console.log('combobox')
 				$(".combobox").combobox();
 				/*$( "#toggle" ).on( "click", function() {
 				  $( ".combobox" ).toggle();
 				});
 				*/
 
+			}
+			
+
+		var email_inicial = $("#email").val();
+
+		$(document).ready(function() {
+
+			// Para Autocompletar
+			var campo_busqueda_texto;
+			var campo_busqueda_numerico;
+			var url_consulta;
+
+			$('#myTable').DataTable({
+				dom: 'Bfrtip',
+				"paging": false,
+				buttons: [
+					'excel', 'pdf'
+				],
+				order: [
+					[0, 'desc']
+				],
+				"language": {
+					            "search": "Buscar",
+					            "zeroRecords": "Ningún registro encontrado.",
+					            "info": "Mostrando página _PAGE_ de _PAGES_",
+					            "infoEmpty": "Tabla vacía.",
+					            "infoFiltered": "(filtrado de _MAX_ registros totales)"
+					        }
 			});
+
+
+			// !!!! Solo valida en la tabla core_terceros
+			$('#email').keyup(function() {
+
+				var email = $("#email").val();
+
+				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
+
+				console.log(url_2);
+
+				$.get(url_2, function(datos) {
+					if (datos != '') {
+						if (datos == email_inicial) {
+							// No hay problema
+							$('#bs_boton_guardar').show();
+						} else {
+							alert("Ya existe una persona con ese EMAIL. Cambié el EMAIL o no podrá guardar el registro.");
+							$('#bs_boton_guardar').hide();
+						}
+
+					} else {
+						// Número de identificación
+						$('#bs_boton_guardar').show();
+					}
+
+				});
+			});
+
+			
+
+			$(cargarCombobox());
 
 			$('.enlace_dropdown').on('click', function() {
 				$('#div_cargando').show();
@@ -638,6 +647,7 @@
 			@yield('j_query')
 
 		});
+		
 	</script>
 
 	<script src="{{ asset('assets/js/input_lista_sugerencias.js') }}"></script> <!-- -->

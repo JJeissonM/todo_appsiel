@@ -52,13 +52,16 @@
 @section('scripts9')
 
 	<script type="text/javascript">
+	
 
 		$(document).ready(function(){
-console.log('hello');
+		console.log('hello');
+
 			$(".btn_nuevo_registro_diagnostico_cie").click(function(event){
 
 				event.preventDefault();
 		        console.log('entra');
+				
 		        var consulta_id = $(this).children('span').attr('data-consulta_id');
 				
 		        $( '#modal_diagnostico_cie_' + consulta_id ).modal({backdrop: "static"});
@@ -72,7 +75,9 @@ console.log('hello');
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
 		            $('#contenido_modal_diagnostico_cie_' + consulta_id).html(data);
-				});		        
+					cargarCombobox()
+				});	
+					        
 		    });
 
 			$(document).on('click', '.btn_eliminar_registro_diagnostico_cie', function(event) {
