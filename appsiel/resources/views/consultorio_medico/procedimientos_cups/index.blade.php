@@ -1,11 +1,10 @@
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
 
-	$datos = App\Salud\ProcedimientosCups::where( [
+	$records_list = App\Salud\ProcedimientosCups::where( [
 											['consulta_id', '=', $consulta->id]
 										] )
 									->get();
-	//dd($datos);
 ?>
 
 <br>
@@ -18,12 +17,14 @@
 		<thead>
 			<tr>
 				<th>Diagnóstico principal</th>
-				<th>Diagnóstico relacionado</th>
-				<th>Núm. autorización</th>
 				<th>Código procedimiento</th>
+				<th>Valor del procedimiento</th>
+				<th>Observaciones</th>
+				<th>Acción</th>
+				<!-- <th>Diagnóstico relacionado</th>
 				<th>Ambito de realización del procedimiento</th>
 				<th>Finalidad del procedimiento</th>
-				<th>Valor del procedimiento</th>
+			-->
 			</tr>
 		</thead>
 		<tbody>
@@ -35,7 +36,8 @@
 					<td> {{ $record->get_fields_to_show()->diagnostico_cie_principal_id->value }} </td>
 					<td> {{ $record->get_fields_to_show()->codigo_cups->value }} </td>
 					<td> {{ $record->get_fields_to_show()->valor_procedimiento->value }} </td>
-					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_procedimiento_cups' data-consulta_id="{{ $consulta->id }}" data-paciente_id="{{ $record->get_fields_to_show()->paciente_id->value }}" data-id="{{ $record->get_fields_to_show()->id }}"><i class='glyphicon glyphicon-trash'></i></button> </td>
+					<td> {{ $record->get_fields_to_show()->observaciones->value }} </td>
+					<td> <button type='button' class='btn btn-danger btn-xs btn_eliminar_registro_procedimientos_cups' data-consulta_id="{{ $consulta->id }}" data-paciente_id="{{ $record->get_fields_to_show()->paciente_id->value }}" data-id="{{ $record->get_fields_to_show()->id }}"><i class='glyphicon glyphicon-trash'></i></button> </td>
 				</tr>
 			@endforeach
 		</tbody>
@@ -51,11 +53,11 @@
         </tfoot>
 	</table>
 
-	@include('consultorio_medico.odontologia.procedimientos_cups.modal', [ 'consulta_id' => $consulta->id ])
+	@include('consultorio_medico.procedimientos_cups.modal', [ 'consulta_id' => $consulta->id ])
 
 </div>
 
-@section('scripts10')
+@section('scripts11')
 
 	<script type="text/javascript">
 
@@ -71,7 +73,7 @@
 
 		        $("#div_cargando").show();
 		        
-		        var modelo_id = 308;
+		        var modelo_id = 310;
 
 		        var url = "{{ url('salud_procedimiento_cups/create') }}" + "?id_modelo=" + modelo_id + "&paciente_id=" + paciente_id + "&consulta_id=" + consulta_id;
 
@@ -85,7 +87,7 @@
 				event.preventDefault();
 				var fila = $(this).closest("tr");
 
-				if ( confirm('¿Desea eliminar el registro de procedimientos_cups para el diente # ' + fila.find('td').eq(0).html() ) )
+				if ( confirm('¿Desea eliminar el registro del Procedimiento para el Diagnóstico # ' + fila.find('td').eq(0).html() ) )
 				{
 					$('#div_cargando').show();
 	            	var url = "{{ url('salud_procedimiento_cups/delete') }}" + "/" + $(this).attr('data-id');
@@ -103,6 +105,24 @@
 			$(document).on("click",".btn_save_modal_procedimientos_cups",function(event){
 
 		    	event.preventDefault();
+
+		    	if ( $('#diagnostico_cie_principal_id').val() == '' )
+		    	{
+		    		alert('Debe ingresar un Código de diagnóstico principal');
+		    		return false;
+		    	}
+
+		    	if ( $('#codigo_cups').val() == '' )
+		    	{
+		    		alert('Debe seleccionar un Código de procedimiento');
+		    		return false;
+		    	}
+		    	
+		    	if ( $('#valor_procedimiento').val() == '' )
+		    	{
+		    		alert('Debe ingresar un valor para el procedimiento');
+		    		return false;
+		    	}
 		        
 		        $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
 		        $(this).attr( 'disabled', 'disabled' );
@@ -115,7 +135,7 @@
 
 		        $.post(url, data, function (respuesta) {
 
-		        	var fila = '<tr id="ultima_fila" style="display:none;"> <td> ' + respuesta.numero_diente.value + ' </td> <td> ' + respuesta.frio.value + ' </td> <td> ' + respuesta.caliente.value + ' </td> <td> ' + respuesta.percusion_horizontal.value + ' </td> <td> ' + respuesta.percusion_vertical.value + ' </td> <td> ' + respuesta.observaciones.value + ' </td> <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_registro_procedimientos_cups" data-consulta_id="' + respuesta.consulta_id.value + '" data-paciente_id="' + respuesta.paciente_id.value + '" data-id="' + respuesta.id + '"><i class="glyphicon glyphicon-trash"></i></button> </td> </tr>';
+		        	var fila = '<tr id="ultima_fila" style="display:none;"> <td> ' + respuesta.diagnostico_cie_principal_id.value + ' </td> <td> ' + respuesta.codigo_cups.value + ' </td> <td> ' + respuesta.valor_procedimiento.value + ' </td> <td> ' + respuesta.observaciones.value + ' </td> <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_registro_procedimientos_cups" data-consulta_id="' + respuesta.consulta_id.value + '" data-paciente_id="' + respuesta.paciente_id.value + '" data-id="' + respuesta.id + '"><i class="glyphicon glyphicon-trash"></i></button> </td> </tr>';
 
 		        	$('#tabla_registros_procedimientos_cups_' + consulta_id).find('tbody:last').append( fila );
 

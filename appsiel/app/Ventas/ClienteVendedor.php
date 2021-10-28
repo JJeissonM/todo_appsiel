@@ -6,31 +6,35 @@ use Illuminate\Database\Eloquent\Model;
 
 use Auth;
 
+use App\Core\Tercero;
+
+use App\Ventas\Cliente;
 use App\Ventas\ClaseCliente;
 use App\Ventas\Vendedor;
 
 // Solo para usuarios con el role Vendedor
-class Cliente2 extends Model
+class ClienteVendedor extends Cliente
 {
     protected $table = 'vtas_clientes';
 	
-	protected $fillable = ['core_tercero_id', 'encabezado_dcto_pp_id', 'clase_cliente_id', 'lista_precios_id', 'lista_descuentos_id', 'vendedor_id','inv_bodega_id', 'zona_id', 'liquida_impuestos', 'condicion_pago_id', 'cupo_credito', 'bloquea_por_cupo', 'bloquea_por_mora', 'estado'];
+	protected $fillable = [ 'core_tercero_id', 'encabezado_dcto_pp_id', 'clase_cliente_id', 'lista_precios_id', 'lista_descuentos_id', 'vendedor_id','inv_bodega_id', 'zona_id', 'liquida_impuestos', 'condicion_pago_id', 'cupo_credito', 'bloquea_por_cupo', 'bloquea_por_mora', 'estado' ];
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Lista de precios', 'Lista de descuentos', 'Zona'];
 
     // Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
-    public $urls_acciones = '{"index":"web","create":"web/create","edit":"vtas_clientes/id_fila/edit","store":"vtas_clientes","update":"vtas_clientes/id_fila","imprimir":"no","show":"vtas_clientes/id_fila","eliminar":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+    public $urls_acciones = '{"index":"web","create":"web/create","edit":"web/id_fila/edit","store":"web","update":"vtas_clientes/id_fila","imprimir":"no","show":"vtas_clientes/id_fila","eliminar":"no","cambiar_estado":"no","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
 // 
-    public $vistas = '{"create":"ventas.clientes.create2"}';
+    //public $vistas = '{"create":"ventas.clientes.create2"}';
 
-	public static function consultar_registros($nro_registros)
+	public static function consultar_registros($nro_registros, $search)
     {
 
         $array_wheres = [['vtas_clientes.id', '>', 0]];
 
         $vendedor = Vendedor::where('user_id', Auth::user()->id)->get()->first();
 
-        if (!is_null($vendedor)) {
+        if (!is_null($vendedor))
+        {
             $array_wheres = array_merge($array_wheres, ['vtas_clientes.vendedor_id' => $vendedor->id]);
         }
 
@@ -66,5 +70,46 @@ class Cliente2 extends Model
     {
         $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
         return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
+    }
+
+    public function store_adicional( $datos, $registro )
+    {
+        // Se copia los datos asociados al Usuario/Vendedor que esta creando al cliente
+        $user_id = Auth::user()->id;
+        $vendedor = Vendedor::where('user_id',$user_id)->get()->first();
+        $datos_tercero = $vendedor->tercero;
+        $datos_cliente = $vendedor->cliente;
+
+        $datos['codigo_ciudad'] = $datos_tercero->codigo_ciudad;
+        $datos['core_empresa_id'] = $datos_tercero->core_empresa_id;
+        $datos['tipo'] = $datos_tercero->tipo;
+        $datos['id_tipo_documento_id'] = $datos_tercero->id_tipo_documento_id;
+        $datos['digito_verificacion'] = $datos_tercero->digito_verificacion;
+
+        $datos['encabezado_dcto_pp_id'] = $datos_cliente->encabezado_dcto_pp_id;
+        $datos['clase_cliente_id'] = $datos_cliente->clase_cliente_id;
+        $datos['lista_precios_id'] = $datos_cliente->lista_precios_id;
+        $datos['lista_descuentos_id'] = $datos_cliente->lista_descuentos_id;
+        $datos['vendedor_id'] = $vendedor->id;
+        $datos['inv_bodega_id'] = $datos_cliente->inv_bodega_id;
+        $datos['zona_id'] = $datos_cliente->zona_id;
+        $datos['liquida_impuestos'] = $datos_cliente->liquida_impuestos;
+        $datos['condicion_pago_id'] = $datos_cliente->condicion_pago_id;
+        $datos['cupo_credito'] = $datos_cliente->cupo_credito;
+        $datos['bloquea_por_cupo'] = $datos_cliente->bloquea_por_cupo;
+        $datos['bloquea_por_mora'] = $datos_cliente->bloquea_por_mora;
+        
+        $datos['estado'] = "Activo";
+        $datos['creado_por'] = Auth::user()->email;
+
+        $tercero = new Tercero;
+        $tercero->fill( $datos );
+        $tercero->save();
+
+        $datos['core_tercero_id'] = $tercero->id;
+        
+        // Datos del Cliente
+        $registro->fill( $datos );
+        $registro->save();
     }
 }

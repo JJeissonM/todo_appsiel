@@ -9,9 +9,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use View;
-use Datatables;
+use Input;
 
-use App\Salud\Endodoncia;
+use App\Salud\ProcedimientosCups;
+use App\Salud\DiagnosticoCie;
 
 class ProcedimientoCupsController extends ModeloController
 {
@@ -23,9 +24,29 @@ class ProcedimientoCupsController extends ModeloController
         for ($i = 0; $i <  $cantida_campos; $i++)
         {
             switch ( $lista_campos[$i]['name'] )
-            {                
-                case 'url_id_modelo':
+            {
+                case 'modelo_entidad_id':
                     $lista_campos[$i]['value'] = $this->modelo->id;
+                    break;
+                case 'paciente_id':
+                    $lista_campos[$i]['value'] = Input::get('paciente_id');
+                    break;
+                case 'consulta_id':
+                    $lista_campos[$i]['value'] = Input::get('consulta_id');
+                    break;
+                case 'diagnostico_cie_principal_id':
+                    $diagnostico_principal = DiagnosticoCie::where([
+                                                        [ 'paciente_id', Input::get('paciente_id') ],
+                                                        [ 'consulta_id', Input::get('consulta_id') ],
+                                                        [ 'es_diagnostico_principal', 1 ]
+                                                        ])
+                                                    ->get()
+                                                    ->first();
+                    if ( !is_null( $diagnostico_principal ) )
+                    {
+                        $lista_campos[$i]['opciones'] = '{"":""," ' . $diagnostico_principal->codigo_diagnostico->id . ' ":" ' . $diagnostico_principal->codigo_diagnostico->codigo . ' ' . $diagnostico_principal->codigo_diagnostico->descripcion . ' "}';
+                        $lista_campos[$i]['value'] = $diagnostico_principal->codigo_diagnostico->id;
+                    }
                     break;
                 default:
                     # code...
@@ -42,10 +63,19 @@ class ProcedimientoCupsController extends ModeloController
 
         return View::make( 'layouts.modelo_form_create_sin_botones', compact('form_create','datos_columnas') )->render();
     }
-    
-    /*public function create()
+
+    public function store(Request $request)
     {
-        return View::make('consultorio_medico.odontologia.endodoncia_linea_ingreso_registro')->render();
+        $modelo = Modelo::find( $request->modelo_entidad_id );
+        
+        $record_created = app( $modelo->name_space )->create( $request->all() );
+        
+        return response()->json( $record_created->get_fields_to_show() );
     }
-    */
+
+    public function delete( $id )
+    {
+        ProcedimientosCups::where('id',$id)->delete();
+        return 1;
+    }
 }   

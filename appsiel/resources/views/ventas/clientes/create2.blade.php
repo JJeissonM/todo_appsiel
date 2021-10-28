@@ -12,6 +12,13 @@
 		    <hr>
 
 		    <?php
+
+		    	/*
+
+					Se crea una vista diferente porque hay muchos campos asignados por defecto. 
+					Aun no hay un proceso generico para asignar estos valores por defecto a uno o varios modelos.
+
+		    	*/
 				
 				$vendedor = App\Ventas\Vendedor::where( 'user_id', Auth::user()->id )->get()->first();
 				$mensaje = '';
@@ -46,16 +53,7 @@
 
 					<div class="row" style="padding:5px;">
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="numero_identificacion">*Cédula / {{ config("configuracion.tipo_identificador") }}:</label>
-							<div class="col-sm-9">
-								<input class="form-control" id="numero_identificacion" autocomplete="off" required="required" name="numero_identificacion" type="text" value="{{ random_int(100, 999999) }}">
-							</div>
-						</div>
-					</div>
-
-					<div class="row" style="padding:5px;">
-						<div class="form-group">
-							<label class="control-label col-sm-3" for="descripcion">*Nombre establecimiento:</label>
+							<label class="control-label col-sm-3" for="descripcion">*Nombre cliente o establecimiento:</label>
 							<div class="col-sm-9">
 								<input class="form-control" id="descripcion" autocomplete="off" required="required" name="descripcion" type="text">
 							</div>
@@ -64,31 +62,42 @@
 
 					<div class="row" style="padding:5px;">
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="razon_social">Razón social:</label>
-							<div class="col-sm-9">
-								<input class="form-control" id="razon_social" autocomplete="off" name="razon_social" type="text">
-							</div>
-						</div>
-					</div>
-
-					<div class="row" style="padding:5px;">
-						<div class="form-group">
-							<label class="control-label col-sm-3" for="direccion1">*Dirección:</label>
+							<label class="control-label col-sm-3" for="direccion1">Dirección:</label>
 							<div class="col-sm-9">
 								<input class="form-control" id="direccion1" autocomplete="off" required="required" name="direccion1" type="text">
 							</div>
 						</div>
 					</div>
 
+					<h5>Datos del contacto</h5>
+					<hr>
+
 					<div class="row" style="padding:5px;">
 						<div class="form-group">
-							<label class="control-label col-sm-3" for="telefono1">*Teléfono:</label>
+							<label class="control-label col-sm-3" for="nombre_contacto">Nombre contacto:</label>
 							<div class="col-sm-9">
-								<input class="form-control" id="telefono1" autocomplete="off" required="required" name="telefono1" type="text">
+								<input class="form-control" id="nombre_contacto" autocomplete="off" name="nombre_contacto" type="text">
 							</div>
 						</div>
 					</div>
 
+					<div class="row" style="padding:5px;">
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="telefono_contacto">Teléfono:</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="telefono_contacto" autocomplete="off" name="telefono_contacto" type="text">
+							</div>
+						</div>
+					</div>
+
+					<div class="row" style="padding:5px;">
+						<div class="form-group">
+							<label class="control-label col-sm-3" for="email_contacto">Email:</label>
+							<div class="col-sm-9">
+								<input class="form-control" id="email_contacto" autocomplete="off" name="email_contacto" type="email">
+							</div>
+						</div>
+					</div>
 					
 					{{ Form::hidden( 'codigo_ciudad', $datos_tercero->codigo_ciudad ) }}
 					{{ Form::hidden( 'core_empresa_id', $datos_tercero->core_empresa_id ) }}

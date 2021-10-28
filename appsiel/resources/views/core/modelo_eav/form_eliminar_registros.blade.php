@@ -6,5 +6,9 @@
 	{{ Form::hidden( 'lbl_descripcion_modelo_entidad', $lbl_descripcion_modelo_entidad ) }}
 	{{ Form::hidden( 'ruta_redirect', $ruta_redirect.'?id='.$id_app.'&id_modelo='.$id_modelo ) }}
 	
-	<button class="btn btn-danger btn-xs btn_eliminar_datos_modelo" title="Eliminar" data-descripcion_modelo="{{ $lbl_descripcion_modelo_entidad }}"> <i class="fa fa-trash"></i></button>
+	@if( isset( $btn_gmail ) )
+		<button class="btn-gmail btn_eliminar_datos_modelo" title="Eliminar" data-descripcion_modelo="{{ $lbl_descripcion_modelo_entidad }}"> <i class="fa fa-trash"></i></button>
+	@else
+		<button class="btn btn-danger btn-xs btn_eliminar_datos_modelo" title="Eliminar" data-descripcion_modelo="{{ $lbl_descripcion_modelo_entidad }}"> <i class="fa fa-trash"></i></button>
+	@endif
 {{ Form::close() }}

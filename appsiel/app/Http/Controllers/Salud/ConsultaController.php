@@ -133,10 +133,12 @@ class ConsultaController extends Controller
         $general = new ModeloController();
 
         // Se obtiene el modelo según la variable modelo_id de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        $modelo = Modelo::find( Input::get('id_modelo') );
+
+        //dd( Input::get('id_modelo'), $modelo);
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
+        $registro = app( $modelo->name_space )->find($id);
 
         $lista_campos = $general->get_campos_modelo($modelo,$registro,'edit');
 
@@ -145,7 +147,7 @@ class ConsultaController extends Controller
                         'campos' => $lista_campos
                     ];
         
-        $paciente = Paciente::datos_basicos_historia_clinica( Input::get('paciente_id') );
+        /*$paciente = Paciente::datos_basicos_historia_clinica( Input::get('paciente_id') );
 
         $miga_pan = [
                         ['url'=>'consultorio_medico?id='.Input::get('id'),'etiqueta'=>'Consultorio Médico'],
@@ -153,9 +155,11 @@ class ConsultaController extends Controller
                         ['url'=>'NO', 'etiqueta' => "Modificar consulta"]
                     ];
 
-        $archivo_js = app($modelo->name_space)->archivo_js;
+        */
 
-        return view( 'consultorio_medico.consultas.crud', compact('form_create','miga_pan','registro','archivo_js')); 
+        $datos_columnas = true;
+
+        return View::make( 'layouts.modelo_form_edit_sin_botones', compact('form_create','registro','datos_columnas') )->render(); 
     }
 
     /**
@@ -167,40 +171,12 @@ class ConsultaController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Se obtiene el modelo según la variable modelo_id de la url
-        $modelo = Modelo::find($request->url_id_modelo);
+        $consulta = ConsultaMedica::find($id);
 
-        // Se obtinene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
+        $consulta->fill( $request->all() );
+        $consulta->save();
 
-        // LLamar a los campos del modelo para verificar los que son requeridos
-        // y los que son únicos
-        $lista_campos = $modelo->campos->toArray();
-        $cant = count($lista_campos);
-        for ($i=0; $i < $cant; $i++) {
-            if ( $lista_campos[$i]['editable'] == 1 ) 
-            { 
-                if ($lista_campos[$i]['requerido']) 
-                {
-                    $this->validate($request,[$lista_campos[$i]['name']=>'required']);
-                }
-                if ($lista_campos[$i]['unico']) 
-                {
-                    $this->validate($request,[$lista_campos[$i]['name']=>'unique:'.$registro->getTable().','.$lista_campos[$i]['name'].','.$id]);
-                }
-            }
-            // Cuando se edita una transacción
-            if ($lista_campos[$i]['name']=='movimiento') {
-                $lista_campos[$i]['value']=1;
-            }
-        }
-
-        $modelo_pacientes = Modelo::where('modelo','salud_pacientes')->first();
-
-        $registro->fill( $request->all() );
-        $registro->save();
-
-        return redirect('consultorio_medico/pacientes/'.$request->paciente_id.'?id='.$request->url_id.'&id_modelo='.$modelo_pacientes->id)->with('flash_message','Consulta MODIFICADA correctamente.');
+        return View::make( 'consultorio_medico.consultas.datos_consulta', compact('consulta') )->render();
     }
 
     /**

@@ -5,7 +5,7 @@ namespace App\Salud;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Sistema\Modelo;
-use App\Core\ModeloEavValor;
+use App\Sistema\Services\FieldsList;
 
 use App\Salud\ConsultaMedica;
 

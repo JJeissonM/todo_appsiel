@@ -19,12 +19,9 @@
 	
 	
 	@if( !empty($examenes->toArray() ) )
-	&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/9999/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
+		&nbsp;&nbsp;&nbsp; {{ Form::bsBtnPrint( 'consultorio_medico/formulas_opticas/9999/print?id='.Input::get('id').'&id_modelo='.$modelo_formulas_opticas->id.'&paciente_id='.$consulta->paciente_id.'&consulta_id='.$consulta->id ) }}
 	@endif
-	<br><br>
-
-	
-	
+	<br><br>	
 
 	<b>Fórmulas para los exámenes del paciente: </b> &nbsp;&nbsp;
 	<div class="btns_examenes_asignados" style="display: inline;">

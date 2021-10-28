@@ -11,10 +11,9 @@
 	@endfor
 </div>
 
-
 @include('consultorio_medico.consultas.examenes_modal', [ 'consulta_id' => $consulta->id ])
 
-
+@include('consultorio_medico.consultas.examenes_modal_update', [ 'consulta_id' => $consulta->id ])
 
 @section('scripts10')
 
@@ -22,7 +21,7 @@
 
 		$(document).ready(function(){
 
-			$(".btn_nuevo_registro_examen").click(function(event){
+			$(".btn_create_examen").click(function(event){
 
 				event.preventDefault();
 		        
@@ -31,33 +30,14 @@
 		        $( '#modal_examen_' + consulta_id ).modal({backdrop: "static"});
 
 		        $("#div_cargando").show();
-		        
-		        var modelo_id = 308;
 
-		        var url = "{{ url('salud_examen/create') }}" + "?id_modelo=" + modelo_id + "&paciente_id=" + paciente_id + "&consulta_id=" + consulta_id;
+		        var url = $(this).attr('data-url');
 
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
 		            $('#contenido_modal_examen_' + consulta_id).html(data);
 				});		        
 		    });
-
-			$(document).on('click', '.btn_eliminar_registro_examen', function(event) {
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-
-				if ( confirm('¿Desea eliminar el registro de examen para el diente # ' + fila.find('td').eq(0).html() ) )
-				{
-					$('#div_cargando').show();
-	            	var url = "{{ url('salud_examen/delete') }}" + "/" + $(this).attr('data-id');
-
-					$.get( url )
-						.done(function( respuesta ) {
-							$('#div_cargando').hide();
-							fila.remove();
-						});
-				}
-			});
 
 
 			// GUARDAR 
@@ -76,20 +56,104 @@
 
 		        $.post(url, data, function (respuesta) {
 
-		        	var fila = '<tr id="ultima_fila" style="display:none;"> <td> ' + respuesta.numero_diente.value + ' </td> <td> ' + respuesta.frio.value + ' </td> <td> ' + respuesta.caliente.value + ' </td> <td> ' + respuesta.percusion_horizontal.value + ' </td> <td> ' + respuesta.percusion_vertical.value + ' </td> <td> ' + respuesta.observaciones.value + ' </td> <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_registro_examen" data-consulta_id="' + respuesta.consulta_id.value + '" data-paciente_id="' + respuesta.paciente_id.value + '" data-id="' + respuesta.id + '"><i class="glyphicon glyphicon-trash"></i></button> </td> </tr>';
+		        	$( '#modal_examen_' + consulta_id).modal('hide');
+		            $( '#contenido_modal_examen_' + consulta_id).html('');
 
-		        	$('#tabla_registros_examen_' + consulta_id).find('tbody:last').append( fila );
+			        $( '#modal_examen_' + consulta_id).find('.btn_save_modal_examen').children('.fa-spinner').attr('class','fa fa-save');
+			        $( '#modal_examen_' + consulta_id).find('.btn_save_modal_examen').removeAttr( 'disabled' );
 
-					$('#ultima_fila').fadeIn(1000);
-					$('#ultima_fila').removeAttr('id');
+			        var button_id = '#btn_create_examen_' + respuesta.consulta_id + '_' + respuesta.examen_id;
 
-		        	$('#modal_examen_' + consulta_id).modal('hide');
-		            $('#contenido_modal_examen_' + consulta_id).html('');
+			        $( button_id ).attr('class','btn btn-default btn-xs btn_ver_examen');
+			        $( button_id ).children( 'i' ).attr('class','fa fa-eye');
+			        $( button_id ).children( 'span' ).remove();
+			        $( button_id ).removeAttr('data-url');
+			        $( button_id ).removeAttr('id');
 
-			        $('#modal_examen_' + consulta_id).find('.btn_save_modal_examen').children('.fa-spinner').attr('class','fa fa-save');
-			        $('#modal_examen_' + consulta_id).find('.btn_save_modal_examen').removeAttr( 'disabled' );
 		        });
 		    });
+			
+			$(document).on( "click", ".btn_ver_examen", function(event){
+				event.preventDefault();
+
+				var consulta_id = $(this).attr('data-consulta_id');
+				$( '#alert_mensaje_' + consulta_id).hide();
+
+				$( '#info_examen_' + consulta_id).html( '' );
+				$('#div_cargando').fadeIn();
+		        
+		        $('#modal_examen_update_' + consulta_id).modal(
+		        	{keyboard: 'true'}
+		        );
+
+		        var url = '../../consultorio_medico/resultado_examen_medico/' + $(this).attr('data-consulta_id') + '-' + $(this).attr('data-paciente_id') + '-' + $(this).attr('data-examen_id') + '?id='+getParameterByName('id') + '&id_modelo='+getParameterByName('id_modelo');
+
+		        $(".btn_edit_examen").attr('data-consulta_id' , $(this).attr('data-consulta_id') );
+		        $(".btn_edit_examen").attr('data-paciente_id', $(this).attr('data-paciente_id') );
+		        $(".btn_edit_examen").attr('data-examen_id', $(this).attr('data-examen_id') );
+
+		        //console.log( $(this).html() );
+
+		        $(".modal-title").html( $(this).html() );
+
+		        $.get( url, function( respuesta ){
+		        	$( '#div_cargando_' + consulta_id).hide();
+		        	$( '#info_examen_' + consulta_id).html( respuesta );
+		        });/**/
+		    });
+
+			
+			$(".btn_edit_examen").click(function(event){
+				event.preventDefault();
+
+				$("#alert_mensaje").hide();
+
+				$('.modal-body .campo_variable').each(function()
+				{
+
+				    var cadena = $.trim( $(this).text() );
+
+				    //console.log( cadena );
+
+				    $(this).html( $('<input/>').attr({ type: 'text', value: cadena, name: 'campo_variable_organo-' + $(this).attr('id'), class: 'form-control', size: '5' }) );
+
+				});
+
+				$(this).hide();
+				$(".btn_save_examen").show();
+		    });
+			
+			$(".btn_save_examen").click(function(event){
+				event.preventDefault();
+
+				$('#div_cargando').show();
+
+				var form = $('.modal-body #form_resultados_examenes');
+				var url = form.attr('action');
+				data = form.serialize();
+				$.post(url,data,function(result){
+
+					//alert( result );
+
+					$('.modal-body .campo_variable').each(function()
+					{
+					    var cadena = $(this).children('input').val();
+					    $(this).html( cadena );
+					});
+
+					$('#div_cargando').hide();
+					
+					$(".btn_save_examen").hide();
+					$(".btn_edit_examen").show();
+
+					$("#alert_mensaje").show();
+				});					
+		    });
+
+		    /*$('#modal_examen_update_' + consulta_id).on('hidden.bs.modal', function(){
+			    $(".btn_save_examen").hide();
+			    $(".btn_edit_examen").show();
+			});*/
 
 		});
 	</script>

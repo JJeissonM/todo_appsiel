@@ -30,6 +30,11 @@ class ConsultaMedica extends Model
         return $this->belongsTo(ProfesionalSalud::class,'profesional_salud_id');
     }
 
+    public function consultorio()
+    {
+        return $this->belongsTo(Consultorio::class, 'consultorio_id');
+    }
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 		$collection = ConsultaMedica::leftJoin('salud_pacientes', 'salud_pacientes.id', '=', 'salud_consultas.paciente_id')

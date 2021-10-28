@@ -144,10 +144,11 @@ class ModeloEavController extends ModeloController
 
         if ( Input::get('modo_peticion') == 'ajax' )
         {
+            $buttons = Input::get('buttons');
             $accion = 'edit';
             $title = 'Actualizar ' .  $modelo->descripcion;
             $form_create['url'] = 'core_eav_update_db';
-            return View::make( 'layouts.formulario_ajax_update_eav', compact( 'form_create', 'accion', 'registro', 'title') )->render();
+            return View::make( 'layouts.formulario_ajax_update_eav', compact( 'form_create', 'accion', 'registro', 'title', 'buttons') )->render();
         }else{
             return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action'));
         }

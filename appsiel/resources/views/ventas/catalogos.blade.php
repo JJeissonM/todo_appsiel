@@ -26,12 +26,10 @@
 				$i = $cant_cols;
 		      ?>
 		        @foreach($permisos as $fila)
-		          	
-		          	<?php  
-
-		          		//dd( $permisos );
-
-		          	?>
+		          
+		          @if( $fila['fa_icon'] == '' )
+		          	@php continue; @endphp
+		          @endif
 
 		          @if($i % $cant_cols == 0)
 		            <div class="row">

@@ -5,8 +5,7 @@
 			<b>Fecha/Hora consulta: </b> {{ $consulta->fecha }} / {{ $consulta->created_at->format('h:i:s a') }}
 		</td>
 		<td>
-			@php $consultorio = App\Salud\Consultorio::find($consulta->consultorio_id); @endphp 
-			<b>Consultorio:</b> {{ $consultorio->descripcion }}
+			<b>Consultorio:</b> {{ $consulta->consultorio->descripcion }}
 		</td>
 		<td>
 			<b>Tipo Consulta:</b> {{ $consulta->tipo_consulta }}
@@ -15,13 +14,15 @@
 	
 	<tr>
 		<td colspan="3">
-			@php 
-				// ADVERTENCIA el campo profesional_salud_id corresponde al ID del usuario que creó la consulta
-				//$profesional_salud = App\Salud\ProfesionalSalud::find($consulta->profesional_salud_id);
-				$profesional_salud = App\User::find($consulta->profesional_salud_id);
-				//dd($profesional_salud->name);  
-			@endphp 
-			<b>Atendido por:</b> {{ $profesional_salud->name }}
+			<?php
+				if ( !is_null( $consulta->profesional_salud->tercero ) )
+				{
+					$profesional_salud = $consulta->profesional_salud->tercero->descripcion;
+				}else{
+					$profesional_salud = App\User::find($consulta->profesional_salud_id)->name;
+				} 
+			?>
+			<b>Atendido por:</b> {{ $profesional_salud }}
 		</td>
 	</tr>
 	<tr>
@@ -32,7 +33,7 @@
 			<b>Parentezco:</b> {{ $consulta->parentezco_acompañante }}
 		</td>
 		<td>
-			<b>Doc. Identificación:</b> {{ $consulta->documento_identidad_acompañante }}
+			<b>Doc. Identificación:</b> {{ number_format((int)$consulta->documento_identidad_acompañante, 0, ',', '.') }}
 		</td>
 	</tr>
 </table>

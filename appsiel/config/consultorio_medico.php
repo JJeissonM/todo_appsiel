@@ -13,34 +13,34 @@ return [
 
     'secciones_consulta' => '{
                                 "0":{ 
-                                	"nombre_seccion":"Historia Médica Ocupacional",
-                                        "url_vista_show":"consultorio_medico.consultas.historia_medica_ocupacional",
-                                        "activo":0,
+                                        "nombre_seccion":"Datos consulta",
+                                        "url_vista_show":"consultorio_medico.consultas.seccion_datos_consulta",
+                                        "activo":1,
                                         "orden":1
                                 }, 
                                 "1":{ 
-                                	"nombre_seccion":"Exámenes",
-                                	"url_vista_show":"consultorio_medico.consultas.examenes",
-                                	"activo":1,
-                                	"orden":2
+                                        "nombre_seccion":"Anamnesis",
+                                        "url_vista_show":"consultorio_medico.consultas.anamnesis",
+                                        "activo":1,
+                                        "orden":1
                                 }, 
                                 "2":{ 
-                                	"nombre_seccion":"Fórmula Óptica",
-                                	"url_vista_show":"consultorio_medico.consultas.formula_optica",
-                                	"activo":0,
-                                	"orden":3
+                                        "nombre_seccion":"Exámenes",
+                                        "url_vista_show":"consultorio_medico.consultas.examenes",
+                                        "activo":1,
+                                        "orden":2
                                 }, 
                                 "3":{ 
-                                	"nombre_seccion":"Diagnóstico",
-                                	"url_vista_show":"consultorio_medico.consultas.diagnostico",
-                                	"activo":0,
-                                	"orden":4
+                                        "nombre_seccion":"Fórmula Óptica",
+                                        "url_vista_show":"consultorio_medico.consultas.formula_optica",
+                                        "activo":1,
+                                        "orden":3
                                 }, 
                                 "4":{ 
-                                	"nombre_seccion":"Prescripción Farmacológica",
-                                	"url_vista_show":"consultorio_medico.consultas.prescripciones_farmacologicas",
-                                	"activo":0,
-                                	"orden":5
+                                        "nombre_seccion":"Diagnóstico",
+                                        "url_vista_show":"consultorio_medico.consultas.diagnostico",
+                                        "activo":0,
+                                        "orden":4
                                 }, 
                                 "5":{ 
                                 	"nombre_seccion":"Observaciones",
@@ -75,20 +75,20 @@ return [
                                 "10":{ 
                                         "nombre_seccion":"Resultados de la consulta",
                                         "url_vista_show":"consultorio_medico.consultas.resultados",
-                                        "activo":0,
+                                        "activo":1,
                                         "orden":4
                                     }, 
                                 "11":{ 
-                                        "nombre_seccion":"Anamnesis",
-                                        "url_vista_show":"consultorio_medico.consultas.anamnesis",
+                                        "nombre_seccion":"Historia Médica Ocupacional",
+                                        "url_vista_show":"consultorio_medico.consultas.historia_medica_ocupacional",
                                         "activo":0,
                                         "orden":1
                                     }, 
                                 "12":{ 
-                                        "nombre_seccion":"Datos consulta",
-                                        "url_vista_show":"consultorio_medico.consultas.seccion_datos_consulta",
-                                        "activo":1,
-                                        "orden":1
+                                        "nombre_seccion":"Prescripción Farmacológica",
+                                        "url_vista_show":"consultorio_medico.consultas.prescripciones_farmacologicas",
+                                        "activo":0,
+                                        "orden":5
                                     }, 
                                 "13":{ 
                                         "nombre_seccion":"Revisión por sistemas",
@@ -105,7 +105,7 @@ return [
                                 "15":{ 
                                         "nombre_seccion":"Endodoncia",
                                         "url_vista_show":"consultorio_medico.odontologia.endodoncia.index",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":4
                                     },
                                 "16":{ 
@@ -116,7 +116,7 @@ return [
                                     }, 
                                 "17":{ 
                                         "nombre_seccion":"Tratamiento",
-                                        "url_vista_show":"consultorio_medico.procedimiento_cups",
+                                        "url_vista_show":"consultorio_medico.procedimientos_cups.index",
                                         "activo":0,
                                         "orden":5
                                     }, 
@@ -135,7 +135,7 @@ return [
                                 "20":{ 
                                         "nombre_seccion":"RIPS",
                                         "url_vista_show":"consultorio_medico.rips",
-                                        "activo":1,
+                                        "activo":0,
                                         "orden":0
                                     }
     						}',

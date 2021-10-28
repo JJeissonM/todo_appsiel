@@ -82,7 +82,7 @@ class ExamenMedico extends Model
             $esta = DB::table('salud_resultados_examenes')->where('examen_id', $opcion->id)->where('paciente_id', $paciente_id)->where('consulta_id', $consulta_id)->first();
 
             if (is_null($esta)) {
-                $vec[] = '<a class="btn btn-primary btn-xs" href="' . url('consultorio_medico/resultado_examen_medico/create?id=' . Input::get('id') . '&id_modelo=' . $modelo_resultados_examenes->id . '&paciente_id=' . $paciente_id . '&consulta_id=' . $consulta_id . '&examen_id=' . $opcion->id) . '"> <i class="fa fa-plus"></i> ' . $opcion->descripcion . ' </a> &nbsp;&nbsp;&nbsp;';
+                $vec[] = '<button class="btn btn-primary btn-xs btn_create_examen" data-url="' . url('consultorio_medico/resultado_examen_medico/create?id=' . Input::get('id') . '&id_modelo=' . $modelo_resultados_examenes->id . '&paciente_id=' . $paciente_id . '&consulta_id=' . $consulta_id . '&examen_id=' . $opcion->id) . '" id="btn_create_examen_' . $consulta_id . '_' . $opcion->id . '" data-paciente_id="' . $paciente_id . '" data-consulta_id="' . $consulta_id . '" data-examen_id="' . $opcion->id . '" data-examen_descripcion="' . $opcion->descripcion . '"> <i class="fa fa-plus"></i> ' . $opcion->descripcion . '  <span data-consulta_id="' . $consulta_id . '"></span> </button> &nbsp;&nbsp;&nbsp;';
             } else {
                 $vec[] = '<button class="btn btn-default btn-xs btn_ver_examen" data-paciente_id="' . $paciente_id . '" data-consulta_id="' . $consulta_id . '" data-examen_id="' . $opcion->id . '" data-examen_descripcion="' . $opcion->descripcion . '"> <i class="fa fa-eye"></i> ' . $opcion->descripcion . ' </button> &nbsp;&nbsp;&nbsp;';
             }

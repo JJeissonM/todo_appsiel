@@ -655,6 +655,9 @@
 	@yield('scripts10')
 	@yield('scripts11')
 	@yield('scripts12')
+	@yield('scripts13')
+	@yield('scripts14')
+	@yield('scripts15')
 	@yield('odontograma')
 
 	<script src="https://www.gstatic.com/charts/loader.js"></script>

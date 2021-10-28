@@ -79,7 +79,7 @@
 <br>
 <br>
 
-@section('scripts3')
+@section('scripts12')
 	<script>
 		
 		var continuar = true;

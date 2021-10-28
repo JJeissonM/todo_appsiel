@@ -31,8 +31,6 @@ class ResultadoExamenMedicoController extends ModeloController
      */
     public function create()
     {
-        //$general = new ModeloController();
-
         // Se obtiene el modelo según la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
@@ -66,14 +64,9 @@ class ResultadoExamenMedicoController extends ModeloController
             $url_action = $modelo->url_form_create.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
         }
 
-        $miga_pan = $this->get_miga_pan($modelo,'Crear nuevo');
-
         $examen = ExamenMedico::find( $examen_id );
 
-        // Si el modelo tiene un archivo js particular
-        $archivo_js = app($modelo->name_space)->archivo_js;
-
-        return view('consultorio_medico.resultado_examen_create',compact('form_create','miga_pan','archivo_js','url_action','organos','variables','examen'));
+        return View::make( 'consultorio_medico.resultado_examen_create',compact('form_create','url_action','organos','variables','examen') )->render();
     }
 
     /**
@@ -117,9 +110,7 @@ class ResultadoExamenMedicoController extends ModeloController
             }
         }
 
-        $modelo_pacientes = Modelo::where('modelo','salud_pacientes')->first();
-
-        return redirect( 'consultorio_medico/pacientes/'.$request->paciente_id.'?id='.$request->url_id.'&id_modelo='.$modelo_pacientes->id )->with( 'flash_message','Registro CREADO correctamente.' );
+        return response()->json( [ 'consulta_id'=>$request->consulta_id, 'examen_id' => $request->examen_id ] );
     }
 
     /**

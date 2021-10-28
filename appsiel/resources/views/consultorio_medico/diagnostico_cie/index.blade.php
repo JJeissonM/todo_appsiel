@@ -3,7 +3,6 @@
 											['consulta_id', '=', $consulta->id]
 										] )
 									->get();
-	//dd( $data );
 ?>
 
 <br>
@@ -12,7 +11,7 @@
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th>Diagnóstico principal hello</th>
+				<th>Diagnóstico principal</th>
 				<th>Código CIE</th>
 				<th>Tipo de diagnóstico</th>
 				<th>Observaciones</th>
@@ -54,11 +53,11 @@
 	<script type="text/javascript">
 
 		$(document).ready(function(){
-console.log('hello');
+
 			$(".btn_nuevo_registro_diagnostico_cie").click(function(event){
 
 				event.preventDefault();
-		        console.log('entra');
+
 		        var consulta_id = $(this).children('span').attr('data-consulta_id');
 				
 		        $( '#modal_diagnostico_cie_' + consulta_id ).modal({backdrop: "static"});

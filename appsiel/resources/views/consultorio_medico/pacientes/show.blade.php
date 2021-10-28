@@ -170,35 +170,6 @@
 			</div>
 			<br><br>
 
-			<div id="myModal" class="modal fade" role="dialog">
-			  <div class="modal-dialog">
-
-			    <!-- Modal content-->
-			    <div class="modal-content">
-			      <div class="modal-header">
-			        <button type="button" class="close" data-dismiss="modal">&times;</button>
-			        <h4 class="modal-title">Exámen</h4>
-			      </div>
-			      <div class="modal-body">
-			      	{{ Form::Spin(64) }}
-			      	<div id="info_examen"></div>
-			      	<div class="alert alert-success alert-dismissible fade in" style="display: none;" id="alert_mensaje">
-					    <strong>Registro actualizado correctamente!</strong>
-					  </div>
-			      </div>
-			      <div class="modal-footer">
-			      	<button class="btn btn-danger btn-xs" data-dismiss="modal"> <i class="fa fa-close"></i> Cerrar </button>
-			        @can('salud_consultas_edit') <!-- -->
-						<button class="btn btn-warning btn-xs btn_edit_examen" data-paciente_id="0" data-consulta_id="0" data-examen_id="0"> <i class="fa fa-edit"></i> Editar </button>
-						<button class="btn btn-primary btn-xs btn_save_examen" data-paciente_id="0" data-consulta_id="0" data-examen_id="0" style="display: none;"> <i class="fa fa-save"></i> Guardar </button>
-						<br><br>
-					@endcan <!-- -->
-			      </div>
-			    </div>
-
-			  </div>
-			</div>
-
 		</div> <!-- Marco -->
 	</div>
 	<br/><br/>
@@ -221,86 +192,6 @@
 				  $(this).parents('.form_eliminar').submit();
 				}
 			});
-			
-			$(".btn_ver_examen").click(function(event){
-				event.preventDefault();
-
-				$("#alert_mensaje").hide();
-
-				$("#info_examen").html( '' );
-				$('#div_spin').fadeIn();
-
-		        $("#myModal").modal(
-		        	{keyboard: 'true'}
-		        );
-
-		        var url = '../../consultorio_medico/resultado_examen_medico/' + $(this).attr('data-consulta_id') + '-' + $(this).attr('data-paciente_id') + '-' + $(this).attr('data-examen_id') + '?id='+getParameterByName('id') + '&id_modelo='+getParameterByName('id_modelo');
-
-		        $(".btn_edit_examen").attr('data-consulta_id' , $(this).attr('data-consulta_id') );
-		        $(".btn_edit_examen").attr('data-paciente_id', $(this).attr('data-paciente_id') );
-		        $(".btn_edit_examen").attr('data-examen_id', $(this).attr('data-examen_id') );
-
-		        //console.log( $(this).html() );
-
-		        $(".modal-title").html( $(this).html() );
-
-		        $.get( url, function( respuesta ){
-		        	$('#div_spin').hide();
-		        	$("#info_examen").html( respuesta );
-		        });/**/
-		    });
-			
-			$(".btn_edit_examen").click(function(event){
-				event.preventDefault();
-
-				$("#alert_mensaje").hide();
-
-				$('.modal-body .campo_variable').each(function()
-				{
-
-				    var cadena = $.trim( $(this).text() );
-
-				    //console.log( cadena );
-
-				    $(this).html( $('<input/>').attr({ type: 'text', value: cadena, name: 'campo_variable_organo-' + $(this).attr('id'), class: 'form-control', size: '5' }) );
-
-				});
-
-				$(this).hide();
-				$(".btn_save_examen").show();
-		    });
-			
-			$(".btn_save_examen").click(function(event){
-				event.preventDefault();
-
-				$('#div_spin').show();
-
-				var form = $('.modal-body #form_resultados_examenes');
-				var url = form.attr('action');
-				data = form.serialize();
-				$.post(url,data,function(result){
-
-					//alert( result );
-
-					$('.modal-body .campo_variable').each(function()
-					{
-					    var cadena = $(this).children('input').val();
-					    $(this).html( cadena );
-					});
-
-					$('#div_spin').hide();
-					
-					$(".btn_save_examen").hide();
-					$(".btn_edit_examen").show();
-
-					$("#alert_mensaje").show();
-				});					
-		    });
-
-		    $("#myModal").on('hidden.bs.modal', function(){
-			    $(".btn_save_examen").hide();
-			    $(".btn_edit_examen").show();
-			  });
 	
 			function getParameterByName(name) {
 			    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

@@ -83,6 +83,11 @@ class Cliente extends Model
     {
         return $this->belongsTo( Vendedor::class, 'vendedor_id');
     }
+        
+    public function zona()
+    {
+        return $this->belongsTo( Zona::class, 'zona_id');
+    }
 
     public function contactos()
     {

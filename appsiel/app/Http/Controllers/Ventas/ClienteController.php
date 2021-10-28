@@ -62,7 +62,6 @@ class ClienteController extends ModeloController
         $Cliente->fill( array_merge( $request->all(), ['core_tercero_id' => $tercero->id] ) );
         $Cliente->save();
 
-
         $acciones = $this->acciones_basicas_modelo( Modelo::find( 138 ), '' );
         
         $url_ver = str_replace('id_fila', $Cliente->id, $acciones->show);
@@ -89,8 +88,10 @@ class ClienteController extends ModeloController
         $lista_campos = $modelo->campos()->orderBy('orden')->get()->toArray();
 
         // Formatear-asignar el valor correspondiente del registro del modelo
+        
         // 1ro. Para los campos del modelo Cliente
         $lista_campos = Campo::asignar_valores_registro( $lista_campos, $registro );
+        
         // 2do. Para los campos del modelo Tercero
         $tercero = Tercero::find($registro->core_tercero_id);
         $lista_campos = Campo::asignar_valores_registro( $lista_campos, $tercero );

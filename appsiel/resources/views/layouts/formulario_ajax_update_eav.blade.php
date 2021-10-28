@@ -16,10 +16,12 @@
 			{{ Form::hidden('modo_peticion', Input::get('modo_peticion')) }}
 
 		{{ Form::close() }}
-	        
-        <button class="btn btn-primary btn-sm btn_save_modal"> <i class="fa fa-save"></i> Guardar </button>
-		
-		<button class="btn btn-danger btn-sm btn_close_modal"> <i class="fa fa-close"></i> Cerrar </button>
+	    
+	    @if( $buttons != 'no' )
+	        <button class="btn btn-primary btn-sm btn_save_modal"> <i class="fa fa-save"></i> Guardar </button>
+			
+			<button class="btn btn-danger btn-sm btn_close_modal"> <i class="fa fa-close"></i> Cerrar </button>
+		@endif
 	</div>
 </div>
 <br/><br/>

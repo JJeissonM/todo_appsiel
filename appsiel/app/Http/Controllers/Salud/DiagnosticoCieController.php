@@ -66,6 +66,9 @@ class DiagnosticoCieController extends ModeloController
     }
 
 
+    /*
+        DE AQUI PARA ABAJO FALTA TERMINAR
+    */
     
     // Parámetro enviados por GET - para la nueva version lista_sugerencias
     public function get_suggestions_list()
