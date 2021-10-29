@@ -22,16 +22,14 @@
 
     <table class="table">
         <tr>
-            <td style="/*border: solid 1px #ddd;*/ border: none;" width="60%">
+            <td style="border: none;" width="60%">
                 <div class="headempresa">
                     @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir' ] )
                 </div>
             </td>
             <td style="/*border: solid 1px #ddd;*/">
                 <div class="headdoc">
-                    <br>
-                    <b
-                        style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b><br>
+                    <b style="font-size: 1.6em; text-align: center; display: block;">{{ $doc_encabezado->documento_transaccion_descripcion }}</b>
 
                     <table style="margin-top: 10px;">
                         <tr>
@@ -50,10 +48,11 @@
             </td>
         </tr>
     </table>
+    
     @if($doc_encabezado->estado == 'Anulado')
-    <div class="lbl_doc_anulado">
-        Documento Anulado
-    </div>
+        <div class="lbl_doc_anulado">
+            Documento Anulado
+        </div>
     @endif
 
     <div class="subhead">

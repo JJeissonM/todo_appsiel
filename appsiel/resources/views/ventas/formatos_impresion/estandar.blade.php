@@ -33,9 +33,6 @@ Cliente:
 
 @section('encabezado_datos_adicionales')
     @include('matriculas.facturas.datos_estudiante')
-    <br>
-    <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
-
     @include('ventas.formatos_impresion.detalles_factura_medica')
     <br>
     <b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}

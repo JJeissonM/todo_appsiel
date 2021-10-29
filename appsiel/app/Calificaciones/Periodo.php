@@ -12,6 +12,7 @@ use Auth;
 use DB;
 
 use App\Matriculas\PeriodoLectivo;
+use App\Calificaciones\Calificacion;
 
 class Periodo extends Model
 {
@@ -38,6 +39,11 @@ class Periodo extends Model
                                     ['id_periodo','=', $this->id ],
                                     ['id_estudiante','=', $estudiante_id ]
                                 ])->get();
+    }
+
+    public function get_calificacion( $curso_id, $estudiante_id, $asignatura_id )
+    {
+        return Calificacion::get_para_boletin( $this->id, $curso_id, $estudiante_id, $asignatura_id );
     }
 
     public static function consultar_registros($nro_registros, $search)

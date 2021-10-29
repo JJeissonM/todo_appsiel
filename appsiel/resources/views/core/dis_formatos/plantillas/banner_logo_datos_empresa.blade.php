@@ -7,7 +7,6 @@
 <table border="0" width="100%">
 	<tr>
 		<td width="30%" align="center">
-			<!--<img src="{{ $url }}" height="{{ config('configuracion.alto_logo_formatos') }}" width="{{ config('configuracion.ancho_logo_formatos') }}" style="padding: 2px 10px;" />-->
 			<p style="text-align: center">
 			<?php
 			
@@ -40,7 +39,6 @@
 		</td>
 		<td>
 			<div style="font-size: 15px; text-align: center;">
-				<br/>
 				<b>{{ $empresa->descripcion }}</b><br/>
 				<b>{{ config("configuracion.tipo_identificador") }}:
 					@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>

@@ -142,7 +142,8 @@ class BoletinController extends Controller
         $formatos = [
                         'pdf_boletines_1' => 'Formato # 1 (estándar)',
                         'pdf_boletines_2' => 'Formato # 2 (preescolar)',
-                        'pdf_boletines_3' => 'Formato # 3 (moderno)'
+                        'pdf_boletines_3' => 'Formato # 3 (moderno)',
+                        'pdf_boletines_4' => 'Formato # 4 (resúmen)'
                     ];
 
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
@@ -155,8 +156,7 @@ class BoletinController extends Controller
                         ['url'=>'NO','etiqueta'=>'Imprimir boletines']
                     ];
 
-
-        return view('calificaciones.boletines.form_imprimir',compact('cursos','periodos_lectivos', 'formatos', 'miga_pan'));
+        return view( 'calificaciones.boletines.form_imprimir', compact('cursos','periodos_lectivos', 'formatos', 'miga_pan' ) );
     }
 	
 	public function generarPDF( Request $request )
@@ -203,7 +203,17 @@ class BoletinController extends Controller
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas') )->render();
+        $periodos = Periodo::get_activos_periodo_lectivo( PeriodoLectivo::get_actual()->id );
+        // Excluir el periodo final
+        foreach ($periodos as $key => $value)
+        {
+            if ( $value->periodo_de_promedios )
+            {
+                unset( $periodos[$key] );
+            }
+        }
+
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas', 'periodos') )->render();
         
         //echo $view;
         // Se prepara el PDF
@@ -222,6 +232,11 @@ class BoletinController extends Controller
         $l = 0;
         foreach ($matriculas as $matricula)
         {
+            if( is_null( $matricula->estudiante ) )
+            {
+                dd( 'ERROR. La matricula no tiene un estudiante asignado.', $matricula );
+            }
+
             $datos->estudiantes[$l] = (object)[];
             $datos->estudiantes[$l]->estudiante = $matricula->estudiante;
             $datos->estudiantes[$l]->password_estudiante = PasswordReset::where( 'email', $matricula->estudiante->tercero->email )->get()->first();
@@ -235,10 +250,10 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->asignacion_asignatura = $asignacion;
 
                 $calificacion = Calificacion::get_para_boletin( $periodo->id, $curso->id, $matricula->estudiante->id, $asignacion->asignatura_id );
-
+                
                 $cuerpo_boletin->lineas[$a]->calificacion = $calificacion;
 
-                if(is_null($asignacion->asignatura)){dd($asignacion);} // La asignatura no existe
+                if(is_null($asignacion->asignatura)){dd('NO hay registros de asignauras para esa asignacion.', $asignacion);} // La asignatura no existe
 
                 $cuerpo_boletin->lineas[$a]->area_id = $asignacion->asignatura->area_id;
                 $cuerpo_boletin->lineas[$a]->peso_asignatura = $asignacion->peso;
