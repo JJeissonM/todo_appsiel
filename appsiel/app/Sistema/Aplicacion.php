@@ -8,7 +8,7 @@ class Aplicacion extends Model
 {
     protected $table = 'sys_aplicaciones';
 
-    protected $fillable = ['ambito', 'descripcion', 'app', 'definicion', 'tipo_precio', 'precio', 'orden', 'nombre_imagen', 'mostrar_en_pag_web', 'estado'];
+    protected $fillable = [ 'ambito', 'descripcion', 'app', 'definicion', 'tipo_precio', 'precio', 'orden', 'nombre_imagen', 'mostrar_en_pag_web', 'estado' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ámbito', 'Descripción', 'Detalles', 'Tipo precio', 'Precio', 'Orden', 'Estado'];
 

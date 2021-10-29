@@ -24,7 +24,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['estandar_medica'=>'Estándar'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	Formato: {{ Form::select('formato_impresion_id',['estandar_medica'=>'Estándar médica','estandar'=>'Estándar','estandar2'=>'Moderna'],null, [ 'id' =>'formato_impresion_id' ]) }}
 	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar_medica' ) }}
 	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 @endsection

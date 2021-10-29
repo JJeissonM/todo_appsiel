@@ -32,18 +32,9 @@
 @endsection
 
 @section('encabezado_datos_adicionales')
-    <?php 
-        $caja_trabajo = \App\Core\ModeloEavValor::get_valor_campo( '221-'.$doc_encabezado->id.'--1305' );
-    ?>
+    @include('ventas.formatos_impresion.detalles_factura_medica')
     <br>
-    <b>Historia clínica No.: &nbsp;&nbsp;</b> {{ App\Salud\Paciente::where( 'core_tercero_id', $doc_encabezado->core_tercero_id )->value('codigo_historia_clinica') }}
-    <br/>
-    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
-    <br>
-    <b>Fecha y hora de entrega: &nbsp;&nbsp;</b> {{ $doc_encabezado->fecha_entrega }} &nbsp;&nbsp; - &nbsp;&nbsp; {{ $doc_encabezado->hora_entrega }}
-    @if( $caja_trabajo != '' )
-        &nbsp;&nbsp;&nbsp;&nbsp;  | &nbsp;&nbsp;&nbsp; <b>Caja de trabajo: &nbsp;&nbsp;</b> {{ $caja_trabajo }}
-    @endif
+    <b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}
 @endsection
 
 @section('tabla_registros_1')
@@ -120,7 +111,7 @@
     ?>
 
     @if( $formula_medica != '' )
-        <p style="width: 100%; text-align: center; font-weight: bold; font-size: 12px; padding: -10px;"> Exámen de {{ $formula_medica->examenes->first()->descripcion }}</p>
+        <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Exámen de {{ $formula_medica->examenes->first()->descripcion }}</div>
         {!! $examen !!}
         @include( 'consultorio_medico.formula_optica_show_tabla', [ 'formula' => $formula_medica ] )
         <br>
@@ -168,7 +159,10 @@
         <br>
     @endif
     @include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
-    <!-- @ include('ventas.incluir.factura_detalles_impuestos',compact('array_tasas')) -->
+    @include('ventas.incluir.factura_detalles_impuestos',compact('array_tasas'))
+    @if( !is_null( $otroscampos ) )
+        {!! $otroscampos->terminos_y_condiciones !!}
+    @endif
 @endsection
 
 @section('tabla_registros_2')
