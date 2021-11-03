@@ -18,7 +18,7 @@ class CxcAbono extends Model
 
     protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'core_empresa_id', 'core_tercero_id', 'modelo_referencia_tercero_index', 'referencia_tercero_id', 'fecha', 'doc_cxc_transacc_id', 'doc_cxc_tipo_doc_id', 'doc_cxc_consecutivo', 'doc_cruce_transacc_id', 'doc_cruce_tipo_doc_id', 'doc_cruce_consecutivo', 'abono', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento recaudo', 'Proveedor', 'Documento CxC Abonado', 'Valor abono'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento recaudo', 'Proveedor', 'Documento CxC Abonado', 'Doc. cruce', 'Valor abono'];
 
     public $urls_acciones = '{"show":"no"}';
 
@@ -26,6 +26,7 @@ class CxcAbono extends Model
     {
         $collection = CxcAbono::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_abonos.core_tipo_doc_app_id')
                         ->leftJoin('core_tipos_docs_apps AS tipo_docs_cxc', 'tipo_docs_cxc.id', '=', 'cxc_abonos.doc_cxc_tipo_doc_id')
+                        ->leftJoin('core_tipos_docs_apps AS tipo_docs_cruce', 'tipo_docs_cruce.id', '=', 'cxc_abonos.doc_cruce_tipo_doc_id')
                         ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_abonos.core_tercero_id')
                         ->where('cxc_abonos.core_empresa_id', Auth::user()->empresa_id)
                         ->select(
@@ -33,8 +34,9 @@ class CxcAbono extends Model
                             DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_abonos.consecutivo) AS campo2'),
                             DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
                             DB::raw('CONCAT(tipo_docs_cxc.prefijo," ",cxc_abonos.doc_cxc_consecutivo) AS campo4'),
-                            'cxc_abonos.abono AS campo5',
-                            'cxc_abonos.id AS campo6'
+                            DB::raw('CONCAT(tipo_docs_cruce.prefijo," ",cxc_abonos.doc_cruce_consecutivo) AS campo5'),
+                            'cxc_abonos.abono AS campo6',
+                            'cxc_abonos.id AS campo7'
                         )
                         ->orderBy('cxc_abonos.created_at', 'DESC')
                         ->get();
@@ -44,7 +46,7 @@ class CxcAbono extends Model
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                    if ( self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7], $search)) {
                         return $c;
                     }
                 });

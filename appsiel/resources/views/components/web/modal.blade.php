@@ -6,7 +6,9 @@
     @if($modal->path != null || $modal->path!='')
         background: url('{{$modal->path}}') no-repeat;
         height: 100%;
-        background-size: cover;
+        width: 54%;
+        background-size: contain;
+        border: 0px;
         object-position: center center;
     @endif
 }

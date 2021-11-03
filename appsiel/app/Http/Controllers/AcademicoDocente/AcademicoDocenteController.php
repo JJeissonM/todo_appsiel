@@ -361,12 +361,14 @@ class AcademicoDocenteController extends Controller
             }
         }
 
-        $view =  View::make( 'academico_docente.pdf_estudiantes1', compact('estudiantes', 'curso', 'asignatura', 'docente', 'periodos', 'calificaciones', 'tope_escala_valoracion_minima') )->render();
+        $tam_letra = '11';
+        $view =  View::make( 'academico_docente.pdf_estudiantes1', compact('estudiantes', 'curso', 'asignatura', 'docente', 'periodos', 'calificaciones', 'tope_escala_valoracion_minima','colegio','tam_letra') )->render();
+        $vista = View::make( 'layouts.pdf3', compact('view') )->render();
         $orientacion = 'landscape';
 
         //crear PDF
         $pdf = \App::make('dompdf.wrapper');
-        $pdf->loadHTML(($view))->setPaper('Letter', $orientacion);
+        $pdf->loadHTML(($vista))->setPaper('Letter', $orientacion);
         return $pdf->stream('listado_estudiantes.pdf');
     }
 

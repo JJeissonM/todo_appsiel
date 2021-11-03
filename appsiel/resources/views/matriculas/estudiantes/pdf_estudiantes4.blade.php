@@ -1,35 +1,3 @@
-<style>
-table {
-	width: 100%;
-	font-size: 13px;
-}
-
-th, td {
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-	background-color: #CACACA;
-}
-
-td.celda {
-	width: 50px;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
-}
-
-h3 {
-	text-align:center;
-}
-
-div.recuadro{
-	
-}
-
-.page-break {
-    page-break-after: always;
-}
-</style>
 <div class="container">
 	@for($k=0;$k < count($estudiantes) ;$k++)
 		<!-- TITULOS -->

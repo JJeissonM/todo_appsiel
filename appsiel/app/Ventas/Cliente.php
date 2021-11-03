@@ -77,7 +77,6 @@ class Cliente extends Model
     {        
         return $this->sumar_dias_calendario_a_fecha( $fecha, $this->condicion_pago->dias_plazo );
     }
-
         
     public function vendedor()
     {

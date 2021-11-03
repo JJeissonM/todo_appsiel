@@ -566,17 +566,23 @@ class ModeloController extends Controller
         // y los que son únicos
         $lista_campos = $modelo->campos->toArray();
         $cant = count($lista_campos);
-        for ($i = 0; $i < $cant; $i++) {
-            if ($lista_campos[$i]['editable'] == 1) {
-                if ($lista_campos[$i]['requerido']) {
+        for ($i = 0; $i < $cant; $i++)
+        {
+            if ($lista_campos[$i]['editable'] == 1) 
+            {
+                if ($lista_campos[$i]['requerido']) 
+                {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'required']);
                 }
-                if ($lista_campos[$i]['unico']) {
+                
+                if ($lista_campos[$i]['unico']) 
+                {
                     $this->validate($request, [$lista_campos[$i]['name'] => 'unique:' . $registro->getTable() . ',' . $lista_campos[$i]['name'] . ',' . $id]);
                 }
             }
             // Cuando se edita una transacción
-            if ($lista_campos[$i]['name'] == 'movimiento') {
+            if ($lista_campos[$i]['name'] == 'movimiento')
+            {
                 $lista_campos[$i]['value'] = 1;
             }
         }

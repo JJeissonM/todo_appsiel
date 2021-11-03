@@ -48,6 +48,8 @@
 	<div class="marco_formulario">
 		@include('ventas.clientes.tabla_datos_basicos')
 
+		@include('ventas.clientes.tabla_datos_contactos')
+
 		@include('ventas.clientes.tabla_datos_ventas')
 	</div>
 
