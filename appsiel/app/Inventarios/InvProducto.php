@@ -13,6 +13,7 @@ use Auth;
 
 
 use App\Inventarios\InvGrupo;
+use App\Inventarios\InvMovimiento;
 
 use App\Contabilidad\Impuesto;
 use App\Ventas\ListaPrecioDetalle;
@@ -33,6 +34,11 @@ class InvProducto extends Model
     public function grupo_inventario()
     {
         return $this->belongsTo(InvGrupo::class, 'inv_grupo_id');
+    }
+
+    public function get_existencia_actual( $bodega_id, $fecha )
+    {
+        return InvMovimiento::get_existencia_actual( $this->id, $bodega_id, $fecha );
     }
 
     public function impuesto()
@@ -76,6 +82,28 @@ class InvProducto extends Model
         }
 
         return $costo_prom;
+    }
+
+    public function set_costo_promedio( $bodega_id, $costo_prom )
+    {
+        $registro_costo_prom = InvCostoPromProducto::where([
+                                                    ['inv_bodega_id','=',$bodega_id],
+                                                    ['inv_producto_id','=', $this->id]
+                                                ])
+                                        ->get()
+                                        ->first();
+
+        if ( is_null( $registro_costo_prom ) )
+        {
+            $registro_costo_prom = new InvCostoPromProducto();
+            $registro_costo_prom->inv_bodega_id = $bodega_id;
+            $registro_costo_prom->inv_producto_id = $this->id;
+            $registro_costo_prom->costo_promedio = $costo_prom;
+            $registro_costo_prom->save();
+        }else{
+            $registro_costo_prom->costo_promedio = $costo_prom;
+            $registro_costo_prom->save();
+        }
     }
 
     public function get_productos($tipo)

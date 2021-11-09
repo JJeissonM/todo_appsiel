@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use App\Nomina\EquivalenciaContable;
+use App\Nomina\NominaElectronica\ConceptoDian;
 
 class NomConcepto extends Model
 {
@@ -17,11 +18,13 @@ class NomConcepto extends Model
         forma_parte_basico: Los conceptos que forman parte integral del básico son aquellas que sustituyen el sueldo y afectan la continuidad de este. Ejemplo: permisos remunerados, licencias remuneradas, vacaciones, incapacidades y otros los cuales en su pago disminuyen el valor del sueldo o jornal a pagar.
 
     */
-    protected $fillable = ['modo_liquidacion_id', 'naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'estado'];
+    protected $fillable = ['modo_liquidacion_id', 'naturaleza', 'porcentaje_sobre_basico', 'valor_fijo', 'descripcion', 'abreviatura', 'forma_parte_basico', 'nom_agrupacion_id', 'cpto_dian_id ', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Modo Liquidación', 'Descripción', 'Abreviatura', '% del básico', 'Vlr. Fijo', 'Naturaleza', 'Parte del básico', 'Agrupación', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
+
+    // FALTA AGREGAR EL ARCHIVO CONCEPTOS.JS. VALIDAR CAMPOS REQUERIDOS
 
     public function modo_liquidacion()
     {
@@ -31,6 +34,11 @@ class NomConcepto extends Model
     public function agrupacion()
     {
         return $this->belongsTo(AgrupacionConcepto::class, 'nom_agrupacion_id');
+    }
+
+    public function cpto_dian()
+    {
+        return $this->belongsTo(ConceptoDian::class, 'cpto_dian_id');
     }
 
     public function equivalencia_contable( $nom_grupo_empleado_id )

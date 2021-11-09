@@ -20,6 +20,62 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+
+				<h4> Parámetros por defecto creación de Productos  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$item_impuesto_id = 1;
+								if( isset($parametros['item_impuesto_id'] ) )
+								{
+									$item_impuesto_id = $parametros['item_impuesto_id'];
+								}
+							?>
+							{{ Form::bsSelect('item_impuesto_id', $item_impuesto_id, 'Impuesto', App\Contabilidad\Impuesto::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$item_lista_precios_id = 1;
+								if( isset($parametros['item_lista_precios_id'] ) )
+								{
+									$item_lista_precios_id = $parametros['item_lista_precios_id'];
+								}
+							?>
+							{{ Form::bsSelect('item_lista_precios_id', $item_lista_precios_id, 'Lista de precios de venta', App\Ventas\ListaPrecioEncabezado::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$item_bodega_principal_id = 1;
+								if( isset($parametros['item_bodega_principal_id'] ) )
+								{
+									$item_bodega_principal_id = $parametros['item_bodega_principal_id'];
+								}
+							?>
+							{{ Form::bsSelect('item_bodega_principal_id', $item_bodega_principal_id, 'Bodega principal', App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto creación de desarmes automáticos  </h4>
 				<hr>
 				<div class="row">
@@ -109,6 +165,73 @@
 					</div>
 
 				</div>
+
+				<h4> Parámetros por defecto creación Entradas de almacén  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['ea_tipo_transaccion_id'] ) )
+								{
+									$ea_tipo_transaccion_id = $parametros['ea_tipo_transaccion_id'];
+								}else{
+									$ea_tipo_transaccion_id = 4;
+								}
+							?>
+							{{ Form::bsSelect('ea_tipo_transaccion_id', $ea_tipo_transaccion_id, 'Tipo de transacción', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['ea_tipo_doc_app_id'] ) )
+								{
+									$ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
+								}else{
+									$ea_tipo_doc_app_id = 9;
+								}
+							?>
+							{{ Form::bsSelect('ea_tipo_doc_app_id', $ea_tipo_doc_app_id, 'Tipo Documento', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['ea_tercero_id'] ) )
+								{
+									$ea_tercero_id = $parametros['ea_tercero_id'];
+								}else{
+									$ea_tercero_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('ea_tercero_id', $ea_tercero_id, 'Tercero', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['ea_motivo_id'] ) )
+								{
+									$ea_motivo_id = $parametros['ea_motivo_id'];
+								}else{
+									$ea_motivo_id = 1;
+								}
+							?>
+							{{ Form::bsSelect('ea_motivo_id', $ea_motivo_id, 'Motivo entrada', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
 
 				<h4> Parámetros por defecto para salidas de Órdenes de Trabajo  </h4>
 				<hr>

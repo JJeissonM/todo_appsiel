@@ -47,6 +47,7 @@ class InvDocEncabezado extends Model
 
     public function lineas_registros()
     {
+        dd('perate');
         return $this->hasMany( InvDocRegistro::class, 'inv_doc_encabezado_id' );
     }
 
@@ -206,9 +207,16 @@ class InvDocEncabezado extends Model
     public function contabilizar( $encabezado_documento )
     {
         $lineas_registros = $encabezado_documento->lineas_registros;
+        
+        if( is_null($lineas_registros) )
+        {
+            return 0;
+        }
 
-        foreach ($lineas_registros as $linea) {
-            if ( $linea->item->tipo != 'producto') {
+        foreach ($lineas_registros as $linea)
+        {
+            if ( $linea->item->tipo != 'producto')
+            {
                 continue; // Si no es un producto, saltar la contabilización de abajo.
             }
 

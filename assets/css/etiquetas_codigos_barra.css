@@ -1,0 +1,10 @@
+
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 12px;
+}
+
+@page {
+  size: 4.24in 38.5in;
+  margin: 15px;
+}

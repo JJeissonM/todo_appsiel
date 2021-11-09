@@ -1,6 +1,10 @@
 <?php 
 
 
+Route::get('inv_item_mandatario_update_item_relacionado/{campo}/{item_id}/{nuevo_valor}', 'Inventarios\ItemMandatarioController@update_item_relacionado');
+Route::get('inv_item_mandatario_etiquetas_codigos_barra/{mandatario_id}/{item_id}/{cantidad}', 'Inventarios\ItemMandatarioController@etiquetas_codigos_barra');
+Route::resource('inv_item_mandatario', 'Inventarios\ItemMandatarioController');
+
 Route::get('inv_get_formulario_edit_registro','Inventarios\InventarioController@get_formulario_edit_registro');
 Route::post('inv_doc_registro_guardar','Inventarios\InventarioController@doc_registro_guardar');
 

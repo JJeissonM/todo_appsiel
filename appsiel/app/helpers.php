@@ -55,7 +55,6 @@ if (! function_exists('get_valores_devengo_deduccion'))
 {
     function get_valores_devengo_deduccion($naturaleza, $valor)
     {
-	        
         switch ($naturaleza)
         {
             case 'devengo':

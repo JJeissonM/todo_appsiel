@@ -1,3 +1,9 @@
+<?php 
+    if ( !isset($colegio) )
+    {
+        $colegio = \App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+    }
+?>
 <table class="banner">
     <tr>
         <td width="25%">
