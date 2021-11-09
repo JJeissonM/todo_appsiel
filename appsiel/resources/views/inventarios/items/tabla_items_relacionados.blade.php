@@ -43,8 +43,14 @@
 						&nbsp;&nbsp;
 						<a class="btn btn-danger" href="{{ url('inventarios/create?id=8&id_modelo=249&id_transaccion=3') }}" title="Registrar salida" target="_blank"> <i class="fa fa-arrow-down"></i></a>
 						&nbsp;&nbsp;
-						<input style="display:inline !important; width: 50px;border-radius: 4px;padding: 4px;" class="cantidad_labels" type="number" min="1" value="{{$existencia_actual}}">
-						<button class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" data-mandatario_id="0" data-item_id="{{$item->id}}"> <i class="fa fa-barcode"></i></button>
+						<input style="display:inline !important; width: 50px;border-radius: 4px;padding: 4px;" class="cantidad_etiquetas" type="number" min="1" value="{{$existencia_actual}}" title="Cantidad a imprimir">
+						<!-- <button class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" data-mandatario_id="0" data-item_id="{ {$item->id}}"> <i class="fa fa-barcode"></i></button>
+						-->
+						
+						<a class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" href="{{ url('inv_item_mandatario_etiquetas_codigos_barra' . '/0/' . $item->id . '/' . $existencia_actual ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
+
+						
+
 					</td>
 				</tr>
 				<?php 
@@ -73,9 +79,10 @@
 	<script type="text/javascript">
 
 		// 96 px = 1 in
-		var altura_hoja_imprimir = "{{$altura_en_pulgadas * 96}}";
+		/*var altura_hoja_imprimir = "{ {$altura_en_pulgadas * 96}}";
 		var ancho_hoja_imprimir = 96 * 4.06;
 		console.log(altura_hoja_imprimir);
+		*/
 		$(document).ready(function(){
 
 			$(".btn_nuevo_item_relacionado").click(function(event){
@@ -97,23 +104,6 @@
 		            $('#contenido_modal_item_relacionado').html(data);
 				});		        
 		    });
-
-			$(document).on('click', '.btn_eliminar_item_relacionado', function(event) {
-				event.preventDefault();
-				var fila = $(this).closest("tr");
-
-				if ( confirm('¿Desea eliminar el registro de endodoncia para el diente # ' + fila.find('td').eq(0).html() ) )
-				{
-					$('#div_cargando').show();
-	            	var url = "{{ url('inv_item_mandatario/delete') }}" + "/" + $(this).attr('data-id');
-
-					$.get( url )
-						.done(function( respuesta ) {
-							$('#div_cargando').hide();
-							fila.remove();
-						});
-				}
-			});
 
 
 			// GUARDAR 
@@ -141,32 +131,19 @@
 		    });
 
 
-			$(document).on("click",".btn_imprimir_etiquetas",function(event){
+			$(document).on( "change", ".cantidad_etiquetas",function(event){
 
 		    	event.preventDefault();
 
-		        var mandatario_id = $(this).attr('data-mandatario_id');
-		        $('#div_cargando').show();
-				
-				//ventana_imprimir = window.open("", "Impresión de Etiquetas Códigos de Barra", "left=200,width=400,height=600,menubar=no");
-				ventana_imprimir = window.open("", "Impresión de Etiquetas Códigos de Barra","menubar=no,height=" + altura_hoja_imprimir + ",width=300" );
+		    	var input_cantidad = $(this);
 
-				var url = "{{ url('inv_item_mandatario_etiquetas_codigos_barra') }}" + "/" + $(this).attr('data-mandatario_id') + "/" + $(this).attr('data-item_id') + "/" + $(this).prev().val();
+		    	var btn_imprimir = $(this).next();
+		    	var url_imprimir = btn_imprimir.attr('href');
+		    	var url_separada = url_imprimir.split('/');
+		    	
+		    	var nueva_url = url_separada[0] + '//' + url_separada[2] + '/' + url_separada[3] + '/' + url_separada[4] + '/' + url_separada[5] + '/' + url_separada[6] + '/' + input_cantidad.val();
 
-				$.get( url )
-					.done(function( respuesta ) {
-						$('#div_cargando').hide();
-
-						//ventana_imprimir.document.write('<html><head><title>Print it!</title><link rel="stylesheet" type="text/css" href="{ {asset('assets/js/inventarios/etiquetas_codigos_barra.js')}}"></head><body>');
-						//var style = "@ page{size: " + ancho_hoja_imprimir + "in " + altura_hoja_imprimir + "in;margin: 0.06in;}";
-						//ventana_imprimir.document.write('<html><head><title>Print it!</title><style>' + style + '</style></head><body>');
-
-						ventana_imprimir.document.write(respuesta);
-
-						//ventana_imprimir.document.write('</body></html>');
-
-						ventana_imprimir.print();
-					});
+		    	btn_imprimir.attr( 'href', nueva_url );
 		    });
 
 

@@ -201,6 +201,7 @@ class ItemMandatarioController extends ModeloController
     public function etiquetas_codigos_barra( $mandatario_id, $item_id, $cantidad )
     {
         $items = [];
+
         if ( (int)$mandatario_id == 0 )
         {
             $item = InvProducto::where( 'id', $item_id )->get()->first();
@@ -210,7 +211,23 @@ class ItemMandatarioController extends ModeloController
                 $items->push( $item );
             }
         }
+
+        $vista = View::make( 'inventarios.items.etiquetas_codigos_barra', compact('items','cantidad') )->render();
+
+        $alto = 96 * ( ceil( $cantidad / 3 ) );
+
+        //dd( $cantidad, ceil( $cantidad / 3 ), $alto );
+
+        //$tam_hoja = 'Letter';
+        $tam_hoja = array(0, 0, 297, $alto );//array(0, 0, 612.00, 390.00);//'folio';
+        $orientacion = 'Portrait';
+
+        $pdf = \App::make('dompdf.wrapper');
+
+        $pdf->loadHTML( $vista )->setPaper( $tam_hoja, $orientacion );
         
-        return View::make( 'inventarios.items.etiquetas_codigos_barra', compact('items','cantidad') )->render();
+        //$pdf->setOptions(['defaultFont' => 'Arial']);
+        //echo $vista;
+        return $pdf->stream();
     }
 }
