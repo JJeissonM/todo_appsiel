@@ -31,52 +31,52 @@
     </head>
     <body id="app-layout">
     
-            <?php
-                $numero_columnas = 3;
-                $i = 3;
-                $minimo_comun_multiplo_columnas = 12;
-            ?>
+        <?php
+            $numero_columnas = 3;
+            $i = 3;
+            $minimo_comun_multiplo_columnas = 12;
+        ?>
 
-            <table>                   
-                
-                    @foreach($items as $fila)
-                      
-                        @if($i % $numero_columnas == 0)
-                            <tr>
-                        @endif
+        <table>                   
+            
+                @foreach($items as $fila)
+                  
+                    @if($i % $numero_columnas == 0)
+                        <tr>
+                    @endif
 
-                        <!-- colspan="{ { $minimo_comun_multiplo_columnas / $numero_columnas }}" -->
-                        <td width="33%">
-                            <div style="padding: 5px; text-align: center;">
+                    <!-- colspan="{ { $minimo_comun_multiplo_columnas / $numero_columnas }}" -->
+                    <td width="33%">
+                        <div style="padding: 5px; text-align: center;">
 
-                                <p>
-                                    <b>{{ substr( $fila->descripcion, 0, 20) }}</b>
-                                </p>
+                            <p>
+                                <b>{{ substr( $fila->descripcion, 0, 20) }}</b>
+                            </p>
 
-                                
-                                <!-- 
-                                    DNS1D::getBarcodePNG( texto_codigo, tipo_codigo, ancho, alto) 
+                            
+                            <!-- 
+                                DNS1D::getBarcodePNG( texto_codigo, tipo_codigo, ancho, alto) 
 
-                                    tipo_codigo: { C128B, C39 }
+                                tipo_codigo: { C128B, C39 }
 
-                                -->
-                                <p>
-                                    <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( (int)$fila->codigo_barras, "EAN13", 2, 100) }}" alt="barcode" />
-                                </p>
-                                {{ $fila->codigo_barras }}
-                            </div>
-                                
-                        </td>
+                            -->
+                            <p>
+                                <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( (int)$fila->codigo_barras, "EAN13", 2, 100) }}" alt="barcode" />
+                            </p>
+                            {{ $fila->codigo_barras }}
+                        </div>
+                            
+                    </td>
 
-                        <?php
-                            $i++;
-                        ?>
+                    <?php
+                        $i++;
+                    ?>
 
-                        @if($i % $numero_columnas == 0)
-                            </tr>
-                        @endif
+                    @if($i % $numero_columnas == 0)
+                        </tr>
+                    @endif
 
-                    @endforeach
-            </table>        
+                @endforeach
+        </table>        
     </body>
 </html>

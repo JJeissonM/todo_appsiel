@@ -34,7 +34,7 @@
 				<?php 
 					$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 				?>
-				<tr>
+				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
 					<td class="referencia_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
 					<td align="center"> {{ $existencia_actual }} </td>
@@ -102,6 +102,7 @@
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
 		            $('#contenido_modal_item_relacionado').html(data);
+		            document.getElementById("referencia").focus();
 				});		        
 		    });
 
@@ -146,45 +147,61 @@
 		    	btn_imprimir.attr( 'href', nueva_url );
 		    });
 
+			var validado;
 
 		    function validar_datos()
 		    {
+		    	validado = true;
 		    	if ( $('#referencia').val() == '' )
 				{
 					$('#referencia').focus();
 					alert('Debe ingresar una Referencia.');
-					return false;
+					validado = false;
 				}
 		    	if ( $('#unidad_medida2').val() == '' )
 				{
 					$('#unidad_medida2').focus();
 					alert('Debe ingresar una Talla.');
-					return false;
+					validado = false;
 				}
 
-		    	$(".referencia_item").each(function() {
-					var val = $(this).text();
-					if ( val == $('#referencia').val() )
+		    	$(".referencia_talla").each(function() {
+					valor_referencia_talla = $(this).attr('data-codigo_referencia_talla');
+						
+					if ( valor_referencia_talla == $('#referencia').val() + $('#unidad_medida2').val() )
 					{
-						$('#referencia').focus();
-						alert('La Referencia ingresada Ya existe para este Producto.');
+						alert('Ya se ingresó Esa Referencia y Talla para este Producto.');
+						validado = false;
 						return false;
 					}
-				});
+				});			    	
 
-		    	$(".talla_item").each(function() {
-					var val = $(this).text();
-					if ( val == $('#unidad_medida2').val() )
-					{
-						$('#unidad_medida2').focus();
-						alert('La Talla ingresada Ya existe para este Producto.');
-						return false;
-					}
-				});
-
-				return true;
+				return validado;
 		    }
 
+		    $(document).on('keyup','#referencia',function(event){
+		    	var codigo_tecla_presionada = event.which || event.keyCode;
+		    	if ( codigo_tecla_presionada == 13 )
+				{
+					$('#unidad_medida2').focus();
+				}
+		    });
+
+		    $(document).on('keyup','#unidad_medida2',function(event){
+		    	var codigo_tecla_presionada = event.which || event.keyCode;
+		    	if ( codigo_tecla_presionada == 13 )
+				{
+					$('#cantidad').focus();
+				}
+		    });
+
+		    $(document).on('keyup','#cantidad',function(event){
+		    	var codigo_tecla_presionada = event.which || event.keyCode;
+		    	if ( codigo_tecla_presionada == 13 )
+				{
+					$('.btn_save_modal_item_relacionado').focus();
+				}
+		    });
 
 		});
 	</script>
