@@ -20,21 +20,21 @@ return array(
         'videos_apps' => array(
             '0' => [
                 'app' => 'matriculas',
-                'urls' => array(
+                'urls' => array(                                 
                     '0' => array(
-                        'label' => 'Cambiar de Curso a Estudiante',
-                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Matriculas/Cambio_de_curso_de_estudiantes.jpg',
-                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Matriculas/Cambio_de_curso_de_estudiantes.mp4',
-                        'duracion' => '5:20',
-                        'publicacion' => '9 de Marzo de 2021'
-                    ),                
-                    '1' => array(
                         'label' => 'Inscripciones y Matricula Estudiantes',
                         'preview' => 'https://appsiel.com.co/Ayudas/Videos/Matriculas/inscripciones_y_matriculas.jpg',
                         'url' => 'https://appsiel.com.co/Ayudas/Videos/Matriculas/inscripciones_y_matriculas.mp4',
                         'duracion' => '6:50',
                         'publicacion' => '17 de Marzo de 2021'
-                    )
+                    ),
+                    '1' => array(
+                        'label' => 'Cambiar de Curso a Estudiante',
+                        'preview' => 'https://appsiel.com.co/Ayudas/Videos/Matriculas/Cambio_de_curso_de_estudiantes.jpg',
+                        'url' => 'https://appsiel.com.co/Ayudas/Videos/Matriculas/Cambio_de_curso_de_estudiantes.mp4',
+                        'duracion' => '5:20',
+                        'publicacion' => '9 de Marzo de 2021'
+                    )  
                 )
             ],
             '1' => [

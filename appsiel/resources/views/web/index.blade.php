@@ -15,7 +15,8 @@
     <!-- Font Awesome -->
     <link href="{{asset('assets/font-awesome/css/font-awesome.min.css')}}" rel="stylesheet">
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+        integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
     <!-- Slick slider -->
     <link href="{{asset('assets/css/slick.css')}}" rel="stylesheet">
     <!-- Gallery Lightbox -->
@@ -27,7 +28,7 @@
     <link href="{{asset('assets/style.css')}}" rel="stylesheet">
     <!-- Fonts -->
 
-    
+
     <link href="{{asset('css/animate.min.css')}}" rel="stylesheet">
     <link href="{{asset('css/owl.carousel.css')}}" rel="stylesheet">
     <link href="{{asset('css/owl.transitions.css')}}" rel="stylesheet">
@@ -41,9 +42,12 @@
     <script src="{{asset('js/respond.min.js')}}"></script>
     <![endif]-->
 
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{asset('images/ico/apple-touch-icon-144-precomposed.png')}}">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{asset('images/ico/apple-touch-icon-114-precomposed.png')}}">
-    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144"
+        href="{{asset('images/ico/apple-touch-icon-144-precomposed.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114"
+        href="{{asset('images/ico/apple-touch-icon-114-precomposed.png')}}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72"
+        href="{{asset('images/ico/apple-touch-icon-72-precomposed.png')}}">
     <link rel="apple-touch-icon-precomposed" href="{{asset('images/ico/apple-touch-icon-57-precomposed.png')}}">
 
     @if($pagina->codigo_google_analitics != '')
@@ -62,33 +66,30 @@
 
 
     @foreach($links as $key => $value)
-        {!! $value !!}
+    {!! $value !!}
     @endforeach
 
     <style type="text/css">
-
-        <?php 
-        if($fonts!=null){
-            foreach($fonts as $f){
-                ?>
-               @font-face {
+        <?php if($fonts !=null) {
+            foreach($fonts as $f) {
+                ?>@font-face {
                     font-family: '{{$f->font}}';
                     src:url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff") format('woff'),
-                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff2") format('woff2'),
-                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot"),
-                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot?#iefix") format('embedded-opentype'),
-                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.otf") format('truetype');
+                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff2") format('woff2'),
+                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot"),
+                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot?#iefix") format('embedded-opentype'),
+                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.otf") format('truetype');
 
                     font-weight: normal;
                     font-style: normal;
                     font-display: swap;
                 }
+
                 <?php
             }
         }
-        ?>
-        
-        .article-ls {
+
+        ?>.article-ls {
             border: 1px solid;
             border-color: #3d6983;
             width: 100%;
@@ -171,17 +172,35 @@
             display: none;
         }
 
-        :root{
+        :root {
             --color-primario: #574696;
             --color-secundario: #42A3DC;
             --color-terciario: #50B794;
 
-            @if ($configuracion !=null) 
-            --color-primario: {{$configuracion->color_primario}};
-            --color-secundario: {{$configuracion->color_segundario}};
-            --color-terciario: {{$configuracion->color_terciario}};
-            @endif          
-           
+            @if ($configuracion !=null) --color-primario: {
+                    {
+                    $configuracion->color_primario
+                }
+            }
+
+            ;
+
+            --color-secundario: {
+                    {
+                    $configuracion->color_segundario
+                }
+            }
+
+            ;
+
+            --color-terciario: {
+                    {
+                    $configuracion->color_terciario
+                }
+            }
+
+            ;
+            @endif
         }
 
         .section-header .section-title:after {
@@ -201,8 +220,7 @@
             background-color: var(--color-primario) !important;
         }
 
-        .
-        .pagination>.active>a,
+        . .pagination>.active>a,
         .pagination>.active>span,
         .pagination>.active>a:hover,
         .pagination>.active>span:hover,
@@ -212,7 +230,8 @@
             cursor: default;
             background-color: grey;
         }
-        .pagination span:hover{
+
+        .pagination span:hover {
             color: grey;
             background-color: whitesmoke;
         }
@@ -241,26 +260,31 @@
         .sticky+.content {
             padding-top: 102px;
         }
-        @foreach($estilos as $key => $value)
-            {!! $value !!}
+
+        @foreach($estilos as $key=> $value) {
+             ! ! $value ! !
+        }
+
         @endforeach
-        
-        
     </style>
 </head>
 
 <body>
-        @foreach($view as $item)
-            {!! $item !!} 
-        @endforeach
+    @foreach($view as $item)
+    {!! $item !!}
+    @endforeach
 
     <!-- End main content -->
 
     <!-- JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
+        integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous">
+    </script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+        integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous">
+    </script>
     <!-- Slick slider -->
     <script type="text/javascript" src="{{asset('assets/web/js/slick.min.js')}}"></script>
     <!-- Progress Bar -->
@@ -321,9 +345,6 @@
     </script>
 
     <script>
-        
-                    
-
         //parallax
         var imgH = 550;
         var prevScrollpos = window.pageYOffset;
@@ -343,7 +364,7 @@
                     item.style.backgroundPositionY = (-item.getBoundingClientRect().top/2)+"px";
                 }else       
                 if((window.innerHeight - item.getBoundingClientRect().top) >= 0  && (window.innerHeight - item.getBoundingClientRect().top) <= imgH){
-                    console.log(item.style.backgroundPositionY)
+                    
                     item.style.backgroundPositionY = ((imgH/2)+((window.innerHeight - item.getBoundingClientRect().top)/2))+"px";
                     
                 }else{
@@ -355,7 +376,7 @@
 
 
     @foreach($scripts as $key => $value)
-        {!! $value !!}
+    {!! $value !!}
     @endforeach
 
     @yield('script')
