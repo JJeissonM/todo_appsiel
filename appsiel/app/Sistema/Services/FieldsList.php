@@ -2,10 +2,6 @@
 
 namespace App\Sistema\Services;
 
-use Illuminate\Http\Request;
-
-use App\Http\Controllers\Controller;
-
 use Input;
 use DB;
 use PDF;

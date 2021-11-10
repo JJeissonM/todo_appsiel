@@ -1,17 +1,7 @@
 <div class="table-responsive">
+	<h5 style="width: 100%; text-align: center;">Datos de ventas</h5>
 	<table class="table table-bordered">
 		<tr>
-			<td colspan="4">
-				<p align="center">
-					<span style="font-size: 1.6em; font-weight: bold;">Datos de ventas</span>
-				</p>
-			</td>
-		</tr>
-		<tr>
-
-			<?php 
-				//dd( $registro, $registro->clase_cliente, $registro->vendedor, $registro->zona, $registro->lista_precios, $registro->lista_descuentos );
-		?>
 			<td>
 				<b>Clase cliente:</b> {{ $registro->clase_cliente->descripcion }}
 			</td>

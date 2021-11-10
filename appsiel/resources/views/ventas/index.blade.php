@@ -29,9 +29,9 @@
 
 		div.boton {
 		  border: 1px solid #ddd;
-		  border-radius: 10px;
-		  /*background: linear-gradient(90deg, rgba(110,41,183,1) 0%, rgba(79,138,232,1) 44%, rgba(13,214,159,1) 100%);*/
-		  background-color: #ddd;
+		  border-radius: 4px;
+		  /*background: linear-gradient(90deg, rgba(110,41,183,1) 0%, rgba(79,138,232,1) 44%, rgba(13,214,159,1) 100%);
+		  background-color: #ddd;*/
 		  text-align: center;
 		  margin: 20px 20px;
 		}

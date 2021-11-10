@@ -269,11 +269,6 @@
 	<div id="btnPaula">
 		<button onclick="paula()" style="border-radius: 50px;" class="btn btn-danger">¿Ayuda?</button>
 	</div>
-	<!--<div id="paula">
-			<img width="230px" height="350px" src="{{asset('assets/images/ayuda.png')}}" />
-		</div>-->
-
-
 
 	<!-- JQuery -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"
@@ -450,7 +445,6 @@
 						this.element.hide();
 						this._createAutocomplete();
 						this._createShowAllButton();
-						console.log('object')
 					},
 					
 					_createAutocomplete: function() {
@@ -571,7 +565,7 @@
 						this.element.show();
 					}
 				});
-				console.log('combobox')
+
 				$(".combobox").combobox();
 				/*$( "#toggle" ).on( "click", function() {
 				  $( ".combobox" ).toggle();
@@ -615,8 +609,6 @@
 				var email = $("#email").val();
 
 				url_2 = "{{ url('/core/validar_email/') }}" + "/" + email;
-
-				console.log(url_2);
 
 				$.get(url_2, function(datos) {
 					if (datos != '') {

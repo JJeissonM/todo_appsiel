@@ -305,7 +305,7 @@
 									$tercero_id_salarios_por_pagar = $parametros['tercero_id_salarios_por_pagar'];
 								}
 							?>
-							{{ Form::bsSelect('tercero_id_salarios_por_pagar', $tercero_id_salarios_por_pagar, 'Cuenta por defecto de salarios por pagar', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('tercero_id_salarios_por_pagar', $tercero_id_salarios_por_pagar, 'Tercero por defecto de salarios por pagar', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 

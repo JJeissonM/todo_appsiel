@@ -34,7 +34,13 @@
 			<tbody>
 				@foreach( $estudiantes[$k]['listado'] as $registro )
 					<?php
-						$responsable_financiero = $registro->estudiante->responsable_financiero();
+
+						$responsable_financiero = (object)[ 'descripcion' => '', 'tipo_doc_identidad' => (object)['abreviatura' => ''], 'numero_identificacion' => 0, 'direccion1' => '', 'email' => '', 'tipo' => '' ];
+						if ( !is_null( $registro->estudiante->responsable_financiero() ) )
+						{
+							$responsable_financiero = $registro->estudiante->responsable_financiero()->tercero;
+						}
+						
 						$libretas_pagos = $registro->libretas_pagos;
 						$ultima_libreta = $libretas_pagos->last();
 
@@ -53,12 +59,12 @@
 						<td> {{ $registro->tipo_documento }} </td>
 						<td> {{ number_format( $registro->numero_identificacion, 0,',','.' ) }} </td>
 						<td> {{ $registro->curso_descripcion }} </td>
-						<td> {{ $responsable_financiero->tercero->descripcion }} </td>
-						<td> {{ $responsable_financiero->tercero->tipo_doc_identidad->abreviatura }} </td>
-						<td> {{ number_format( $responsable_financiero->tercero->numero_identificacion, 0,',','.' ) }} </td>
-						<td> {{ $responsable_financiero->tercero->direccion1 }} </td>
-						<td> {{ $responsable_financiero->tercero->email }} </td>
-						<td> {{ $responsable_financiero->tercero->tipo }} </td>
+						<td> {{ $responsable_financiero->descripcion }} </td>
+						<td> {{ $responsable_financiero->tipo_doc_identidad->abreviatura }} </td>
+						<td> {{ number_format( $responsable_financiero->numero_identificacion, 0,',','.' ) }} </td>
+						<td> {{ $responsable_financiero->direccion1 }} </td>
+						<td> {{ $responsable_financiero->email }} </td>
+						<td> {{ $responsable_financiero->tipo }} </td>
 						<td> ${{ number_format( $valor_matricula, 0,',','.' ) }} </td>
 						<td> ${{ number_format( $valor_pension, 0,',','.' ) }} </td>
 					</tr>

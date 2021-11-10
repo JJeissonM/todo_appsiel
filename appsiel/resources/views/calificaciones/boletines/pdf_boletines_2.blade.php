@@ -80,6 +80,8 @@
 		@include('calificaciones.boletines.mostrar_usuarios_estudiantes')
 		
 		@include('calificaciones.boletines.seccion_firmas')
+		
+		{!! generado_por_appsiel() !!}
 
 		<div class="page-break"></div>
 	@endforeach {{-- Estudiante --}}

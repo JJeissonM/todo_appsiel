@@ -68,7 +68,6 @@ class TiempoLaborado implements Estrategia
 		}
 
 		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
-dd($horas_liquidadas_empleado);
 		// Para que no se liquide el tiempo después de vacaciones, si estas termina dentro del mismo lapso del documento
 		$horas_liquidadas_empleado += $this->get_horas_descontar_por_vacaciones( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
 		

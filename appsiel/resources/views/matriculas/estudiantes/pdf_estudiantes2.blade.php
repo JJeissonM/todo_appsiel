@@ -1,49 +1,5 @@
-<style>
-
-	img {
-		padding-left:30px;
-	}
-
-	table {
-		width:100%;
-	}
-
-	table.banner{
-		border: 0px solid;
-		border-collapse: collapse;
-		border-spacing:  0;
-	}
-
-th, td {
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-	background-color: #CACACA;
-}
-
-td.celda {
-	width: 50px;
-	border-left: 1px solid #ddd;
-	border-right: 1px solid #ddd;
-}
-
-h3 {
-	text-align:center;
-}
-
-div.recuadro{
-	border: 1px solid #ddd;
-}
-
-.page-break {
-    page-break-after: always;
-}
-</style>
-<?php
-	$colegio = App\Core\Colegio::where('id','=',Auth::user()->id_colegio)->get();
-?>
-<div class="container">
+<div class="container-fluid">
+	
 	@for($k=0;$k < count($estudiantes) ;$k++)
 		<!-- TITULOS -->
 		<div align="center"> <b> Fichas de datos básicos de estudiantes </b> </div>

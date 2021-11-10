@@ -35,7 +35,8 @@
 	?>
 
 	@include('calificaciones.boletines.pdf_preinforme_academico_un_boletin')
-
+	
+	{!! generado_por_appsiel() !!}
 
 	<div class="page-break"></div>
 

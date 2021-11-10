@@ -211,6 +211,9 @@ class EstudianteController extends ModeloController
 
     public function generar_listado( Request $request )
     {
+
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
+
         if ($request->sga_grado_id == "Todos")
         {
             $grados = Grado::where('estado', 'Activo')->get();
@@ -254,8 +257,8 @@ class EstudianteController extends ModeloController
         $formato = 'pdf_estudiantes' . $request->tipo_listado;
 
         $tam_letra = $request->tam_letra;
-
-        $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra'))->render();
+        //dd($colegio);
+        $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra','colegio'))->render();
 
         $vista = View::make( 'layouts.pdf3', compact('view') )->render();
 

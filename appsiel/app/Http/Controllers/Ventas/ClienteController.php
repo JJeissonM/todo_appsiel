@@ -279,5 +279,3 @@ class ClienteController extends ModeloController
     }
 
 }
-
-// cardona cha

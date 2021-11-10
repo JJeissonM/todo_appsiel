@@ -84,22 +84,6 @@ class InvCostoPromProducto extends Model
         $item = InvProducto::find( $producto_id );
 
         return $item->get_costo_promedio( $bodega_id );
-
-        /*$costo_prom = InvCostoPromProducto::where('inv_bodega_id','=',$bodega_id)
-                                    ->where('inv_producto_id','=',$producto_id )
-                                    ->value('costo_promedio');
-
-        if ( is_null( $costo_prom ) || $costo_prom < 0 )
-        {
-            $item = InvProducto::
-            $costo_prom = 1;
-            if ( !is_null( $item ) )
-            {
-                $costo_prom = $item->precio_compra;
-            }
-        }
-
-        return $costo_prom;*/
     }
 
 

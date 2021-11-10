@@ -1,12 +1,6 @@
 <div class="table-responsive">
+	<h5 style="width: 100%; text-align: center;">Datos básicos</h5>
 	<table class="table table-bordered">
-		<tr>
-			<td colspan="4">
-				<p align="center">
-					<span style="font-size: 1.6em; font-weight: bold;">Datos básicos</span>
-				</p>
-			</td>
-		</tr>
 		<tr>
 			<td rowspan="3" width="120px">
 

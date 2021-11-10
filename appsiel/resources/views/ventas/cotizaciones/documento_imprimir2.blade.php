@@ -59,11 +59,15 @@ use App\Core\Tercero;
             <b style="font-size: 16px">Cotización Nro. {{ sprintf("%04d", $doc_encabezado->documento_transaccion_consecutivo) }}</b>
         </td>
     </tr>
-    <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
-        <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
-        <td colspan="2"></td>
-    </tr>
+    @if( (int)$doc_encabezado->numero_identificacion == 0 )
+        <tr><td colspan="2">&nbsp;</td></tr>
+    @else
+        <tr>
+            <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
+            <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
+            <td colspan="2"></td>
+        </tr>
+    @endif
     <tr>
         <td colspan="4" >&nbsp;</td>
     </tr>

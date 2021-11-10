@@ -1489,8 +1489,6 @@ class InventarioController extends TransaccionController
                         );
     }
 
-
-
     public static function contabilizar_documento_inventario( $documento_id, $detalle_operacion )
     {
         $documento = InvDocEncabezado::find( $documento_id );
