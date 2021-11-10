@@ -18,6 +18,7 @@ use App\Sistema\Campo;
 
 use App\Inventarios\InvProducto;
 use App\Inventarios\Services\CodigoBarras;
+use App\Inventarios\Services\TallaItem;
 use App\Inventarios\EntradaAlmacen;
 
 use App\Sistema\Html\MigaPan;
@@ -112,11 +113,12 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->creado_por = $item_mandatario->creado_por;
 
         $item_relacionado->referencia = $referencia;
-        $item_relacionado->unidad_medida2 = $talla_id;
 
+        $talla = new TallaItem( $talla_id );
+        $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
         $item_relacionado->save();
 
-        $item_relacionado->codigo_barras = $this->get_barcode( $item_relacionado->id, '000', $talla_id, $referencia );
+        $item_relacionado->codigo_barras = $talla->get_talla_formateada();
         $item_relacionado->save();
 
         return $item_relacionado->id;
@@ -173,8 +175,9 @@ class ItemMandatarioController extends ModeloController
                 break;
 
             case 'talla':
-                $item->unidad_medida2 = $nuevo_valor;
-                $nuevo_barcode = substr( $item->codigo_barras, 0, (int)config('codigo_barras.longitud_item') + (int)config('codigo_barras.longitud_color') ) . $this->formatea_talla( $nuevo_valor ) . $item->referencia;
+                $talla = new TallaItem( $nuevo_valor );
+                $item->unidad_medida2 = $talla->convertir_mayusculas();
+                $nuevo_barcode = substr( $item->codigo_barras, 0, (int)config('codigo_barras.longitud_item') + (int)config('codigo_barras.longitud_color') ) . $talla->get_talla_formateada() . $item->referencia;
                 break;
             
             default:
@@ -186,20 +189,9 @@ class ItemMandatarioController extends ModeloController
         $item->save();
     }
 
-    public function formatea_talla( $talla_id )
-    {
-        $largo_campo = strlen( $talla_id );
-        $longitud_campo = 3 - $largo_campo;
-        for ($i=0; $i < $longitud_campo; $i++)
-        {
-            $talla_id = '0' . $talla_id;
-        }
-
-        return $talla_id;
-    }
-
     public function etiquetas_codigos_barra( $mandatario_id, $item_id, $cantidad )
     {
+        $item_bodega_principal_id = (int)config( 'inventarios.item_bodega_principal_id' );
         $items = [];
 
         if ( (int)$mandatario_id == 0 )
@@ -210,6 +202,19 @@ class ItemMandatarioController extends ModeloController
             {
                 $items->push( $item );
             }
+        }else{
+            $item_mandatario = ItemMandatario::find( (int)$mandatario_id );
+            $items_relacionados = $item_mandatario->items_relacionados;
+            $items = collect([]);
+            foreach ( $items_relacionados as $item )
+            {
+                $cantidad = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
+                for ($i=0; $i < $cantidad; $i++)
+                {
+                    $items->push( $item );
+                }
+            }
+            $cantidad = 25; // Aprox. 10 filas de tres stickers por hoja
         }
 
         $vista = View::make( 'inventarios.items.etiquetas_codigos_barra', compact('items','cantidad') )->render();
@@ -219,15 +224,15 @@ class ItemMandatarioController extends ModeloController
         //dd( $cantidad, ceil( $cantidad / 3 ), $alto );
 
         //$tam_hoja = 'Letter';
-        $tam_hoja = array(0, 0, 297, $alto );//array(0, 0, 612.00, 390.00);//'folio';
+        $tam_hoja = array(0, 0, 295, $alto );//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion = 'Portrait';
 
+        /*echo $vista;*/
+        
         $pdf = \App::make('dompdf.wrapper');
 
         $pdf->loadHTML( $vista )->setPaper( $tam_hoja, $orientacion );
-        
-        //$pdf->setOptions(['defaultFont' => 'Arial']);
-        //echo $vista;
         return $pdf->stream();
+        
     }
 }

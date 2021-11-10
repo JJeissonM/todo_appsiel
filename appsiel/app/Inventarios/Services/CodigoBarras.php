@@ -4,14 +4,16 @@ namespace App\Inventarios\Services;
 
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
+use App\Inventarios\Services\TallaItem;
 
 class CodigoBarras
 {
 	public $barcode;
 
 	public function __construct( $item_id, $color_id, $talla_id, $referencia )
-	{		
-		$this->barcode = '7' . $this->formatea_item( $item_id ) . $this->formatea_color( $color_id ) . $this->formatea_talla( $talla_id ) . $referencia;
+	{
+		$talla = new TallaItem( $talla_id );
+		$this->barcode = '7' . $this->formatea_item( $item_id ) . $this->formatea_color( $color_id ) . $talla->get_talla_formateada() . $referencia;
 	}
 
 	public function formatea_item( $item_id )
@@ -36,18 +38,6 @@ class CodigoBarras
         }
 
         return $color_id;
-	}
-
-	public function formatea_talla( $talla_id )
-	{
-		$largo_campo = strlen( $talla_id );
-        $longitud_campo = (int)config('codigo_barras.longitud_talla') - $largo_campo;
-        for ($i=0; $i < $longitud_campo; $i++)
-        {
-            $talla_id = config('codigo_barras.caracter_relleno') . $talla_id;
-        }
-
-        return $talla_id;
 	}
 
 	public function get_barcode()

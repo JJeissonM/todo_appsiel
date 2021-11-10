@@ -3,6 +3,11 @@
     {
         $colegio = \App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
     }
+
+    if ( !isset($tam_letra) )
+    {
+        $tam_letra = 3;
+    }
 ?>
 <table class="banner">
     <tr>

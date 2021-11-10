@@ -17,7 +17,7 @@
 			{{ Form::bsSelect( 'item_bodega_principal_id', $item_bodega_principal_id, 'Bodega', App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
 		</div>
 		<div class="col-md-6">
-			<button class="btn btn-info" title="Imprimir etiquetas de códigos de barras" onclick="ventana_imprimir(this);" data-mandatario_id="{{ $registro->id }}" data-item_id="0"> <i class="fa fa-barcode"></i></button>
+			<a class="btn btn-info" title="Imprimir etiquetas de códigos de barras" href="{{ url('inv_item_mandatario_etiquetas_codigos_barra' . '/' . $registro->id . '/0/0' ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
 		</div>
 	</div>
 	<table class="table table-bordered table-striped">
@@ -168,7 +168,7 @@
 		    	$(".referencia_talla").each(function() {
 					valor_referencia_talla = $(this).attr('data-codigo_referencia_talla');
 						
-					if ( valor_referencia_talla == $('#referencia').val() + $('#unidad_medida2').val() )
+					if ( valor_referencia_talla == $('#referencia').val() + $('#unidad_medida2').val().toUpperCase() )
 					{
 						alert('Ya se ingresó Esa Referencia y Talla para este Producto.');
 						validado = false;

@@ -61,7 +61,7 @@
 
                             -->
                             <p>
-                                <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( (int)$fila->codigo_barras, "EAN13", 2, 100) }}" alt="barcode" />
+                                <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( $fila->codigo_barras, "EAN13", 2, 100 ) }}" alt="barcode" />
                             </p>
                             {{ $fila->codigo_barras }}
                         </div>
