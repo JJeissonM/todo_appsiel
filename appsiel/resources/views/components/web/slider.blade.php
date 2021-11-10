@@ -1,15 +1,12 @@
-<style>   
-
-        #main-slider{
-            position: relative;
-        }
+<style>
+    #main-slider-default {
+        position: relative;
+    }
 
     .slider-font {
-        @if( !is_null($slider) )
-            @if( !is_null($slider->configuracionfuente ) )
-                font-family: <?php echo $slider->configuracionfuente->fuente->font; ?> !important;
-            @endif
-        @endif
+        @if( !is_null($slider)) @if( !is_null($slider->configuracionfuente)) font-family: <?php echo $slider->configuracionfuente->fuente->font;
+        ?> !important;
+        @endif @endif
     }
 
     .owl-carousel img {
@@ -23,57 +20,62 @@
         object-fit: cover;
     }
 
-    @media (max-width: 1440px){
+    @media (max-width: 1440px) {
         .owl-carousel img {
-           height: 480px;
-            
+            height: 480px;
+
         }
-        #main-slider .item {
+
+        #main-slider-default .item {
             height: 482px;
         }
     }
-    
-    @media (max-width: 1024px){
+
+    @media (max-width: 1024px) {
         .owl-carousel img {
             width: 100vw;
         }
-        .owl-carousel img:after{
+
+        .owl-carousel img:after {
             width: 100vw;
         }
 
-        #image{
+        #image {
             width: 100vw;
             animation: linear 7s infinite alternate example;
         }
 
-        #image:hover{
+        #image:hover {
             width: 100vw;
-            animation-play-state: paused;        
+            animation-play-state: paused;
         }
     }
 
     @keyframes example {
-        from {object-position: 0% 50% ;}
-        to {object-position: 100% 50% ;}
+        from {
+            object-position: 0% 50%;
+        }
+
+        to {
+            object-position: 100% 50%;
+        }
     }
 
-    #main-slider .owl-prev{
+    #main-slider-default .owl-prev {
         border-radius: 0 35px 35px 0;
         width: 35px;
         left: 0;
         text-indent: 0;
     }
 
-    #main-slider .owl-next{
+    #main-slider-default .owl-next {
         border-radius: 35px 0 0 35px;
         width: 35px;
         right: 0;
         text-indent: 0;
     }
-
-
 </style>
-<section id="main-slider" class="slider-font pb-md-5 pb-sm-2" >
+<section id="main-slider-default" class="slider-font pb-md-5 pb-sm-2">
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)
@@ -82,18 +84,23 @@
                 <div class="container">
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="carousel-content slider-font" >
+                            <div class="carousel-content slider-font">
 
                                 @if( $item->titulo != '' )
-                                <h2 class="slider-font" style="text-shadow: 1px 1px 2px black; color: {{$item->colorTitle}} !important;">{{$item->titulo}}</h2>
+                                <h2 class="slider-font"
+                                    style="text-shadow: 1px 1px 2px black; color: {{$item->colorTitle}} !important;">
+                                    {{$item->titulo}}</h2>
                                 @endif
 
                                 @if( $item->descripcion != '' )
-                                <p class="slider-font" style="text-shadow: 1px 1px 2px black; color: {{$item->colorText}} !important;">{{$item->descripcion}}</p>
+                                <p class="slider-font"
+                                    style="text-shadow: 1px 1px 2px black; color: {{$item->colorText}} !important;">
+                                    {{$item->descripcion}}</p>
                                 @endif
 
                                 @if( $item->button != '')
-                                <a class="slider-font btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}} <i class="fa fa-plus"></i></a>
+                                <a class="slider-font btn btn-primary btn-lg" href="{{$item->enlace}}">{{$item->button}}
+                                    <i class="fa fa-plus"></i></a>
                                 @endif
 
                             </div>
@@ -101,7 +108,7 @@
                     </div>
                 </div>
             </div>
-           <img id="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
+            <img id="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
         </div>
         @endforeach
     </div>
@@ -146,4 +153,4 @@
     <!--/.owl-carousel-->
     @endif
 </section>
-<!--/#main-slider-->
+<!--/#main-slider-default-->

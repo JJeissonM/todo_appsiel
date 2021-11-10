@@ -1,15 +1,12 @@
-<style>   
-
-    #main-slider{
-      position: relative;
+<style>
+    #main-slider-appsiel {
+        position: relative;
     }
 
     .slider-font {
-        @if( !is_null($slider) )
-            @if( !is_null($slider->configuracionfuente ) )
-                font-family: <?php echo $slider->configuracionfuente->fuente->font; ?> !important;
-            @endif
-        @endif
+        @if( !is_null($slider)) @if( !is_null($slider->configuracionfuente)) font-family: <?php echo $slider->configuracionfuente->fuente->font;
+        ?> !important;
+        @endif @endif
     }
 
     .owl-carousel img {
@@ -21,33 +18,31 @@
         object-fit: cover;
     }
 
-    #main-slider .item {
+    #main-slider-appsiel .item {
         width: 100% !important;
         height: auto !important;
     }
 
-    #main-slider .owl-prev{
+    #main-slider-appsiel .owl-prev {
         border-radius: 0 35px 35px 0;
         width: 35px;
         left: 0;
         text-indent: 0;
     }
 
-    #main-slider .owl-next{
+    #main-slider-appsiel .owl-next {
         border-radius: 35px 0 0 35px;
         width: 35px;
         right: 0;
         text-indent: 0;
     }
-
-
 </style>
-<section id="main-slider" class="slider-font">
+<section id="main-slider-appsiel" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)
-        <div class="item" style="width: 100%;">            
-           <img id="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
+        <div class="item" style="width: 100%;">
+            <img id="image" src="{{asset($item->imagen)}}" alt="{{$item->titulo}}">
         </div>
         @endforeach
     </div>
@@ -92,4 +87,4 @@
     <!--/.owl-carousel-->
     @endif
 </section>
-<!--/#main-slider-->
+<!--/#main-slider-appsiel-->
