@@ -118,7 +118,8 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
         $item_relacionado->save();
 
-        $item_relacionado->codigo_barras = $talla->get_talla_formateada();
+        $item_relacionado->codigo_barras = $this->get_barcode( $item_relacionado->id, '000', $talla_id, $referencia );
+        
         $item_relacionado->save();
 
         return $item_relacionado->id;

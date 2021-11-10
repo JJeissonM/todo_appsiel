@@ -13,13 +13,22 @@ class CodigoBarras
 	public function __construct( $item_id, $color_id, $talla_id, $referencia )
 	{
 		$talla = new TallaItem( $talla_id );
-		$this->barcode = '7' . $this->formatea_item( $item_id ) . $this->formatea_color( $color_id ) . $talla->get_talla_formateada() . $referencia;
+		$talla_formateada = $talla->get_talla_formateada();
+		
+		$item_formateado = $this->formatea_item( $item_id, $talla_formateada, $referencia );
+
+		$this->barcode = '7' . $item_formateado . $talla_formateada . $referencia;
 	}
 
-	public function formatea_item( $item_id )
+	public function formatea_item( $item_id, $talla, $referencia )
 	{
+		// EAN13: la longitud del codigo de barras debe ser de 13 caracteres NUMERICOS
+		$longitud_ean13 = 12; // Le agrego un 7 al comienzo
+
 		$largo_campo = strlen( $item_id );
-        $longitud_campo = (int)config('codigo_barras.longitud_item') - $largo_campo;
+
+        $longitud_campo = $longitud_ean13 - $largo_campo - strlen($talla) - strlen($referencia);
+
         for ($i=0; $i < $longitud_campo; $i++)
         {
             $item_id = config('codigo_barras.caracter_relleno') . $item_id;
