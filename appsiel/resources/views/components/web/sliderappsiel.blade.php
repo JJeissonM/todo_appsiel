@@ -37,7 +37,7 @@
         text-indent: 0;
     }
 </style>
-<section id="main-slider" class="slider-font">
+<section id="main-slider-appsiel" class="slider-font">
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)
