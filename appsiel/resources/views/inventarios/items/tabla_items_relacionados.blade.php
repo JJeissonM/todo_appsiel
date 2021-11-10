@@ -118,7 +118,7 @@
 		        }
 		        
 		        $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
-		        $(this).attr( 'disabled', 'disabled' );
+		        //$(this).attr( 'disabled', 'disabled' );
 
 		        var mandatario_id = $(this).children('span').attr('data-mandatario_id');
 		        formulario = $('#modal_item_relacionado').find('form');
@@ -127,7 +127,7 @@
 		        var data = formulario.serialize();
 
 		        $.post(url, data, function (respuesta) {
-		        	location.reload(true);
+		        	//location.reload(true);
 		        });/**/
 		    });
 
@@ -158,6 +158,22 @@
 					alert('Debe ingresar una Referencia.');
 					validado = false;
 				}
+
+				if ( !$.isNumeric( $('#referencia').val() ) )
+				{
+					$('#referencia').focus();
+					alert('Debe ingresar una Referencia numérica. NO se permiten letras.');
+					validado = false;
+				}
+
+				if ( $('#referencia').val().length > 5 )
+				{
+					$('#referencia').focus();
+					alert('La Referencia debe tener máximo cinco (5) dígitos.');
+					validado = false;
+				}
+
+
 		    	if ( $('#unidad_medida2').val() == '' )
 				{
 					$('#unidad_medida2').focus();

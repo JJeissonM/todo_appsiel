@@ -41,6 +41,11 @@ class TallaItem
 
 	public function convertir_a_numero()
 	{
+		if ( is_numeric($this->talla) )
+		{
+			return false;
+		}
+		
 		switch( $this->talla )
 		{
 			case 'S':
