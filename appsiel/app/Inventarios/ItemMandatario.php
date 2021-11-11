@@ -148,7 +148,7 @@ class ItemMandatario extends Model
         $user = Auth::user();
         $registro->estado = 'Activo';
         $registro->tipo = 'producto';
-        $registro->impuesto_id = (int)config('invetarios.item_impuesto_id');
+        $registro->impuesto_id = (int)config('inventarios.item_impuesto_id');
         $registro->core_empresa_id = $user->empresa_id;
         $registro->unidad_medida1 = 'UND';
         $registro->save();

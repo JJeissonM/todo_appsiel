@@ -325,34 +325,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$codigo_estandar_generacion = 'EAN13';
-								if( isset($parametros['codigo_estandar_generacion'] ) )
+								$ancho_hoja_impresion = 295;
+								if( isset($parametros['ancho_hoja_impresion'] ) )
 								{
-									$codigo_estandar_generacion = $parametros['codigo_estandar_generacion'];
+									$ancho_hoja_impresion = $parametros['ancho_hoja_impresion'];
 								}
-								$array_estandars = [ 
-													'EAN13' => 'EAN13',
-													'C39' => 'C39',
-													'C39+' => 'C39+',
-													'C128A' => 'C128A',
-													'C128B' => 'C128B'
-													];
 							?>
-
-							{{ Form::bsSelect('codigo_estandar_generacion', $codigo_estandar_generacion, 'Estándar a utilizar', $array_estandars, ['class'=>'form-control']) }}
+							{{ Form::bsText('ancho_hoja_impresion', $ancho_hoja_impresion, 'Ancho hoja de impresión (px)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$caracter_relleno = 0;
-								if( isset($parametros['caracter_relleno'] ) )
+								$alto_hoja_impresion = '';
+								if( isset($parametros['alto_hoja_impresion'] ) )
 								{
-									$caracter_relleno = $parametros['caracter_relleno'];
+									$alto_hoja_impresion = $parametros['alto_hoja_impresion'];
 								}
 							?>
-							
+							{{ Form::bsText('alto_hoja_impresion', $alto_hoja_impresion, 'Alto hoja de impresión (px) (dejar vacío para cálculo automático)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

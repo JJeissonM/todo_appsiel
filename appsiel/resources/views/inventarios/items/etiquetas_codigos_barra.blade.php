@@ -47,7 +47,7 @@
 
                     <!-- colspan="{ { $minimo_comun_multiplo_columnas / $numero_columnas }}" -->
                     <td width="33%">
-                        <div style="padding: 5px; text-align: center;">
+                        <div style="border: solid 1px #ddd; border-radius: 4px; padding: 5px; text-align: center;">
 
                             <p>
                                 <b>{{ substr( $fila->descripcion, 0, 20) }}</b>

@@ -222,14 +222,22 @@ class ItemMandatarioController extends ModeloController
             $cantidad = 25; // Aprox. 10 filas de tres stickers por hoja
         }
 
+        if ($cantidad <= 3 )
+        {
+            $cantidad = 4;
+        }
+
         $vista = View::make( 'inventarios.items.etiquetas_codigos_barra', compact('items','cantidad') )->render();
 
         $alto = 96 * ( ceil( $cantidad / 3 ) );
 
-        //dd( $cantidad, ceil( $cantidad / 3 ), $alto );
+        if ( (int)config('inventarios.ancho_hoja_impresion') != 0 )
+        {
+            $alto = (int)config('inventarios.ancho_hoja_impresion');
+        }
 
         //$tam_hoja = 'Letter';
-        $tam_hoja = array(0, 0, 295, $alto );//array(0, 0, 612.00, 390.00);//'folio';
+        $tam_hoja = array(0, 0, (int)config('inventarios.ancho_hoja_impresion'), $alto );//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion = 'Portrait';
 
         /*echo $vista;*/

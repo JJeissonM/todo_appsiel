@@ -18,6 +18,7 @@
   'longitud_talla' => '2',
   'longitud_color' => '0',
   'caracter_relleno' => '0',
-  'codigo_estandar_generacion' => 'C39+',
+  'ancho_hoja_impresion' => '295',
+  'alto_hoja_impresion' => '',
   'url_id_modelo' => '0',
 ) ;
