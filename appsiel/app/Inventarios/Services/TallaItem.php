@@ -20,10 +20,10 @@ class TallaItem
 		$this->convertir_a_numero();
 
 		$largo_campo = strlen( $this->talla );
-        $longitud_campo = (int)config('codigo_barras.longitud_talla') - $largo_campo;
+        $longitud_campo = (int)config('inventarios.longitud_talla') - $largo_campo;
         for ($i=0; $i < $longitud_campo; $i++)
         {
-            $this->talla = config('codigo_barras.caracter_relleno') . $this->talla;
+            $this->talla = config('inventarios.caracter_relleno') . $this->talla;
         }
 
         return $this->talla;

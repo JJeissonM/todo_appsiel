@@ -23,6 +23,7 @@
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
+				<th>Cód. barras</th>
 				<th>Referencia</th>
 				<th>Talla</th>
 				<th>Cantidad</th>
@@ -35,6 +36,7 @@
 					$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 				?>
 				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
+					<td> {{ $item->codigo_barras }} </td>
 					<td class="referencia_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
 					<td align="center"> {{ $existencia_actual }} </td>

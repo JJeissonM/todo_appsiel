@@ -258,6 +258,106 @@
 
 				</div>
 
+				<h4> Parámetros para Códigos de Barra  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$longitud_item = 5;
+								if( isset($parametros['longitud_item'] ) )
+								{
+									$longitud_item = $parametros['longitud_item'];
+								}
+							?>
+							{{ Form::bsText('longitud_item', $longitud_item, 'Longitud Item ID', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$longitud_talla = 2;
+								if( isset($parametros['longitud_talla'] ) )
+								{
+									$longitud_talla = $parametros['longitud_talla'];
+								}
+							?>
+							{{ Form::bsText('longitud_talla', $longitud_talla, 'Longitud Talla', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$longitud_color = 0;
+								if( isset($parametros['longitud_color'] ) )
+								{
+									$longitud_color = $parametros['longitud_color'];
+								}
+							?>
+							{{ Form::bsText('longitud_color', $longitud_color, 'Longitud Color', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$caracter_relleno = 0;
+								if( isset($parametros['caracter_relleno'] ) )
+								{
+									$caracter_relleno = $parametros['caracter_relleno'];
+								}
+							?>
+							{{ Form::bsText('caracter_relleno', $caracter_relleno, 'Caracter de relleno', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$codigo_estandar_generacion = 'EAN13';
+								if( isset($parametros['codigo_estandar_generacion'] ) )
+								{
+									$codigo_estandar_generacion = $parametros['codigo_estandar_generacion'];
+								}
+								$array_estandars = [ 
+													'EAN13' => 'EAN13',
+													'C39' => 'C39',
+													'C39+' => 'C39+',
+													'C128A' => 'C128A',
+													'C128B' => 'C128B'
+													];
+							?>
+
+							{{ Form::bsSelect('codigo_estandar_generacion', $codigo_estandar_generacion, 'Estándar a utilizar', $array_estandars, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$caracter_relleno = 0;
+								if( isset($parametros['caracter_relleno'] ) )
+								{
+									$caracter_relleno = $parametros['caracter_relleno'];
+								}
+							?>
+							
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

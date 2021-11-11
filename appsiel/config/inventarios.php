@@ -14,5 +14,10 @@
   'ea_tercero_id' => '211',
   'ea_motivo_id' => '1',
   'motivo_salida_id_ot' => '5',
+  'longitud_item' => '5',
+  'longitud_talla' => '2',
+  'longitud_color' => '0',
+  'caracter_relleno' => '0',
+  'codigo_estandar_generacion' => 'C39+',
   'url_id_modelo' => '0',
 ) ;

@@ -119,7 +119,7 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->save();
 
         $item_relacionado->codigo_barras = $this->get_barcode( $item_relacionado->id, '000', $talla_id, $referencia );
-        
+
         $item_relacionado->save();
 
         return $item_relacionado->id;
@@ -128,7 +128,7 @@ class ItemMandatarioController extends ModeloController
     public function get_barcode( $item_relacionado_id, $color_id, $talla_id, $referencia )
     {
         $codigo_barras = new CodigoBarras( $item_relacionado_id, $color_id, $talla_id, $referencia );
-        return $codigo_barras->get_barcode();
+        return $codigo_barras->get_barcode( $item_relacionado_id );
     } 
 
     public function show($id)
@@ -168,17 +168,21 @@ class ItemMandatarioController extends ModeloController
     public function update_item_relacionado( $campo, $item_id, $nuevo_valor )
     {
         $item = InvProducto::find( $item_id );
+        
+        $referencia =  $item->referencia;
+        $talla_id =  $item->unidad_medida2;
+
         switch ( $campo )
         {
             case 'referencia':
+                $referencia = $nuevo_valor;
                 $item->referencia = $nuevo_valor;
-                $nuevo_barcode = substr( $item->codigo_barras, 0, (int)config('codigo_barras.longitud_item') + (int)config('codigo_barras.longitud_color') + (int)config('codigo_barras.longitud_talla') ) . $nuevo_valor;
                 break;
 
             case 'talla':
-                $talla = new TallaItem( $nuevo_valor );
+                $talla_id = $nuevo_valor;
+                $talla = new TallaItem( $talla_id );
                 $item->unidad_medida2 = $talla->convertir_mayusculas();
-                $nuevo_barcode = substr( $item->codigo_barras, 0, (int)config('codigo_barras.longitud_item') + (int)config('codigo_barras.longitud_color') ) . $talla->get_talla_formateada() . $item->referencia;
                 break;
             
             default:
@@ -186,7 +190,7 @@ class ItemMandatarioController extends ModeloController
                 break;
         }
 
-        $item->codigo_barras = $nuevo_barcode;
+        $item->codigo_barras = $this->get_barcode( $item_id, '000', $talla_id, $referencia );
         $item->save();
     }
 
