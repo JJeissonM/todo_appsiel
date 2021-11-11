@@ -1,5 +1,5 @@
 <style>
-    #main-slider-appsiel {
+    .main-slider-appsiel {
         position: relative;
     }
 
@@ -18,26 +18,26 @@
         object-fit: cover;
     }
 
-    #main-slider-appsiel .item {
+    .main-slider-appsiel .item {
         width: 100% !important;
         height: auto !important;
     }
 
-    #main-slider-appsiel .owl-prev {
+    .main-slider-appsiel .owl-prev {
         border-radius: 0 35px 35px 0;
         width: 35px;
         left: 0;
         text-indent: 0;
     }
 
-    #main-slider-appsiel .owl-next {
+    .main-slider-appsiel .owl-next {
         border-radius: 35px 0 0 35px;
         width: 35px;
         right: 0;
         text-indent: 0;
     }
 </style>
-<section id="main-slider-appsiel" class="slider-font">
+<section id="main-slider-appsiel" class="slider-font main-slider-appsiel">
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)

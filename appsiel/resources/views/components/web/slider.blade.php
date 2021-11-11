@@ -1,5 +1,5 @@
 <style>
-    #main-slider-default {
+    .main-slider-default {
         position: relative;
     }
 
@@ -26,7 +26,7 @@
 
         }
 
-        #main-slider-default .item {
+        .main-slider-default .item {
             height: 482px;
         }
     }
@@ -61,21 +61,21 @@
         }
     }
 
-    #main-slider-default .owl-prev {
+    .main-slider-default .owl-prev {
         border-radius: 0 35px 35px 0;
         width: 35px;
         left: 0;
         text-indent: 0;
     }
 
-    #main-slider-default .owl-next {
+    .main-slider-default .owl-next {
         border-radius: 35px 0 0 35px;
         width: 35px;
         right: 0;
         text-indent: 0;
     }
 </style>
-<section id="main-slider-default" class="slider-font pb-md-5 pb-sm-2">
+<section id="main-slider-default" class="slider-font pb-md-5 pb-sm-2 main-slider-default">
     @if($slider != null && $slider->items->count() > 0)
     <div class="owl-carousel slider-font">
         @foreach($slider->items as $item)
