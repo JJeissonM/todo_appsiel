@@ -4,7 +4,7 @@
 		
 		<h4 style="width: 100%;text-align: center;">
 			<strong>
-				Datos de contabilización del documento de nómina
+				Datos de contabilización provisiones de prestaciones sociales
 			</strong>
 		</h4>
 		
@@ -27,20 +27,6 @@
 		        </td>
 		    </tr>
 		    <tr>
-		        <td>
-		            <b>Total Devengos: </b>
-		             &nbsp; ${{ number_format( $encabezado_doc->total_devengos, '0','.',',') }}
-		        </td>
-		        <td>
-		            <b>Total Deducciones: </b>
-		             &nbsp; ${{ number_format( $encabezado_doc->total_deducciones, '0','.',',') }}
-		        </td>
-		        <td>
-		            <b>Valor Neto: </b> 
-		            &nbsp; ${{ number_format( $encabezado_doc->total_devengos - $encabezado_doc->total_deducciones, '0','.',',') }}
-		        </td>
-		    </tr>
-		    <tr>
 		        <td colspan="3">
 		            <span style="color:red;">
 		            	<b>Nota: </b>
@@ -52,7 +38,7 @@
 
 		@if( $contabilizado )
 			<div class="alert alert-success">
-			  <strong>Documento contabilizado correctamente.</strong>
+			  <strong>Provisiones contabilizadas correctamente.</strong>
 			</div>
 		@else
 			<div class="alert alert-info">
@@ -109,5 +95,11 @@
 				</tr>
 			</tfoot>
 		</table>
+
+		@if( $valor_debito_total == 0 )
+			<div class="alert alert-warning">
+			  <strong>No hay registros de provisiones en el mes seleccioado.</strong>
+			</div>
+		@endif
 	</div>
 </div>

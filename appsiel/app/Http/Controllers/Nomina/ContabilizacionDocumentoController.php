@@ -47,12 +47,13 @@ class ContabilizacionDocumentoController extends TransaccionController
 
         if ( $request->almacenar_registros )
         {
+            // COntabilizar y generar movimientos de CxC y CxP
             $servicio_contabilizacion->almacenar_movimiento_contable();
-            //$servicio_contabilizacion->almacenar_movimiento_cxp();
-            //$servicio_contabilizacion->almacenar_movimiento_cxc();
+            //$servicio_contabilizacion->encabezado_doc->estado = 'Cerrado';
+            //$servicio_contabilizacion->encabezado_doc->save();
         }
         
-        $vista = View::make( 'nomina.procesos.incluir.resultado_contabilizacion_documento', [ 'encabezado_doc' => $servicio_contabilizacion->encabezado_doc, 'lineas_tabla' => $lineas_html_movimiento_contable, 'valor_debito_total' => $servicio_contabilizacion->valor_debito_total, 'valor_credito_total' => $servicio_contabilizacion->valor_credito_total ] )->render();
+        $vista = View::make( 'nomina.procesos.incluir.resultado_contabilizacion_documento', [ 'encabezado_doc' => $servicio_contabilizacion->encabezado_doc, 'lineas_tabla' => $lineas_html_movimiento_contable, 'valor_debito_total' => $servicio_contabilizacion->valor_debito_total, 'valor_credito_total' => $servicio_contabilizacion->valor_credito_total, 'contabilizado' => $request->almacenar_registros ] )->render();
         
         return $vista;
     }

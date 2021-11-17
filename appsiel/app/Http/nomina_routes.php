@@ -54,6 +54,13 @@ Route::post('nom_calcular_porcentaje_fijo_retefuente', 'Nomina\RetefuenteControl
 
 
 // 				CONTABILIZACIÓN
+
+// CONTAB. PROVISION NOMINA
+Route::post('nom_contabilizar_provision_nomina', 'Nomina\ContabilizacionProvisionController@contabilizar');
+Route::get('nom_retirar_contabilizacion_provision_nomina/{fecha_final_promedios}', 'Nomina\ContabilizacionProvisionController@retirar');
+
+
+// CONTAB. DOCUMENTO DE NOMINA
 Route::post('nom_contabilizar_documento_nomina', 'Nomina\ContabilizacionDocumentoController@contabilizar');
 Route::get('nom_retirar_contabilizacion_documento_nomina/{doc_encabezado_id}', 'Nomina\ContabilizacionDocumentoController@retirar');
 

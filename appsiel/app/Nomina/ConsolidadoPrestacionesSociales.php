@@ -25,6 +25,35 @@ class ConsolidadoPrestacionesSociales extends Model
 		return $this->belongsTo(NomContrato::class, 'nom_contrato_id');
 	}
 
+	public function get_descripcion_prestacion()
+	{
+		switch ( $this->tipo_prestacion )
+		{
+			case 'vacaciones':
+				return 'Vacaciones'; 
+				break;
+			
+			
+			case 'prima_legal':
+				return 'Prima de servicios'; 
+				break;
+			
+			
+			case 'cesantias':
+				return 'Cesantías'; 
+				break;
+			
+			
+			case 'intereses_cesantias':
+				return 'Intereses de cesantías'; 
+				break;
+			
+			default:
+				// code...
+				break;
+		}
+	}
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 		$collection =  ConsolidadoPrestacionesSociales::leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_consolidados_prestaciones_sociales.nom_contrato_id')

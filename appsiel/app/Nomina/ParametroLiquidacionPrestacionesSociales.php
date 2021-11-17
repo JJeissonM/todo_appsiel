@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Carbon\Carbon;
 
+use App\Contabilidad\ContabCuenta;
+
 class ParametroLiquidacionPrestacionesSociales extends Model
 {
     protected $table = 'nom_parametros_liquidacion_prestaciones_sociales';
@@ -19,11 +21,26 @@ class ParametroLiquidacionPrestacionesSociales extends Model
                             promedio_agrupacion: solo promedios de la agrupación (se debe incluir el sueldo en la agrupación para que lo tenga en cuenta)
                         }
     */
-    protected $fillable = ['concepto_prestacion', 'grupo_empleado_id', 'nom_agrupacion_id', 'nom_concepto_id', 'nom_agrupacion2_id', 'base_liquidacion', 'cantidad_meses_a_promediar', 'dias_a_liquidar', 'sabado_es_dia_habil'];
+    protected $fillable = [ 'concepto_prestacion', 'grupo_empleado_id', 'nom_agrupacion_id', 'nom_concepto_id', 'nom_agrupacion2_id', 'base_liquidacion', 'cantidad_meses_a_promediar', 'dias_a_liquidar', 'sabado_es_dia_habil', 'contab_cuenta_db_id', 'contab_cuenta_cr_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Prestación', 'Grupo empleados', 'Agrupación de conceptos', 'Concepto', 'Base liquidación', 'Cantidad meses a promediar', 'Días a liquidar'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
+
+    public function agrupacion_conceptos()
+    {
+        return $this->belongsTo(AgrupacionConcepto::class, 'nom_agrupacion_id');
+    }
+
+    public function cuenta_debito()
+    {
+        return $this->belongsTo( ContabCuenta::class, 'contab_cuenta_db_id');
+    }
+
+    public function cuenta_credito()
+    {
+        return $this->belongsTo( ContabCuenta::class, 'contab_cuenta_cr_id');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

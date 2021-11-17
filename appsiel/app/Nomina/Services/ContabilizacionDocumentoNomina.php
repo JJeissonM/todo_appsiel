@@ -128,6 +128,9 @@ class ContabilizacionDocumentoNomina
 				{
 					switch( $equ_contab->concepto->modo_liquidacion_id )
 					{
+						case '10': // Fondo Solidaridad Pensional
+							$tercero = $contrato->entidad_pension->tercero;
+							break;
 						case '12': // Salud Obligatoria
 							$tercero = $contrato->entidad_salud->tercero;
 							break;
@@ -152,7 +155,12 @@ class ContabilizacionDocumentoNomina
 				//
 				break;
 		}
-		
+
+		if( is_null($tercero) )
+		{
+			$tercero = (object)[ 'id' => 0, 'numero_identificacion' => 0, 'descripcion'  => 'Tercero no esta definido. Por favor revise el Tercero asociado a la Equivalencia contable de este Concepto.'];
+		}
+
 		return $tercero;
 	}
 
@@ -201,7 +209,7 @@ class ContabilizacionDocumentoNomina
 			if ( !is_null( $movimiento->cuenta_contable ) )
 			{
 				$cuenta_contable = $movimiento->cuenta_contable->codigo . ' ' . $movimiento->cuenta_contable->descripcion;
-			}			
+			}
 
 			$lineas_tabla[] = (object)[
 										'error' => $observacion->error,
@@ -278,11 +286,17 @@ class ContabilizacionDocumentoNomina
 			$descripcion .= '<br>Concepto no registra una cuenta contable relacionada.'; 
 		}
 
-		if ( $linea_movimiento_contab->tercero->id == 0 )
+		if ( is_null($linea_movimiento_contab->tercero) )
+		{
+			$error = 1;
+			$descripcion .= '<br>El registro no tiene un tercero relacionado.';
+		}elseif ( $linea_movimiento_contab->tercero->id == 0 )
 		{
 			$error = 1;
 			$descripcion .= '<br>El registro no tiene un tercero relacionado.'; 
 		}
+
+			
 
 		if ( $linea_movimiento_contab->valor_debito + $linea_movimiento_contab->valor_credito == 0 )
 		{
@@ -431,6 +445,9 @@ class ContabilizacionDocumentoNomina
 
         // RETIRO DEL MOVIMIENTO CONTABLE
 		ContabMovimiento::where( $array_wheres2 )->delete();
+
+        //$encabezado_doc->estado = 'Activo';
+        //$encabezado_doc->save();
 
 		return 'ok';
 	}

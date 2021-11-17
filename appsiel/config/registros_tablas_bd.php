@@ -42342,6 +42342,54 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-11-08 12:16:54',
       'updated_at' => '2021-11-08 12:17:13',
     ),
+    1381 => 
+    array (
+      'id' => 1387,
+      'descripcion' => 'Cuenta contable DB',
+      'tipo' => 'select',
+      'name' => 'contab_cuenta_db_id',
+      'opciones' => 'model_App\\Contabilidad\\ContabCuenta',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-11-13 14:05:30',
+      'updated_at' => '2021-11-13 14:06:14',
+    ),
+    1382 => 
+    array (
+      'id' => 1388,
+      'descripcion' => 'Cuenta contable CR',
+      'tipo' => 'select',
+      'name' => 'contab_cuenta_cr_id',
+      'opciones' => 'model_App\\Contabilidad\\ContabCuenta',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-11-13 14:06:17',
+      'updated_at' => '2021-11-13 14:06:32',
+    ),
+    1383 => 
+    array (
+      'id' => 1389,
+      'descripcion' => 'Datos de contabilización',
+      'tipo' => 'personalizado',
+      'name' => 'lbl_datos_contabilizacion',
+      'opciones' => ' ',
+      'value' => '<div style="padding-left: 15px;"> <h5> Datos de contabilización </h5> <hr> </div>',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 0,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2021-11-13 14:07:33',
+      'updated_at' => '2021-11-13 14:08:12',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -67348,6 +67396,41 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'orden' => 6,
       'core_modelo_id' => 317,
       'core_campo_id' => 216,
+    ),
+    2613 => 
+    array (
+      'id' => 3062,
+      'orden' => 18,
+      'core_modelo_id' => 267,
+      'core_campo_id' => 97,
+    ),
+    2614 => 
+    array (
+      'id' => 3063,
+      'orden' => 20,
+      'core_modelo_id' => 267,
+      'core_campo_id' => 1389,
+    ),
+    2615 => 
+    array (
+      'id' => 3064,
+      'orden' => 22,
+      'core_modelo_id' => 267,
+      'core_campo_id' => 123,
+    ),
+    2616 => 
+    array (
+      'id' => 3065,
+      'orden' => 24,
+      'core_modelo_id' => 267,
+      'core_campo_id' => 1387,
+    ),
+    2617 => 
+    array (
+      'id' => 3066,
+      'orden' => 26,
+      'core_modelo_id' => 267,
+      'core_campo_id' => 1388,
     ),
   ),
   'sys_reportes' => 

@@ -20,7 +20,6 @@ use App\Nomina\PrestacionesLiquidadas;
 
 class ProcesosController extends Controller
 {
-    //
 
     public function procesar_archivo_plano( Request $request )
     {

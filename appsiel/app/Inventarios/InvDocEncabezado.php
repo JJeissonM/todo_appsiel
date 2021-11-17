@@ -47,7 +47,7 @@ class InvDocEncabezado extends Model
 
     public function lineas_registros()
     {
-        dd('perate');
+        //dd('perate');
         return $this->hasMany( InvDocRegistro::class, 'inv_doc_encabezado_id' );
     }
 

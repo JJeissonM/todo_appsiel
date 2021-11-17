@@ -15,9 +15,24 @@ class ContabDocEncabezado extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Detalle', 'Valor documento', 'Estado'];
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
+    }
+
+    public function registros()
+    {
+        return $this->hasMany('App\Contabilidad\ContabDocRegistro');
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -106,11 +121,5 @@ class ContabDocEncabezado extends Model
             )
             ->get()
             ->first();
-    }
-
-
-    public function registros()
-    {
-        return $this->hasMany('App\Contabilidad\ContabDocRegistro');
     }
 }

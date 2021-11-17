@@ -48,7 +48,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
     protected $valor_consolidado_mes_cesantias = 0;
 
     /*
-        Por cada empleado activo liquida los conceptos automáticos, las cuotas y préstamos
+        Por cada empleado con movimiento liquida los conceptos automáticos, las cuotas y préstamos
         Además actualiza el total de devengos y deducciones en el documento de nómina
     */
     public function consolidar_prestaciones( Request $request )
@@ -136,6 +136,25 @@ class ConsolidadoPrestacionesController extends TransaccionController
                                                         'observacion' => '',
                                                         'dias_totales_laborados' => 0,
                                                         'estado' => 'Error. La prestación no tiene asociada una agrupación de conceptos para su cálculo.'
+                                                    ];
+                    continue;
+                }
+
+                if( is_null( $parametros_prestacion->agrupacion_conceptos ) )
+                {
+                    $lista_consolidados[] = (object)[
+                                                        'tercero' => (object)[ 'descripcion' => $empleado->tercero->descripcion, 'numero_identificacion' => $empleado->tercero->numero_identificacion],
+                                                        'tipo_prestacion'=> $prestacion,
+                                                        'fecha_fin_mes' => $fecha_final_promedios,
+                                                        'valor_acumulado_mes_anterior' => 0,
+                                                        'valor_pagado_mes' => 0,
+                                                        'valor_consolidado_mes' => 0,
+                                                        'dias_consolidado_mes' => 0,
+                                                        'valor_acumulado' => 0,
+                                                        'dias_acumulados' => 0,
+                                                        'observacion' => '',
+                                                        'dias_totales_laborados' => 0,
+                                                        'estado' => 'Error. La prestación Tiene asociada una agrupación de conceptos ERRADA.'
                                                     ];
                     continue;
                 }

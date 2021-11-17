@@ -103,7 +103,8 @@ class ListaPrecioDetalle extends Model
 		$productos = [];
 		$i = 0;
 		$precios2 = collect([]);
-		foreach ($precios as $value) {
+		foreach ($precios as $value)
+		{
 			if (!in_array($value->producto_codigo, $productos)) {
 				$precios2[$i] = $value;
 				$productos[$i] = $value->producto_codigo;
