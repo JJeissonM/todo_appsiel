@@ -16,10 +16,17 @@ class ServiciosInventarios
         $lista_items_existencia_negativa = $obj->lista_items_con_existencias_negativas( $lista_items );
         $items = [];
         foreach ($lista_items_existencia_negativa as $linea)
-        {	
+        {
+        	$item = InvProducto::find($linea->item_id);
+
+        	if ( $item->tipo == 'servicio' )
+        	{
+        		continue;
+        	}
+        	
         	$obj_aux = (object)[ 
 						'item_id' => $linea->item_id,
-						'descripcion' => InvProducto::find($linea->item_id)->descripcion,
+						'descripcion' => $item->descripcion,
 						'existencia' => $linea->existencia,
 						'cantidad_facturada' => $linea->cantidad_a_disminuir,
 						'nuevo_saldo' => $linea->nuevo_saldo

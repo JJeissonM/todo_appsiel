@@ -17,7 +17,5 @@ Route::get('almacenar_calificacion_a_respuesta_estudiante', 'ActividadesEscolare
 
 Route::get('remover_archivo_adjunto/{respuesta_id}', 'ActividadesEscolares\ActividadesEscolaresController@remover_archivo_adjunto');
 
-
-
 Route::resource('actividades_escolares', 'ActividadesEscolares\ActividadesEscolaresController');
 

@@ -20,7 +20,7 @@
         @can('vtas_recontabilizar')
         	<a class="btn-gmail" href="{{ url( 'ventas_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endcan
-	@endif	
+	@endif
 @endsection
 
 @section('botones_imprimir_email')

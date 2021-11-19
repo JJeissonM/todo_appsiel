@@ -105,9 +105,6 @@ class ProcesoController extends ModeloController
         return [ $tabla, $hay_periodo_final ];
     }
 
-    
-
-
     public function calcular_promedio_notas_periodo_final( $periodo_lectivo_id )
     {
         $usuario_email = Auth::user()->email;
@@ -196,6 +193,47 @@ class ProcesoController extends ModeloController
     }
 
     public function almacenar_pesos_asignaturas_areas( Request $request )
+    {
+        $cursos = Curso::where('sga_grado_id', $request->grado_id)->get();
+        
+        foreach ($cursos as $curso)
+        {
+            $asignaturas = $request->asignatura_id;
+            $pesos = $request->peso;
+            foreach ($asignaturas as $key => $asignatura_id)
+            {
+                CursoTieneAsignatura::where([
+                                                ['periodo_lectivo_id', '=', $request->periodo_lectivo_id],
+                                                ['curso_id', '=', $curso->id],
+                                                ['asignatura_id', '=', (int)$asignatura_id] ]
+                                            )
+                                    ->update( ['peso' => $pesos[$key] ] );
+            }                
+        }        
+        
+        return redirect( 'index_procesos/calificaciones.procesos.asignar_pesos_asignaturas_por_area?id=2&id_modelo=0' )->with('flash_message','Pesos de asignaturas almacenados correctamente.'); 
+    }
+
+
+
+    public function form_copiar_logros_de_un_periodo()
+    {
+        $miga_pan = [
+                        ['url' => $this->aplicacion->app.'?id='.Input::get('id'), 'etiqueta'=> $this->aplicacion->descripcion ],
+                        ['url' => 'NO','etiqueta'=> 'Proceso: Copiar logros de un periodo a otro']
+                    ];
+
+        $vec = Periodo::get_activos_periodo_lectivo();
+        $periodos['']='';
+        foreach ($vec as $opcion)
+        {
+            $periodos[$opcion->id] = $opcion->periodo_lectivo_descripcion . ' > ' . $opcion->descripcion;
+        }
+
+        return view( 'calificaciones.procesos.copiar_logros_de_un_periodo', compact( 'miga_pan', 'periodos') );
+    }
+
+    public function copiar_logros_de_un_periodo( Request $request )
     {
         $cursos = Curso::where('sga_grado_id', $request->grado_id)->get();
         

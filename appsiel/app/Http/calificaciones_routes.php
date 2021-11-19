@@ -9,6 +9,9 @@ Route::get('calificaciones_eliminar_escala_valoracion/{id}', 'Calificaciones\Log
 
 Route::get('calificaciones_logros/listar', 'Calificaciones\LogroController@listar');
 Route::get('calificaciones_logros/inactivos', 'Calificaciones\LogroController@consulta_inactivos');
+Route::get('cali_copiar_logros_de_un_periodo', 'Calificaciones\ProcesoController@form_copiar_logros_de_un_periodo');
+Route::post('cali_copiar_logros_de_un_periodo', 'Calificaciones\ProcesoController@copiar_logros_de_un_periodo');
+
 Route::resource('calificaciones_logros', 'Calificaciones\LogroController');
 
 //Calificaciones

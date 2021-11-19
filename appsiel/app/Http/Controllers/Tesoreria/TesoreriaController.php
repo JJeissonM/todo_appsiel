@@ -249,9 +249,6 @@ class TesoreriaController extends TransaccionController
         return $opciones;
     }
 
-
-
-
     // AUMENTAR EL CONSECUTIVO Y OBTENERLO AUMENTADO
     public function get_consecutivo($core_empresa_id, $core_tipo_doc_app_id)
     {

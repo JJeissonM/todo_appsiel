@@ -120,3 +120,8 @@ Route::post('teso_resumen_movimiento_caja_bancos','Tesoreria\ReporteController@t
 Route::get('tesoreria/reporte_cartera_por_curso','Tesoreria\ReporteController@reporte_cartera_por_curso');
 Route::post('tesoreria/ajax_reporte_cartera_por_curso','Tesoreria\ReporteController@ajax_reporte_cartera_por_curso');
 Route::get('teso_pdf_reporte_cartera_por_curso','Tesoreria\ReporteController@teso_pdf_reporte_cartera_por_curso');
+
+
+// PROCESOS
+
+Route::get('teso_recontabilizar_documento_pago/{doc_encabezado_id}', 'Tesoreria\PagoController@recontabilizar_un_documento'); // Tambien Reconstruye el movimiento de Tesoreria

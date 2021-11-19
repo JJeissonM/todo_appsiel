@@ -530,10 +530,11 @@ class InvFisicoController extends TransaccionController
         $bodega_id = Input::get('bodega_id');
         
         $productos = InvProducto::where('inv_productos.inv_grupo_id', $grupo_id)
-                                    ->select(
-                                                DB::raw('CONCAT(inv_productos.descripcion, " (",inv_productos.unidad_medida1,") - Talla: ",inv_productos.unidad_medida2) AS producto_descripcion'),'inv_productos.id AS producto_id')
-                                    ->get()
-                                    ->toArray();
+                                ->where('inv_productos.estado', 'Activo')
+                                ->select(
+                                            DB::raw('CONCAT(inv_productos.descripcion, " (",inv_productos.unidad_medida1,") - Talla: ",inv_productos.unidad_medida2) AS producto_descripcion'),'inv_productos.id AS producto_id')
+                                ->get()
+                                ->toArray();
 
         
 

@@ -38,6 +38,8 @@
         <a class="btn-gmail" id="btn_duplicar" href="{{ url( 'teso_pagos_duplicar_documento/'.$id.$variables_url ) }}" title="Duplicar"><i class="fa fa-btn fa-clone"></i></a>
 
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+
+        <a class="btn-gmail" href="{{ url( 'teso_recontabilizar_documento_pago/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
     @endif
 @endsection
 

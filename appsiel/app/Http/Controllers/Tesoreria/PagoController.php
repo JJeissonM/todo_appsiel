@@ -223,35 +223,43 @@ class PagoController extends TransaccionController
 
             $this->contabilizar_registro( $cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
 
-
             // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
             if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' )
             {
-                $this->datos['valor_documento'] = $valor * -1;
-                $this->datos['valor_pagado'] = 0;
-                $this->datos['saldo_pendiente'] = $valor * -1;
-                $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
-                $this->datos['estado'] = 'Pendiente';
-                CxpMovimiento::create( $this->datos );
+                $this->almacenar_cxp( $this->datos, $valor );
             }
 
             // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
             if ( $motivo->teso_tipo_motivo == 'Pago anticipado' )
             {
-                $this->datos['valor_documento'] = $valor;
-                $this->datos['valor_pagado'] = 0;
-                $this->datos['saldo_pendiente'] = $valor;
-                $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
-                $this->datos['estado'] = 'Pendiente';
-                CxcMovimiento::create( $this->datos );
+                $this->almacenar_cxc( $this->datos, $valor );
             }
-
 
             $total_documento += $valor;
 
         } // FIN FOR - CADA LINEA DEL PAGO
 
         return [ $contab_cuenta_id, $total_documento];
+    }
+
+    public function almacenar_cxp( $datos, $valor )
+    {
+        $datos['valor_documento'] = $valor * -1;
+        $datos['valor_pagado'] = 0;
+        $datos['saldo_pendiente'] = $valor * -1;
+        $datos['fecha_vencimiento'] = $datos['fecha'];
+        $datos['estado'] = 'Pendiente';
+        CxpMovimiento::create( $datos );
+    }
+
+    public function almacenar_cxc( $datos, $valor )
+    {
+        $datos['valor_documento'] = $valor;
+        $datos['valor_pagado'] = 0;
+        $datos['saldo_pendiente'] = $valor;
+        $datos['fecha_vencimiento'] = $datos['fecha'];
+        $datos['estado'] = 'Pendiente';
+        CxcMovimiento::create( $datos );
     }
 
 
@@ -353,15 +361,18 @@ class PagoController extends TransaccionController
         return view( 'tesoreria.pagos.create', compact( 'form_create','miga_pan', 'registro', 'archivo_js', 'lineas_tabla_ingreso_registros', 'linea_num', 'mensaje_duplicado' ) );
     }
 
-
-
     public function verificar_permitir_editar( $doc_registros )
     {   
         $permitir_editar = true;
 
         foreach ($doc_registros as $linea)
         {
-            $motivo = TesoMotivo::find( $linea->motivo_id );
+            if ( !is_null( $linea->motivo_id ) )
+            {
+                $motivo = TesoMotivo::find( $linea->motivo_id );
+            }else{
+                $motivo = $linea->motivo;
+            }
 
             if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' || $motivo->teso_tipo_motivo == 'Prestamo financiero' ||  $motivo->teso_tipo_motivo == 'Pago anticipado' )
             {
@@ -414,8 +425,7 @@ class PagoController extends TransaccionController
 
 
     public function imprimir($id)
-    {
-       
+    {      
        $documento_vista = $this->generar_documento_vista( $id, 'tesoreria.formatos_impresion.pagos.'.Input::get('formato_impresion_id') );
 
         // Se prepara el PDF
@@ -562,5 +572,87 @@ class PagoController extends TransaccionController
         $this->duplicado = true;
 
         return $this->edit( $nuevo_doc_encabezado->id );
+    }
+
+    public function recontabilizar_un_documento( $doc_encabezado_id )
+    {
+        $documento = TesoDocEncabezado::find( $doc_encabezado_id );
+
+        // Obtener líneas de registros del documento
+        $registros_documento = $documento->lineas_registros;
+
+        if( !$this->verificar_permitir_editar( $registros_documento ) )
+        {
+           return redirect( 'tesoreria/pagos/' . $doc_encabezado_id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen MOTIVOS que afectan movimientos de CxP o CxC no pueden ser recontabilizados.');
+        }
+
+        $datos = $documento->toArray();
+
+        $array_wheres = ['core_empresa_id'=>$documento->core_empresa_id, 
+            'core_tipo_transaccion_id' => $documento->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $documento->core_tipo_doc_app_id,
+            'consecutivo' => $documento->consecutivo];
+
+        TesoMovimiento::where( $array_wheres )->delete(); 
+
+        ContabMovimiento::where( $array_wheres )->delete();
+
+        $total_credito = 0;
+        foreach ($registros_documento as $linea)
+        {
+            TesoMovimiento::create( $datos +  
+                            [ 'teso_encabezado_id' => $linea->teso_encabezado_id] + 
+                            [ 'teso_motivo_id' => $linea->teso_motivo_id] + 
+                            [ 'teso_caja_id' => $linea->teso_caja_id] + 
+                            [ 'teso_cuenta_bancaria_id' => $linea->teso_cuenta_bancaria_id] + 
+                            [ 'teso_medio_recaudo_id' => $linea->teso_medio_recaudo_id] + 
+                            [ 'valor_movimiento' => $linea->valor ] +
+                            [ 'descripcion' => $linea->detalle_operacion ] +
+                            [ 'estado' => 'Activo' ]
+                        );
+
+
+            $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
+
+            // MOVIMIENTO DEBITO (SEGUN EL MOTIVO)
+            $cuenta_id = $linea->motivo->contab_cuenta_id;
+            $valor_debito = $linea->valor;
+            $valor_credito = 0;
+
+            ContabMovimiento::create( $datos + 
+                            [ 'contab_cuenta_id' => $cuenta_id ] +
+                            [ 'detalle_operacion' => $detalle_operacion] + 
+                            [ 'valor_debito' => $valor_debito] + 
+                            [ 'valor_credito' => ($valor_credito * -1) ] + 
+                            [ 'valor_saldo' => ( $valor_debito - $valor_credito ) ] + 
+                            [ 'teso_caja_id' => $linea->teso_caja_id] + 
+                            [ 'teso_cuenta_bancaria_id' => $linea->teso_cuenta_bancaria_id]
+                        );
+
+            $total_credito += $linea->valor;
+        }
+
+        if ( $documento->teso_caja_id == 0 ) 
+        {
+            $banco = TesoCuentaBancaria::find( $documento->teso_cuenta_bancaria_id );
+            $contab_cuenta_id = $banco->contab_cuenta_id;
+        }else{
+            $caja = TesoCaja::find( $documento->teso_caja_id );
+            $contab_cuenta_id = $caja->contab_cuenta_id;
+        }
+
+        $detalle_operacion = $documento->descripcion . ' Recontabilizado.';
+
+        ContabMovimiento::create( $datos + 
+                            [ 'contab_cuenta_id' => $contab_cuenta_id ] +
+                            [ 'detalle_operacion' => $detalle_operacion] + 
+                            [ 'valor_debito' => 0 ] + 
+                            [ 'valor_credito' => ($total_credito * -1) ] + 
+                            [ 'valor_saldo' => ( 0 - $valor_credito ) ] + 
+                            [ 'teso_caja_id' => $linea->teso_caja_id] + 
+                            [ 'teso_cuenta_bancaria_id' => $linea->teso_cuenta_bancaria_id]
+                        );
+
+        return redirect( 'tesoreria/pagos/'.$doc_encabezado_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', 'Documento Recontabilizado.' );
     }
 }

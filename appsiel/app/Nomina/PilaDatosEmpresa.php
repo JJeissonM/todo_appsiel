@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class PilaDatosEmpresa extends Model
 {
     protected $table = 'nom_pila_datos_empresa';
-    protected $fillable = ['core_empresa_id', 'tipo_aportante', 'clase_aportante', 'forma_presentacion', 'tipo_persona', 'naturaleza_juridica', 'tipo_pagador_pensiones', 'tipo_accion', 'administradora_riesgos_laborales_id', 'actividad_economica_ciiu', 'rep_legal_core_tercero_id', 'porcentaje_sena', 'porcentaje_icbf', 'porcentaje_caja_compensacion', 'estado'];
+
+    protected $fillable = ['core_empresa_id', 'tipo_aportante', 'clase_aportante', 'forma_presentacion', 'tipo_persona', 'naturaleza_juridica', 'tipo_pagador_pensiones', 'tipo_accion', 'administradora_riesgos_laborales_id', 'actividad_economica_ciiu', 'rep_legal_core_tercero_id', 'porcentaje_sena', 'porcentaje_icbf', 'porcentaje_caja_compensacion', 'porcentaje_eps_empresa', 'porcentaje_afp_empresa', 'estado', 'contab_cuenta_db_eps_id', 'contab_cuenta_cr_eps_id', 'contab_cuenta_db_afp_id', 'contab_cuenta_cr_afp_id', 'contab_cuenta_db_arl_id', 'contab_cuenta_cr_arl_id', 'contab_cuenta_db_sena_id', 'contab_cuenta_cr_sena_id', 'contab_cuenta_db_icbf_id', 'contab_cuenta_cr_icbf_id', 'contab_cuenta_db_caja_compensacion_id', 'contab_cuenta_cr_caja_compensacion_id'];
 
     public function empresa()
     {
