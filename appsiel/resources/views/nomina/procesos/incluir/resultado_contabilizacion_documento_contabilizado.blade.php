@@ -50,7 +50,8 @@
 						<div class="alert alert-warning">
 						  <strong>Advertencia!</strong>
 						  <br>
-						   El documento de nómina YA se encuentra contabilizado.
+						   El documento de nómina YA se encuentra contabilizado. 
+						   <a href="{{url('nomina/' . $encabezado_doc->id . '?id=17&id_modelo=90&id_transaccion=14')}}" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-external-link"></i> Consultar </a>
 						</div>
 					@endif
 		        </td>

@@ -157,6 +157,22 @@ class NomConcepto extends Model
             ->get();
     }
 
+    public function get_total_dev_ded_empleado_registros_documento( $encabezado_doc_id, $nom_contrato_id )
+    {
+        $sum_devengos = NomDocRegistro::where( 'nom_doc_encabezado_id', (int)$encabezado_doc_id )
+                                    ->where('nom_contrato_id', $nom_contrato_id )
+                                    ->where('nom_concepto_id', $this->id)
+                                    ->sum('valor_devengo');
+
+        $sum_deducciones = NomDocRegistro::where( 'nom_doc_encabezado_id', (int)$encabezado_doc_id )
+                                    ->where('nom_contrato_id', $nom_contrato_id )
+                                    ->where('nom_concepto_id', $this->id)
+                                    ->sum('valor_deduccion');
+
+        //dd($this,(int)$encabezado_doc_id, $nom_contrato_id,$sum_devengos,$sum_deducciones);
+        
+        return (object)[ 'sum_devengos' => $sum_devengos, 'sum_deducciones' => $sum_deducciones ];
+    }
 
     public function validar_eliminacion($id)
     {

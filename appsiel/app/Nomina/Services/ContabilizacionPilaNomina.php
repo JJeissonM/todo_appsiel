@@ -39,7 +39,6 @@ class ContabilizacionPilaNomina
 	// La contabilización se hará con base en los Consolidados de prestaciones Sociales del mes a contabilizar
 	public function set_movimiento_contabilizar()
 	{
-
 		$registros_consolidados = ConsolidadoPrestacionesSociales::where( 'fecha_fin_mes', $this->fecha_final_promedios )->get();
 
 		$this->valor_debito_total = 0;

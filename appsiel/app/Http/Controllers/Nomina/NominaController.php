@@ -189,16 +189,18 @@ class NominaController extends TransaccionController
     /**
      * Muestra un documento de liquidación con sus registros
      */
-    public function show($id)
+    public function show($encabezado_doc_id)
     {
         $modelo = Modelo::find(Input::get('id_modelo'));
 
-        $reg_anterior = NomDocEncabezado::where('id', '<', $id)->max('id');
-        $reg_siguiente = NomDocEncabezado::where('id', '>', $id)->min('id');
-
-        $view_pdf = $this->vista_preliminar($id,'show');
+        $reg_anterior = NomDocEncabezado::where('id', '<', $encabezado_doc_id)->max('id');
+        $reg_siguiente = NomDocEncabezado::where('id', '>', $encabezado_doc_id)->min('id');
         
-        $encabezado_doc = $this->encabezado_doc;
+        $encabezado_doc =  NomDocEncabezado::get_un_registro( $encabezado_doc_id );
+
+        $empleados = $encabezado_doc->empleados;
+
+        $conceptos = $encabezado_doc->conceptos_liquidados();
 
         $miga_pan = [
                   ['url'=>'nomina?id='.Input::get('id'),'etiqueta'=>'Nómina'],
@@ -215,7 +217,14 @@ class NominaController extends TransaccionController
         $registro_modelo_padre_id = $respuesta['registro_modelo_padre_id'];
         $titulo_tab = $respuesta['titulo_tab'];
 
-        return view( 'nomina.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id','encabezado_doc','tabla','opciones','registro_modelo_padre_id','titulo_tab') ); 
+        $empresa = Empresa::find( $encabezado_doc->core_empresa_id);
+        $ciudad = $empresa->ciudad->descripcion;
+
+        $descripcion_transaccion = $encabezado_doc->tipo_documento_app->descripcion;
+
+        $registros_contabilidad = $encabezado_doc->get_registros_contabilidad();
+
+        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad' ) ); 
 
     }
 
@@ -233,105 +242,15 @@ class NominaController extends TransaccionController
 
 
     // Generar vista para SHOW o IMPRIMIR
-    public function vista_preliminar($id,$vista)
+    public function vista_preliminar( $encabezado_doc_id, $vista )
     {
+        $this->encabezado_doc =  NomDocEncabezado::get_un_registro($encabezado_doc_id);
 
-        $this->encabezado_doc =  NomDocEncabezado::get_un_registro($id);
+        $empleados = $this->encabezado_doc->empleados;
 
-        $empleados =$this->encabezado_doc->empleados;
+        $conceptos = $this->encabezado_doc->conceptos_liquidados();
 
-        $conceptos = NomConcepto::conceptos_del_documento($this->encabezado_doc->id);
-
-        $tabla = '<style> .celda_firma { width: 100px; }  .celda_nombre_empleado { width: 150px; } .table.sticky th {position: sticky; top: 0;} </style>
-                    <br>
-                    <div class="table-responsive">
-                     <table  class="tabla_registros table table-bordered table-striped sticky contenido" style="margin-top: 1px; width: 100%;">
-                    <thead>
-                      <tr class="">
-                          <th>
-                             NO.
-                          </th>
-                          <th>
-                             EMPLEADO
-                          </th>
-                          <th>
-                             IDENTIFCACIÓN
-                          </th>';
-        foreach ($conceptos as $registro)
-        {          
-          $tabla.='<th>'.$registro->abreviatura.'</th>';
-        }
-
-        $tabla.='<th>T. DEVENGOS</th>
-                    <th>T. DEDUCCIONES</th>
-                    <th>TOTAL A PAGAR</th>
-                    <th width="100px">FIRMA</th>
-                    </tr>
-                    </thead>
-                    <tbody>';
-
-        $total_1=0;
-        $i=1;
-
-        $this->vec_totales = array_fill(0, count($conceptos)+3, 0);  
-        
-        foreach ($empleados as $empleado)
-        {          
-            $this->total_devengos_empleado = 0;
-            $this->total_deducciones_empleado = 0;
-
-            $tabla.='<tr>
-                    <td class="text-center">'.$i.'</td>
-                    <td class="text-left celda_nombre_empleado">'.$empleado->tercero->descripcion.'</td>
-                    <td class="text-center">'.$empleado->tercero->numero_identificacion.'</td>';
-
-            $this->pos = 0;
-            foreach ($conceptos as $un_concepto)
-            {
-                $valor = $this->get_valor_celda( NomDocRegistro::where('nom_doc_encabezado_id',$this->encabezado_doc->id)
-                                                                ->where('core_tercero_id',$empleado->core_tercero_id)
-                                                                ->where('nom_concepto_id',$un_concepto->nom_concepto_id)
-                                                                ->get(), $un_concepto );
-                
-                $tabla.='<td title="'.$un_concepto->descripcion.'">'.$valor.'</td>';
-                $this->pos++;
-            }
-
-            $total_devengos_empleado = NomDocRegistro::where( 'nom_doc_encabezado_id', $this->encabezado_doc->id )
-                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                                        ->sum('valor_devengo');
-
-            $total_deducciones_empleado = NomDocRegistro::where( 'nom_doc_encabezado_id', $this->encabezado_doc->id )
-                                                        ->where( 'core_tercero_id', $empleado->core_tercero_id )
-                                                        ->sum('valor_deduccion');
-
-            $tabla.='<td title="Total devengos">'.Form::TextoMoneda( $total_devengos_empleado ).'</td>';
-
-            $tabla.='<td title="Total deducciones">'.Form::TextoMoneda( $total_deducciones_empleado ).'</td>';
-
-            $tabla.='<td title="Total a pagar">'.Form::TextoMoneda( $total_devengos_empleado - $total_deducciones_empleado ).'</td>';
-
-            $tabla.='<td class="celda_firma"> &nbsp; </td>';
-
-            $this->vec_totales[$this->pos] += $total_devengos_empleado;
-            $this->pos++;
-            $this->vec_totales[$this->pos] += $total_deducciones_empleado;
-            $this->pos++;
-            $this->vec_totales[$this->pos] += $total_devengos_empleado - $total_deducciones_empleado;
-
-            $tabla.='</tr>';
-            $i++;
-        }
-
-        $tabla.='<tr><td></td><td></td><td></td>';
-
-        $cant = count( $this->vec_totales );
-        for ($j=0; $j < $cant; $j++)
-        {
-            $tabla.='<td>'.Form::TextoMoneda( $this->vec_totales[$j] ).'</td>';
-        }
-        $tabla.='<td> &nbsp; </td>';
-        $tabla.='</tr></tbody></table></div>';
+        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id' ) )->render();
 
         // DATOS ADICIONALES
         $tipo_doc_app = TipoDocApp::find($this->encabezado_doc->core_tipo_doc_app_id);
@@ -346,7 +265,8 @@ class NominaController extends TransaccionController
         $encabezado_doc = $this->encabezado_doc;
 
         $firmas = '';
-        if(Input::get('formato_impresion_id') == 2){
+        if(Input::get('formato_impresion_id') == 2)
+        {
             $view_1 = View::make('nomina.incluir.encabezado_transaccion2',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad') )->render();
 
             $view_pdf = $view_1.$tabla.$firmas.'<div class="page-break"></div>';
@@ -358,45 +278,6 @@ class NominaController extends TransaccionController
         
         
         return $view_pdf;
-    }
-
-    function get_valor_celda($registro, $un_concepto)
-    {
-        if ( count($registro) > 0) 
-        {
-            $valor = 0;
-            $total_devengos = 0;
-            $total_deducciones = 0;
-            foreach ($registro as $linea )
-            {
-                $total_devengos += $linea->valor_devengo;
-                $total_deducciones += $linea->valor_deduccion;
-                $valor +=  $linea->valor_devengo + $linea->valor_deduccion;
-            }
-
-            // Se suma devengo y deduccion (alguno de los dos es cero)
-            $lbl_valor = Form::TextoMoneda( $valor );
-
-            switch ($un_concepto->naturaleza) 
-            {
-                case 'devengo':
-                    $this->total_devengos_empleado += $total_devengos;
-                    break;
-                case 'deduccion':
-                    $this->total_deducciones_empleado += $total_deducciones;
-                    break;
-                
-                default:
-                    # code...
-                    break;
-            }
-
-            $this->vec_totales[$this->pos] += $total_devengos + $total_deducciones;
-        }else{
-            $lbl_valor = '';
-        }
-
-        return $lbl_valor;
     }
 
     // Retiro de conceptos con modo liquidacion automatica

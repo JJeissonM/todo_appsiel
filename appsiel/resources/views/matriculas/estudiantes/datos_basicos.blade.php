@@ -1,11 +1,23 @@
 <table class="table table-bordered table-striped">
 	<tr>
 		<td colspan="2"><h3> <strong>Datos básicos del estudiante</strong> </h3></td>
-	</tr>	
+	</tr>
+	<tr>
+		<td colspan="2"><strong>Curso: </strong> {{ $estudiante->matricula_activa()->curso->descripcion }} - {{ $estudiante->matricula_activa()->periodo_lectivo->descripcion }} </td>
+	</tr>
+
 	<tr>
 		<td><strong>Nombre: </strong> {{ $estudiante->nombre_completo }}</td>
 		<td rowspan="6" align="center">
-			<img alt="foto.jpg" src="{{ asset( config('configuracion.url_instancia_cliente').'/storage/app/fotos_terceros/'.$estudiante->imagen ) }}" style="width: 130px; height: 180px;" />
+			<?php
+				if ( $estudiante->imagen != '' )
+				{
+					$src = asset( config('configuracion.url_instancia_cliente').'/storage/app/fotos_terceros/'.$estudiante->imagen );
+				}else{
+					$src = asset( 'assets/images/avatar.png/' );
+				}
+			?>
+			<img alt="foto.jpg" src="{{ $src }}" style="width: 140px; height: 170px;" />
 		</td>
 	</tr>
 	<tr>
@@ -24,7 +36,7 @@
 		<td><strong>Teléfono: </strong>{{ $estudiante->telefono1 }}</td>
 	</tr>
 	<tr>
-		<td><strong>Email: </strong>{{ $estudiante->email }}</td>
+		<td colspan="2"><strong>Email: </strong>{{ $estudiante->email }}</td>
 	</tr>
 </table>
 

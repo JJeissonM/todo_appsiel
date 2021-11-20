@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Nomina\NomContrato;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\NomConcepto;
+
+use App\Contabilidad\ContabMovimiento;
 
 use DB;
 use Input;
@@ -52,6 +55,16 @@ class NomDocEncabezado extends Model
     public function registros_liquidacion()
     {
         return $this->hasMany(NomDocRegistro::class, 'nom_doc_encabezado_id');
+    }
+
+    public function conceptos_liquidados()
+    {
+        return NomConcepto::leftJoin('nom_doc_registros', 'nom_doc_registros.nom_concepto_id', '=', 'nom_conceptos.id')
+                        ->where( 'nom_doc_registros.nom_doc_encabezado_id', $this->id )
+                        ->select('nom_conceptos.*')
+                        ->distinct('nom_doc_registros.nom_concepto_id')
+                        ->orderBy('nom_conceptos.id', 'ASC')
+                        ->get();
     }
 
     public function actualizar_totales()
@@ -319,12 +332,19 @@ class NomDocEncabezado extends Model
     {
         $tabla = '<div class="table-responsive">
                 <table class="table table-bordered table-striped" id="myTable">
-                    <thead>';
+                    <thead><tr>';
         $encabezado_tabla = ['ORDEN', 'IDENTIFCACIÓN', 'EMPLEADO', 'ACCIÓN'];
-        for ($i = 0; $i < count($encabezado_tabla); $i++) {
-            $tabla .= '<th>' . $encabezado_tabla[$i] . '</th>';
+        for ($i = 0; $i < count($encabezado_tabla); $i++)
+        {
+            if ( $i == 0 )
+            {
+                $tabla .= '<th>' . $encabezado_tabla[$i] . '</th>';
+            }else{
+                $tabla .= '<th>' . $encabezado_tabla[$i] . '</th>';
+            }
+                
         }
-        $tabla .= '</thead>
+        $tabla .= '</tr></thead>
                     <tbody>';
         foreach ($registros_asignados as $fila) {
             $orden = DB::table('nom_empleados_del_documento')
@@ -406,5 +426,13 @@ class NomDocEncabezado extends Model
         }
 
         return 'ok';
+    }
+
+    public function get_registros_contabilidad()
+    {
+        return ContabMovimiento::where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                            ->where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                            ->where('contab_movimientos.consecutivo', $this->consecutivo)
+                            ->get();
     }
 }

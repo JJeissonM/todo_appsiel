@@ -323,12 +323,13 @@ class ContabMovimiento extends Model
 
     public static function get_registros_contables($core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo)
     {
-        return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+        return ContabMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
+            ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
             ->where('contab_movimientos.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->where('contab_movimientos.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->where('contab_movimientos.consecutivo', $consecutivo)
             ->groupBy('contab_movimientos.contab_cuenta_id')
-            ->selectRaw('contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.codigo AS cuenta_codigo, sum(contab_movimientos.valor_debito) AS valor_debito, sum(contab_movimientos.valor_credito) AS valor_credito')
+            ->selectRaw('contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.codigo AS cuenta_codigo, sum(contab_movimientos.valor_debito) AS valor_debito, sum(contab_movimientos.valor_credito) AS valor_credito, CONCAT(core_terceros.numero_identificacion," ",core_terceros.descripcion) AS tercero')
             ->get()->toArray();
     }
 

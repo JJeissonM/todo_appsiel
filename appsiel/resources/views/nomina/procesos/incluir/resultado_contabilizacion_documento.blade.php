@@ -52,7 +52,8 @@
 
 		@if( $contabilizado )
 			<div class="alert alert-success">
-			  <strong>Documento contabilizado correctamente.</strong>
+			  <strong>Documento contabilizado correctamente.</strong> 
+				<a href="{{url('nomina/' . $encabezado_doc->id . '?id=17&id_modelo=90&id_transaccion=14')}}" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-external-link"></i> Consultar </a>
 			</div>
 		@else
 			<div class="alert alert-info">

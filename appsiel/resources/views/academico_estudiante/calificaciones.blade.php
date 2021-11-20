@@ -46,8 +46,6 @@
 							{{ Form::hidden('curso_id',$curso->id) }}
 							
 						{{ Form::close() }}
-						<!--	<button id="btn_ir">ir</button>	-->
-
 
 						{{ Form::open( [ 'url' => 'calificaciones/boletines/generarPDF', 'files' => true, 'id' => 'formulario_boletin'] ) }}
 

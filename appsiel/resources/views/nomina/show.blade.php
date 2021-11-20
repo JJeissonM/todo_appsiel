@@ -28,19 +28,19 @@
 			
 
 			@if ( $encabezado_doc->estado == 'Activo' )
-				{{ Form::bsBtnEdit2('web/'.$id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
-				{{ Form::bsBtnEliminar('web_eliminar/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+				{{ Form::bsBtnEdit2('web/'.$encabezado_doc_id.'/edit?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
+				{{ Form::bsBtnEliminar('web_eliminar/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion') ) }}
 				&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Liquidar', 'primary', 'cogs', 
 						[ 
-							['link' => 'nomina/liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							['link' => 'nomina/liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
 							'etiqueta' => 'Registros automáticos (todo)'],
-							['link' => 'nom_liquidar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							['link' => 'nom_liquidar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
 							'etiqueta' => 'Primas de antigüedad']
 						] ) }}
 				&nbsp;&nbsp;&nbsp; {{ Form::bsBtnDropdown( 'Retirar', 'warning', 'history', 
 						[ 
-							['link' => 'nomina/retirar_liquidacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ],
-							['link' => 'nom_retirar_prima_antiguedad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							['link' => 'nomina/retirar_liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 'etiqueta' => 'Registros automáticos (todo)' ],
+							['link' => 'nom_retirar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
 							'etiqueta' => 'Primas de antigüedad']
 						] ) }}
 			@else
@@ -50,7 +50,7 @@
 		<div class="col-md-6">
 
 			Formato: {{ Form::select('formato_impresion_id',['1'=>'Estándar','2'=>'Estándar v2'], null, [ 'id' =>'formato_impresion_id' ] ) }}
-			{{ Form::bsBtnPrint( 'nomina_print/'.$id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion').'&formato_impresion_id=1' ) }}
+			{{ Form::bsBtnPrint( 'nomina_print/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='. Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion').'&formato_impresion_id=1' ) }}
 			
 		</div>
 		<div class="col-md-1">
@@ -76,46 +76,28 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-			<div class="container-fluid">
-				{!! $view_pdf !!}
-			</div>
 
-			<div class="container-fluid">
-				<br/><br/>
-				<ul class="nav nav-tabs">
-				  <li class="active"><a href="#">{{ $titulo_tab }}</a></li>
-				</ul>
-				
-				<br/><br/>
-				
-				{!! $tabla !!}
+			@include('nomina.incluir.encabezado_transaccion')
 
-				{{ Form::open(array('url'=>'nom_guardar_asignacion')) }}
-					<div class="row">
-						<div class="col-md-8 col-md-offset-2" style="vertical-align: center; border: 1px solid gray;">
-							<h3>Asignar nuevo</h3>
-							<div class="row">
-								<div class="col-md-6">
-									{{ Form::bsSelect('registro_modelo_hijo_id',null,$titulo_tab,$opciones,['class'=>'combobox']) }}
-								</div>
-								<div class="col-md-6">
-									{{ Form::bsText('nombre_columna1',null,'Orden',[]) }}
-								</div>
-								{{ Form::hidden('registro_modelo_padre_id',$registro_modelo_padre_id) }}
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#tab1"> Registros de liquidación </a></li>
+				<li><a data-toggle="tab" href="#tab2"> Empleados del documento </a></li>
+				<li><a data-toggle="tab" href="#tab3"> Contabilización </a></li>
+		    </ul>
 
-								{{ Form::hidden('url_id',Input::get('id'))}}
-								{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
-								{{ Form::hidden('url_id_transaccion',Input::get('id_transaccion'))}}
-							</div>
-							<div align="center">
-								<br/>
-								{{ Form::submit('Guardar', array('class' => 'btn btn-primary btn-sm')) }}
-							</div>
-							<br/><br/>
-						</div>
-					</div>
-				{{ Form::close() }}
-			</div>
+		    <div class="tab-content">
+		    	<div id="tab1" class="tab-pane fade in active">
+			        @include( 'nomina.incluir.tabla_registros_documento' )
+			    </div>
+			    <div id="tab2" class="tab-pane fade">
+			        @include( 'nomina.incluir.tabla_empleados_documento' )
+		    	</div>
+			    <div id="tab3" class="tab-pane fade">
+			    	<br><br>
+			        @include('transaccion.registros_contables_con_terceros')
+		    	</div>
+		    </div><!---->
+			
 		</div>
 	</div>
 	<br/><br/>	

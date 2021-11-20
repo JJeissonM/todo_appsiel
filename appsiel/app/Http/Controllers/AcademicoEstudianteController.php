@@ -141,8 +141,14 @@ class AcademicoEstudianteController extends Controller
 
         $opciones = Periodo::get_activos_periodo_lectivo();
 
+        $periodos_abiertos = config('calificaciones.periodos_activos_visualizar_calificaciones');
         $vec[''] = '';
-        foreach ($opciones as $opcion) {
+        foreach ($opciones as $opcion)
+        {
+            if ( !in_array( $opcion->id, $periodos_abiertos ) )
+            {
+                continue;
+            }
             $vec[$opcion->id] = $opcion->periodo_lectivo_descripcion . ' > ' . $opcion->descripcion;
         }
 

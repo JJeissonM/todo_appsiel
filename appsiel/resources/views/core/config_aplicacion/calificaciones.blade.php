@@ -36,11 +36,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$permitir_calificaciones_sin_logros = 'Si';
 								if( isset($parametros['permitir_calificaciones_sin_logros'] ) )
 								{
 									$permitir_calificaciones_sin_logros = $parametros['permitir_calificaciones_sin_logros'];
-								}else{
-									$permitir_calificaciones_sin_logros = 'Si';
 								}
 							?>
 							{{ Form::bsSelect('permitir_calificaciones_sin_logros', $permitir_calificaciones_sin_logros, 'Permitir ingreso de calificaciones sin haber ingresado logros', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
@@ -50,11 +49,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$manejar_preinformes_academicos = 'No';
 								if( isset($parametros['manejar_preinformes_academicos'] ) )
 								{
 									$manejar_preinformes_academicos = $parametros['manejar_preinformes_academicos'];
-								}else{
-									$manejar_preinformes_academicos = 'No';
 								}
 							?>
 							{{ Form::bsSelect('manejar_preinformes_academicos', $manejar_preinformes_academicos, 'Manejar pre-informes académicos', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
@@ -68,11 +66,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$colegio_maneja_metas = 'No';
 								if( isset($parametros['colegio_maneja_metas'] ) )
 								{
 									$colegio_maneja_metas = $parametros['colegio_maneja_metas'];
-								}else{
-									$colegio_maneja_metas = 'No';
 								}
 							?>
 							{{ Form::bsSelect('colegio_maneja_metas', $colegio_maneja_metas, 'Manejar metas en boletines', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
@@ -82,11 +79,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$etiqueta_calificacion_boletines = 'numero_y_letras';
 								if( isset($parametros['etiqueta_calificacion_boletines'] ) )
 								{
 									$etiqueta_calificacion_boletines = $parametros['etiqueta_calificacion_boletines'];
-								}else{
-									$etiqueta_calificacion_boletines = 'numero_y_letras';
 								}
 							?>
 							{{ Form::bsSelect('etiqueta_calificacion_boletines', $etiqueta_calificacion_boletines, 'Calificación a mostrar en boletines', ['numero_y_letras'=>'Número y letras','solo_numeros'=>'Solo números','solo_letras'=>'Solo letras'], ['class'=>'form-control']) }}
@@ -143,11 +139,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$formato_boletin_default = 'pdf_boletines_3';
 								if( isset($parametros['formato_boletin_default'] ) )
 								{
 									$formato_boletin_default = $parametros['formato_boletin_default'];
-								}else{
-									$formato_boletin_default = 'pdf_boletines_3';
 								}
 
 								$formatos_boletines = [
@@ -169,11 +164,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$estudiante_revisar_guia_academicas = 'No';
 								if( isset($parametros['estudiante_revisar_guia_academicas'] ) )
 								{
 									$estudiante_revisar_guia_academicas = $parametros['estudiante_revisar_guia_academicas'];
-								}else{
-									$estudiante_revisar_guia_academicas = 'No';
 								}
 							?>
 							{{ Form::bsSelect('estudiante_revisar_guia_academicas', $estudiante_revisar_guia_academicas, 'Estudiante puede revisar guías académicas', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
@@ -183,11 +177,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$estudiante_activar_foros_discucion = 'No';
 								if( isset($parametros['estudiante_activar_foros_discucion'] ) )
 								{
 									$estudiante_activar_foros_discucion = $parametros['estudiante_activar_foros_discucion'];
-								}else{
-									$estudiante_activar_foros_discucion = 'No';
 								}
 							?>
 							{{ Form::bsSelect('estudiante_activar_foros_discucion', $estudiante_activar_foros_discucion, 'Estudiante puede participar en foros', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
@@ -228,6 +221,51 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$periodos_activos_visualizar_calificaciones = '';
+								if( isset($parametros['periodos_activos_visualizar_calificaciones'] ) )
+								{
+									$periodos_activos_visualizar_calificaciones = $parametros['periodos_activos_visualizar_calificaciones'];
+								}
+
+								$valores = '';
+								if ( is_array($periodos_activos_visualizar_calificaciones) ) 
+								{
+									foreach( $periodos_activos_visualizar_calificaciones AS $key => $value )
+									{
+										global $valores;
+
+									    $valores .= $value . ',';
+									}
+								}
+
+								$opciones = App\Calificaciones\Periodo::get_activos_periodo_lectivo();
+
+						        $vec[''] = '';
+						        foreach ($opciones as $opcion)
+						        {
+						            $vec[$opcion->id] = $opcion->periodo_lectivo_descripcion . ' > ' . $opcion->descripcion;
+						        }
+
+						        $periodos = $vec;
+
+							?>
+							{{ Form::bsCheckBox('periodos_activos_visualizar_calificaciones', $valores, 'Periodos activos para visualizar calificaciones', $periodos, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">
@@ -242,10 +280,6 @@
 	</div>
 	<br/><br/>
 
-
-
-
-	<div id="div_cargando">Cargando...</div>
 @endsection
 
 @section('scripts')

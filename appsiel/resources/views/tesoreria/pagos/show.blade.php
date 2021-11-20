@@ -39,7 +39,7 @@
 
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
 
-        <a class="btn-gmail" href="{{ url( 'teso_recontabilizar_documento_pago/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
+        <!-- <a class="btn-gmail" href="{ { url( 'teso_recontabilizar_documento_pago/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a> -->
     @endif
 @endsection
 

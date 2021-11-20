@@ -148,9 +148,6 @@ class Estudiante extends Model
         return $vec;
     }
 
-
-
-
     public static function get_nombre_completo($id, $modo_ordenamiento = 1)
     {
         switch ($modo_ordenamiento) {
