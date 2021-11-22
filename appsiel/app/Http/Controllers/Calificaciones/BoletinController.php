@@ -393,6 +393,8 @@ class BoletinController extends Controller
 
     /*
         PROCESO PARA CALCULAR LOS PUESTOS DE ESTUDIANTES DE UN CURSO
+
+        NOTA: NO ESTA TENIENDO EN CUENTA LA NOTA DE NIVELACION. SERÍA INJUSTO QUE ALGUIENQUE NIVELE OCUPE LOS PRIMERO PUESTOS. AUNQUE EN EL PERIODO FINAL SI ENTRA LA NOTA DE NIVELACION.
 	*/
     public function calcular_puesto_p(Request $request)
     {
@@ -415,7 +417,7 @@ class BoletinController extends Controller
                                     ->groupBy('id_estudiante')
                                     ->orderBy('promedioCalificaciones','DESC')
                                     ->get();
-
+        //dd($promedios);
         /* $query_1 = "SELECT AVG(calificacion) as promedioCalificaciones,id_estudiante FROM calificaciones 
 				WHERE id_colegio=".$colegio->id." AND anio=".$anio." AND id_periodo=".$request->id_periodo." AND curso_id=".$request->curso_id." 
 				GROUP BY id_estudiante 

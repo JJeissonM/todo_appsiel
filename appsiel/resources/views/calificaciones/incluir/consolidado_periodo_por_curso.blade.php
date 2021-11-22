@@ -1,6 +1,6 @@
 <p style="text-align: center; font-size: 15px; font-weight: bold;">
     
-    Consolidado de calificaciones <br/> 
+    Consolidado de calificaciones por Estudiante <br/> 
     Año: {{explode("-",$periodo->fecha_desde)[0]}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  Periodo: {{$periodo->descripcion}}
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Curso: {{$curso->descripcion}}
  </p>
@@ -42,23 +42,36 @@
                         <td>
                             @php
                                 
-                                $cali = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)->whereLoose('asignatura_id', $vec_asignaturas[$j]['id'])->first();//->get('calificacion');//
+                                $calificacion = $calificaciones->whereLoose('id_estudiante',$estudiante->id_estudiante)->whereLoose('id_asignatura', $vec_asignaturas[$j]['id'])->first();//->get('calificacion');//
+
+
+                                $cali = 0;
+                                $lbl_nivelacion = '';
+                                if( !is_null( $calificacion ) )
+                                {
+                                    $cali = $calificacion->calificacion;
+                                    if( !is_null( $calificacion->nota_nivelacion() ) )
+                                    {
+                                        $cali = $calificacion->nota_nivelacion()->calificacion;
+                                        $lbl_nivelacion = 'n';
+                                    }
+                                }
 
                                 $text_cali = '';
                                 $color_text = 'black';
-                                if ( !is_null($cali) ) 
+                                if ( $cali != 0 ) 
                                 {
-                                    $cali_final += $cali->calificacion;
-                                    $text_cali = number_format($cali->calificacion, 2, ',', '.');
+                                    $cali_final += $cali;
+                                    $text_cali = number_format($cali, config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                                     $n++;
 
-                                    if ( $cali->calificacion <= $tope_escala_valoracion_minima ) {
+                                    if ( $cali <= $tope_escala_valoracion_minima ) {
                                         $color_text = 'red';
                                     }
                                 }/**/
                                 
                            @endphp
-                           <span style="color: {{$color_text}}"> {{ $text_cali }}</span>
+                           <span style="color: {{$color_text}}"> {{ $text_cali }} <sup>{{ $lbl_nivelacion }}</sup> </span>
                         </td>
                     @endfor
 

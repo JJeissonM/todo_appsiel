@@ -70,6 +70,7 @@
                                 <td>
                                     <span style="background: {{$array_periodos['calificacion'][$periodo->id]['background_color']}}; color: {{$array_periodos['calificacion'][$periodo->id]['text_color']}}" > 
                                         {{ $array_periodos['calificacion'][$periodo->id]['text'] }}
+                                        <sup> {{ $array_periodos['calificacion'][$periodo->id]['lbl_nivelacion'] }} </sup>
                                     </span>               
                                 </td>
                             @endforeach
@@ -151,8 +152,9 @@
                             <!-- Dibujar la nota de cada periodo -->
                             @foreach($periodos as $periodo)                    
                                 <td>
-                                    <span style="background: {{$array_periodos['calificacion'][$periodo->id]['background_color']}}; color: {{$array_periodos['calificacion'][$periodo->id]['text_color']}}" > 
+                                    <span style="background: {{$array_periodos['calificacion'][$periodo->id]['background_color']}}; color: {{$array_periodos['calificacion'][$periodo->id]['text_color']}}" >
                                         {{ $array_periodos['calificacion'][$periodo->id]['text'] }}
+                                        <sup> {{ $array_periodos['calificacion'][$periodo->id]['lbl_nivelacion'] }} </sup>
                                     </span>               
                                 </td>
                             @endforeach
@@ -201,9 +203,9 @@
         foreach($periodos as $periodo)
         {
                 
-            $cali = $calificaciones->whereLoose( 'estudiante_id', $estudiante_id )
-                                    ->whereLoose( 'periodo_id', $periodo->id )
-                                    ->whereLoose( 'asignatura_id', $asignatura_id )
+            $cali = $calificaciones->whereLoose( 'id_estudiante', $estudiante_id )
+                                    ->whereLoose( 'id_periodo', $periodo->id )
+                                    ->whereLoose( 'id_asignatura', $asignatura_id )
                                     ->first();
 
             if ( !is_null($cali) ) 
@@ -212,6 +214,7 @@
                 $cali_periodos[$periodo->id]['text'] = number_format($cali->calificacion, 1, ',', '.');
                 $cali_periodos[$periodo->id]['text_color'] = 'black';
                 $cali_periodos[$periodo->id]['background_color'] = 'transparent';
+                $cali_periodos[$periodo->id]['lbl_nivelacion'] = $cali->lbl_nivelacion;
 
                 if ( $cali->calificacion <= $tope_escala_valoracion_minima )
                 {
@@ -225,9 +228,9 @@
                 $cali_periodos[$periodo->id]['text'] = '';
                 $cali_periodos[$periodo->id]['text_color'] = '';
                 $cali_periodos[$periodo->id]['background_color'] = '';
+                $cali_periodos[$periodo->id]['lbl_nivelacion'] = '';
                 $periodos_faltantes++;
             }
-
         }
         
         // 2do. Se calcula el valor de la(s) nota(s) faltante(s)
@@ -254,6 +257,7 @@
                 $cali_periodos[$periodo->id]['text'] = $cali_faltante_text;
                 $cali_periodos[$periodo->id]['text_color'] = $cali_faltante_text_color;
                 $cali_periodos[$periodo->id]['background_color'] = 'yellow';
+                $cali_periodos[$periodo->id]['lbl_nivelacion'] = '';
             }
         }
 

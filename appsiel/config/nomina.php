@@ -7,7 +7,7 @@
   'valor_uvt_actual' => '36308',
   'sabado_es_dia_habil' => '1',
   'calcular_valor_proyectado_fondo_solidaridad' => '1',
-  'concepto_salario_integral' => '',
+  'concepto_salario_integral' => '2',
   'concepto_salud_obligatoria' => '64',
   'pago_salario_completo_en_incapacidades' => '0',
   'id_concepto_pagar_empresa_en_incapacidades' => '',
@@ -18,6 +18,6 @@
   'concepto_a_pagar_pasante_sena' => '77',
   'porcentaje_liquidacon_pasante_sena' => '75',
   'cuenta_id_salarios_por_pagar' => '206',
-  'tercero_id_salarios_por_pagar' => '212',
+  'tercero_id_salarios_por_pagar' => '43',
   'url_id_modelo' => '0',
 ) ;

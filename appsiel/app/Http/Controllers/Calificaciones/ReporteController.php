@@ -99,8 +99,7 @@ class ReporteController extends Controller
                 $celdas_encabezado_areas.='<th colspan="'.$cant_asig_area.'" style="border: 1px solid; text-align:center;">'.$un_area->abreviatura.'</th>';
             }
                 
-        }        
-
+        }
 
         $celdas_encabezado_asignaturas='';
         for ($i=0; $i < $as; $i++) 
@@ -178,13 +177,21 @@ class ReporteController extends Controller
     }
 
     /*
-        * POST promedio_acumulado_periodos 
+        * POST promedio_acumulado_periodos TODAS LAS ASIGNATURAS
     */
     public function promedio_acumulado_periodos(Request $request)
     {
         $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
+
+        foreach( $calificaciones AS $calificacion )
+        {
+            if ( !is_null( $calificacion->nota_nivelacion() ) )
+            {
+                $calificacion->calificacion = $calificacion->nota_nivelacion()->calificacion;
+            }
+        }
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
 
@@ -222,6 +229,16 @@ class ReporteController extends Controller
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
 
+        foreach( $calificaciones AS $calificacion )
+        {
+            $calificacion->lbl_nivelacion = '';
+            if ( !is_null( $calificacion->nota_nivelacion() ) )
+            {
+                $calificacion->calificacion = $calificacion->nota_nivelacion()->calificacion;
+                $calificacion->lbl_nivelacion = 'n';
+            }
+        }
+
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
         
         $curso = Curso::find( $request->curso_id );     
@@ -258,6 +275,16 @@ class ReporteController extends Controller
                                                         ->first()->calificacion_maxima;
 
         $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
+
+        foreach( $calificaciones AS $calificacion )
+        {
+            $calificacion->lbl_nivelacion = '';
+            if ( !is_null( $calificacion->nota_nivelacion() ) )
+            {
+                $calificacion->calificacion = $calificacion->nota_nivelacion()->calificacion;
+                $calificacion->lbl_nivelacion = 'n';
+            }
+        }
 
         $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id, null );
         
@@ -413,6 +440,8 @@ class ReporteController extends Controller
     public function rendimiento_areas_asignaturas( Request $request )
     {
 
+        dd('Lo sentimos. Reporte no disponible. Intente en otro momento.');
+
         $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
         $periodo = Periodo::find( $request->periodo_id );
         $grado = Grado::find( $request->sga_grado_id );
@@ -421,8 +450,6 @@ class ReporteController extends Controller
 
         // Seleccionar asignaturas del grado
         $asignaturas = CursoTieneAsignatura::asignaturas_del_grado( $array_cursos_id, $request->periodo_lectivo_id);
-
-        dd($asignaturas);
 
         $curso = Curso::find( $request->curso_id );
 

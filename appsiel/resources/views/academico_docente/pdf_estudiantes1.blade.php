@@ -24,6 +24,7 @@
 	                </div>
 	            </th>
 	        @endforeach
+			<th>Prom.</th>
 			<?php
 				$cant_celdas=10;
 				for($i=1;$i<=$cant_celdas;$i++){
@@ -33,46 +34,26 @@
 		</tr>
 		</thead>
 		<tbody>
-		<?php $j=1;
-		foreach ($estudiantes as $estudiante){
-
-				$prom_final=0;
-                $n = 0;
-			?>
+		<?php
+			$j=1;
+		?>
+		@foreach ($estudiantes as $estudiante){
 			<tr>
 				<td width="20px" align="center"><?php echo $j; $j++;?></td>
-				<td width="200px"><div style="font-size: 12px;">{{ $estudiante->nombre_completo }} </div> </td>
-				@foreach($periodos as $periodo)
-                    <td width="20px" align="center">
-                        @php 
-                            // Calcular calificacion promedio del estudiante en la Collection calificaciones
-                            $prom = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)
-                            			->whereLoose('periodo_id',$periodo->id)
-                            			->avg('calificacion');
+				<td width="200px">
+					<div style="font-size: 12px;">
+						{{ $estudiante->nombre_completo }}
+					</div>
+				</td>
+				
+				@include('calificaciones.incluir.celdas_calificaciones_periodos')
 
-                            //dd( $calificaciones, $estudiante->id_estudiante, $periodo->id,  $prom );
-                            $text_prom = '';
-                            $color_text = 'black';
-                            /**/if ( !is_null($prom) ) 
-                            {
-                                $prom_final += $prom;
-                                $text_prom = number_format($prom, config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
-                                $n++;
-
-                                if ( $prom <= $tope_escala_valoracion_minima ) {
-                                    $color_text = 'red';
-                                }
-                            }                               
-                        @endphp
-                        <span style="color: {{$color_text}};font-size: 12px; padding: 1px;"> {{ $text_prom }}</span>
-                    </td>
-                @endforeach
-                <?php for($i=1;$i<=$cant_celdas;$i++){
-                    echo "<td class='celda'>&nbsp;</td>";
-                } ?>
+                @for( $i=1; $i<=$cant_celdas; $i++)
+                	<td class='celda'>&nbsp;</td>
+                @endfor
 				<td class='celda2'>&nbsp;</td>
 			</tr>	
-		<?php } ?>
+		@endforeach
 		</tbody>
 	</table>
 </div>

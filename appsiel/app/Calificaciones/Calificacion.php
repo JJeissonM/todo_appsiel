@@ -31,11 +31,11 @@ class Calificacion extends Model
     public function nota_nivelacion()
     {
         return NotaNivelacion::where('periodo_id', $this->id_periodo)
-            ->where('curso_id', $this->curso_id)
-            ->where('asignatura_id', $this->id_asignatura)
-            ->where('estudiante_id', $this->id_estudiante)
-            ->get()
-            ->first();
+                            ->where('curso_id', $this->curso_id)
+                            ->where('asignatura_id', $this->id_asignatura)
+                            ->where('estudiante_id', $this->id_estudiante)
+                            ->get()
+                            ->first();
     }
 
     /**
@@ -202,37 +202,36 @@ class Calificacion extends Model
         }
 
         return Calificacion::where($array_wheres)
-            ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
-            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
-            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_calificaciones.id_estudiante')
-            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones.id_asignatura')
-            ->select(
-                'sga_calificaciones.anio',
-                'sga_periodos.id AS periodo_id',
-                'sga_cursos.id AS curso_id',
-                'sga_estudiantes.id AS estudiante_id',
-                'sga_asignaturas.id AS asignatura_id',
-                'sga_calificaciones.calificacion',
-                'sga_calificaciones.logros',
-                'sga_calificaciones.id AS calificacion_id'
-            )
-            ->get();
+                        ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
+                        ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
+                        ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_calificaciones.id_estudiante')
+                        ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones.id_asignatura')
+                        ->select(
+                            'sga_calificaciones.anio',
+                            'sga_periodos.id AS id_periodo',
+                            'sga_cursos.id AS curso_id',
+                            'sga_estudiantes.id AS id_estudiante',
+                            'sga_asignaturas.id AS id_asignatura',
+                            'sga_calificaciones.calificacion',
+                            'sga_calificaciones.logros',
+                            'sga_calificaciones.id AS calificacion_id'
+                        )
+                        ->get();
     }
-
 
 
     public static function get_para_boletin($periodo_id, $curso_id, $estudiante_id, $asignatura_id)
     {
         return Calificacion::where(
-            [
-                'id_periodo' => $periodo_id,
-                'curso_id' => $curso_id,
-                'id_estudiante' => $estudiante_id,
-                'id_asignatura' => $asignatura_id
-            ]
-        )
-            ->get()
-            ->first();
+                                    [
+                                        'id_periodo' => $periodo_id,
+                                        'curso_id' => $curso_id,
+                                        'id_estudiante' => $estudiante_id,
+                                        'id_asignatura' => $asignatura_id
+                                    ]
+                                )
+                            ->get()
+                            ->first();
     }
 
 
@@ -241,13 +240,13 @@ class Calificacion extends Model
         $periodo = Periodo::find($periodo_id);
 
         $calificacion = Calificacion::where([
-            'id_periodo' => $periodo_id,
-            'curso_id' => $curso_id,
-            'id_estudiante' => $estudiante_id,
-            'id_asignatura' => $asignatura_id
-        ])
-            ->get()
-            ->first();
+                                            'id_periodo' => $periodo_id,
+                                            'curso_id' => $curso_id,
+                                            'id_estudiante' => $estudiante_id,
+                                            'id_asignatura' => $asignatura_id
+                                        ])
+                                    ->get()
+                                    ->first();
 
         $la_calificacion = (object)[
                                         'valor' => 0,
@@ -300,13 +299,39 @@ class Calificacion extends Model
 
     public static function get_calificacion_promedio_asignatura_estudiante_periodos($periodos_promediar, $curso_id, $estudiante_id, $asignatura_id)
     {
-        return Calificacion::whereIn('id_periodo', $periodos_promediar)
+        /*$array_wheres = ['sga_calificaciones.id_colegio' => $id_colegio];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, ['sga_calificaciones.curso_id' => $curso_id]);
+        }*/
+
+        $calificaciones = Calificacion::whereIn('id_periodo', $periodos_promediar)
                             ->where([
                                 'curso_id' => $curso_id,
                                 'id_estudiante' => $estudiante_id,
                                 'id_asignatura' => $asignatura_id
                             ])
-                            ->avg('calificacion');
+                            ->get();      
+
+        $prom = 0;
+        $n = 0;
+        foreach( $calificaciones AS $calificacion )
+        {
+            $n++;
+            if ( is_null( $calificacion->nota_nivelacion() ) )
+            {
+                $prom += $calificacion->calificacion;
+            }else{
+                $prom += $calificacion->nota_nivelacion()->calificacion;
+            }
+        }
+
+        if ( $n != 0 )
+        {
+            return $prom / $n;
+        }
+
+        return 0;
     }
 
     public static function get_calificacion_promedio_estudiante_periodos($periodos_promediar, $curso_id, $estudiante_id)

@@ -37,8 +37,8 @@
                     @foreach($periodos as $periodo)
                         <td>
                             @php 
-                                // Calcular calificacion promedio del estudiante en la Collection calificaciones
-                                $prom = $calificaciones->whereLoose('estudiante_id',$estudiante->id_estudiante)->whereLoose('periodo_id',$periodo->id)->avg('calificacion');//->all();//
+                                // Calcular calificacion promedio del estudiante en la Collection calificaciones (todas las asignaturas)
+                                $prom = $calificaciones->whereLoose('id_estudiante',$estudiante->id_estudiante)->whereLoose('id_periodo',$periodo->id)->avg('calificacion');//->all();//
                                 $text_prom = '';
                                 $color_text = 'black';
                                 /**/if ( !is_null($prom) ) 

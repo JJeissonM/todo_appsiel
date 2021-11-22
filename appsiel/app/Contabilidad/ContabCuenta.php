@@ -199,6 +199,66 @@ class ContabCuenta extends Model
                                     "tabla":"teso_motivos",
                                     "llave_foranea":"contab_cuenta_id",
                                     "mensaje":"Está asociada a un Motivo de Tesorería."
+                                },
+                            "7":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_db_eps_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "8":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_cr_eps_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "9":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_db_afp_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "10":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_cr_afp_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "11":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_db_arl_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "12":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_cr_arl_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "13":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_db_sena_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "14":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_cr_sena_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "15":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_db_icbf_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "16":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_cr_icbf_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "17":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_db_caja_compensacion_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
+                                },
+                            "18":{
+                                    "tabla":"nom_pila_datos_empresa",
+                                    "llave_foranea":"contab_cuenta_cr_caja_compensacion_id",
+                                    "mensaje":"Está asociada en la configuración de Datos de Empresa para PILA."
                                 }
                         }';
         $tablas = json_decode($tablas_relacionadas);

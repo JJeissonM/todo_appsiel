@@ -115,15 +115,23 @@
 							{
 								
 								// Se llama a la calificacion de cada asignatura (en la colección de calificaciones) 
-								$obj_calificacion = $calificaciones->where('estudiante_id',$estudiante->id_estudiante)->where('asignatura_id',$asignatura->id)->first();
+								$obj_calificacion = $calificaciones->where('id_estudiante',$estudiante->id_estudiante)->where('id_asignatura',$asignatura->id)->first();
 								
 								$calificacion = 0;
 								$escala = (object) array('id' => 0, 'nombre_escala' => '');
+								
+								$lbl_nivelacion = '';
 								
 								// Se calcula el texto de la calificación
 								if ( !is_null($obj_calificacion) ) 
 								{
 									$calificacion = $obj_calificacion->calificacion;
+									if ( !is_null( $obj_calificacion->nota_nivelacion() ) )
+									{
+										$calificacion = $obj_calificacion->nota_nivelacion()->calificacion;
+										$lbl_nivelacion = 'n';
+									}
+
 									$escala = App\Calificaciones\EscalaValoracion::where('calificacion_minima','<=',$calificacion)
 													->where('calificacion_maxima','>=',$calificacion)
 													->where('periodo_lectivo_id','=',$periodo->periodo_lectivo_id)->first();									
@@ -140,7 +148,7 @@
 									{
 										$escala = (object) array('id' => 0, 'nombre_escala' => '');
 									}
-									$tbody.='<td>'.$calificacion.'( '.$escala->nombre_escala.')</td>';
+									$tbody.='<td>'.$calificacion.'<sup>' . $lbl_nivelacion . '</sup>( '.$escala->nombre_escala.')</td>';
 								}
 								
 								$tbody .=  \View::make('calificaciones.boletines.revisar2_incluir_celda_logros',[

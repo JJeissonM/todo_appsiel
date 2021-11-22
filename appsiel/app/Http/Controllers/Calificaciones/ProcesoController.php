@@ -122,7 +122,7 @@ class ProcesoController extends ModeloController
         
         $periodos = $periodo_lectivo->periodos->where('estado','Activo')->all();
         
-        $array_ids_periodos_promediar = []; // A promediar
+        $array_ids_periodos_promediar = []; // Se excluye el de promedio (FINAL)
         $i = 0;
         foreach ($periodos as $fila)
         {
@@ -134,7 +134,6 @@ class ProcesoController extends ModeloController
                 $periodo_final_id = $fila->id;
             }
         }
-
 
         // PASO 1. Vaciar los datos del periodo final en ese periodo lectivo
         Calificacion::where('id_periodo',$periodo_final_id)->delete();
@@ -215,7 +214,10 @@ class ProcesoController extends ModeloController
     }
 
 
-
+    /*
+        form_copiar_logros_de_un_periodo: 
+            PENDIENTE POR TERMINAR
+    */
     public function form_copiar_logros_de_un_periodo()
     {
         $miga_pan = [
