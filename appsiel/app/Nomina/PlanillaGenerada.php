@@ -11,7 +11,9 @@ use DB;
 class PlanillaGenerada extends Model
 {
     protected $table = 'nom_pila_planillas_generadas';
+    
     protected $fillable = ['pila_datos_empresa_id', 'descripcion', 'fecha_final_mes', 'estado'];
+    
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Descripción', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nom_pila_show/id_fila"}';

@@ -4,7 +4,7 @@
 		
 		<h4 style="width: 100%;text-align: center;">
 			<strong>
-				Datos de contabilización de provisiones de prestaciones sociales
+				Datos de contabilización planilla integrada
 			</strong>
 		</h4>
 		
@@ -36,7 +36,7 @@
 						<div class="alert alert-warning">
 						  <strong>Advertencia!</strong>
 						  <br>
-						   Las provisiones para el mes seleccionado, YA se encuentran contabilizadas con el documento {{ $encabezado_doc->tipo_documento_app->prefijo }} {{ $encabezado_doc->consecutivo }}.
+						   Los registros de planilla integrada para el mes seleccionado, YA se encuentran contabilizados con el documento {{ $encabezado_doc->tipo_documento_app->prefijo }} {{ $encabezado_doc->consecutivo }}.
 						</div>
 					@endif
 		        </td>

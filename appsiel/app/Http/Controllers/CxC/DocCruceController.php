@@ -120,7 +120,7 @@ class DocCruceController extends TransaccionController
       // En este recorrido se va actualizando la tabla cxc_movimientos, el movimiento contable y se crean dos arrays: $vector_cartera y $vector_afavor con estos dos arrays luego se crearan registros en la tabla cxc_abonos
       $j = 0;
       $valor_total = 0;
-      $cant = count($tabla_documentos_a_cancelar)-1;
+      $cant = count( $tabla_documentos_a_cancelar ) - 1;
       for ($i=0; $i < $cant; $i++) 
       {
             $cxc_movimiento_id = (int)$tabla_documentos_a_cancelar[$i]->cxc_movimiento_id;

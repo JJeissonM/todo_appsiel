@@ -290,9 +290,19 @@
                         @foreach($contacts as $c)
                         <tr>
                             <td>{{$c->names}}</td>
-                            <?php $email_tel = explode( '|', trim($c->email)) ?>
-                            <td><?php echo '<a href="mailto:'.$email_tel[0].'" >'.$email_tel[0].'</a>' ?></td>
-                            <td><?php echo $email_tel[1] ?></td>
+                            <?php $email_tel = explode( '|', trim($c->email));
+                                    $email = '';
+                                    $phone = '';
+                                    if (isset( $email_tel[0] ) )
+                                    {
+                                        $email = $email_tel[0];
+                                    }
+                                    if (isset( $email_tel[1] ) )
+                                    {
+                                        $phone = $email_tel[1];
+                                    } ?>
+                            <td><?php echo '<a href="mailto:'.$email.'" >'.$email.'</a>' ?></td>
+                            <td><?php echo $phone; ?></td>
                             <td>{{$c->subject}}</td>
                             <td>@if($c->state=='READ') <label style="background-color: green; color:#FFF; padding: 5px;" class="label label-success">LEÍDO</label> @else <label style="background-color: red; color:#FFF; padding: 5px;" class="label label-success">SIN LEER</label> @endif</td>
                             <td>

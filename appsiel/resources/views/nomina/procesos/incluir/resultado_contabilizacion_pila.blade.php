@@ -38,7 +38,7 @@
 
 		@if( $contabilizado )
 			<div class="alert alert-success">
-			  <strong>Provisiones contabilizadas correctamente.</strong>
+			  <strong>Registros de Planilla integrada contabilizados correctamente.</strong>
 			</div>
 		@else
 			<div class="alert alert-info">
@@ -49,6 +49,7 @@
 		<table class="table table-striped">
 			<thead>
 				<tr>
+		    		<th>No.</th>
 					<th>Tipo causación</th>
 					<th>Cuenta contable</th>
 					<th>Tercero movimiento</th>
@@ -62,6 +63,7 @@
 				<?php 
 					$valor_debito_total = 0;
 					$valor_credito_total = 0;
+					$i = 1;
 				?>
 				@foreach( $lineas_tabla AS $linea )
 					<?php 
@@ -72,6 +74,7 @@
 						}
 					?>
 					<tr class="{{$clase}}">
+				        <td> {{ $i }} </td>
 						<td> {{ $linea->tipo_causacion }} </td>
 						<td> {{ $linea->cuenta_contable }} </td>
 						<td> {{ $linea->tercero_movimiento }} </td>
@@ -83,6 +86,7 @@
 					<?php 
 						$valor_debito_total += $linea->valor_debito;
 						$valor_credito_total += $linea->valor_credito;
+						$i++;
 					?>
 				@endforeach
 			</tbody>
@@ -98,7 +102,7 @@
 
 		@if( $valor_debito_total == 0 )
 			<div class="alert alert-warning">
-			  <strong>No hay registros de provisiones en el mes seleccioado.</strong>
+			  <strong>No se ha procesado la planilla integrada en el mes seleccionado.</strong>
 			</div>
 		@endif
 	</div>

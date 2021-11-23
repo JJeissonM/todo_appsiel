@@ -33,7 +33,6 @@ class ContabilizacionPilaController extends TransaccionController
 {
     public function contabilizar( Request $request )
     {
-
         $servicio_contabilizacion = new ContabilizacionPilaNomina( $request->fecha_final_promedios, $request->core_tipo_doc_app_id );
 
         $encabezado_doc = $servicio_contabilizacion->get_estado( $request->fecha_final_promedios );

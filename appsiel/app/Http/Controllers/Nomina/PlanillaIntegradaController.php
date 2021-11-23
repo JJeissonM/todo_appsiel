@@ -33,6 +33,11 @@ use App\Nomina\PilaRiesgoLaboral;
 use App\Nomina\PilaParafiscales;
 use App\Nomina\EmpleadoPlanilla;
 
+use App\Nomina\Services\Pila\NovedadService;
+use App\Nomina\Services\Pila\SaludService;
+use App\Nomina\Services\Pila\PensionService;
+use App\Nomina\Services\Pila\RiesgoLaboralService;
+use App\Nomina\Services\Pila\ParafiscalService;
 
 /*
     Los campos tipo numérico “N”, se reportarán justificados a la derecha y rellenados con ceros a la izquierda. Los campos tipo alfa-numérico “A”, se reportarán justificados a la izquierda y se rellenarán con espacios a la derecha”.
@@ -121,7 +126,8 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE NOVEDADES
             */
-            $datos_novedades = $this->get_campos_novedades($planilla->id, $empleado->id, $linea->id);
+            $pila_service = new NovedadService();
+            $datos_novedades = $pila_service->get_valores_campos( $planilla->id, $empleado->id, $linea->id );
             foreach ($datos_novedades as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -132,7 +138,8 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE SALUD
             */
-            $datos_salud = $this->get_campos_salud($planilla->id, $empleado->id, $linea->id);
+            $pila_service = new SaludService();
+            $datos_salud = $pila_service->get_valores_campos( $planilla->id, $empleado->id, $linea->id );
             foreach ($datos_salud as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -143,7 +150,8 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE PENSION
             */
-            $datos_pension = $this->get_campos_pension($planilla->id, $empleado->id, $linea->id);
+            $pila_service = new PensionService();
+            $datos_pension = $pila_service->get_valores_campos( $planilla->id, $empleado->id, $linea->id );
             foreach ($datos_pension as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -154,7 +162,8 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE RIESGOS LABORALES
             */
-            $datos_riesgos_laborales = $this->get_campos_riesgos_laborales($planilla->id, $empleado->id, $linea->id);
+            $pila_service = new RiesgoLaboralService();
+            $datos_riesgos_laborales = $pila_service->get_valores_campos( $planilla->id, $empleado->id, $linea->id );
             foreach ($datos_riesgos_laborales as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -165,7 +174,8 @@ class PlanillaIntegradaController extends Controller
             /*
                         DATOS DE PARAFISCALES
             */
-            $datos_parafiscales = $this->get_campos_parafiscales($planilla->id, $empleado->id, $linea->id);
+            $pila_service = new ParafiscalService();
+            $datos_parafiscales = $pila_service->get_valores_campos( $planilla->id, $empleado->id, $linea->id );
             foreach ($datos_parafiscales as $key => $value)
             {
                 $datos_columnas[] = $value;
@@ -177,146 +187,6 @@ class PlanillaIntegradaController extends Controller
 
         return $datos_filas;
 
-    }
-
-    public function get_campos_novedades($planilla_id, $empleado_id,$empleado_planilla_id)
-    {
-        $nodevades_empleado = PilaNovedades::where('planilla_generada_id',$planilla_id)
-                                                ->where('nom_contrato_id',$empleado_id)
-                                                ->where('empleado_planilla_id',$empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        $pila_novedades = new PilaNovedades;
-        $campos = $pila_novedades->getFillable();
-        foreach ($campos as $key => $value)
-        {
-            if ($key > 2)
-            {
-                if( is_null( $nodevades_empleado ) )
-                {
-                    $vector[] = '';
-                }else{
-                    $vector[] = $nodevades_empleado->$value;
-                }             
-            }                
-        }
-
-        array_pop($vector);
-        array_pop($vector);
-        array_pop($vector);
-        array_pop($vector);     
-
-        return $vector;
-    }
-
-    public function get_campos_salud($planilla_id, $empleado_id,$empleado_planilla_id)
-    {
-        $nodevades_empleado = PilaSalud::where('planilla_generada_id',$planilla_id)
-                                                ->where('nom_contrato_id',$empleado_id)
-                                                ->where('empleado_planilla_id',$empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        $pila_novedades = new PilaSalud;
-        $campos = $pila_novedades->getFillable();
-        foreach ($campos as $key => $value)
-        {
-            if ($key > 2)
-            {
-                if( is_null( $nodevades_empleado ) )
-                {
-                    $vector[] = '';
-                }else{
-                    $vector[] = $nodevades_empleado->$value;
-                }             
-            }                
-        }
-
-        array_pop($vector);
-        return $vector;
-    }
-
-    public function get_campos_pension($planilla_id, $empleado_id,$empleado_planilla_id)
-    {
-        $nodevades_empleado = PilaPension::where('planilla_generada_id',$planilla_id)
-                                                ->where('nom_contrato_id',$empleado_id)
-                                                ->where('empleado_planilla_id',$empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        $pila_novedades = new PilaPension;
-        $campos = $pila_novedades->getFillable();
-        foreach ($campos as $key => $value)
-        {
-            if ($key > 2)
-            {
-                if( is_null( $nodevades_empleado ) )
-                {
-                    $vector[] = '';
-                }else{
-                    $vector[] = $nodevades_empleado->$value;
-                }             
-            }                
-        }
-
-        array_pop($vector);
-        return $vector;
-    }
-
-    public function get_campos_riesgos_laborales($planilla_id, $empleado_id,$empleado_planilla_id)
-    {
-        $nodevades_empleado = PilaRiesgoLaboral::where('planilla_generada_id',$planilla_id)
-                                                ->where('nom_contrato_id',$empleado_id)
-                                                ->where('empleado_planilla_id',$empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        $pila_novedades = new PilaRiesgoLaboral;
-        $campos = $pila_novedades->getFillable();
-        foreach ($campos as $key => $value)
-        {
-            if ($key > 2)
-            {
-                if( is_null( $nodevades_empleado ) )
-                {
-                    $vector[] = '';
-                }else{
-                    $vector[] = $nodevades_empleado->$value;
-                }             
-            }                
-        }
-
-        array_pop($vector);
-        array_pop($vector);
-        return $vector;
-    }
-
-    public function get_campos_parafiscales($planilla_id, $empleado_id,$empleado_planilla_id)
-    {
-        $nodevades_empleado = PilaParafiscales::where('planilla_generada_id',$planilla_id)
-                                                ->where('nom_contrato_id',$empleado_id)
-                                                ->where('empleado_planilla_id',$empleado_planilla_id)
-                                                ->get()
-                                                ->first();
-
-        $pila_novedades = new PilaParafiscales;
-        $campos = $pila_novedades->getFillable();
-        foreach ($campos as $key => $value)
-        {
-            if ($key > 2)
-            {
-                if( is_null( $nodevades_empleado ) )
-                {
-                    $vector[] = '';
-                }else{
-                    $vector[] = $nodevades_empleado->$value;
-                }             
-            }                
-        }
-
-        array_pop($vector);
-        return $vector;
     }
 
     /* 

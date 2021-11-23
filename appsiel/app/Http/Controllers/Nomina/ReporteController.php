@@ -54,6 +54,11 @@ use App\Nomina\PilaRiesgoLaboral;
 use App\Nomina\PilaParafiscales;
 use App\Nomina\EmpleadoPlanilla;
 
+use App\Nomina\Services\Pila\SaludService;
+use App\Nomina\Services\Pila\PensionService;
+use App\Nomina\Services\Pila\RiesgoLaboralService;
+use App\Nomina\Services\Pila\ParafiscalService;
+
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 
@@ -421,24 +426,24 @@ class ReporteController extends Controller
         return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
     }
 
+    /*
+        listado_aportes_pila
+    */
     public function listado_aportes_pila(Request $request)
     {
         $fecha_final_mes = $request->fecha_final_mes;
 
-        $coleccion_movimientos_salud = PilaSalud::where('fecha_final_mes',$fecha_final_mes)
-                                    ->orderBy('codigo_entidad_salud')
-                                    ->get();
+        $pila_service = new SaludService();
+        $coleccion_movimientos_salud = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
 
-        $coleccion_movimientos_pension = PilaPension::where('fecha_final_mes',$fecha_final_mes)
-                                    ->orderBy('codigo_entidad_pension')
-                                    ->get();
+        $pila_service = new PensionService();
+        $coleccion_movimientos_pension = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
 
-        $coleccion_movimientos_riesgos_laborales = PilaRiesgoLaboral::where('fecha_final_mes',$fecha_final_mes)
-                                    ->orderBy('codigo_arl')
-                                    ->get();
+        $pila_service = new RiesgoLaboralService();
+        $coleccion_movimientos_riesgos_laborales = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
 
-        $coleccion_movimientos_parafiscales = PilaParafiscales::where('fecha_final_mes',$fecha_final_mes)
-                                    ->get();
+        $pila_service = new ParafiscalService();
+        $coleccion_movimientos_parafiscales = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
 
         $vista = View::make('nomina.reportes.aportes_pila', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_pension', 'coleccion_movimientos_riesgos_laborales', 'coleccion_movimientos_parafiscales', 'fecha_final_mes' ) )->render();
 
@@ -446,7 +451,6 @@ class ReporteController extends Controller
 
         return $vista;
     }
-
 
 
     public function resumen_liquidaciones(Request $request)

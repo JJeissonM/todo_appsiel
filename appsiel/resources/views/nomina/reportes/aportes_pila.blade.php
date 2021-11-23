@@ -32,25 +32,25 @@
 			<tr>
 				<td>
 					<div class="accordion"> Aportes a Salud </div>
-					@include('nomina.reportes.pila_tabla_resumen_entidades_salud',['movimiento' => $coleccion_movimientos_salud])
+					@include('nomina.reportes.pila_tabla_resumen_entidades',['movimiento' => $coleccion_movimientos_salud])
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<div class="accordion"> Aportes a Pensión </div>
-					@include('nomina.reportes.pila_tabla_resumen_entidades_pension',['movimiento' => $coleccion_movimientos_pension])
+					@include('nomina.reportes.pila_tabla_resumen_entidades',['movimiento' => $coleccion_movimientos_pension])
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<div class="accordion"> Aportes a Riesgos laborales </div>
-					@include('nomina.reportes.pila_tabla_resumen_entidades_riesgos_laborales',['movimiento' => $coleccion_movimientos_riesgos_laborales])
+					@include('nomina.reportes.pila_tabla_resumen_entidades',['movimiento' => $coleccion_movimientos_riesgos_laborales])
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<div class="accordion"> Aportes a Parafiscales </div>
-					@include('nomina.reportes.pila_tabla_resumen_entidades_parafiscales',['movimiento' => $coleccion_movimientos_parafiscales])
+					@include('nomina.reportes.pila_tabla_resumen_entidades',['movimiento' => $coleccion_movimientos_parafiscales])
 				</td>
 			</tr>
 		</tbody>
@@ -62,26 +62,3 @@
 	</div>	
 
 </div>
-
-<?php 
-	
-	function dibujar_etiquetas( $descripcion_entidad, $nit, $codigo_nacional )
-	{
-		return '<tr>
-					<td>
-						' . $nit . '
-					</td>
-					<td>
-						' . $descripcion_entidad . '
-					</td>
-					<td>
-						' . $codigo_nacional . '
-					</td>';
-	}
-
-	function dibujar_valor( $total_entidad )
-	{
-		return '<td> ' . Form::TextoMoneda( $total_entidad ) . ' </td> </tr>';
-	}
-
-?>

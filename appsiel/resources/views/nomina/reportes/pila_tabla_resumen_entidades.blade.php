@@ -10,68 +10,22 @@
 	<tbody>
 		<?php 
 			$gran_total = 0;
-			$entidad_anterior = '';
-			$total_entidad = 0;
-			$es_siguiente_iteracion = false;
-			$hay_mas_registros = true;
-			$iteracion = 1;
-			$cantidad_registros = count( $movimiento->toArray() );
-			foreach($movimiento AS $registro)
-			{
-				$entidad_actual = $registro->entidad();
-
-				$codigo_nacional = 'NNN';
-				$nit = '';
-				$descripcion_entidad = '';
-				if ( !is_null($entidad_actual) )
-				{
-					$codigo_nacional = $entidad_actual->codigo_nacional;
-					$nit = $entidad_actual->tercero->numero_identificacion;
-					$descripcion_entidad = $entidad_actual->descripcion;
-				}
-
-				if( $entidad_anterior != $codigo_nacional )
-				{
-					if ( $es_siguiente_iteracion )
-					{
-						echo dibujar_valor( $total_entidad );
-						$total_entidad = 0;
-					}
-					
-					$es_siguiente_iteracion = false;
-					$entidad_anterior = $codigo_nacional;
-					
-					if ( $hay_mas_registros )
-					{
-						echo dibujar_etiquetas( $descripcion_entidad, $nit, $codigo_nacional );
-					}
-					
-					$total_entidad += (float)$registro->cotizacion_salud;
-
-				}else{
-					$total_entidad += (float)$registro->cotizacion_salud;
-					$entidad_anterior = $codigo_nacional;
-					$es_siguiente_iteracion = true;
-				}
-
-				if ( $iteracion == $cantidad_registros )
-				{
-					$hay_mas_registros = false;
-				}
-
-				$gran_total += (float)$registro->cotizacion_salud;
-				$iteracion++;
-
-			}
-
-			echo dibujar_valor( $total_entidad );
 		?>
+		@foreach( $movimiento AS $registro )
+			<tr>
+				<td> {{ $registro->entidad->tercero->numero_identificacion }} </td>
+				<td> {{ $registro->entidad->descripcion }} </td> 
+				<td> {{ $registro->entidad->codigo_nacional }} </td>
+				<td> {{ Form::TextoMoneda( $registro->total_cotizacion ) }} </td>
+			</tr>
+			<?php 
+				$gran_total += $registro->total_cotizacion;
+			?>
+		@endforeach
 	</tbody>
 	<tfoot>
 		<tr>
-			<td></td>
-			<td></td>
-			<td></td>
+			<td colspan="3"> &nbsp; </td>
 			<td> {{ Form::TextoMoneda( $gran_total ) }} </td>
 		</tr>
 	</tfoot>

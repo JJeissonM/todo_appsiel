@@ -24,7 +24,7 @@
             }
 		?>
 
-		{{ Form::open(['url'=>'nom_contabilizar_provision_nomina','id'=>'formulario_inicial','files' => true]) }}
+		{{ Form::open(['url'=>'nom_contabilizar_pila','id'=>'formulario_inicial','files' => true]) }}
 			<div class="row" style="padding:5px;">
 				<label class="control-label col-sm-4" >
 					<span data-toggle="tooltip" title="Escoger día 30 del mes. Para febrero, escoger siempre día 28."> <i class="fa fa-question-circle"></i></span>
@@ -128,7 +128,7 @@
 		 		$("#div_cargando").show();
         		$("#div_resultado").html( '' );
 
-				var url = "{{ url('nom_retirar_contabilizacion_provision_nomina') }}" + '/' + $('#fecha_final_promedios').val();
+				var url = "{{ url('nom_retirar_contabilizacion_pila') }}" + '/' + $('#fecha_final_promedios').val();
 
 				$.ajax({
 				    url: url,

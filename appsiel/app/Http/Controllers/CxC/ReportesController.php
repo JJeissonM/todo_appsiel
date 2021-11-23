@@ -45,7 +45,7 @@ class ReportesController extends Controller
         $servicio = new DocumentosPendientesCxC();
 
         $movimiento = $servicio->get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id );
-
+        
         foreach ( $movimiento as $linea_movimiento )
         {
             $linea_movimiento->show = 1;

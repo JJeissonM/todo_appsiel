@@ -62,22 +62,42 @@ class DocumentosPendientesCxC extends Model
                                     
         foreach( $movimiento as $linea_movimiento )
         {
-            $array_wheres2 = [
-                                ['doc_cxc_transacc_id', '=', $linea_movimiento->core_tipo_transaccion_id ],
-                                ['doc_cxc_tipo_doc_id', '=', $linea_movimiento->core_tipo_doc_app_id ],
-                                ['doc_cxc_consecutivo', '=', (int)$linea_movimiento->consecutivo ],
-                                ['core_tercero_id', '=', $linea_movimiento->core_tercero_id ]
-                            ];
+            if ( $linea_movimiento->valor_documento < 0 )
+            {
+                // ANTICIPO
+                $array_wheres2 = [
+                                    ['core_tipo_transaccion_id', '=', $linea_movimiento->core_tipo_transaccion_id ],
+                                    ['core_tipo_doc_app_id', '=', $linea_movimiento->core_tipo_doc_app_id ],
+                                    ['consecutivo', '=', (int)$linea_movimiento->consecutivo ],
+                                    ['core_tercero_id', '=', $linea_movimiento->core_tercero_id ]
+                                ];
+            }else{
+                // DOCUMENTO DE CXC (FACTURA)
+                $array_wheres2 = [
+                                    ['doc_cxc_transacc_id', '=', $linea_movimiento->core_tipo_transaccion_id ],
+                                    ['doc_cxc_tipo_doc_id', '=', $linea_movimiento->core_tipo_doc_app_id ],
+                                    ['doc_cxc_consecutivo', '=', (int)$linea_movimiento->consecutivo ],
+                                    ['core_tercero_id', '=', $linea_movimiento->core_tercero_id ]
+                                ];
+            }
 
             if( $fecha_corte != '' )
             {
+                $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
             }
 
             $abonos = CxcAbono::where( $array_wheres2 )->sum('abono');
 
             $linea_movimiento->valor_pagado = $abonos;
-            $linea_movimiento->saldo_pendiente = $linea_movimiento->valor_documento - $abonos;
+            if ( $linea_movimiento->valor_documento < 0 )
+            {
+                // ANTICIPO
+                $linea_movimiento->saldo_pendiente = $linea_movimiento->valor_documento + $abonos;
+            }else{
+                // DOCUMENTO DE CXC (FACTURA)
+                $linea_movimiento->saldo_pendiente = $linea_movimiento->valor_documento - $abonos;
+            }
         }
 
         return $movimiento;

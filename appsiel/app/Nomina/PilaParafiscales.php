@@ -4,6 +4,8 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Nomina\NomEntidad;
+
 class PilaParafiscales extends Model
 {
     protected $table = 'nom_pila_liquidacion_parafiscales';
@@ -12,6 +14,11 @@ class PilaParafiscales extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Planilla generada', 'Empleado', 'Fecha PILA', 'Cotizante Exonerado de aportes Parafiscales', 'Codigo Entidad CCF', 'Dias cotizados', 'IBC Parafiscales', 'Tarifa CCF', 'Cotizacion CCF', 'Tarifa SENA', 'Cotizacion SENA', 'Tarifa ICBF', 'Cotizacion ICBF', 'Total Cotizacion'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
+
+    public function entidad()
+    {
+        return NomEntidad::where('codigo_nacional', $this->codigo_entidad_ccf)->get()->first();
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
