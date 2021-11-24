@@ -18,6 +18,6 @@
   'concepto_a_pagar_pasante_sena' => '77',
   'porcentaje_liquidacon_pasante_sena' => '75',
   'cuenta_id_salarios_por_pagar' => '206',
-  'tercero_id_salarios_por_pagar' => '43',
+  'tercero_id_salarios_por_pagar' => '',
   'url_id_modelo' => '0',
 ) ;

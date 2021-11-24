@@ -37,6 +37,7 @@
 						  <strong>Advertencia!</strong>
 						  <br>
 						   Los registros de planilla integrada para el mes seleccionado, YA se encuentran contabilizados con el documento {{ $encabezado_doc->tipo_documento_app->prefijo }} {{ $encabezado_doc->consecutivo }}.
+						   <a href="{{url( 'contabilidad/' . $encabezado_doc->id . '?id=14&id_modelo=47&id_transaccion=9')}}" target="_blank" class="btn btn-info btn-sm"><i class="fa fa-external-link"></i> Consultar </a>
 						</div>
 					@endif
 		        </td>

@@ -482,10 +482,11 @@ class CalificacionController extends Controller
     // LLenar select dependiente
     public function get_select_asignaturas($curso_id, $periodo_id = null)
     {
-        if (is_null($periodo_id) or $periodo_id == 'null') {
+        if ( is_null($periodo_id) or $periodo_id == 'null' )
+        {
             $periodo_lectivo = PeriodoLectivo::get_actual();
-        } else {
-            $periodo_lectivo = PeriodoLectivo::get_segun_periodo($periodo_id);
+        }else{
+            $periodo_lectivo = PeriodoLectivo::get_segun_periodo( $periodo_id );
         }
 
         $asignaturas = CursoTieneAsignatura::asignaturas_del_curso($curso_id, null, $periodo_lectivo->id);

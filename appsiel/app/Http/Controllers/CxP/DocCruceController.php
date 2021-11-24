@@ -222,13 +222,14 @@ class DocCruceController extends TransaccionController
       $this->contabilizar_credito( $movimiento_afavor, $valor_abono, $detalle_operacion);
     }
 
+    // La fecha del abono se registra con la fecha del documento que se está creando ( Cruce, Recaudo, Nota crédito, etc. )
     public function almacenar_abono_cxp($doc_encabezado, $movimiento_cartera, $movimiento_afavor, $abono)
     {
       // Almacenar registro de abono
       $datos = ['core_tipo_transaccion_id' => $movimiento_afavor->core_tipo_transaccion_id]+
                   ['core_tipo_doc_app_id' => $movimiento_afavor->core_tipo_doc_app_id]+
                   ['consecutivo' => $movimiento_afavor->consecutivo]+
-                  ['fecha' => $movimiento_afavor->fecha]+
+                  ['fecha' => $doc_encabezado->fecha]+
                   ['core_empresa_id' => $movimiento_afavor->core_empresa_id]+
                   ['core_tercero_id' => $movimiento_afavor->core_tercero_id]+
                   ['modelo_referencia_tercero_index' => $movimiento_cartera->modelo_referencia_tercero_index]+

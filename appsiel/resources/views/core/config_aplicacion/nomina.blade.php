@@ -299,7 +299,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$tercero_id_salarios_por_pagar = 1;
+								$tercero_id_salarios_por_pagar = '';
 								if( isset($parametros['tercero_id_salarios_por_pagar'] ) )
 								{
 									$tercero_id_salarios_por_pagar = $parametros['tercero_id_salarios_por_pagar'];

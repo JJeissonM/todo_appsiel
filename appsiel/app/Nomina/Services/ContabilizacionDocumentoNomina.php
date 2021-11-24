@@ -27,7 +27,6 @@ class ContabilizacionDocumentoNomina
 		$this->encabezado_doc = NomDocEncabezado::find( $nom_doc_encabezado_id );
 	}
 
-
 	public function set_movimiento_contabilizar()
 	{
 		$registros_liquidacion = $this->encabezado_doc->registros_liquidacion()->orderBy('core_tercero_id')->get();
@@ -91,6 +90,13 @@ class ContabilizacionDocumentoNomina
 			$valor_credito = 0;
 		}
 
+		if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
+		{
+			$tercero_id = $linea_registro_nomina->core_tercero_id;
+		}else{
+			$tercero_id = (int)config('nomina.tercero_id_salarios_por_pagar');
+		}
+
 		$this->movimiento_contabilizar->push( (object)[
 														'es_contrapartida' => 1,
 														'error' => 0,
@@ -101,7 +107,7 @@ class ContabilizacionDocumentoNomina
 														'consecutivo' => $this->encabezado_doc->consecutivo,
 														'fecha' => $this->encabezado_doc->fecha,
 														'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
-														'tercero' => Tercero::find( (int)config('nomina.tercero_id_salarios_por_pagar') ),
+														'tercero' => Tercero::find( $tercero_id ),
 														'cuenta_contable' => $cta_contapartida,
 														'valor_debito' => $valor_debito,
 														'valor_credito' => $valor_credito,

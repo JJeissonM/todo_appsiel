@@ -208,8 +208,8 @@
         }
 
         .btn.btn-primary {
-            background: var(--color-primario) !important;
-            border-color: var(--color-secundario) !important;
+            /*background: var(--color-primario) !important;
+            border-color: var(--color-secundario) !important;*/
         }
 
         .media.service-box .pull-left>i {
@@ -431,7 +431,7 @@
 
                     $('#div_spin').show();
 
-                    var url = "{{ url('get_select_asignaturas') }}" + "/" + curso_id + "/" + null;
+                    var url = "{{ url('pw_get_select_asignaturas') }}" + "/" + curso_id + "/" + null;
                     $.ajax({
                         url: url,
                         type: 'get',

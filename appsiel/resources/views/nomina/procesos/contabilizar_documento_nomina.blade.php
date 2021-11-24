@@ -30,6 +30,22 @@
 			</div>
 
 			<div class="row" style="padding:5px;">
+				<?php
+					if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
+					{
+						$tercero_descripcion = 'A nombre de cada empleado.';
+					}else{
+						$tercero_descripcion = App\Core\Tercero::find( (int)config('nomina.tercero_id_salarios_por_pagar') )->descripcion;
+					}
+				?>
+				<label class="control-label col-sm-4" > <b> Tercero causación pasivo: </b> </label>
+
+				<div class="col-sm-8">
+					{{ Form::text( 'tercero', $tercero_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
+				</div>
+			</div>
+
+			<div class="row" style="padding:5px;">
 				&nbsp;				 
 			</div>
 

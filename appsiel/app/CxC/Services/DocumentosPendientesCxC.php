@@ -16,8 +16,7 @@ class DocumentosPendientesCxC extends Model
     public function get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id ) 
     {
         $array_wheres = [
-                            [ 'cxc_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
-                            [ 'cxc_movimientos.estado', '=', 'Pendiente']
+                            [ 'cxc_movimientos.core_empresa_id', '=', Auth::user()->empresa_id]
                         ];
 
         if( $fecha_corte != '' )
@@ -59,7 +58,8 @@ class DocumentosPendientesCxC extends Model
                                     ->orderBy('cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')
                                     ->get();
-                                    
+        
+        // En el movimiento hay documentos de anticipo (Ej, Recaudos) y documentos de cartera (Ej, Facturas de ventas)
         foreach( $movimiento as $linea_movimiento )
         {
             if ( $linea_movimiento->valor_documento < 0 )
@@ -87,8 +87,9 @@ class DocumentosPendientesCxC extends Model
                 $array_wheres2 = array_merge( $array_wheres2, [ ['fecha', '<=', $fecha_corte ] ] );
             }
 
+            // Sumar los abonos hechos al documento del movimiento para restarlos al valor del documento y mostrarlo en el saldo pendiente
             $abonos = CxcAbono::where( $array_wheres2 )->sum('abono');
-
+            
             $linea_movimiento->valor_pagado = $abonos;
             if ( $linea_movimiento->valor_documento < 0 )
             {
