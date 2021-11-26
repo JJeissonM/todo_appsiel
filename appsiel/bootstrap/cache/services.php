@@ -33,10 +33,12 @@
     29 => 'Yajra\\Datatables\\DatatablesServiceProvider',
     30 => 'Milon\\Barcode\\BarcodeServiceProvider',
     31 => 'Cmgmyr\\Messenger\\MessengerServiceProvider',
-    32 => 'App\\Providers\\AppServiceProvider',
-    33 => 'App\\Providers\\AuthServiceProvider',
-    34 => 'App\\Providers\\EventServiceProvider',
-    35 => 'App\\Providers\\RouteServiceProvider',
+    32 => 'Way\\Generators\\GeneratorsServiceProvider',
+    33 => 'Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider',
+    34 => 'App\\Providers\\AppServiceProvider',
+    35 => 'App\\Providers\\AuthServiceProvider',
+    36 => 'App\\Providers\\EventServiceProvider',
+    37 => 'App\\Providers\\RouteServiceProvider',
   ),
   'eager' => 
   array (
@@ -58,10 +60,12 @@
     15 => 'Yajra\\Datatables\\DatatablesServiceProvider',
     16 => 'Milon\\Barcode\\BarcodeServiceProvider',
     17 => 'Cmgmyr\\Messenger\\MessengerServiceProvider',
-    18 => 'App\\Providers\\AppServiceProvider',
-    19 => 'App\\Providers\\AuthServiceProvider',
-    20 => 'App\\Providers\\EventServiceProvider',
-    21 => 'App\\Providers\\RouteServiceProvider',
+    18 => 'Way\\Generators\\GeneratorsServiceProvider',
+    19 => 'Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider',
+    20 => 'App\\Providers\\AppServiceProvider',
+    21 => 'App\\Providers\\AuthServiceProvider',
+    22 => 'App\\Providers\\EventServiceProvider',
+    23 => 'App\\Providers\\RouteServiceProvider',
   ),
   'deferred' => 
   array (

@@ -15,6 +15,7 @@ use Schema;
 use App\Matriculas\Estudiante;
 use App\Sistema\Modelo;
 use App\Core\Departamento;
+use App\Nomina\NomContrato;
 use App\Ventas\Cliente;
 
 class Tercero extends Model
@@ -83,6 +84,11 @@ class Tercero extends Model
     public function responsableestudiantes()
     {
         return $this->hasMany(Responsableestudiante::class);
+    }
+
+    public function empleado()
+    {
+        return $this->hasOne(NomContrato::class, 'core_tercero_id');
     }
 
     public function representante_legal()

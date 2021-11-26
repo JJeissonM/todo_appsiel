@@ -2,6 +2,7 @@
 
 namespace App\Nomina\Services;
 
+use App\Nomina\NomContrato;
 use App\Nomina\NomDocEncabezado;
 
 use Auth;
@@ -21,6 +22,7 @@ class ContabilizacionDocumentoNomina
 	public $valor_debito_total;
 	public $valor_credito_total;
 	public $movimiento_contabilizar;
+	public $ids_contratos = [];
 
 	public function __construct( $nom_doc_encabezado_id )
 	{
@@ -53,6 +55,7 @@ class ContabilizacionDocumentoNomina
 			$valor_debito = $this->get_valor_debito( $equ_contab, $linea_registro_nomina );
 			$valor_credito = $this->get_valor_credito( $equ_contab, $linea_registro_nomina );
 
+			$tercero_mov = $this->get_tercero_movimiento( $equ_contab, $linea_registro_nomina->contrato );
 			$registro_equivalencia_contable = (object)[
 									'es_contrapartida' => 0,
 									'error' => 0,
@@ -63,7 +66,7 @@ class ContabilizacionDocumentoNomina
 									'consecutivo' => $this->encabezado_doc->consecutivo,
 									'fecha' => $this->encabezado_doc->fecha,
 									'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
-									'tercero' => $this->get_tercero_movimiento( $equ_contab, $linea_registro_nomina->contrato ),
+									'tercero' => $tercero_mov,
 									'cuenta_contable' => $cuenta_contable,
 									'valor_debito' => $valor_debito,
 									'valor_credito' => $valor_credito,
@@ -71,7 +74,7 @@ class ContabilizacionDocumentoNomina
 									'estado' => 'Activo',
 									'creado_por' => Auth::user()->email,
 									'fecha_vencimiento' => $this->encabezado_doc->fecha
-								];
+								];			
 
 			$this->valor_debito_total += $valor_debito;
 			$this->valor_credito_total += $valor_credito;
@@ -79,46 +82,90 @@ class ContabilizacionDocumentoNomina
 			$this->movimiento_contabilizar->push( $registro_equivalencia_contable );
 		}
 
-		$cta_contapartida = ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
+		$this->set_movimiento_credito();
+	}
 
-		if ( $this->valor_debito_total >= $this->valor_credito_total )
-		{
-			$valor_debito = 0;
-			$valor_credito = $this->valor_debito_total - $this->valor_credito_total;
-		}else{
-			$valor_debito = $this->valor_credito_total - $this->valor_debito_total;
-			$valor_credito = 0;
-		}
+	public function set_movimiento_credito()
+	{
+		$cta_contapartida = ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
 
 		if ( (int)config('nomina.tercero_id_salarios_por_pagar') == 0 )
 		{
-			$tercero_id = $linea_registro_nomina->core_tercero_id;
+			// Un registro credito por cada empleado
+			
+			$empleados = $this->encabezado_doc->empleados;
+			$registros_liquidacion = $this->encabezado_doc->registros_liquidacion;
+			//dd( $empleados );
+			foreach ( $empleados as $empleado )
+			{
+				$total_devengos = $registros_liquidacion->where('nom_contrato_id',$empleado->id)->sum('valor_devengo');
+				$total_deducciones = $registros_liquidacion->where('nom_contrato_id',$empleado->id)->sum('valor_deduccion');
+				
+				if ( $total_devengos >= $total_deducciones )
+				{
+					$valor_debito = 0;
+					$valor_credito = $total_devengos - $total_deducciones;
+				}else{
+					$valor_debito = $total_deducciones - $total_devengos;
+					$valor_credito = 0;
+				}
+
+				$this->movimiento_contabilizar->push( (object)[
+					'es_contrapartida' => 1,
+					'error' => 0,
+					'equivalencia_contable' => null,
+					'concepto' => null,
+					'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
+					'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
+					'consecutivo' => $this->encabezado_doc->consecutivo,
+					'fecha' => $this->encabezado_doc->fecha,
+					'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
+					'tercero' => $empleado->tercero,
+					'cuenta_contable' => $cta_contapartida,
+					'valor_debito' => $valor_debito,
+					'valor_credito' => $valor_credito ,
+					'tipo_transaccion' => 'crear_cxp',
+					'estado' => 'Activo',
+					'creado_por' => Auth::user()->email,
+					'fecha_vencimiento' => $this->encabezado_doc->fecha
+				] );
+			}
 		}else{
+
+			// Un solo registro credito
 			$tercero_id = (int)config('nomina.tercero_id_salarios_por_pagar');
+			if ( $this->valor_debito_total >= $this->valor_credito_total )
+			{
+				$valor_debito = 0;
+				$valor_credito = $this->valor_debito_total - $this->valor_credito_total;
+			}else{
+				$valor_debito = $this->valor_credito_total - $this->valor_debito_total;
+				$valor_credito = 0;
+			}
+			$this->movimiento_contabilizar->push( (object)[
+															'es_contrapartida' => 1,
+															'error' => 0,
+															'equivalencia_contable' => null,
+															'concepto' => null,
+															'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
+															'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
+															'consecutivo' => $this->encabezado_doc->consecutivo,
+															'fecha' => $this->encabezado_doc->fecha,
+															'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
+															'tercero' => Tercero::find( $tercero_id ),
+															'cuenta_contable' => $cta_contapartida,
+															'valor_debito' => $valor_debito,
+															'valor_credito' => $valor_credito,
+															'tipo_transaccion' => 'crear_cxp',
+															'estado' => 'Activo',
+															'creado_por' => Auth::user()->email,
+															'fecha_vencimiento' => $this->encabezado_doc->fecha
+														] );
 		}
 
-		$this->movimiento_contabilizar->push( (object)[
-														'es_contrapartida' => 1,
-														'error' => 0,
-														'equivalencia_contable' => null,
-														'concepto' => null,
-														'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
-														'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
-														'consecutivo' => $this->encabezado_doc->consecutivo,
-														'fecha' => $this->encabezado_doc->fecha,
-														'core_empresa_id' => $this->encabezado_doc->core_empresa_id,
-														'tercero' => Tercero::find( $tercero_id ),
-														'cuenta_contable' => $cta_contapartida,
-														'valor_debito' => $valor_debito,
-														'valor_credito' => $valor_credito,
-														'tipo_transaccion' => 'crear_cxp',
-														'estado' => 'Activo',
-														'creado_por' => Auth::user()->email,
-														'fecha_vencimiento' => $this->encabezado_doc->fecha
-													] );
 	}
 
-	public function get_tercero_movimiento( $equ_contab, $contrato )
+	public function get_tercero_movimiento( $equ_contab, NomContrato $contrato )
 	{
 		$tercero = (object)['id'=>0,'numero_identificacion'=>0,'descripcion'=>0];
 
@@ -208,7 +255,7 @@ class ContabilizacionDocumentoNomina
 			$concepto = '';
 			if ( !is_null( $movimiento->concepto ) )
 			{
-				$concepto = $movimiento->concepto->codigo . ' ' . $movimiento->concepto->descripcion;
+				$concepto = $movimiento->concepto->id . ' ' . $movimiento->concepto->descripcion;
 			}
 
 			$cuenta_contable = '';

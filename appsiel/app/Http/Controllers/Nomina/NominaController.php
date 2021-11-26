@@ -222,7 +222,7 @@ class NominaController extends TransaccionController
 
         $descripcion_transaccion = $encabezado_doc->tipo_documento_app->descripcion;
 
-        $registros_contabilidad = $encabezado_doc->get_registros_contabilidad();
+        $registros_contabilidad = $encabezado_doc->get_movimiento_contable();
 
         return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad' ) ); 
 

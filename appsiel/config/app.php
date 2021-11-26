@@ -158,6 +158,8 @@ return [
         Yajra\Datatables\DatatablesServiceProvider::class,
         Milon\Barcode\BarcodeServiceProvider::class,
         Cmgmyr\Messenger\MessengerServiceProvider::class,
+        Way\Generators\GeneratorsServiceProvider::class,
+        Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
 
         /*
          * Application Service Providers...

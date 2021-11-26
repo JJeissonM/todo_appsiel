@@ -46,6 +46,22 @@
 			</div>
 
 			<div class="row" style="padding:5px;">
+				<?php
+					$cuenta_descripcion = 'A nombre de cada empleado.';
+					if ( (int)config('nomina.cuenta_id_salarios_por_pagar') != 0 )
+					{
+						$cuenta = App\Contabilidad\ContabCuenta::find( (int)config('nomina.cuenta_id_salarios_por_pagar') );
+						$cuenta_descripcion = $cuenta->codigo . ' ' . $cuenta->descripcion;
+					}
+				?>
+				<label class="control-label col-sm-4" > <b> Cuenta causación pasivo: </b> </label>
+
+				<div class="col-sm-8">
+					{{ Form::text( 'cuenta', $cuenta_descripcion, [ 'class' => 'form-control', 'disabled' => 'disabled' ]) }}
+				</div>
+			</div>
+
+			<div class="row" style="padding:5px;">
 				&nbsp;				 
 			</div>
 

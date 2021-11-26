@@ -114,6 +114,7 @@
 			<img src="{{ $url }}" width="80px" style="float: left" />
 			<img src="{{ asset('assets/img/escudo_colombia.png') }}" width="80px" style="float: right" />
 		</div>
+
 		<table width="100%">
 			<tr>
 				<td colspan="6" style="text-align: center; font-size: 1.1em;">
@@ -145,7 +146,11 @@
 		</table>
 		<footer style="border:none">
 			<div style="border-top: 2px solid rgb(0, 0, 0); height: 10px; margin: 0 4rem"></div>
-			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}
+			<div style="text-align: center">
+				Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}
+				@if( $colegio->empresa->email != '' )
+					Email: {{$colegio->empresa->email}}
+				@endif
 			</div>
 			<div style="text-align: center">{{ $colegio->ciudad }}</div>
 		</footer>

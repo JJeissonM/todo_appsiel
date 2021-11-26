@@ -428,7 +428,7 @@ class NomDocEncabezado extends Model
         return 'ok';
     }
 
-    public function get_registros_contabilidad()
+    public function get_movimiento_contable()
     {
         return ContabMovimiento::where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
                             ->where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)

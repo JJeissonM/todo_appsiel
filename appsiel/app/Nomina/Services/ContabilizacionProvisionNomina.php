@@ -316,6 +316,10 @@ class ContabilizacionProvisionNomina
         CxpMovimiento::where( $array_wheres2 )->delete();
 
         // RETIRO DEL MOVIMIENTO CONTABLE
+
+        $encabezado_doc->estado = 'Anulado';
+        $encabezado_doc->save();
+
 		ContabMovimiento::where( $array_wheres2 )->delete();
 
 		$encabezado_doc->delete();

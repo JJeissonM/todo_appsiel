@@ -34,6 +34,14 @@ class ContabDocEncabezado extends Model
     {
         return $this->hasMany('App\Contabilidad\ContabDocRegistro');
     }
+    
+    public function get_movimiento_contable()
+    {
+        return ContabMovimiento::where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                            ->where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                            ->where('contab_movimientos.consecutivo', $this->consecutivo)
+                            ->get();
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

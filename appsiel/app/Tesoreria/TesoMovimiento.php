@@ -116,7 +116,10 @@ class TesoMovimiento extends Model
         {
             case 'App\Contratotransporte\Vehiculo':
                 $etiqueta = 'Placa Vehículo';
-                $valor = $registro->placa;
+                if ( !is_null($registro) )
+                {
+                    $valor = $registro->placa;
+                }
                 break;
             
             default:

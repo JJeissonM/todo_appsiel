@@ -319,7 +319,9 @@ class ContabilidadController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
 
-        return view( 'contabilidad.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id', 'empresa','doc_encabezado') ); 
+        $registros_contabilidad = $doc_encabezado->get_movimiento_contable();
+
+        return view( 'contabilidad.show',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id', 'empresa','doc_encabezado', 'registros_contabilidad') ); 
     }
 
 

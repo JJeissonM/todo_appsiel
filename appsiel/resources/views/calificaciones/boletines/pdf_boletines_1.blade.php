@@ -100,8 +100,6 @@
 		
 		@include('calificaciones.boletines.seccion_firmas')
 		
-		{!! generado_por_appsiel() !!}
-		
 		<div class="page-break"></div>
 		
 	@endforeach

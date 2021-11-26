@@ -98,6 +98,8 @@
 		    	</div>
 		    </div><!---->
 			
+			@include('transaccion.auditoria', [ 'doc_encabezado' => $encabezado_doc ])
+
 		</div>
 	</div>
 	<br/><br/>	

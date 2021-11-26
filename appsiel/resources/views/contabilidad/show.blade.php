@@ -102,6 +102,10 @@
 
 			{!! $view_pdf !!}
 			
+			@include('transaccion.registros_contables_con_terceros')
+
+			@include('transaccion.auditoria')
+			
 		</div>
 	</div>
 	<br/><br/>	
