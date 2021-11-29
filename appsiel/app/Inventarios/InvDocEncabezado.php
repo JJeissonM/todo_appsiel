@@ -47,7 +47,6 @@ class InvDocEncabezado extends Model
 
     public function lineas_registros()
     {
-        //dd('perate');
         return $this->hasMany( InvDocRegistro::class, 'inv_doc_encabezado_id' );
     }
 
@@ -152,6 +151,9 @@ class InvDocEncabezado extends Model
         return $encabezado_documento->crear_nuevo( $datos );
     }
 
+    /*
+            Deprecated. Use App\Inventarios\Services\InvDocumentsService@crear_lineas_registros
+    */
     public function crear_lineas_registros( $datos, $doc_encabezado, array $lineas_registros)
     {
         $cantidad_registros = count($lineas_registros);
@@ -204,6 +206,9 @@ class InvDocEncabezado extends Model
         Cuentas de Inventarios vs Costo de ventas
         Aplica a productos almacenables
     */
+    /*
+            Deprecated. Use App\Inventarios\Services\InvDocumentsService@crear_lineas_registros
+    */
     public function contabilizar( $encabezado_documento )
     {
         $lineas_registros = $encabezado_documento->lineas_registros;
@@ -241,6 +246,9 @@ class InvDocEncabezado extends Model
         }
     }
 
+    /*
+            Deprecated. Use App\Inventarios\Services\InvDocumentsService@crear_lineas_registros
+    */
     public function contabilizar_registro( $datos, $contab_cuenta_id, $valor_debito, $valor_credito )
     {
         ContabMovimiento::create(   

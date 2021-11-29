@@ -240,7 +240,7 @@
 		        var url_0 = "{{url('pos_factura_validar_existencias')}}" + "/" + pdv_id;
 
 				return $.get( url_0 ).then(function( data ) {
-					if ( data != 1 ) // Cuando falla la validacion.
+					if ( data != 1 ) // Cuando falla la validacion. data = vista_html
 					{
 						continuar = false;
 						$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias: <i class="fa fa-remove"></i> </h1>' + data );

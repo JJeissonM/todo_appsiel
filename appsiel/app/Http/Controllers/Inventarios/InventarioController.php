@@ -237,6 +237,10 @@ class InventarioController extends TransaccionController
         }
     }
 
+    /*
+        Esta se reemplaza en el servicio Inventarios\Sevices\DocumentsLinesService
+    
+    */
     public static function preparar_array_lineas_registros( $request_registros, $modo_ajuste )
     {
         $lineas_registros = json_decode( $request_registros );
@@ -271,6 +275,8 @@ class InventarioController extends TransaccionController
 
 
     /*
+
+        Deprecated. Usar en su lugar App\Inventarios\Services\InvDocumentsHeadersService@crear_documento
         Este método se llamada desde VentaController, CompraController y varios Controllers más
         Crea un documento completo: encabezados, registros, movimiento y contabilización
         Devuelve en ID del documento creado
@@ -436,6 +442,7 @@ class InventarioController extends TransaccionController
         TransaccionController::set_costo_promedio( $bodega_destino_id, $inv_producto_id, $costo_prom);
     }
 
+
     public static function crear_encabezado_remision_ventas( $datos, $estado = null )
     {
         // Llamar a los parámetros del archivo de configuración
@@ -448,7 +455,6 @@ class InventarioController extends TransaccionController
         {
             $datos['estado'] = $estado;
         }
-
         
         $datos['creado_por'] = 'paula@appsiel.com.co';
         if(Auth::user()){
@@ -468,8 +474,6 @@ class InventarioController extends TransaccionController
     */
     public static function crear_registros_remision_ventas( $doc_encabezado, $lineas_registros )
     {
-        $cantidad_registros = count($lineas_registros);
-
         foreach( $lineas_registros AS $linea )
         {
             if ( $linea->cantidad == 0 )
