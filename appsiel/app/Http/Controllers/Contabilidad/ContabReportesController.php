@@ -179,7 +179,7 @@ class ContabReportesController extends Controller
     ** Cada EEFF es un reporte que tiene asociados grupos de cuentas. Se deben asignar GRUPOS PADRES
     ** Los grupos de cuentas estan estructurados en forma de arbol en una tabla de la base de datos. De manera que al asignar un grupo padre al reporte, se traigan todo sus grupos descendientes hasta llegar a las cuentas
     */
-    public function contab_ajax_generacion_eeff2(Request $request)
+    public function contab_ajax_generacion_eeff(Request $request)
     {
         
         // Solo se debería crear el arbol cuando se crean nuevos grupos
@@ -1168,82 +1168,77 @@ class ContabReportesController extends Controller
     ** Cada EEFF es un reporte que tiene asociados grupos de cuentas. Se deben asignar GRUPOS PADRES
     ** Los grupos de cuentas estan estructurados en forma de arbol en una tabla de la base de datos. De manera que al asignar un grupo padre al reporte, se traigan todo sus grupos descendientes hasta llegar a las cuentas
     */
-    public function contab_ajax_generacion_eeff(Request $request)
+    public function contab_ajax_generacion_eeff2(Request $request)
     {
+        $anio = $request->lapso1_lbl;
+        $fecha_inicial = $request->lapso1_ini;
+        $fecha_final = $request->lapso1_fin;
+
         $obj_repor_serv = new ReportsServices();
-        //$mov_activos = $obj_repor_serv->get_saldo_clase_cuenta( $request->lapso1_ini, $request->lapso1_fin, 1 );
+        $obj_repor_serv->set_mov_clase_cuenta( $request->lapso1_ini, $request->lapso1_fin, 5 );
 
-        $grupos_padres_clase_activos = $obj_repor_serv->get_grupos_padre_de_clase_cuenta( 1 );
-        foreach ($grupos_padres_clase_activos as $grupo_padre )
+        // Caja cuenta debe estar, obligatoriamente, asignada a un grupo hijo
+        $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos( array_keys( $obj_repor_serv->movimiento->groupBy('contab_cuenta_id')->all() ) );
+        if( !empty( $grupos_invalidos ) )
         {
-            $grupos_padres_clase_activos = $obj_repor_serv->get_grupos_hijos( $grupo_padre->id );
+            dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
         }
 
+        $grupos_hijos = $obj_repor_serv->movimiento->groupBy('contab_cuenta_grupo_id')->all();
+        
+        $grupos_padres = $obj_repor_serv->get_ids_grupos_padres( array_keys( $grupos_hijos ) );
 
-        $mov_grupos_padre_cuentas = $obj_repor_serv->get_mov_grupos_padre_cuentas( $request->lapso1_ini, $request->lapso1_fin );
-        
-        $grupos_padres = $mov_grupos_padre_cuentas->groupBy('contab_cuenta_grupo_id')->all();
-        
-        $datos_grupos_padres = [];
-        foreach ($grupos_padres as $grupo_padre_id => $value)
+        //dd( $grupos_hijos, $grupos_padres );
+
+        $filas = [];
+        //$grupos_padres_clases_cuentas = $obj_repor_serv->get_grupos_padre_de_clase_cuenta( 1 );
+        foreach ( $grupos_padres as $key => $grupo_padre_id )
         {
-            $obj = (object)[];
-            $obj->grupo_cuentas = ContabCuentaGrupo::find( $grupo_padre_id );
-            $obj->total_saldo = $mov_grupos_padre_cuentas->where( 'contab_cuenta_grupo_id', $grupo_padre_id )->sum('valor_saldo');
-            $datos_grupos_padres[] = $obj;
+            $filas[] = (object)[
+                'datos_clase_cuenta' => 0,
+                'datos_grupo_padre' => $obj_repor_serv->datos_fila_grupo_padre( $grupo_padre_id ),
+                'datos_grupo_hijo' => 0,
+                'datos_cuenta' => 0
+                ];
+            
+            $grupos_hijos = $obj_repor_serv->get_grupos_hijos( $grupo_padre_id );
+            foreach ($grupos_hijos as $grupo_hijo )
+            {
+                $filas[] = (object)[
+                    'datos_clase_cuenta' => 0,
+                    'datos_grupo_padre' => 0,
+                    'datos_grupo_hijo' => (object)[ 
+                                                    'descripcion' => $grupo_hijo->descripcion,
+                                                    'valor' => $obj_repor_serv->get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_hijo->id )->sum('valor_saldo')
+                                                ],
+                    'datos_cuenta' => 0
+                    ];
+                
+                $cuentas_del_grupo = $obj_repor_serv->get_cuentas_del_grupo( $grupo_hijo->id );
+
+                foreach ($cuentas_del_grupo as $cuenta)
+                {
+                    if ( empty(  $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->count() ) )
+                    {
+                        continue;
+                    }
+
+                    $filas[] = (object)[
+                                            'datos_clase_cuenta' => 0,
+                                            'datos_grupo_padre' => 0,
+                                            'datos_grupo_hijo' => 0,
+                                            'datos_cuenta' => (object)[ 
+                                                                        'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
+                                                                        'valor' => $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->sum('valor_saldo')
+                                                                    ]
+                                            ];
+                }
+            }
         }
 
-        dd( $datos_grupos_padres );
+        $vista = View::make('contabilidad.reportes.tabla_eeff', compact('filas', 'anio') )->render();
 
-        $reporte_id = $request->reporte_id;
-
-        $this->lapso1_lbl = $request->lapso1_lbl;
-        $lapso1_lbl = $request->lapso1_lbl;
-
-        $this->lapso1_ini = $request->lapso1_ini;
-        $this->lapso1_fin = $request->lapso1_fin;
-
-        $this->lapso2_lbl = $request->lapso2_lbl;
-        $lapso2_lbl = $request->lapso2_lbl;
-        $this->lapso2_ini = $request->lapso2_ini;
-        $this->lapso2_fin = $request->lapso2_fin;
-        
-        $this->lapso3_lbl = $request->lapso3_lbl;
-        $lapso3_lbl = $request->lapso3_lbl;
-        $this->lapso3_ini = $request->lapso3_ini;
-        $this->lapso3_fin = $request->lapso3_fin;
-
-        $this->tipo_reporte = $request->tipo_reporte;
-
-        //$cols = 1; // cantidad de columnas, una por cada lapso a mostrar
-
-        $tabla = view( 'contabilidad.incluir.eeff.encabezado_tabla_generacion_eeff', compact('lapso1_lbl','lapso2_lbl','lapso3_lbl') )->render();
-
-        // Obtener el reporte
-        $reporte = ContabReporteEeff::find($reporte_id);
-        
-        // 
-        $grupos = $reporte->grupos_cuentas()->orderBy('orden')->get()->toArray();
-
-        foreach ($grupos as $fila) 
-        {
-            $tabla .= $this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin );            
-        }
-
-        $tabla.='<tr>
-                    <td> TOTAL </td>
-                    <td></td>
-                    <td style="text-align: right;">'.number_format( $this->total1_reporte , 0, ',', '.').'</td>';
-        if ( $this->lapso2_lbl != '' ) 
-        {
-            $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
-        }
-
-        $tabla.='<td></td></tr>';
-
-        $tabla.='</tbody> </table> </div>';
-
-        echo $tabla;
+        echo $vista;
     }
 
 }

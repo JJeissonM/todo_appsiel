@@ -134,15 +134,17 @@ class ContabCuenta extends Model
         $registros = DB::table('contab_cuenta_grupos')
             ->where('contab_cuenta_clase_id', $id_select_padre)
             ->where('core_empresa_id', '=', Auth::user()->empresa_id)
+            ->where('grupo_padre_id', '<>', 0)
             ->get();
 
         $opciones = '<option value="">Seleccionar...</option>';
-        foreach ($registros as $campo) {
+        foreach ($registros as $campo)
+        {
             $grupo = DB::table('contab_cuenta_grupos')
                 ->where('id', $campo->grupo_padre_id)
                 ->value('descripcion');
 
-            $opciones .= '<option value="' . $campo->id . '">' . $grupo . ' > ' . $campo->descripcion . '</option>';
+            $opciones .= '<option value="' . $campo->id . '">' . $campo->descripcion . ' ( ' . $grupo . ' )</option>';
         }
         return $opciones;
     }

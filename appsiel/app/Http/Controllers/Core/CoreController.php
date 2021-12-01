@@ -35,7 +35,7 @@ class CoreController extends Controller
     {        
         // Se obtiene el modelo "Padre"
         $modelo = Modelo::find($id_modelo);
-
+        
         $opciones = app($modelo->name_space)->get_registros_select_hijo($id_select_padre);   
 
         return $opciones;

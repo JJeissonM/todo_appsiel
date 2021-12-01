@@ -606,7 +606,8 @@ class ContabilidadController extends TransaccionController
         $registros_c = DB::table('contab_cuenta_grupos')
                 ->where( [ 
                     [ 'contab_cuenta_clase_id', $clase_id ],
-                    [ 'core_empresa_id','=', Auth::user()->empresa_id ]
+                    [ 'core_empresa_id','=', Auth::user()->empresa_id ],
+                    [ 'grupo_padre_id','<>', 0 ]
                     ] )
                 ->get();
 

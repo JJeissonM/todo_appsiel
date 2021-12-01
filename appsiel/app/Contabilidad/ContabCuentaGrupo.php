@@ -146,7 +146,8 @@ class ContabCuentaGrupo extends Model
             ->get();
 
         $opciones = '<option value="">Seleccionar...</option>';
-        foreach ($registros as $campo) {
+        foreach ($registros as $campo)
+        {
             $grupo = DB::table('contab_cuenta_grupos')
                 ->where('id', $campo->grupo_padre_id)
                 ->value('descripcion');
