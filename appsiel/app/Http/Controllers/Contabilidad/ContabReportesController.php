@@ -156,7 +156,7 @@ class ContabReportesController extends Controller
     }
 
     /*
-        generacion_eeff
+        Formulario generacion_eeff
     */
     public function generacion_eeff()
     {
@@ -175,128 +175,36 @@ class ContabReportesController extends Controller
         return view('contabilidad.generacion_eeff',compact('reportes','miga_pan'));
     }
 
-    /*
-    ** Cada EEFF es un reporte que tiene asociados grupos de cuentas. Se deben asignar GRUPOS PADRES
-    ** Los grupos de cuentas estan estructurados en forma de arbol en una tabla de la base de datos. De manera que al asignar un grupo padre al reporte, se traigan todo sus grupos descendientes hasta llegar a las cuentas
-    */
-    public function contab_ajax_generacion_eeff(Request $request)
-    {
-        
-        // Solo se debería crear el arbol cuando se crean nuevos grupos
-        $this->crear_arbol_grupo_cuentas(); 
-
-        $reporte_id = $request->reporte_id;
-
-        $this->lapso1_lbl = $request->lapso1_lbl;
-        $lapso1_lbl = $request->lapso1_lbl;
-
-        $this->lapso1_ini = $request->lapso1_ini;
-        $this->lapso1_fin = $request->lapso1_fin;
-
-        $this->lapso2_lbl = $request->lapso2_lbl;
-        $lapso2_lbl = $request->lapso2_lbl;
-        $this->lapso2_ini = $request->lapso2_ini;
-        $this->lapso2_fin = $request->lapso2_fin;
-        
-        $this->lapso3_lbl = $request->lapso3_lbl;
-        $lapso3_lbl = $request->lapso3_lbl;
-        $this->lapso3_ini = $request->lapso3_ini;
-        $this->lapso3_fin = $request->lapso3_fin;
-
-        $this->tipo_reporte = $request->tipo_reporte;
-
-        //$cols = 1; // cantidad de columnas, una por cada lapso a mostrar
-
-        $tabla = view( 'contabilidad.incluir.eeff.encabezado_tabla_generacion_eeff', compact('lapso1_lbl','lapso2_lbl','lapso3_lbl') )->render();
-
-        // Obtener el reporte
-        $reporte = ContabReporteEeff::find($reporte_id);
-        
-        // 
-        $grupos = $reporte->grupos_cuentas()->orderBy('orden')->get()->toArray();
-
-        foreach ($grupos as $fila) 
-        {
-            $tabla .= $this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin );            
-        }
-
-        $tabla.='<tr>
-                    <td> TOTAL </td>
-                    <td></td>
-                    <td style="text-align: right;">'.number_format( $this->total1_reporte , 0, ',', '.').'</td>';
-        if ( $this->lapso2_lbl != '' ) 
-        {
-            $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
-        }
-
-        $tabla.='<td></td></tr>';
-
-        $tabla.='</tbody> </table> </div>';
-
-        echo $tabla;
-    }
-
     // Generar PDF
     public function contab_pdf_eeff()
     {
-        
-        // Solo se debería crear el arbol cuando se crean nuevos grupos
-        $this->crear_arbol_grupo_cuentas(); 
-
         $reporte_id = Input::get( 'reporte_id' );
+        $anio = Input::get( 'lapso1_lbl' );
 
-        $this->lapso1_lbl = Input::get( 'lapso1_lbl' );
-        $lapso1_lbl = Input::get( 'lapso1_lbl' );
+        $fecha_inicial = Input::get( 'lapso1_ini' );
+        $fecha_final = Input::get( 'lapso1_fin' );
 
-        $this->lapso1_ini = Input::get( 'lapso1_ini' );
-        $this->lapso1_fin = Input::get( 'lapso1_fin' );
+        $modalidad_reporte = Input::get( 'modalidad_reporte' ); 
+        $detallar_cuentas = Input::get( 'detallar_cuentas' );        
 
-        $this->lapso2_lbl = Input::get( 'lapso2_lbl' );
-        $lapso2_lbl = Input::get( 'lapso2_lbl' );
-        $this->lapso2_ini = Input::get( 'lapso2_ini' );
-        $this->lapso2_fin = Input::get( 'lapso2_fin' );
-        
-        $this->lapso3_lbl = Input::get( 'lapso3_lbl' );
-        $lapso3_lbl = Input::get( 'lapso3_lbl' );
-        $this->lapso3_ini = Input::get( 'lapso3_ini' );
-        $this->lapso3_fin = Input::get( 'lapso3_fin' );
-
-
-        $this->tipo_reporte = Input::get( 'tipo_reporte' );
-
-        //$cols = 1; // cantidad de columnas, una por cada lapso a mostrar
-
-        $tabla = view( 'contabilidad.incluir.eeff.encabezado_tabla_generacion_eeff', compact('lapso1_lbl','lapso2_lbl','lapso3_lbl') )->render();
-
-        // Obtener el reporte
-        $reporte = ContabReporteEeff::find($reporte_id);
-        
-        // 
-        $grupos = $reporte->grupos_cuentas()->orderBy('orden')->get()->toArray();
-
-        foreach ($grupos as $fila) 
-        {
-            $tabla.=$this->get_arbol_movimiento_grupo_cuenta($fila['pivot']['contab_grupo_cuenta_id'], $this->lapso1_ini,$this->lapso1_fin );         
-        }
-
-        $tabla.='<tr>
-                    <td> TOTAL </td>
-                    <td></td>
-                    <td style="text-align: right;">'.number_format( $this->total1_reporte , 0, ',', '.').'</td>';
-        if ( $this->lapso2_lbl != '' ) 
-        {
-            $tabla.='<td style="text-align: right;">'.number_format( $this->total2_reporte , 0, ',', '.').'</td>';
-        }
-
-        $tabla.='<td></td></tr>';
-
-        $tabla.='</tbody> </table> </div>';
+        $tabla = $this->get_vista_eeff( $anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas );
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
-        
-        $encabezado2 = View::make( 'contabilidad.incluir.encabezado_pdf_eeff', compact('empresa') )->render();
 
-        $vista = View::make( 'layouts.pdf3', [ 'view' => $encabezado2.$tabla ] )->render();
+        switch ( $reporte_id )
+        {
+            case 'balance_general':
+                $titulo = 'ESTADO DE SITUACIÓN FINANCIERA';
+                break;
+            
+            default:
+                $titulo = 'ESTADO DE RESULTADOS';
+                break;
+        } 
+        
+        $encabezado2 = View::make( 'contabilidad.incluir.encabezado_pdf_eeff', compact('empresa','titulo') )->render();
+
+        $vista = View::make( 'layouts.pdf3', [ 'view' => $encabezado2 . $tabla ] )->render();
 
         $tam_hoja = 'Letter';
         $orientacion='portrait';
@@ -305,373 +213,6 @@ class ContabReportesController extends Controller
 
         return $pdf->stream('estados_financieros.pdf');
     }
-
-    // A los reportes se le asigna el grupo de cuentas superior (Abuelo)
-    public function get_arbol_movimiento_grupo_cuenta( $grupo_abuelo_id, $fecha_inicial, $fecha_final )
-    {
-        $empresa_id = Auth::user()->empresa_id;
-
-        // Se obtienen los valores del movimiento
-        $cuentas = ContabMovimiento::get_movimiento_arbol_grupo_cuenta($empresa_id, $fecha_inicial, $fecha_final, $grupo_abuelo_id, $this->tipo_reporte );
-
-        // Si hay un segundo lapso, se agrega otro campo de valor al array $cuentas (valor_saldo2)
-        if ( $this->lapso2_lbl != '' ) 
-        {
-            $cuentas2 = ContabMovimiento::get_movimiento_arbol_grupo_cuenta($empresa_id, $this->lapso2_ini, $this->lapso2_fin, $grupo_abuelo_id, $this->tipo_reporte );
-
-            $tam_cuentas2 = count($cuentas2);
-
-            for ($i=0; $i < count($cuentas); $i++) 
-            {
-                $agregado = true;
-                for ($j=0; $j < $tam_cuentas2; $j++) 
-                {
-                    // Como se han eliminado elementos del segundo array, se verifica primero si existe la key para el valor de $j
-                    if ( isset($cuentas2[$j]) ) 
-                    {
-                        // Si la cuenta del array2 ya está en el array1, se agrega el valor_saldo2 en el array1
-                        if ( $cuentas[$i]['cuenta_id'] == $cuentas2[$j]['cuenta_id']) 
-                        {
-                            $agregado = true;
-                            $cuentas[$i]['valor_saldo2'] = $cuentas2[$j]['valor_saldo'];
-                            unset($cuentas2[$j]);
-                            break;
-                        }else{
-                            $agregado = false;
-                        }
-                    }
-                }
-                
-
-                // Si la cuenta no está en el segundo array se agrega cero 
-                if ( !$agregado ) {
-                    $cuentas[$i]['valor_saldo2'] = 0;
-                }
-            }
-
-            // Después de hacer los recorridos, en el segundo array, quedan los elementos que no están en el primero; entonces, se agregan esos elementos al primer array
-            for ($j=0; $j < $tam_cuentas2; $j++) 
-            {
-                if ( isset($cuentas2[$j]) ) 
-                {
-                    $valor_saldo2 = $cuentas2[$j]['valor_saldo'];
-                    $cuentas2[$j]['valor_saldo'] = 0;
-                    $cuentas2[$j]['valor_saldo2'] = $valor_saldo2;
-                    $cuentas[$i] = $cuentas2[$j];
-                    $i++;
-                }
-            }
-
-        }
-
-        // Se crea el bloque de la tabla a visualizar
-        if ( $this->lapso2_lbl != '' ) 
-        {
-            // Cuando tiene lapso2
-            $bloque_tabla = $this->printtd_2( $this->ordenar_2($cuentas) );
-        }else{
-            $bloque_tabla = $this->printtd( $this->ordenar($cuentas) );
-        }
-
-        return $bloque_tabla;
-    }
-
-
-    function printtd($cuentas) 
-    {
-        $tr =  '';
-        
-        foreach ($cuentas as $cuenta) 
-        {
-            // Mostrar valores en positivo
-            $valor = round( $cuenta["valor"], 3);
-            $lbl_saldo = '';
-            if( $valor < 0 )
-            {
-                $valor = $valor * -1;
-                $lbl_saldo = 'CR';
-            }
-
-            $la_etiqueta = $cuenta["etiqueta"];
-            $clase = 'fila_cuenta';
-
-            $etiqueta = explode( 'a3p0', $la_etiqueta );
-            if ( isset($etiqueta[1] ) )
-            {
-                $clase = $etiqueta[0];
-                $la_etiqueta = $etiqueta[1];
-            }
-            
-            $tr.='<tr class="'.$clase.'">
-                    <td>'.$la_etiqueta.'</td>
-                    <td></td>
-                    <td style="text-align: right;">'.number_format( $valor , 0, ',', '.').'</td>
-                    <td>'.$lbl_saldo.'</td>';
-
-            if ( $this->lapso2_lbl != '' ) 
-            {
-                $tr.='<td></td>';
-            }
-
-            $tr.='</tr>';
-            $tr.=$this->printtd($cuenta["hijos"]);
-        }
-        
-        return $tr;
-    }
-
-    function ordenar($cuentas)
-    {
-        $arr = [];
-
-        foreach ($cuentas as $fila)
-        {
-            
-            $abuelo = $fila["abuelo_id"];
-            $this->acumular(
-                $arr, 
-                $abuelo,
-                'grupo_abuelo'.'a3p0'.$fila["abuelo_descripcion"],
-                $fila["valor_saldo"]
-            );
-            
-            $padre = $fila["padre_id"];
-            $this->acumular(
-                $arr[$abuelo]["hijos"], 
-                $padre, 
-                'grupo_padre'.'a3p0'.$fila["padre_descripcion"],
-                $fila["valor_saldo"]
-            );
-            
-            $hijo = $fila["hijo_id"];
-            $this->acumular(
-                $arr[$abuelo]["hijos"][$padre]["hijos"], 
-                $hijo, 
-                'grupo_hijo'.'a3p0'.$fila["hijo_descripcion"],
-                $fila["valor_saldo"]
-            );
-            
-            array_push(
-                            $arr[$abuelo]["hijos"][$padre]["hijos"][$hijo]["hijos"],
-                            [ 
-                                "etiqueta" =>  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$fila["cuenta_codigo"] . ' ' . $fila["cuenta_descripcion"],
-                                "valor" =>  $fila["valor_saldo"],
-                                "hijos" => []
-                            ]  
-                        );
-            
-
-            $this->total1_reporte += $fila["valor_saldo"];
-        }        
-
-        return $arr;
-    }
-
-    function acumular(&$collection, $key, $descripcion, $valor) 
-    {
-        if( !array_key_exists($key, $collection) )
-        {
-            $collection[$key] = [
-                "etiqueta" =>  $descripcion,
-                "valor" =>  $valor,
-                "hijos" => []
-            ];
-        } else {
-            $collection[$key]["valor"] += $valor;
-        }
-    }
-
-    // cuando el informe tiene un segundo lapso
-    function printtd_2($cuentas)
-    {
-        $tr =  '';
-        
-        foreach ($cuentas as $cuenta) 
-        {
-            $tr.='<tr>
-                    <td>'.$cuenta["etiqueta"].'</td>
-                    <td></td>
-                    <td>'.number_format( $cuenta["valor"] , 0, ',', '.').'</td>
-                    <td>'.number_format( $cuenta["valor2"] , 0, ',', '.').'</td>
-                    </tr>';
-            $tr.=$this->printtd_2($cuenta["hijos"]);
-        }
-        
-        return $tr;
-    }
-
-    function ordenar_2($cuentas) {
-        $arr = [];
-
-        foreach ($cuentas as $fila) {
-            $fila["valor_saldo2"] = 0;
-            $abuelo = $fila["abuelo_id"];
-            $this->acumular_2(
-                $arr, 
-                $abuelo, 
-                '<span class="label label-default"> <i class="'.$abuelo.'"></i>'.$fila["abuelo_descripcion"]."</span>", 
-                $fila["valor_saldo"], 
-                $fila["valor_saldo2"]
-            );
-            
-            $padre = $fila["padre_id"];
-            $this->acumular_2(
-                $arr[$abuelo]["hijos"], 
-                $padre, 
-                '&nbsp;&nbsp;<span class="label label-primary"> <i class="'.$padre.'"></i>'.$fila["padre_descripcion"]."</span>", 
-                $fila["valor_saldo"], 
-                $fila["valor_saldo2"]
-            );
-            
-            $hijo = $fila["hijo_id"];
-            $this->acumular_2(
-                $arr[$abuelo]["hijos"][$padre]["hijos"], 
-                $hijo, 
-                '&nbsp;&nbsp;&nbsp;&nbsp;<span class="label label-warning"> <i class="'.$hijo.'"></i>'.$fila["hijo_descripcion"]."</span>", 
-                $fila["valor_saldo"], 
-                $fila["valor_saldo2"]
-            );
-            
-            array_push($arr[$abuelo]["hijos"][$padre]["hijos"][$hijo]["hijos"], [
-                "etiqueta" =>  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.$fila["cuenta_descripcion"],
-                "valor" =>  $fila["valor_saldo"],
-                "valor2" =>  $fila["valor_saldo2"],
-                "hijos" => []
-            ]);
-            
-
-            $this->total1_reporte+=$fila["valor_saldo"];
-            $this->total2_reporte+=$fila["valor_saldo2"];
-        }
-        
-        return $arr;
-    }
-
-    function acumular_2(&$collection, $key, $descripcion, $valor, $valor2) 
-    {
-        if(!array_key_exists($key, $collection)) {
-            $collection[$key] = [
-                "etiqueta" =>  $descripcion,
-                "valor" =>  $valor,
-                "valor2" =>  $valor2,
-                "hijos" => []
-            ];
-        } else {
-            $collection[$key]["valor"] += $valor;
-            $collection[$key]["valor2"] += $valor2;
-        }
-    }
-
-    // Almacenar en la base de datos el arbol de grupo de cuentas
-    public function crear_arbol_grupo_cuentas()
-    {
-
-        $empresa_id = Auth::user()->empresa_id;
-
-        $this->grupos_cuentas = ContabCuentaGrupo::where('core_empresa_id', $empresa_id)->get()->toArray();
-
-        // ITERACIÓN 1
-        // Se crea un array de padres (id_padre = 0)
-        // y se destina una key_2 del array para almacenar un vector sus padre
-        $abuelo = $this->get_hijos(0);
-
-        // ITERACIÓN 2
-        // Se recorre el array de padres.
-        // por cada "Papá" se recorre todo el array de grupos_cuentas para agregar los hijo en la key_2 de cada "Papá" (id_padre = abuelo[$j][0])
-        for($j=0; $j < count($abuelo); $j++) {
-            $abuelo[$j][2] = $this->get_hijos( $abuelo[$j][0] );
-        }
-
-        
-
-        // ITERACIÓN 3
-        for($i=0; $i < count($abuelo); $i++) {
-
-            $padre = $abuelo[$i][2];
-
-            $key = 0;
-            for($j=0; $j < count($padre); $j++) {
-                array_push($padre[$j][2], $this->get_hijos( $padre[$j][0]) );                
-            }
-
-            $abuelo[$i][2] = $padre;
-
-        }
-        
-        // CUARDAR EL ARBOL
-
-        // Se vacía la tabla
-        ContabArbolGruposCuenta::where('core_empresa_id',$empresa_id)
-            ->delete();
-
-        for($i=0; $i < count($abuelo); $i++) 
-        {
-            ContabArbolGruposCuenta::create(
-                [ 'core_empresa_id' => $empresa_id ] +
-                [ 'abuelo_id' => $abuelo[$i][0] ]+
-                ['padre_id' => $abuelo[$i][0] ] +
-                ['hijo_id' => $abuelo[$i][0] ] +
-                ['nivel' => 1 ] +
-                ['abuelo_descripcion' => $abuelo[$i][1] ] +
-                ['padre_descripcion' => $abuelo[$i][1] ] +
-                ['hijo_descripcion' => $abuelo[$i][1] ]
-                );
-
-            $padre = $abuelo[$i][2];
-
-            for($j=0; $j < count($padre); $j++) 
-            {
-                ContabArbolGruposCuenta::create(
-                    [ 'core_empresa_id' => $empresa_id ] +
-                    [ 'abuelo_id' => $abuelo[$i][0] ]+
-                    ['padre_id' => $padre[$j][0] ] +
-                    ['hijo_id' => $padre[$j][0] ] +
-                    ['nivel' => 2 ] +
-                    ['abuelo_descripcion' => $abuelo[$i][1] ] +
-                    ['padre_descripcion' => $padre[$j][1] ] +
-                    ['hijo_descripcion' => $padre[$j][1] ]
-                );
-
-                $hijo = $padre[$j][2][0];
-
-                for($k=0; $k < count($hijo); $k++) 
-                {
-                    ContabArbolGruposCuenta::create(
-                        [ 'core_empresa_id' => $empresa_id ] +
-                        [ 'abuelo_id' => $abuelo[$i][0] ]+
-                        ['padre_id' => $padre[$j][0] ] +
-                        ['hijo_id' => $hijo[$k][0] ] +
-                        ['nivel' => 3 ] +
-                        ['abuelo_descripcion' => $abuelo[$i][1] ] +
-                        ['padre_descripcion' => $padre[$j][1] ] +
-                        ['hijo_descripcion' => $hijo[$k][1] ]
-                    );
-                }                     
-            }   
-        }
-    }
-
-    public function get_hijos($id_padre)
-    {
-        $key = 0;
-        $padre = [];
-        for($i=0;$i<count($this->grupos_cuentas);$i++) 
-        {
-
-            if ( $this->grupos_cuentas[$i]['grupo_padre_id'] == $id_padre ) 
-            {
-                //echo $this->grupos_cuentas[$i]['descripcion']."</br>";
-                $padre[$key][0] = $this->grupos_cuentas[$i]['id'];
-                $padre[$key][1] = $this->grupos_cuentas[$i]['descripcion'];
-                $padre[$key][2] = [];
-                $key++;
-            }
-
-        }
-
-        return $padre;
-    }
-
 
     /*
         contab_auxiliar_por_cuenta
@@ -1173,72 +714,141 @@ class ContabReportesController extends Controller
         $anio = $request->lapso1_lbl;
         $fecha_inicial = $request->lapso1_ini;
         $fecha_final = $request->lapso1_fin;
+        $modalidad_reporte = $request->modalidad_reporte;
+        $reporte_id = $request->reporte_id;
+        $detallar_cuentas = $request->detallar_cuentas;
 
-        $obj_repor_serv = new ReportsServices();
-        $obj_repor_serv->set_mov_clase_cuenta( $request->lapso1_ini, $request->lapso1_fin, 5 );
+        echo $this->get_vista_eeff( $anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas );
+    }
 
-        // Caja cuenta debe estar, obligatoriamente, asignada a un grupo hijo
-        $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos( array_keys( $obj_repor_serv->movimiento->groupBy('contab_cuenta_id')->all() ) );
-        if( !empty( $grupos_invalidos ) )
+    public function get_vista_eeff( $anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas )
+    {
+        if ( $modalidad_reporte == 'acumular_movimiento' )
         {
-            dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
+            $fecha_inicial = '1900-01-01';
         }
 
-        $grupos_hijos = $obj_repor_serv->movimiento->groupBy('contab_cuenta_grupo_id')->all();
-        
-        $grupos_padres = $obj_repor_serv->get_ids_grupos_padres( array_keys( $grupos_hijos ) );
-
-        //dd( $grupos_hijos, $grupos_padres );
-
-        $filas = [];
-        //$grupos_padres_clases_cuentas = $obj_repor_serv->get_grupos_padre_de_clase_cuenta( 1 );
-        foreach ( $grupos_padres as $key => $grupo_padre_id )
+        switch ( $reporte_id )
         {
-            $filas[] = (object)[
-                'datos_clase_cuenta' => 0,
-                'datos_grupo_padre' => $obj_repor_serv->datos_fila_grupo_padre( $grupo_padre_id ),
-                'datos_grupo_hijo' => 0,
-                'datos_cuenta' => 0
-                ];
+            case 'balance_general':
+                $ids_clases_cuentas = [ 1, 2, 3];
+                break;
             
-            $grupos_hijos = $obj_repor_serv->get_grupos_hijos( $grupo_padre_id );
-            foreach ($grupos_hijos as $grupo_hijo )
-            {
-                $filas[] = (object)[
-                    'datos_clase_cuenta' => 0,
-                    'datos_grupo_padre' => 0,
-                    'datos_grupo_hijo' => (object)[ 
-                                                    'descripcion' => $grupo_hijo->descripcion,
-                                                    'valor' => $obj_repor_serv->get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_hijo->id )->sum('valor_saldo')
-                                                ],
-                    'datos_cuenta' => 0
-                    ];
-                
-                $cuentas_del_grupo = $obj_repor_serv->get_cuentas_del_grupo( $grupo_hijo->id );
+            default:
+                $ids_clases_cuentas = [ 4, 5, 6 ];
+                break;
+        }
 
-                foreach ($cuentas_del_grupo as $cuenta)
+        $obj_repor_serv = new ReportsServices();
+        $totale_clases = [ 0, 0, 0, 0, 0, 0 ];
+        $filas = [];
+        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
+        {
+            $obj_repor_serv->set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id );
+
+            $valor_clase = $obj_repor_serv->datos_clase_cuenta( $clase_cuenta_id );
+            
+            if ( $valor_clase->valor == 0 )
+            {
+                continue;
+            }
+
+            $totale_clases[$clase_cuenta_id] = $valor_clase->valor;
+
+            $filas[] = (object)[
+                                'datos_clase_cuenta' => $valor_clase,
+                                'datos_grupo_padre' => 0,
+                                'datos_grupo_hijo' => 0,
+                                'datos_cuenta' => 0
+                                ];
+            // Caja cuenta debe estar, obligatoriamente, asignada a un grupo hijo
+            $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos( array_keys( $obj_repor_serv->movimiento->groupBy('contab_cuenta_id')->all() ) );
+            if( !empty( $grupos_invalidos ) )
+            {
+                dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
+            }
+
+            $grupos_hijos = $obj_repor_serv->movimiento->groupBy('contab_cuenta_grupo_id')->all();
+            
+            $grupos_padres = $obj_repor_serv->get_ids_grupos_padres( array_keys( $grupos_hijos ) );
+            //$grupos_padres_clases_cuentas = $obj_repor_serv->get_grupos_padre_de_clase_cuenta( 1 );
+            foreach ( $grupos_padres as $key => $grupo_padre_id )
+            {
+                $valor_padre = $obj_repor_serv->datos_fila_grupo_padre( $grupo_padre_id );
+
+                if ( $valor_padre->valor == 0 )
                 {
-                    if ( empty(  $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->count() ) )
+                    continue;
+                }
+
+                $filas[] = (object)[
+                                    'datos_clase_cuenta' => 0,
+                                    'datos_grupo_padre' => $valor_padre,
+                                    'datos_grupo_hijo' => 0,
+                                    'datos_cuenta' => 0
+                                    ];
+                
+                $grupos_hijos = $obj_repor_serv->get_grupos_hijos( $grupo_padre_id );
+                foreach ($grupos_hijos as $grupo_hijo )
+                {
+                    $valor_hijo = $obj_repor_serv->get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_hijo->id )->sum('valor_saldo');
+
+                    if ( $valor_hijo == 0 )
                     {
                         continue;
                     }
 
                     $filas[] = (object)[
-                                            'datos_clase_cuenta' => 0,
-                                            'datos_grupo_padre' => 0,
-                                            'datos_grupo_hijo' => 0,
-                                            'datos_cuenta' => (object)[ 
-                                                                        'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
-                                                                        'valor' => $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->sum('valor_saldo')
-                                                                    ]
-                                            ];
+                        'datos_clase_cuenta' => 0,
+                        'datos_grupo_padre' => 0,
+                        'datos_grupo_hijo' => (object)[ 
+                                                        'descripcion' => $grupo_hijo->descripcion,
+                                                        'valor' => $valor_hijo
+                                                    ],
+                        'datos_cuenta' => 0
+                        ];
+                    
+                    $cuentas_del_grupo = $obj_repor_serv->get_cuentas_del_grupo( $grupo_hijo->id );
+
+                    foreach ($cuentas_del_grupo as $cuenta)
+                    {
+                        if( !$detallar_cuentas )
+                        {
+                            continue;
+                        }
+                        
+                        $valor_cuenta = $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->sum('valor_saldo');
+                        if ( $valor_cuenta == 0 )
+                        {
+                            continue;
+                        }
+
+                        $filas[] = (object)[
+                                                'datos_clase_cuenta' => 0,
+                                                'datos_grupo_padre' => 0,
+                                                'datos_grupo_hijo' => 0,
+                                                'datos_cuenta' => (object)[ 
+                                                                            'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
+                                                                            'valor' => $valor_cuenta
+                                                                        ]
+                                                ];
+                    }
                 }
             }
         }
 
-        $vista = View::make('contabilidad.reportes.tabla_eeff', compact('filas', 'anio') )->render();
+        switch ( $reporte_id )
+        {
+            case 'balance_general':
+                $gran_total = abs( $totale_clases[ 1 ] ) - abs( $totale_clases[ 2 ] ) - abs( $totale_clases[ 3 ] );
+                break;
+            
+            default:
+            $gran_total = abs( $totale_clases[ 4 ] ) - abs( $totale_clases[ 5 ] ) - abs( $totale_clases[ 6 ] );
+                break;
+        }        
 
-        echo $vista;
+        return View::make('contabilidad.reportes.tabla_eeff', compact('filas', 'anio', 'gran_total') )->render();
     }
 
 }

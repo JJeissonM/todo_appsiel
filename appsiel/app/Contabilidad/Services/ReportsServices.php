@@ -2,6 +2,7 @@
 
 namespace App\Contabilidad\Services;
 
+use App\Contabilidad\ClaseCuenta;
 use App\Contabilidad\ContabCuentaGrupo;
 use App\Contabilidad\ContabCuenta;
 
@@ -60,13 +61,6 @@ class ReportsServices
                                 ->get();
     }
 
-    public function get_mov_cuenta( $fecha_inicial, $fecha_final, $cuenta_id )
-    {
-        return ContabMovimiento::whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
-                                ->where('contab_cuenta_id', $cuenta_id )
-                                ->get();
-    }
-
     public function get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_cuenta_id )
     {
         return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
@@ -83,9 +77,22 @@ class ReportsServices
         // Para los grupos hijos de este papa
         $ids_cuentas = ContabCuenta::whereIn( 'contab_cuenta_grupo_id', $grupos_hijos_ids )
                                    ->get()->pluck('id')->all();
-
+        
         return (object)[ 
                             'descripcion' => $grupo_padre->descripcion,
+                            'valor' => $this->movimiento->whereIn( 'contab_cuenta_id', $ids_cuentas )->sum('valor_saldo')
+                        ];
+    }
+
+    public function datos_clase_cuenta( $clase_cuenta_id )
+    {
+        $clase_cuenta = ClaseCuenta::find( $clase_cuenta_id );
+        
+        $ids_cuentas = ContabCuenta::where( 'contab_cuenta_clase_id', $clase_cuenta_id )
+                                   ->get()->pluck('id')->all();
+
+        return (object)[ 
+                            'descripcion' => strtoupper( $clase_cuenta->descripcion ),
                             'valor' => $this->movimiento->whereIn( 'contab_cuenta_id', $ids_cuentas )->sum('valor_saldo')
                         ];
     }

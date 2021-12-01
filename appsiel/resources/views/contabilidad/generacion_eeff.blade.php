@@ -14,7 +14,7 @@
 				<div class="row">
 					<div class="col-sm-3">
 						{{ Form::label('reporte_id','Reporte') }}
-						{{ Form::select('reporte_id',$reportes,null,[ 'class' => 'form-control','id'=>'reporte_id']) }}
+						{{ Form::select('reporte_id',[ 'balance_general' => 'Balance general', 'estado_resultados' => 'Estado de resultados'],null,[ 'class' => 'form-control','id'=>'reporte_id']) }}
 					</div>
 					<div class="col-sm-6">
 						<div class="row">
@@ -45,24 +45,18 @@
 								{{ Form::date('lapso1_fin',date('Y-12-31'),['class'=>'form-control','id'=>'lapso1_fin']) }}
 							</div>
 						</div>
+						<br>
 						<div class="row">
-							<div class="col-sm-2">
-								{{ Form::label('etiqueta_2','Lapso 2:',[]) }}
+							<div class="col-sm-6">
+								{{ Form::bsSelect('modalidad_reporte',null,'Modalidad del Reporte',[ 'acumular_movimiento' => 'Acumular movimiento', 'acumular_periodo' => 'Acumular solo periodo'],[ 'class' => 'form-control','id'=>'modalidad_reporte']) }}
 							</div>
-							<div class="col-sm-2">
-								{{ Form::text('lapso2_lbl','',['class'=>'form-control','id'=>'lapso2_lbl']) }}
-							</div>
-							<div class="col-sm-4">
-								{{ Form::date('lapso2_ini','',['class'=>'form-control','id'=>'lapso2_ini']) }}
-							</div>
-							<div class="col-sm-4">
-								{{ Form::date('lapso2_fin','',['class'=>'form-control','id'=>'lapso2_fin']) }}
+							<div class="col-sm-6">
+								{{ Form::bsSelect('detallar_cuentas',null,'Detallar Cuentas',[ 1 => 'Si', 0 => 'No' ],[ 'class' => 'form-control','id'=>'detallar_cuentas']) }}
 							</div>
 						</div>
 					</div>
 					<div class="col-sm-3">
-						{{ Form::label('tipo_reporte','Modalidad del Reporte') }}
-						{{ Form::select('tipo_reporte',['Acumular movimiento','Acumular solo periodo'],null,[ 'class' => 'form-control','id'=>'tipo_reporte']) }}
+						<br>
 						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
 					</div>
 				</div>

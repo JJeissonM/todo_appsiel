@@ -1,7 +1,7 @@
 <table style="width: 100%; margin: 0px;" class="texto_moneda">
 	<tr>
 		@if( !is_null($lbl) )
-			<td width="35%" style="border: 0px; !important">
+			<td width="35%" style="border: 0px !important">
 				<strong> {{ $lbl }} </strong>
 			</td>
 		@endif
