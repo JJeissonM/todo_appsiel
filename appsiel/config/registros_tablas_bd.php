@@ -68211,12 +68211,12 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     39 => 
     array (
       'id' => 41,
-      'descripcion' => 'Resumen de aportes a Seg. social y parafiscales',
+      'descripcion' => 'Resumen de aportes Planilla Integrada',
       'core_app_id' => 17,
       'url_form_action' => 'nom_listado_aportes_pila',
       'estado' => 'Activo',
       'created_at' => '2020-11-11 18:30:07',
-      'updated_at' => '2021-01-12 05:53:14',
+      'updated_at' => '2021-11-23 10:34:06',
     ),
     40 => 
     array (

@@ -18,7 +18,7 @@ use Illuminate\Pagination\Paginator;
 class ContabMovimiento extends Model
 {
     // tipo_transaccion se refiere al tipo de transacción de la línea
-    protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'id_registro_doc_tipo_transaccion', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'documento_soporte', 'contab_cuenta_id', 'valor_operacion', 'valor_debito', 'valor_credito', 'valor_saldo', 'detalle_operacion', 'tipo_transaccion', 'inv_producto_id', 'cantidad', 'tasa_impuesto', 'base_impuesto', 'valor_impuesto', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'estado', 'creado_por', 'modificado_por', 'fecha_vencimiento', 'inv_bodega_id'];
+    protected $fillable = [ 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'id_registro_doc_tipo_transaccion', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'documento_soporte', 'contab_cuenta_id', 'valor_operacion', 'valor_debito', 'valor_credito', 'valor_saldo', 'detalle_operacion', 'tipo_transaccion', 'inv_producto_id', 'cantidad', 'tasa_impuesto', 'base_impuesto', 'valor_impuesto', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'estado', 'creado_por', 'modificado_por', 'fecha_vencimiento', 'inv_bodega_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Producto', 'Detalle', 'Cuenta', 'Tasa impuesto', 'Base impuesto', 'Débito', 'Crédito'];
 
@@ -308,17 +308,30 @@ class ContabMovimiento extends Model
             ->toArray();
     }
 
-    public static function get_movimiento_arbol_grupo_cuenta($empresa_id, $fecha_inicial, $fecha_final, $grupo_abuelo_id)
+    public static function get_movimiento_arbol_grupo_cuenta($empresa_id, $fecha_inicial, $fecha_final, $grupo_abuelo_id, $tipo_reporte)
     {
+        if ( $tipo_reporte )
+        {
+            return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                    ->leftJoin('contab_arbol_grupos_cuentas', 'contab_arbol_grupos_cuentas.hijo_id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
+                    ->where('contab_movimientos.core_empresa_id', $empresa_id)
+                    ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final])
+                    ->where('contab_arbol_grupos_cuentas.abuelo_id', $grupo_abuelo_id)
+                    ->groupBy('contab_movimientos.contab_cuenta_id')
+                    ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_arbol_grupos_cuentas.abuelo_descripcion, contab_arbol_grupos_cuentas.padre_descripcion, contab_arbol_grupos_cuentas.hijo_descripcion, contab_arbol_grupos_cuentas.abuelo_id, contab_arbol_grupos_cuentas.padre_id, contab_arbol_grupos_cuentas.hijo_id, contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.id AS cuenta_id, contab_cuentas.codigo AS cuenta_codigo')
+                    ->get()
+                    ->toArray();
+        }
+
         return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
-            ->leftJoin('contab_arbol_grupos_cuentas', 'contab_arbol_grupos_cuentas.hijo_id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
-            ->where('contab_movimientos.core_empresa_id', $empresa_id)
-            ->where('contab_movimientos.fecha', '<=', $fecha_final)
-            ->where('contab_arbol_grupos_cuentas.abuelo_id', $grupo_abuelo_id)
-            ->groupBy('contab_movimientos.contab_cuenta_id')
-            ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_arbol_grupos_cuentas.abuelo_descripcion, contab_arbol_grupos_cuentas.padre_descripcion, contab_arbol_grupos_cuentas.hijo_descripcion, contab_arbol_grupos_cuentas.abuelo_id, contab_arbol_grupos_cuentas.padre_id, contab_arbol_grupos_cuentas.hijo_id, contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.id AS cuenta_id, contab_cuentas.codigo AS cuenta_codigo')
-            ->get()
-            ->toArray();
+                    ->leftJoin('contab_arbol_grupos_cuentas', 'contab_arbol_grupos_cuentas.hijo_id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
+                    ->where('contab_movimientos.core_empresa_id', $empresa_id)
+                    ->where('contab_movimientos.fecha', '<=', $fecha_final)
+                    ->where('contab_arbol_grupos_cuentas.abuelo_id', $grupo_abuelo_id)
+                    ->groupBy('contab_movimientos.contab_cuenta_id')
+                    ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_arbol_grupos_cuentas.abuelo_descripcion, contab_arbol_grupos_cuentas.padre_descripcion, contab_arbol_grupos_cuentas.hijo_descripcion, contab_arbol_grupos_cuentas.abuelo_id, contab_arbol_grupos_cuentas.padre_id, contab_arbol_grupos_cuentas.hijo_id, contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.id AS cuenta_id, contab_cuentas.codigo AS cuenta_codigo')
+                    ->get()
+                    ->toArray();
     }
 
     public static function get_registros_contables($core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo)

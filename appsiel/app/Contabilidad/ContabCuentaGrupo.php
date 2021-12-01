@@ -99,12 +99,15 @@ class ContabCuentaGrupo extends Model
 
     public static function sqlString($search)
     {
-        $string = ContabCuentaGrupo::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
+        $string = ContabCuentaGrupo::leftJoin('contab_cuenta_grupos AS grupos_padres', 'grupos_padres.id', '=', 'contab_cuenta_grupos.grupo_padre_id')
+        ->leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuenta_grupos.contab_cuenta_clase_id')
             ->where('contab_cuenta_grupos.core_empresa_id', Auth::user()->empresa_id)
             ->select(
                 'contab_cuenta_clases.descripcion AS CLASE',
-                'contab_cuenta_grupos.grupo_padre_id as PADRE',
-                'contab_cuenta_grupos.descripcion AS DESCRIPCIÓN'
+                'grupos_padres.descripcion as PADRE',
+                'contab_cuenta_grupos.descripcion AS DESCRIPCIÓN',
+                'contab_cuenta_grupos.id AS ID',
+                'grupos_padres.id AS PADRE_ID'
             )
             ->orWhere("contab_cuenta_clases.descripcion", "LIKE", "%$search%")
             ->orWhere("contab_cuenta_grupos.grupo_padre_id", "LIKE", "%$search%")

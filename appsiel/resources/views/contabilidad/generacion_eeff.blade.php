@@ -61,7 +61,8 @@
 						</div>
 					</div>
 					<div class="col-sm-3">
-						{{ Form::label(' ','.') }}
+						{{ Form::label('tipo_reporte','Modalidad del Reporte') }}
+						{{ Form::select('tipo_reporte',['Acumular movimiento','Acumular solo periodo'],null,[ 'class' => 'form-control','id'=>'tipo_reporte']) }}
 						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
 					</div>
 				</div>

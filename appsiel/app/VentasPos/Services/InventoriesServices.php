@@ -2,6 +2,8 @@
 
 namespace App\VentasPos\Services;
 
+use Illuminate\Http\Request;
+
 use App\Inventarios\Services\ValidacionExistencias;
 use App\Inventarios\Services\InvDocumentsService;
 use App\Inventarios\Services\InvDocumentsLinesService;
@@ -24,6 +26,7 @@ use App\Inventarios\InvCostoPromProducto;*/
 
 use View;
 use DB;
+use Auth;
 
 class InventoriesServices
 {
