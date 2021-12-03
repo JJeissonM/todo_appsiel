@@ -40,6 +40,7 @@ use App\Matriculas\FacturaAuxEstudiante;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcDocEncabezado;
 use App\CxC\CxcAbono;
+use App\CxC\Services\AccountingServices;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
@@ -111,6 +112,9 @@ class DocCruceController extends TransaccionController
      */
     public function store(Request $request)
     {
+      $obj_accou_serv = new AccountingServices();
+      $cxc_move_note_id = $obj_accou_serv->create_accounting_note_doc( $request->tabla_documentos_a_cancelar, $request->fecha, $request->core_tercero_id );
+
       $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
       // esta tabla contiene documentos de cartera y de saldo_a_favor
@@ -124,6 +128,10 @@ class DocCruceController extends TransaccionController
       for ($i=0; $i < $cant; $i++) 
       {
             $cxc_movimiento_id = (int)$tabla_documentos_a_cancelar[$i]->cxc_movimiento_id;
+            if ( $cxc_movimiento_id == -1 )
+            {
+              $cxc_movimiento_id = $cxc_move_note_id;
+            }
 
             $valor_aplicar = (float)$tabla_documentos_a_cancelar[$i]->valor_aplicar;
 
@@ -401,7 +409,7 @@ class DocCruceController extends TransaccionController
           ->where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
           ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
           ->where('consecutivo', $documento->consecutivo)
-          ->get()[0];;
+          ->get()[0];
     }
 
 
@@ -448,14 +456,8 @@ class DocCruceController extends TransaccionController
       $documento = CxcDocEncabezado::find($id);
 
       // 1ro. Borrar registros contables
-      $array_wheres = [
-                      'core_empresa_id' => $documento->core_empresa_id, 
-                      'core_tipo_transaccion_id' => $documento->core_tipo_transaccion_id,
-                      'core_tipo_doc_app_id' => $documento->core_tipo_doc_app_id,
-                      'consecutivo' => $documento->consecutivo
-                    ];
-      ContabMovimiento::where($array_wheres)->delete();
-
+      $obj_accou_serv = new AccountingServices();
+      $obj_accou_serv->delete_accounting_move( $documento->core_empresa_id, $documento->core_tipo_transaccion_id, $documento->core_tipo_doc_app_id, $documento->consecutivo );
 
       // 2do. Por cada abono, se reversa el valor que el doc. cruce descontó en el movimiento cartera y se elimina el abono
       $array_wheres = [
@@ -491,6 +493,8 @@ class DocCruceController extends TransaccionController
         $this->actualizar_mov_cxc( $mov_documento_afavor, $linea, 'afavor', $linea->abono ); // Para saldo afavor el movimiento es negativo, los abonos también deben ser negativos
 
         $this->anular_recaudo_cartera_estudiante( $mov_documento_afavor, $linea->abono );
+
+        $obj_accou_serv->anular_nota_contable_ajuste( $linea );
 
         // Se elimina el abono
         $linea->delete();

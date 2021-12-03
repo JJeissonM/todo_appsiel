@@ -30,7 +30,7 @@
                     <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_total, 2, ',', '.') }} </td>
                     <td>
-                        @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) )
+                        @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) && Input::get('id_transaccion') != 2 )
                             <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
 
                             @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])

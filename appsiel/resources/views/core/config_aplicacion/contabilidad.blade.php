@@ -20,6 +20,192 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+				<h4> Documento contable por defecto </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$transaction_type_id_default = 43;
+
+								if( isset($parametros['transaction_type_id_default'] ) )
+								{
+									$transaction_type_id_default = $parametros['transaction_type_id_default'];
+								}
+							?>
+							{{ Form::bsSelect('transaction_type_id_default', $transaction_type_id_default, 'Tipo de transaccion ', \App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$document_type_id_default = 43;
+
+								if( isset($parametros['document_type_id_default'] ) )
+								{
+									$document_type_id_default = $parametros['document_type_id_default'];
+								}
+							?>
+							{{ Form::bsSelect('document_type_id_default', $document_type_id_default, 'Tipo documento', \App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$contact_id_default = 1;
+
+								if( isset($parametros['contact_id_default'] ) )
+								{
+									$contact_id_default = $parametros['contact_id_default'];
+								}
+							?>
+							{{ Form::bsSelect('contact_id_default', $contact_id_default, 'Tercero', \App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+				<h4> Cuentas contables por defecto </h4>
+				<?php
+					$array_cuentas = App\Contabilidad\ContabCuenta::opciones_campo_select();
+				?>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_cartera_default = 27;
+								if( isset($parametros['cta_cartera_default'] ) )
+								{
+									$cta_cartera_default = $parametros['cta_cartera_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_cartera_default', $cta_cartera_default, 'Cta. Cartera (CxC)', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_anticipo_clientes_default = 219;
+								if( isset($parametros['cta_anticipo_clientes_default'] ) )
+								{
+									$cta_anticipo_clientes_default = $parametros['cta_anticipo_clientes_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_anticipo_clientes_default', $cta_anticipo_clientes_default, 'Cta. Anticipo clientes', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_por_pagar_default = 131;
+								if( isset($parametros['cta_por_pagar_default'] ) )
+								{
+									$cta_por_pagar_default = $parametros['cta_por_pagar_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_por_pagar_default', $cta_por_pagar_default, 'Cta. por pagar (CxP)', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_anticipo_proveedores_default = 29;
+								if( isset($parametros['cta_anticipo_proveedores_default'] ) )
+								{
+									$cta_anticipo_proveedores_default = $parametros['cta_anticipo_proveedores_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_anticipo_proveedores_default', $cta_anticipo_proveedores_default, 'Cta. Anticipo proveedores', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_ingresos_default = 229;
+								if( isset($parametros['cta_ingresos_default'] ) )
+								{
+									$cta_ingresos_default = $parametros['cta_ingresos_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_ingresos_default', $cta_ingresos_default, 'Cta. ingresos (ventas)', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_gastos_default = 229;
+								if( isset($parametros['cta_gastos_default'] ) )
+								{
+									$cta_gastos_default = $parametros['cta_gastos_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_gastos_default', $cta_gastos_default, 'Cta. Gastos', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_impuestos_default = 229;
+								if( isset($parametros['cta_impuestos_default'] ) )
+								{
+									$cta_impuestos_default = $parametros['cta_impuestos_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_impuestos_default', $cta_impuestos_default, 'Cta. Impuestos', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_inventarios_default = 229;
+								if( isset($parametros['cta_inventarios_default'] ) )
+								{
+									$cta_inventarios_default = $parametros['cta_inventarios_default'];
+								}
+							?>
+							{{ Form::bsSelect('cta_inventarios_default', $cta_inventarios_default, 'Cta. Inventarios', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+				
+				<br>
 				<h4> Parámetros por defecto cierre del ejercicio </h4>
 				<hr>
 				<div class="row">

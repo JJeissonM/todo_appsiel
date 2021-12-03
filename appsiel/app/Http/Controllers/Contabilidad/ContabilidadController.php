@@ -42,7 +42,6 @@ class ContabilidadController extends TransaccionController
 
     /* El método index() está en TransaccionController */
 
-
     public function create()
     {
         $this->set_variables_globales();
@@ -51,20 +50,17 @@ class ContabilidadController extends TransaccionController
     }
 
 
-
-
     public function store( Request $request )
     {
+        dd( $request->all() );
         $registro_encabezado_doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
         
         $this->almacenar_lineas_registros( $request, $tabla_registros_documento, $registro_encabezado_doc );
 
-        return redirect( 'contabilidad/'.$registro_encabezado_doc->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+        return redirect( 'contabilidad/' . $registro_encabezado_doc->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion );
     }
-
-
 
     public function almacenar_lineas_registros( $request, $tabla_registros_documento, $registro_encabezado_doc )
     {
