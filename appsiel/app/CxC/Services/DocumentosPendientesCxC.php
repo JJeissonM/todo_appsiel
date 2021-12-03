@@ -87,15 +87,16 @@ class DocumentosPendientesCxC extends Model
             }
 
             // Sumar los abonos hechos al documento del movimiento para restarlos al valor del documento y mostrarlo en el saldo pendiente
-            $abonos = CxcAbono::where( $array_wheres2 )->sum('abono');
+            $abonos = CxcAbono::where( $array_wheres2 )->sum('abono'); // Siempre positivo
             
-            $linea_movimiento->valor_pagado = $abonos;
             if ( $linea_movimiento->valor_documento < 0 )
             {
                 // ANTICIPO
+                $linea_movimiento->valor_pagado = $abonos * -1;
                 $linea_movimiento->saldo_pendiente = $linea_movimiento->valor_documento + $abonos;
             }else{
                 // DOCUMENTO DE CXC (FACTURA)
+                $linea_movimiento->valor_pagado = $abonos;
                 $linea_movimiento->saldo_pendiente = $linea_movimiento->valor_documento - $abonos;
             }
         }

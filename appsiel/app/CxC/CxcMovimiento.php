@@ -28,7 +28,7 @@ class CxcMovimiento extends Model
     
     $this->estado = 'Pendiente';
 
-    if ( $nuevo_saldo >= -0.01 && $nuevo_saldo <= 0.01 )
+    if ( $nuevo_saldo == 0 )
     {
       $this->estado = 'Pagado';
       $this->modificado_por = Auth::user()->email;
@@ -169,7 +169,7 @@ class CxcMovimiento extends Model
     $doc_encabezado->saldo_pendiente = $nuevo_saldo; // -3.000
     $doc_encabezado->save();
 
-    if ( $nuevo_saldo >= -0.01 && $nuevo_saldo <= 0.01 )
+    if ( $nuevo_saldo == 0 )
     {
       $doc_encabezado->update(
                               [
