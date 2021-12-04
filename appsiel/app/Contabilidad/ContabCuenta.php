@@ -17,7 +17,7 @@ class ContabCuenta extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Clase', 'Grupo', 'Código', 'Descripción', 'Aplicación asociada'];
 
-    public static function consultar_registros($nro_registros, $search)
+    public function consultar_registros($nro_registros, $search)
     {
         $collection = ContabCuenta::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuentas.contab_cuenta_clase_id')
                                     ->leftJoin('contab_cuenta_grupos', 'contab_cuenta_grupos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')

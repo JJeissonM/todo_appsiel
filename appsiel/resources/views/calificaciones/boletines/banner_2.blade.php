@@ -7,13 +7,14 @@
         </td>
 
         <td align="center">
+            <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->descripcion }}</b>
             <br/>
-            <b style="font-size: {{$tam_letra+1}}mm;">{{ $colegio->descripcion }}</b>
+            <b style="font-size: {{$tam_letra-1}}mm;">{{ $colegio->slogan }}</b>
             <br/>
-            <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->ciudad }}</b>
-            <br/>
-            Resolución No. {{ $colegio->resolucion }}<br/>
-            {{ $colegio->direccion }},Teléfono: {{ $colegio->telefonos }}
+            <span style="font-size: {{$tam_letra-1}}mm;">
+                Resolución No. {{ $colegio->resolucion }}<br/>
+                {{ $colegio->direccion }}, {{ $colegio->ciudad }}, Teléfono: {{ $colegio->telefonos }}
+            </span>
         </td>
     </tr>
 </table>
