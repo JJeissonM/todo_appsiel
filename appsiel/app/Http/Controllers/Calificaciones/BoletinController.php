@@ -215,13 +215,12 @@ class BoletinController extends Controller
 
 		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas', 'periodos') )->render();
         
-        echo $view;
         // Se prepara el PDF
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');			
         $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
 
-		//return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
+		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
 	}
 
     public function preparar_datos_boletin( $periodo, $curso, $matriculas )
