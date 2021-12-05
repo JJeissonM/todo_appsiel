@@ -215,13 +215,13 @@ class BoletinController extends Controller
 
 		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas', 'periodos') )->render();
         
-        //echo $view;
+        echo $view;
         // Se prepara el PDF
         $orientacion='portrait';
         $pdf = \App::make('dompdf.wrapper');			
         $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
 
-		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
+		//return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
 	}
 
     public function preparar_datos_boletin( $periodo, $curso, $matriculas )
@@ -264,19 +264,26 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->logros_adicionales = null;
                 if ( !is_null($calificacion) )
                 {
-                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $calificacion->calificacion, $periodo->periodo_lectivo_id );
+                    $valor_calificacion = $calificacion->calificacion;
+                    $calificacion_nivelada = $periodo->get_calificacion_nivelacion( $curso->id, $matricula->estudiante->id, $asignacion->asignatura->id );
+                    if( !is_null($calificacion_nivelada) )
+                    {
+                        $valor_calificacion = $calificacion_nivelada->calificacion;
+                    }
+
+                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $valor_calificacion, $periodo->periodo_lectivo_id );
                     $cuerpo_boletin->lineas[$a]->escala_valoracion = $escala_valoracion;
 
                     if( is_null( $escala_valoracion ) )
                     {
-                        dd( 'Por favor corrija la calificacion. No hay configurada una Escala de valoracion para la calificacion ' . $calificacion->calificacion . '. Curso: ' . $curso->descripcion . '. Asignatura: ' . $asignacion->asignatura->descripcion . '. Estudiante: ' . $matricula->estudiante->tercero->descripcion );
+                        dd( 'Por favor corrija la calificacion. No hay configurada una Escala de valoracion para la calificacion ' . $valor_calificacion . '. Curso: ' . $curso->descripcion . '. Asignatura: ' . $asignacion->asignatura->descripcion . '. Estudiante: ' . $matricula->estudiante->tercero->descripcion );
                     }
 
                     $cuerpo_boletin->lineas[$a]->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id, $escala_valoracion->id );
 
                     $cuerpo_boletin->lineas[$a]->logros_adicionales = $this->get_logros_adicionales( $calificacion, $asignacion->asignatura_id );
 
-                    $cuerpo_boletin->lineas[$a]->valor_calificacion = $calificacion->calificacion;
+                    $cuerpo_boletin->lineas[$a]->valor_calificacion = $valor_calificacion;
                 }
 
                 $cuerpo_boletin->lineas[$a]->propositos = Meta::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id );
@@ -417,14 +424,6 @@ class BoletinController extends Controller
                                     ->groupBy('id_estudiante')
                                     ->orderBy('promedioCalificaciones','DESC')
                                     ->get();
-        //dd($promedios);
-        /* $query_1 = "SELECT AVG(calificacion) as promedioCalificaciones,id_estudiante FROM calificaciones 
-				WHERE id_colegio=".$colegio->id." AND anio=".$anio." AND id_periodo=".$request->id_periodo." AND curso_id=".$request->curso_id." 
-				GROUP BY id_estudiante 
-				ORDER BY promedioCalificaciones DESC";
-		
-		$promedios = DB::select($query_1);
-        */
 
 		$nom_curso = Curso::where('id','=',$request->curso_id)->value('descripcion');
 

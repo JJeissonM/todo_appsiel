@@ -32,8 +32,8 @@
 					<th style="width:200px;">{{ $lbl_asigatura }}</th>
 					<th style="width:40px;">I.H.</th>
 					@if($curso->maneja_calificacion==1)
-				        @foreach($periodos as $periodo)
-				            <th style="width:35px;"> P{{$periodo->numero}} </th>
+				        @foreach($periodos as $periodo_lista)
+				            <th style="width:35px;"> P{{$periodo_lista->numero}} </th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
 				        <th style="width:35px;"> Prom. </th>

@@ -47,6 +47,20 @@ class NotaNivelacion extends Model
 			->first();
 	}
 
+    public static function get_para_boletin($periodo_id, $curso_id, $estudiante_id, $asignatura_id)
+    {
+        return NotaNivelacion::where(
+                                    [
+                                        'periodo_id' => $periodo_id,
+                                        'curso_id' => $curso_id,
+                                        'estudiante_id' => $estudiante_id,
+                                        'asignatura_id' => $asignatura_id
+                                    ]
+                                )
+                            ->get()
+                            ->first();
+    }
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 		return NotaNivelacion::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_notas_nivelaciones.estudiante_id')

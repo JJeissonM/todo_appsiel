@@ -13,6 +13,7 @@ use DB;
 
 use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Calificacion;
+use App\Calificaciones\NotaNivelacion;
 
 class Periodo extends Model
 {
@@ -44,6 +45,11 @@ class Periodo extends Model
     public function get_calificacion( $curso_id, $estudiante_id, $asignatura_id )
     {
         return Calificacion::get_para_boletin( $this->id, $curso_id, $estudiante_id, $asignatura_id );
+    }
+
+    public function get_calificacion_nivelacion( $curso_id, $estudiante_id, $asignatura_id )
+    {
+        return NotaNivelacion::get_para_boletin( $this->id, $curso_id, $estudiante_id, $asignatura_id );
     }
 
     public static function consultar_registros($nro_registros, $search)

@@ -52,7 +52,7 @@
 		case 'solo_nota_nivelacion_con_etiqueta':
 			if ( !is_null( $linea->calificacion->nota_nivelacion() ) )
 			{
-				echo $lbl_nivelacion . '<sup>Nivelada</sup>';
+				echo $lbl_nivelacion . '<sup>n</sup>';
 			}else{
 				echo $lbl_nota_original;
 			}
@@ -70,7 +70,7 @@
 		case 'ambas_notas':
 			if ( !is_null( $linea->calificacion->nota_nivelacion() ) )
 			{
-				echo '<del>' . $lbl_nota_original . '</del> &nbsp;' . $lbl_nivelacion;
+				echo '<span style="color: gray">' . $lbl_nota_original . '</span> &nbsp;' . $lbl_nivelacion . '<sup>n</sup>';
 			}else{
 				echo $lbl_nota_original;
 			}

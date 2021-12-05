@@ -5,8 +5,8 @@
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Curso: {{$curso->descripcion}}
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Calificación mínima para ganar: {{$tope_escala_valoracion_minima+0.01}}
      <br>
-     <span style="background-color: yellow;"> &#9632; Nota faltante.</span> 
-     <span style=" font-size: 12px; color: gray;"> El promedio de la asignatura se calcula con los periodos que tienen calificación. </span>
+     <span style="background-color: yellow;"> &#9632; Calificación	faltante.</span> 
+     <span style=" font-size: 12px; color: gray;"> El promedio de la asignatura se calcula con los periodos que tienen calificación. No se tiene en cuenta el periodo de promedios (Periodo FINAL). </span>
  </p>
     <hr>
 

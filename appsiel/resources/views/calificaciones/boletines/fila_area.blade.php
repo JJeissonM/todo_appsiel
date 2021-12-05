@@ -27,6 +27,7 @@
 							}
 
 							$escala_valoracion_area = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion_media_ponderada, $periodo->periodo_lectivo_id );
+							
 							$lbl_escala_valoracion_area = '';
 							if ( $escala_valoracion_area )
 							{
@@ -58,7 +59,7 @@
 					@endif
 				</td>
 			@else
-				<td colspan="{{ $cant_columnas }}"></td>
+				<td colspan="{{ $cant_columnas }}">&nbsp;</td>
 			@endif
 	</tr>
 @endif
