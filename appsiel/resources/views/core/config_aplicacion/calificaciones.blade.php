@@ -267,6 +267,32 @@
 				</div>
 
 				<br><br>
+				<h4> Certificado de Notas  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$detallar_curso_grado = 'grado';
+								if( isset($parametros['detallar_curso_grado'] ) )
+								{
+									$detallar_curso_grado = $parametros['detallar_curso_grado'];
+								}
+							?>
+							{{ Form::bsSelect('detallar_curso_grado', $detallar_curso_grado, 'Detallar etiqueta del...', [ 'grado' => 'Grado', 'curso' => 'Curso'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br><br>
 
 				<div style="width: 100%; text-align: center;">
 					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>

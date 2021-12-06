@@ -22,5 +22,6 @@
     4 => '4',
     5 => '7',
   ),
+  'detallar_curso_grado' => 'grado',
   'url_id_modelo' => '0',
 ) ;
