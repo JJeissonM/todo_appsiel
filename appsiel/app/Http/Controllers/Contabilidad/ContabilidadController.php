@@ -52,7 +52,6 @@ class ContabilidadController extends TransaccionController
 
     public function store( Request $request )
     {
-        dd( $request->all() );
         $registro_encabezado_doc = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);
