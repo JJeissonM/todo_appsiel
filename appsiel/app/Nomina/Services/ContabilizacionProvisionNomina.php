@@ -4,7 +4,7 @@ namespace App\Nomina\Services;
 
 use App\Nomina\NomDocEncabezado;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 use App\Core\Tercero;
 use App\Contabilidad\ContabCuenta;
@@ -277,6 +277,17 @@ class ContabilizacionProvisionNomina
 												[ 'fecha', '=', $fecha ],
 												[ 'proceso_contabilizado', '=', 'provision_prestaciones_sociales' ]
 											])
+										->get()
+										->first();
+	}
+
+	public function get_document_header( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo  )
+	{
+		$array_wheres = [ 'core_empresa_id'=> Auth::user()->empresa_id, 
+            'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+            'consecutivo' => $consecutivo];
+		return ContabDocEncabezado::where( $array_wheres )
 										->get()
 										->first();
 	}
