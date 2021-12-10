@@ -57,9 +57,11 @@ class NominaElectronicaController extends Controller
         $lapso = new LapsoNomina( $request->fecha_final_periodo );
         $empleados_con_movimiento = $lapso->get_empleados_con_movimiento();
         $almacenar_registros = $request->almacenar_registros;
+
+        // Un "Documento de soporte de nómina electrónica" por cada empleado
         foreach ( $empleados_con_movimiento as $registro_empleado )
         {
-      dd('hi');
+            //dd('hi');
             $empleado = $registro_empleado->contrato;
 
             $doc_soporte_empleado = new DocumentoSoporte();

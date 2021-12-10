@@ -311,6 +311,198 @@
 
 				</div>
 
+				<h4> Parámetros de Nómina Electrónica  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$proveedor_tecnologico_default = 'DATAICO';
+								if( isset($parametros['proveedor_tecnologico_default'] ) )
+								{
+									$proveedor_tecnologico_default = $parametros['proveedor_tecnologico_default'];
+								}
+							?>
+							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'TFHKA' => 'The Fatory HKA'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$nom_elec_ambiente = 'PRUEBAS';
+								if( isset($parametros['nom_elec_ambiente'] ) )
+								{
+									$nom_elec_ambiente = $parametros['nom_elec_ambiente'];
+								}
+							?>
+							{{ Form::bsSelect('nom_elec_ambiente', $nom_elec_ambiente, 'Ambiente', ['PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$pin_software = 1234567;
+								if( isset($parametros['pin_software'] ) )
+								{
+									$pin_software = $parametros['pin_software'];
+								}
+							?>
+							{{ Form::bsText('pin_software', $pin_software, 'PIN del software del prov. tec.', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$enviar_email_empleados = 'false';
+								if( isset($parametros['enviar_email_empleados'] ) )
+								{
+									$enviar_email_empleados = $parametros['enviar_email_empleados'];
+								}
+							?>
+							{{ Form::bsSelect('enviar_email_empleados', $enviar_email_empleados, 'Enviar facturas por email al empleado', ['false' => 'No', 'true' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$email_copia_documento_soporte = '';
+								if( isset($parametros['email_copia_documento_soporte'] ) )
+								{
+									$email_copia_documento_soporte = $parametros['email_copia_documento_soporte'];
+								}
+							?>
+							{{ Form::bsText('email_copia_documento_soporte', $email_copia_documento_soporte, 'Enviar copia del doc. soporte nómina del empleado a este E-mail', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_servicio_emision = '';
+								if( isset($parametros['url_servicio_emision'] ) )
+								{
+									$url_servicio_emision = $parametros['url_servicio_emision'];
+								}
+							?>
+							{{ Form::bsText('url_servicio_emision', $url_servicio_emision, 'URL Servicio Emisión documento nómina', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_nota_ajuste_reemplazo = '';
+								if( isset($parametros['url_nota_ajuste_reemplazo'] ) )
+								{
+									$url_nota_ajuste_reemplazo = $parametros['url_nota_ajuste_reemplazo'];
+								}
+							?>
+							{{ Form::bsText('url_nota_ajuste_reemplazo', $url_nota_ajuste_reemplazo, 'URL Servicio Emisión Nota de Ajuste (Reemplazo) Nómina Electrónica', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_nota_ajuste_eliminacion = '';
+								if( isset($parametros['url_nota_ajuste_eliminacion'] ) )
+								{
+									$url_nota_ajuste_eliminacion = $parametros['url_nota_ajuste_eliminacion'];
+								}
+							?>
+							{{ Form::bsText('url_nota_ajuste_eliminacion', $url_nota_ajuste_eliminacion, 'URL Servicio Emisión Nota de Ajuste (Eliminación) Nómina Electrónica', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$tokenEmpresa = 'test-set-id';
+								if( isset($parametros['tokenEmpresa'] ) )
+								{
+									$tokenEmpresa = $parametros['tokenEmpresa'];
+								}
+							?>
+							{{ Form::bsText('tokenEmpresa', $tokenEmpresa, 'Token Empresa (test-set-id)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$tokenDian = '';
+								if( isset($parametros['tokenDian'] ) )
+								{
+									$tokenDian = $parametros['tokenDian'];
+								}
+							?>
+							{{ Form::bsText('tokenDian', $tokenDian, 'Token DIAN (dian-id)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$modalidad_asignada = '2';
+								if( isset($parametros['modalidad_asignada'] ) )
+								{
+									$modalidad_asignada = $parametros['modalidad_asignada'];
+								}
+							?>
+							{{ Form::bsSelect('modalidad_asignada', $modalidad_asignada, 'Modalidad asignada', ['1' => 'Automática', '2' => 'Manual Con Prefijo', '3' => 'Manual Sin Prefijo', '4' => 'Manual Contingencia'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

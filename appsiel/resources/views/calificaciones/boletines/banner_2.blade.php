@@ -9,7 +9,7 @@
         <td align="center">
             <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->descripcion }}</b>
             <br/>
-            <b style="font-size: {{$tam_letra-1}}mm;">{{ $colegio->slogan }}</b>
+            <b style="font-size: {{$tam_letra-1}}mm;">{!! $colegio->slogan !!}</b>
             <br/>
             <span style="font-size: {{$tam_letra-1}}mm;">
                 Resolución No. {{ $colegio->resolucion }}<br/>

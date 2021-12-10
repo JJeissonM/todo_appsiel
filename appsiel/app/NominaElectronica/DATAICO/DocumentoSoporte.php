@@ -21,7 +21,7 @@ class DocumentoSoporte extends Model
 {
    const CORE_TIPO_TRANSACCION_ID = 59; // Documentos soporte Nómina Electrónica
 
-   public $head_data_string, $accruals_string, $deductions_string, $employee_string;
+   public $array_head_data, $array_accruals, $array_deductions, $array_employee;
 
    protected $table = 'nom_elect_doc_soporte';
 
@@ -49,15 +49,16 @@ class DocumentoSoporte extends Model
 
    public function get_json( NomContrato $empleado, $lapso, $almacenar_registros )
    {
-      dd('hi');
+      //dd('hi');
       $this->set_data_json( $empleado, $lapso, $almacenar_registros );
-      //dd(  '{' . $this->head_data_string . '}'  );
-      return json_decode( '{' . $this->head_data_string . '}' );
+      dd(  $this->array_head_data );
+      return json_decode( $this->array_head_data );
    }
 
    public function set_data_json( $empleado, $lapso, $almacenar_registros )
    {
       $this->set_head_data( $empleado, $lapso, $almacenar_registros );
+      dd( $this->array_head_data );
       $this->set_accruals_data( $empleado, $lapso );
    }
 
@@ -76,19 +77,30 @@ class DocumentoSoporte extends Model
          $app_doc_type->aumentar_consecutivo( $core_empresa_id, $core_tipo_doc_app->id );
       }
 
-      $this->head_data_string = '"env": "PRUEBAS","prefix": "' . $core_tipo_doc_app->prefijo . '","number": ' .$consecutivo . ',"salary": ' . $empleado->sueldo . ',"periodicity" : "MENSUAL","initial-settlement-date": "' . $lapso->fecha_inicial . '","final-settlement-date": "' . $lapso->fecha_final . '","issue-date": "' . date('Y-m-d') . '","payment-date": "' . date('Y-m-d') . '","notes": [{"text": ""}]';
+      $this->array_head_data = [ 
+         'env' => 'PRUEBAS',
+         'prefix' => $core_tipo_doc_app->prefijo,
+         'number' => $consecutivo,
+         'salary' =>  $empleado->sueldo,
+         'periodicity' => 'MENSUAL',
+         'initial-settlement-date' => $lapso->fecha_inicial,
+         'final-settlement-date' => $lapso->fecha_final,
+         'issue-date' => date('Y-m-d'),
+         'payment-date' => date('Y-m-d'),
+         'notes' => [ 'text' => '']
+      ];
 
    }
 
    public function set_accruals_data( $empleado, $lapso )
    {
       $registros = $empleado->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final);
-      dd('set_accruals_data',$lapso->fecha_inicial, $lapso->fecha_final,$registros);
+      dd( $lapso->fecha_inicial, $lapso->fecha_final,$registros);
       $concepto->cpto_dian->codigo;
       
       /*
 
-      "accruals": [ { "code": "BASICO", "amount": 1500000, "days": 5 }, { "code": "VIATICO", "amount": 100000, "amount-ns": 200000 } ]
+      "accruals": [ { "code => BASICO", "amount": 1500000, "days": 5 }, { "code => VIATICO", "amount": 100000, "amount-ns": 200000 } ]
       
       */
 
@@ -101,7 +113,13 @@ class DocumentoSoporte extends Model
          $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
       }
 
-      $this->accruals_string = '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+      $this->array_accruals = [];
+      /*'actions': {"send_dian" =>  $send_dian,
+         'send_email" =>  $send_email,
+         'email => ' . $lista_emails"},
+      'credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ),
+         'items" =>  $this->get_lineas_registros(),
+         'charges": []}}';*/
    }
 
    public function get_encabezado_factura()
@@ -122,8 +140,19 @@ class DocumentoSoporte extends Model
       }
 
       $flexible = 'true';
-
-      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente();
+      /*
+      return '"env => ' . $this->env,
+      'dataico_account_id'=> ' . config('facturacion_electronica.tokenEmpresa'),
+      'number':'.$this->doc_encabezado->consecutivo.',
+      'issue_date => ' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y'),
+      'payment_date'=> ' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y'),
+      'invoice_type_code'=> ' . $this->invoice_type_code,
+      'payment_means_type'=> ' . $payment_means_type,
+      'payment_means'=> ' . $payment_means,
+      'numbering':{"resolution_number":"' . $resolucion->numero_resolucion,
+         "prefix":"' . $resolucion->prefijo,
+         "flexible":' . $flexible}, "customer" =>  $this->get_datos_cliente();
+         */
    }
 
    public function get_encabezado_nota_credito( $factura_doc_encabezado )
@@ -144,12 +173,24 @@ class DocumentoSoporte extends Model
       }
 
       $flexible = 'true';
-      $reason = 'DEVOLUCION'; /**********  List [ "DEVOLUCION", "ANULACION", "REBAJA", "DESCUENTO", "RECISION", "OTROS" ]    PENDIENTE    ******/
+      /*
+      $reason = 'DEVOLUCION'; /**********  List [ "DEVOLUCION", "ANULACION", "REBAJA", "DESCUENTO", "RECISION", "OTROS" ]    PENDIENTE    
       $issue_date = date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y');
       $fecha_vencimiento = date_create( $this->doc_encabezado->fecha_vencimiento );
       $payment_date = date_format( date_add( $fecha_vencimiento, date_interval_create_from_date_string("1 month")),'d/m/Y');
 
-      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","issue_date": "' . $issue_date . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","payment_date": "' . $payment_date . '","reason": "' . $reason . '","invoice_id": "' . $invoice_id . '","number":'.$this->doc_encabezado->consecutivo.',"numbering":{"prefix":"' . $this->doc_encabezado->tipo_documento_app->prefijo . '","flexible":' . $flexible . '}';
+      return '"env => ' . $this->env,
+      'dataico_account_id'=> ' . config('facturacion_electronica.tokenEmpresa'),
+      'issue_date'=> ' . $issue_date,
+      'payment_means_type'=> ' . $payment_means_type,
+      'payment_means'=> ' . $payment_means,
+      'payment_date'=> ' . $payment_date,
+      'reason'=> ' . $reason,
+      'invoice_id'=> ' . $invoice_id,
+      'number':'.$this->doc_encabezado->consecutivo.',
+      'numbering":{"prefix":"' . $this->doc_encabezado->tipo_documento_app->prefijo,
+         "flexible":' . $flexible}';
+      */
    }
 
    public function get_datos_cliente()
@@ -166,7 +207,20 @@ class DocumentoSoporte extends Model
       }
       $regimen = 'ORDINARIO';
 
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $cliente->tercero->descripcion . '","first_name":"' . $cliente->tercero->nombre1 . '","family_name":"' . $cliente->tercero->apellido1 . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ) . '","city": "' . strtoupper( $cliente->tercero->ciudad->descripcion ) . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
+      /*
+      return '{"email => ' . $cliente->tercero->email,
+         "phone => ' . $cliente->tercero->telefono1,
+         "party_type => ' . $party_type,
+         "company_name => ' . $cliente->tercero->descripcion,
+         "first_name":"' . $cliente->tercero->nombre1,
+         "family_name":"' . $cliente->tercero->apellido1,
+         "party_identification => ' . $cliente->tercero->numero_identificacion,
+         "tax_level_code => ' . $tax_level_code,
+         "regimen => ' . $regimen,
+         "department => ' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ),
+         "city => ' . strtoupper( $cliente->tercero->ciudad->descripcion ),
+         "address_line => ' . $cliente->tercero->direccion1"}';
+         */
    }
 
    public function get_lineas_registros()
@@ -183,14 +237,20 @@ class DocumentoSoporte extends Model
             $string_items .= ',';
          }
 
-         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . $linea->item->descripcion . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
+         $string_items .= '{"sku => ' . $linea->item->id,
+            "description => ' . $linea->item->descripcion,
+            "quantity" =>  abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ),
+            'price" =>  abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
 
          if ( $linea->tasa_descuento != 0 )
          {
-            $string_items .= ',"discount_rate": ' . $linea->tasa_descuento;
+            $string_items .= ',
+            'discount_rate" =>  $linea->tasa_descuento;
          } 
 
-         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "IVA"}]}';
+         $string_items .= ',
+         'taxes": [  {    "tax_rate" =>  $linea->tasa_impuesto,
+            'tax_category => IVA"}]}';
          $es_primera_linea = false;
       }
 
@@ -213,7 +273,7 @@ class DocumentoSoporte extends Model
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
 
-         $response = $client->get( $this->url_emision . '?number=' .$resolucion->prefijo . $this->doc_encabezado->consecutivo, [
+         $response = $client->get( $this->url_emision?number=' .$resolucion->prefijo . $this->doc_encabezado->consecutivo, [
              // un array con la data de los headers como tipo de peticion, etc.
              'headers' => [
                            'content-type' => 'application/json',

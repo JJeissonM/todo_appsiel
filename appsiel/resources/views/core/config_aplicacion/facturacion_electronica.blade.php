@@ -31,7 +31,6 @@
 								if( isset($parametros['proveedor_tecnologico_default'] ) )
 								{
 									$proveedor_tecnologico_default = $parametros['proveedor_tecnologico_default'];
-								}else{
 								}
 							?>
 							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'TFHKA' => 'The Fatory HKA'], ['class'=>'form-control']) }}
@@ -45,7 +44,6 @@
 								if( isset($parametros['fe_ambiente'] ) )
 								{
 									$fe_ambiente = $parametros['fe_ambiente'];
-								}else{
 								}
 							?>
 							{{ Form::bsSelect('fe_ambiente', $fe_ambiente, 'Ambiente', ['PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control']) }}
@@ -63,7 +61,6 @@
 								if( isset($parametros['enviar_email_clientes'] ) )
 								{
 									$enviar_email_clientes = $parametros['enviar_email_clientes'];
-								}else{
 								}
 							?>
 							{{ Form::bsSelect('enviar_email_clientes', $enviar_email_clientes, 'Enviar facturas por email al cliente', ['false' => 'No', 'true' => 'Si'], ['class'=>'form-control']) }}

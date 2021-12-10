@@ -343,13 +343,13 @@ class PagoCxpController extends TransaccionController
 
         $documentos_abonados = CxpAbono::get_documentos_abonados( $pago );
 
-        foreach ($documentos_abonados as $linea)
+        foreach ($documentos_abonados as $registro_abono)
         {
             // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
-            $documento_cxp_pendiente = CxpMovimiento::where('core_tipo_transaccion_id', $linea->doc_cxp_transacc_id)
-                                                        ->where('core_tipo_doc_app_id', $linea->doc_cxp_tipo_doc_id)
-                                                        ->where('consecutivo', $linea->doc_cxp_consecutivo)
-                                                        ->where('core_tercero_id', $linea->core_tercero_id)
+            $documento_cxp_pendiente = CxpMovimiento::where('core_tipo_transaccion_id', $registro_abono->doc_cxp_transacc_id)
+                                                        ->where('core_tipo_doc_app_id', $registro_abono->doc_cxp_tipo_doc_id)
+                                                        ->where('consecutivo', $registro_abono->doc_cxp_consecutivo)
+                                                        ->where('core_tercero_id', $registro_abono->core_tercero_id)
                                                         ->get()
                                                         ->first();
 
@@ -357,20 +357,37 @@ class PagoCxpController extends TransaccionController
             {
                 // Se halla el total de todos los pagos que halla tenido (incluido el abono realizado por este pago)
                 // Ahi que diferenciar por el tercero
-                $valor_abonos_aplicados = CxpAbono::where('doc_cxp_transacc_id',$linea->doc_cxp_transacc_id)
-                                                ->where('doc_cxp_tipo_doc_id',$linea->doc_cxp_tipo_doc_id)
-                                                ->where('doc_cxp_consecutivo',$linea->doc_cxp_consecutivo)
-                                                ->where('referencia_tercero_id',$linea->referencia_tercero_id)
+
+
+                /*
+
+                    No todos los movimientos tienen lleno este campo: referencia_tercero_id
+
+                */
+                $array_wheres_abono_cxp = [
+                    ['doc_cxp_transacc_id', '=', $registro_abono->doc_cxp_transacc_id],
+                    ['doc_cxp_tipo_doc_id' , '=',  $registro_abono->doc_cxp_tipo_doc_id],
+                    ['doc_cxp_consecutivo' , '=',  $registro_abono->doc_cxp_consecutivo]
+                ];
+
+                if ( $registro_abono->modelo_referencia_tercero_index == '' ) 
+                {
+                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['core_tercero_id' => $registro_abono->core_tercero_id ]);
+                }else{
+                    $array_wheres_abono_cxp = array_merge($array_wheres_abono_cxp, ['referencia_tercero_id' => $registro_abono->referencia_tercero_id ]);
+                }
+
+                $valor_abonos_aplicados = CxpAbono::where( $array_wheres_abono_cxp )
                                                 ->sum('abono');
 
-                $nuevo_saldo_pendiente = $documento_cxp_pendiente->valor_documento - $valor_abonos_aplicados + $linea->abono;
+                $nuevo_saldo_pendiente = $documento_cxp_pendiente->valor_documento - $valor_abonos_aplicados + $registro_abono->abono;
 
-                $nuevo_valor_pagado = $valor_abonos_aplicados - $linea->abono; // el valor_abonos_aplicados es como mínimo el valor de $linea->abono
+                $nuevo_valor_pagado = $valor_abonos_aplicados - $registro_abono->abono; // el valor_abonos_aplicados es como mínimo el valor de $registro_abono->abono
 
             }else{
                 
-                $nuevo_saldo_pendiente = $documento_cxp_pendiente->saldo_pendiente + $linea->abono;
-                $nuevo_valor_pagado = $documento_cxp_pendiente->valor_pagado - $linea->abono;
+                $nuevo_saldo_pendiente = $documento_cxp_pendiente->saldo_pendiente + $registro_abono->abono;
+                $nuevo_valor_pagado = $documento_cxp_pendiente->valor_pagado - $registro_abono->abono;
             }
 
             $documento_cxp_pendiente->valor_pagado = $nuevo_valor_pagado;
@@ -379,7 +396,7 @@ class PagoCxpController extends TransaccionController
             $documento_cxp_pendiente->save();
 
             // Se elimina el abono
-            $linea->delete();
+            $registro_abono->delete();
         }
 
         // Borrar movimiento de tesorería del pago y su contabilidad. Además actualizar estado del encabezado del documento de pago.
