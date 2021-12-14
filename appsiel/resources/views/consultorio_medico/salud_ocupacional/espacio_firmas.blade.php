@@ -3,24 +3,28 @@
 	<tbody>
 		<tr style="text-align: center;">
 			<td>
-				
 				<?php
 					$firma = "_________________________________________________";
+					$nombre_y_cc = '';
 					if ( !is_null($firma_autorizada) ) 
 					{
 						if ( $firma_autorizada->imagen != "") 
 						{
 							$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada->imagen;	
 							$firma = '<img src="'.$url_firma.'" width="250px" height="70px" style="margin-bottom: -20px;"/>';
+							
+							$nombre_y_cc = $firma_autorizada->tercero->descripcion . ' - CC: ' . number_format( $firma_autorizada->tercero->numero_identificacion, 0, ',', '.');
 						}						
 					}
 				?>
 				{!! $firma !!} <br>
-				Firma del médico de Salud Ocupacional
+				Firma del Médico
 				<br>
-				Registro Médico No. {{ $consulta->profesional_salud->numero_carnet_licencia }}
+				{{ $nombre_y_cc }}
 				<br>
-				Licencia de salud Ocupacional No. {{ $consulta->profesional_salud->licencia_salud_ocupacional }}
+				RM {{ $consulta->profesional_salud->numero_carnet_licencia }}
+				-
+				LIC {{ $consulta->profesional_salud->licencia_salud_ocupacional }}
 			</td>
 			<td>
 				__________________________________ 
