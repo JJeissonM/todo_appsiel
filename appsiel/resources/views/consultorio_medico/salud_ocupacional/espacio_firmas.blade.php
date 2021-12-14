@@ -3,8 +3,19 @@
 	<tbody>
 		<tr style="text-align: center;">
 			<td>
-				_________________________________________________
-				<br>
+				
+				<?php
+					$firma = "_________________________________________________";
+					if ( !is_null($firma_autorizada) ) 
+					{
+						if ( $firma_autorizada->imagen != "") 
+						{
+							$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada->imagen;	
+							$firma = '<img src="'.$url_firma.'" width="250px" height="70px" style="margin-bottom: -20px;"/>';
+						}						
+					}
+				?>
+				{!! $firma !!} <br>
 				Firma del médico de Salud Ocupacional
 				<br>
 				Registro Médico No. {{ $consulta->profesional_salud->numero_carnet_licencia }}

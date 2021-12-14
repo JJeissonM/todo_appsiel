@@ -740,7 +740,7 @@ class ContabReportesController extends Controller
         }
 
         $obj_repor_serv = new ReportsServices();
-        $totale_clases = [ 0, 0, 0, 0, 0, 0 ];
+        $totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
         $filas = [];
         foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
         {
@@ -753,7 +753,7 @@ class ContabReportesController extends Controller
                 continue;
             }
 
-            $totale_clases[$clase_cuenta_id] = $valor_clase->valor;
+            $totales_clases[$clase_cuenta_id] = $valor_clase->valor;
 
             $filas[] = (object)[
                                 'datos_clase_cuenta' => $valor_clase,
@@ -840,11 +840,11 @@ class ContabReportesController extends Controller
         switch ( $reporte_id )
         {
             case 'balance_general':
-                $gran_total = abs( $totale_clases[ 1 ] ) - abs( $totale_clases[ 2 ] ) - abs( $totale_clases[ 3 ] );
+                $gran_total = abs( $totales_clases[ 1 ] ) - abs( $totales_clases[ 2 ] ) - abs( $totales_clases[ 3 ] );
                 break;
             
             default:
-            $gran_total = abs( $totale_clases[ 4 ] ) - abs( $totale_clases[ 5 ] ) - abs( $totale_clases[ 6 ] );
+            $gran_total = abs( $totales_clases[ 4 ] ) - abs( $totales_clases[ 5 ] ) - abs( $totales_clases[ 6 ] );
                 break;
         }        
 

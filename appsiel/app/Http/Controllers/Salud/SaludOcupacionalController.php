@@ -27,9 +27,7 @@ use App\Salud\ExamenTieneOrganos;
 use App\Salud\ExamenMedico;
 use App\Salud\ConsultaMedica;
 use App\Salud\Paciente;
-use App\Salud\ProfesionalSalud;
 use App\Salud\FormulaOptica;
-use App\Salud\TipoLente;
 
 class SaludOcupacionalController extends ModeloController
 {
@@ -53,7 +51,13 @@ class SaludOcupacionalController extends ModeloController
         {
             if ( $modelo_id == 9999 )
             {
-                $vistas_secciones .= '<br><br><br>' . View::make( 'consultorio_medico.salud_ocupacional.espacio_firmas', compact( 'consulta' ) )->render();
+                $firma_autorizada = null;
+                $profesional_salud = $consulta->profesional_salud;
+                if ( $profesional_salud != null ) {
+                    $firma_autorizada = FirmaAutorizada::get_firma_tercero( $profesional_salud->core_tercero_id );
+                };
+
+                $vistas_secciones .= '<br><br><br>' . View::make( 'consultorio_medico.salud_ocupacional.espacio_firmas', compact( 'consulta', 'firma_autorizada' ) )->render();
                 continue;
             }
             

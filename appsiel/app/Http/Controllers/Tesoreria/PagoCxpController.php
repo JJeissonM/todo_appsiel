@@ -361,7 +361,9 @@ class PagoCxpController extends TransaccionController
 
                 /*
 
-                    No todos los movimientos tienen lleno este campo: referencia_tercero_id
+                    ERROR. CUANDO SE PAGAN VARIOS REGISTROS DEL MISMO DOCUMENTO SOLO REVERSA UN REGISTRO DE CXC
+                    EJEMPLO, CONTABILIZACIO DE LA NOMINA: UNA EPS TIENE VARIOS REGISTROS DE CXP CON EL MISMO DOC. 
+                    SI HAGO EL PAGO DE CXC DE TODOS LOS REGISTRO Y LUEGO ANULO ESE PAGO, SOLO ME "REVIVE" UN REGISTRO DE CXP
 
                 */
                 $array_wheres_abono_cxp = [

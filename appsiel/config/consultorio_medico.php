@@ -81,7 +81,7 @@ return [
                                 "11":{ 
                                         "nombre_seccion":"Historia Médica Ocupacional",
                                         "url_vista_show":"consultorio_medico.consultas.historia_medica_ocupacional",
-                                        "activo":0,
+                                        "activo":1,
                                         "orden":1
                                     }, 
                                 "12":{ 
