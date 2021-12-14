@@ -134,7 +134,7 @@ class PacienteController extends Controller
     public function update(Request $request, $id)
     {
         $datos = $request->all();
-
+        
         $modelo = Modelo::find($request->url_id_modelo);
 
         // Se obtinene el registro a modificar del modelo
@@ -178,6 +178,10 @@ class PacienteController extends Controller
         $registro->fill( $request->all() );
         $registro->save();
 
+        // Actualizar datos del Tercero
+        $registro->tercero->fill( $request->all() );
+        $registro->tercero->save();
+
         $archivos_enviados = $request->file();
         foreach ($archivos_enviados as $key => $value) 
         {
@@ -192,7 +196,7 @@ class PacienteController extends Controller
 
             $extension =  $archivo->clientExtension();
 
-            $nuevo_nombre = uniqid().'.'.$extension;
+            $nuevo_nombre = str_slug($archivo->getClientOriginalName()) . '-' . uniqid() . '.' . $extension;
 
             Storage::put( 'fotos_terceros/' . $nuevo_nombre, file_get_contents( $archivo->getRealPath() ) );
 
@@ -200,11 +204,6 @@ class PacienteController extends Controller
             $registro2->tercero->$key = $nuevo_nombre;
             $registro2->tercero->save();
         }
-
-
-        // Actualizar datos del Tercero
-        $registro->tercero->fill( $request->all() );
-        $registro->tercero->save();
 
         // Llenar campos tipo EAV
         $obj_eav = new ModeloEavValor();
