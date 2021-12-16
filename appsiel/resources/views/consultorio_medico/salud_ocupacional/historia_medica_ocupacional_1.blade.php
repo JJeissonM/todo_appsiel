@@ -15,6 +15,7 @@
 		</td>
 	</tr>
 </table>
+<br>
 <h3 style="width: 100%; text-align: center; margin: -10px;">
 	HISTORIA MÉDICA OCUPACIONAL
 </h3>

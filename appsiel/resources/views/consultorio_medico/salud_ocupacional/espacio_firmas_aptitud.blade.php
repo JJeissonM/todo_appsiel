@@ -12,7 +12,7 @@
 						if ( $firma_autorizada->imagen != "") 
 						{
 							$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada->imagen;	
-							$firma = '<img src="'.$url_firma.'" width="130px" height="35px" style="margin-bottom: -60px;"/>';
+							$firma = '<img src="'.$url_firma.'" width="135px" height="35px" style="margin-bottom: -60px;"/>';
 							
 							$nombre_y_cc = $firma_autorizada->tercero->descripcion; // . ' - CC: ' . number_format( $firma_autorizada->tercero->numero_identificacion, 0, ',', '.');
 							

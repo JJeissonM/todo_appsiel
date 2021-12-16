@@ -170,7 +170,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
                 }
 
                 $dias_totales_liquidacion = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / $dias_base_legales;
-
+                
                 $valor_base_diaria =  $this->get_valor_base_diaria( $empleado, $fecha_inicial, $fecha_final_promedios, $parametros_prestacion->nom_agrupacion_id, $parametros_prestacion->base_liquidacion );
 
                 $valor_consolidado_mes = $dias_totales_liquidacion * $valor_base_diaria;
@@ -405,5 +405,35 @@ class ConsolidadoPrestacionesController extends TransaccionController
         ConsolidadoPrestacionesSociales::whereBetween('fecha_fin_mes', [ $fecha_inicial, $fecha_final_promedios ] )->delete();
 
         return '<h3><b>Registros retirados correctamente.</b></h3>';
+    }
+
+    public function show( $contrato_id )
+    {
+        $aplicacion = Aplicacion::find( Input::get('id') );
+        $contrato = NomContrato::find( $contrato_id );
+        $miga_pan = [
+                        [ 
+                        'url' => $aplicacion->app.'?id='.$aplicacion->id,
+                        'etiqueta' => $aplicacion->descripcion
+                        ],
+                        [ 
+                        'url' => 'web?id='.$aplicacion->id.'&id_modelo=266',
+                        'etiqueta' => 'Consolidados de prestaciones sociales'
+                        ],
+                        [ 
+                        'url' => 'NO',
+                        'etiqueta' => 'Empleado: ' . $contrato->tercero->descripcion
+                        ]
+                        ];
+        
+        $prestaciones_consolidadas = $contrato->prestaciones_consolidadas;
+        $data = [
+                    'vacaciones' => $prestaciones_consolidadas->where('tipo_prestacion', 'vacaciones')->sortBy('fecha_fin_mes')->all(),
+                    'prima_legal' => $prestaciones_consolidadas->where('tipo_prestacion', 'prima_legal')->sortBy('fecha_fin_mes')->all(),
+                    'cesantias' => $prestaciones_consolidadas->where('tipo_prestacion', 'cesantias')->sortBy('fecha_fin_mes')->all(),
+                    'intereses_cesantias' => $prestaciones_consolidadas->where('tipo_prestacion', 'intereses_cesantias')->sortBy('fecha_fin_mes')->all()
+                ];
+
+        return View::make('nomina.prestaciones_sociales.show_prestaciones_consolidadas_empleado', compact('miga_pan','contrato','data'))->render();
     }
 }

@@ -11,14 +11,14 @@ class ConsolidadoPrestacionesSociales extends Model
 	protected $table = 'nom_consolidados_prestaciones_sociales';
 
 	// tipo_prestacion = { vacaciones | prima_legal | cesantias | intereses_cesantias }
+
+	// MISMO ENCABEZADO DE CONTRATOS
 	protected $fillable = [ 'nom_contrato_id', 'tipo_prestacion', 'fecha_fin_mes', 'valor_acumulado_mes_anterior', 'valor_pagado_mes', 'valor_consolidado_mes', 'dias_consolidado_mes', 'dias_totales_laborados', 'valor_acumulado', 'dias_acumulados', 'observacion', 'estado'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empleado', 'Prestación',  'Mes', 'Acumulado mes anterior', 'Vlr. pagado mes', 'Vlr. consolidado mes', 'Días consol. mes', 'Vlr. acumulado'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Grupo Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado'];
 
 	//public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
-	public $urls_acciones = '{"show":"no"}';
-
-	//public $archivo_js = 'assets/js/nomina/novedades_tnl.js';
+	public $urls_acciones = '{"show":"nom_consolidado_empleado/id_fila"}';
 
 	public function contrato()
 	{
@@ -31,18 +31,15 @@ class ConsolidadoPrestacionesSociales extends Model
 		{
 			case 'vacaciones':
 				return 'Vacaciones'; 
-				break;
-			
+				break;			
 			
 			case 'prima_legal':
 				return 'Prima de servicios'; 
-				break;
-			
+				break;			
 			
 			case 'cesantias':
 				return 'Cesantías'; 
-				break;
-			
+				break;			
 			
 			case 'intereses_cesantias':
 				return 'Intereses de cesantías'; 
@@ -56,44 +53,30 @@ class ConsolidadoPrestacionesSociales extends Model
 
 	public static function consultar_registros($nro_registros, $search)
 	{
-		$collection =  ConsolidadoPrestacionesSociales::leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_consolidados_prestaciones_sociales.nom_contrato_id')
-			->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-			->select(
-				'core_terceros.descripcion AS campo1',
-				'nom_consolidados_prestaciones_sociales.tipo_prestacion AS campo2',
-				'nom_consolidados_prestaciones_sociales.fecha_fin_mes AS campo3',
-				'nom_consolidados_prestaciones_sociales.valor_acumulado_mes_anterior AS campo4',
-				'nom_consolidados_prestaciones_sociales.valor_pagado_mes AS campo5',
-				'nom_consolidados_prestaciones_sociales.valor_consolidado_mes AS campo6',
-				'nom_consolidados_prestaciones_sociales.dias_consolidado_mes AS campo7',
-				'nom_consolidados_prestaciones_sociales.valor_acumulado AS campo8',
-				'nom_consolidados_prestaciones_sociales.id AS campo9'
-			)
-			->where("core_terceros.descripcion", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.tipo_prestacion", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.fecha_fin_mes", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.valor_acumulado_mes_anterior", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.valor_pagado_mes", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.valor_consolidado_mes", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.dias_consolidado_mes", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.dias_acumulados", "LIKE", "%$search%")
-			->orWhere("nom_consolidados_prestaciones_sociales.valor_acumulado", "LIKE", "%$search%")
-			->orderBy('nom_consolidados_prestaciones_sociales.created_at', 'DESC')
-			->paginate($nro_registros);
-
-    	if (count($collection) > 0)
-        {
-            foreach ($collection as $c)
-            {
-                $c->campo4 = '$' . number_format( $c->campo4, 0, ',', '.' );
-                $c->campo5 = '$' . number_format( $c->campo5, 0, ',', '.' );
-                $c->campo6 = '$' . number_format( $c->campo6, 0, ',', '.' );
-                $c->campo7 = number_format( $c->campo7, 2, ',', '.' );
-                $c->campo8 = '$' . number_format( $c->campo8, 0, ',', '.' );
-            }
-        }
-        
-        return $collection;
+		return NomContrato::leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
+            ->leftJoin('nom_cargos', 'nom_cargos.id', '=', 'nom_contratos.cargo_id')
+            ->leftJoin('nom_grupos_empleados', 'nom_grupos_empleados.id', '=', 'nom_contratos.grupo_empleado_id')
+            ->select(
+                'core_terceros.numero_identificacion AS campo1',
+                'core_terceros.descripcion AS campo2',
+                'nom_grupos_empleados.descripcion AS campo3',
+                'nom_cargos.descripcion AS campo4',
+                'nom_contratos.sueldo AS campo5',
+                'nom_contratos.fecha_ingreso AS campo6',
+                'nom_contratos.contrato_hasta AS campo7',
+                'nom_contratos.estado AS campo8',
+                'nom_contratos.id AS campo9'
+            )
+            ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_grupos_empleados.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_contratos.sueldo", "LIKE", "%$search%")
+            ->orWhere("nom_contratos.fecha_ingreso", "LIKE", "%$search%")
+            ->orWhere("nom_contratos.contrato_hasta", "LIKE", "%$search%")
+            ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
+            ->orderBy('nom_contratos.created_at', 'DESC')
+            ->paginate($nro_registros);
 	}
 
 	public static function sqlString($search)

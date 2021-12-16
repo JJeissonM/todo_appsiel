@@ -345,6 +345,11 @@ class Vacaciones implements Estrategia
         $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $empleado->fecha_ingreso, $documento_nomina->fecha );
 
         $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
+        
+        // 22 = Profesor de establecimiento particular
+        if ( $empleado->tipo_cotizante == 22) {
+            $dias_totales_laborados += $empleado->dias_laborados_adicionales_docentes();
+        }
 
         $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
         

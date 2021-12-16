@@ -25,26 +25,6 @@ class PrestacionSocial
     */
     public static function get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final )
     {
-        /*$registros = NomDocRegistro::leftJoin('nom_conceptos','nom_conceptos.id','=','nom_doc_registros.nom_concepto_id')
-                                            ->whereBetween( 'nom_doc_registros.fecha', [ $fecha_inicial, $fecha_final ] )
-                                            ->where( 'nom_conceptos.forma_parte_basico', 1 )
-                                            ->where( 'nom_doc_registros.nom_contrato_id', $empleado->id )
-                                            ->get();
-        $cantidad_horas_laboradas = 0;
-        $concepto_vacaciones_id = self::get_concepto_vacaciones_id( $empleado );
-        foreach ( $registros as $registro )
-        {
-            // Se salta el concepto de vacaciones en liquidación de contratos
-        	if ( ($registro->nom_concepto_id == $concepto_vacaciones_id) && ( $registro->encabezado_documento->tipo_liquidacion == 'terminacion_contrato' ) )
-        	{
-        		continue;
-        	}
-
-        	$cantidad_horas_laboradas += $registro->cantidad_horas;
-        }
-
-        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );*/
-
         $dias_calendario = self::calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final );
 
         $registros = NomDocRegistro::whereBetween( 'nom_doc_registros.fecha', [ $fecha_inicial, $fecha_final ] )
@@ -73,8 +53,15 @@ class PrestacionSocial
             }            
         }
 
-        return ( $dias_calendario - $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
+        $array_fecha_final = explode('-', $fecha_final);
+        $dias_adicionales = 0;
+        if ( $array_fecha_final[1] == '02') {
+            $dias_adicionales = 2; // Se completan los treinta días
+        }
 
+        $dias_totales_laborados = ( $dias_calendario - $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') ) + $dias_adicionales;
+
+        return $dias_totales_laborados;
     }
 
     public static function calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $fecha_final )

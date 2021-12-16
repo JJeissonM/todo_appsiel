@@ -45,6 +45,8 @@ Route::get('nom_pdf_prestaciones_liquidadas/{registro_id}', 'Nomina\Prestaciones
 // 		CONSOLIDADO DE PRESTACIONES
 Route::post('nom_consolidar_prestaciones', 'Nomina\ConsolidadoPrestacionesController@consolidar_prestaciones');
 Route::get('nom_retirar_consolidado_prestaciones/{fecha_final_promedios}', 'Nomina\ConsolidadoPrestacionesController@retirar_consolidado_prestaciones');
+Route::get('nom_consolidado_empleado/{contrato_id}', 'Nomina\ConsolidadoPrestacionesController@show');
+
 
 // RETEFUENTE
 Route::post('nom_liquidar_retefuente', 'Nomina\RetefuenteController@liquidacion');

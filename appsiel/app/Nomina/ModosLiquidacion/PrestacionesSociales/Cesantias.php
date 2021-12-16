@@ -214,10 +214,20 @@ class Cesantias implements Estrategia
         $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
 
         $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $this->fecha_final_liquidacion );
+        
+        // 22 = Profesor de establecimiento particular
+        if ( $empleado->tipo_cotizante == 22) {
+            $dias_totales_laborados += $empleado->dias_laborados_adicionales_docentes();
+        }
 
         $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $fecha_inicial, $this->fecha_final_liquidacion );
 
         $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
+        
+        // 22 = Profesor de establecimiento particular
+        if ( $empleado->tipo_cotizante == 22) {
+            $dias_totales_no_laborados += $empleado->dias_laborados_adicionales_docentes();
+        }
 
         $dias_totales_liquidacion = $dias_totales_laborados * $parametros_prestacion->dias_a_liquidar / self::DIAS_BASE_LEGALES;
 

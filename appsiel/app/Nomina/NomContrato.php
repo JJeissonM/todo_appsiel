@@ -76,6 +76,11 @@ class NomContrato extends Model
         return $this->hasMany(NomDocRegistro::class, 'core_tercero_id', 'core_tercero_id');
     }
 
+    public function prestaciones_consolidadas()
+    {
+        return $this->hasMany(ConsolidadoPrestacionesSociales::class, 'nom_contrato_id');
+    }
+
     public function salario_x_hora()
     {
         return $this->sueldo / (int)config('nomina.horas_laborales');
@@ -132,6 +137,17 @@ class NomContrato extends Model
         }
 
         return $valor_ibc;
+    }
+
+    public function dias_laborados_adicionales_docentes()
+    {
+        // Verificar si tiene movimiento en 10 meses del año
+        if( NomDocRegistro::where('nom_contrato_id',$this->id)->groupBy('fecha')->get()->count() > 10 )
+        {
+            return 60;
+        }
+
+        return 0;
     }
 
     public function get_registros_documentos_nomina_entre_fechas($fecha_inicial, $fecha_final)
