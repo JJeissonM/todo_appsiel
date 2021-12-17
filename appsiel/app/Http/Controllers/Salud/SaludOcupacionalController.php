@@ -96,7 +96,8 @@ class SaludOcupacionalController extends ModeloController
         foreach ( $ids_modelos_relacionados as $key => $modelo_id )
         {
             if ( $modelo_id == 9999 )
-            {$firma_autorizada = null;
+            {
+                $firma_autorizada = null;
                 $profesional_salud = $consulta->profesional_salud;
                 if ( $profesional_salud != null ) {
                     $firma_autorizada = FirmaAutorizada::get_firma_tercero( $profesional_salud->core_tercero_id );

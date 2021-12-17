@@ -15,7 +15,6 @@ use Input;
 use Form;
 use NumerosEnLetras;
 
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 

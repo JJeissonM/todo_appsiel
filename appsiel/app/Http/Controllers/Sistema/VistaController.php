@@ -723,7 +723,7 @@ class VistaController extends Controller
 
     // El campo recibido ya tiene asignado el valor de la opcion en la key value
     public static function get_descripcion_value_campo_tipo_select( array $campo )
-    {   
+    {
         $valor = 'Valor no encontrado.';
 
         if( $campo['name'] == 'nom_contrato_id' )
@@ -757,8 +757,16 @@ class VistaController extends Controller
 
                 $model = substr($texto_opciones,6,strlen($texto_opciones)-1);
 
-                $registro = app($model)->where('id', $campo['value'])->get();
-
+                if ( $campo['name'] == 'core_campo_id-ID')
+                {
+                    if (method_exists(app($model), 'get_valor_to_show')) {
+                        $valor = app($model)->get_valor_to_show($campo);
+                    }else{
+                        $registro = app($model)->where('id', $campo['value'])->get();
+                    }
+                }else{
+                    $registro = app($model)->where('id', $campo['value'])->get();
+                }
                 break;
 
             case 'ayuda':

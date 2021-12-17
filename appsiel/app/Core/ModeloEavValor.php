@@ -213,7 +213,14 @@ class ModeloEavValor extends Model
 
         foreach ( $campos as $linea ) 
         {
-            $datos[] = (object)[ 'descripcion' => $linea->descripcion, 'valor' => $this->get_valor_desde_valores_entidades( $valores_entidades, $linea->id ) ];
+            $el_valor = $this->get_valor_desde_valores_entidades( $valores_entidades, $linea->id );
+            
+            if ($linea->id == 1410) {
+                $linea->value = $this->get_valor_desde_valores_entidades( $valores_entidades, $linea->id );
+                $el_valor = \App\Salud\RecomendacionLaboral::get_valor_to_show( $linea->toArray() );
+            }
+
+            $datos[] = (object)[ 'descripcion' => $linea->descripcion, 'valor' => $el_valor ];
         }
 
         return $datos;

@@ -261,9 +261,9 @@ class ModeloEavController extends ModeloController
             {
                 $salida .= '<tr>';
             }
-            
-            $valor = ModeloEavController::get_valor_desde_valores_entidades( $valores_entidades, $linea->id );
 
+            $valor = ModeloEavController::get_valor_desde_valores_entidades( $valores_entidades, $linea->id );
+            
             $salida .= '<td>'.VistaController::mostrar_campo( $linea->id, $valor, 'show' ).'</td>';
 
             $i++;
