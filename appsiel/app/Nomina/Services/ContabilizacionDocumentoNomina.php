@@ -405,6 +405,24 @@ class ContabilizacionDocumentoNomina
                 CxpMovimiento::create( $datos );
             }
 
+            // Anticipos de CxP
+	        if ( $movimiento->tipo_transaccion == 'anticipo_cxp' )
+	        {
+	            $datos['core_tipo_transaccion_id'] = $movimiento->core_tipo_transaccion_id;
+            	$datos['core_tipo_doc_app_id'] = $movimiento->core_tipo_doc_app_id;
+            	$datos['consecutivo'] = $movimiento->consecutivo;
+            	$datos['core_empresa_id'] = $movimiento->core_empresa_id;
+            	$datos['core_tercero_id'] = $movimiento->tercero->id;
+            	$datos['fecha'] = $movimiento->fecha;
+            	$datos['fecha_vencimiento'] = $movimiento->fecha;
+            	$datos['valor_documento'] = $movimiento->valor_debito * -1;
+                $datos['valor_pagado'] = 0;
+                $datos['saldo_pendiente'] = $movimiento->valor_debito * -1;
+            	$datos['creado_por'] = $movimiento->creado_por;
+                $datos['estado'] = 'Pendiente';
+	            CxpMovimiento::create( $datos );
+	        }
+
             // Anticipos de CxC
 	        if ( $movimiento->tipo_transaccion == 'anticipo_cxc' )
 	        {

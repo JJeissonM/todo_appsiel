@@ -161,6 +161,9 @@
             		</tr>
             	</table>
 			</div>
+			<div>
+				@include('tesoreria.incluir.medios_recaudos')
+			</div>
 
 			<hr>
 			<h4>Parámetros</h4>
