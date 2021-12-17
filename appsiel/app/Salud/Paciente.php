@@ -14,7 +14,7 @@ class Paciente extends Model
 
     protected $fillable = ['core_tercero_id', 'codigo_historia_clinica', 'fecha_nacimiento', 'genero', 'ocupacion', 'estado_civil', 'grupo_sanguineo', 'remitido_por', 'nivel_academico'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Codigo historia clínica', 'Nombre completo', 'Doc. Identidad', 'Fecha nacimiento', 'Género', 'Grupo Sanguineo'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Codigo historia clínica', 'Nombre completo', 'Doc. Identidad', 'Fecha nacimiento', 'Género'];
 
     //public $vistas = '{"index":"consultorio_medico.pacientes_index"}';
 
@@ -48,24 +48,36 @@ class Paciente extends Model
     {
         $select_raw = "TRIM(CONCAT(core_terceros.nombre1,' ',core_terceros.otros_nombres,' ',core_terceros.apellido1,' ',core_terceros.apellido2)) AS campo2";
 
-        return Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
+        $collection = Paciente::leftJoin('core_terceros', 'core_terceros.id', '=', 'salud_pacientes.core_tercero_id')
             ->select(
                 'salud_pacientes.codigo_historia_clinica as campo1',
                 DB::raw($select_raw),
                 'core_terceros.numero_identificacion as campo3',
                 'salud_pacientes.fecha_nacimiento as campo4',
                 'salud_pacientes.genero as campo5',
-                'salud_pacientes.grupo_sanguineo as campo6',
-                'salud_pacientes.id as campo7'
+                'salud_pacientes.id as campo6'
             )
             ->where("salud_pacientes.codigo_historia_clinica", "LIKE", "%$search%")
             ->orWhere(DB::raw("TRIM(CONCAT(core_terceros.nombre1,' ',core_terceros.otros_nombres,' ',core_terceros.apellido1,' ',core_terceros.apellido2))"), "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("salud_pacientes.fecha_nacimiento", "LIKE", "%$search%")
             ->orWhere("salud_pacientes.genero", "LIKE", "%$search%")
-            ->orWhere("salud_pacientes.grupo_sanguineo", "LIKE", "%$search%")
             ->orderBy('salud_pacientes.created_at', 'DESC')
             ->paginate($nro_registros);
+
+        /*if (count($collection) > 0)
+        {
+            foreach ($collection as $c)
+            {
+                $c->campo4 = '$' . number_format( $c->campo4, 0, ',', '.' );
+                $c->campo5 = '$' . number_format( $c->campo5, 0, ',', '.' );
+                $c->campo6 = '$' . number_format( $c->campo6, 0, ',', '.' );
+                $c->campo7 = number_format( $c->campo7, 2, ',', '.' );
+                $c->campo8 = '$' . number_format( $c->campo8, 0, ',', '.' );
+            }
+        }*/
+
+        return $collection;
     }
 
     public static function sqlString($search)

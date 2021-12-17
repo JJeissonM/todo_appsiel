@@ -139,5 +139,6 @@ return [
                                         "orden":0
                                     }
     						}',
-    'mostrar_datos_laborales_paciente' => '1'
+                            'mostrar_datos_laborales_paciente' => '1',
+                            'lbl_tipo_evaluacion_medica_ocupacional' => 'EXÁMEN OCUPACIONAL CON ÉNFASIS OSTEOMUSCULAR'
 ];

@@ -209,7 +209,7 @@ class RecomendacionLaboral extends Model
     {
         $arr_value = explode('-',$campo['value']);
         
-        if (!isset($arr_value[1])) {
+        if (!isset($arr_value[1])||!isset($arr_value[2])||!isset($arr_value[3])) {
             return 0;
         }
         

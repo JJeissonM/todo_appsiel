@@ -13,7 +13,7 @@
 	<img src="{{ $url_imagen }}" style="width: 115px; height: 135px; display: inline; padding: 5px;">
 </div>
 
-<table class="table table-bordered" style="width: 60%;">
+<table class="table table-bordered" style="width: 80%;">
 	<tr align="center">
 		<td><b>Cod Historia Clínica</b></td>
 		<td><b>Tipo de Evaluación Médica</b></td>
@@ -21,10 +21,11 @@
 	</tr>
 	<tr align="center">
 		<td>{{ $datos_historia_clinica->codigo }}</td>
-		<td>EXAMEN OCUPACIONAL</td>
+		<td>{{config('consultorio_medico.lbl_tipo_evaluacion_medica_ocupacional')}}</td>
 		<td> {{ $consulta->fecha }} </td>
 	</tr>
 </table>
+<br>
 <table class="table table-bordered" style="width: 80% !important;">
 	<tr>
 		<td colspan="3">
@@ -45,6 +46,9 @@
 			<b>Fecha de nacimiento: </b>{{ $datos_historia_clinica->fecha_nacimiento }} ( {{ \Carbon\Carbon::parse($datos_historia_clinica->fecha_nacimiento)->diff(\Carbon\Carbon::now())->format('%y años') }} )
 		</td>
 	</tr>
+</table>
+<br>
+<table class="table table-bordered">
 	<tr>
 		<td>
 			<b>Dirección:</b> {{ $datos_historia_clinica->direccion1 }}
@@ -78,31 +82,31 @@
 	</tr>
 </table>
 <?php 
-
 	$datos_laborales = $datos_historia_clinica->datos_laborales();
-
 	$cant_cols = 4;
 	$i = $cant_cols;
 ?>
-<table class="table table-bordered">
-	<tbody>
-		@foreach($datos_laborales as $registro_eav)
-			
-			@if($i % $cant_cols == 0)
-				<tr>
-			@endif
+@if( !empty($datos_laborales->toArray()) )
+	<table class="table table-bordered">
+		<tbody>
+			@foreach($datos_laborales as $registro_eav)
+				
+				@if($i % $cant_cols == 0)
+					<tr>
+				@endif
 
-			<td>
-				<b> {{ $registro_eav->campo->descripcion }}: </b> {{ $registro_eav->valor }}
-			</td>
+				<td>
+					<b> {{ $registro_eav->campo->descripcion }}: </b> {{ $registro_eav->valor }}
+				</td>
 
-			<?php
-				$i++;
-			?>
-			
-			@if($i % $cant_cols == 0)
-				</tr>
-			@endif
-		@endforeach
-	</tbody>
-</table>
+				<?php
+					$i++;
+				?>
+				
+				@if($i % $cant_cols == 0)
+					</tr>
+				@endif
+			@endforeach
+		</tbody>
+	</table>
+@endif

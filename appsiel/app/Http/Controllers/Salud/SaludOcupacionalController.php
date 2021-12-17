@@ -91,6 +91,10 @@ class SaludOcupacionalController extends ModeloController
 
         $datos_historia_clinica = Paciente::datos_basicos_historia_clinica( $consulta->paciente_id );
 
+        /**
+         * 286 = App\Salud\ExamenesVacunas
+         * 287 = App\Salud\Conclusiones
+         */
         $ids_modelos_relacionados = [ 286, 287, 9999  ];//];
         $vistas_secciones = '';
         foreach ( $ids_modelos_relacionados as $key => $modelo_id )
