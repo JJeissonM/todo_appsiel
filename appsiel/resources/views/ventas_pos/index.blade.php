@@ -81,7 +81,7 @@
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
-		        		$btn_acumular = '<button class="btn btn-xs btn-warning" id="btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
+		        		$btn_acumular = '<button class="btn btn-xs btn-warning btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
 
 		        		$btn_hacer_arqueo = '<a href="'.url( '/web/create' . '?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id='.$pdv->caja_default_id ) .'" class="btn btn-xs btn-info" id="btn_hacer_arqueo"> Hacer arqueo </a>';
 
@@ -205,7 +205,9 @@
 
 		$(document).ready(function(){
 
-			$("#btn_acumular").click(function(event){
+			var btn_acumular;
+
+			$(".btn_acumular").click(function(event){
 
 		        $("#myModal").modal({backdrop: "static"});
 		        $("#div_spin").show();
@@ -214,6 +216,7 @@
 		        $(".btn_edit_modal").hide();
 		        $(".btn_save_modal").hide();
 
+				btn_acumular = $(this);
 
 		        validar_existencias().then( acumular ).then( contabilizar ).then(function() {
 
@@ -236,7 +239,7 @@
 			function validar_existencias()
 			{
 				$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Validando Existencias... </h1>' );
-				pdv_id = $("#btn_acumular").attr('data-pdv_id');
+				pdv_id = btn_acumular.attr('data-pdv_id');
 		        var url_0 = "{{url('pos_factura_validar_existencias')}}" + "/" + pdv_id;
 
 				return $.get( url_0 ).then(function( data ) {
@@ -262,7 +265,7 @@
 					return 0;
 				}
 
-				pdv_id = $("#btn_acumular").attr('data-pdv_id');
+				pdv_id = btn_acumular.attr('data-pdv_id');
 		        var url_1 = "{{url('pos_factura_acumular')}}" + "/" + pdv_id;
 
 				return $.get( url_1 ).then(function( data ) {
@@ -280,7 +283,7 @@
 					return 0;
 				}
 
-				pdv_id = $("#btn_acumular").attr('data-pdv_id');
+				pdv_id = btn_acumular.attr('data-pdv_id');
 		        var url_2 = "{{url('pos_factura_contabilizar')}}" + "/" + pdv_id;
 
 				return $.get( url_2 ).then(function( data ) {
