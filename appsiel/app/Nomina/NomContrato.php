@@ -142,7 +142,7 @@ class NomContrato extends Model
     public function dias_laborados_adicionales_docentes()
     {
         // Verificar si tiene movimiento en 10 meses del año
-        if( NomDocRegistro::where('nom_contrato_id',$this->id)->groupBy('fecha')->get()->count() > 10 )
+        if( NomDocRegistro::where('nom_contrato_id',$this->id)->groupBy('fecha')->get()->count() >= 10 )
         {
             return 60;
         }

@@ -353,6 +353,11 @@ class Vacaciones implements Estrategia
 
         $dias_totales_no_laborados = $dias_calendario_laborados - $dias_totales_laborados;
         
+        // 22 = Profesor de establecimiento particular
+        if ( $empleado->tipo_cotizante == 22) {
+            $dias_totales_no_laborados += $empleado->dias_laborados_adicionales_docentes();
+        }
+        
         /*
             Falta calcular los días no laborados
         */

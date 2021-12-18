@@ -431,7 +431,7 @@ class NomDocEncabezado extends Model
     public function get_movimiento_contable()
     {
         return ContabMovimiento::where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
-                            ->where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
+                            ->where('contab_movimientos.core_tipo_doc_app_id', $this->core_tipo_doc_app_id)
                             ->where('contab_movimientos.consecutivo', $this->consecutivo)
                             ->get();
     }
