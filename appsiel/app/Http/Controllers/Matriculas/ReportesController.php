@@ -61,6 +61,26 @@ class ReportesController extends Controller
         
         return $alumnos_por_curso;
     }
+	
+    public static function nuevos_matriculados( $periodo_lectivo )
+    {
+        $alumnos_por_antiguedad = Estudiante::get_estudiantes_x_antiguedad( $periodo_lectivo );
+        // Creación de gráfico de Torta
+        $stocksTable = Lava::DataTable();
+        
+        $stocksTable->addStringColumn('ESTUDIANTES')
+                    ->addNumberColumn('CANTIDAD');
+        
+        foreach($alumnos_por_antiguedad as $registro){
+            $stocksTable->addRow([
+              $registro[0], (int)$registro[1]
+            ]);
+        }
+
+        Lava::BarChart('antiguedad', $stocksTable);
+        
+        return $alumnos_por_antiguedad;
+    }
 
     public static function grafica_estudiantes_x_genero( $periodo_lectivo )
     {

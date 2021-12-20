@@ -216,8 +216,35 @@
 					</div>
 
 				</div>
+				<div class="row">
 
-				
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$banner_reportes = 'renderizado';
+								if( isset($parametros['banner_reportes'] ) )
+								{
+									$banner_reportes = $parametros['banner_reportes'];
+								}
+							?>
+							{{ Form::bsSelect('banner_reportes', $banner_reportes, 'Tipo de Banner para reportes', ['renderizado'=>'Renderizado (View)','imagen' => 'Imágen fija'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$url_imagen_banner = '';
+								if( isset($parametros['url_imagen_banner'] ) )
+								{
+									$url_imagen_banner = $parametros['url_imagen_banner'];
+								}
+							?>
+							{{ Form::bsText('url_imagen_banner', $url_imagen_banner, 'URL de la imágen para el banner de reportes', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 
 				<br><br>
 

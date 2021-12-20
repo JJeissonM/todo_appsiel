@@ -110,19 +110,30 @@
 			<img src="{{ $url }}" />
 		</div>
 
-		<div style="position: absolute; width: 100%">
-			<img src="{{ $url }}" width="80px" style="float: left" />
-			<img src="{{ asset('assets/img/escudo_colombia.png') }}" width="80px" style="float: right" />
-		</div>
+		@if(config('matriculas.banner_reportes') == 'renderizado')
+			<div style="position: absolute; width: 100%">
+				<img src="{{ $url }}" width="80px" style="float: left" />
+				<img src="{{ asset('assets/img/escudo_colombia.png') }}" width="80px" style="float: right" />
+			</div>
+		@endif
+
+		@if(config('matriculas.banner_reportes') == 'imagen')
+			<div style="width: 100%;">
+				<img src="{{ config('matriculas.url_imagen_banner') }}" height="150px"/>
+			</div>
+		@endif
 
 		<table width="100%">
-			<tr>
-				<td colspan="6" style="text-align: center; font-size: 1.1em;">
-					<div style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px">
-						@include('core.dis_formatos.plantillas.cetificados_notas_texto_encabezado')
-					</div>
-				</td>
-			</tr>
+			@if(config('matriculas.banner_reportes') == 'renderizado')
+				<tr>
+					<td colspan="6" style="text-align: center; font-size: 1em;">
+						<div
+							style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px; padding-top: 10px">
+							@include('core.dis_formatos.plantillas.cetificados_notas_texto_encabezado')
+						</div>
+					</td>
+				</tr>
+			@endif
 			<tr>
 				<td colspan="6">
 					@include('core.dis_formatos.plantillas.cetificados_notas_texto_introduccion')

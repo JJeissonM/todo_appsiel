@@ -72,11 +72,13 @@ class MatriculaController extends ModeloController
         $alumnos_por_curso = ReportesController::grafica_estudiantes_x_curso($periodo_lectivo->id);
         $generos = ReportesController::grafica_estudiantes_x_genero($periodo_lectivo->id);
 
+        $nuevos_matriculados = ReportesController::nuevos_matriculados( $periodo_lectivo->id );
+
         $miga_pan = [
             ['url' => 'NO', 'etiqueta' => 'Matrículas']
         ];
 
-        return view('matriculas.index', compact('generos', 'alumnos_por_curso', 'miga_pan', 'periodo_lectivo'));
+        return view('matriculas.index', compact('generos', 'alumnos_por_curso', 'miga_pan', 'periodo_lectivo','nuevos_matriculados'));
     }
 
 

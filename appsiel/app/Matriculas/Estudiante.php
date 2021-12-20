@@ -204,6 +204,36 @@ class Estudiante extends Model
             ->get();
     }
 
+    public static function get_estudiantes_x_antiguedad($periodo_lectivo_id, $estado_matricula = 'Activo')
+    {
+        $array_wheres = [];
+
+        $array_wheres = array_merge($array_wheres, ['sga_matriculas.id_colegio' => Colegio::get_colegio_user()->id]);
+
+        $array_wheres = array_merge($array_wheres, ['sga_matriculas.periodo_lectivo_id' => $periodo_lectivo_id]);
+
+        $array_wheres = array_merge($array_wheres, ['sga_matriculas.estado' => $estado_matricula]);
+
+        $matriculas_nuevas = Matricula::where($array_wheres)->get();
+        
+        $antiguos = 0;
+        $nuevos = 0;
+        //dd($matriculas_nuevas);
+        foreach ($matriculas_nuevas as $matricula) {
+            $cant_matriculas_estudiante = Matricula::where('id_estudiante',$matricula->id_estudiante)->count();
+            if ($cant_matriculas_estudiante>1) {
+                $antiguos++;
+            }else{
+                $nuevos++;
+            }
+        }
+
+        return [
+                ['Antiguos', $antiguos],
+                ['Nuevos',$nuevos],
+            ];
+    }
+
     public static function get_estudiante_x_tercero_id($tercero_id)
     {
         $array_wheres = [];

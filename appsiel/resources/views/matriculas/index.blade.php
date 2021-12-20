@@ -34,8 +34,29 @@
 					//echo Lava::render('PieChart', 'MyStocks', 'stocks-chart');
 					echo Lava::render('BarChart', 'MyStocks', 'stocks-chart');
 					echo Lava::render('PieChart', 'Generos', 'stocks-chart2');
+					echo Lava::render('BarChart', 'antiguedad', 'stocks-chart3');
 					//dd($generos);
 				?>
+				<div class="row">
+					<div  class="col-sm-6">
+						<b>Cantidad de estudiantes por antiguedad</b>
+						<div id="stocks-chart3"></div>
+						<table>
+							@php $total=0 @endphp
+							@foreach($nuevos_matriculados as $fila)
+								<tr>
+									<td width="100px">{{ $fila[0] }}: </td><td>{{ $fila[1] }}</td>
+								</tr>
+								@php $total += $fila[1] @endphp
+							@endforeach
+							<tr><td width="100px">TOTAL</td><td>{{ $total }} Estudiantes</td></tr>
+						</table>
+					</div>
+					<div  class="col-sm-6">
+						&nbsp;
+					</div>
+				</div>
+				<hr>
 				<div class="row">
 					<div  class="col-sm-6">
 						<b>Cantidad de estudiantes por curso</b>
