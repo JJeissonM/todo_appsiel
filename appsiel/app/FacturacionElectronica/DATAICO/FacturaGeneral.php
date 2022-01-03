@@ -65,13 +65,6 @@ class FacturaGeneral
             break;
       }
 
-      /*
-dd($json_doc_electronico_enviado);
-      
-      $consecutivo = 105;
-      $json_doc_electronico_enviado = '{"actions": {"send_dian": true,"send_email": false,"email": "ing.adalbertoperez@gmail.com"},"invoice": {"env": "PRUEBAS","dataico_account_id": "a2532b03-a8bf-4514-a4e8-5fd7ec0499e9","number":'.$consecutivo.',"issue_date": "2021-07-31","payment_date": "2021-07-31","invoice_type_code": "FACTURA_VENTA","payment_means_type": "CREDITO","payment_means": "MUTUAL_AGREEMENT","numbering":{"resolution_number":"18760000001","prefix":"SETT","flexible":true}, "customer": {"email": "ing.adalbertoperez@gmail.com","phone": "06 50 27 98 72","party_type": "PERSONA_NATURAL","company_name": "HODGES DILLON HADASSAH","first_name":"HADASSAH","family_name":"HODGES","party_identification": "163506063","tax_level_code": "SIMPLIFICADO","regimen": "ORDINARIO","department": "CESAR","city": "VALLEDUPAR","address_line": "Apartado núm.: 297, 6199 Ullamcorper Ctra."},"items": [{"sku": "6","description": "ARROZ DIANA 3 KL","quantity": 2,"price": 7500,"taxes": [  {    "tax_rate": 0,"tax_category": "IVA"}]},{"sku": "8","description": "LANGOSTINO","quantity": 1.5,"price": 46500,"discount_rate": 7,"taxes": [  {    "tax_rate": 0,"tax_category": "IVA"}]},{"sku": "43","description": "LANGOSTA GRANDE","quantity": 3.23,"price": 40840.3361,"discount_rate": 10,"taxes": [  {    "tax_rate": 19,"tax_category": "IVA"}]}],"charges": []}}';
-*/
-      //dd(json_decode( $json_doc_electronico_enviado )->invoice);
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
 
@@ -90,8 +83,6 @@ dd($json_doc_electronico_enviado);
 
       $array_respuesta = json_decode( (string) $response->getBody(), true );
       $array_respuesta['codigo'] = $response->getStatusCode();
-
-      //dd( $array_respuesta );
 
       $obj_resultado = new ResultadoEnvio;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );

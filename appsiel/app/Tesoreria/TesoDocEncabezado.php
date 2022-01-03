@@ -67,6 +67,11 @@ class TesoDocEncabezado extends Model
         return $this->hasMany( TesoDocRegistro::class, 'teso_encabezado_id');
     }
 
+    public function lines()
+    {
+        return $this->hasMany( TesoDocRegistro::class, 'teso_encabezado_id');
+    }
+
     public function lineas_movimientos()
     {
         return TesoMovimiento::where( [ 
@@ -79,7 +84,13 @@ class TesoDocEncabezado extends Model
 
     public function actualizar_valor_total()
     {
-        $this->valor_total = TesoDocRegistro::where('teso_encabezado_id',$this->id)->sum('valor');
+        $this->valor_total = $this->lines->sum('valor');
+        $this->save();
+    } 
+
+    public function update_total()
+    {
+        $this->valor_total = $this->lines->sum('valor');
         $this->save();
     }
 
@@ -183,7 +194,6 @@ class TesoDocEncabezado extends Model
 
     public function transacciones_adicionales( $datos, $tipo_operacion, $valor )
     {
-
         // Solo los anticipos de clientes se guardan en el movimiento de cartera (CxC)
         if ( $tipo_operacion == 'Anticipo' )
         {

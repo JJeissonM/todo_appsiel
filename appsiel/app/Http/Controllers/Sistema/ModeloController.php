@@ -859,8 +859,8 @@ class ModeloController extends Controller
                 $lista_campos[$i]['value'] = null;
             }
 
-            // Para llenar los campos tipo select y checkbox
-            if ($lista_campos[$i]['tipo'] == 'select' || $lista_campos[$i]['tipo'] == 'bsCheckBox') {
+            // Para llenar los campos tipo select, checkbox y multiselect_autocomplete
+            if ($lista_campos[$i]['tipo'] == 'select' || $lista_campos[$i]['tipo'] == 'bsCheckBox' || $lista_campos[$i]['tipo'] == 'multiselect_autocomplete') {
                 $lista_campos[$i]['opciones'] = VistaController::get_opciones_campo_tipo_select($lista_campos[$i]);
             }
         }

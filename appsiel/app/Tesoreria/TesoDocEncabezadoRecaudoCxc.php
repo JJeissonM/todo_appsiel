@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 use Auth;
+use Exception;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -17,12 +18,21 @@ use App\CxC\CxcAbono;
 
 use App\Contabilidad\ContabMovimiento;
 
+use App\Core\Transactions\TraitTransactionDocument;
+use App\Core\Transactions\TransactionDocumentHeader;
+use App\Core\Transactions\TransactionDocumentLines;
+use App\Core\Transactions\TransactionMovements;
+
 class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 {
+    use TraitTransactionDocument;
+
     // Apunta a la misma tabla del modelo de Recaudos
     protected $table = 'teso_doc_encabezados'; 
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Detalle', 'Valor Documento', 'Estado'];
+
+
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -147,15 +157,15 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
-        $total_abonos_cxc = $doc_encabezado->almacenar_registros_cxc( $request );
+        $doc_encabezado->almacenar_y_contabilizar_abonos_cxc( $request );
 
         return $doc_encabezado->id;
     }
 
     /*
-        Se almacenas lineas de registro por cada tabla de medios de pago enviada
+        Se almacenas lineas de registro por cada linea de medios de pago enviada
     */
-    public function almacenar_registros_cxc( $request )
+    public function almacenar_y_contabilizar_abonos_cxc( $request )
     {
         $lineas_registros = json_decode($request->lineas_registros);
 
@@ -220,4 +230,73 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 
         return $total_abonos_cxc;
     }
+
+    public function create_transaction_document($model, $data)
+    {
+        if ( !isset($data['document_lines'])) {
+            throw new Exception('No se enviaron lineas de registros para el documento.');
+        }
+
+        // create document header
+        $obj_transaction = new TransactionDocumentHeader($model);
+        $this->validate_data_fillables($this->getFillable(),$data);
+        $obj_transaction->create($data);
+
+        // create document lines
+        $obj_document_lines = new TransactionDocumentLines('teso_documents_lines');
+        $document_lines = $this->validate_document_lines($obj_document_lines,$obj_transaction->document_header,$data['document_lines']);
+        $obj_document_lines->create($document_lines);
+
+        // create movement 
+        $obj_movements = new TransactionMovements('movimiento_tesoreria');
+        $move_rows = $this->validate_move_rows($obj_transaction->document_header);
+        $obj_movements->create($move_rows);
+
+        // update total
+        $obj_transaction->document_header->update_total();
+        
+        // Create accounting of Treasury movement
+        
+
+
+        // create accounts receivables lines
+    }
+
+    public function validate_document_lines( $obj_document_lines,$document_header,$data )
+	{
+        $data_lines_new = [];
+        $data_lines = json_decode($data,true);
+        foreach ($data_lines as $line) {
+            $line += ["teso_encabezado_id"=>$document_header->id,"estado"=>"Activo"];
+            $this->validate_data_fillables(app($obj_document_lines->model->name_space)->getFillable(),$line);
+            
+            if ($line['core_tercero_id'] == '') {
+                $line['core_tercero_id'] = $document_header->core_tercero_id;
+            }
+
+            $data_lines_new[] = $line;
+        }
+        return $data_lines_new;
+	}
+
+    public function validate_move_rows($document_header)
+	{
+        $data_lines = [];
+
+        $data1 = $document_header->toArray();
+        unset($data1['core_tercero_id']);
+        unset($data1['teso_medio_recaudo_id']);
+        unset($data1['teso_caja_id']);
+        unset($data1['teso_cuenta_bancaria_id']);
+        $document_lines = $document_header->lines;
+        foreach ($document_lines as $line) {
+            $data1['valor_movimiento'] = $line->valor;
+            if ($line->motivo->movimiento == 'salida') {
+                $data1['valor_movimiento'] = $line->valor * -1;
+            }
+
+            $data_lines[] = $data1 + $line->toArray();
+        }
+        return $data_lines;
+	}
 }

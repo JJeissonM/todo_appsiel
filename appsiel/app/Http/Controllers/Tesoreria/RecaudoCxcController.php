@@ -4,16 +4,12 @@ namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use NumerosEnLetras;
-use Form;
-use Schema;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\App;
 
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -142,7 +138,7 @@ class RecaudoCxcController extends Controller
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
-        $total_abonos_cxc = $doc_encabezado->almacenar_registros_cxc( $request );
+        $total_abonos_cxc = $doc_encabezado->almacenar_y_contabilizar_abonos_cxc( $request );
         
         $retenciones = new RegistroRetencion();
         $retenciones->almacenar_nuevos_registros( $request->lineas_registros_retenciones, $doc_encabezado, $total_abonos_cxc, 'sufrida' );
@@ -232,7 +228,7 @@ class RecaudoCxcController extends Controller
         $orientacion='portrait';
         $tam_hoja = 'Letter';//array(0,0,50,800);//'A4';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');

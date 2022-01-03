@@ -138,7 +138,7 @@ class VentaController extends TransaccionController
     public function store(Request $request)
     {
         $datos = $request->all(); // Datos originales
-        //dd( $datos );
+        
         $lineas_registros = json_decode($request->lineas_registros);
 
         $registros_medio_pago = new RegistrosMediosPago;
@@ -168,6 +168,10 @@ class VentaController extends TransaccionController
             $abono = (float)$request->abono;
             if ( $abono != 0 )
             {
+                $data = $request->all() + $doc_encabezado->toArray();
+                $transaction_name = 32; // Recaudos de CxC. Por ahora se maneja el ID
+                new TransactionDocument($transaction_name,$data);
+
                 $registro_cxc = CxcMovimiento::where( [
                                                         'core_empresa_id'=>$doc_encabezado->core_empresa_id, 
                                                         'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
@@ -385,6 +389,7 @@ class VentaController extends TransaccionController
         $encabezado_documento = app( $this->transaccion->modelo_encabezados_documentos )->find( $id );
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
+        
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
         $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );

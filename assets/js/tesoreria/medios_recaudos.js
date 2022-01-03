@@ -6,7 +6,6 @@ $("#teso_motivo_id option:first").next().attr('selected','selected');
 $("#btn_nuevo").click(function(event){
     event.preventDefault();
     if (validar_requeridos()) {
-        //$('#div_ingreso_registros_medios_recaudo').show();
         reset_form_registro();
         $("#recaudoModal").modal(
             {backdrop: "static",keyboard: 'true'}

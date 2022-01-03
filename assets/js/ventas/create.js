@@ -382,7 +382,7 @@ $(document).ready(function(){
 
     // Al modificar el precio de venta
     $('#precio_unitario').keyup(function(event){
-    	console.log( $(this).val() );
+		
 		if( validar_input_numerico( $(this) ) )
 		{
 			precio_unitario = parseFloat( $(this).val() );
@@ -505,8 +505,6 @@ $(document).ready(function(){
 
     function seleccionar_cliente(item_sugerencia)
     {
-    	console.log( item_sugerencia );
-
 		// Asignar descripción al TextInput
         $('#cliente_input').val( item_sugerencia.html() );
         $('#cliente_input').css( 'background-color','white ' );
@@ -934,7 +932,7 @@ $(document).ready(function(){
 			return false;		  			
 		}
 
-		if ( $('#url_id_transaccion').val() != 42 && $('#url_id_transaccion').val() != 44 ) // Para doscumentos distintos a pedidos y Facturas medicas
+		if ( $('#url_id_transaccion').val() != 42 ) // Para doscumentos distintos a pedidos y Facturas medicas
 		{
 			if( !comparar_total_factura_total_medios_recaudos()  )
 			{

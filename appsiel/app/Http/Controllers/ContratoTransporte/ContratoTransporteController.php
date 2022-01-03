@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\ContratoTransporte;
 
+use App\Sistema\SecuenciaCodigo;
+
 use App\Contratotransporte\Conductor;
 use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Contrato;
@@ -22,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\View\View as ViewView;
 use View;
+
 
 class ContratoTransporteController extends Controller
 {
@@ -301,11 +304,16 @@ class ContratoTransporteController extends Controller
     //calcula el numero del contrato
     function nroContrato()
     {
+        $nro = SecuenciaCodigo::get_codigo('cte_contratos');
+        // Se incrementa el consecutivo
+        SecuenciaCodigo::incrementar_consecutivo('cte_contratos');
+        /*
         $contratos = Contrato::all();
         $nro = count($contratos) + 1;
         if (strlen($nro) == 0) {
             return "0001";
         }
+        */
         if (strlen($nro) == 1) {
             return "000" . $nro;
         }
@@ -724,7 +732,8 @@ class ContratoTransporteController extends Controller
         $p->plantilla_id = $request->plantilla_id;
         $hoy = getdate();
         $nro_planilla = config('contrato_transporte.numero_territorial') . config('contrato_transporte.resolucion_habilitacion') . config('contrato_transporte.anio_creacion_empresa');
-        $nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $this->nroFUEC();
+        //$nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $this->nroFUEC();
+        $nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $c->numero_contrato;
         $p->nro = $nro_planilla;
         $result = 0;
         if ($p->save()) {

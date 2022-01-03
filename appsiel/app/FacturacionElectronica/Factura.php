@@ -13,14 +13,12 @@ use App\Tesoreria\RegistrosMediosPago;
 
 
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
-use App\FacturacionElectronica\ResultadoEnvioDocumento;
 
 use App\FacturacionElectronica\ResultadoEnvio;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class Factura extends VtasDocEncabezado
 {

@@ -2,61 +2,44 @@
 
 namespace App\Http\Controllers\Core;
 
-use App\Contabilidad\Impuesto;
-use App\Http\Controllers\Tesoreria\RecaudoController;
 use App\Tesoreria\TesoMotivo;
-use App\Ventas\ListaDctoDetalle;
-use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\VtasDocRegistro;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 // Controllers
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Sistema\EmailController;
-use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Facades
 use Auth;
 use DB;
 use Input;
-use View;
 use Form;
-use Lava;
-
-use App\Sistema\Html\BotonesAnteriorSiguiente;
+use Exception;
 
 // Modelos del core
 use App\Sistema\Aplicacion;
 use App\Sistema\TipoTransaccion;
-use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
 use Spatie\Permission\Models\Permission;
 use App\Core\Empresa;
-use App\Core\Tercero;
 use App\Core\EncabezadoDocumentoTransaccion;
 
-// Objetos 
-use App\Sistema\Html\TablaIngresoLineaRegistros;
+// Objetos
 use App\Sistema\Html\MigaPan;
 
 // Otros Modelos
-use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
-use App\Inventarios\InvBodega;
 use App\Inventarios\InvCostoPromProducto;
-use App\Inventarios\InvMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
+
+use App\Core\Transactions\TransactionDocument;
 
 class TransaccionController extends Controller
 {
@@ -65,7 +48,7 @@ class TransaccionController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
     public function set_variables_globales()
@@ -329,5 +312,21 @@ class TransaccionController extends Controller
         }
         
         return $total;
+    }
+
+    public function show($transaction_name)
+    {
+        //
+    }
+
+    public function store(Request $request)
+    {
+        if ( !isset($request->transaction_name)) {
+            throw new Exception('Campo transaction_name NO enviado.');
+        }
+        $data = $request->all();
+        //$transaction_name = ; 32// Recaudos de CxC. Por ahora se maneja el ID
+        $transaction_doc = new TransactionDocument($request->transaction_name,$data);
+        $transaction_doc->create( $data );
     }
 }

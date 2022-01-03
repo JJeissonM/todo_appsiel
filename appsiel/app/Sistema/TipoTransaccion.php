@@ -32,7 +32,12 @@ class TipoTransaccion extends Model
 
     public function modelo()
     {
-        return $this->belongsTo('App\Sistema\Modelo');
+        return $this->belongsTo('App\Sistema\Modelo','core_modelo_id');
+    }
+
+    public function model()
+    {
+        return $this->belongsTo('App\Sistema\Modelo','core_modelo_id');
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -43,7 +48,7 @@ class TipoTransaccion extends Model
                 'sys_tipos_transacciones.id AS campo1',
                 'sys_aplicaciones.descripcion AS campo2',
                 'sys_tipos_transacciones.descripcion AS campo3',
-                'sys_modelos.descripcion AS Model campo4',
+                'sys_modelos.descripcion AS campo4',
                 'sys_tipos_transacciones.modelo_encabezados_documentos AS campo5',
                 'sys_tipos_transacciones.modelo_registros_documentos AS campo6',
                 'sys_tipos_transacciones.modelo_movimientos AS campo7',

@@ -277,7 +277,23 @@
 		        });/**/
 		    });
 
+			
+			var url_raiz = "{{ url('/') }}";
+			var dias_plazo;
+
+			$.fn.actualizar_medio_recaudo = function(){
+		
+				var texto_total_recaudos = this.html().substring(1);
+				
+				if( parseFloat( texto_total_recaudos ) == 0 )
+				{
+					return false;
+				}
+
+			};
+
 		});
 	</script>
+	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
 
 @endsection

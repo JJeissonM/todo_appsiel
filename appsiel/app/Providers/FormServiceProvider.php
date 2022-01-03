@@ -28,7 +28,8 @@ class FormServiceProvider extends ServiceProvider
         Form::component('bsSelectCreate', 'components.form.select_create', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectName', 'components.form.select_name', ['name', 'value', 'lbl', 'opciones', 'attributes']);
         Form::component('bsSelectTerceros', 'components.form.select_terceros', ['name', 'value', 'lbl', 'opciones', 'attributes']);
-
+        Form::component('multiselect_autocomplete', 'components.form.multiselect_autocomplete', ['name', 'value', 'lbl', 'opciones', 'attributes']);
+        
         Form::component('bsInputListaSugerencias', 'components.form.input_lista_sugerencias', ['name', 'value', 'lbl', 'attributes']);
 
         Form::component('bsCheckBox', 'components.form.checkbox', ['name', 'value', 'lbl', 'opciones', 'attributes']);

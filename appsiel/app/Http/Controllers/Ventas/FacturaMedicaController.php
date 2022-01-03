@@ -31,9 +31,7 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
 use App\Core\Tercero;
-use App\Core\EncabezadoDocumentoTransaccion;
 
 
 use App\Inventarios\InvDocEncabezado;
@@ -56,9 +54,7 @@ use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
-use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;

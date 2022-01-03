@@ -218,6 +218,9 @@ class VistaController extends Controller
                 $opciones = VistaController::get_opciones_campo_tipo_select( $campo );
                 $control = Form::bsSelect($campo['name'], $campo['value'], $campo['descripcion'], $opciones, $campo['atributos']);
                 break;
+            case 'multiselect_autocomplete':
+                $control = Form::multiselect_autocomplete($campo['name'], $campo['opciones'], $campo['value'], array_merge( [ 'id' => $campo['name'] ], $campo['atributos'] ));
+                break;
             case 'bsSelectCreate':
                 $control = Form::bsSelectCreate($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
@@ -460,9 +463,9 @@ class VistaController extends Controller
             case 'botones_form':
                 $control = Form::bsButtonsForm($campo['value'], $campo['atributos']);
                 break;
-            case 'select':
-                $control = Form::select($campo['name'], $campo['opciones'], $campo['value'], array_merge( [ 'id' => $campo['name'],'style'=>'border: none;border-color: transparent;border-bottom: 1px solid gray;' ], $campo['atributos'] ));
-                break;
+                case 'select':
+                    $control = Form::select($campo['name'], $campo['opciones'], $campo['value'], array_merge( [ 'id' => $campo['name'],'style'=>'border: none;border-color: transparent;border-bottom: 1px solid gray;' ], $campo['atributos'] ));
+                    break;
             case 'bsSelectCreate':
                 $control = Form::bsSelectCreate($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;

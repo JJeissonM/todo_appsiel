@@ -661,6 +661,7 @@
 	@yield('scripts14')
 	@yield('scripts15')
 	@yield('odontograma')
+	@yield('multiselect')
 
 	<script src="https://www.gstatic.com/charts/loader.js"></script>
 	<script>
