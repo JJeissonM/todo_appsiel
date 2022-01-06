@@ -11,13 +11,11 @@
                 @foreach($abonos as $linea )
                     <tr>
 
-                        <?php 
-                
+                        <?php
                             $el_documento = app( App\Sistema\TipoTransaccion::find( $linea->core_tipo_transaccion_id )->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$linea->core_tipo_transaccion_id)
                             ->where('core_tipo_doc_app_id',$linea->core_tipo_doc_app_id)
                             ->where('consecutivo',$linea->consecutivo)
                             ->get()->first();
-
                         ?>
 
                         <td class="text-center"> 

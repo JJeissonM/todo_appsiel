@@ -137,10 +137,7 @@
 
 			<br/>
 
-
-
 			{!! $tabla->dibujar() !!}
-
 
 			Productos ingresados: <span id="numero_lineas"> 0 </span>
 			

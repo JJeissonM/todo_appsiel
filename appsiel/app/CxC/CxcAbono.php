@@ -2,6 +2,7 @@
 
 namespace App\CxC;
 
+use App\Sistema\TipoTransaccion;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
@@ -21,6 +22,17 @@ class CxcAbono extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento recaudo', 'Proveedor', 'Documento CxC Abonado', 'Doc. cruce', 'Valor abono'];
 
     public $urls_acciones = '{"show":"no"}';
+
+    public function account_receivable_document_header()
+    {
+        $transaction = TipoTransaccion::find($this->doc_cxc_transacc_id);
+        return app($transaction->model->name_space)->where([
+            ['core_tipo_transaccion_id','=',$this->doc_cxc_transacc_id],
+            ['core_tipo_doc_app_id','=',$this->doc_cxc_tipo_doc_id],
+            ['consecutivo','=',$this->doc_cxc_consecutivo],
+            ])
+            ->get()->first();
+    }
 
     public static function consultar_registros( $nro_registros, $search )
     {
@@ -170,7 +182,6 @@ class CxcAbono extends Model
      */
     public static function get_abonos_documento($doc_cxc_encabezado)
     {
-
         return CxcAbono::where('cxc_abonos.doc_cxc_transacc_id', $doc_cxc_encabezado->core_tipo_transaccion_id)
             ->where('cxc_abonos.doc_cxc_tipo_doc_id', $doc_cxc_encabezado->core_tipo_doc_app_id)
             ->where('cxc_abonos.doc_cxc_consecutivo', $doc_cxc_encabezado->consecutivo)

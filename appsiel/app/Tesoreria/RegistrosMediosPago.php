@@ -21,7 +21,7 @@ class RegistrosMediosPago
         return json_decode( json_encode( $lineas_registros_medios_recaudos ) );
     }
 
-
+    // campo_lineas_recaudos is type JSON
     public function get_datos_ids( $campo_lineas_recaudos )
     {
         $datos = [];

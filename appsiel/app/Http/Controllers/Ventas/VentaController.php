@@ -58,6 +58,8 @@ use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
+use App\Ventas\Services\TreasuryServices;
+
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
@@ -138,6 +140,8 @@ class VentaController extends TransaccionController
     public function store(Request $request)
     {
         $datos = $request->all(); // Datos originales
+
+        //dd($datos);
         
         $lineas_registros = json_decode($request->lineas_registros);
 
@@ -165,24 +169,15 @@ class VentaController extends TransaccionController
 
         if( isset($request->abono) && $request->forma_pago == 'credito' )
         {
+            // Create Account Receivable Payment (Recaudo de CxC)
             $abono = (float)$request->abono;
+            if ($abono > $doc_encabezado->valor_total) {
+                $abono = $doc_encabezado->valor_total;
+            }
             if ( $abono != 0 )
             {
-                $data = $request->all() + $doc_encabezado->toArray();
-                $transaction_name = 32; // Recaudos de CxC. Por ahora se maneja el ID
-                new TransactionDocument($transaction_name,$data);
-
-                $registro_cxc = CxcMovimiento::where( [
-                                                        'core_empresa_id'=>$doc_encabezado->core_empresa_id, 
-                                                        'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
-                                                        'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
-                                                        'consecutivo' => $doc_encabezado->consecutivo
-                                                    ] )
-                                                ->get()->first();
-
-                $recaudo_cxc = new TesoDocEncabezadoRecaudoCxc();
-                $request['lineas_registros'] = '[{"id_doc":"' . $registro_cxc->id . '","Cliente":"NA","Documento interno":"NA","Fecha":"NA","Fecha vencimiento":"NA","Valor Documento":"$0","Valor pagado":"$0","Saldo pendiente":"$0","abono":"' . $abono . '"},{"id_doc":"","Cliente":"","Documento interno":"$0","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
-                $recaudo_cxc->crear_documento( $request, 153 ); // 153 = Modelo: Recaudo de CxC
+                $obj_trea_serv = new TreasuryServices();
+                $obj_trea_serv->create_account_receivable_payment_from_invoice($doc_encabezado,$abono,$request['lineas_registros_medios_recaudo']);
             }            
         }
 

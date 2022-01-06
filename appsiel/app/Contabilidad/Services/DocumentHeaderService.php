@@ -13,7 +13,7 @@ class DocumentHeaderService
 {
     public function cancel_document( ContabDocEncabezado $document_header )
     {
-        // Se elimina el movimiento
+        // Se borra el movimiento
         $obj_accou_movin_serv = new AccountingMovingService();
         $obj_accou_movin_serv->delete_move( new TransactionPrimaryKeyVO( $document_header->core_empresa_id, $document_header->core_tipo_transaccion_id, $document_header->core_tipo_doc_app_id, $document_header->consecutivo ) );
 

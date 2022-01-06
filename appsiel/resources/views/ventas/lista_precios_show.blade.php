@@ -151,7 +151,8 @@
 
 		function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
         {
-        	('#fecha_activacion').focus();
+			$('#lista_sugerencias').remove();
+        	$('#fecha_activacion').focus();
         }
 
 		$(document).ready(function(){

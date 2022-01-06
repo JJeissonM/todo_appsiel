@@ -9,7 +9,6 @@ use Auth;
 use Exception;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -23,6 +22,8 @@ use App\Core\Transactions\TransactionDocumentHeader;
 use App\Core\Transactions\TransactionDocumentLines;
 use App\Core\Transactions\TransactionMovements;
 
+use App\Tesoreria\Services\AccountsReceivableServices;
+
 class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 {
     use TraitTransactionDocument;
@@ -31,8 +32,6 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
     protected $table = 'teso_doc_encabezados'; 
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Detalle', 'Valor Documento', 'Estado'];
-
-
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -237,37 +236,41 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
             throw new Exception('No se enviaron lineas de registros para el documento.');
         }
 
-        // create document header
+        // Create document header
         $obj_transaction = new TransactionDocumentHeader($model);
         $this->validate_data_fillables($this->getFillable(),$data);
+        $data['core_tipo_transaccion_id'] = config('tesoreria.recaudo_tipo_transaccion_id');
+        $data['core_tipo_doc_app_id'] = config('tesoreria.recaudo_tipo_doc_app_id');
         $obj_transaction->create($data);
 
-        // create document lines
+        // Create document lines
         $obj_document_lines = new TransactionDocumentLines('teso_documents_lines');
-        $document_lines = $this->validate_document_lines($obj_document_lines,$obj_transaction->document_header,$data['document_lines']);
+        $document_lines = $this->set_and_validate_document_lines($obj_document_lines,$obj_transaction->document_header,$data['document_lines']);
         $obj_document_lines->create($document_lines);
 
-        // create movement 
+        // Create movement 
         $obj_movements = new TransactionMovements('movimiento_tesoreria');
         $move_rows = $this->validate_move_rows($obj_transaction->document_header);
         $obj_movements->create($move_rows);
 
-        // update total
+        // Update total document header
         $obj_transaction->document_header->update_total();
         
         // Create accounting of Treasury movement
-        
+        $obj_transaction->document_header->accounting_movement();
 
-
-        // create accounts receivables lines
+        // Create Record Payment of Accounts Receivable
+        $obj_ar_serv = new AccountsReceivableServices();
+        $obj_ar_serv->create_record_payment_accounts_receivable($obj_transaction->document_header,$data['account_receivable_lines']);
     }
 
-    public function validate_document_lines( $obj_document_lines,$document_header,$data )
+    public function set_and_validate_document_lines( $obj_document_lines,$document_header,$data )
 	{
         $data_lines_new = [];
         $data_lines = json_decode($data,true);
         foreach ($data_lines as $line) {
-            $line += ["teso_encabezado_id"=>$document_header->id,"estado"=>"Activo"];
+            $line['teso_encabezado_id'] = $document_header->id;
+            $line['estado'] = 'Activo';
             $this->validate_data_fillables(app($obj_document_lines->model->name_space)->getFillable(),$line);
             
             if ($line['core_tercero_id'] == '') {

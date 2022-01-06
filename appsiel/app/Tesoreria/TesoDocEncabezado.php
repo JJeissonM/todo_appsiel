@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use DB;
 use Auth;
 
+use App\Tesoreria\Services\AccountingServices;
+
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMedioRecaudo;
@@ -82,6 +84,13 @@ class TesoDocEncabezado extends Model
                                 ->get();
     } 
 
+    public function accounting_movement()
+    {
+        $obj_accou_serv = new AccountingServices();
+        $obj_accou_serv->create_accounting_movement( $this->lineas_movimientos() );
+    } 
+
+    // Esta ya no va, se reemplaza por update_total()
     public function actualizar_valor_total()
     {
         $this->valor_total = $this->lines->sum('valor');

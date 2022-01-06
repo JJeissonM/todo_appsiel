@@ -4,10 +4,9 @@
 
 	if ( $user->hasRole('Cajero PDV') ) 
     {
-    	$pdvs = App\VentasPos\Pdv::where( 'cajero_default_id', $user->id )
-    								->get();
+    	$pdvs = App\VentasPos\Pdv::where( [['cajero_default_id','=', $user->id],['estado','<>', 'Inactivo']] )->get();
     }else{
-    	$pdvs = App\VentasPos\Pdv::all();
+    	$pdvs = App\VentasPos\Pdv::where([['estado','<>', 'Inactivo']])->get();
     }
 ?>
 

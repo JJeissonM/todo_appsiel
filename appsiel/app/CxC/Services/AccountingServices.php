@@ -12,6 +12,7 @@ use App\Sistema\ValueObjects\TransactionPrimaryKeyVO;
 use App\Contabilidad\Services\DocumentHeaderService;
 use App\Contabilidad\Services\DocumentLinesService;
 use App\Contabilidad\Services\AccountingMovingService;
+use App\Contabilidad\Services\AccountingMovement;
 use App\Contabilidad\ContabDocEncabezado;
 use App\Contabilidad\ContabMovimiento;
 
@@ -129,6 +130,107 @@ class AccountingServices
                             [ 'teso_caja_id' => $teso_caja_id]  + 
                             [ 'teso_cta_bancaria_id' => $teso_cta_bancaria_id] 
                         );
+    }
+    
+    public function create_accounting_movement($accounts_receivables_payment_record)
+    {
+        $obj_acco_move = new AccountingMovement();
+        $model = new ContabMovimiento();
+        
+        $data = $this->set_data($accounts_receivables_payment_record);
+        
+        // Accounting Payment
+        $data['contab_cuenta_id'] = $this->get_main_account($accounts_receivables_payment_record);
+        $obj_acco_move->store($model,$data);
+
+        // Accounting Advance Payments (Anticipos en Cruces)
+        if ($accounts_receivables_payment_record->doc_cruce_transacc_id == 0) {
+            return 0;
+        }
+        $obj_acco_move->store($model,$this->set_data_contra($accounts_receivables_payment_record,$data));
+    }
+
+    public function set_data($movement)
+    {
+        $data = $movement->toArray();
+        
+        if ($movement->doc_cruce_transacc_id != 0) {
+            $data['core_tipo_transaccion_id'] = $data['doc_cruce_transacc_id'];
+            $data['core_tipo_doc_app_id'] = $data['doc_cruce_tipo_doc_id'];
+            $data['consecutivo'] = $data['doc_cruce_consecutivo'];
+        }
+
+        $data['id_registro_doc_tipo_transaccion'] = $movement->id;
+        $data['valor_operacion'] = 0;
+
+        // En un recaudo normal, el abono es credito
+        $valor_debito = 0;
+        $valor_credito = $movement->abono * -1;
+        
+        $data['valor_debito'] = $valor_debito;
+        $data['valor_credito'] = $valor_credito;
+        $data['valor_saldo'] = $valor_debito + $valor_credito;
+        $data['detalle_operacion'] = 'Abono factura de cliente';
+        $data['tipo_transaccion'] = 'pago_cxc'; // Nuevo en contabilidad
+        $data['inv_producto_id'] = 0;
+        $data['cantidad'] = 0;
+        $data['tasa_impuesto'] = 0;
+        $data['base_impuesto'] = 0;
+        $data['valor_impuesto'] = 0;
+        $data['fecha_vencimiento'] = '0000-00-00';
+        $data['inv_bodega_id'] = 0;
+
+        $data['teso_caja_id'] = 0;
+        $data['teso_cuenta_bancaria_id'] = 0;
+
+        $data['codigo_referencia_tercero'] = 0;
+        $data['documento_soporte'] = 0;
+        $data['estado'] = 'Activo';
+
+        return $data;
+    }
+
+    public function get_main_account($movement)
+    {
+        // Registro Debito de la contabilizacion del documento de cartera.
+        $cta_x_cobrar_id = ContabMovimiento::where('core_tipo_transaccion_id',$movement->doc_cxc_transacc_id)
+                                            ->where('core_tipo_doc_app_id',$movement->doc_cxc_tipo_doc_id)
+                                            ->where('consecutivo',$movement->doc_cxc_consecutivo)
+                                            ->where('core_tercero_id',$movement->core_tercero_id)
+                                            ->where('valor_credito',0)
+                                            ->value('contab_cuenta_id');
+
+        if( is_null( $cta_x_cobrar_id ) )
+        {
+            $cta_x_cobrar_id = config('configuracion.cta_cartera_default');
+        }
+
+        return $cta_x_cobrar_id;
+    }
+
+    public function set_data_contra($movement,$data)
+    {
+        $account_advance_id = ContabMovimiento::where('core_tipo_transaccion_id',$movement->core_tipo_transaccion_id)
+                                            ->where('core_tipo_doc_app_id',$movement->core_tipo_doc_app_id)
+                                            ->where('consecutivo',$movement->consecutivo)
+                                            ->where('core_tercero_id',$movement->core_tercero_id)
+                                            ->where('valor_credito',0)
+                                            ->value('contab_cuenta_id');
+
+        if( is_null( $account_advance_id ) )
+        {
+            $account_advance_id = config('configuracion.cta_anticipo_clientes_default');
+        }
+
+        $data['contab_cuenta_id'] = $account_advance_id;
+        // Se invierten los valores
+        $valor_debito = $data['valor_debito'];
+        $valor_credito = $data['valor_credito'];
+        $data['valor_debito'] = $valor_credito * -1;
+        $data['valor_credito'] = $valor_debito * -1;
+        $data['valor_saldo'] = $data['valor_saldo'] * -1;
+
+        return $data;
     }
 
     public function delete_accounting_move( $core_empresa_id, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
