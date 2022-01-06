@@ -243,7 +243,6 @@ class ModeloEavController extends ModeloController
 
     public static function show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id )
     {
-
         $modelo_entidad = Modelo::find( $modelo_entidad_id );
         
         $campos = $modelo_entidad->campos()->where('name','core_campo_id-ID')->orderBy('orden')->get();
@@ -255,6 +254,8 @@ class ModeloEavController extends ModeloController
         $num_cols = 2;
         $i=0;
 
+        $cantidad_campos = 0;
+        $cantidad_sin_valores = 0;
         foreach ( $campos as $linea ) 
         {
             if ( $i % $num_cols == 0) 
@@ -264,6 +265,10 @@ class ModeloEavController extends ModeloController
 
             $valor = ModeloEavController::get_valor_desde_valores_entidades( $valores_entidades, $linea->id );
             
+            if ($valor == '--') {
+                $cantidad_sin_valores++;
+            }
+            
             $salida .= '<td>'.VistaController::mostrar_campo( $linea->id, $valor, 'show' ).'</td>';
 
             $i++;
@@ -271,11 +276,24 @@ class ModeloEavController extends ModeloController
             if ( $i % $num_cols == 0) 
             {
                 $salida .= '</tr>';
-            }     
-        }            
+            }
 
-        $salida .= '</table> <br>';
+            $cantidad_campos++;
+        }
 
+        if ( $i % $num_cols != 0) {
+            $cant_col_restantes = $i % $num_cols;
+            for ($k=0; $k < $cant_col_restantes; $k++) { 
+                $salida .= '<td>&nbsp;</td>';
+            }
+            $salida .= '</tr>';
+        }
+
+        $salida .= '</table>';
+
+        if ($cantidad_campos == $cantidad_sin_valores) {
+            $salida = '';
+        }
         return $salida;
     }
 

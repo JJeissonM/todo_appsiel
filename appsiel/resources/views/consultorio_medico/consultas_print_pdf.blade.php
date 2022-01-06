@@ -16,26 +16,50 @@
 	        	@include('consultorio_medico.pacientes.datos_laborales')
 	        @endif
 
-			<br>
-			<h3>Anamnesis</h3>
-			{!! $anamnesis !!}
+			@if($anamnesis!='')
+				<br>
+				<h3 style="margin-bottom: 1px;">Anamnesis</h3>
+				{!! $anamnesis !!}
+			@endif
 
-			<br>
-			<!-- Datos de Exámenes--> 
-			<h3>Exámenes</h3>
-			{!! $examenes !!}
 
-			<br>
-			<h3>Fórmula</h3>
+			@if($examenes!='')
+				<br>
+				<h3 style="margin-bottom: -25px;">Exámenes</h3>
+				{!! $examenes !!}
+			@endif			
+			
 			<?php
-				$formula = App\Salud\FormulaOptica::where('paciente_id', $consulta->paciente_id)->where('consulta_id', $consulta->id)->first();
+				$examenes2 = App\Salud\ExamenMedico::examenes_del_paciente2( $consulta->paciente_id, $consulta->id );
 			?>
+			@if(!empty($examenes2->toArray()))
+				<br>
+				<h3 style="margin-bottom: 1px;">Fórmula</h3>
+				@foreach($examenes2 as $examen)
+					<?php
+						//$formula = App\Salud\FormulaOptica::where('paciente_id', $consulta->paciente_id)->where('consulta_id', $consulta->id)->first();
+						$formula = App\Salud\FormulaOptica::leftJoin('salud_formula_tiene_examenes','salud_formula_tiene_examenes.formula_id','=','salud_formulas_opticas.id')
+													->where('salud_formulas_opticas.paciente_id', $consulta->paciente_id)
+													->where('salud_formulas_opticas.consulta_id', $consulta->id)
+													->where('salud_formula_tiene_examenes.examen_id', $examen->id)
+													->get()
+													->first();
+					?>
+					@include('consultorio_medico.formula_optica_show_tabla', [ 'formula' => $formula ] )
+				@endforeach
+			@endif
+			
+			@if(!empty($diagnosticos->toArray()))
+				<br>
+				<h3 style="margin-bottom: 1px;">Diagnóstico(s)</h3>
+				@include('consultorio_medico.diagnostico_cie.show_tabla', [ 'diagnosticos' => $diagnosticos ] )
+			@endif
 
-			@include('consultorio_medico.formula_optica_show_tabla' )
-
-			<br>
-			<h3>Resultados</h3>
-			{!! $resultados !!}
+			@if($resultados!='')
+				<br>
+				<h3 style="margin-bottom: -25px;">Resultados</h3>
+				{!! $resultados !!}
+			@endif
 
 			<br><br>
 

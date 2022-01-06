@@ -33,6 +33,7 @@ use App\Salud\ProfesionalSalud;
 use App\Salud\ResultadoExamenMedico;
 use App\Salud\ExamenTieneOrganos;
 use App\Salud\ExamenTieneVariables;
+use App\Salud\DiagnosticoCie;
 use App\Salud\FormulaOptica;
 
 class ConsultaController extends Controller
@@ -256,6 +257,9 @@ class ConsultaController extends Controller
         $modelo_entidad_id = 111; // Resultados de la consulta
         $resultados = ModeloEavController::show_datos_entidad( $modelo_padre_id, $registro_modelo_padre_id, $modelo_entidad_id );
 
+        // DiagnosticoCie
+        $diagnosticos = DiagnosticoCie::where('consulta_id',$consulta->id)->get();
+
         // PROFESIONAL DE LA SALUD
         $raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
         $profesional_salud = ProfesionalSalud::leftJoin('core_terceros','core_terceros.id','=','salud_profesionales.core_tercero_id')->select(DB::raw($raw),'salud_profesionales.especialidad','salud_profesionales.numero_carnet_licencia')->first();
@@ -265,12 +269,12 @@ class ConsultaController extends Controller
         $tam_hoja = 'Letter';
         $orientacion='portrait';
 
-        $view =  View::make('consultorio_medico.consultas_print_pdf', compact('consulta','datos_historia_clinica','examenes','anamnesis','resultados','profesional_salud','empresa'))->render();
+        $view =  View::make('consultorio_medico.consultas_print_pdf', compact('consulta','datos_historia_clinica','examenes','anamnesis','resultados','profesional_salud','empresa','diagnosticos'))->render();
 
         $pdf = \App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
 
         //return $view;
-        return $pdf->download('historia_clinica.pdf');//stream();
+        return $pdf->stream('historia_clinica.pdf');//stream();
     }
 }

@@ -13,8 +13,6 @@
 												->select('salud_examenes.descripcion','salud_formula_tiene_examenes.formula_id','salud_formula_tiene_examenes.examen_id')
 												->get();*/
 		$examenes = App\Salud\ExamenMedico::examenes_del_paciente2( $consulta->paciente_id, $consulta->id );
-
-		;
 	?>
 	
 	

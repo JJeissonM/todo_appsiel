@@ -122,7 +122,6 @@
         <?php 
             $datos = json_decode( $formula_asociada_factura->contenido_formula );
         ?>
-
         <table class="table table-bordered">
             <thead>
                 <tr>
