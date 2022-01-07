@@ -146,15 +146,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 <body id="app-layout">
 	<div class="container-fluid">
 		<div class="row">
-			<table class="table table-bordered table-striped">
-				<tbody>
-					<tr>
-						<td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
-						<td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
-						<td class="border" style="width: 40%;"><img style="width: 220px; height: 70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$emp->imagen }}"></td>
-					</tr>
-				</tbody>
-			</table>
+			@include('contratos_transporte.contratos.logos_encabezado_print')
 			<div class="row">
 				<div class="col-md-12" style="text-align: center; font-weight: bold; font-size: 14px;">
 					<p><b>CONTRATO DE PRESTACION DE SERVICIO DE TRANSPORTE N° {{$c->numero_contrato}}</b><br><b>TRANSPORTE GRUPO ESPECIFICO DE USUARIOS</b></p>
@@ -230,7 +222,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td style="width: 40%; text-align: left;"><br><br><br><br></td>
 						<td style="width: 20%; text-align: left;"><br><br><br><br></td>
-						<td style="width: 40%; text-align: left;"><img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}"></td>
+						<td style="width: 40%; text-align: left;"><img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}" style="max-height: 70px;"></td>
 					</tr>
 					<tr>
 						<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
@@ -256,15 +248,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 
 
 		<div class="row" style="font-size: 14px; line-height: 1.5;">
-			<table class="table table-bordered table-striped">
-				<tbody>
-					<tr>
-						<td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
-						<td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
-						<td class="border" style="width: 40%;"><img style="width: 220px; height: 70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$emp->imagen }}"></td>
-					</tr>
-				</tbody>
-			</table>
+			@include('contratos_transporte.contratos.logos_encabezado_print')
 			<table style="width: 100%;">
 				<tbody>
 					<tr>
@@ -457,11 +441,11 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important;">@if($emp!=null) {{$emp->direccion1." - "}} @endif {{$v->direccion}}<br> @if($emp!=null) {{$emp->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($emp!=null) {{$emp->email." - "}} @endif {{$v->correo}}</a></td>
 						<td class="border" style="width: 20%; text-align: center; font-weight: bold; margin-top: 10px !important;">
-							<img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}">
+							<img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}" style="max-width: 70px;">
 							<br>Sello
 						</td>
 						<td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 14px;">
-							<img src="{{config('contrato_transporte.url_imagen_firma_rep_legal')}}">
+							<img src="{{config('contrato_transporte.url_imagen_firma_rep_legal')}}"  style="max-height: 70px;">
 							<br>FIRMA
 							<br>
 							<i style="font-size: 9px; text-decoration: none;" valign="bottom">{{$v->firma}}</i>
@@ -481,15 +465,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 		<div class="page-break"></div>
 
 		<div class="row" style="font-size: 12px !important; line-height: 1.2;">
-			<table class="table table-bordered table-striped">
-				<tbody>
-					<tr>
-						<td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
-						<td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
-						<td class="border" style="width: 40%;"><img style="width: 220px; height: 70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$emp->imagen }}"></td>
-					</tr>
-				</tbody>
-			</table>
+			@include('contratos_transporte.contratos.logos_encabezado_print')
 				<table style="width: 100%;">
 					<tbody>
 						<tr>
