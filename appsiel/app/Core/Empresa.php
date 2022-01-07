@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use DB;
 
+use App\Core\Tercero;
+
 class Empresa extends Model
 {
     protected $table = 'core_empresas';
@@ -22,6 +24,21 @@ class Empresa extends Model
     public function ciudad()
     {
         return $this->belongsTo('App\Core\Ciudad', 'codigo_ciudad');
+    }
+
+    public function representante_legal()
+    {
+        $tercero_empresa = Tercero::where('numero_identificacion',$this->id)->get()->first();
+
+        if ( !is_null($tercero_empresa) )
+        {
+            $tercero_representante_legal_empresa = $tercero_empresa->representante_legal();
+            if ( !is_null($tercero_representante_legal_empresa) )
+            {
+                return $tercero_representante_legal_empresa->descripcion;
+            }
+        }
+        return '';
     }
 
     public static function consultar_registros($nro_registros, $search)

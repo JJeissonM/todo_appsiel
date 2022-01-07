@@ -42,7 +42,7 @@
 							<div class="col-md-6" style="padding: 30px;">
 								<div class="form-group">
 									<label>Representante Legal (CONTRATISTA)</label>
-									<input type="text" name="rep_legal" class="form-control" required value="HUBER PARADA QUINTERO">
+									<input type="text" name="rep_legal" class="form-control" required value="{{$e->representante_lega()}}">
 								</div>
 								<div class="form-group">
 									<label>Contratante</label>
@@ -137,7 +137,7 @@
 									<input type="number" class="form-control" placeholder="Año" required name="anio_contrato" />
 								</div>
 								<div class="form-group">
-									<label>Convenio Consorcio Unión Temporarl Con</label>
+									<label>Convenio Consorcio Unión Temporar Con</label>
 									<input type="text" class="form-control" name="convenio">
 								</div>
 							</div>

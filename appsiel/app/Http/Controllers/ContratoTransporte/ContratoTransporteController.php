@@ -484,7 +484,7 @@ class ContratoTransporteController extends Controller
             {
                 $representante_legal_contratante = $contratante->tercero;
             }
-        }            
+        }
         
         $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'emp', 'representante_legal_contratante'))->render();
 
