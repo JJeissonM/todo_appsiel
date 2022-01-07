@@ -40,7 +40,9 @@
 								<tr>
 									<td class="border" style="width: 40%;"><img style="width: 100%;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
 									<td class="border" style="width: 20%; text-align: center;"><img style="width: 70%;" src="{{ asset('img/logos/super_transporte.png') }}"></td>
-									<td class="border" style="width: 40%;"><img style="width: 100%;" src="{{ asset('img/logos/transporcol_center.png') }}"></td>
+									<td class="border" style="width: 40%; text-align:center;">
+										<img style="max-height:70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen }}">
+									</td>
 								</tr>
 							</tbody>
 						</table>
@@ -55,9 +57,9 @@
 							<tbody>
 								<tr>
 									<td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
-									<td class="border" style="width: 50%;">ASOCIACIÓN TRANSPORCOL</td>
+									<td class="border" style="width: 50%;">{{$empresa->descripcion}}</td>
 									<td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} </td>
-									<td class="border" style="width: 20%;">900.293.125-3</td>
+									<td class="border" style="width: 20%;">{{number_format($empresa->numero_identificacion,0,',','.')}}-{{$empresa->digito_verificacion}}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -65,7 +67,7 @@
 							<tbody>
 								<tr>
 									<td class="border" style="width: 20%; font-weight: bold;">CONTRATO No.</td>
-									<td class="border" style="width: 80%;">ASOCIACIÓN TRANSPORCOL</td>
+									<td class="border" style="width: 80%;">{{$empresa->descripcion}}</td>
 								</tr>
 							</tbody>
 						</table>
@@ -207,7 +209,24 @@
 						<table style="width: 100%;">
 							<tbody>
 								<tr>
-									<td class="border" style="width: 40%; text-align: center; font-weight: bold; padding: 10px;">@if($empresa!=null) {{$empresa->direccion1." - "}} @endif {{$v->direccion}}<br> @if($empresa!=null) {{$empresa->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($empresa!=null) {{$empresa->email." - "}} @endif {{$v->correo}}</a></td>
+									<td class="border" style="width: 40%; text-align: center; font-weight: bold; padding: 10px;">
+										@if($empresa!=null) 
+											{{$empresa->direccion1." - "}} 
+										@endif 
+										{{$v->direccion}}
+										<br> 
+										@if($empresa!=null) 
+											{{$empresa->telefono1." - "}}
+										@endif 
+										{{$v->telefono}}
+										<br>
+										<a> 
+											@if($empresa!=null) 
+												{{$empresa->email." - "}} 
+											@endif 
+											{{$v->correo}}
+										</a>
+									</td>
 									<td class="border" style="width: 20%; text-align: center; font-weight: bold;" valign="bottom">Sello</td>
 									<td class="border" style="width: 40%; text-align: center; font-weight: bold; font-size: 14px;" valign="bottom">FIRMA<br>{{$v->firma}}</td>
 								</tr>
@@ -236,7 +255,7 @@
 								<tr>
 									<td class="border" style="width: 40%;"><img style="width: 100%;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
 									<td class="border" style="width: 20%; text-align: center;"><img style="width: 70%;" src="{{ asset('img/logos/super_transporte.png') }}"></td>
-									<td class="border" style="width: 40%;"><img style="width: 100%;" src="{{ asset('img/logos/transporcol_center.png') }}"></td>
+									<td class="border" style="width: 40%; text-align:center;"><img style="max-height:70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen }}"></td>
 								</tr>
 							</tbody>
 						</table>

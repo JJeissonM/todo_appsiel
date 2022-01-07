@@ -203,7 +203,7 @@ class CxCController extends TransaccionController
      * Almacenar Registros de una Cuenta de cobro.
      *
      */
-  public function store(Request $request,$registro_encabezado_doc)
+  public function store__no(Request $request,$registro_encabezado_doc)
   {
       /*
         ** Ya se llenó la tabla *_doc_encabezados* en el ModeloController (CxcDocEncabezado)
