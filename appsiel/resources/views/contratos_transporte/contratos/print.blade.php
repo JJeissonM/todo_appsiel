@@ -441,7 +441,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important;">@if($emp!=null) {{$emp->direccion1." - "}} @endif {{$v->direccion}}<br> @if($emp!=null) {{$emp->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($emp!=null) {{$emp->email." - "}} @endif {{$v->correo}}</a></td>
 						<td class="border" style="width: 20%; text-align: center; font-weight: bold; margin-top: 10px !important;">
-							<img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}" style="max-width: 70px;">
+							<img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}" style="max-width: 120px;">
 							<br>Sello
 						</td>
 						<td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 14px;">

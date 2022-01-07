@@ -42,7 +42,7 @@
 							<div class="col-md-6" style="padding: 30px;">
 								<div class="form-group">
 									<label>Representante Legal (CONTRATISTA)</label>
-									<input type="text" name="rep_legal" class="form-control" required value="{{$e->representante_lega()}}">
+									<input type="text" name="rep_legal" class="form-control" required value="{{$e->representante_legal()}}">
 								</div>
 								<div class="form-group">
 									<label>Contratante</label>

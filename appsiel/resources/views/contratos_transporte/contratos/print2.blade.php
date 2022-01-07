@@ -150,16 +150,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 	<div class="container-fluid">
 		<div class="row" style="font-size: 13px; line-height: 1.1;">
 			<div class="col-md-12">
-				<table style="width: 100%;">
-					<tbody>
-						<tr>
-							<td class="border" style="width: 40%;"><img style="width: 260px; height: 80px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
-							<!--<td class="border" style="width: 20%; text-align: center;"><img style="width: 80px; height: 80px;" src="{{ asset('img/logos/super_transporte.png') }}"></td>-->
-							<td class="border" style="width: 20%; text-align: center;"><img src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode"/></td>
-							<td class="border" style="width: 40%;"><img style="width: 260px; height: 80px;" src="{{ asset('img/logos/transporcol_center.png') }}"></td>
-						</tr>
-					</tbody>
-				</table>
+				@include('contratos_transporte.contratos.logos_encabezado_print',['e'=>$empresa])
 				<table style="width: 100%;">
 					<tbody>
 						<tr>
@@ -339,15 +330,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 			</div>
 			<div class="page-break"></div>
 			<div class="col-md-12" style="font-size: 12px !important; line-height: 1.1;">
-				<table style="width: 100%;">
-					<tbody>
-						<tr>
-							<td class="border" style="width: 40%;"><img style="width: 260px; height: 80px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
-							<td class="border" style="width: 20%; text-align: center;"><img style="width: 80px; height: 80px;" src="{{ asset('img/logos/super_transporte.png') }}"></td>
-							<td class="border" style="width: 40%;"><img style="width: 260px; height: 80px;" src="{{ asset('img/logos/transporcol_center.png') }}"></td>
-						</tr>
-					</tbody>
-				</table>
+				@include('contratos_transporte.contratos.logos_encabezado_print',['e'=>$empresa])
 				<table style="width: 100%;">
 					<tbody>
 						<tr>
