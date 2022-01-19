@@ -139,7 +139,6 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 
 .border_center {
 	border: 1.2px solid;
-	padding: 5px;
 	text-align: center;
 }
 
