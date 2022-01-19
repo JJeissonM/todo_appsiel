@@ -9,11 +9,12 @@
                         <img style="max-height: 70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$emp->imagen }}">
                     </div>
                     <div style="width: 60%;float:right;">
+                        <br/>
                         <span style="color:{{ config('contrato_transporte.color_emp_label') }}; font-weight:bold;">{{ $emp->descripcion }}</span>
                     </div>
                 </div>                
-                <br>
-                <span style="color:{{ config('contrato_transporte.color_slogan') }}; font-weight:bold;">{{ config('contrato_transporte.slogan') }}</span>
+                <div style="width: 100%;clear:both; font-size:9px;">
+                    <span style="color:{{ config('contrato_transporte.color_slogan') }}; font-weight:bold;">{{ config('contrato_transporte.slogan') }}</span></div>
             </td>
         </tr>
     </tbody>
