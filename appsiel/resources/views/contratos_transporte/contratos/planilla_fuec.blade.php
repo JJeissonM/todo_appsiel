@@ -1,3 +1,7 @@
+<?php
+
+use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
+?>
 <table style="width: 100%;">
     <tbody>
         <tr>
@@ -59,9 +63,9 @@
     <tbody>
         <tr>
             <td class="border" style="width: 30%; border-bottom: none;"></td>
-            <td class="border" style="width: 20%; font-weight: bold;">DÍA</td>
-            <td class="border" style="width: 20%; font-weight: bold;">MES</td>
-            <td class="border" style="width: 20%; font-weight: bold;">AÑO</td>
+            <td class="border_center" style="width: 20%; font-weight: bold;">DÍA</td>
+            <td class="border_center" style="width: 20%; font-weight: bold;">MES</td>
+            <td class="border_center" style="width: 20%; font-weight: bold;">AÑO</td>
         </tr>
         <tr>
             <td class="border" style="width: 30%; font-weight: bold; border-top: none;">FECHA INICIAL</td>
@@ -87,10 +91,10 @@
 <table style="width: 100%;">
     <tbody>
         <tr>
-            <td class="border" style="width: 15%; font-weight: bold;">PLACA</td>
-            <td class="border" style="width: 25%; font-weight: bold;">MODELO</td>
-            <td class="border" style="width: 20%; font-weight: bold;">MARCA</td>
-            <td class="border" style="width: 40%; font-weight: bold;">CLASE</td>
+            <td class="border_center" style="width: 15%; font-weight: bold;">PLACA</td>
+            <td class="border_center" style="width: 25%; font-weight: bold;">MODELO</td>
+            <td class="border_center" style="width: 20%; font-weight: bold;">MARCA</td>
+            <td class="border_center" style="width: 40%; font-weight: bold;">CLASE</td>
         </tr>
         <tr>
             <td class="border_center" style="width: 15%; font-weight: bold;">{{$c->vehiculo->placa}}</td>
@@ -103,8 +107,8 @@
 <table style="width: 100%;">
     <tbody>
         <tr>
-            <td class="border" style="width: 40%; font-weight: bold;">NÚMERO INTERNO</td>
-            <td class="border" style="width: 60%; font-weight: bold;">NÚMERO TARJETA DE OPERACIÓN</td>
+            <td class="border_center" style="width: 40%; font-weight: bold;">NÚMERO INTERNO</td>
+            <td class="border_center" style="width: 60%; font-weight: bold;">NÚMERO TARJETA DE OPERACIÓN</td>
         </tr>
         <tr>
             <td class="border_center" style="width: 40%; font-weight: bold;">{{$c->vehiculo->int}}</td>
@@ -116,10 +120,10 @@
     <tbody>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; border-bottom: none;"></td>
-            <td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
-            <td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
-            <td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">No LICENCIA CONDUCCIÓN</td>
-            <td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">VIGENCIA</td>
+            <td class="border_center" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
+            <td class="border_center" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
+            <td class="border_center" style="width: 19%; font-weight: bold; font-size: 12px;">No LICENCIA CONDUCCIÓN</td>
+            <td class="border_center" style="width: 10%; font-weight: bold; font-size: 12px;">VIGENCIA</td>
         </tr>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">DATOS DEL CONDUCTOR 1</td>
@@ -144,10 +148,10 @@
         </tr>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; border-bottom: none;"></td>
-            <td class="border" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
-            <td class="border" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
-            <td class="border" style="width: 19%; font-weight: bold; font-size: 12px;">DIRECCIÓN</td>
-            <td class="border" style="width: 10%; font-weight: bold; font-size: 12px;">TELÉFONO</td>
+            <td class="border_center" style="width: 32%; font-weight: bold; font-size: 12px;">NOMBRES Y APELLIDOS</td>
+            <td class="border_center" style="width: 13%; font-weight: bold; font-size: 12px;">No CÉDULA</td>
+            <td class="border_center" style="width: 19%; font-weight: bold; font-size: 12px;">DIRECCIÓN</td>
+            <td class="border_center" style="width: 10%; font-weight: bold; font-size: 12px;">TELÉFONO</td>
         </tr>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
