@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Auth;
 use DB;
 use View;
 use Lava;
-use Input;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Auth;
 use NumerosEnLetras;
 use Form;
 use Storage;

@@ -29,7 +29,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 
 	<style>
 		body {
-			font-family: 'Lato';
+			font-family: 'Arial';
 			background-color: #FFFFFF !important;
 			/*width: 98%;*/
 		}

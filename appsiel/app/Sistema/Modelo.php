@@ -18,7 +18,7 @@ class Modelo extends Model
     // El campo ruta_storage_imagen almacenará todos los archivos tipo file que maneje el modelo (cambiar nombre del campo)
     protected $fillable = ['descripcion', 'modelo', 'name_space', 'modelo_relacionado', 'url_crear', 'url_edit', 'url_print', 'url_ver', 'enlaces', 'url_estado', 'controller_complementario', 'url_form_create', 'url_eliminar', 'home_miga_pan', 'ruta_storage_imagen'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'Descripción', 'Ubicación', 'Modelo relacionado', 'Directorio Imágenes', 'Create', 'Edit', 'Show', 'Print', 'Eliminar'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'ID', 'Descripción', 'Ubicación', 'Modelo relacionado', 'Directorio Imágenes', 'Enlaces', 'Modelo (Name)', 'Show', 'Print', 'Eliminar'];
 
     public function campos()
     {
@@ -34,11 +34,11 @@ class Modelo extends Model
             'sys_modelos.name_space AS campo3',
             'sys_modelos.modelo_relacionado AS campo4',
             'sys_modelos.ruta_storage_imagen AS campo5',
-            'sys_modelos.url_crear AS campo6',
-            'sys_modelos.url_edit AS campo7',
+            'sys_modelos.enlaces AS campo6',
+            'sys_modelos.modelo AS campo7',
             'sys_modelos.url_ver AS campo8',
             'sys_modelos.url_print AS campo9',
-            'sys_modelos.url_eliminar AS campo10',
+            'sys_modelos.modelo AS campo10',
             'sys_modelos.id AS campo11'
         )
             ->where("sys_modelos.id", "LIKE", "%$search%")
@@ -46,8 +46,8 @@ class Modelo extends Model
             ->orWhere("sys_modelos.name_space", "LIKE", "%$search%")
             ->orWhere("sys_modelos.modelo_relacionado", "LIKE", "%$search%")
             ->orWhere("sys_modelos.ruta_storage_imagen", "LIKE", "%$search%")
-            ->orWhere("sys_modelos.url_crear", "LIKE", "%$search%")
-            ->orWhere("sys_modelos.url_edit", "LIKE", "%$search%")
+            ->orWhere("sys_modelos.enlaces", "LIKE", "%$search%")
+            ->orWhere("sys_modelos.modelo", "LIKE", "%$search%")
             ->orWhere("sys_modelos.url_ver", "LIKE", "%$search%")
             ->orWhere("sys_modelos.url_print", "LIKE", "%$search%")
             ->orWhere("sys_modelos.url_eliminar", "LIKE", "%$search%")
@@ -60,12 +60,13 @@ class Modelo extends Model
     public static function sqlString($search)
     {
         $string = Modelo::select(
+            'sys_modelos.id AS ID',
             'sys_modelos.descripcion AS DESCRIPCIÓN',
             'sys_modelos.name_space AS UBICACIÓN',
             'sys_modelos.modelo_relacionado AS MODELO_RELACIONADO',
             'sys_modelos.ruta_storage_imagen AS DIRECTORIO_IMÁGENES',
-            'sys_modelos.url_crear AS CREATE',
-            'sys_modelos.url_edit AS EDIT',
+            'sys_modelos.enlaces AS ENLACES',
+            'sys_modelos.modelo AS MODELO(NAME)',
             'sys_modelos.url_ver AS SHOW',
             'sys_modelos.url_print AS PRINT',
             'sys_modelos.url_eliminar AS ELIMINAR'
@@ -75,8 +76,8 @@ class Modelo extends Model
             ->orWhere("sys_modelos.name_space", "LIKE", "%$search%")
             ->orWhere("sys_modelos.modelo_relacionado", "LIKE", "%$search%")
             ->orWhere("sys_modelos.ruta_storage_imagen", "LIKE", "%$search%")
-            ->orWhere("sys_modelos.url_crear", "LIKE", "%$search%")
-            ->orWhere("sys_modelos.url_edit", "LIKE", "%$search%")
+            ->orWhere("sys_modelos.enlaces", "LIKE", "%$search%")
+            ->orWhere("sys_modelos.modelo", "LIKE", "%$search%")
             ->orWhere("sys_modelos.url_ver", "LIKE", "%$search%")
             ->orWhere("sys_modelos.url_print", "LIKE", "%$search%")
             ->orWhere("sys_modelos.url_eliminar", "LIKE", "%$search%")
