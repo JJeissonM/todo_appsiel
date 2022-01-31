@@ -13,9 +13,9 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
     <tbody>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
-            <td class="border_center" style="width: 50%;">{{$p->razon_social}}</td>
+            <td class="border_center" style="width: 50%; font-size: 12px;">{{$p->razon_social}}</td>
             <td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} </td>
-            <td class="border_center" style="width: 20%;">{{$p->nit}}</td>
+            <td class="border_center" style="width: 20%; font-size: 12px;">{{$p->nit}}</td>
         </tr>
     </tbody>
 </table>
@@ -23,7 +23,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
     <tbody>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">CONTRATO No.</td>
-            <td class="border_center" style="width: 80%;">{{$c->numero_contrato}}</td>
+            <td class="border_center" style="width: 80%; font-size: 12px;">{{$c->numero_contrato}}</td>
         </tr>
     </tbody>
 </table>
@@ -31,9 +31,9 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
     <tbody>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">CONTRATANTE</td>
-            <td class="border_center" style="width: 50%;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} @endif</td>
+            <td class="border_center" style="width: 50%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} @endif</td>
             <td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} /CC</td>
-            <td class="border_center" style="width: 20%;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
+            <td class="border_center" style="width: 20%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
         </tr>
     </tbody>
 </table>
@@ -45,14 +45,14 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         </tr>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">ORIGEN - DESTINO</td>
-            <td class="border_center" style="width: 80%;">{{$c->origen." - ".$c->destino}}</td>
+            <td class="border_center" style="width: 80%; font-size: 12px;">{{$c->origen." - ".$c->destino}}</td>
         </tr>
     </tbody>
 </table>
 <table style="width: 100%;">
     <tbody>
         <tr>
-            <td class="border" style="width: 100%; font-weight: bold;">CONVENIO CONSORCIO UNION TEMPORAL CON: {{$p->convenio}}</td>
+            <td class="border" style="width: 100%;"><span style=" font-weight: bold;"> CONSORCIO UNION TEMPORAL CON: </span><span style="font-size: 12px;">{{$p->convenio}}</span></td>
         </tr>
         <tr>
             <td class="border" style="width: 100%; font-weight: bold; text-align: center;">VIGENCIA DEL CONTRATO</td>
@@ -69,15 +69,15 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         </tr>
         <tr>
             <td class="border" style="width: 30%; font-weight: bold; border-top: none;">FECHA INICIAL</td>
-            <td class="border_center" style="width: 20%;">{{$fi[2]}}</td>
-            <td class="border_center" style="width: 20%;">{{ContratoTransporteController::mes()[$fi[1]]}}</td>
-            <td class="border_center" style="width: 20%;">{{$fi[0]}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{$fi[2]}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{ContratoTransporteController::mes()[$fi[1]]}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{$fi[0]}}</td>
         </tr>
         <tr>
             <td class="border" style="width: 30%; font-weight: bold;">FECHA FINAL</td>
-            <td class="border_center" style="width: 20%;">{{$ff[2]}}</td>
-            <td class="border_center" style="width: 20%;">{{ContratoTransporteController::mes()[$ff[1]]}}</td>
-            <td class="border_center" style="width: 20%;">{{$ff[0]}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{$ff[2]}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{ContratoTransporteController::mes()[$ff[1]]}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{$ff[0]}}</td>
         </tr>
     </tbody>
 </table>
@@ -97,10 +97,10 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border_center" style="width: 40%; font-weight: bold;">CLASE</td>
         </tr>
         <tr>
-            <td class="border_center" style="width: 15%;">{{$c->vehiculo->placa}}</td>
-            <td class="border_center" style="width: 25%;">{{$c->vehiculo->modelo}}</td>
-            <td class="border_center" style="width: 20%;">{{$c->vehiculo->marca}}</td>
-            <td class="border_center" style="width: 40%;">{{$c->vehiculo->clase}}</td>
+            <td class="border_center" style="width: 15%;font-size: 12px;">{{$c->vehiculo->placa}}</td>
+            <td class="border_center" style="width: 25%;font-size: 12px;">{{$c->vehiculo->modelo}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{$c->vehiculo->marca}}</td>
+            <td class="border_center" style="width: 40%;font-size: 12px;">{{$c->vehiculo->clase}}</td>
         </tr>
     </tbody>
 </table>
@@ -111,8 +111,8 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border_center" style="width: 60%; font-weight: bold;">NÚMERO TARJETA DE OPERACIÓN</td>
         </tr>
         <tr>
-            <td class="border_center" style="width: 40%;">{{$c->vehiculo->int}}</td>
-            <td class="border_center" style="width: 60%;">@if($to!=null) {{$to->nro_documento}} @else --- @endif</td>
+            <td class="border_center" style="width: 40%;font-size: 12px;">{{$c->vehiculo->int}}</td>
+            <td class="border_center" style="width: 60%;font-size: 12px;">@if($to!=null) {{$to->nro_documento}} @else --- @endif</td>
         </tr>
     </tbody>
 </table>
@@ -165,7 +165,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 <table style="width: 100%;">
     <tbody>
         <tr>
-            <td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important;">@if($empresa!=null) {{$empresa->direccion1." - "}} @endif {{$v->direccion}}<br> @if($empresa!=null) {{$empresa->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($empresa!=null) {{$empresa->email." - "}} @endif {{$v->correo}}</a></td>
+            <td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 12px;">@if($empresa!=null) {{$empresa->direccion1." - "}} @endif {{$v->direccion}}<br> @if($empresa!=null) {{$empresa->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($empresa!=null) {{$empresa->email." - "}} @endif {{$v->correo}}</a></td>
             <td class="border" style="width: 20%; text-align: center; font-weight: bold; margin-top: 10px !important;">
                 <img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}" style="max-width: 120px;">
                 <br>Sello
