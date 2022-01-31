@@ -249,7 +249,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 		</div>
 
 
-		<div class="page-break"></div>
+		<!-- <div class="page-break"></div> -->
 
 
 		<div class="row" style="font-size: 14px; line-height: 1.5;">
