@@ -34,6 +34,8 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 			background-color: #FFFFFF !important;
 			/*width: 98%;*/
 		}
+		
+		@page { margin: 15px; }
 
 		#suggestions {
 			position: absolute;

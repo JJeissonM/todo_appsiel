@@ -62,7 +62,7 @@
 								</div>
 								<div class="form-group">
 									<label>En Representación de...</label>
-									<textarea required class="form-control" name="representacion_de">PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)</textarea>
+									<textarea required class="form-control" name="representacion_de">{{config('contrato_transporte.texto_en_representacion_de')}}</textarea>
 									<!-- <input type="text" required class="form-control" name="representacion_de" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)"> -->
 								</div>
 								<div class="form-group">
