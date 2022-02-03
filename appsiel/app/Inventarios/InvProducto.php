@@ -16,6 +16,7 @@ use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
 
 use App\Contabilidad\Impuesto;
+use App\Inventarios\Services\CodigoBarras;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 
@@ -431,7 +432,7 @@ class InvProducto extends Model
     {
         if ( $registro->codigo_barras == '' )
         {
-            $registro->codigo_barras = $registro->id;
+            $registro->codigo_barras = (new CodigoBarras($registro->id, 0, 0, 0))->barcode;
             $registro->save();
         }
     }

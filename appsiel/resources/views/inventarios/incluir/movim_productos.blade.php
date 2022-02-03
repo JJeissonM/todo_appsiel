@@ -46,6 +46,8 @@
         </thead>
         <tbody>
             <?php
+            $total_cant_in = 0;
+            $total_cant_out = 0;
                 for($i=0;$i<count($productos);$i++){
 
                     $modelo_crud_id = 0;
@@ -67,18 +69,28 @@
                     <td>{{ formato_numero($productos[$i]['cantidad_out'],'cantidad') }}</td>
                     <td>{{ formato_numero($productos[$i]['costo_unit_out'],'valor') }}</td>
                     <td>{{ formato_numero($productos[$i]['costo_total_out'],'valor') }}</td>
-                    @if( $productos[$i]['cantidad_saldo'] > - 0.009 && $productos[$i]['cantidad_saldo'] < 0.009 )
-                        <td>0</td>
-                        <td>0</td>
-                        <td>0</td>
-                    @else
-                        <td>{{ formato_numero($productos[$i]['cantidad_saldo'],'cantidad') }}</td>
-                        <td>{{ formato_numero($productos[$i]['costo_unit_saldo'],'valor') }}</td>
-                        <td>{{ formato_numero($productos[$i]['costo_total_saldo'],'valor') }}</td>
-                    @endif
+                    <td>{{ formato_numero($productos[$i]['cantidad_saldo'],'cantidad') }}</td>
+                    <td>{{ formato_numero($productos[$i]['costo_unit_saldo'],'valor') }}</td>
+                    <td>{{ formato_numero($productos[$i]['costo_total_saldo'],'valor') }}</td>
                 </tr>
-            <?php } ?>
+            <?php 
+            $total_cant_in += (float)$productos[$i]['cantidad_in'];
+            $total_cant_out += (float)$productos[$i]['cantidad_out'];
+        } ?>
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"></td>
+                <td>
+                    {{ formato_numero($total_cant_in,'cantidad') }}
+                </td>
+                <td colspan="2"></td>
+                <td>
+                    {{ formato_numero($total_cant_out,'cantidad') }}
+                </td>
+                <td colspan="5"></td>
+            </tr>
+        </tfoot>
     </table>
 </div>
     
