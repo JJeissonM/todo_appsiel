@@ -49,7 +49,10 @@
 								if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
 								{
 									$productos[$i]['Costo'] = $item->get_costo_promedio( 0 ) * $productos[$i]['Cantidad'];
-									$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
+									if( $productos[$i]['Cantidad'] != 0)
+									{
+										$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
+									}
 								}
 
 				        		$unidad_medida = $productos[$i]['unidad_medida1'];
