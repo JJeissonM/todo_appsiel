@@ -237,10 +237,15 @@ class TransaccionController extends Controller
     // CALCULAR EL COSTO PROMEDIO
     public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion)
     {
+        //dd(config('inventarios.fecha_inicio_calculo_costo_promedio'));
+        $fecha_inicio_calculo_costo_promedio = '1900-01-01';
+        if (config('inventarios.fecha_inicio_calculo_costo_promedio') != null ) {
+            $fecha_inicio_calculo_costo_promedio = config('inventarios.fecha_inicio_calculo_costo_promedio');
+        }
         // NOTA: EL COSTO SE CALCULA TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE TIENE EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
         $costo_prom = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
                                 ->where('inv_movimientos.inv_producto_id','=',$id_producto)
-                                ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
+                                ->whereBetween('inv_movimientos.fecha', [$fecha_inicio_calculo_costo_promedio,$fecha_transaccion])
                                 ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
                                 ->get()
                                 ->toArray();
@@ -257,6 +262,11 @@ class TransaccionController extends Controller
     // Almacenar el costo promedio en la tabla de la BD
     public static function set_costo_promedio($id_bodega,$id_producto,$costo_prom)
     {
+        
+        $item = InvProducto::find( $id_producto );
+        $item->set_costo_promedio( $id_bodega, $costo_prom );
+
+        /*
         $costo_prom = round( $costo_prom, 2 );
         
         $existe = InvCostoPromProducto::where('inv_bodega_id',$id_bodega)
@@ -284,6 +294,7 @@ class TransaccionController extends Controller
         $item = InvProducto::find( $id_producto );
         $item->precio_compra = abs( $costo_prom );
         $item->save();
+        */
     }
 
     public function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)

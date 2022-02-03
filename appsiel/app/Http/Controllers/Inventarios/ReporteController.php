@@ -246,9 +246,13 @@ class ReporteController extends Controller
             $cantidad_saldo += $fila->cantidad;
             $costo_unit_saldo = $fila->costo_unitario;
             $costo_total_saldo += $fila->costo_total;
-            if ( $cantidad_saldo == 0 )
+            /*if ( $cantidad_saldo == 0 )
             {
                 $costo_unit_saldo = 0;
+            }*/
+            if ( $cantidad_saldo != 0 )
+            {
+                $costo_unit_saldo = $costo_total_saldo / $cantidad_saldo; 
             }
 
 

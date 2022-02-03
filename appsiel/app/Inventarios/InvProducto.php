@@ -87,13 +87,22 @@ class InvProducto extends Model
 
     public function set_costo_promedio( $bodega_id, $costo_prom )
     {
-        $registro_costo_prom = InvCostoPromProducto::where([
-                                                    ['inv_bodega_id','=',$bodega_id],
-                                                    ['inv_producto_id','=', $this->id]
-                                                ])
+        $array_wheres = [ 
+            ['inv_producto_id','=', $this->id]
+        ];
+
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
+        {
+            $bodega_id = 0;
+        }
+        
+        $array_wheres = array_merge( $array_wheres, ['inv_bodega_id' => $bodega_id] );
+        
+        $registro_costo_prom = InvCostoPromProducto::where( $array_wheres )
                                         ->get()
                                         ->first();
 
+        $costo_prom = round( abs( $costo_prom ), 2 );
         if ( is_null( $registro_costo_prom ) )
         {
             $registro_costo_prom = new InvCostoPromProducto();
@@ -105,6 +114,9 @@ class InvProducto extends Model
             $registro_costo_prom->costo_promedio = $costo_prom;
             $registro_costo_prom->save();
         }
+        
+        $this->precio_compra = $costo_prom;
+        $this->save();
     }
 
     public function get_productos($tipo)

@@ -76,6 +76,38 @@
 
 				</div>
 
+				<h4> Parámetros para costeo de productos  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$fecha_inicio_calculo_costo_promedio = '1900-01-01';
+								if( isset($parametros['fecha_inicio_calculo_costo_promedio'] ) )
+								{
+									$fecha_inicio_calculo_costo_promedio = $parametros['fecha_inicio_calculo_costo_promedio'];
+								}
+							?>
+							{{ Form::bsFecha('fecha_inicio_calculo_costo_promedio', $fecha_inicio_calculo_costo_promedio, 'Fecha de inicio para el cálculo del costo promedio', null, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$maneja_costo_promedio_por_bodegas = 1;
+								if( isset($parametros['maneja_costo_promedio_por_bodegas'] ) )
+								{
+									$maneja_costo_promedio_por_bodegas = $parametros['maneja_costo_promedio_por_bodegas'];
+								}
+							?>
+							{{ Form::bsSelect('maneja_costo_promedio_por_bodegas', $maneja_costo_promedio_por_bodegas, 'Maneja costo promedio por bodegas', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto creación de desarmes automáticos  </h4>
 				<hr>
 				<div class="row">
