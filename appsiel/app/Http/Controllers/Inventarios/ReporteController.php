@@ -112,6 +112,11 @@ class ReporteController extends Controller
 
                 $productos[$i]['Costo'] = $movin_filtrado->where('inv_producto_id',$item_id)->where('inv_bodega_id',$bodega_id)->sum('costo_total');
 
+                if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
+                {
+                    $productos[$i]['Costo'] = $item->get_costo_promedio( 0 ) * $productos[$i]['Cantidad'];
+                }
+
                 $total_cantidad_item += $productos[$i]['Cantidad'];
                 $total_costo_item += $productos[$i]['Costo'];
             

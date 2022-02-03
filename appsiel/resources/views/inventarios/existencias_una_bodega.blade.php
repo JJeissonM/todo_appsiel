@@ -36,6 +36,7 @@
 				        $total_cantidad=0;
 				        $total_costo_total=0;
 				        for($i=0;$i<count($productos);$i++){ 
+							$item = App\Inventarios\InvProducto::find((int)$productos[$i]['id']);
 				        		$productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
 				        		$costo_unitario = 0;
 				        		if( $productos[$i]['Cantidad'] != 0)
@@ -44,6 +45,12 @@
 				        		}else{
 				        			$productos[$i]['Costo'] = 0;	
 				        		}
+
+								if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
+								{
+									$productos[$i]['Costo'] = $item->get_costo_promedio( 0 ) * $productos[$i]['Cantidad'];
+									$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
+								}
 
 				        		$unidad_medida = $productos[$i]['unidad_medida1'];
 				        		if( $productos[$i]['unidad_medida2'] != '' )
