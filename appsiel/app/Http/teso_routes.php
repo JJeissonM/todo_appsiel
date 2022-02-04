@@ -130,3 +130,5 @@ Route::get('teso_recontabilizar_documento_pago/{doc_encabezado_id}', 'Tesoreria\
 
 Route::get('teso_traslado_efectivo_recontabilizar/{doc_encabezado_id}', 'Tesoreria\TrasladoEfectivosController@recontabilizar');
 Route::get('teso_traslado_efectivo_recontabilizacion_masiva/{fecha_inicial}/{fecha_final}', 'Tesoreria\TrasladoEfectivosController@recontabilizacion_masiva');
+
+Route::get('teso_generar_libretas_de_estudiantes_matriculados', 'Tesoreria\ProcessController@generar_libretas_de_estudiantes_matriculados');

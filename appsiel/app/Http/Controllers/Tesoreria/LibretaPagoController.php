@@ -48,7 +48,7 @@ use App\Ventas\Cliente;
 
 
 use App\CxC\CxcMovimiento;
-
+use App\Tesoreria\Services\PaymentBookServices;
 
 class LibretaPagoController extends ModeloController
 {
@@ -188,55 +188,15 @@ class LibretaPagoController extends ModeloController
     {
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
+
+        // Crear la libreta
         $registro = $this->crear_nuevo_registro( $request );
 
         /*      SE CREAN LOS REGISTROS DE CARTERA DE ESTUDIANTES (Plan de Pagos)    */
-        
-        $datos = array_combine( (new TesoPlanPagosEstudiante)->getFillable(), ['','','','','','','',''] );
-
-        // Datos comunes
-        $datos['id_libreta'] = $registro->id;
-        $datos['id_estudiante'] = $request->id_estudiante;
-        $datos['estado'] = "Pendiente";
-
-        // 1. Se agrega el registro de matrícula por pagar en la cartera de estudiantes
-        // Datos del concepto de Matrícula
-        $datos['inv_producto_id'] = (int)config('matriculas.inv_producto_id_default_matricula');
-        $datos['valor_cartera'] = $request->valor_matricula;
-        $datos['saldo_pendiente'] = $request->valor_matricula;
-        $datos['fecha_vencimiento'] = $request->fecha_inicio;
-
-        $this->almacenar_linea_registro_cartera( $datos );
-
-        // 2. Se agregan los registros de pensiones por pagar
-        // Datos del concepto de Pensión (por cada mes)
-        $this->almacenar_registros_pension( $datos, $request );
+        $obj_libreta = new PaymentBookServices();
+        $obj_libreta->create_payment_plan( $registro->id, $request->id_estudiante, $request->valor_matricula, $request->valor_pension_mensual, $request->fecha_inicio, $request->numero_periodos);
 
         return redirect( 'tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta creada correctamente.');
-    }
-
-    public function almacenar_registros_pension( $datos, $request )
-    {
-        // Datos del concepto de Pensión (por cada mes)
-        $fecha = explode( "-", $request->fecha_inicio);
-        $num_mes = $fecha[1];
-        $num_anio = $fecha[0];
-        for($i=0;$i<$request->numero_periodos;$i++)
-        {
-            $datos['inv_producto_id'] = config('matriculas.inv_producto_id_default_pension');
-            $datos['valor_cartera'] = $request->valor_pension_mensual;
-            $datos['saldo_pendiente'] = $request->valor_pension_mensual;
-            $datos['fecha_vencimiento'] = $num_anio . '-' . $num_mes . '-' . $fecha[2];
-
-            $this->almacenar_linea_registro_cartera( $datos );
-
-            $num_mes++;
-            if ($num_mes>12)
-            {
-                $num_mes = 1;
-                $num_anio++;
-            }
-        }
     }
 
     /**
@@ -300,8 +260,6 @@ class LibretaPagoController extends ModeloController
      */
     public function update(Request $request, $id)
     {
-        $parametros = config('configuracion'); // Llamar al archivo de configuración del core
-
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
 
         $registro = TesoLibretasPago::find($id);
@@ -310,36 +268,14 @@ class LibretaPagoController extends ModeloController
         TesoPlanPagosEstudiante::where( 'id_libreta', $id )->delete();
 
         // Crear nuevamente registros de cartera (Plan de pagos)
-        $datos = array_combine( (new TesoPlanPagosEstudiante)->getFillable(), ['','','','','','','',''] );
-
-        // Datos comunes
-        $datos['id_libreta'] = $id;
-        $datos['id_estudiante'] = $matricula_estudiante->id_estudiante;
-        $datos['estado'] = "Pendiente";
-
-        // Datos del concepto de Matrícula
-        $datos['inv_producto_id'] = config('matriculas.inv_producto_id_default_matricula');
-        $datos['valor_cartera'] = $request->valor_matricula;
-        $datos['saldo_pendiente'] = $request->valor_matricula;
-        $datos['fecha_vencimiento'] = $request->fecha_inicio;
-
-        $this->almacenar_linea_registro_cartera( $datos );
-
-        // Datos del concepto de Pensión (por cada mes)
-        $this->almacenar_registros_pension( $datos, $request );
+        $obj_libreta = new PaymentBookServices();
+        $obj_libreta->create_payment_plan( $registro->id, $matricula_estudiante->id_estudiante, $request->valor_matricula, $request->valor_pension_mensual, $request->fecha_inicio, $request->numero_periodos);
 
         $registro->fill( $request->all() );
         $registro->id_estudiante = $matricula_estudiante->id_estudiante;
         $registro->save();
 
         return redirect('tesoreria/ver_plan_pagos/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Libreta modificada correctamente.');
-    }
-
-    public function almacenar_linea_registro_cartera( array $datos )
-    {
-        $cartera = new TesoPlanPagosEstudiante;
-        $cartera->fill( $datos );
-        $cartera->save();
     }
 
 
