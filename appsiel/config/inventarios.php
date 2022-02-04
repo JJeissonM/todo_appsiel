@@ -5,7 +5,7 @@
   'item_lista_precios_id' => '1',
   'item_bodega_principal_id' => '1',
   'fecha_inicio_calculo_costo_promedio' => '1900-01-01',
-  'maneja_costo_promedio_por_bodegas' => '0',
+  'maneja_costo_promedio_por_bodegas' => '1',
   'core_tipo_transaccion_id' => '4',
   'core_tipo_doc_app_id' => '9',
   'core_tercero_id' => '212',

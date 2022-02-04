@@ -71,6 +71,35 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
+							<?php 
+								$ancho_columna_1_libretas_pagos = 45;
+								if( isset($parametros['ancho_columna_1_libretas_pagos'] ) )
+								{
+									$ancho_columna_1_libretas_pagos = $parametros['ancho_columna_1_libretas_pagos'];
+								}
+							?>
+							{{ Form::bsText('ancho_columna_1_libretas_pagos', $ancho_columna_1_libretas_pagos, 'Ancho columna #1 PDF Libretas pagos (%)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$payment_book_font_size = 12;
+								if( isset($parametros['payment_book_font_size'] ) )
+								{
+									$payment_book_font_size = $parametros['payment_book_font_size'];
+								}
+							?>
+							{{ Form::bsText('payment_book_font_size', $payment_book_font_size, 'Tamaño de la letra (px)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
 							&nbsp;
 						</div>
 					</div>

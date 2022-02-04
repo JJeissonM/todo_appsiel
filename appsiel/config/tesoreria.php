@@ -4,6 +4,8 @@
   'motivo_recibo_caja_id' => '1',
   'motivo_comprobante_egresos_id' => '5',
   'formato_libreta_pago_defecto' => 'pdf_libreta',
+  'ancho_columna_1_libretas_pagos' => '50',
+  'payment_book_font_size' => '14',
   'recaudo_tipo_transaccion_id' => '32',
   'recaudo_tipo_doc_app_id' => '3',
   'recaudo_motivo_id' => '21',

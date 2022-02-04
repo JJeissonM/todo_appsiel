@@ -28,7 +28,7 @@
 			$anio = '20'.substr($codigo_matricula, 0, 2);
 		?>
 		<td colspan="2">
-			<div style="line-height: 1.5; text-align: justify; text-justify: inter-word; font-size: 17px;">
+			<div style="line-height: 1.5; text-align: justify; text-justify: inter-word;">
 				<b>Nombre del alumno:</b> &nbsp;&nbsp; {{ $nombre_completo }}
 				<br>
 				<b>Curso:</b>&nbsp;&nbsp;{{ $nom_curso }}&nbsp;&nbsp;

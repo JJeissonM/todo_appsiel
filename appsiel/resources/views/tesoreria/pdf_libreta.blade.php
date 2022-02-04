@@ -61,10 +61,15 @@
     </table>
     <div class="page-break"></div>
 
+    <?php
+        $ancho_columna_1 = config('tesoreria.ancho_columna_1_libretas_pagos');
+        $font_size = config('tesoreria.payment_book_font_size');
+        //$ancho_columna_2 = 100 - $ancho_columna_1;
+    ?>
     <!-- RECIBO DE MATRICULA -->
-    <table style="margin: 30px 15px 0px 35px;">
+    <table style="margin: 30px 15px 0px 35px; font-size:{{$font_size}}px">
         <tr>
-            <td>
+            <td style="width: {{$ancho_columna_1}}%;">
                 @include('tesoreria.incluir.matricula',['etiqueta'=>'Copia Estudiante'])
             </td>
             <td>
@@ -91,9 +96,9 @@
             }
         ?>
 
-        <table style="margin: 30px 15px 0px 35px;">
+        <table style="margin: 30px 15px 0px 35px; font-size:{{$font_size}}px">
             <tr>
-                <td>
+                <td style="width: {{$ancho_columna_1}}%;">
                     @include('tesoreria.incluir.pension',['etiqueta'=>'Copia Estudiante'])
                 </td>
                 <td>
@@ -105,9 +110,9 @@
     @endfor
         
         <!-- PAZ Y SALVO -->
-        <table style="margin: 30px 15px 0px 35px;">
+        <table style="margin: 30px 15px 0px 35px; font-size:1em;">
             <tr>
-                <td>
+                <td style="width: {{$ancho_columna_1}}%;">
                     @include('tesoreria.incluir.pazysalvo')
                 </td>
                 <td>
