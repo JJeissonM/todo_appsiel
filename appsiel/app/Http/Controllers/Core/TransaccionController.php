@@ -237,25 +237,36 @@ class TransaccionController extends Controller
     // CALCULAR EL COSTO PROMEDIO
     public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion)
     {
-        //dd(config('inventarios.fecha_inicio_calculo_costo_promedio'));
-        $fecha_inicio_calculo_costo_promedio = '1900-01-01';
-        if (config('inventarios.fecha_inicio_calculo_costo_promedio') != null ) {
-            $fecha_inicio_calculo_costo_promedio = config('inventarios.fecha_inicio_calculo_costo_promedio');
+
+        // NOTA: Ya el registro del item está agregado en el movimiento
+
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
+            
+            // COSTO PROMEDIO PONDERADO
+
+            // NOTA: EL COSTO SE CALCULA TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE TIENE EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
+            $costo_prom = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
+                    ->where('inv_movimientos.inv_producto_id','=',$id_producto)
+                    ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
+                    ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
+                    ->get()
+                    ->toArray();
+
+        }else{
+            
+            $costo_prom = InvMovimiento::where('inv_movimientos.inv_producto_id','=',$id_producto)
+                    ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
+                    ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
+                    ->get()
+                    ->toArray();
         }
-        // NOTA: EL COSTO SE CALCULA TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE TIENE EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
-        $costo_prom = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
-                                ->where('inv_movimientos.inv_producto_id','=',$id_producto)
-                                ->whereBetween('inv_movimientos.fecha', [$fecha_inicio_calculo_costo_promedio,$fecha_transaccion])
-                                ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
-                                ->get()
-                                ->toArray();
 
         if ($costo_prom[0]['Costo']==0) {
             $costo_prom = $valor_default;
         }else{
             $costo_prom = $costo_prom[0]['Costo'];
-        } 
-
+        }
+         
         return $costo_prom;
     }
 

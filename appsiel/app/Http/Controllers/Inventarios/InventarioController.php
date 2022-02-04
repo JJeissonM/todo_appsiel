@@ -391,14 +391,26 @@ class InventarioController extends TransaccionController
             }
 
             // Si es una entrada, se calcula el costo promedio por bodega y producto
-            //if ($request->core_tipo_transaccion_id==$tipo_entrada) {
             if ($motivo->movimiento == 'entrada')
             {
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
                 $costo_prom = TransaccionController::calcular_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha);
 
-                // Actualizo/Almaceno el costo promedio
-                TransaccionController::set_costo_promedio( $request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
+                if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1  )
+                {
+                    // Actualizo/Almaceno el costo promedio
+                    TransaccionController::set_costo_promedio( $request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
+                }else{
+
+                    // Cuando no maneja costo promedio por bodegas (un solo costo para todo)
+
+                    // Solo se calcula costo promedio, si la entrada NO es por transferencia
+                    if ($request->core_tipo_transaccion_id != $tipo_transferencia) 
+                    {
+                        // Actualizo/Almaceno el costo promedio
+                        TransaccionController::set_costo_promedio( $request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom);
+                    }
+                }                
             }
         }
     }
