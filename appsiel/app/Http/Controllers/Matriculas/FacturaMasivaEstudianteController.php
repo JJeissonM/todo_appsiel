@@ -242,7 +242,6 @@ class FacturaMasivaEstudianteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        //dd( $request->all() );
         $lote = uniqid();
         $tbody = '';
         $precio_total = 0;
@@ -260,7 +259,31 @@ class FacturaMasivaEstudianteController extends TransaccionController
             }
 
             $registro_plan_pagos = TesoPlanPagosEstudiante::find( $linea->linea_plan_pago_id );
-            
+
+            if ( $registro_plan_pagos == null ) {
+                $tbody .= '<tr>
+                        <td>' . $linea->Estudiante . '</td>
+                        <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. El concepto ' . $linea->Concepto . ' no existe en la libreta del estudiante. ID Línea del plan de pagos = ' . $linea->linea_plan_pago_id . ' </td>
+                    </tr>';
+                continue;
+            }
+
+            if ( $registro_plan_pagos->estudiante == null ) {
+                $tbody .= '<tr>
+                        <td>' . $linea->Estudiante . '</td>
+                        <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. Línea del plan de pagos NO tiene un estudiante asociado. Concepto = ' . $linea->Concepto . '. ID Línea del plan de pagos = ' . $linea->linea_plan_pago_id . ' </td>
+                    </tr>';
+                continue;
+            }
+
+            if ( $registro_plan_pagos->estudiante->matricula_activa() == null ) {
+                $tbody .= '<tr>
+                        <td>' . $linea->Estudiante . '</td>
+                        <td colspan="3"> <br><i class="fa fa-warning"></i> Error. No se generó la factura. Estudiante no tiene una matrícula Activa. Concepto = ' . $linea->Concepto . '. ID Línea del plan de pagos = ' . $linea->linea_plan_pago_id . ' </td>
+                    </tr>';
+                continue;
+            }
+
             $registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
             $registro_plan_pagos->fecha = $request->fecha;
 

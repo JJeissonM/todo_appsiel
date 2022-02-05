@@ -58,12 +58,4 @@ class ProcessController extends Controller
 
         echo "Se crearon ". $n ." Libretas con sus planes de pago";
     }
-    
-    public function crear_libreta_estudiante( $doc_header_id )
-    {
-        $document_header = TesoDocEncabezado::find( $doc_header_id );
-        $document_header->accounting_movement();
-
-        return $document_header;
-    }
 }
