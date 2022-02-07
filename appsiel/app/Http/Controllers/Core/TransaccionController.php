@@ -251,6 +251,17 @@ class TransaccionController extends Controller
                     ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
                     ->get()
                     ->toArray();
+            
+            $cant = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
+            ->where('inv_movimientos.inv_producto_id','=',$id_producto)
+            ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
+            ->select(DB::raw('sum(inv_movimientos.cantidad) AS cantidad_total'))
+            ->get()
+            ->toArray();
+
+            if ($cant[0]['cantidad_total'] <= 0 ) {
+                $costo_prom[0]['Costo'] = 0;
+            }
 
         }else{
             
@@ -259,6 +270,16 @@ class TransaccionController extends Controller
                     ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
                     ->get()
                     ->toArray();
+            
+            $cant = InvMovimiento::where('inv_movimientos.inv_producto_id','=',$id_producto)
+            ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
+            ->select(DB::raw('sum(inv_movimientos.cantidad) AS cantidad_total'))
+            ->get()
+            ->toArray();
+
+            if ($cant[0]['cantidad_total'] <= 0 ) {
+                $costo_prom[0]['Costo'] = 0;
+            }
         }
 
         if ($costo_prom[0]['Costo']==0) {

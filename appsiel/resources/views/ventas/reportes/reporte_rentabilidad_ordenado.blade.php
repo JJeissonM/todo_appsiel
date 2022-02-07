@@ -37,10 +37,10 @@
 
             <?php
 
-                $total_1_producto = 0;
-                $total_2_producto = 0;
-                $total_3_producto = 0; 
-                $total_4_producto = 0; // Rentabilidad
+                $total_cantidad_venta = 0;
+                $total_volumen_venta = 0;
+                $total_costo = 0; 
+                $total_rentabilidad = 0; // Rentabilidad
 
                 $array_lista = [];
                 $i = 0;
@@ -90,10 +90,10 @@
 
                     $array_lista[$i]['rentabilidad'] = $precio - $costo_total;
 
-                    $total_1_producto += $cantidad;
-                    $total_2_producto += $precio;
-                    $total_3_producto += $costo_total;
-                    $total_4_producto += $precio - $costo_total;
+                    $total_cantidad_venta += $cantidad;
+                    $total_volumen_venta += $precio;
+                    $total_costo += $costo_total;
+                    $total_rentabilidad += $precio - $costo_total;
 
                     $i++;
                 }
@@ -122,6 +122,7 @@
                     <td> ${{ number_format( $array_lista[$i]['precio'], 2, ',', '.') }} </td>
                     <td> ${{ number_format( $array_lista[$i]['costo_promedio'], 2, ',', '.') }} </td>
                     <td> ${{ number_format( $array_lista[$i]['costo_total'], 2, ',', '.') }} </td>
+                    <td> ${{ number_format( $array_lista[$i]['rentabilidad'], 2, ',', '.') }} </td>
                     <?php
                         $margen_rentabilidad = 0;
                         if ( $array_lista[$i]['costo_total'] != 0)
@@ -129,7 +130,6 @@
                             $margen_rentabilidad = $array_lista[$i]['rentabilidad'] / $array_lista[$i]['costo_total'] * 100;
                         }
                     ?>
-                    <td> ${{ number_format( $array_lista[$i]['rentabilidad'], 2, ',', '.') }} </td>
                     <td> {{ number_format( $margen_rentabilidad, 2, ',', '.') }}% </td>
                 </tr>
 
@@ -144,13 +144,20 @@
 
             <tr style=" background-color: #67cefb; font-weight: bolder;">
                 <td> </td>
-                <td> {{ number_format( $total_1_producto, 2, ',', '.') }} </td>
+                <td> {{ number_format( $total_cantidad_venta, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
-                <td> ${{ number_format( $total_2_producto, 2, ',', '.') }} </td>
+                <td> ${{ number_format( $total_volumen_venta, 2, ',', '.') }} </td>
                 <td> &nbsp;</td>
-                <td> ${{ number_format( $total_3_producto, 2, ',', '.') }} </td>
-                <td> ${{ number_format( $total_4_producto, 2, ',', '.') }} </td>
-                <td> &nbsp;</td>
+                <td> ${{ number_format( $total_costo, 2, ',', '.') }} </td>
+                <td> ${{ number_format( $total_rentabilidad, 2, ',', '.') }} </td>
+                <?php
+                    $margen_rentabilidad = 0;
+                    if ( $total_costo != 0)
+                    {
+                        $margen_rentabilidad = $total_rentabilidad / $total_costo * 100;
+                    }
+                ?>
+                <td> {{ number_format( $margen_rentabilidad, 2, ',', '.') }}% </td>
             </tr>
         </tbody>
     </table>

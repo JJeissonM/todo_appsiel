@@ -2,40 +2,21 @@
 
 namespace App\Http\Controllers\Matriculas;
 
-
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
-use App\Http\Controllers\Matriculas\FacturaEstudianteController;
 use App\Http\Controllers\Ventas\VentaController;
 
 use Input;
-use DB;
 use Auth;
 
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
-use App\Core\TipoDocApp;
-use App\Core\Tercero;
-
-use App\Core\Empresa;
-
-use App\CxC\CxcDocRegistro;
-use App\CxC\CxcMovimiento;
-use App\CxC\CxcServicio;
-use App\CxC\CxcEstadoCartera;
 
 use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\Matriculas\FacturaAuxEstudiante;
-
-use App\Contabilidad\ContabMovimiento;
-
-use App\Inventarios\InvProducto;
 use App\Ventas\VtasDocEncabezado;
 
 class FacturaMasivaEstudianteController extends TransaccionController

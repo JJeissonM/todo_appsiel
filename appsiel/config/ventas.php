@@ -23,7 +23,7 @@
   'pv_tipo_doc_app_id' => '41',
   'modo_liquidacion_precio' => 'lista_de_precios',
   'permitir_venta_menor_costo' => '0',
-  'permitir_inventarios_negativos' => '0',
+  'permitir_inventarios_negativos' => '1',
   'encabezado_linea_1' => 'SERVIMOS CON CALIDAD',
   'encabezado_linea_2' => '',
   'encabezado_linea_3' => '',
