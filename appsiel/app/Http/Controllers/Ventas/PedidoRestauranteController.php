@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\VentasPos;
+namespace App\Http\Controllers\Ventas;
 
 use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
@@ -69,7 +69,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvGrupo;
 
-class FacturaPosController extends TransaccionController
+class PedidoRestauranteController extends TransaccionController
 {
     protected $doc_encabezado;
 
@@ -77,6 +77,7 @@ class FacturaPosController extends TransaccionController
 
     public function create()
     {
+        $pdv_id = 1;
         $this->set_variables_globales();
 
         // Enviar valores predeterminados
@@ -91,11 +92,11 @@ class FacturaPosController extends TransaccionController
         if (is_null($tabla)) {
             $tabla = '';
         }
-
+        
         $user = Auth::user();
 
-        $pdv = Pdv::find(Input::get('pdv_id'));
-
+        $pdv = Pdv::find($pdv_id);
+        
         $cliente = $pdv->cliente;
         
         $validar = $this->verificar_datos_por_defecto( $pdv );
@@ -173,8 +174,8 @@ class FacturaPosController extends TransaccionController
             $pr->categoria = $grupo_inventario->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        //$vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
-        $vista_categorias_productos = '';
+        $vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        //$vista_categorias_productos = '';
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
@@ -193,7 +194,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores'));
+        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores'));
     }
 
     public function verificar_datos_por_defecto( $pdv )
@@ -229,6 +230,8 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $request->core_empresa_id = Auth::user()->empresa_id;
+        
         $pedido = VtasPedido::find($request->pedido_id);
 
         $lineas_registros = json_decode($request->lineas_registros);
@@ -618,7 +621,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores'));
+        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores'));
     }
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)
@@ -1205,7 +1208,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores') );
+        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores') );
     }
 
     public function set_catalogos( $pdv_id )

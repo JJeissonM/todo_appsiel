@@ -89,3 +89,6 @@ Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@reconta
 Route::post('vtas_form_crear_remision_desde_doc_venta','Ventas\ProcesoController@form_crear_remision_desde_doc_venta');
 Route::post('vtas_crear_remision_y_factura_desde_doc_venta','Ventas\ProcesoController@crear_remision_y_factura_desde_doc_venta');
 Route::post('ventas_conexion/procesos/procesar/masivo','Ventas\ProcesoController@conexion_procesos')->name('ventas.conexion_procesos');
+
+// Pedidos de restarurantes
+Route::resource('vtas_pedidos_restaurante', 'Ventas\PedidoRestauranteController');
