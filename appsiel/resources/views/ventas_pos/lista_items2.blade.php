@@ -17,17 +17,16 @@
 						@if(count($value)>0)
 						@foreach($value as $item)
 							<div class="col-md-3" style="padding: 10px;" id="btn_{{ $item->id }}">
-								<div class="col-md-12" style="border: 1px solid;">
-									<button onclick="mandar_codigo2({{ $item->id }})" class="btn btn-block btn-success btn-xs"> 
+									<button onclick="mandar_codigo2({{ $item->id }})" class="btn btn-block btn-default btn-xs">
+										<br>
 										@if($item->imagen!='')
-										<img style="width: 70px;" src="{{url('')}}/appsiel/storage/app/inventarios/{{$item->imagen}}">
+										 <img style="width: 100px; height: 100px; border-radius:4px;" src="{{url('')}}/appsiel/storage/app/inventarios/{{$item->imagen}}">
 										@else
-										<img style="width: 70px;" src="{{url('')}}/assets/img/box.png">
+										<img style="width: 100px; height: 100px;" src="{{url('')}}/assets/img/box.png">
 										@endif
 										<p style="text-align: center;">{{ $item->descripcion }}</p>
 									</button>
 									<br>
-								</div>
 							</div>
 						@endforeach
 						@else
