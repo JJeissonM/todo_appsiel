@@ -407,7 +407,7 @@ function reset_linea_ingreso_default2() {
 	$('#tasa_impuesto').val('');
 	$('#precio_total').val('');
 
-	$('#inv_producto_id').focus();
+	//$('#inv_producto_id').focus();
 
 	$('#popup_alerta').hide();
 
@@ -428,7 +428,7 @@ function reset_linea_ingreso_default2() {
 }
 
 function deshabilitar_campos_encabezado2() {
-	$('#cliente_input').attr('disabled', 'disabled');
+	//$('#cliente_input').attr('disabled', 'disabled');
 	$('#fecha').attr('disabled', 'disabled');
 	$('#inv_bodega_id').attr('disabled', 'disabled');
 }
@@ -511,7 +511,7 @@ function agregar_la_linea_ini() {
 	// agregar nueva fila a la tabla
 	$('#ingreso_registros').find('tfoot:last').append(fila);
 
-	$('#inv_producto_id').focus();
+	//$('#inv_producto_id').focus();
 }
 
 
@@ -632,7 +632,7 @@ $(document).ready(function () {
 
 		$(this).attr('class','btn btn-default btn_vendedor vendedor_activo');
 
-		$('#efectivo_recibido').focus();
+		$('#btn_guardar_factura').focus();
 
 		$('#vendedor_id').val( $(this).attr('data-vendedor_id') );
 		$('#vendedor_id').attr( 'data-vendedor_descripcion', $(this).attr('data-vendedor_descripcion') );

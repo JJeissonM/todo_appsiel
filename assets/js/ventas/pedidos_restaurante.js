@@ -336,13 +336,11 @@ $(document).ready(function () {
         $('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
         $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
 
-
         $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
         $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
         $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
         $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
         $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
-
 
         var forma_pago = 'contado';
         var dias_plazo = parseInt(item_sugerencia.attr('data-dias_plazo'));
@@ -372,8 +370,8 @@ $(document).ready(function () {
         $('#clientes_suggestions').html('');
         $('#clientes_suggestions').hide();
 
-        reset_tabla_ingreso_items();
-        reset_resumen_de_totales();
+        //reset_tabla_ingreso_items();
+        //reset_resumen_de_totales();
         reset_linea_ingreso_default();
 
         $.get( url_raiz + '/vtas_get_lista_precios_cliente' + "/" + $('#cliente_id').val())
@@ -519,7 +517,7 @@ $(document).ready(function () {
 
         // Desactivar el click del botón
         //$( this ).off( event );
-        $( this ).attr( 'disabled', 'disabled' );
+        //$( this ).attr( 'disabled', 'disabled' );
 
         $('#linea_ingreso_default').remove();
         //$('#linea_ingreso_default_aux').remove();
@@ -543,7 +541,9 @@ $(document).ready(function () {
         //setCookie( 'ultimo_valor_ajuste_al_peso', valor_ajuste_al_peso, 1);
 
         $.post(url, data, function (doc_encabezado_consecutivo) {
-            resetear_ventana();            
+            alert('Pedido almacenado correctamente');
+            location.reload();
+            //resetear_ventana();            
         });
 
     });
@@ -557,6 +557,7 @@ $(document).ready(function () {
         reset_linea_ingreso_default();
     	reset_tabla_ingreso_medios_pago();
     	reset_efectivo_recibido();
+        $('[button]').show();
     }
 
     $(document).on('click', '#btn_recalcular_totales', function(event) {

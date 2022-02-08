@@ -19,7 +19,7 @@ class PedidoRestaurante extends VtasDocEncabezado
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Mesa',  'Fecha entrega', 'Estado'];
 
-    public $urls_acciones = '{"create":"vtas_pedidos_restaurante/create","store":"vtas_pedidos_restaurante","eliminar":"web_eliminar/id_fila"}';
+    public $urls_acciones = '{"create":"vtas_pedidos_restaurante/create","store":"vtas_pedidos_restaurante","show":"vtas_pedidos/id_fila"}';
 
     public $vistas = '{"index":"layouts.index3","create":"ventas.pedidos.restaurante.crud_pedido"}';
 
@@ -52,7 +52,7 @@ class PedidoRestaurante extends VtasDocEncabezado
 
     public static function consultar_registros2($nro_registros, $search)
     {
-        $core_tipo_transaccion_id = 42; // Pedido de ventas
+        $core_tipo_transaccion_id = 60; // Pedido de ventas
 
         $collection = PedidoRestaurante::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')

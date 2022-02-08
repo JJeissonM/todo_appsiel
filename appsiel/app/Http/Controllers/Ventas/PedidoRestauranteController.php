@@ -39,9 +39,8 @@ use App\Inventarios\InvProducto;
 
 use App\VentasPos\PreparaTransaccion;
 
-use App\VentasPos\FacturaPos;
-use App\VentasPos\DocRegistro;
-use App\VentasPos\Movimiento;
+use App\Ventas\VtasDocEncabezado AS FacturaPos;
+use App\Ventas\VtasDocRegistro AS DocRegistro;
 
 use App\Ventas\VtasPedido;
 use App\Ventas\Vendedor;
@@ -116,7 +115,16 @@ class PedidoRestauranteController extends TransaccionController
             switch ($lista_campos[$i]['name']) {
 
                 case 'core_tipo_doc_app_id':
-                    $lista_campos[$i]['opciones'] = [$pdv->tipo_doc_app_default_id => $pdv->tipo_doc_app->prefijo . " - " . $pdv->tipo_doc_app->descripcion];
+                    $opciones = [];                    
+                    if (!is_null($this->transaccion)) {
+                        $tipo_docs_app = $this->transaccion->tipos_documentos;
+                        foreach ($tipo_docs_app as $fila) {
+                            $opciones[$fila->id] = $fila->prefijo . " - " . $fila->descripcion;
+                        }
+                    }else{
+                        $opciones = [$pdv->tipo_doc_app_default_id => $pdv->tipo_doc_app->prefijo . " - " . $pdv->tipo_doc_app->descripcion];
+                    }
+                    $lista_campos[$i]['opciones'] = $opciones;
                     break;
 
                 case 'cliente_input':
@@ -230,13 +238,7 @@ class PedidoRestauranteController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $request->core_empresa_id = Auth::user()->empresa_id;
-        
-        $pedido = VtasPedido::find($request->pedido_id);
-
         $lineas_registros = json_decode($request->lineas_registros);
-
-        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request);
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -250,42 +252,9 @@ class PedidoRestauranteController extends TransaccionController
 
         // Crear Registros del documento de ventas
         $request['creado_por'] = Auth::user()->email;
-        FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
-
-        if ( !is_null( $pedido ) )
-        {
-            $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
-            $pedido->estado = 'Facturado';
-            $pedido->save();
-
-            self::actualizar_cantidades_pendientes( $pedido, 'restar' );
-        }
+        self::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         return $doc_encabezado->consecutivo;
-    }
-
-    public function actualizar_campo_lineas_registros_medios_recaudos_request(&$request_2)
-    {
-        $lineas_registros_medios_recaudos = json_decode($request_2->lineas_registros_medios_recaudos, true); // true convierte en un array asociativo al JSON
-
-        $aux = array_pop($lineas_registros_medios_recaudos); // eliminar ultimo elemento del array
-
-        $medios_recaudos = json_encode($lineas_registros_medios_recaudos);
-
-
-        if ($medios_recaudos == "[]") // Si no se envian medios de pago, se utiliza efectivo por defecto
-        {
-            $pdv = Pdv::find($request_2->pdv_id);
-
-            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' . $pdv->caja_default_id . '-' . $pdv->caja->descripcion . '","teso_cuenta_bancaria_id":"0-","valor":"$' . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) . '"}]';
-        } else {
-
-            // CUANDO HAY VARIOS MEDIOS DE RECAUDOS... ¿CÓMO CUADRAR CON EL TOTAL DE LA FACTURA?
-
-
-            $valor = json_decode($medios_recaudos)[0]->valor;
-            $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio), $medios_recaudos);
-        }
     }
 
 
@@ -297,7 +266,7 @@ class PedidoRestauranteController extends TransaccionController
     {
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         $datos = $request->all();
-
+        
         $total_documento = 0;
 
         $cantidad_registros = count($lineas_registros);
@@ -308,7 +277,7 @@ class PedidoRestauranteController extends TransaccionController
             {
                 continue; // Evitar guardar registros con productos NO validos
             }
-            
+
             $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
                             ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
                             ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
@@ -322,16 +291,11 @@ class PedidoRestauranteController extends TransaccionController
                             ['valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento] +
                             ['creado_por' => Auth::user()->email] +
                             ['estado' => 'Pendiente'] +
-                            ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
+                            ['vtas_doc_encabezado_id' => $doc_encabezado->id];
 
             $registro_creado = DocRegistro::create($linea_datos);
 
             $datos['consecutivo'] = $doc_encabezado->consecutivo;
-
-            Movimiento::create(
-                                $datos +
-                                    $linea_datos
-                            );
 
             $total_documento += (float)$lineas_registros[$i]->precio_total;
         } // Fin por cada registro
@@ -692,7 +656,7 @@ class PedidoRestauranteController extends TransaccionController
         // Crear nuevamente las líneas de registros
         $request['creado_por'] = Auth::user()->email;
         $request['modificado_por'] = Auth::user()->email;
-        FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+        self::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         return $doc_encabezado->consecutivo;
     }
@@ -728,7 +692,6 @@ class PedidoRestauranteController extends TransaccionController
 
             self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
         }
-
 
         return 1;
     }

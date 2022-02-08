@@ -10,25 +10,12 @@ use App\Http\Controllers\Sistema\VistaController;
         #div_resumen_totales{
             font-size: 0.8em;
         }
-        
-        #suggestions {
-            position: absolute;
-            z-index: 9999;
-        }
-
-        #clientes_suggestions {
-            position: absolute;
-            z-index: 9999;
-            bottom: 20px;
-        }
 
         #existencia_actual, #tasa_impuesto, #tasa_descuento {
             width: 40px;
         }
 
-
-
-        @media only screen and (min-width: 993px) {
+        /*@media only screen and (min-width: 993px) {
             .elemento_fondo {
                 position: fixed;
                 z-index: 9999;
@@ -36,7 +23,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 margin-bottom: 0;
                 float: left;
             }
-        }
+        }*/
 
         .vendedor_activo{
             background-color: #574696;
@@ -179,7 +166,7 @@ input[type=number]::-webkit-outer-spin-button {
                     {{ Form::bsText( 'numero_identificacion', $cliente->tercero->numero_identificacion, config("configuracion.tipo_identificador").'/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
                     {{ Form::bsText( 'telefono1', $cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
                 </div>
-            </div>                    
+            </div>
 
             <input type="hidden" name="lista_precios_id" id="lista_precios_id"
                    value="{{$cliente->lista_precios_id}}" required="required">
@@ -219,9 +206,7 @@ input[type=number]::-webkit-outer-spin-button {
 
             <hr>
 
-
-
-    <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
+            <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 
             <div class="container-fluid">
                 <div class="row">
@@ -248,9 +233,26 @@ input[type=number]::-webkit-outer-spin-button {
 
                 </div>
 
+                <input type="text" style="width:1px;" id="mitad_focus">
+                <div class="row">                
+                    <label class="control-label col-sm-3 col-md-3" for="cliente_input"><i class="fa fa-asterisk"></i>Atentidor Por:</label>
+                    <div class="col-sm-9 col-md-9">
+                        @include('ventas.pedidos.restaurante.componente_meseros')
+                    </div>
+                </div>
+                
+                <div class="row" style="padding:5px; back-ground-color:#50B794;">
+                    <div style="left: 0">
+                        <label class="control-label col-sm-3 col-md-3" for="cliente_input"><i class="fa fa-asterisk"></i>MESA:</label>
+                        <div class="col-sm-9 col-md-9">
+                            <input class="form-control" id="cliente_input" placeholder="MESA" autocomplete="off" required="required" name="cliente_input" type="text" value="{{$cliente->tercero->descripcion}}">
+                            <div id="clientes_suggestions">  </div>
+                        </div>
+                    </div>
+                </div>
                 
                 {!! $vista_categorias_productos !!}
-                
+
             </div>
 
             <br>
@@ -318,15 +320,10 @@ input[type=number]::-webkit-outer-spin-button {
     <!-- La ventana contiene la variable contenido_modal hacer un @ incl para que funcione-->
     @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>'']) <!-- -->
 
-
     @include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])
 
     <div id="div_plantilla_factura" style="display: none;">
         {!! $plantilla_factura !!}
-    </div>
-
-    <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
-        @include('ventas_pos.componente_vendedores')
     </div>
 
 @endsection
@@ -338,6 +335,10 @@ input[type=number]::-webkit-outer-spin-button {
     <script type="text/javascript" src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
     
     <script type="text/javascript">
+        
+        //$("html, body").animate({ scrollTop: $(document).height() + "px" });
+        
+        $("#mitad_focus").focus();
         
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};
