@@ -377,13 +377,8 @@ function agregar_la_linea2()
 	$('#numero_lineas').text(hay_productos);
 	deshabilitar_campos_encabezado2();
 
-	// Bajar el Scroll hasta el final de la página
-	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
-
 	reset_linea_ingreso_default2();
 	reset_efectivo_recibido2();
-
-	//$('#total_valor_total').actualizar_medio_recaudo();
 
 	numero_linea++;
 }

@@ -10,8 +10,8 @@
         }
 
         @page {
-          size: 3.15in 38.5in;
           margin: 15px;
+          size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 38.5in;
         }
 
         .page-break {

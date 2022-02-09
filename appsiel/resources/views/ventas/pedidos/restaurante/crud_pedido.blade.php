@@ -340,11 +340,8 @@ input[type=number]::-webkit-outer-spin-button {
     
     <script type="text/javascript">
         
-        //$("html, body").animate({ scrollTop: $(document).height() + "px" });
-        
         $("#mitad_focus").focus();
         $("#linea_ingreso_default_aux").hide();
-        
         
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};

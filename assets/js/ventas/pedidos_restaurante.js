@@ -510,18 +510,14 @@ $(document).ready(function () {
         }
 
         // Desactivar el click del botón
-        //$( this ).off( event );
         //$( this ).attr( 'disabled', 'disabled' );
 
         $('#linea_ingreso_default').remove();
-        //$('#linea_ingreso_default_aux').remove();
 
-        var table = $('#ingreso_registros').tableToJSON();
-        //var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();                
+        var table = $('#ingreso_registros').tableToJSON();               
 
         // Se asigna el objeto JSON a un campo oculto del formulario
         $('#lineas_registros').val( JSON.stringify( table ) );
-        //$('#lineas_registros_medios_recaudos').val( JSON.stringify( table2 ) );
 
         // No se puede enviar controles disabled
         habilitar_campos_encabezado();
@@ -529,15 +525,16 @@ $(document).ready(function () {
         var url = $("#form_create").attr('action');
         var data = $("#form_create").serialize();
 
-        //setCookie( 'ultimo_valor_total_cambio', total_cambio, 1);
-        //setCookie( 'ultimo_valor_total_factura', total_factura, 1);
-        //setCookie( 'ultimo_valor_efectivo_recibido', parseFloat($('#efectivo_recibido').val()), 1);
-        //setCookie( 'ultimo_valor_ajuste_al_peso', valor_ajuste_al_peso, 1);
+        $.post(url, data, function (doc_encabezado) {
+            $('doc_encabezado_documento_transaccion_descripcion').append(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
 
-        $.post(url, data, function (doc_encabezado_consecutivo) {
-            alert('Pedido almacenado correctamente');
-            location.reload();
-            //resetear_ventana();            
+            $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
+
+            llenar_tabla_productos_facturados(doc_encabezado);
+
+            ventana_imprimir();
+            
+            resetear_ventana();
         });
 
     });
@@ -568,104 +565,28 @@ $(document).ready(function () {
         $('#total_valor_total').actualizar_medio_recaudo();
         $('#lbl_efectivo_recibido').text('$ 0');
         $('#efectivo_recibido').removeAttr('readonly');
-    });
+    });   
 
-
-    /*$(document).on('click', '.btn_vendedor', function(event) {
-        event.preventDefault();
-    });*/
-
-    
-
-    function llenar_tabla_productos_facturados()
+    function llenar_tabla_productos_facturados(doc_encabezado)
     {
         var linea_factura;
-        var lbl_total_factura = 0;
 
         $('.linea_registro').each(function( ){
-
-            linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
-
-            if( parseFloat( $(this).find('.valor_total_descuento').text() ) != 0 )
-            {
-                linea_factura += '<tr> <td colspan="2" style="text-align: right;">Dcto.</td> <td colspan="2"> ( -$' + new Intl.NumberFormat("de-DE").format( parseFloat( $(this).find('.valor_total_descuento').text() ).toFixed(0) ) + ' ) </td> </tr>';
-            }
+            $("#btn_"+ $(this).find('.inv_producto_id').text() ).show();
+            linea_factura = '<tr> <td style="border: solid 1px gray;"> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td style="border: solid 1px gray; text-align:center;"> ' + $(this).find('.cantidad').text() + ' </td> <td style="border: solid 1px gray;"> <br>  </td></tr>';
 
             $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
-
-            lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
-
         });
 
-
-        $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
-        $('.lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_ajuste_al_peso));
-        $('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat($('#efectivo_recibido').val())));
-        $('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(total_cambio)));
-
-        $('.lbl_condicion_pago').text( $('#forma_pago').val() );
-        $('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
-
-        $('#tr_fecha_vencimiento').hide();
-        if ($('#forma_pago').val() == 'credito')
-        {
-            $('#tr_fecha_vencimiento').show();
-        }
-
-        $('#lbl_fecha').text( $('#fecha').val() );
-        var d = new Date();
-        $('#lbl_hora').text( addZero( get_hora( d.getHours() ) ) + ':' + addZero(d.getMinutes()) + ' ' + get_horario( d.getHours() ) );
-
-        $('.lbl_cliente_descripcion').text( $('#cliente_descripcion_aux').val() );
-        $('.lbl_cliente_nit').text( $('#numero_identificacion').val() );
-        $('.lbl_cliente_direccion').text( $('#direccion1').val() );
-        $('.lbl_cliente_telefono').text( $('#telefono1').val() );
-
-        $('.lbl_atendido_por').text( $('#vendedor_id').attr('data-vendedor_descripcion') );
-        
-        $('.lbl_descripcion_doc_encabezado').text( $('#descripcion').val() );
-
-        llenar_resumen_medios_recaudo();        
-
+        $('#doc_encabezado_documento_transaccion_descripcion').text( doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
+        $('#doc_encabezado_fecha').text( doc_encabezado.doc_encabezado_fecha);
+        $('#doc_encabezado_tercero_nombre_completo').text( doc_encabezado.doc_encabezado_tercero_nombre_completo);
+        $('#doc_encabezado_documento_transaccion_prefijo_consecutivo').text( doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
+        $('#doc_encabezado_vendedor_descripcion').text( doc_encabezado.doc_encabezado_vendedor_descripcion);
+        $('#cantidad_total_productos').text( doc_encabezado.cantidad_total_productos);
+        $('#doc_encabezado_descripcion').text( doc_encabezado.doc_encabezado_descripcion);
     }
 
-    function llenar_resumen_medios_recaudo()
-    {
-        if ($('#forma_pago').val() == 'credito')
-        {
-            $('#div_resumen_medios_pago').hide();
-            return 0;
-        }
-
-        $('#div_resumen_medios_pago').show();
-
-        if( $('#total_valor_total').html() == '$ 0' )
-        {
-            $('#div_resumen_medios_pago').find('#lbl_medio_pago').text('Efectivo');
-
-            $('#teso_caja_id').val( $('#caja_pdv_default_id').val() );
-            
-            var lbl_caja_default_pdv = $('#teso_caja_id option:selected').text();
-            $('#div_resumen_medios_pago').find('#lbl_caja_banco').text(lbl_caja_default_pdv);
-            
-            var valor_medio_pago = $('#total_efectivo_recibido').val() - $
-            ('#valor_total_cambio').val(); 
-
-            $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_medio_pago.toFixed(2)) );
-        }else{
-
-            // Se esta suponiendo UN solo medio de pago
-            var array_celdas =  $('#ingreso_registros_medios_recaudo tr').find('td');
-
-            var lbl_medio_pago =  array_celdas.eq(0).find('span').eq(1).text();
-            var lbl_caja_banco =  array_celdas.eq(2).find('span').eq(1).text() + '' + array_celdas.eq(3).find('span').eq(1).text();
-            var lbl_valor_medio_pago =  array_celdas.eq(4).text();
-
-            $('#div_resumen_medios_pago').find('#lbl_medio_pago').text(lbl_medio_pago);
-            $('#div_resumen_medios_pago').find('#lbl_caja_banco').text(lbl_caja_banco);
-            $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text(lbl_valor_medio_pago);
-        }
-    }
 
     function get_hora(i)
     {

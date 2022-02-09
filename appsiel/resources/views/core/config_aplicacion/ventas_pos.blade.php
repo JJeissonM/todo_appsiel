@@ -52,6 +52,30 @@
 
 				</div>
 
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ancho_formato_impresion = '3.15';
+								if( isset($parametros['ancho_formato_impresion'] ) )
+								{
+									$ancho_formato_impresion = $parametros['ancho_formato_impresion'];
+								}
+							?>
+							{{ Form::bsText('ancho_formato_impresion', $ancho_formato_impresion, 'Anchura Formato impresión (Pulgadas)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<div class="row">
 
 					<div class="col-md-6">
