@@ -28,7 +28,7 @@
             </td>
         </tr>
                                                 
-        <tr style="font-size:1.5em;">
+        <tr style="font-size:1.3em;">
             <td width="55%">
                 <strong> Productos ingresados: </strong>
             </td>
@@ -37,7 +37,7 @@
             </td>
         </tr>
 
-        <tr style="font-size:1.5em;">
+        <tr style="font-size:1.3em;">
             <td width="55%">
                 <strong> Total factura </strong>
             </td>

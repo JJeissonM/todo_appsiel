@@ -6,7 +6,11 @@
 
 @section('botones_acciones')
 
-	{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+	@can('vtas_bloquear_vista_index')
+		
+	@else
+		{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+	@endcan
 	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado == 'Pendiente')
 		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>

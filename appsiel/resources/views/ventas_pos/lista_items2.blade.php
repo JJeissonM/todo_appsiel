@@ -16,7 +16,7 @@
 					<div class="card-body">
 						@if(count($value)>0)
 						@foreach($value as $item)
-							<div class="col-md-3" style="padding: 10px;" id="btn_{{ $item->id }}">
+							<div class="col-md-3 col-xs-6" style="padding: 10px;" id="btn_{{ $item->id }}">
 									<button onclick="mandar_codigo2({{ $item->id }})" class="btn btn-block btn-default btn-xs">
 										<br>
 										@if($item->imagen!='')
@@ -24,7 +24,7 @@
 										@else
 										<img style="width: 100px; height: 100px;" src="{{url('')}}/assets/img/box.png">
 										@endif
-										<p style="text-align: center;">{{ $item->descripcion }}</p>
+										<p style="text-align: center; white-space: nowrap; overflow: hidden; white-space: initial;">{{ $item->descripcion }}</p>
 									</button>
 									<br>
 							</div>
