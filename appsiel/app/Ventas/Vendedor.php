@@ -8,6 +8,7 @@ use DB;
 use Schema;
 
 use App\Core\Tercero;
+use App\User;
 use App\Ventas\Cliente;
 
 class Vendedor extends Model
@@ -31,6 +32,11 @@ class Vendedor extends Model
     public function cliente()
     {
         return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function equipo_ventas()

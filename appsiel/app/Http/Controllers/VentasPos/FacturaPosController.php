@@ -97,6 +97,7 @@ class FacturaPosController extends TransaccionController
         $pdv = Pdv::find(Input::get('pdv_id'));
 
         $cliente = $pdv->cliente;
+        $vendedor = $cliente->vendedor;
         
         $validar = $this->verificar_datos_por_defecto( $pdv );
         if ( $validar != 'ok' )
@@ -123,7 +124,7 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    $lista_campos[$i]['value'] = [$pdv->cliente->vendedor_id];
+                    $lista_campos[$i]['value'] = [$vendedor->id];
                     break;
 
                 case 'forma_pago':
@@ -193,7 +194,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor'));
     }
 
     public function verificar_datos_por_defecto( $pdv )
@@ -541,13 +542,6 @@ class FacturaPosController extends TransaccionController
             }
         }
 
-        /*foreach ($lista_campos as $key => $value)
-        {
-            if ($value['name'] == 'cliente_input') {
-                $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
-            }
-        }*/
-
         $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
 
         $url_action = str_replace('id_fila', $registro->id, $acciones->update);
@@ -603,8 +597,7 @@ class FacturaPosController extends TransaccionController
         $redondear_centena = config('ventas_pos.redondear_centena');
         
         $cliente = $registro->cliente;
-        $cliente->vendedor_id = $registro->vendedor_id;
-        $cliente->vendedor_descripcion = $registro->vendedor->tercero->descripcion;
+        $vendedor = $registro->vendedor;
 
         $pedido_id = 0;
 
@@ -618,7 +611,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor'));
     }
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)
@@ -1139,6 +1132,7 @@ class FacturaPosController extends TransaccionController
 
         $pdv = Pdv::find(Input::get('pdv_id'));
         $cliente = $pedido->cliente;
+        $vendedor = $pedido->vendedor;
         //Personalización de la lista de campos
         for ($i = 0; $i < $cantidad_campos; $i++) {
             switch ($lista_campos[$i]['name']) {
@@ -1153,7 +1147,7 @@ class FacturaPosController extends TransaccionController
 
                 case 'vendedor_id':
                     //array_shift($lista_campos[$i]['opciones']);
-                    $lista_campos[$i]['value'] = [$pedido->vendedor->id];
+                    $lista_campos[$i]['value'] = [$vendedor->id];
                     //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
                     break;
 
@@ -1205,7 +1199,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores') );
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor') );
     }
 
     public function set_catalogos( $pdv_id )

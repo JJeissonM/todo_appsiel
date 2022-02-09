@@ -317,11 +317,21 @@ $(document).ready(function () {
         calcular_valor_descuento();
     }
 
-    function seleccionar_cliente(item_sugerencia) {
+    $('.btn_mesa').on('click', function (e) {
+		e.preventDefault();
+        
+		$('.mesa_activa').attr('class','btn btn-default btn_mesa');
+
+		$(this).attr('class','btn btn-default btn_mesa mesa_activa');
+
+        seleccionar_mesa($(this));
+
+	});
+
+    function seleccionar_mesa(item_sugerencia) {
 
         // Asignar descripción al TextInput
-        $('#cliente_input').val(item_sugerencia.html());
-        $('#cliente_input').css('background-color', 'transparent');
+        $('#lbl_mesa_seleccionada').text(item_sugerencia.attr('data-nombre_cliente'));
 
         // Asignar Campos ocultos
         $('#cliente_id').val(item_sugerencia.attr('data-cliente_id'));
@@ -365,24 +375,8 @@ $(document).ready(function () {
         }
         $('#fecha_vencimiento').val(fecha.getFullYear() + '-' + mes + '-' + dia);
 
+    } // FIN seleccionar_mesa
 
-        //Hacemos desaparecer el resto de sugerencias
-        $('#clientes_suggestions').html('');
-        $('#clientes_suggestions').hide();
-
-        //reset_tabla_ingreso_items();
-        //reset_resumen_de_totales();
-        reset_linea_ingreso_default();
-
-        $.get( url_raiz + '/vtas_get_lista_precios_cliente' + "/" + $('#cliente_id').val())
-            .done(function (data) {
-                precios = data[0];
-                descuentos = data[1];
-            });
-
-        // Bajar el Scroll hasta el final de la página
-        //$("html, body").animate({scrollTop: $(document).height() + "px"});
-    }
 
     function agregar_nueva_linea() 
     {
@@ -523,11 +517,11 @@ $(document).ready(function () {
         //$('#linea_ingreso_default_aux').remove();
 
         var table = $('#ingreso_registros').tableToJSON();
-        var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();                
+        //var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();                
 
         // Se asigna el objeto JSON a un campo oculto del formulario
         $('#lineas_registros').val( JSON.stringify( table ) );
-        $('#lineas_registros_medios_recaudos').val( JSON.stringify( table2 ) );
+        //$('#lineas_registros_medios_recaudos').val( JSON.stringify( table2 ) );
 
         // No se puede enviar controles disabled
         habilitar_campos_encabezado();
@@ -575,6 +569,13 @@ $(document).ready(function () {
         $('#lbl_efectivo_recibido').text('$ 0');
         $('#efectivo_recibido').removeAttr('readonly');
     });
+
+
+    /*$(document).on('click', '.btn_vendedor', function(event) {
+        event.preventDefault();
+    });*/
+
+    
 
     function llenar_tabla_productos_facturados()
     {

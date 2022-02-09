@@ -97,6 +97,7 @@ class PedidoRestauranteController extends TransaccionController
         $pdv = Pdv::find($pdv_id);
         
         $cliente = $pdv->cliente;
+        $vendedor = $cliente->vendedor;
         
         $validar = $this->verificar_datos_por_defecto( $pdv );
         if ( $validar != 'ok' )
@@ -132,7 +133,7 @@ class PedidoRestauranteController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    $lista_campos[$i]['value'] = [$pdv->cliente->vendedor_id];
+                    $lista_campos[$i]['value'] = [$vendedor->id];
                     break;
 
                 case 'forma_pago':
@@ -201,8 +202,12 @@ class PedidoRestauranteController extends TransaccionController
         $total_efectivo_recibido = 0;
 
         $vendedores = Vendedor::where('estado','Activo')->get();
+        
+        $mesas = Cliente::where('estado','Activo')
+        ->orWhere('id',$cliente->id)
+        ->get();
 
-        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores'));
+        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','mesas'));
     }
 
     public function verificar_datos_por_defecto( $pdv )
@@ -306,56 +311,6 @@ class PedidoRestauranteController extends TransaccionController
         return 0;
     }
 
-    /**
-     *
-     */
-    public function show($id)
-    {
-        $this->set_variables_globales();
-
-        $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
-
-        $doc_encabezado = app($this->transaccion->modelo_encabezados_documentos)->get_registro_impresion($id);
-        $doc_registros = app($this->transaccion->modelo_registros_documentos)->get_registros_impresion($doc_encabezado->id);
-
-        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados($doc_encabezado);
-        $empresa = $this->empresa;
-        if ( !is_null($doc_encabezado->pdv) )
-        {
-            if ( $doc_encabezado->pdv->direccion != '' )
-            {
-                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
-                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
-                $empresa->email = $doc_encabezado->pdv->email;
-            }
-        }
-
-        $id_transaccion = $this->transaccion->id;
-
-        $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
-
-        // Datos de los abonos aplicados a la factura
-        $abonos = CxcAbono::get_abonos_documento($doc_encabezado);
-
-        // Datos de Notas Crédito aplicadas a la factura
-        $notas_credito = NotaCredito::get_notas_aplicadas_factura($doc_encabezado->id);
-
-        $documento_vista = '';
-
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo);
-
-        $url_crear = $this->modelo->url_crear . $this->variables_url;
-
-        $vista = 'ventas_pos.show';
-
-        if ( !is_null(Input::get('vista') ) )
-        {
-            $vista = Input::get('vista');
-        }
-
-        return view($vista, compact('id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad', 'abonos', 'empresa', 'docs_relacionados', 'doc_registros', 'url_crear', 'id_transaccion', 'notas_credito'));
-    }
-
 
     /*
         Imprimir
@@ -422,171 +377,6 @@ class PedidoRestauranteController extends TransaccionController
         return View::make('ventas_pos.formatos_impresion.' . config('ventas_pos.plantilla_factura_pos_default'), compact('empresa', 'resolucion', 'etiquetas', 'pdv'))->render();
     }
 
-    /**
-     * Prepara la vista para Editar una Factura POS
-     */
-    public function edit($id)
-    {
-        $this->set_variables_globales();
-
-        // Se obtiene el registro a modificar del modelo
-        $registro = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
-
-        $pdv = Pdv::find($registro->pdv_id);
-
-        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro, 'edit');
-
-        $doc_encabezado = FacturaPos::get_registro_impresion($id);
-
-        $cantidad = count($lista_campos);
-
-        $eid = '';
-
-		if( config("configuracion.tipo_identificador") == 'NIT') { 
-            $eid = number_format( $doc_encabezado->numero_identificacion, 0, ',', '.');
-        }else { 
-            $eid = $doc_encabezado->numero_identificacion;
-        }
-
-        // Agregar al comienzo del documento
-        array_unshift($lista_campos, [
-            "id" => 201,
-            "descripcion" => "Empresa",
-            "tipo" => "personalizado",
-            "name" => "encabezado",
-            "opciones" => "",
-            "value" => '<div style="border: solid 1px #ddd; padding-top: -20px;">
-                                                            <b style="font-size: 1.6em; text-align: center; display: block;">
-                                                                ' . $doc_encabezado->documento_transaccion_descripcion . '
-                                                                <br/>
-                                                                <b>No.</b> ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo . '
-                                                                <br/>
-                                                                <b>Fecha:</b> ' . $doc_encabezado->fecha . '
-                                                            </b>
-                                                            <br/>
-                                                            <b>Cliente:</b> ' . $doc_encabezado->tercero_nombre_completo . '
-                                                            <br/>
-                                                            <b>'.config("configuracion.tipo_identificador").' &nbsp;&nbsp;</b> ' . $eid. '
-                                                        </div>',
-            "atributos" => [],
-            "definicion" => "",
-            "requerido" => 0,
-            "editable" => 1,
-            "unico" => 0
-        ]);
-
-        //dd( $doc_encabezado );
-        //Personalización de la lista de campos
-        foreach ($lista_campos as $key => $value)
-        {
-            switch ($value['name']){
-
-                case 'cliente_input':
-                    $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
-                    break;
-
-                case 'vendedor_id':
-                    $lista_campos[$key]['value'] = [$doc_encabezado->vendedor_id];
-                    break;
-
-                case 'forma_pago':
-                    $lista_campos[$key]['value'] = $doc_encabezado->condicion_pago;
-                    $lista_campos[$key]['editable'] = 1;
-                    $lista_campos[$key]['atributos'] = [];
-                    break;
-
-                case 'fecha_vencimiento':
-                    $lista_campos[$key]['value'] = $doc_encabezado->fecha_vencimiento;
-                    break;
-
-                case 'inv_bodega_id':
-                    $lista_campos[$key]['opciones'] = [$pdv->bodega_default_id => $pdv->bodega->descripcion];
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-        }
-
-        /*foreach ($lista_campos as $key => $value)
-        {
-            if ($value['name'] == 'cliente_input') {
-                $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
-            }
-        }*/
-
-        $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
-
-        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
-
-        $form_create = [
-            'url' => $url_action,
-            'campos' => $lista_campos
-        ];
-
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion . '.' . ' Modificar: ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo);
-
-        $archivo_js = app($this->modelo->name_space)->archivo_js;
-
-        $motivos = ['10-salida' => 'Ventas POS'];
-        $inv_motivo_id  = 10;
-
-        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = new TablaIngresoLineaRegistros(PreparaTransaccion::get_datos_tabla_ingreso_lineas_registros($this->transaccion, $motivos));
-
-        if (is_null($tabla)) {
-            $tabla = '';
-        }
-
-
-        $id_transaccion = 8; // 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
-        $medios_recaudo = RecaudoController::get_medios_recaudo();
-        $cajas = RecaudoController::get_cajas();
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
-
-        $numero_linea = count($registro->lineas_registros) + 1;
-
-        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($registro->lineas_registros);
-
-        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
-
-        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'cuerpo_tabla_medios_recaudos'))->render();
-
-        $total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
-
-        $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
-        $productosTemp = null;
-        foreach ($productos as $pr) {
-            $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
-            $productosTemp[$pr->categoria][] = $pr;
-        }
-
-        $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
-        $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
-
-        $plantilla_factura = $this->generar_plantilla_factura($pdv);
-
-        $redondear_centena = config('ventas_pos.redondear_centena');
-        
-        $cliente = $registro->cliente;
-        $cliente->vendedor_id = $registro->vendedor_id;
-        $cliente->vendedor_descripcion = $registro->vendedor->tercero->descripcion;
-
-        $pedido_id = 0;
-
-        $valor_subtotal = number_format($registro->lineas_registros->sum('base_impuesto_total') + $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.');
-
-        $valor_descuento = number_format( $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.');
-
-        $valor_total_impuestos = number_format( $registro->lineas_registros->sum('precio_total') - $registro->lineas_registros->sum('base_impuesto_total'),'2',',','.');
-
-        $valor_total_factura = $registro->lineas_registros->sum('precio_total');
-
-        $vendedores = Vendedor::where('estado','Activo')->get();
-
-        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores'));
-    }
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)
     {

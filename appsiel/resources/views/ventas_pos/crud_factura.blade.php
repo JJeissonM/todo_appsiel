@@ -117,14 +117,15 @@ use App\Http\Controllers\Sistema\VistaController;
             <input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}" required="required">
             <input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
                    value="{{$cliente->clase_cliente_id}}" required="required">
-            <input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$cliente->vendedor->equipo_ventas_id}}" required="required">
 
             <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}"
                    required="required">
 
             <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
 
-            <input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$cliente->vendedor_descripcion}}" value="{{$cliente->vendedor_id}}">
+            <input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}" value="{{$vendedor->id}}">
+            
+            <input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$vendedor->equipo_ventas_id}}" required="required">
 
             <input type="hidden" name="cliente_descripcion" id="cliente_descripcion"
                    value="{{$cliente->tercero->descripcion}}" required="required">

@@ -549,8 +549,8 @@ $(document).ready(function () {
 	agregar_la_linea_ini();
 
 	// Elementos al final de la página
-	$('#cliente_input').parent().parent().attr('style','left: 0');
-	$('#cliente_input').parent().parent().attr('class', 'elemento_fondo');
+	//$('#cliente_input').parent().parent().attr('style','left: 0');
+	//$('#cliente_input').parent().parent().attr('class', 'elemento_fondo');
 
 	$('#cliente_input').on('focus', function () {
 		$(this).select();
@@ -625,18 +625,82 @@ $(document).ready(function () {
 		}
 	});
 
+    var hay_error_password = true;
 	$('.btn_vendedor').on('click', function (e) {
 		e.preventDefault();
+
+        $("#modal_password").modal({backdrop: "static"});
 
 		$('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
 
 		$(this).attr('class','btn btn-default btn_vendedor vendedor_activo');
 
-		$('#btn_guardar_factura').focus();
-
 		$('#vendedor_id').val( $(this).attr('data-vendedor_id') );
 		$('#vendedor_id').attr( 'data-vendedor_descripcion', $(this).attr('data-vendedor_descripcion') );
-		
+		$('#vendedor_id').attr( 'data-user_id', $(this).attr('data-user_id') );
+
+		$('#lbl_vendedor_mesero').text( '' );
+        hay_error_password = true;
 	});
+
+    $("#modal_password").on('shown.bs.modal', function(){
+        $('#lbl_vendedor_modal').text( $('#vendedor_id').attr( 'data-vendedor_descripcion') );
+        $('#lbl_error_password').hide();
+        $('#seller_password').val('');
+        $('#seller_password').focus();
+    });
+
+    $("#seller_password").on('keyup', function(){
+        var codigo_tecla_presionada = event.which || event.keyCode;
+        if (codigo_tecla_presionada == 13 ) { // 13 = Tecla Enter
+            validate_password();
+        }else{
+            $('#lbl_error_password').hide();
+        }
+    });
+
+    $("#btn_validate_password").on('click', function(e){            
+		e.preventDefault();
+        validate_password();
+    });
+
+
+    function validate_password()
+    {
+        var password = 'a3p0';
+        if ( $('#seller_password').val() != '') {
+            password = $('#seller_password').val();
+        }
+        var url = url_raiz + "/" + "core/validate_password" + "/" + $('#vendedor_id').attr( 'data-user_id') + "/" + password;
+
+        $.get(url, function (respuesta) {
+            if (respuesta == 'ok') {
+                $('#lbl_vendedor_mesero').text( $('#lbl_vendedor_modal').text() );
+                $("#modal_password").modal("hide");
+                hay_error_password = false;
+            }else{
+                $('#lbl_error_password').show();
+                hay_error_password = true;
+            }
+        });
+    }
+
+    $("#modal_password").on('hidden.bs.modal', function(){
+        if (hay_error_password) {
+            
+            $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+
+		    $('#vendedor_default').attr('class','btn btn-default btn_vendedor vendedor_activo');
+
+            $('#vendedor_id').val( $('#vendedor_default').attr('data-vendedor_id') );
+		    $('#vendedor_id').attr( 'data-vendedor_descripcion', $('#vendedor_default').attr('data-vendedor_descripcion') );
+		    $('#vendedor_id').attr( 'data-user_id', $('#vendedor_default').attr('data-user_id') );
+
+            $('#lbl_vendedor_mesero').text( $('#vendedor_default').attr('data-vendedor_descripcion') );
+            
+        }
+    });
+
+        
 	
 });

@@ -92,6 +92,7 @@ Route::get('core/validar_numero_identificacion2/{numero_identificacion}', 'Core\
 Route::get('core/validar_email/{email}', 'Core\TerceroController@validar_email');
 
 
+
 //Route::group(['middleware' => ['role:SuperAdmin']], function () {
 Route::resource('core/usuarios', 'UserController');
 Route::resource('core/roles', 'Core\RoleController');
@@ -101,6 +102,10 @@ Route::resource('core/roles', 'Core\RoleController');
 // Los usuarios administradores pueden cambiar la contraseña de cualquier usuario
 Route::get('core/usuario/cambiarpasswd/{user_id}', 'UserController@form_cambiarpasswd');
 Route::post('core/usuario/cambiarpasswd', 'UserController@cambiarpasswd');
+
+Route::get('core/usuario/cambiarpasswd_vendedor/{user_id}', 'UserController@form_cambiarpasswd_vendedor');
+
+Route::get('core/validate_password/{user_id}/{password}', 'UserController@validate_password');
 
 // Perfil del usuario
 Route::get('core/usuario/perfil', 'UserController@perfil');

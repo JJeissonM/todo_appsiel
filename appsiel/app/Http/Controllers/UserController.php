@@ -24,7 +24,7 @@ use App\Matriculas\Estudiante;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Contratotransporte\Vehiculo;
-
+use App\Ventas\Vendedor;
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -131,6 +131,28 @@ class UserController extends ModeloController
             $estudiante = Estudiante::find( Input::get('estudiante_id') );
             $registro = User::find( $estudiante->user_id );
         }
+
+        if ( is_null($registro) )
+        {
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado. Debe editar el registro y el usuario se creará automáticamente.');
+        }
+
+        if (!isset($miga_pan)) {
+            $miga_pan = [
+                            [ 'url' => $this->aplicacion->app.'?id='.Input::get('id'), 'etiqueta' => $this->aplicacion->descripcion ],
+                            [ 'url' => 'NO','etiqueta' => 'Cambiar contraseña: '.$registro->name.' ('.$registro->email.')' ]
+                        ];
+        }
+        
+
+        return view('core.usuario.cambiarpasswd',compact('registro','miga_pan'));
+    }
+
+    // Formulario para cambiar contraseña Modelo Vendedor
+    public function form_cambiarpasswd_vendedor( $user_id )
+    {
+        $vendedor = Vendedor::find($user_id);
+        $registro = User::find( $vendedor->user_id );
 
         if ( is_null($registro) )
         {
@@ -329,5 +351,26 @@ class UserController extends ModeloController
         }
 
         echo "Se crearon " . $l . " usuarios.";
+    }
+
+    
+
+    // Formulario para cambiar contraseña Modelo Vendedor
+    public function validate_password( $user_id, $password )
+    {
+        //$vendedor = Vendedor::find($user_id);
+        $usuario = User::find( $user_id );
+
+        if ( is_null($usuario) )
+        {
+            return 'no';
+        }
+
+        if (Hash::check($password, $usuario->password)) {
+            return 'ok';
+        }
+        
+        dd(is_null($usuario), Hash::make($password), $usuario->password);
+        return 'no';
     }
 }

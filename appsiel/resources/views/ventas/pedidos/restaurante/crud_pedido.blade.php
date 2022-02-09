@@ -15,16 +15,6 @@ use App\Http\Controllers\Sistema\VistaController;
             width: 40px;
         }
 
-        /*@media only screen and (min-width: 993px) {
-            .elemento_fondo {
-                position: fixed;
-                z-index: 9999;
-                bottom: 0;
-                margin-bottom: 0;
-                float: left;
-            }
-        }*/
-
         .vendedor_activo{
             background-color: #574696;
             color: white;
@@ -32,7 +22,16 @@ use App\Http\Controllers\Sistema\VistaController;
 
         .componente_vendedores{
             padding-top: 4px;
-        };
+        }
+
+        .mesa_activa{
+            background-color: #574696;
+            color: white;
+        }
+
+        .componente_mesas{
+            padding-top: 4px;
+        }
 
         input[type="number"] {
   -webkit-appearance: textfield;
@@ -109,9 +108,10 @@ input[type=number]::-webkit-outer-spin-button {
 
         <div class="marco_formulario">
 
-            <h4>Nuevo registro</h4>
+            <h4>Nuevo Pedido</h4>
             <hr>
 
+            <div style="display: none;">
             @if( Input::get('action') == 'edit' )
                 {{ Form::model($registro, ['url' => [$url_action], 'method' => 'PUT','files' => true,'id' => 'form_create']) }}
             @else
@@ -145,14 +145,26 @@ input[type=number]::-webkit-outer-spin-button {
             <input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}" required="required">
             <input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
                    value="{{$cliente->clase_cliente_id}}" required="required">
-            <input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$cliente->vendedor->equipo_ventas_id}}" required="required">
 
             <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}"
                    required="required">
 
             <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
 
-            <input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$cliente->vendedor_descripcion}}" value="{{$cliente->vendedor_id}}">
+            <?php 
+                $user_vendedor_id = 0;
+                if ($vendedor != null ) {
+                    if ($vendedor->usuario != null ) {
+                        $user_vendedor_id = $vendedor->usuario->id;
+                    }
+                }
+            ?>
+
+            <input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}" data-user_id="{{$user_vendedor_id}}" value="{{$vendedor->id}}">
+            
+            <input type="hidden" name="vendedor_default_id" id="vendedor_default_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}" data-user_id="{{$user_vendedor_id}}" value="{{$vendedor->id}}">
+
+            <input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$vendedor->equipo_ventas_id}}" required="required">
 
             <input type="hidden" name="cliente_descripcion" id="cliente_descripcion"
                    value="{{$cliente->tercero->descripcion}}" required="required">
@@ -204,55 +216,47 @@ input[type=number]::-webkit-outer-spin-button {
 
             {{ Form::close() }}
 
+
             <hr>
+
+        </div>
 
             <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 
             <div class="container-fluid">
+                <div class="marco_formulario">
+                    <input type="text" style="width:1px;" id="mitad_focus">
+                    
+                    <div class="row">
+                        @include('ventas.pedidos.restaurante.componente_meseros')
+                    </div>
+                    
+                    <div class="row">
+                        @include('ventas.pedidos.restaurante.componente_mesas')
+                    </div>
+                </div>
+                <br>
                 <div class="row">
-                    <div class="col-md-8 well">
+                    <div class="col-md-6">
                         <div class="container-fluid">
                             <div class="marco_formulario">
                                                 <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
                                                 {!! str_replace("<tbody>
                                         
                                     </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
-                                    Productos ingresados: <span id="numero_lineas"> 0 </span>
-                                                <br/><br/>
+                                    
+                                    @include('ventas.pedidos.restaurante.crud_pedido_resumen_totales')
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-md-4 well" style="font-size: 1.2em;">
+                    <div class="col-md-6" style="font-size: 1.2em;">
                         <div class="container-fluid">
-                            <div class="marco_formulario">                       
-                                @include('ventas.pedidos.restaurante.crud_pedido_resumen_totales')
-                            </div>
+                            {!! $vista_categorias_productos !!}
                         </div>
                     </div>
 
                 </div>
-
-                <input type="text" style="width:1px;" id="mitad_focus">
-                <div class="row">                
-                    <label class="control-label col-sm-3 col-md-3" for="cliente_input"><i class="fa fa-asterisk"></i>Atentidor Por:</label>
-                    <div class="col-sm-9 col-md-9">
-                        @include('ventas.pedidos.restaurante.componente_meseros')
-                    </div>
-                </div>
-                
-                <div class="row" style="padding:5px; back-ground-color:#50B794;">
-                    <div style="left: 0">
-                        <label class="control-label col-sm-3 col-md-3" for="cliente_input"><i class="fa fa-asterisk"></i>MESA:</label>
-                        <div class="col-sm-9 col-md-9">
-                            <input class="form-control" id="cliente_input" placeholder="MESA" autocomplete="off" required="required" name="cliente_input" type="text" value="{{$cliente->tercero->descripcion}}">
-                            <div id="clientes_suggestions">  </div>
-                        </div>
-                    </div>
-                </div>
-                
-                {!! $vista_categorias_productos !!}
-
             </div>
 
             <br>
@@ -339,6 +343,8 @@ input[type=number]::-webkit-outer-spin-button {
         //$("html, body").animate({ scrollTop: $(document).height() + "px" });
         
         $("#mitad_focus").focus();
+        $("#linea_ingreso_default_aux").hide();
+        
         
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};

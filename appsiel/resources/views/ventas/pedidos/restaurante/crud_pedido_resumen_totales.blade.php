@@ -27,8 +27,18 @@
                 <div id="total_impuestos" style="display: inline;"> $ {{ $valor_total_impuestos }}</div>
             </td>
         </tr>
+                                                
         <tr style="font-size:1.5em;">
-            <td width="35%">
+            <td width="55%">
+                <strong> Productos ingresados: </strong>
+            </td>
+            <td style="text-align: right;">
+                <span id="numero_lineas"> 0 </span>
+            </td>
+        </tr>
+
+        <tr style="font-size:1.5em;">
+            <td width="55%">
                 <strong> Total factura </strong>
             </td>
             <td style="text-align: right;">
@@ -39,6 +49,7 @@
                 <div id="lbl_ajuste_al_peso" style="display: inline; font-size: 9px;display: none;"> $ 0</div>
             </td>
         </tr>
+
         <tr class="warning" style="display: none;">
             <td width="35%">
                 <strong> Efectivo Recibido </strong>
