@@ -237,7 +237,7 @@ function reset_campos_formulario()
 	$('#cliente_id').val( cliente_default.id );
 	$('#cliente_input').val( cliente_default.descripcion );
 	$('#cliente_input').css('background-color', 'transparent');
-	$('#vendedor_id').val( cliente_default.vendedor_id );
+	//$('#vendedor_id').val( cliente_default.vendedor_id );
 	$('#inv_bodega_id').val( cliente_default.inv_bodega_id );
 	$('#forma_pago').val( forma_pago_default );
 	$('#fecha_vencimiento').val( fecha_vencimiento_default );
@@ -693,7 +693,6 @@ $(document).ready(function () {
 		    $('#vendedor_id').attr( 'data-user_id', $('#vendedor_default').attr('data-user_id') );
 
             $('#lbl_vendedor_mesero').text( $('#vendedor_default').attr('data-vendedor_descripcion') );
-            
         }
     });
 

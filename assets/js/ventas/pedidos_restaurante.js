@@ -343,7 +343,7 @@ $(document).ready(function () {
         $('#lista_descuentos_id').val(item_sugerencia.attr('data-lista_descuentos_id'));
 
         // Asignar resto de campos
-        $('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
+        //$('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
         $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
 
         $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
