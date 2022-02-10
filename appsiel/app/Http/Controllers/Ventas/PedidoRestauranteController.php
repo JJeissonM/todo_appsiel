@@ -204,8 +204,8 @@ class PedidoRestauranteController extends TransaccionController
         $vendedores = Vendedor::where('estado','Activo')->get();
         
         $mesas = Cliente::where('estado','Activo')
-        ->orWhere('id',$cliente->id)
-        ->get();
+            ->orWhere('id',$cliente->id)
+            ->get();
 
         return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','mesas'));
     }

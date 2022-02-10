@@ -110,7 +110,7 @@ input[type=number]::-webkit-outer-spin-button {
             <h4>&nbsp;&nbsp;&nbsp;Nuevo Pedido</h4>
             <hr>
 
-            <div style="display: none;">
+            <div style="display: block;">
                 @if( Input::get('action') == 'edit' )
                     {{ Form::model($registro, ['url' => [$url_action], 'method' => 'PUT','files' => true,'id' => 'form_create']) }}
                 @else
@@ -168,7 +168,7 @@ input[type=number]::-webkit-outer-spin-button {
                 <input type="hidden" name="cliente_descripcion" id="cliente_descripcion"
                     value="{{$cliente->tercero->descripcion}}" required="required">
 
-                <div class="row well">
+                <div class="row well" style="display: none;">
                     <div class="col-md-6">
                         {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'class'=>'form-control'] ) }}
                         {{ Form::bsText( 'direccion1', $cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
@@ -340,6 +340,12 @@ input[type=number]::-webkit-outer-spin-button {
         
         $("#mitad_focus").focus();
         $("#linea_ingreso_default_aux").hide();
+
+        $("#btn_cancelar").hide();
+        $("#core_empresa_id_lbl").parent().parent().parent().parent().hide();
+        $("#core_tipo_doc_app_id").parent().parent().parent().parent().hide();
+        $("#fecha").parent().parent().parent().parent().hide();
+        $("#contacto_cliente_id").parent().parent().parent().parent().hide();        
         
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};
