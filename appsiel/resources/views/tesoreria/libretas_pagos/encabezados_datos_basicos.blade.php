@@ -1,5 +1,10 @@
 
 <?php
+	if($estudiante->matricula_activa() == null )
+	{
+		dd('El estudiante ' . $estudiante->tercero->descripcion . ' NO tiene una matrícula activa en el sistema. Por favor revisar.');
+	}
+
 	$cod_matricula = $estudiante->matricula_activa()->codigo;
 	$descripcion_curso = $estudiante->matricula_activa()->curso->descripcion;
 	if ( isset($matricula) )

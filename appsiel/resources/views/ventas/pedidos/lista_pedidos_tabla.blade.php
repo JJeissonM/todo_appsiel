@@ -10,7 +10,7 @@
                     <td> {{ $pedido->fecha }} </td>
                     <td class="text-center"> {{ $pedido->tipo_documento_app->prefijo }} {{ $pedido->consecutivo }} </td>
                     <td> {{ $pedido->tercero->descripcion }} </td>
-                    <td> {{ $pedido->vendedor->descripcion }} </td>
+                    <td> {{ $pedido->vendedor->tercero->descripcion }} </td>
                     <td> ${{ number_format($pedido->valor_total,0,',','.') }} </td>
                     <td>
                         <a class="btn btn-default btn-xs btn-detail" href="{{ url('pos_factura_crear_desde_pedido/' . $pedido->id . '?id=20&id_modelo=175&id_transaccion=42&formato_impresion_id=pos') }}" title="Facturar" ><i class="fa fa-file"></i>&nbsp;</a>
