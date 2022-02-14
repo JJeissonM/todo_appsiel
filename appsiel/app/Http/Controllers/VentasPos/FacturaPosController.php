@@ -252,14 +252,30 @@ class FacturaPosController extends TransaccionController
 
         if ( !is_null( $pedido ) )
         {
-            $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
-            $pedido->estado = 'Facturado';
-            $pedido->save();
+            $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
-            self::actualizar_cantidades_pendientes( $pedido, 'restar' );
+            foreach ($todos_los_pedidos as $un_pedido) {
+                $un_pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
+                $un_pedido->estado = 'Facturado';
+                $un_pedido->save(); 
+                
+                self::actualizar_cantidades_pendientes( $un_pedido, 'restar' );
+            }
         }
 
         return $doc_encabezado->consecutivo;
+    }
+
+    public function get_todos_los_pedidos_mesero_para_la_mesa($pedido)
+    {
+        return VtasPedido::where(
+                            [
+                                ['cliente_id','=',$pedido->cliente_id],
+                                ['vendedor_id','=',$pedido->vendedor_id],
+                                ['estado','=','Pendiente']
+                            ]
+                        )
+                ->get();
     }
 
     public function actualizar_campo_lineas_registros_medios_recaudos_request(&$request_2)
@@ -509,7 +525,6 @@ class FacturaPosController extends TransaccionController
             "unico" => 0
         ]);
 
-        //dd( $doc_encabezado );
         //Personalización de la lista de campos
         foreach ($lista_campos as $key => $value)
         {
@@ -712,11 +727,15 @@ class FacturaPosController extends TransaccionController
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( !is_null($pedido) )
         {
-            $pedido->estado = "Pendiente";
-            $pedido->ventas_doc_relacionado_id = 0;
-            $pedido->save();
+            $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
-            self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
+            foreach ($todos_los_pedidos as $un_pedido) {
+                $un_pedido->estado = "Pendiente";
+                $un_pedido->ventas_doc_relacionado_id = 0;
+                $un_pedido->save();
+
+                self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+            }                
         }
 
 
@@ -797,11 +816,15 @@ class FacturaPosController extends TransaccionController
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( !is_null($pedido) )
         {
-            $pedido->estado = "Pendiente";
-            $pedido->ventas_doc_relacionado_id = 0;
-            $pedido->save();
+            $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
-            self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
+            foreach ($todos_los_pedidos as $un_pedido) {
+                $un_pedido->estado = "Pendiente";
+                $un_pedido->ventas_doc_relacionado_id = 0;
+                $un_pedido->save();
+
+                self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+            }
         }
 
         // 6to. Se marca como anulado el documento
@@ -1104,6 +1127,7 @@ class FacturaPosController extends TransaccionController
 
         // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
         $pedido = VtasPedido::find($pedido_id);
+
         $numero_linea = count($pedido->lineas_registros) + 1;
 
 
@@ -1189,7 +1213,9 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
 
-        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($pedido->lineas_registros);
+        $todas_las_lineas_registros = $this->unificar_lineas_registros_pedidos($pedido);
+
+        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($todas_las_lineas_registros);
 
         $valor_subtotal = 0;
         $valor_descuento = 0;
@@ -1200,6 +1226,21 @@ class FacturaPosController extends TransaccionController
         $vendedores = Vendedor::where('estado','Activo')->get();
 
         return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor') );
+    }
+
+    public function unificar_lineas_registros_pedidos($pedido)
+    {
+        $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+        
+        $todas_las_lineas_registros = [];
+        foreach ($todos_los_pedidos as $pedido) {
+            $lineas_registros = $pedido->lineas_registros;
+            foreach ($lineas_registros as $linea) {
+                $todas_las_lineas_registros[] = $linea;
+            }
+        }
+
+        return $todas_las_lineas_registros;
     }
 
     public function set_catalogos( $pdv_id )
