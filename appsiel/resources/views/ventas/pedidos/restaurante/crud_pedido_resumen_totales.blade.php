@@ -73,6 +73,15 @@
                 <button class="btn btn-lg btn-primary" id="btn_guardar_factura" disabled="disabled"><i
                             class="fa fa-check"></i> Guardar pedido
                 </button>
+                <button style="display: none;" class="btn btn-sm btn-success" id="btn_imprimir_pedido"><i
+                            class="fa fa-print"></i> Imprimir pedido
+                </button>
+                <button style="display: none;" class="btn btn-lg btn-primary" id="btn_modificar_pedido"><i
+                            class="fa fa-check"></i> Modificar pedido
+                </button>
+                <button style="display: none;" class="btn btn-sm btn-danger" id="btn_anular_pedido" data-pedido_label=""><i
+                            class="fa fa-trash"></i> Anular pedido
+                </button>
             </td>
         </tr>
     </table>

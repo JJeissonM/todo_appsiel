@@ -267,17 +267,6 @@ $(document).ready(function () {
 
     });
 
-    // Valores unitarios
-    function calcular_impuestos()
-    {
-        var precio_venta = precio_unitario - valor_unitario_descuento;
-
-        base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
-
-        valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
-    }
-
-
     $('#tasa_descuento').keyup(function () {
 
         if (validar_input_numerico($(this))) {
@@ -305,6 +294,16 @@ $(document).ready(function () {
         }
     });
 
+    // Valores unitarios
+    function calcular_impuestos()
+    {
+        var precio_venta = precio_unitario - valor_unitario_descuento;
+
+        base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
+
+        valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
+    }
+
     function calcular_valor_descuento()
     {
         // El descuento se calcula cuando el precio tiene el IVA incluido
@@ -316,67 +315,6 @@ $(document).ready(function () {
         $('#tasa_descuento').val(0);
         calcular_valor_descuento();
     }
-
-    $('.btn_mesa').on('click', function (e) {
-		e.preventDefault();
-        
-		$('.mesa_activa').attr('class','btn btn-default btn_mesa');
-
-		$(this).attr('class','btn btn-default btn_mesa mesa_activa');
-
-        seleccionar_mesa($(this));
-
-	});
-
-    function seleccionar_mesa(item_sugerencia) {
-
-        // Asignar descripción al TextInput
-        $('#lbl_mesa_seleccionada').text(item_sugerencia.attr('data-nombre_cliente'));
-
-        // Asignar Campos ocultos
-        $('#cliente_id').val(item_sugerencia.attr('data-cliente_id'));
-        $('#zona_id').val(item_sugerencia.attr('data-zona_id'));
-        $('#clase_cliente_id').val(item_sugerencia.attr('data-clase_cliente_id'));
-        $('#liquida_impuestos').val(item_sugerencia.attr('data-liquida_impuestos'));
-        $('#core_tercero_id').val(item_sugerencia.attr('data-core_tercero_id'));
-        $('#lista_precios_id').val(item_sugerencia.attr('data-lista_precios_id'));
-        $('#lista_descuentos_id').val(item_sugerencia.attr('data-lista_descuentos_id'));
-
-        // Asignar resto de campos
-        //$('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
-        $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
-
-        $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
-        $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
-        $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
-        $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
-        $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
-
-        var forma_pago = 'contado';
-        var dias_plazo = parseInt(item_sugerencia.attr('data-dias_plazo'));
-        if (dias_plazo > 0) {
-            forma_pago = 'credito';
-        }
-        $('#forma_pago').val(forma_pago);
-
-        // Para llenar la fecha de vencimiento
-        var fecha = new Date($('#fecha').val());
-        fecha.setDate(fecha.getDate() + (dias_plazo + 1));
-
-        var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
-        var dia = fecha.getDate();// + 1; // Se le suma 1,
-
-        if (mes < 10) {
-            mes = '0' + mes;
-        }
-
-        if (dia < 10) {
-            dia = '0' + dia;
-        }
-        $('#fecha_vencimiento').val(fecha.getFullYear() + '-' + mes + '-' + dia);
-
-    } // FIN seleccionar_mesa
-
 
     function agregar_nueva_linea() 
     {
@@ -530,14 +468,133 @@ $(document).ready(function () {
 
             $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
 
+            reset_componente_meseros();
+            reset_componente_mesas();
+            reset_pedidos_mesero_para_una_mesa();
+
             llenar_tabla_productos_facturados(doc_encabezado);
 
             ventana_imprimir();
+
+            reset_datos_pedido();
             
             resetear_ventana();
         });
 
     });
+
+    
+    $('#btn_modificar_pedido').click(function (event){
+        event.preventDefault();
+
+        if( hay_productos == 0 )
+        {
+            alert('No ha ingresado productos.');
+            reset_linea_ingreso_default();
+            reset_efectivo_recibido();
+            $('#btn_nuevo').hide();
+            return false;
+        }
+
+        // Desactivar el click del botón
+        //$( this ).attr( 'disabled', 'disabled' );
+
+        $('#linea_ingreso_default').remove();
+
+        var table = $('#ingreso_registros').tableToJSON();               
+
+        // Se asigna el objeto JSON a un campo oculto del formulario
+        $('#lineas_registros').val( JSON.stringify( table ) );
+
+        // No se puede enviar controles disabled
+        habilitar_campos_encabezado();
+        
+        $("#form_create").attr('method','PUT');
+
+        var url = $("#form_create").attr('action') + '/' + $('#pedido_id').val();
+        var data = $("#form_create").serialize();
+
+        $.ajax({
+            url: url,
+            data: data,
+            method: "PUT"
+          }).done(function(doc_encabezado) {
+            $('doc_encabezado_documento_transaccion_descripcion').text(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
+
+            $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
+
+            //reset_componente_meseros();
+
+            llenar_tabla_productos_facturados(doc_encabezado);
+
+            ventana_imprimir();
+
+            reset_datos_pedido();
+            
+            resetear_ventana();
+          });
+
+    });
+
+    
+    $('#btn_anular_pedido').click(function (event){
+        event.preventDefault();
+
+        if (confirm('Realmente quiere anular el pedido ' + $('#btn_anular_pedido').attr('data-pedido_label') ) ) {
+            var url = url_raiz + "/" + "vtas_pedidos_restaurante_cancel" + "/" + $('#pedido_id').val();
+
+            $.get(url, function (pedido) {
+
+                reset_datos_pedido();
+                $('#div_pedidos_mesero_para_una_mesa').html('<div class="alert alert-danger"><strong>'+pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo+'!</strong> Pedido anulado correctamente.</div>');
+                
+            });
+        }
+        
+    });
+
+    
+    $('#btn_imprimir_pedido').click(function (event){
+        event.preventDefault();
+
+        var url = url_raiz + "/" + "vtas_cargar_datos_editar_pedido" + "/" + $('#pedido_id').val();
+
+        $.get(url, function (un_pedido) {
+            
+            $('doc_encabezado_documento_transaccion_descripcion').text( un_pedido.doc_encabezado_documento_transaccion_descripcion );
+
+            $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text( un_pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo );
+
+            llenar_tabla_productos_facturados(un_pedido);
+
+            ventana_imprimir();
+
+            reset_datos_pedido();
+            
+            resetear_ventana();
+        });
+        
+    });
+
+    function reset_componente_meseros()
+    {
+        $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+        $('#lbl_vendedor_mesero').text( '' );
+    }
+
+    function reset_componente_mesas()
+    {
+		$('.btn_mesa').removeAttr('disabled');
+        $('.btn_mesa').attr('class','btn btn-default btn_mesa');
+        $('#lbl_mesa_seleccionada').text( '' );
+    }
+
+    function reset_pedidos_mesero_para_una_mesa()
+    {
+        $('#div_pedidos_mesero_para_una_mesa').text( '' );
+    }
+
+    
 
     function resetear_ventana()
     {
@@ -548,8 +605,36 @@ $(document).ready(function () {
         reset_linea_ingreso_default();
     	reset_tabla_ingreso_medios_pago();
     	reset_efectivo_recibido();
-        $('[button]').show();
+
+        mostrar_botones_productos();
     }
+
+	function reset_datos_mesa()
+	{
+		$('#div_pedidos_mesero_para_una_mesa').html('');
+		$('#lbl_mesa_seleccionada').html('');
+		$('.btn_mesa').removeAttr('disabled');
+		$('.btn_mesa').attr('class','btn btn-default btn_mesa');
+
+        $('.linea_registro').each(function () {
+            $(this).remove();
+        });
+        
+		hay_productos = 0;
+        numero_lineas = 0;
+
+        $('#btn_guardar_factura').show();
+        $('#btn_modificar_pedido').hide();
+        $('#btn_anular_pedido').hide();
+        $('#btn_imprimir_pedido').hide();
+
+		 // reset totales
+		 $('#total_cantidad').text('0');
+ 
+		 // Total factura  (Sumatoria de precio_total)
+		 $('#total_factura').text('$ 0');
+		 $('#valor_total_factura').val(0);
+	}
 
     $(document).on('click', '#btn_recalcular_totales', function(event) {
         event.preventDefault();
@@ -623,8 +708,6 @@ $(document).ready(function () {
         hay_productos = 0;
         numero_lineas = 0;
         $('#numero_lineas').text('0');
-
-        //agregar_la_linea_ini();
     }
 
     function reset_resumen_de_totales()
@@ -747,60 +830,6 @@ $(document).ready(function () {
     }
 
 
-    var valor_actual, elemento_modificar, elemento_padre;
-
-    // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
-    $(document).on('dblclick', '.elemento_modificar', function(){
-
-        elemento_modificar = $(this);
-
-        elemento_padre = elemento_modificar.parent();
-
-        valor_actual = $(this).html();
-
-        elemento_modificar.hide();
-
-        elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
-
-        document.getElementById('valor_nuevo').value = valor_actual;
-        document.getElementById('valor_nuevo').select();
-
-    });
-
-    // Si la caja de texto pierde el foco
-    $(document).on('blur', '#valor_nuevo', function(event){
-
-        var x = event.which || event.keyCode; // Capturar la tecla presionada
-        if( x != 13 ) // 13 = Tecla Enter
-        {
-            elemento_padre.find('#valor_nuevo').remove();
-            elemento_modificar.show();
-        }
-
-    });
-
-    // Al presiona teclas en la caja de texto
-    $(document).on('keyup', '#valor_nuevo', function () {
-
-        var x = event.which || event.keyCode; // Capturar la tecla presionada
-
-        // Abortar la edición
-        if (x == 27) // 27 = ESC
-        {
-            elemento_padre.find('#valor_nuevo').remove();
-            elemento_modificar.show();
-            return false;
-        }
-
-        // Guardar
-        if (x == 13) // 13 = ENTER
-        {
-            var fila = $(this).closest("tr");
-            guardar_valor_nuevo(fila);
-        }
-    });
-
-
     $("#btn_listar_items").click(function (event) {
 
         $("#myModal").modal({keyboard: true});
@@ -811,166 +840,7 @@ $(document).ready(function () {
 
     });
 
-
-    $(document).on('click', ".btn_registrar_ingresos_gastos", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            {backdrop: "static"}
-        );
-
-        $("#myModal2 .modal-title").text('Nuevo registro de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn-danger").hide();
-        $("#myModal2 .btn_save_modal").show();
-
-        $("#myModal2 .btn_save_modal").removeAttr('disabled');        
-
-        var url = url_raiz + "/" + "ventas_pos_form_registro_ingresos_gastos" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-
-    $(document).on('click', ".btn_consultar_estado_pdv", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            { backdrop: 'static', keyboard: false}
-        );
-
-        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn_save_modal").hide();
-
-        var url = url_raiz + "/" + "pos_get_saldos_caja_pdv" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-
-    $(document).on('click', ".btn_revisar_pedidos_ventas", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            {keyboard: true}
-        );
-
-        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn_save_modal").hide();
-
-        var url = url_raiz + "/" + "pos_revisar_pedidos_ventas" + "/" + $('#pdv_id').val();
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-
-    $(document).on('click', '#myModal2 .btn_save_modal', function (event) {
-        event.preventDefault();
-
-        if ($('#combobox_motivos').val() == '')
-        {
-            $('#combobox_motivos').focus();
-            alert('Debe ingresar un Motivo');
-            return false;
-        }
-
-        if ($('#cliente_proveedor_id').val() == '') {
-            $('#cliente_proveedor_id').focus();
-            alert('Debe ingresar un Cliente/Proveedor.');
-            return false;
-        }
-
-        if (!validar_input_numerico($('#col_valor')) || $('#col_valor').val() == '') {
-            alert('No ha ingresado una valor para la transacción.');
-            return false;
-        }
-        
-        // Desactivar el click del botón
-        $( this ).hide();
-        $( this ).attr( 'disabled', 'disabled' );
-
-        var url = $("#form_registrar_ingresos_gastos").attr('action');
-        var data = $("#form_registrar_ingresos_gastos").serialize();
-
-        $.post(url, data, function (respuesta) {
-            $('#contenido_modal2').html(respuesta);
-            $("#myModal2 .btn-danger").show();
-            $("#myModal2 .btn_save_modal").hide();
-        });
-
-    });
-
-
-    $(document).on('click', ".btn_consultar_documentos", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            {keyboard: true}
-        );
-
-        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn_save_modal").hide();
-
-        var url = url_raiz + "/" + "pos_consultar_documentos_pendientes" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
     var fila;
-    $(document).on('click', ".btn_anular_factura", function (event) {
-        event.preventDefault();
-
-        var opcion = confirm('¿Seguro desea anular la factura ' + $(this).attr('data-lbl_factura') + ' ?');
-
-        if (opcion) {
-            fila = $(this).closest("tr");
-
-            $('#div_spin2').fadeIn();
-            var url = url_raiz + "/" + "pos_factura_anular" + "/" + $(this).attr('data-doc_encabezado_id');
-
-            $.get(url, function (respuesta) {
-                $('#div_spin2').hide();
-
-                fila.find('td').eq(7).text('Anulado');
-                fila.find('.btn_modificar_factura').hide();
-                fila.find('.btn_anular_factura').hide();
-                alert('Documento anulado correctamente.');
-            });
-        } else {
-            return false;
-        }
-    });
 
 
     function guardar_valor_nuevo(fila) 
@@ -1036,45 +906,259 @@ $(document).ready(function () {
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
 
-
-    $("#btn_cargar_plano").on('click',function(event){
-        event.preventDefault();
-
-        if ( !validar_requeridos() )
-        {
+    
+    $('.btn_mesa').on('click', function (e) {
+		e.preventDefault();
+        
+        if ( $('#lbl_vendedor_mesero').text() == '') {
+            alert('Debe seleccionar un MESERO.');
             return false;
         }
 
-        $("#div_spin").show();
-        $("#div_cargando").show();
+		$('.mesa_activa').attr('class','btn btn-default btn_mesa');
+
+		$(this).attr('class','btn btn-default btn_mesa mesa_activa');
+
+        seleccionar_mesa($(this));
+
+	});
+
+    function seleccionar_mesa(item_sugerencia) {
+
+
+        // Asignar descripción al TextInput
+        $('#lbl_mesa_seleccionada').text(item_sugerencia.attr('data-nombre_cliente'));
+
+        // Asignar Campos ocultos
+        $('#cliente_id').val(item_sugerencia.attr('data-cliente_id'));
+        $('#zona_id').val(item_sugerencia.attr('data-zona_id'));
+        $('#clase_cliente_id').val(item_sugerencia.attr('data-clase_cliente_id'));
+        $('#liquida_impuestos').val(item_sugerencia.attr('data-liquida_impuestos'));
+        $('#core_tercero_id').val(item_sugerencia.attr('data-core_tercero_id'));
+        $('#lista_precios_id').val(item_sugerencia.attr('data-lista_precios_id'));
+        $('#lista_descuentos_id').val(item_sugerencia.attr('data-lista_descuentos_id'));
+
+        // Asignar resto de campos
+        //$('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
+        $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
+
+        $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
+        $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
+        $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
+        $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
+        $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
+
+        var forma_pago = 'contado';
+        var dias_plazo = parseInt(item_sugerencia.attr('data-dias_plazo'));
+        if (dias_plazo > 0) {
+            forma_pago = 'credito';
+        }
+        $('#forma_pago').val(forma_pago);
+
+        // Para llenar la fecha de vencimiento
+        var fecha = new Date($('#fecha').val());
+        fecha.setDate(fecha.getDate() + (dias_plazo + 1));
+
+        var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
+        var dia = fecha.getDate();// + 1; // Se le suma 1,
+
+        if (mes < 10) {
+            mes = '0' + mes;
+        }
+
+        if (dia < 10) {
+            dia = '0' + dia;
+        }
+        $('#fecha_vencimiento').val(fecha.getFullYear() + '-' + mes + '-' + dia);
+
+        reset_pedidos_cargados_mesa();
+        cagar_pedidos_mesero_para_esta_mesa();
+
+    } // FIN seleccionar_mesa
+
+    function reset_pedidos_cargados_mesa()
+    {
+        $('#div_pedidos_mesero_para_una_mesa').html('');
         
-        var form = $('#form_archivo_plano');
-        var url = form.attr('action');
-        var datos = new FormData(document.getElementById("form_archivo_plano"));
+        reset_datos_pedido();
+    }
 
-        $.ajax({
-            url: url,
-            type: "post",
-            dataType: "html",
-            data: datos,
-            cache: false,
-            contentType: false,
-            processData: false
-        })
-        .done(function( respuesta ){
-            $('#div_cargando').hide();
-            $("#div_spin").hide();
+    function reset_datos_pedido()
+    {
+        $('#ingreso_registros').find('tbody').html('');
+        $('#numero_lineas').text('0');
 
-            $("#ingreso_registros").find('tbody:last').prepend( respuesta );
-            calcular_totales();
-            $('#btn_nuevo').show();
+        mostrar_botones_productos();
 
-            hay_productos = $('#ingreso_registros tr').length - 2;
-            $('#numero_lineas').html( hay_productos );
+        hay_productos = 0;
+        numero_lineas = 0;
+        
+        $('#btn_guardar_factura').show();
+        $('#btn_modificar_pedido').hide();
+        $('#btn_anular_pedido').hide();
+        $('#btn_imprimir_pedido').hide();
 
-            $('#inv_producto_id').focus();
+        $("#div_ingreso_registros").find('h5').html('Ingreso de productos<br><span style="color:red;">NUEVO PEDIDO</span>');
+    }
+
+    function mostrar_botones_productos()
+    {
+        $('#accordionExample').find('button').each(function () {
+            $(this).parent().show();
         });
+    }
+
+	function cagar_pedidos_mesero_para_esta_mesa()
+	{
+        $('#div_pedidos_mesero_para_una_mesa').html('<span class="text-info">Cargando pedidos...</span>');
+
+		var url = url_raiz + "/" + "vtas_get_pedidos_mesero_para_una_mesa" + "/" + $('#vendedor_id').val() + "/" + $('#cliente_id').val();
+
+        $.get(url, function (pedidos) {
+            $('#div_pedidos_mesero_para_una_mesa').html('');
+			var botones = '';
+			pedidos.forEach(un_pedido => {
+				botones += '<button class="btn btn-warning btn_pedido_mesero_para_una_mesa"  data-pedido_id="'+un_pedido.pedido_id+'">'+un_pedido.pedido_label+'</button>';
+                botones += '&nbsp;&nbsp;&nbsp;&nbsp;';
+			});
+
+            if (botones != '' ) {
+                $('#div_pedidos_mesero_para_una_mesa').append('<h5><b>'+$('.vendedor_activo').text()+'</b>, tienes estos pedidos pendientes</h5><hr>');                
+            }
+
+            $('#div_pedidos_mesero_para_una_mesa').append(botones);
+        });
+	}
+
+    $(document).on('click', '.btn_pedido_mesero_para_una_mesa', function () {
+        
+        $("#div_cargando").show();
+        $('#ingreso_registros').find('tbody').html('');
+        $('#numero_lineas').text('0');
+
+        mostrar_botones_productos();
+
+        var url = url_raiz + "/" + "vtas_cargar_datos_editar_pedido" + "/" + $(this).attr('data-pedido_id');
+
+        $.get(url, function (un_pedido) {
+            
+            $("#div_cargando").hide();
+            
+            var lineas_registros = un_pedido.lineas_registro;
+
+            lineas_registros.forEach(linea => {				
+                var string_fila = generar_string_celdas_edit( linea );
+                $('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="' + linea.numero_linea + '">' + string_fila + '</tr>');
+                $("#btn_"+linea.inv_producto_id).hide();
+			});
+
+            // Se calculan los totales
+            calcular_totales();
+            
+        
+            $("#div_ingreso_registros").find('h5').html('Ingreso de productos<br><span style="color:red;">Modificar pedido: '+un_pedido.pedido_label+ ', ' +un_pedido.mesa_label+'</span>');
+            $('#pedido_id').val(un_pedido.pedido_id);
+
+            $('#numero_lineas').text(un_pedido.numero_lineas);
+            hay_productos = un_pedido.numero_lineas;
+            numero_lineas = un_pedido.numero_lineas;
+            
+            $('#btn_guardar_factura').hide();
+            $('#btn_modificar_pedido').show();
+            $('#btn_anular_pedido').attr('data-pedido_label',un_pedido.pedido_label+ ', ' +un_pedido.mesa_label);
+            $('#btn_anular_pedido').show();
+
+            
+            $('#btn_imprimir_pedido').attr('data-pedido_label',un_pedido.pedido_label+ ', ' +un_pedido.mesa_label);
+            $('#btn_imprimir_pedido').attr('data-doc_encabezado_documento_transaccion_descripcion',un_pedido.doc_encabezado_documento_transaccion_descripcion);
+            $('#btn_imprimir_pedido').attr('data-doc_encabezado_documento_transaccion_prefijo_consecutivo',un_pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo);
+            $('#btn_imprimir_pedido').show();
+            
+        });
+
     });
+
+    function generar_string_celdas_edit(linea){
+    
+        var celdas = [];
+        var num_celda = 0;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="inv_producto_id">' + linea.inv_producto_id + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="precio_unitario">' + linea.precio_unitario + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="base_impuesto">' + linea.base_impuesto_unitario + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="tasa_impuesto">' + linea.tasa_impuesto + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="valor_impuesto">' + linea.valor_impuesto_unitario + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="base_impuesto_total">' + linea.base_impuesto_unitario * linea.cantidad + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="cantidad">' + linea.cantidad + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="precio_total">' + linea.precio_total + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="tasa_descuento">' + linea.tasa_descuento + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td style="display: none;"><div class="valor_total_descuento">' + linea.valor_total_descuento + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td> &nbsp; </td>';
+    
+        num_celda++;
+    
+        var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+    
+        celdas[num_celda] = '<td> ' + btn_borrar + ' &nbsp;&nbsp; <div class="lbl_producto_descripcion" style="display: inline;"> ' + linea.lbl_producto_descripcion + ' </div> </td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td> <div class="number-input"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepDown()" class="minus"></button><input class="quantity" min="1" name="quantity" value="' + linea.cantidad + '" type="number" readonly="readonly"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepUp()" class="plus"></button> </div> </td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td> <div class="lbl_precio_unitario" style="display: inline;">' + '$' + new Intl.NumberFormat("de-DE").format(linea.precio_unitario) + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td>' + linea.tasa_descuento + '% ( $<div class="lbl_valor_total_descuento" style="display: inline;">' + new Intl.NumberFormat("de-DE").format(linea.valor_total_descuento.toFixed(0)) + '</div> ) </td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td><div class="lbl_tasa_impuesto" style="display: inline;">' + linea.tasa_impuesto + '</div></td>';
+    
+        num_celda++;
+    
+        celdas[num_celda] = '<td> <div class="lbl_precio_total" style="display: inline;">' + '$' + new Intl.NumberFormat("de-DE").format(linea.precio_total.toFixed(0)) + ' </div> </td> <td> &nbsp; </td>';
+    
+        var cantidad_celdas = celdas.length;
+        var string_celdas = '';
+        for (var i = 0; i < cantidad_celdas; i++) {
+            string_celdas = string_celdas + celdas[i];
+        }
+
+        return string_celdas;
+    };
 
 });
 

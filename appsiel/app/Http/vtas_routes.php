@@ -91,4 +91,18 @@ Route::post('vtas_crear_remision_y_factura_desde_doc_venta','Ventas\ProcesoContr
 Route::post('ventas_conexion/procesos/procesar/masivo','Ventas\ProcesoController@conexion_procesos')->name('ventas.conexion_procesos');
 
 // Pedidos de restarurantes
+/**
+ * vendedor_id = MESERO
+ * cliente_id = MESA
+ * 
+ */
 Route::resource('vtas_pedidos_restaurante', 'Ventas\PedidoRestauranteController');
+
+Route::get('vtas_pedidos_restaurante_mesas_disponibles_mesero/{vendedor_id}', 'Ventas\PedidoRestauranteController@get_mesas_disponibles_mesero');
+
+Route::get('vtas_get_pedidos_mesero_para_una_mesa/{vendedor_id}/{cliente_id}', 'Ventas\PedidoRestauranteController@get_pedidos_mesero_para_una_mesa');
+
+Route::get('vtas_cargar_datos_editar_pedido/{pedido_id}', 'Ventas\PedidoRestauranteController@cargar_datos_editar_pedido');
+Route::get('vtas_pedidos_restaurante_cancel/{pedido_id}', 'Ventas\PedidoRestauranteController@cancel');
+
+Route::get('vtas_pedidos_restaurante_pruebas', 'Ventas\PedidoRestauranteController@pruebas');

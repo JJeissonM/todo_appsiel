@@ -67,6 +67,8 @@ use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvGrupo;
+use App\Ventas\Services\PedidosRestauranteServices;
+use Symfony\Component\HttpKernel\Client;
 
 class PedidoRestauranteController extends TransaccionController
 {
@@ -96,7 +98,7 @@ class PedidoRestauranteController extends TransaccionController
 
         $pdv = Pdv::find($pdv_id);
         
-        $cliente = $pdv->cliente;
+        $cliente = Cliente::find(config('pedidos_restaurante.cliente_default_id'));
         $vendedor = $cliente->vendedor;
         
         $validar = $this->verificar_datos_por_defecto( $pdv );
@@ -167,13 +169,19 @@ class PedidoRestauranteController extends TransaccionController
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
+        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Pedidos');
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
-
+        
+        $categoria_cocina = InvGrupo::find((int)Input::get('grupo_inventarios_id'));
+        
         $productosTemp = null;
         foreach ($productos as $pr)
         {
+            if ( $pr->inv_grupo_id != $categoria_cocina->id) {
+                continue;
+            }
+
             $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
             if ( is_null($grupo_inventario) )
             {
@@ -203,11 +211,19 @@ class PedidoRestauranteController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
         
-        $mesas = Cliente::where('estado','Activo')
-            ->orWhere('id',$cliente->id)
-            ->get();
+        $mesas = $this->get_mesas();
 
         return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','mesas'));
+    }
+
+    public function get_mesas()
+    {
+        return Cliente::where([
+            ['estado','=','Activo'],
+            ['clase_cliente_id','=',(int)config('pedidos_restaurante.clase_cliente_tipo_mesas_id')]
+            ])
+            ->orWhere('id',(int)config('pedidos_restaurante.cliente_default_id'))
+            ->get();
     }
 
     public function verificar_datos_por_defecto( $pdv )
@@ -261,6 +277,53 @@ class PedidoRestauranteController extends TransaccionController
 
         //return $doc_encabezado->consecutivo;
         return response()->json( $this->build_json_pedido($doc_encabezado), 200);
+    }
+
+    public function edit($id)
+    {
+        $pedido_serv = new PedidosRestauranteServices();
+        return response()->json( $pedido_serv->cargar_datos_editar_pedido($id) );
+    }
+
+    public function update(Request $request, $id)
+    {
+        $pedido = VtasPedido::find($id);
+
+        if (!str_contains($pedido->descripcion,'<<Modificado>>')) {
+            $pedido->descripcion .= ' <<Modificado>>';
+            $pedido->save();
+        }        
+
+        $lineas_registros = $pedido->lineas_registros;
+        foreach ($lineas_registros as $linea) {
+            $linea->delete();
+        }
+
+        $lineas_registros = json_decode($request->lineas_registros);
+
+        // Crear Registros del documento de ventas
+        $request['creado_por'] = Auth::user()->email;
+        self::crear_registros_documento($request, $pedido, $lineas_registros);
+
+        return response()->json( $this->build_json_pedido($pedido), 200);
+    }
+
+    public function cancel($id)
+    {
+        $pedido = VtasPedido::find($id);
+
+        $pedido->estado = 'Anulado';
+        $pedido->modificado_por = Auth::user()->email;
+        $pedido->save();
+
+        $lineas_registros = $pedido->lineas_registros;
+        foreach ($lineas_registros as $linea) {
+            $linea->estado = 'Anulado';
+            $linea->modificado_por = Auth::user()->email;
+            $linea->save();
+        }
+
+        return response()->json( $this->build_json_pedido($pedido), 200);
     }
 
     public function build_json_pedido($doc_encabezado)
@@ -395,6 +458,37 @@ class PedidoRestauranteController extends TransaccionController
                 ];
         
         return response()->json( $datos );
+    }
+
+    // mesero_id = vendedor_id
+    public function get_mesas_disponibles_mesero($mesero_id)
+    {
+        $obj = new PedidosRestauranteServices();
+        return response()->json( $obj->get_mesas_disponibles_mesero($mesero_id) );
+    }
+
+    public function get_pedidos_pendientes_mesero($mesero_id)
+    {
+        $obj = new PedidosRestauranteServices();
+        return response()->json( $obj->get_pedidos_pendientes_mesero($mesero_id) );
+    }
+
+    public function get_pedidos_mesero_para_una_mesa($mesero_id, $mesa_id)
+    {
+        $obj = new PedidosRestauranteServices();
+        return response()->json( $obj->get_pedidos_mesero_para_una_mesa($mesero_id, $mesa_id) );
+    }
+
+    public function cargar_datos_editar_pedido($pedido_id)
+    {
+        $obj = new PedidosRestauranteServices();
+        return response()->json( $obj->cargar_datos_editar_pedido($pedido_id) );
+    }
+
+    public function pruebas()
+    {
+        $obj = new PedidosRestauranteServices();
+        return response()->json( $obj->cargar_datos_editar_pedido(  308  ) );
     }
 
 }

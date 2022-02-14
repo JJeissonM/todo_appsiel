@@ -103,14 +103,10 @@ input[type=number]::-webkit-outer-spin-button {
 
     @include('layouts.mensajes')
 
-    <div class="row">
+    <div class="container-fluid">
         <br>
-
-
             <h4>&nbsp;&nbsp;&nbsp;Nuevo Pedido</h4>
             <hr>
-
-            <div style="display: block;">
                 @if( Input::get('action') == 'edit' )
                     {{ Form::model($registro, ['url' => [$url_action], 'method' => 'PUT','files' => true,'id' => 'form_create']) }}
                 @else
@@ -218,12 +214,11 @@ input[type=number]::-webkit-outer-spin-button {
 
                 <hr>
 
-            </div> <!-- Div to hide -->
 
             <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 
             <div class="container-fluid">
-                <div class="row">
+                <div class="container">
                     <input type="text" style="width:1px;" id="mitad_focus">
                     
                     <div class="row">
@@ -235,10 +230,15 @@ input[type=number]::-webkit-outer-spin-button {
                     </div>
                 </div>
                 <br>
+
+                <div class="container">
+                    <div class="row" id='div_pedidos_mesero_para_una_mesa'>
+                    </div>
+                </div>
+                <br>
+
                 <div class="row">
                     <div class="col-md-6">
-                        
-
                             <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
                             {!! str_replace("<tbody>
                     
@@ -260,6 +260,7 @@ input[type=number]::-webkit-outer-spin-button {
             <br>
             
     </div>
+
     <br/>
     <table style="display: none;">
         <tr id="linea_ingreso_default_aux">
@@ -345,7 +346,13 @@ input[type=number]::-webkit-outer-spin-button {
         $("#core_empresa_id_lbl").parent().parent().parent().parent().hide();
         $("#core_tipo_doc_app_id").parent().parent().parent().parent().hide();
         $("#fecha").parent().parent().parent().parent().hide();
-        $("#contacto_cliente_id").parent().parent().parent().parent().hide();        
+        $("#contacto_cliente_id").parent().parent().parent().parent().hide();
+        $("#descripcion").parent().parent().parent().parent().css('border','solid 2px gray');
+
+        $("#div_ingreso_registros").find('h5').html('Ingreso de productos<br><span style="color:red;">NUEVO PEDIDO</span>');
+        $("#div_ingreso_registros").find('h5').css('background-color','#50B794');
+        $("#div_ingreso_registros").find('h5').css('text-align','center');
+
         
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};

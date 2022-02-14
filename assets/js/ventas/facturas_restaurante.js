@@ -317,6 +317,16 @@ function mandar_codigo(item_id) {
 
 function mandar_codigo2(item_id) {
 
+	if ( $('#lbl_vendedor_mesero').text() == '') {
+		alert('Debe seleccionar un MESERO.');
+		return false;
+	}
+
+	if ( $('#lbl_mesa_seleccionada').text() == '') {
+		alert('Debe seleccionar una MESA.');
+		return false;
+	}
+
 	var producto = productos.find(item => item.id === parseInt(item_id));
 
 	tasa_impuesto = producto.tasa_impuesto;
@@ -498,8 +508,6 @@ function calcular_valor_descuento2() {
 	valor_total_descuento = valor_unitario_descuento * cantidad;
 }
 
-
-
 function agregar_la_linea_ini() {
 	// Se escogen los campos de la fila ingresada
 	var fila = $('#linea_ingreso_default_aux');
@@ -509,8 +517,6 @@ function agregar_la_linea_ini() {
 
 	//$('#inv_producto_id').focus();
 }
-
-
 
 function validar_venta_menor_costo()
 {
@@ -544,83 +550,6 @@ $(document).ready(function () {
 
 	agregar_la_linea_ini();
 
-	// Elementos al final de la página
-	//$('#cliente_input').parent().parent().attr('style','left: 0');
-	//$('#cliente_input').parent().parent().attr('class', 'elemento_fondo');
-
-	$('#cliente_input').on('focus', function () {
-		$(this).select();
-	});
-
-	$("#cliente_input").after('<div id="clientes_suggestions"> </div>');
-
-	// Al ingresar código, descripción o código de barras del producto
-	$('#cliente_input').on('keyup', function () {
-
-		var codigo_tecla_presionada = event.which || event.keyCode;
-
-		switch (codigo_tecla_presionada) {
-			case 27:// 27 = ESC
-				$('#clientes_suggestions').html('');
-				$('#clientes_suggestions').hide();
-				break;
-
-			case 40:// Flecha hacia abajo
-				var item_activo = $("a.list-group-item.active");
-				item_activo.next().attr('class', 'list-group-item list-group-item-cliente active');
-				item_activo.attr('class', 'list-group-item list-group-item-cliente');
-				$('#cliente_input').val(item_activo.next().html());
-				break;
-
-			case 38:// Flecha hacia arriba
-				$(".flecha_mover:focus").prev().focus();
-				var item_activo = $("a.list-group-item.active");
-				item_activo.prev().attr('class', 'list-group-item list-group-item-cliente active');
-				item_activo.attr('class', 'list-group-item list-group-item-cliente');
-				$('#cliente_input').val(item_activo.prev().html());
-				break;
-
-			case 13:// Al presionar Enter
-
-				if ($(this).val() == '') {
-					return false;
-				}
-
-				var item = $('a.list-group-item.active');
-
-				if (item.attr('data-cliente_id') === undefined)
-				{
-					alert('El cliente ingresado no existe.');
-					reset_campos_formulario();
-				} else {
-					seleccionar_cliente(item);
-				}
-				break;
-
-			default:
-				// Manejo código de producto o nombre
-				var campo_busqueda = 'descripcion';
-				if ($.isNumeric($(this).val())) {
-					var campo_busqueda = 'numero_identificacion';
-				}
-
-				// Si la longitud es menor a tres, todavía no busca
-				if ($(this).val().length < 2) {
-					return false;
-				}
-
-				var url = '../vtas_consultar_clientes';
-
-				$.get(url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda })
-					.done(function (data) {
-						// Se llena el DIV con las sugerencias que arooja la consulta
-						$('#clientes_suggestions').show().html(data);
-						$('a.list-group-item.active').focus();
-					});
-				break;
-		}
-	});
-
     var hay_error_password = true;
 	$('.btn_vendedor').on('click', function (e) {
 		e.preventDefault();
@@ -637,7 +566,46 @@ $(document).ready(function () {
 
 		$('#lbl_vendedor_mesero').text( '' );
         hay_error_password = true;
+		
+		reset_datos_mesa();
+		
 	});
+
+	function reset_datos_mesa()
+	{
+		$('#div_pedidos_mesero_para_una_mesa').html('');
+		$('#lbl_mesa_seleccionada').html('');
+		$('.btn_mesa').removeAttr('disabled');
+		$('.btn_mesa').attr('class','btn btn-default btn_mesa');
+
+        $('.linea_registro').each(function () {
+            $(this).remove();
+        });
+        
+		hay_productos = 0;
+        numero_lineas = 0;
+		
+		$('#ingreso_registros').find('tbody').html('');
+        $('#numero_lineas').text('0');
+
+        $('#accordionExample').find('button').each(function () {
+            $(this).parent().show();
+        });
+
+        $("#div_ingreso_registros").find('h5').html('Ingreso de productos<br><span style="color:red;">NUEVO PEDIDO</span>');
+
+
+        $('#btn_guardar_factura').show();
+        $('#btn_modificar_pedido').hide();
+        $('#btn_anular_pedido').hide();
+
+		 // reset totales
+		 $('#total_cantidad').text('0');
+ 
+		 // Total factura  (Sumatoria de precio_total)
+		 $('#total_factura').text('$ 0');
+		 $('#valor_total_factura').val(0);
+	}
 
     $("#modal_password").on('shown.bs.modal', function(){
         $('#lbl_vendedor_modal').text( $('#vendedor_id').attr( 'data-vendedor_descripcion') );
@@ -683,19 +651,39 @@ $(document).ready(function () {
 
     $("#modal_password").on('hidden.bs.modal', function(){
         if (hay_error_password) {
-            
             $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
-
+            /*
 		    $('#vendedor_default').attr('class','btn btn-default btn_vendedor vendedor_activo');
 
-            $('#vendedor_id').val( $('#vendedor_default').attr('data-vendedor_id') );
+            $('#vendedor_id').val( $('#vendedor_default').val() );
 		    $('#vendedor_id').attr( 'data-vendedor_descripcion', $('#vendedor_default').attr('data-vendedor_descripcion') );
 		    $('#vendedor_id').attr( 'data-user_id', $('#vendedor_default').attr('data-user_id') );
 
             $('#lbl_vendedor_mesero').text( $('#vendedor_default').attr('data-vendedor_descripcion') );
-        }
+			*/
+        }else{
+			bloquear_mesas_pedidos_otros_meseros();
+		}
     });
 
-        
+	function bloquear_mesas_pedidos_otros_meseros()
+	{
+		var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_disponibles_mesero" + "/" + $('#vendedor_id').val();
+
+        $.get(url, function (disponibles) {
+			var arr_disponibles = [];
+			var i = 0;
+			disponibles.forEach(disponible => {
+				arr_disponibles[i] = parseInt(disponible.mesa_id);
+				i++;
+			});
+			
+            $('.btn_mesa').each(function () {
+				if ( !arr_disponibles.includes( parseInt($(this).attr('data-mesa_id') ) ) ) {
+					$(this).attr('disabled','disabled');
+				}			
+			});
+        });
+	}        
 	
 });

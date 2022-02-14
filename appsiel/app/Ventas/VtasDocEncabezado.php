@@ -92,6 +92,11 @@ class VtasDocEncabezado extends Model
         $this->save();
     }
 
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
+
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {

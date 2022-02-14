@@ -46,7 +46,7 @@ class VtasPedido extends VtasDocEncabezado
     public function lineas_registros()
     {
         return $this->hasMany(VtasDocRegistro::class, 'vtas_doc_encabezado_id');
-    }
+    }   
 
     public static function consultar_registros2($nro_registros, $search)
     {
