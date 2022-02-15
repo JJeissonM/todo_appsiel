@@ -24,7 +24,7 @@
 										@else
 											<img style="width: 100px; height: 100px;" src="{{url('')}}/assets/img/box.png">
 										@endif
-										<p style="text-align: center; white-space: nowrap; overflow: hidden; white-space: initial;">{{ substr($item->descripcion,0,20).'...' }}</p>
+										<p style="text-align: center; white-space: nowrap; overflow: hidden; white-space: initial;">{{ $item->descripcion }}</p>
 									</button>
 									<br>
 							</div>

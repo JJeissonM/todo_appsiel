@@ -38,7 +38,7 @@
                 <div id="total_impuestos" style="display: inline;"> $ {{ $valor_total_impuestos }}</div>
             </td>
         </tr>
-        <tr>
+        <tr class="info">
             <td width="35%">
                 <strong> Total factura </strong>
             </td>
@@ -56,7 +56,7 @@
             </td>
             <td style="text-align: right;">
                 <input type="text" name="efectivo_recibido" id="efectivo_recibido"
-                       class="form-control" autocomplete="off">
+                       class="form-control" autocomplete="off" style="background-color: white !important;">
                 <div id="lbl_efectivo_recibido" style="display: inline;"> $ 0</div>
             </td>
         </tr>

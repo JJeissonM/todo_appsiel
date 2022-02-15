@@ -2,6 +2,7 @@
 
 namespace App\CxC;
 
+use App\Sistema\TipoTransaccion;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
@@ -35,6 +36,19 @@ class CxcMovimiento extends Model
     }
 
     $this->save();
+  }
+
+  public function get_movement_document()
+  {
+    $transaction_type = TipoTransaccion::find($this->core_tipo_transaccion_id);
+    
+    return app($transaction_type->modelo_encabezados_documentos)->where([
+                                ['core_tipo_transaccion_id', '=', $this->core_tipo_transaccion_id ],
+                                ['core_tipo_doc_app_id', '=', $this->core_tipo_doc_app_id ],
+                                ['consecutivo', '=', $this->consecutivo ],
+                                ['core_tercero_id', '=', $this->core_tercero_id ]
+                            ])
+                            ->get();
   }
 
   // Se consultan los documentos para la empresa que tiene asignada el usuario

@@ -58,3 +58,6 @@ Route::get('cxc_eliminar_interes/{id}', 'CxC\InteresesMoraController@eliminar_in
 // REPORTES
 Route::post('cxc_documentos_pendientes', 'CxC\ReportesController@documentos_pendientes');
 Route::post('cxc_estado_de_cuenta', 'CxC\ReportesController@estado_de_cuenta');
+
+//              PROCESOS
+Route::get('cxc_procesos_pruebas', 'CxC\ProcesosController@pruebas');

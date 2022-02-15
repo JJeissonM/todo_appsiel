@@ -34,6 +34,17 @@ class CxcAbono extends Model
             ->get()->first();
     }
 
+    public function accross_document_header()
+    {
+        $transaction = TipoTransaccion::find($this->doc_cruce_transacc_id);
+        return app($transaction->model->name_space)->where([
+            ['core_tipo_transaccion_id','=',$this->doc_cruce_transacc_id],
+            ['core_tipo_doc_app_id','=',$this->doc_cruce_tipo_doc_id],
+            ['consecutivo','=',$this->doc_cruce_consecutivo],
+            ])
+            ->get()->first();
+    }
+
     public static function consultar_registros( $nro_registros, $search )
     {
         $collection = CxcAbono::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_abonos.core_tipo_doc_app_id')

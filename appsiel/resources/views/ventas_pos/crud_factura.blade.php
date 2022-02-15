@@ -179,7 +179,9 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <hr>
 
+            <input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}">
 
+            
 
     <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 

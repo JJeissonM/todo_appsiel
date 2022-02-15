@@ -2,15 +2,13 @@
 
 namespace App\CxC\Services;
 
-use Illuminate\Database\Eloquent\Model;
-
 use DB;
 use Auth;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
-class DocumentosPendientesCxC extends Model
+class DocumentosPendientesCxC
 {
     
     public function get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id ) 

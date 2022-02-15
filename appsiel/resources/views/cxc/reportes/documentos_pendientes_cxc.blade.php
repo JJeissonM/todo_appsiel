@@ -42,7 +42,7 @@
         @foreach( $movimiento AS $linea_movimiento )
             <?php
                 
-                if( $linea_movimiento->show == 0 )
+                if( !$linea_movimiento->show )
                 {
                     continue;
                 }

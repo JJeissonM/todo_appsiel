@@ -72,7 +72,16 @@ $(document).ready(function () {
                 // se supone que es un código de barras
                 var campo_busqueda = '';
                 if ($(this).val().length > 5) {
-                    var producto = productos.find(item => item.codigo_barras === $(this).val());
+                    var barcode = $(this).val();
+                    var barcode_precio_unitario = $('#precio_unitario').val();
+                    console.log(barcode);
+                    if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' ) {
+                        var el_item_id = get_item_id_from_barcode( barcode );
+                        var producto = productos.find(item => item.id === parseInt(el_item_id));
+                        
+                    }else{
+                        var producto = productos.find(item => item.codigo_barras === $(this).val());
+                    }
                     campo_busqueda = 'codigo_barras';
                 } else {
                     var producto = productos.find(item => item.id === parseInt($(this).val()));
@@ -97,6 +106,13 @@ $(document).ready(function () {
                         $('#cantidad').val(1);
 
                         cantidad = 1;
+                        if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' ) {
+                            $('#cantidad').val(get_quantity_from_barcode( barcode ));
+                            cantidad = get_quantity_from_barcode( barcode );
+                            if ( barcode_precio_unitario != '') {
+                                $('#precio_unitario').val(barcode_precio_unitario);
+                            }
+                        }
 
                         calcular_valor_descuento();
                         calcular_impuestos();
@@ -115,6 +131,16 @@ $(document).ready(function () {
         }
 
     });
+    
+    function get_item_id_from_barcode( barcode )
+    {
+        return parseInt( barcode.substr(0, 6) );
+    }
+
+    function get_quantity_from_barcode( barcode )
+    {
+        return parseFloat( barcode.substr(6, 2) ) + '.' + parseFloat( barcode.substr(8, 3) );
+    }
 
     $('#efectivo_recibido').on('keyup', function (event) {
 

@@ -45,12 +45,12 @@ class ReportesController extends Controller
         $servicio = new DocumentosPendientesCxC();
 
         $movimiento = $servicio->get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id );
-
+        
         foreach ( $movimiento as $linea_movimiento )
         {
             $linea_movimiento->show = 1;
             // Para NO mostrar saldos con saldo pendientes cero
-            if ( $linea_movimiento->saldo_pendiente == 0 && $linea_movimiento->id != 0 )
+            if ( $linea_movimiento->saldo_pendiente == 0)// && $linea_movimiento->id != 0 
             {
                 $linea_movimiento->show = 0;
             }
