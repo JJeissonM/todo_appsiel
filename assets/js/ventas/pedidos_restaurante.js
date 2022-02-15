@@ -1030,6 +1030,16 @@ $(document).ready(function () {
         });
 	}
 
+    $(document).on('click', '.btn_numero_teclado', function () {
+        var seller_password = $('#seller_password').val();
+        $('#seller_password').val( seller_password + $(this).text() );
+    });
+
+    $(document).on('click', '#btn_clear_teclado', function () {
+        $('#seller_password').val('');
+        $('#lbl_error_password').hide();
+    });
+
     $(document).on('click', '.btn_pedido_mesero_para_una_mesa', function () {
         
         $("#div_cargando").show();

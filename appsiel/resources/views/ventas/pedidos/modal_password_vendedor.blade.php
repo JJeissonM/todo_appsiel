@@ -10,7 +10,21 @@
           <p>
             {{Form::bsPassword('seller_password', null, 'Ingrese su contraseña', ['id'=>'seller_password'])}}
             <div id="lbl_error_password" style="color: red; display:none;">Contraseña incorrecta.</div>
-        </p>
+          </p>
+          <br><br><br>
+          <p>
+            <button class="btn btn-default btn_numero_teclado" value="1">1</button>
+            <button class="btn btn-default btn_numero_teclado" value="2">2</button>
+            <button class="btn btn-default btn_numero_teclado" value="3">3</button>
+            <button class="btn btn-default btn_numero_teclado" value="4">4</button>
+            <button class="btn btn-default btn_numero_teclado" value="5">5</button>
+            <button class="btn btn-default btn_numero_teclado" value="6">6</button>
+            <button class="btn btn-default btn_numero_teclado" value="7">7</button>
+            <button class="btn btn-default btn_numero_teclado" value="8">8</button>
+            <button class="btn btn-default btn_numero_teclado" value="9">9</button>
+            <button class="btn btn-default btn_numero_teclado" value="0">0</button>
+            <button class="btn btn-danger" id="btn_clear_teclado">Borrar</button>
+          </p>
         </div>
         <div class="modal-footer">
             <br>
