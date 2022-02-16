@@ -45,3 +45,6 @@ Route::post('ventas_pos_cargue_archivo_plano', 'VentasPos\ArchivoPlanoController
 
 
 
+// RECETAS RESTAURANTE
+
+Route::get('vtas_pos_hacer_preparaciones_recetas/{pdv_id}', 'VentasPos\FacturaPosController@hacer_preparaciones_recetas');

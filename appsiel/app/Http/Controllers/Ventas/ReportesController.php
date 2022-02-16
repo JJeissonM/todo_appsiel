@@ -13,8 +13,6 @@ use Input;
 use DB;
 use Auth;
 use Form;
-use View;
-use Cache;
 use Lava;
 
 use App\Ventas\VtasMovimiento;
@@ -24,6 +22,8 @@ use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvDocEncabezado;
 
 use App\Contabilidad\Impuesto;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 class ReportesController extends Controller
 {
@@ -308,6 +308,31 @@ class ReportesController extends Controller
                                         ['core_tipo_transaccion_id',24]
                                     ])
                                 ->get();
+    }
+
+    public function ventas_por_vendedor(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $agrupar_por = 'vendedor_id';
+        $detalla_productos  = (int)$request->detalla_productos;
+        $iva_incluido  = (int)$request->iva_incluido;
+
+        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+
+        // En el movimiento se trae el precio_total con IVA incluido
+        $mensaje = 'IVA Incluido en precio';
+        if ( !$iva_incluido )
+        {
+            $mensaje = 'IVA <b>NO</b> incluido en precio';
+        }
+
+        $vista = View::make('ventas.reportes.ventas_por_vendedor', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
     }
 
 }

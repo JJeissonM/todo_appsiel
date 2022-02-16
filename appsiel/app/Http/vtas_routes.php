@@ -74,6 +74,7 @@ Route::get('ventas/eliminar_producto/{id}', 'Ventas\VentaController@eliminar_pro
 Route::post('vtas_precio_venta_por_producto', 'Ventas\ReportesController@precio_venta_por_producto');
 Route::post('vtas_reporte_ventas', 'Ventas\ReportesController@vtas_reporte_ventas');
 Route::post('vtas_reporte_rentabilidad', 'Ventas\ReportesController@vtas_reporte_rentabilidad');
+Route::post('vtas_reporte_ventas_por_vendedor', 'Ventas\ReportesController@ventas_por_vendedor');
 
 
 // PROCESOS

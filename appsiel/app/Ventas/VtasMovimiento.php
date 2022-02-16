@@ -229,8 +229,11 @@ class VtasMovimiento extends Model
             case 'inv_producto_id':
                 $agrupar_por = 'producto';
                 break;
-            case 'tasa_impuesto':
-                $agrupar_por = 'tasa_impuesto';
+                case 'tasa_impuesto':
+                    $agrupar_por = 'tasa_impuesto';
+                    break;
+            case 'vendedor_id':
+                $agrupar_por = 'vendedor_id';
                 break;
             case 'clase_cliente_id':
                 $agrupar_por = 'clase_cliente';
@@ -262,6 +265,7 @@ class VtasMovimiento extends Model
                                         'vtas_movimientos.tasa_impuesto AS tasa_impuesto',
                                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
                                         'vtas_movimientos.forma_pago',
+                                        'vtas_movimientos.vendedor_id',
                                         'vtas_movimientos.cantidad',
                                         'vtas_movimientos.precio_total',
                                         'vtas_movimientos.base_impuesto_total',// AS base_imp_tot

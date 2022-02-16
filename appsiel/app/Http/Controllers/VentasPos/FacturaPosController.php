@@ -132,12 +132,17 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'fecha_vencimiento':
-                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') );
+                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
                     break;
 
                 case 'inv_bodega_id':
                     $lista_campos[$i]['opciones'] = [$pdv->bodega_default_id => $pdv->bodega->descripcion];
                     break;
+
+                case 'fecha':
+                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
+                    break;
+                            
                 default:
                     # code...
                     break;
@@ -848,6 +853,9 @@ class FacturaPosController extends TransaccionController
         
         // Un documento de desarme (MK) por acumulación
         $obj_acumm_serv->hacer_desarme_automatico();
+        
+        // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
+        $obj_acumm_serv->hacer_preparaciones_recetas();
 
         if ( !(int)config( 'ventas_pos.validar_existencias_al_acumular' ) )
         {
@@ -864,6 +872,15 @@ class FacturaPosController extends TransaccionController
         }
 
         return $obj_invt_serv->tabla_items_existencias_negativas( $obj_acumm_serv->pos->bodega_default_id, $obj_acumm_serv->invoices->last()->fecha, $lista_items );
+
+    }
+
+    public function hacer_preparaciones_recetas($pdv_id)
+    {
+        $obj_acumm_serv = new AccumulationService( $pdv_id );
+
+        // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
+        $obj_acumm_serv->hacer_preparaciones_recetas();
 
     }
 

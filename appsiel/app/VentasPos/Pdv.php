@@ -39,6 +39,11 @@ class Pdv extends Model
         return $this->belongsTo( TipoDocApp::class,'tipo_doc_app_default_id');
     }
 
+    public function ultima_fecha_apertura()
+    {
+        return AperturaEncabezado::where('pdv_id',$this->id)->orderBy('created_at', 'desc')->get()->first()->fecha;
+    }
+
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 	

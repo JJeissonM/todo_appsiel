@@ -537,6 +537,15 @@ $(document).ready(function () {
     });
 
     
+    $('#btn_crear_nuevo_pedido').click(function (event){
+        event.preventDefault();
+        reset_datos_pedido();
+        mostrar_botones_productos();
+    });
+
+    
+
+    
     $('#btn_anular_pedido').click(function (event){
         event.preventDefault();
 
@@ -625,6 +634,7 @@ $(document).ready(function () {
 
         $('#btn_guardar_factura').show();
         $('#btn_modificar_pedido').hide();
+        $('#btn_crear_nuevo_pedido').hide();
         $('#btn_anular_pedido').hide();
         $('#btn_imprimir_pedido').hide();
 
@@ -995,6 +1005,7 @@ $(document).ready(function () {
         
         $('#btn_guardar_factura').show();
         $('#btn_modificar_pedido').hide();
+        $('#btn_crear_nuevo_pedido').hide();
         $('#btn_anular_pedido').hide();
         $('#btn_imprimir_pedido').hide();
 
@@ -1003,7 +1014,7 @@ $(document).ready(function () {
 
     function mostrar_botones_productos()
     {
-        $('#accordionExample').find('button').each(function () {
+        $('#accordionExample2').find('button').each(function () {
             $(this).parent().show();
         });
     }
@@ -1074,10 +1085,11 @@ $(document).ready(function () {
             numero_lineas = un_pedido.numero_lineas;
             
             $('#btn_guardar_factura').hide();
-            $('#btn_modificar_pedido').show();
+            //$('#btn_modificar_pedido').show();
             $('#btn_anular_pedido').attr('data-pedido_label',un_pedido.pedido_label+ ', ' +un_pedido.mesa_label);
             $('#btn_anular_pedido').show();
 
+            $('#btn_crear_nuevo_pedido').show();
             
             $('#btn_imprimir_pedido').attr('data-pedido_label',un_pedido.pedido_label+ ', ' +un_pedido.mesa_label);
             $('#btn_imprimir_pedido').attr('data-doc_encabezado_documento_transaccion_descripcion',un_pedido.doc_encabezado_documento_transaccion_descripcion);

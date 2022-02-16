@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Inventarios;
+
+use Illuminate\Database\Eloquent\Model;
+
+class RecetaCocina extends Model
+{
+    protected $table = 'inv_recetas_cocina';
+	
+    protected $fillable = ['item_platillo_id','item_ingrediente_id','cantidad_porcion'];
+
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Platillo', 'Ingrediente', 'Cant. porción'];
+
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
+
+    public function item_platillo()
+    {
+      return $this->belongsTo(InvProducto::class,'item_platillo_id');
+    }
+
+    public function item_ingrediente()
+    {
+      return $this->belongsTo(InvProducto::class,'item_ingrediente_id');
+    }
+
+    public function ingredientes()
+    {
+        $lista = RecetaCocina::where('item_platillo_id',$this->item_platillo_id)->get();
+
+        $data = [];
+        foreach ($lista as $platillo) {
+            $data[] = [
+                    'ingrediente' => $platillo->item_ingrediente,
+                    'cantidad_porcion' => $platillo->cantidad_porcion
+                ];
+        }
+      return $data;
+    }
+
+    public static function consultar_registros($nro_registros, $search)
+  {
+    return RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
+      ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
+      ->select(
+        'items_consumir.descripcion AS campo1',
+        'items_producir.descripcion AS campo2',
+        'inv_recetas_cocina.cantidad_porcion AS campo3',
+        'inv_recetas_cocina.id AS campo4'
+      )
+      ->where("items_consumir.descripcion", "LIKE", "%$search%")
+      ->orWhere("items_producir.descripcion", "LIKE", "%$search%")
+      ->orWhere("inv_recetas_cocina.cantidad_porcion", "LIKE", "%$search%")
+      ->orderBy('inv_recetas_cocina.created_at', 'DESC')
+      ->paginate($nro_registros);
+  }
+  
+  public static function sqlString($search)
+  {
+    $string = RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
+      ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
+      ->select(
+        'items_consumir.descripcion AS campo1',
+        'items_producir.descripcion AS campo2',
+        'inv_recetas_cocina.cantidad_porcion AS campo3',
+        'inv_recetas_cocina.id AS campo4'
+      )
+      ->where("items_consumir.descripcion", "LIKE", "%$search%")
+      ->orWhere("items_producir.descripcion", "LIKE", "%$search%")
+      ->orWhere("inv_recetas_cocina.cantidad_porcion", "LIKE", "%$search%")
+      ->orderBy('inv_recetas_cocina.created_at', 'DESC')
+      ->toSql();
+    return str_replace('?', '"%' . $search . '%"', $string);
+  }
+
+  //Titulo para la exportación en PDF y EXCEL
+  public static function tituloExport()
+  {
+    return "ASIGNACIÓN DE INGREDIENTES A RECETAS DE COCINA";
+  }
+}

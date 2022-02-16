@@ -143,7 +143,11 @@ class PedidoRestauranteController extends TransaccionController
                     break;
 
                 case 'fecha_vencimiento':
-                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') );
+                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
+                    break;
+
+                case 'fecha':
+                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
                     break;
 
                 case 'inv_bodega_id':

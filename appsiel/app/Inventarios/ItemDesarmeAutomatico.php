@@ -59,6 +59,7 @@ class ItemDesarmeAutomatico extends Model
       ->orderBy('inv_items_desarmes_automaticos.created_at', 'DESC')
       ->paginate($nro_registros);
   }
+  
   public static function sqlString($search)
   {
     $string = ItemDesarmeAutomatico::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_items_desarmes_automaticos.item_consumir_id')

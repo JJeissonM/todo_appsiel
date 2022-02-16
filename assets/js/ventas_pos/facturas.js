@@ -228,7 +228,7 @@ $.fn.generar_string_celdas = function (fila) {
 
 function reset_campos_formulario()
 {
-	$('#fecha').val( get_fecha_hoy() );
+	//$('#fecha').val( get_fecha_hoy() );
 	$('#descripcion').val( '' );
 
 	$('#cliente_id').val( cliente_default.id );

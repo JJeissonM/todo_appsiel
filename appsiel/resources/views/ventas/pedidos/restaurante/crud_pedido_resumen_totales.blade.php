@@ -79,6 +79,13 @@
                 <button style="display: none;" class="btn btn-lg btn-primary" id="btn_modificar_pedido"><i
                             class="fa fa-check"></i> Modificar pedido
                 </button>
+
+                <br><br>
+                <button style="display: none;" class="btn btn-md btn-primary" id="btn_crear_nuevo_pedido" data-pedido_label=""><i
+                            class="fa fa-trash"></i> Crear Nuevo Pedido
+                </button>
+
+                <br><br>
                 <button style="display: none;" class="btn btn-sm btn-danger" id="btn_anular_pedido" data-pedido_label=""><i
                             class="fa fa-trash"></i> Anular pedido
                 </button>

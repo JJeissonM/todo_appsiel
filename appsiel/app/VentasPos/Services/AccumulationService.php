@@ -44,10 +44,21 @@ class AccumulationService
     {
         $pdv_id = $this->pos->id;
         $bodega_default_id = $this->pos->bodega_default_id;
-        $fecha = $this->invoices->first()->fecha;
+        $fecha = $this->pos->ultima_fecha_apertura();
         $parametros_config_inventarios = config('inventarios');
 
         $obj_inv_doc_serv = new InventoriesServices();
+        return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios );
+    }
+
+    public function hacer_preparaciones_recetas()
+    {
+        $pdv_id = $this->pos->id;
+        $bodega_default_id = $this->pos->bodega_default_id;
+        $fecha = $this->pos->ultima_fecha_apertura();
+        $parametros_config_inventarios = config('inventarios');
+
+        $obj_inv_doc_serv = new RecipeServices();
         return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios );
     }
 
