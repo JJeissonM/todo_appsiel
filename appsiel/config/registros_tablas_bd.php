@@ -8132,6 +8132,21 @@
       'created_at' => '2022-02-08 12:47:43',
       'updated_at' => '2022-02-09 04:30:42',
     ),
+    542 => 
+    array (
+      'id' => 568,
+      'core_app_id' => 8,
+      'modelo_id' => 321,
+      'name' => 'inv_items_recetas',
+      'descripcion' => 'Asociar ingredientes a recetas',
+      'url' => 'web',
+      'parent' => 71,
+      'orden' => 11,
+      'enabled' => 1,
+      'fa_icon' => '',
+      'created_at' => '2022-02-16 14:02:22',
+      'updated_at' => '2022-02-16 14:03:15',
+    ),
   ),
   'roles' => 
   array (
@@ -20228,6 +20243,24 @@
       'orden' => 0,
       'permission_id' => 567,
       'role_id' => 25,
+    ),
+    1986 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 568,
+      'role_id' => 1,
+    ),
+    1987 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 568,
+      'role_id' => 3,
+    ),
+    1988 => 
+    array (
+      'orden' => 0,
+      'permission_id' => 568,
+      'role_id' => 9,
     ),
   ),
   'sys_campos' => 
@@ -42874,6 +42907,54 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2022-02-08 18:10:11',
       'updated_at' => '2022-02-08 18:13:23',
     ),
+    1408 => 
+    array (
+      'id' => 1414,
+      'descripcion' => 'Item a preparar (Platillo)',
+      'tipo' => 'select',
+      'name' => 'item_platillo_id',
+      'opciones' => 'model_App\\Inventarios\\InvProducto',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2022-02-16 13:59:11',
+      'updated_at' => '2022-02-16 13:59:46',
+    ),
+    1409 => 
+    array (
+      'id' => 1415,
+      'descripcion' => 'Ingrediente',
+      'tipo' => 'select',
+      'name' => 'item_ingrediente_id',
+      'opciones' => 'model_App\\Inventarios\\InvProducto',
+      'value' => 'null',
+      'atributos' => '{"class":"combobox"}',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2022-02-16 13:59:48',
+      'updated_at' => '2022-02-16 14:00:05',
+    ),
+    1410 => 
+    array (
+      'id' => 1416,
+      'descripcion' => 'Cantidad para una porción',
+      'tipo' => 'bsText',
+      'name' => 'cantidad_porcion',
+      'opciones' => ' ',
+      'value' => 'null',
+      'atributos' => '',
+      'definicion' => '',
+      'requerido' => 1,
+      'editable' => 1,
+      'unico' => 0,
+      'created_at' => '2022-02-16 14:00:21',
+      'updated_at' => '2022-02-16 14:00:59',
+    ),
   ),
   'sys_modelos' => 
   array (
@@ -49652,6 +49733,28 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'ruta_storage_archivo_adjunto' => '',
       'created_at' => '2022-02-08 12:45:48',
       'updated_at' => '2022-02-08 12:45:48',
+    ),
+    308 => 
+    array (
+      'id' => 321,
+      'descripcion' => 'Recetas cocina',
+      'modelo' => 'RecetaCocina',
+      'name_space' => 'App\\Inventarios\\RecetaCocina',
+      'modelo_relacionado' => '',
+      'url_crear' => '',
+      'url_edit' => '',
+      'url_print' => '',
+      'url_ver' => '',
+      'enlaces' => '',
+      'url_estado' => '',
+      'url_eliminar' => '',
+      'controller_complementario' => '',
+      'url_form_create' => '',
+      'home_miga_pan' => '',
+      'ruta_storage_imagen' => '',
+      'ruta_storage_archivo_adjunto' => '',
+      'created_at' => '2022-02-16 13:58:49',
+      'updated_at' => '2022-02-16 13:58:49',
     ),
   ),
   'sys_modelo_tiene_campos' => 
@@ -68234,6 +68337,41 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'core_modelo_id' => 134,
       'core_campo_id' => 1413,
     ),
+    2654 => 
+    array (
+      'id' => 3112,
+      'orden' => 2,
+      'core_modelo_id' => 321,
+      'core_campo_id' => 1414,
+    ),
+    2655 => 
+    array (
+      'id' => 3113,
+      'orden' => 4,
+      'core_modelo_id' => 321,
+      'core_campo_id' => 97,
+    ),
+    2656 => 
+    array (
+      'id' => 3114,
+      'orden' => 6,
+      'core_modelo_id' => 321,
+      'core_campo_id' => 1415,
+    ),
+    2657 => 
+    array (
+      'id' => 3115,
+      'orden' => 8,
+      'core_modelo_id' => 321,
+      'core_campo_id' => 123,
+    ),
+    2658 => 
+    array (
+      'id' => 3116,
+      'orden' => 10,
+      'core_modelo_id' => 321,
+      'core_campo_id' => 1416,
+    ),
   ),
   'sys_reportes' => 
   array (
@@ -68697,6 +68835,16 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'created_at' => '2021-08-09 23:57:46',
       'updated_at' => '2021-08-09 23:58:00',
     ),
+    46 => 
+    array (
+      'id' => 48,
+      'descripcion' => 'Ventas por vendedor',
+      'core_app_id' => 13,
+      'url_form_action' => 'vtas_reporte_ventas_por_vendedor',
+      'estado' => 'Activo',
+      'created_at' => '2022-02-16 11:57:08',
+      'updated_at' => '2022-02-16 12:01:33',
+    ),
   ),
   'sys_reporte_tiene_campos' => 
   array (
@@ -69002,617 +69150,641 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     50 => 
     array (
+      'orden' => 2,
+      'core_reporte_id' => 48,
+      'core_campo_id' => 473,
+    ),
+    51 => 
+    array (
       'orden' => 6,
       'core_reporte_id' => 1,
       'core_campo_id' => 474,
     ),
-    51 => 
+    52 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 2,
       'core_campo_id' => 474,
     ),
-    52 => 
+    53 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 5,
       'core_campo_id' => 474,
     ),
-    53 => 
+    54 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 13,
-      'core_campo_id' => 474,
-    ),
-    54 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
     55 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 23,
+      'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
     56 => 
     array (
-      'orden' => 4,
-      'core_reporte_id' => 24,
+      'orden' => 2,
+      'core_reporte_id' => 23,
       'core_campo_id' => 474,
     ),
     57 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 26,
+      'core_reporte_id' => 24,
       'core_campo_id' => 474,
     ),
     58 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 27,
+      'core_reporte_id' => 26,
       'core_campo_id' => 474,
     ),
     59 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 30,
+      'core_reporte_id' => 27,
       'core_campo_id' => 474,
     ),
     60 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 30,
       'core_campo_id' => 474,
     ),
     61 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 31,
       'core_campo_id' => 474,
     ),
     62 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 35,
+      'core_reporte_id' => 33,
       'core_campo_id' => 474,
     ),
     63 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 36,
+      'core_reporte_id' => 35,
       'core_campo_id' => 474,
     ),
     64 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 37,
+      'core_reporte_id' => 36,
       'core_campo_id' => 474,
     ),
     65 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 38,
+      'core_reporte_id' => 37,
       'core_campo_id' => 474,
     ),
     66 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 39,
+      'core_reporte_id' => 38,
       'core_campo_id' => 474,
     ),
     67 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 42,
+      'core_reporte_id' => 39,
       'core_campo_id' => 474,
     ),
     68 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 43,
+      'core_reporte_id' => 42,
       'core_campo_id' => 474,
     ),
     69 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 47,
+      'core_reporte_id' => 43,
       'core_campo_id' => 474,
     ),
     70 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 47,
+      'core_campo_id' => 474,
+    ),
+    71 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 48,
+      'core_campo_id' => 474,
+    ),
+    72 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 5,
       'core_campo_id' => 476,
     ),
-    71 => 
+    73 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 8,
       'core_campo_id' => 489,
     ),
-    72 => 
+    74 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 8,
       'core_campo_id' => 490,
     ),
-    73 => 
+    75 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 8,
       'core_campo_id' => 491,
     ),
-    74 => 
+    76 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 13,
       'core_campo_id' => 536,
     ),
-    75 => 
+    77 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 15,
       'core_campo_id' => 561,
     ),
-    76 => 
+    78 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 11,
       'core_campo_id' => 588,
     ),
-    77 => 
+    79 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 12,
       'core_campo_id' => 588,
     ),
-    78 => 
+    80 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 22,
       'core_campo_id' => 588,
     ),
-    79 => 
+    81 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 25,
       'core_campo_id' => 588,
     ),
-    80 => 
+    82 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 28,
       'core_campo_id' => 588,
     ),
-    81 => 
+    83 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 33,
       'core_campo_id' => 588,
     ),
-    82 => 
+    84 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 44,
       'core_campo_id' => 588,
     ),
-    83 => 
+    85 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 31,
       'core_campo_id' => 592,
     ),
-    84 => 
+    86 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 34,
       'core_campo_id' => 592,
     ),
-    85 => 
+    87 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 7,
       'core_campo_id' => 599,
     ),
-    86 => 
+    88 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 17,
       'core_campo_id' => 599,
     ),
-    87 => 
+    89 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 32,
       'core_campo_id' => 599,
     ),
-    88 => 
+    90 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 34,
       'core_campo_id' => 599,
     ),
-    89 => 
+    91 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 45,
       'core_campo_id' => 599,
     ),
-    90 => 
+    92 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 31,
       'core_campo_id' => 604,
     ),
-    91 => 
+    93 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 34,
       'core_campo_id' => 604,
     ),
-    92 => 
+    94 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 17,
       'core_campo_id' => 613,
     ),
-    93 => 
+    95 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 17,
       'core_campo_id' => 614,
     ),
-    94 => 
+    96 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 18,
       'core_campo_id' => 614,
     ),
-    95 => 
+    97 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 17,
       'core_campo_id' => 615,
     ),
-    96 => 
+    98 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 18,
       'core_campo_id' => 615,
     ),
-    97 => 
+    99 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 17,
       'core_campo_id' => 616,
     ),
-    98 => 
+    100 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 18,
       'core_campo_id' => 616,
     ),
-    99 => 
+    101 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 17,
       'core_campo_id' => 617,
     ),
-    100 => 
+    102 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 17,
       'core_campo_id' => 618,
     ),
-    101 => 
+    103 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 18,
       'core_campo_id' => 619,
     ),
-    102 => 
+    104 => 
     array (
       'orden' => 5,
       'core_reporte_id' => 13,
       'core_campo_id' => 622,
     ),
-    103 => 
+    105 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 20,
       'core_campo_id' => 622,
     ),
-    104 => 
+    106 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 622,
     ),
-    105 => 
+    107 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 35,
       'core_campo_id' => 622,
     ),
-    106 => 
+    108 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 20,
       'core_campo_id' => 623,
     ),
-    107 => 
+    109 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 20,
       'core_campo_id' => 629,
     ),
-    108 => 
+    110 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 21,
       'core_campo_id' => 630,
     ),
-    109 => 
+    111 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 21,
       'core_campo_id' => 632,
     ),
-    110 => 
+    112 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 633,
     ),
-    111 => 
+    113 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 35,
       'core_campo_id' => 633,
     ),
-    112 => 
+    114 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 13,
       'core_campo_id' => 636,
     ),
-    113 => 
+    115 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 13,
       'core_campo_id' => 637,
     ),
-    114 => 
+    116 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 24,
       'core_campo_id' => 637,
     ),
-    115 => 
+    117 => 
+    array (
+      'orden' => 8,
+      'core_reporte_id' => 48,
+      'core_campo_id' => 637,
+    ),
+    118 => 
     array (
       'orden' => 15,
       'core_reporte_id' => 13,
       'core_campo_id' => 638,
     ),
-    116 => 
+    119 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 13,
       'core_campo_id' => 639,
     ),
-    117 => 
+    120 => 
     array (
       'orden' => 17,
       'core_reporte_id' => 13,
       'core_campo_id' => 640,
     ),
-    118 => 
+    121 => 
     array (
       'orden' => 18,
       'core_reporte_id' => 13,
       'core_campo_id' => 641,
     ),
-    119 => 
+    122 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 24,
       'core_campo_id' => 723,
     ),
-    120 => 
+    123 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 24,
       'core_campo_id' => 724,
     ),
-    121 => 
+    124 => 
+    array (
+      'orden' => 6,
+      'core_reporte_id' => 48,
+      'core_campo_id' => 724,
+    ),
+    125 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 29,
       'core_campo_id' => 739,
     ),
-    122 => 
+    126 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 30,
       'core_campo_id' => 766,
     ),
-    123 => 
+    127 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 33,
       'core_campo_id' => 767,
     ),
-    124 => 
+    128 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 35,
       'core_campo_id' => 768,
     ),
-    125 => 
+    129 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 23,
       'core_campo_id' => 771,
     ),
-    126 => 
+    130 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 36,
       'core_campo_id' => 771,
     ),
-    127 => 
+    131 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 22,
       'core_campo_id' => 773,
     ),
-    128 => 
+    132 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 28,
       'core_campo_id' => 773,
     ),
-    129 => 
+    133 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 37,
       'core_campo_id' => 816,
     ),
-    130 => 
+    134 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 47,
       'core_campo_id' => 816,
     ),
-    131 => 
+    135 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 38,
       'core_campo_id' => 953,
     ),
-    132 => 
+    136 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 38,
       'core_campo_id' => 954,
     ),
-    133 => 
+    137 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 46,
       'core_campo_id' => 954,
     ),
-    134 => 
+    138 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 20,
       'core_campo_id' => 991,
     ),
-    135 => 
+    139 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 38,
       'core_campo_id' => 1021,
     ),
-    136 => 
+    140 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 42,
       'core_campo_id' => 1024,
     ),
-    137 => 
+    141 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 38,
       'core_campo_id' => 1044,
     ),
-    138 => 
+    142 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 40,
       'core_campo_id' => 1044,
     ),
-    139 => 
+    143 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 43,
       'core_campo_id' => 1044,
     ),
-    140 => 
+    144 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 46,
       'core_campo_id' => 1044,
     ),
-    141 => 
+    145 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 41,
       'core_campo_id' => 1136,
     ),
-    142 => 
+    146 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 40,
       'core_campo_id' => 1137,
     ),
-    143 => 
+    147 => 
     array (
       'orden' => 5,
       'core_reporte_id' => 43,
       'core_campo_id' => 1137,
     ),
-    144 => 
+    148 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 38,
       'core_campo_id' => 1143,
     ),
-    145 => 
+    149 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 43,
       'core_campo_id' => 1143,
     ),
-    146 => 
+    150 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 46,
       'core_campo_id' => 1143,
     ),
-    147 => 
+    151 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 40,
       'core_campo_id' => 1174,
     ),
-    148 => 
+    152 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 46,
       'core_campo_id' => 1263,
     ),
-    149 => 
+    153 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 46,
       'core_campo_id' => 1313,
     ),
-    150 => 
+    154 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 22,
       'core_campo_id' => 1314,
     ),
-    151 => 
+    155 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 28,
       'core_campo_id' => 1314,
     ),
-    152 => 
+    156 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 44,
