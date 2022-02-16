@@ -60,24 +60,25 @@ class RecipeServices
 
             $ingredientes = $receta_platillo->ingredientes();
             $costo_total_ingredientes = 0;
+            $arr = [];
             foreach ($ingredientes as $ingrediente) {
                 $cantidad_a_sacar = $ingrediente['cantidad_porcion'] * $cantidad_facturada;
 
                 $costo_unitario_ingrediente = $ingrediente['ingrediente']->get_costo_promedio( $bodega_default_id );
 
-                $costo_total_ingredientes += $costo_unitario_ingrediente * $cantidad_a_sacar;
+                $costo_total_ingredientes += $costo_unitario_ingrediente * $ingrediente['cantidad_porcion'];
 
                 // Una linea de salida por cada ingrediente
                 $lineas_desarme .= ',{"inv_producto_id":"' . $ingrediente['ingrediente']->id . '","Producto":"' . $ingrediente['ingrediente']->id . ' ' . $ingrediente['ingrediente']->descripcion . ' (' . $ingrediente['ingrediente']->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_ingrediente) . '"}';
 
             }
-
-            $costo_unitario_platillo = $costo_total_ingredientes / $cantidad_facturada;
-
+            //dd($arr);
+            //$costo_unitario_platillo = $costo_total_ingredientes / $cantidad_facturada;
+            //dd($costo_total_ingredientes, $cantidad_facturada);
             $lineas_desarme .= ',';
             
             // Un solo registro de entrada para el platillo
-            $lineas_desarme .= '{"inv_producto_id":"' . $receta_platillo->item_platillo->id . '","Producto":"' . $receta_platillo->item_platillo->id . ' ' . $receta_platillo->item_platillo->descripcion . ' (' . $receta_platillo->item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_platillo . '","cantidad":"' . $cantidad_facturada . ' UND","costo_total":"$' . ($cantidad_facturada * $costo_unitario_platillo) . '"}';
+            $lineas_desarme .= '{"inv_producto_id":"' . $receta_platillo->item_platillo->id . '","Producto":"' . $receta_platillo->item_platillo->id . ' ' . $receta_platillo->item_platillo->descripcion . ' (' . $receta_platillo->item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $cantidad_facturada . ' UND","costo_total":"$' . ($cantidad_facturada * $costo_total_ingredientes) . '"}';
 
             $hay_productos++;
         }
@@ -88,8 +89,6 @@ class RecipeServices
         }
 
         $lineas_desarme .= ',{"inv_producto_id":"","Producto":"00.00","motivo":"$00.00","costo_unitario":""},{"inv_producto_id":"Agregar productos","Producto":"Agregar productos","motivo":"Agregar productos","costo_unitario":"Agregar productos","cantidad":"Agregar productos","costo_total":"Calcular costos"}]';
-
-        dd($lineas_desarme);
 
         return $lineas_desarme; // Type string
     }
@@ -135,7 +134,7 @@ class RecipeServices
 
         $obj_inv_docum_head_serv = new InvDocumentsService();
         $obj_inv_docum_head_serv->store_document($request, $lineas_registros, self::INV_DOC_HEADER_MODEL_NAME);
-
+        
         return 1;
     }
 

@@ -7,7 +7,7 @@
   'maneja_costo_promedio_por_bodegas' => '1',
   'core_tipo_transaccion_id' => '4',
   'core_tipo_doc_app_id' => '9',
-  'core_tercero_id' => '212',
+  'core_tercero_id' => '219',
   'motivo_salida_id' => '3',
   'motivo_entrada_id' => '4',
   'ea_tipo_transaccion_id' => '1',
