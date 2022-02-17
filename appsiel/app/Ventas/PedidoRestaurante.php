@@ -56,7 +56,8 @@ class PedidoRestaurante extends VtasDocEncabezado
 
         $collection = PedidoRestaurante::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
-                ->leftJoin('core_terceros as vendedores', 'vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
+                ->leftJoin('vtas_vendedores', 'vtas_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
+                ->leftJoin('core_terceros as vendedores', 'vendedores.id', '=', 'vtas_vendedores.core_tercero_id')
                 ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                 ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
                 ->select(

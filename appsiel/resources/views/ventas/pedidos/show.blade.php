@@ -101,6 +101,12 @@
 			@endif
 		</td>
 		<td style="border: solid 1px #ddd;">
+			<b>Vendedor: </b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
+			<br>
+			<b>Fecha creación: </b> {{ $doc_encabezado->created_at }}
+			<br>
+			<b>Fecha modificación: </b> {{ $doc_encabezado->updated_at }}
+			<br>
 			@if( !is_null($doc_encabezado->contacto_cliente) )
 				<b>Contacto: </b> {{ $doc_encabezado->contacto_cliente->tercero->descripcion }}
 				<br>

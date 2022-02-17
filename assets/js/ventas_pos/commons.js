@@ -108,7 +108,7 @@ $(document).ready(function () {
                         cantidad = 1;
                         if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' ) {
                             $('#cantidad').val(get_quantity_from_barcode( barcode ));
-                            cantidad = get_quantity_from_barcode( barcode );
+                            cantidad = parseFloat( get_quantity_from_barcode( barcode ) );
                             if ( barcode_precio_unitario != '') {
                                 $('#precio_unitario').val(barcode_precio_unitario);
                             }
@@ -139,7 +139,7 @@ $(document).ready(function () {
 
     function get_quantity_from_barcode( barcode )
     {
-        return parseFloat( barcode.substr(6, 2) ) + '.' + parseFloat( barcode.substr(8, 3) );
+        return barcode.substr(6, 2) + '.' + barcode.substr(8, 3);
     }
 
     $('#efectivo_recibido').on('keyup', function (event) {

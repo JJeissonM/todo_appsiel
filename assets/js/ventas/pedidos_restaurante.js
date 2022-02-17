@@ -474,6 +474,8 @@ $(document).ready(function () {
 
             llenar_tabla_productos_facturados(doc_encabezado);
 
+            $('#ingreso_registros').find('tbody').html('');
+
             ventana_imprimir();
 
             reset_datos_pedido();
@@ -522,11 +524,11 @@ $(document).ready(function () {
             $('doc_encabezado_documento_transaccion_descripcion').text(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
 
             $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
-
             //reset_componente_meseros();
 
             llenar_tabla_productos_facturados(doc_encabezado);
 
+            $('#ingreso_registros').find('tbody').html('');
             ventana_imprimir();
 
             reset_datos_pedido();
