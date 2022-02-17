@@ -215,7 +215,11 @@ class InvDocumentsService
         $inv_doc_head = InvDocEncabezado::find( $inv_doc_head_id );
 
         // Obtener líneas de registros del documento
-        $registros_documento = $inv_doc_head->lineas_registros;
+        $registros_documento = [];
+        if ( gettype($inv_doc_head) == "object" ) {
+            $registros_documento = $inv_doc_head->lineas_registros;
+        }
+
 
         $obj_accou_serv = new AccountingServices();
         foreach ($registros_documento as $linea)
