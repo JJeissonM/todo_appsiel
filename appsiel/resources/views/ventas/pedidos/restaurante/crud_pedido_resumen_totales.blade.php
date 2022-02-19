@@ -68,6 +68,11 @@
                 <div id="total_cambio" style="display: inline;"> $ 0</div>
             </td>
         </tr>
+        <tr class="info" >
+            <td colspan="2">
+                <textarea id="descripcion" rows="4" placeholder="Detalle" name="descripcion" cols="70" style="font-size:1.2em; margin: 5px;"></textarea>
+            </td>
+        </tr>
         <tr class="default">
             <td colspan="2" style="text-align: center;">
                 <button class="btn btn-lg btn-primary" id="btn_guardar_factura" disabled="disabled"><i

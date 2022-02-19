@@ -489,6 +489,18 @@ class PedidoRestauranteController extends TransaccionController
         return response()->json( $obj->cargar_datos_editar_pedido($pedido_id) );
     }
 
+    public function cambiar_pedidos_de_mesa($mesa_pedidos_id, $nueva_mesa_id)
+    {
+        $obj = new PedidosRestauranteServices();
+        return $obj->cambiar_pedidos_de_mesa($mesa_pedidos_id, $nueva_mesa_id);
+    }
+
+    public function mesas_permitidas_para_cambiar()
+    {
+        $obj = new PedidosRestauranteServices();
+        return $obj->mesas_permitidas_para_cambiar();
+    }
+
     public function pruebas()
     {
         $obj = new PedidosRestauranteServices();

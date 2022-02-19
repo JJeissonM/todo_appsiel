@@ -553,6 +553,7 @@ $(document).ready(function () {
     var hay_error_password = true;
 	$('.btn_vendedor').on('click', function (e) {
 		e.preventDefault();
+		$('.btn_mesa').attr('disabled','disabled');
 
         $("#modal_password").modal({backdrop: "static"});
 
@@ -575,7 +576,7 @@ $(document).ready(function () {
 	{
 		$('#div_pedidos_mesero_para_una_mesa').html('');
 		$('#lbl_mesa_seleccionada').html('');
-		$('.btn_mesa').removeAttr('disabled');
+		//$('.btn_mesa').removeAttr('disabled');
 		$('.btn_mesa').attr('class','btn btn-default btn_mesa');
 
         $('.linea_registro').each(function () {
@@ -662,9 +663,29 @@ $(document).ready(function () {
             $('#lbl_vendedor_mesero').text( $('#vendedor_default').attr('data-vendedor_descripcion') );
 			*/
         }else{
-			bloquear_mesas_pedidos_otros_meseros();
+			activar_mesas_disponibles_mesero();
 		}
     });
+
+	function activar_mesas_disponibles_mesero()
+	{
+		var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_disponibles_mesero" + "/" + $('#vendedor_id').val();
+
+        $.get(url, function (disponibles) {
+			var arr_disponibles = [];
+			var i = 0;
+			disponibles.forEach(disponible => {
+				arr_disponibles[i] = parseInt(disponible.mesa_id);
+				i++;
+			});
+			
+            $('.btn_mesa').each(function () {
+				if ( arr_disponibles.includes( parseInt($(this).attr('data-mesa_id') ) ) ) {
+					$(this).removeAttr('disabled');
+				}			
+			});
+        });
+	}  
 
 	function bloquear_mesas_pedidos_otros_meseros()
 	{

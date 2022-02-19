@@ -7,6 +7,46 @@ use App\Ventas\VtasPedido;
 
 class PedidosRestauranteServices
 {
+
+    public function mesas_permitidas_para_cambiar()
+    {
+        $mesas = $this->get_clientes_tipo_mesas();
+
+        $mesas_pedidos_pendientes = VtasPedido::where([
+                        ['estado','=','Pendiente'],
+                        ['core_tipo_transaccion_id','=',60],
+                    ])
+                    ->whereIn('cliente_id',$mesas->pluck('id')->toArray())
+                    ->get()->pluck('cliente_id')->toArray();
+                    
+        $disponibles = [];
+        foreach ($mesas as $mesa) {
+            if (in_array($mesa->id,$mesas_pedidos_pendientes)) {
+                continue;
+            }
+            
+            $disponibles[] = $this->build_obj_mesa($mesa);               
+        }
+
+        return $disponibles;
+    }
+
+    public function cambiar_pedidos_de_mesa($mesa_pedidos_id, $nueva_mesa_id)
+    {
+        $pedidos_pendientes_una_mesa = VtasPedido::where([
+                        ['estado','=','Pendiente'],
+                        ['cliente_id','=',$mesa_pedidos_id],
+                        ['core_tipo_transaccion_id','=',60],
+                    ])
+                    ->get();
+                    
+        foreach ($pedidos_pendientes_una_mesa as $pedido) {            
+            $pedido->cliente_id = $nueva_mesa_id;
+        }
+
+        return true;
+    }
+
     // vendedor = mesero
     public function get_pedidos_pendientes_mesero($mesero_id)
     {

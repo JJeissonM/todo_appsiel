@@ -461,9 +461,10 @@ $(document).ready(function () {
         habilitar_campos_encabezado();
 
         var url = $("#form_create").attr('action');
-        var data = $("#form_create").serialize();
-
-        $.post(url, data, function (doc_encabezado) {
+        var data = $("#form_create").serialize() + "&descripcion=" + $('#descripcion').val();
+        /*console.log(data,$('#descripcion').html(),$('#descripcion').text(),$('#descripcion').val());*/
+        
+        $.post(url, data , function (doc_encabezado) {
             $('doc_encabezado_documento_transaccion_descripcion').append(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
 
             $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
@@ -475,6 +476,7 @@ $(document).ready(function () {
             llenar_tabla_productos_facturados(doc_encabezado);
 
             $('#ingreso_registros').find('tbody').html('');
+            $('#descripcion').val('');
 
             ventana_imprimir();
 
@@ -482,7 +484,7 @@ $(document).ready(function () {
             
             resetear_ventana();
         });
-
+        
     });
 
     
@@ -543,9 +545,8 @@ $(document).ready(function () {
         event.preventDefault();
         reset_datos_pedido();
         mostrar_botones_productos();
+        $('#descripcion').val('');
     });
-
-    
 
     
     $('#btn_anular_pedido').click(function (event){
@@ -604,8 +605,6 @@ $(document).ready(function () {
     {
         $('#div_pedidos_mesero_para_una_mesa').text( '' );
     }
-
-    
 
     function resetear_ventana()
     {
@@ -1040,8 +1039,27 @@ $(document).ready(function () {
             }
 
             $('#div_pedidos_mesero_para_una_mesa').append(botones);
+
+            //llenar_select_mesas_permitidas_para_cambiar();
         });
 	}
+
+    function llenar_select_mesas_permitidas_para_cambiar()
+    {
+        $('#div_cambiar_mesa').show();
+        var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_permitidas_para_cambiar";
+        // + "/" + $('#vendedor_id').val() + "/" + $('#cliente_id').val();
+
+        $.get(url, function (mesas_disponibles) {
+            $('#nueva_mesa_id').html('');
+			var opciones_select = '<option value="">Seleccionar nueva mesa</option>';
+			mesas_disponibles.forEach(mesa => {
+				opciones_select += '<option value="'+mesa.mesa_id+'">'+mesa.mesa_descripcion+'</option>';
+			});
+
+            $('#nueva_mesa_id').append(opciones_select);
+        });
+    }
 
     $(document).on('click', '.btn_numero_teclado', function () {
         var seller_password = $('#seller_password').val();
@@ -1076,13 +1094,15 @@ $(document).ready(function () {
 			});
 
             // Se calculan los totales
-            calcular_totales();
-            
+            calcular_totales();           
         
             $("#div_ingreso_registros").find('h5').html('Ingreso de productos<br><span style="color:red;">Modificar pedido: '+un_pedido.pedido_label+ ', ' +un_pedido.mesa_label+'</span>');
             $('#pedido_id').val(un_pedido.pedido_id);
-
+            console.log(un_pedido.doc_encabezado_descripcion);
+            $('#descripcion').val(un_pedido.doc_encabezado_descripcion);
+            
             $('#numero_lineas').text(un_pedido.numero_lineas);
+
             hay_productos = un_pedido.numero_lineas;
             numero_lineas = un_pedido.numero_lineas;
             
