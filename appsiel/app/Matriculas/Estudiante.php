@@ -104,27 +104,27 @@ class Estudiante extends Model
     public static function sqlString($search)
     {
         $string = Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
-                            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
-                            ->select(
-                                        DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRE'),
-                                        DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS DOCUMENTO'),
-                                        'sga_estudiantes.genero AS GENERO',
-                                        'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
-                                        'core_terceros.telefono1 AS TELEFONO',
-                                        'core_terceros.direccion1 AS EMAIL_PAPÁ',
-                                        'core_terceros.email AS EMAIL_MAMÁ',
-                                        'sga_estudiantes.id AS ESTUDIANTE_ID',
-                                        'core_terceros.id AS TERCERO_ID'
-                                    )
-                            ->where("sga_estudiantes.genero", "LIKE", "%$search%")
-                            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
-                            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
-                            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
-                            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
-                            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
-                            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
-                            ->orderBy('sga_estudiantes.id', 'desc')
-                            ->toSql();
+            ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
+            ->select(
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS NOMBRE'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS DOCUMENTO'),
+                'sga_estudiantes.genero AS GENERO',
+                'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
+                'core_terceros.telefono1 AS TELEFONO',
+                'core_terceros.direccion1 AS EMAIL_PAPÁ',
+                'core_terceros.email AS EMAIL_MAMÁ',
+                'sga_estudiantes.id AS ESTUDIANTE_ID',
+                'core_terceros.id AS TERCERO_ID'
+            )
+            ->where("sga_estudiantes.genero", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
+            ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+            ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
+            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
+            ->orderBy('sga_estudiantes.id', 'desc')
+            ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 
@@ -215,23 +215,23 @@ class Estudiante extends Model
         $array_wheres = array_merge($array_wheres, ['sga_matriculas.estado' => $estado_matricula]);
 
         $matriculas_nuevas = Matricula::where($array_wheres)->get();
-        
+
         $antiguos = 0;
         $nuevos = 0;
         //dd($matriculas_nuevas);
         foreach ($matriculas_nuevas as $matricula) {
-            $cant_matriculas_estudiante = Matricula::where('id_estudiante',$matricula->id_estudiante)->count();
-            if ($cant_matriculas_estudiante>1) {
+            $cant_matriculas_estudiante = Matricula::where('id_estudiante', $matricula->id_estudiante)->count();
+            if ($cant_matriculas_estudiante > 1) {
                 $antiguos++;
-            }else{
+            } else {
                 $nuevos++;
             }
         }
 
         return [
-                ['Antiguos', $antiguos],
-                ['Nuevos',$nuevos],
-            ];
+            ['Antiguos', $antiguos],
+            ['Nuevos', $nuevos],
+        ];
     }
 
     public static function get_estudiante_x_tercero_id($tercero_id)
@@ -289,7 +289,7 @@ class Estudiante extends Model
                 'core_terceros.direccion1',
                 'core_terceros.barrio',
                 'core_ciudades.descripcion AS ciudad',
-                'users.email',
+                'core_terceros.email',
                 'sga_estudiantes.id'
             )
             ->get()
