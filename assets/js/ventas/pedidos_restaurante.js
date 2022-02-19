@@ -20,7 +20,7 @@ $(document).ready(function () {
 
     if ( $('#action').val() != 'edit' )
     {
-        $('#fecha').val( get_fecha_hoy() );
+        //$('#fecha').val( get_fecha_hoy() );
     }
 
     //Al hacer click en alguna de las sugerencias (escoger un producto)
