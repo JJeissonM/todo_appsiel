@@ -131,6 +131,10 @@ class FacturaPosController extends TransaccionController
                     $lista_campos[$i]['value'] = $pdv->cliente->forma_pago( date('Y-m-d') );
                     break;
 
+                case 'fecha':
+                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
+                    break;
+
                 case 'fecha_vencimiento':
                     $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
                     break;
@@ -138,16 +142,15 @@ class FacturaPosController extends TransaccionController
                 case 'inv_bodega_id':
                     $lista_campos[$i]['opciones'] = [$pdv->bodega_default_id => $pdv->bodega->descripcion];
                     break;
-
-                case 'fecha':
-                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
-                    break;
                             
                 default:
                     # code...
                     break;
             }
         }
+
+        $fecha = $pdv->ultima_fecha_apertura();
+        $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
 
         $modelo_controller = new ModeloController;
         $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
@@ -199,7 +202,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento'));
     }
 
     public function verificar_datos_por_defecto( $pdv )
@@ -562,6 +565,9 @@ class FacturaPosController extends TransaccionController
             }
         }
 
+        $fecha = $doc_encabezado->fecha;
+        $fecha_vencimiento = $doc_encabezado->fecha_vencimiento;
+
         $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
 
         $url_action = str_replace('id_fila', $registro->id, $acciones->update);
@@ -631,7 +637,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento'));
     }
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)
@@ -1187,9 +1193,11 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'vendedor_id':
-                    //array_shift($lista_campos[$i]['opciones']);
                     $lista_campos[$i]['value'] = [$vendedor->id];
-                    //$lista_campos[$i]['opciones'] = [ $pdv->cliente->vendedor->id => $pdv->cliente->vendedor->tercero->descripcion];
+                    break;
+
+                case 'fecha':
+                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
                     break;
 
                 case 'fecha_vencimiento':
@@ -1204,6 +1212,9 @@ class FacturaPosController extends TransaccionController
                     break;
             }
         }
+
+        $fecha = $pdv->ultima_fecha_apertura();
+        $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
 
         $form_create = [
             'url' => $acciones->store,
@@ -1242,7 +1253,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor') );
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento') );
     }
 
     public function unificar_lineas_registros_pedidos($pedido)

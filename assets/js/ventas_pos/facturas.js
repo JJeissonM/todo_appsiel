@@ -540,6 +540,9 @@ $(document).ready(function () {
 
 	$('#btn_guardar').hide();
 
+	$('#fecha').val(fecha);
+	$('#fecha_vencimiento').val(fecha_vencimiento);
+
 	agregar_la_linea_ini();
 
 	// Elementos al final de la página

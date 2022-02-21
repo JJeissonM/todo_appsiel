@@ -312,6 +312,9 @@ use App\Http\Controllers\Sistema\VistaController;
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};
         numero_linea = {{ $numero_linea }};
+        
+        var fecha = "{{$fecha}}";
+        var fecha_vencimiento = "{{$fecha_vencimiento}}";
 
         $('#efectivo_recibido').val( {{ $total_efectivo_recibido }} );
 

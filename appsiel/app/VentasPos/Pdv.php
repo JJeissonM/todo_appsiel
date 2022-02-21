@@ -41,7 +41,12 @@ class Pdv extends Model
 
     public function ultima_fecha_apertura()
     {
-        return AperturaEncabezado::where('pdv_id',$this->id)->orderBy('created_at', 'desc')->get()->first()->fecha;
+        $ultima_apertura = AperturaEncabezado::where('pdv_id',$this->id)->orderBy('created_at', 'desc')->get()->first();
+
+        if ( $ultima_apertura == null ) {
+            return date('Y-m-d');
+        }
+        return $ultima_apertura->fecha;
     }
 
 
