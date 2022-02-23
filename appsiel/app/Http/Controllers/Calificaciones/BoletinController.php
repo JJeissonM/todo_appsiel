@@ -77,7 +77,7 @@ class BoletinController extends Controller
         $anio = (int)explode("-",$periodo->fecha_desde)[0];
 
         // Listado de estudiantes con matriculas activas en el curso y año indicados
-        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, 'Activo'  );
+        $estudiantes = Matricula::estudiantes_matriculados( $request->curso_id, $periodo->periodo_lectivo_id, null );
 
         if ( $request->tipo_informe[0] == 'preinforme' )
         {

@@ -148,8 +148,8 @@ class ProcesoController extends ModeloController
         {
             $asignaturas_del_curso_y_periodo_lectivo = Asignatura::asignadas_al_curso( $periodo_lectivo_id, $curso->id );
 
-            // Listado de estudiantes con matriculas activas en el curso y año indicados
-            $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, 'Activo' );            
+            // Listado de estudiantes con matriculas en el curso y año indicados
+            $estudiantes = Matricula::estudiantes_matriculados( $curso->id, $periodo_lectivo_id, null );
 
             foreach ($asignaturas_del_curso_y_periodo_lectivo as $asignatura)
             {
