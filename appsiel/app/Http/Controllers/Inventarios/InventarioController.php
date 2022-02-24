@@ -44,6 +44,7 @@ use App\VentasPos\DocRegistro;
 use App\Contabilidad\ContabMovimiento;
 
 use App\Nomina\OrdenDeTrabajo;
+use App\VentasPos\FacturaPos;
 
 class InventarioController extends TransaccionController
 {
@@ -609,6 +610,7 @@ class InventarioController extends TransaccionController
                     <b>Orden de compras: </b> <a href="' . url('compras/' . $fatura_compra->id . '?id=9&id_modelo=147&id_transaccion=' . $reg_fatura_compras->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_compra->documento_transaccion_prefijo_consecutivo . '</a>';
         }
 
+        $enlace2 = '';
         // Verificar si pertenece a una documento de ventas
         $reg_factura_venta = VtasDocEncabezado::where('remision_doc_encabezado_id', $doc_encabezado->id)
             ->orWhere('remision_doc_encabezado_id', 'LIKE', '%,' . $doc_encabezado->id)
@@ -616,11 +618,23 @@ class InventarioController extends TransaccionController
             ->orWhere('remision_doc_encabezado_id', 'LIKE', '%,' . $doc_encabezado->id . ',%')
             ->get()
             ->first();
-        $enlace2 = '';
         if (!is_null($reg_factura_venta)) {
             $fatura_venta = VtasDocEncabezado::get_registro_impresion($reg_factura_venta->id);
             $enlace2 = '<br/>
                     <b>Factura de ventas: </b> <a href="' . url('ventas/' . $fatura_venta->id . '?id=13&id_modelo=139&id_transaccion=' . $reg_factura_venta->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_venta->documento_transaccion_prefijo_consecutivo . '</a>';
+        }
+
+        // Verificar si pertenece a una documento de ventas POS
+        $reg_factura_venta = FacturaPos::where('remision_doc_encabezado_id', $doc_encabezado->id)
+            ->orWhere('remision_doc_encabezado_id', 'LIKE', '%,' . $doc_encabezado->id)
+            ->orWhere('remision_doc_encabezado_id', 'LIKE', $doc_encabezado->id . ',%')
+            ->orWhere('remision_doc_encabezado_id', 'LIKE', '%,' . $doc_encabezado->id . ',%')
+            ->get()
+            ->first();
+        if (!is_null($reg_factura_venta)) {
+            $fatura_venta = FacturaPos::get_registro_impresion($reg_factura_venta->id);
+            $enlace2 = '<br/>
+                    <b>Factura POS: </b> <a href="' . url('pos_factura/' . $fatura_venta->id . '?id=20&id_modelo=230&id_transaccion=' . $reg_factura_venta->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_venta->documento_transaccion_prefijo_consecutivo . '</a>';
         }
 
 
