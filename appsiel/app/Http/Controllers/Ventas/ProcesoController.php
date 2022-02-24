@@ -40,7 +40,7 @@ use App\Inventarios\RemisionVentas;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\RegistrosMediosPago;
 use App\Ventas\Cliente;
-
+use App\Ventas\Services\DocumentHeaderService;
 use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
 
 class ProcesoController extends Controller
@@ -544,5 +544,19 @@ class ProcesoController extends Controller
         $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
 
         return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
+    }
+
+    public function documents_massive_canceling( $ids_list )
+    {
+        $ids = explode(',',$ids_list);
+
+        $doc_header_serv = new DocumentHeaderService();
+
+        $results = [];
+        foreach ($ids as $key => $document_id) {
+            $results[] = $doc_header_serv->cancel_document_by_id( $document_id, true );
+        }
+
+        return response()->json($results,200);
     }
 }

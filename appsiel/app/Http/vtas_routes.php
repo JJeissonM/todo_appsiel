@@ -84,6 +84,9 @@ Route::get('ventas_recontabilizar_nota/{id}', 'Ventas\ProcesoController@recontab
 Route::get('actualizar_valor_total_vtas_encabezados_doc', 'Ventas\ProcesoController@actualizar_valor_total_vtas_encabezados_doc');
 Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@recontabilizar_documentos_ventas');
 
+// Anular facturas masivas
+Route::get('sales_documents_massive_canceling/{ids_list}', 'Ventas\ProcesoController@documents_massive_canceling');
+
 
 //Coneccion de todos los procesos de ventas: cotizacion, pedidos, remisiones, facturas de venta
 
