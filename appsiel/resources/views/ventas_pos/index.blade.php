@@ -161,8 +161,18 @@
 											{!! $btn_abrir !!}
 											{!! $btn_facturar !!}
 											{!! $btn_cerrar !!}
-											{!! $btn_acumular !!}
-											{!! $btn_hacer_arqueo !!}
+
+											@can('vtas_pos_acumular_pdv')
+												{!! $btn_acumular !!}
+											@else 
+												&nbsp;
+											@endcan
+
+											@can('vtas_pos_hacer_arqueo_pdv')
+												{!! $btn_hacer_arqueo !!}
+											@else 
+												&nbsp;
+											@endcan
 											
 										</div>
 										<br><br>

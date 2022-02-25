@@ -1,9 +1,16 @@
 <div class="row">
     <div class="col-md-4 col-xs-12">
         <div class="btn-group">
-            <button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Estado de PDV"><i class="fa fa-btn fa-search"></i> Estado PDV </button>
-            <button class="btn btn-default btn-xs btn_consultar_documentos" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Facturas de ventas"><i class="fa fa-btn fa-search"></i> Consultar facturas
-            </button>
+            @can('vtas_pos_consultar_estado_pdv')
+                <button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Estado de PDV">
+                    <i class="fa fa-btn fa-search"></i> Estado PDV </button>
+            @endcan
+
+            @can('vtas_pos_consultar_facturas_pdv')
+                <button class="btn btn-default btn-xs btn_consultar_documentos" data-pdv_id="{{Input::get('pdv_id')}}" data-lbl_ventana="Facturas de ventas">
+                    <i class="fa fa-btn fa-search"></i> Consultar facturas
+                </button>
+            @endcan
         </div>
     </div>
 
