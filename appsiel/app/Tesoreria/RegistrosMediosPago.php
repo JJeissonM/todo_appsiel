@@ -4,7 +4,7 @@ namespace App\Tesoreria;
 
 class RegistrosMediosPago
 {
-    public function depurar_tabla_registros_medios_recaudos( string $filas_tabla_medios_recaudos )
+    public function depurar_tabla_registros_medios_recaudos( string $filas_tabla_medios_recaudos, $default_value = null )
     {
         // Conviertir en un array asociativo al strig: JSON,true
         $lineas_registros_medios_recaudos = json_decode( $filas_tabla_medios_recaudos, true );
@@ -14,8 +14,22 @@ class RegistrosMediosPago
             return json_decode( '[]' );
         }
 
+        // Asignar medio de pago por defecto
+        /**[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"","teso_caja_id":"","teso_cuenta_bancaria_id":"","valor":"$1400"},{"teso_medio_recaudo_id":"","teso_motivo_id":"$1400.00","teso_caja_id":"","teso_cuenta_bancaria_id":""}] */
+
         // Eliminar ultimo elemento del array (totales de la tabla)
-        $aux = array_pop( $lineas_registros_medios_recaudos );
+        array_pop( $lineas_registros_medios_recaudos );
+        
+        if(empty($lineas_registros_medios_recaudos))
+        {
+            $lineas_registros_medios_recaudos = [[
+                'teso_medio_recaudo_id' => '1-Efectivo',
+                'teso_motivo_id' => '1-Recaudo clientes',
+                'teso_caja_id' => '1-Caja general',
+                'teso_cuenta_bancaria_id' => '0-',
+                'valor' => '$'.$default_value
+            ]];
+        }
         
         // Devolver en formato JSON
         return json_decode( json_encode( $lineas_registros_medios_recaudos ) );
