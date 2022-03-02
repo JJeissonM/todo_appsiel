@@ -182,10 +182,20 @@ class AccumulationService
 
         foreach ( $invoices_heads as $invoice_head )
         {
+            if( $invoice_head->estado == 'Pendiente')
+            {
+                continue;
+            }
+
             $invoice_lines = $invoice_head->lineas_registros;
 
             foreach ( $invoice_lines as $invoice_line )
             {
+                if( $invoice_line->estado == 'Pendiente')
+                {
+                    continue;
+                }
+
                 $data_invoice_line = $invoice_head->toArray() + $invoice_line->toArray();
 
                 $data_invoice_line['estado'] = 'Activo';

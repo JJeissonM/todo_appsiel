@@ -1,7 +1,7 @@
 <tr>
     @if( $mostrar_columna_tercero )
         <td>
-            {{ $linea_movimiento->numero_identificacion }} {{ $linea_movimiento->tercero }}
+            {{ $linea_movimiento->numero_identificacion }} {{ $linea_movimiento->descripcion_tercero }}
             @if( $linea_movimiento->lbl_estudiante != '' )
                 <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estudiante: </b> {{ $linea_movimiento->lbl_estudiante }}
             @endif

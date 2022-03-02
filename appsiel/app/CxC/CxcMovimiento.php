@@ -2,6 +2,7 @@
 
 namespace App\CxC;
 
+use App\Core\Tercero;
 use App\Sistema\TipoTransaccion;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +18,11 @@ class CxcMovimiento extends Model
   public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Tercero', 'Valor cartera', 'Valor pagado', 'Saldo pendiente', 'Estado'];
 
   public $urls_acciones = '{"show":"no"}';
+
+  public function tercero()
+  {
+    return $this->belongsTo(Tercero::class,'core_tercero_id');
+  }
 
   public function actualizar_saldos($abono)
   {

@@ -14,13 +14,6 @@ use Form;
 use View;
 use Cache;
 
-use App\Sistema\TipoTransaccion;
-use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Sistema\Campo;
-use App\Core\Tercero;
-use App\Core\Empresa;
-
 use App\CxC\Services\DocumentosPendientesCxC;
 
 use App\Ventas\Cliente;
@@ -39,15 +32,31 @@ class ReportesController extends Controller
     public function documentos_pendientes(Request $request)
     {
         $core_tercero_id = $request->core_tercero_id;
-        $clase_cliente_id = $request->clase_cliente_id;
+        $clase_cliente_id = (int)$request->clase_cliente_id;
         $fecha_corte = $request->fecha_corte;
 
         $servicio = new DocumentosPendientesCxC();
 
-        $movimiento = $servicio->get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id );
+        $movimiento = $servicio->get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id);
         
         foreach ( $movimiento as $linea_movimiento )
         {
+            if ($clase_cliente_id != '') {
+                if ($linea_movimiento->tercero == null ) {
+                    continue;
+                }
+
+                if($linea_movimiento->tercero->cliente() == null)
+                {
+                    continue;
+                }
+
+                if($linea_movimiento->tercero->cliente()->clase_cliente_id != $clase_cliente_id)
+                {
+                    continue;
+                }
+            }                
+
             $linea_movimiento->show = 1;
             // Para NO mostrar saldos con saldo pendientes cero
             if ( $linea_movimiento->saldo_pendiente == 0)// && $linea_movimiento->id != 0 

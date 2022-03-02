@@ -11,7 +11,7 @@ use App\CxC\CxcAbono;
 class DocumentosPendientesCxC
 {
     
-    public function get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id, $clase_cliente_id ) 
+    public function get_movimiento_documentos_pendientes_fecha_corte( $fecha_corte, $core_tercero_id ) 
     {
         $array_wheres = [
                             [ 'cxc_movimientos.core_empresa_id', '=', Auth::user()->empresa_id]
@@ -28,20 +28,15 @@ class DocumentosPendientesCxC
             $array_wheres = array_merge($array_wheres, [ [ 'cxc_movimientos.core_tercero_id', '=', (int)$core_tercero_id ] ] );
         }
 
-        if( $clase_cliente_id != '' )
-        {
-            $array_wheres = array_merge($array_wheres, [ [ 'vtas_clientes.clase_cliente_id', '=', $clase_cliente_id ] ] );
-        }
         $movimiento = CxcMovimiento::leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
-                                    ->leftJoin('vtas_clientes', 'vtas_clientes.core_tercero_id', '=', 'cxc_movimientos.core_tercero_id')
                                     ->where( $array_wheres )
                                     ->select(
                                                 'cxc_movimientos.id',
                                                 'cxc_movimientos.core_tipo_transaccion_id',
                                                 'cxc_movimientos.core_tipo_doc_app_id',
                                                 'cxc_movimientos.consecutivo',
-                                                'core_terceros.descripcion AS tercero',
+                                                'core_terceros.descripcion AS descripcion_tercero',
                                                 'core_terceros.numero_identificacion',
                                                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_movimientos.consecutivo) AS documento'),
                                                 'cxc_movimientos.fecha',
@@ -50,7 +45,6 @@ class DocumentosPendientesCxC
                                                 'cxc_movimientos.valor_pagado',
                                                 'cxc_movimientos.saldo_pendiente',
                                                 'cxc_movimientos.estado',
-                                                'vtas_clientes.clase_cliente_id',
                                                 'cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.core_tercero_id')
                                     ->orderBy('cxc_movimientos.fecha')
