@@ -112,10 +112,6 @@ class AccumulationService
                 $linea->estado = 'Acumulado';
                 $linea->save();
             }
-
-            if (empty($datos)) {
-                continue;
-            }
             
             // Actualiza Movimiento POS
             Movimiento::where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
@@ -153,9 +149,17 @@ class AccumulationService
                 lineas_registros_medios_recaudos =  esta variable es un campo de vtas_pos_doc_encabezados
             */
             if (!isset($datos['lineas_registros_medios_recaudos'])) {
-                dd( 'Indice no definido: lineas_registros_medios_recaudos en el array.', $datos);
+                
+                $datos['lineas_registros_medios_recaudos'] = [[
+                    'teso_medio_recaudo_id' => '1-Efectivo',
+                    'teso_motivo_id' => '1-Recaudo clientes',
+                    'teso_caja_id' => '1-Caja general',
+                    'teso_cuenta_bancaria_id' => '0-',
+                    'valor' => '$'.$total_documento
+                ]];
             }
-            $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
+
+            $lineas_recaudos = json_decode(json_encode($datos['lineas_registros_medios_recaudos']));
 
             if ( !is_null($lineas_recaudos) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
