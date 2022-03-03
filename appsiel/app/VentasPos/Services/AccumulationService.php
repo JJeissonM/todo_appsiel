@@ -149,17 +149,10 @@ class AccumulationService
                 lineas_registros_medios_recaudos =  esta variable es un campo de vtas_pos_doc_encabezados
             */
             if (!isset($datos['lineas_registros_medios_recaudos'])) {
-                
-                $datos['lineas_registros_medios_recaudos'] = [[
-                    'teso_medio_recaudo_id' => '1-Efectivo',
-                    'teso_motivo_id' => '1-Recaudo clientes',
-                    'teso_caja_id' => '1-Caja general',
-                    'teso_cuenta_bancaria_id' => '0-',
-                    'valor' => '$'.$total_documento
-                ]];
+                $datos['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"1-Caja general","teso_cuenta_bancaria_id":"0-","valor":"$'.$total_documento.'"}]';
             }
-
-            $lineas_recaudos = json_decode(json_encode($datos['lineas_registros_medios_recaudos']));
+            
+            $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
             if ( !is_null($lineas_recaudos) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
