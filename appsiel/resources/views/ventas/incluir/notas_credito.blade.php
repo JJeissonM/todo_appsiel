@@ -20,7 +20,9 @@
                                                 ->where('consecutivo',$doc_encabezado->consecutivo)
                                                 ->get()
                                                 ->first();
-
+                            if ($el_documento == null) {
+                                continue;
+                            }
                             $modelo = App\Sistema\Modelo::find( $transaccion->core_modelo_id );
                             $url_ver = str_replace('id_fila', $el_documento->id, $modelo->url_ver)
 

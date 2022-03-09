@@ -15,7 +15,7 @@ use View;
 use Input;
 
 use App\Core\EncabezadoDocumentoTransaccion;
-
+use App\Core\TipoDocApp;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 use App\Inventarios\RemisionVentas;
@@ -25,16 +25,10 @@ use App\Ventas\NotaCredito;
 
 use App\CxC\CxcAbono;
 
-use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoMovimiento;
 
-use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
-use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Factura;
-
-use App\FacturacionElectronica\ResultadoEnvio;
-
-use App\FacturacionElectronica\DATAICO\FacturaGeneral;
+use App\FacturacionElectronica\Services\DocumentHeaderService;
 
 class FacturaController extends TransaccionController
 {
@@ -52,6 +46,7 @@ class FacturaController extends TransaccionController
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
 
         $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
+
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $doc_encabezado->id );
 
         $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados( $doc_encabezado );
@@ -125,7 +120,7 @@ class FacturaController extends TransaccionController
 
         if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
         {
-            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El pefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
+            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
         }
 
         $mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();                
@@ -149,4 +144,24 @@ class FacturaController extends TransaccionController
 
         return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
     }
+
+    public function convertir_en_factura_electronica( $vtas_doc_encabezado_id, $parent_transaction_id )
+    {
+        $tipo_doc_fe = TipoDocApp::find(config('facturacion_electronica.document_type_id_default'));
+        if ( empty( $tipo_doc_fe->resolucion_facturacion->toArray() ) )
+        {
+            return back()->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $tipo_doc_fe->prefijo . ' no tiene una resolución asociada.');
+        }
+
+        $doc_header_serv = new DocumentHeaderService();
+        $result = $doc_header_serv->convert_to_electronic_invoice($vtas_doc_encabezado_id, $parent_transaction_id);
+
+        if ( $result->status == 'mensaje_error' )
+        {
+            return back()->with( $result->status, $result->message);
+        }
+
+        return redirect( 'fe_factura/'. $result->new_document_header_id.'?id=21&id_modelo=244&id_transaccion=52' )->with($result->status,$result->message);
+    }
+    
 }

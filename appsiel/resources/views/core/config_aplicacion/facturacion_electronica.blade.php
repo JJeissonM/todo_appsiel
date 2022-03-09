@@ -264,6 +264,41 @@
 
 				<br><br>
 
+				<h4> Documento de Factura por defecto </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$transaction_type_id_default = 52;
+								if( isset($parametros['transaction_type_id_default'] ) )
+								{
+									$transaction_type_id_default = $parametros['transaction_type_id_default'];
+								}
+							?>
+							{{ Form::bsSelect('transaction_type_id_default', $transaction_type_id_default, 'Tipo de transacción', \App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$document_type_id_default = 47;
+
+								if( isset($parametros['document_type_id_default'] ) )
+								{
+									$document_type_id_default = $parametros['document_type_id_default'];
+								}
+							?>
+							{{ Form::bsSelect('document_type_id_default', $document_type_id_default, 'Tipo documento', \App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<br><br>
+
 				<div style="width: 100%; text-align: center;">
 					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 

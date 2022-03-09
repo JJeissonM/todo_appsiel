@@ -14,5 +14,7 @@
   'tokenPassword' => 'a4afb1e20e856e8fb031b487efbfd239',
   'modalidad_asignada' => '2',
   'cantidadDecimales' => '4',
+  'transaction_type_id_default' => '52',
+  'document_type_id_default' => '47',
   'url_id_modelo' => '0',
 ) ;

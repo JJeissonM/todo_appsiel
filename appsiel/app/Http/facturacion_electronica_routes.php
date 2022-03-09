@@ -6,6 +6,7 @@ Route::resource('facturacion_electronica', 'FacturacionElectronica\AplicacionCon
 
 
 Route::get('fe_factura_enviar/{id}', 'FacturacionElectronica\FacturaController@enviar_factura_electronica');
+Route::get('fe_convertir_en_factura_electronica/{vtas_doc_encabezado_id}/{parent_transaction_id}', 'FacturacionElectronica\FacturaController@convertir_en_factura_electronica');
 Route::resource('fe_factura', 'FacturacionElectronica\FacturaController');
 
 

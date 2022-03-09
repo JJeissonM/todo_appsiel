@@ -59,6 +59,11 @@ class FacturaPos extends Model
         return $this->hasMany(DocRegistro::class, 'vtas_pos_doc_encabezado_id');
     }
 
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
+
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {

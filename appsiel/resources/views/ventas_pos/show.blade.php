@@ -14,6 +14,10 @@
         @can('vtas_recontabilizar')
         	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endcan
+
+        @can('Facturación Electrónica')
+        	<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . '/' . $doc_encabezado->core_tipo_transaccion_id .$variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
+        @endcan
         
 	@endif
 	
@@ -88,7 +92,14 @@
 @endsection
 
 @section('documento_vista')
+
 	@include('ventas.incluir.documento_vista')
+	
+	<input name="datos_doc_encabezado" id="datos_doc_encabezado" type="hidden" value="{{ $doc_encabezado->documento_transaccion_descripcion.' '.$doc_encabezado->documento_transaccion_prefijo_consecutivo }}">
+
+	
+	@include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>''])
+
 @endsection
 
 @section('registros_otros_documentos')
@@ -234,21 +245,6 @@
 			}
 
 
-            $('.btn_save_modal').click(function(event){
-
-            	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
-            	{
-            		if ( !validar_existencia_actual() )
-					{
-						$('#precio_total').val('');
-						return false;
-					}
-                    validacion_saldo_movimientos_posteriores();
-            	}else{
-            		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
-            	}
-            });
-
             $('#enlace_anular').click(function(){
             	
             	if ( !$("#opcion1").is(":checked") && !$("#opcion2").is(":checked") )
@@ -328,6 +324,35 @@
 				$('#saldo_a_la_fecha').val( nuevo_saldo );
 				$('#saldo_a_la_fecha2').val( nuevo_saldo );
 			}
+
+			$("#myModal").on('hide.bs.modal', function(){
+                $('#popup_alerta_danger').hide();
+            });
+
+
+			// Convertir en Fact. Elect.
+			$("#btn_convertir_en_factura_electronica").click(function (event) {
+				event.preventDefault();
+				
+				$('#contenido_modal2').html('<h2>'+$("#datos_doc_encabezado").val()+'</h2><h3>¿Realmente desea convertir este documento en un <b>Factura Electrónica</b>?</h3>');
+
+				$("#myModal2").modal(
+					{keyboard: true}
+				);
+
+				$("#myModal2 .modal-title").text('Convertir documento en Factura Electrónica');
+
+				$("#myModal2 .btn_edit_modal").hide();
+				$("#myModal2 .btn_save_modal").html('Convertir');
+				
+				$("#myModal2 .btn_save_modal").attr( 'data-href',$(this).attr( 'data-href') );
+
+			});
+
+			
+            $('.btn_save_modal').click(function(event){
+				location.href = $(this).attr( 'data-href');
+			});
 
 		});
 	</script>

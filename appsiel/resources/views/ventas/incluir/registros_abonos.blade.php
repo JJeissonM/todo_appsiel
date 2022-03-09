@@ -16,6 +16,11 @@
                             ->where('core_tipo_doc_app_id',$linea->core_tipo_doc_app_id)
                             ->where('consecutivo',$linea->consecutivo)
                             ->get()->first();
+
+                            
+                            if ($el_documento == null) {
+                                continue;
+                            }
                         ?>
 
                         <td class="text-center"> 

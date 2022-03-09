@@ -159,8 +159,6 @@
 				
 				$('#btn_print').attr('href', new_url);
 
-
-
 				var btn_email = $('#btn_email').attr('href');
 
 				n = btn_email.search('formato_impresion_id');
