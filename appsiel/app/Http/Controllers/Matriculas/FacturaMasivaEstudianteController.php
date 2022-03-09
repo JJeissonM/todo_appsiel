@@ -72,7 +72,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
             $concepto_id = null;
         }
 
-        $planes_pagos = $obj_planes_pagos->get_registros_pendientes_o_vencidos_a_la_fecha( $request->fecha, $concepto_id );
+        $planes_pagos = $obj_planes_pagos->get_registros_pendientes_o_vencidos_a_la_fecha( $request->fecha_vencimiento, $concepto_id );
 
         $thead = '<tr>
                     <th style="display:none;">linea_plan_pago_id</th>
@@ -101,8 +101,6 @@ class FacturaMasivaEstudianteController extends TransaccionController
             
             $clase_danger = 'danger';
             $linea_plan_pago_id = 0;
-
-            //$registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
 
             $estudiante = $registro_plan_pagos->estudiante;
 
@@ -265,7 +263,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
                 continue;
             }
 
-            $registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
+            //$registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
             $registro_plan_pagos->fecha = $request->fecha;
 
             $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, (int)$request->generar_fact_electronica );
@@ -354,7 +352,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
         $request['registros_medio_pago'] = '[]';
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
-        $aux_factura = FacturaAuxEstudiante::create( [ 'vtas_doc_encabezado_id' => $doc_encabezado->id,
+        FacturaAuxEstudiante::create( [ 'vtas_doc_encabezado_id' => $doc_encabezado->id,
                                                         'matricula_id' => (int)$request->matricula_id,
                                                         'cartera_estudiante_id' => (int)$request->cartera_estudiante_id
                                                      ] );

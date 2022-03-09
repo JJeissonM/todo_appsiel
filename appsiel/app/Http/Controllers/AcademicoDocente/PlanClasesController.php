@@ -41,18 +41,21 @@ class PlanClasesController extends ModeloController
     	// Crear el encabezado
     	$registro = $this->crear_nuevo_registro( $request ); // Esta línea hace que la variable $request cambie (no se porqué   ¿¿¿???)
 
-    	foreach ( $datos['elemento_descripcion'] as $key => $value )
-    	{
+        if (isset($datos['elemento_descripcion'])) {
+            foreach ( $datos['elemento_descripcion'] as $key => $value )
+            {
 
-    		PlanClaseRegistro::create( 
-    									[ 
-					    					'plan_clase_encabezado_id' => $registro->id,
-					    					'plan_clase_estruc_elemento_id' => $datos['elemento_id'][ $key ],
-					    					'contenido' => $value,
-					    					'estado' => 'Activo'
-					    				]
-					    			);
-    	}
+                PlanClaseRegistro::create( 
+                                            [ 
+                                                'plan_clase_encabezado_id' => $registro->id,
+                                                'plan_clase_estruc_elemento_id' => $datos['elemento_id'][ $key ],
+                                                'contenido' => $value,
+                                                'estado' => 'Activo'
+                                            ]
+                                        );
+            }
+        }
+            
 
         $modelo = Modelo::find( $request->url_id_modelo );
         $this->almacenar_imagenes($request, $modelo->ruta_storage_imagen, $registro);
@@ -139,33 +142,36 @@ class PlanClasesController extends ModeloController
             $registro2 = $registro;
         }
 
-
-    	foreach ( $datos['elemento_descripcion'] as $key => $value )
-    	{
-
-    		$registro_elemento = PlanClaseRegistro::where( 'plan_clase_encabezado_id', $registro->id )
-                                                    ->where( 'plan_clase_estruc_elemento_id', $datos['elemento_id'][ $key ] )
-                                                    ->get()
-                                                    ->first();
-
-            if ( !is_null( $registro_elemento ) )
+        if (isset($datos['elemento_descripcion'])) 
+        {
+           
+            foreach ( $datos['elemento_descripcion'] as $key => $value )
             {
-                $registro_elemento->update( 
-		    									[ 
-							    					'contenido' => $value
-							    				]
-							    			);
-            }else{
-            	PlanClaseRegistro::create( 
-    									[ 
-					    					'plan_clase_encabezado_id' => $registro->id,
-					    					'plan_clase_estruc_elemento_id' => $datos['elemento_id'][ $key ],
-					    					'contenido' => $value,
-					    					'estado' => 'Activo'
-					    				]
-					    			);
-            }	
-    	}
+
+                $registro_elemento = PlanClaseRegistro::where( 'plan_clase_encabezado_id', $registro->id )
+                                                        ->where( 'plan_clase_estruc_elemento_id', $datos['elemento_id'][ $key ] )
+                                                        ->get()
+                                                        ->first();
+
+                if ( !is_null( $registro_elemento ) )
+                {
+                    $registro_elemento->update( 
+                                                    [ 
+                                                        'contenido' => $value
+                                                    ]
+                                                );
+                }else{
+                    PlanClaseRegistro::create( 
+                                            [ 
+                                                'plan_clase_encabezado_id' => $registro->id,
+                                                'plan_clase_estruc_elemento_id' => $datos['elemento_id'][ $key ],
+                                                'contenido' => $value,
+                                                'estado' => 'Activo'
+                                            ]
+                                        );
+                }	
+            }
+        }
 
 
         $registro->fill( $request->all() );
