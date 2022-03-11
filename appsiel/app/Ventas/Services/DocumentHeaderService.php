@@ -33,15 +33,19 @@ class DocumentHeaderService
             'consecutivo' => $document_header->consecutivo];
 
         // Verificar si la factura tiene abonos, si tiene no se puede eliminar
-        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$document_header->core_tipo_transaccion_id)
+        $abonos = CxcAbono::where('doc_cxc_transacc_id',$document_header->core_tipo_transaccion_id)
                             ->where('doc_cxc_tipo_doc_id',$document_header->core_tipo_doc_app_id)
                             ->where('doc_cxc_consecutivo',$document_header->consecutivo)
-                            ->count();
+                            ->get();
         
-        if ($cantidad != 0) {
+        if (!empty($abonos->toArray())) {
+            $lista_abonos = '';
+            foreach ($abonos as $abono) {
+                $lista_abonos .= ' - ' . $abono->payment_document_header()->get_label_documento();
+            }
             return (object)[
                 'status'=>'mensaje_error',
-                'message'=>'Factura ' . $document_header->get_label_documento()  . ' NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería).'
+                'message'=>'Factura ' . $document_header->get_label_documento()  . ' NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería): ' . $lista_abonos
             ];
         }
 

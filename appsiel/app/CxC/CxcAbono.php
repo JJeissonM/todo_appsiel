@@ -23,6 +23,17 @@ class CxcAbono extends Model
 
     public $urls_acciones = '{"show":"no"}';
 
+    public function payment_document_header()
+    {
+        $transaction = TipoTransaccion::find($this->core_tipo_transaccion_id);
+        return app($transaction->model->name_space)->where([
+            ['core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
+            ['consecutivo','=',$this->consecutivo],
+            ])
+            ->get()->first();
+    }
+
     public function account_receivable_document_header()
     {
         $transaction = TipoTransaccion::find($this->doc_cxc_transacc_id);

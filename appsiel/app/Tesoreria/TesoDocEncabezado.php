@@ -74,6 +74,11 @@ class TesoDocEncabezado extends Model
         return $this->hasMany( TesoDocRegistro::class, 'teso_encabezado_id');
     }
 
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
+
     public function lineas_movimientos()
     {
         return TesoMovimiento::where( [ 
