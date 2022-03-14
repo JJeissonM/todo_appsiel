@@ -602,12 +602,12 @@ class FacturaPosController extends TransaccionController
 
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($registro->lineas_registros);
 
-        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
+        //$cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
 
-        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'cuerpo_tabla_medios_recaudos'))->render();
+        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias'))->render();
 
-        $total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
-
+        //$total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
+        $total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = null;
         foreach ($productos as $pr) {

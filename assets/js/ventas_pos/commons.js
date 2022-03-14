@@ -244,7 +244,7 @@ $(document).ready(function () {
     {
         if ($("#permitir_venta_menor_costo").val() == 0) {
             var ok = true;
-
+            
             if (base_impuesto_unitario < costo_unitario) {
                 $('#popup_alerta').show();
                 $('#popup_alerta').css('background-color', 'red');
@@ -756,6 +756,8 @@ $(document).ready(function () {
 
     function reset_linea_ingreso_default()
     {
+        $('#efectivo_recibido').val('');
+
         $('#inv_producto_id').val('');
         $('#cantidad').val('');
         $('#precio_unitario').val('');
@@ -811,8 +813,7 @@ $(document).ready(function () {
         $('.linea_registro').each(function() {
             var cantidad_linea = parseFloat( $(this).find('.elemento_modificar').eq(0).text() );
             total_cantidad += cantidad_linea;
-            //precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
-            //cantidad += parseFloat( $(this).find('.cantidad').text() );
+            
             subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * cantidad_linea;
             valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
             total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
@@ -849,6 +850,8 @@ $(document).ready(function () {
     // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
     $(document).on('dblclick', '.elemento_modificar', function(){
 
+        $('#popup_alerta').hide();
+
         elemento_modificar = $(this);
 
         elemento_padre = elemento_modificar.parent();
@@ -877,7 +880,7 @@ $(document).ready(function () {
     });
 
     // Al presiona teclas en la caja de texto
-    $(document).on('keyup', '#valor_nuevo', function () {
+    $(document).on('keyup', '#valor_nuevo', function (event) {
 
         var x = event.which || event.keyCode; // Capturar la tecla presionada
 
@@ -1082,6 +1085,16 @@ $(document).ready(function () {
 
         elemento_modificar.html(valor_nuevo);
         elemento_modificar.show();
+        
+        var producto = productos.find(item => item.id === parseInt( fila.find('.inv_producto_id').text() ) );
+        costo_unitario = producto.costo_promedio;
+
+        calcular_precio_total_lbl(fila);
+
+        if ( !validar_venta_menor_costo() )
+        { 
+            elemento_modificar.html(valor_actual);
+        }
 
         $('#inv_producto_id').focus();
 
@@ -1096,8 +1109,6 @@ $(document).ready(function () {
 
     function calcular_precio_total_lbl(fila) 
     {
-        //precio_unitario = parseFloat(fila.find('.precio_unitario').text());
-        //base_impuesto_unitario = parseFloat(fila.find('.base_impuesto').text());
         tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
         cantidad = parseFloat( fila.find('.elemento_modificar').eq(0).text() );
         precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
@@ -1111,6 +1122,13 @@ $(document).ready(function () {
         base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
 
         precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+
+
+        fila.find('.precio_unitario').text(precio_unitario);
+        
+        fila.find('.base_impuesto').text(base_impuesto_unitario);
+        
+        fila.find('.valor_impuesto').text(precio_venta - base_impuesto_unitario);        
 
         fila.find('.cantidad').text(cantidad);
 
