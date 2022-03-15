@@ -338,12 +338,9 @@ class InvProducto extends Model
 
     public static function get_producto_pagina_web($id)
     {
-        
         $producto = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                     ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
-                    //->where('inv_productos.core_empresa_id', Auth::user()->empresa_id)
-                    ->where('inv_productos.estado', 'Activo')
-                    ->where('inv_productos.mostrar_en_pagina_web', 1)
+                    ->where('inv_productos.id',$id)
                     ->select(
                                 'inv_productos.id',
                                 'inv_productos.descripcion',
@@ -358,16 +355,14 @@ class InvProducto extends Model
                                 'inv_productos.imagen',
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
-                    ->where('inv_productos.mostrar_en_pagina_web',1)
-                    ->where('inv_productos.id',$id)
                     ->orderBy('grupo_descripcion', 'ASC')
                     ->get()
                     ->first();
 
         
-            $producto->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $producto->id );
+            $producto->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $id );
 
-            $producto->descuento = ListaDctoDetalle::get_descuento_producto( config('pagina_web.lista_descuentos_id'), date('Y-m-d'), $producto->id );
+            $producto->descuento = ListaDctoDetalle::get_descuento_producto( config('pagina_web.lista_descuentos_id'), date('Y-m-d'), $id );
 
             $producto->valor_descuento = $producto->precio_venta * ( $producto->descuento / 100);
 

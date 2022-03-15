@@ -245,12 +245,24 @@ class AccountingServices
      */
     public function anular_nota_contable_ajuste( $linea_abono_cxc )
     {
+        $contab_doc_header = ContabDocEncabezado::where('core_empresa_id',$linea_abono_cxc->core_empresa_id)
+                            ->where('core_tipo_transaccion_id', $linea_abono_cxc->core_tipo_transaccion_id)
+                            ->where('core_tipo_doc_app_id', $linea_abono_cxc->core_tipo_doc_app_id)
+                            ->where('consecutivo', $linea_abono_cxc->consecutivo)
+                            ->get()
+                            ->first();
+
+        if ($contab_doc_header == null) {
+            return 0;
+        }
+
         // Anular movimiento de CxC de la nota
         $mov_cxc = CxcMovimiento::where('core_empresa_id',$linea_abono_cxc->core_empresa_id)
                                 ->where('core_tipo_transaccion_id', $linea_abono_cxc->core_tipo_transaccion_id)
                                 ->where('core_tipo_doc_app_id', $linea_abono_cxc->core_tipo_doc_app_id)
                                 ->where('consecutivo', $linea_abono_cxc->consecutivo)
                                 ->get()->first();
+
         if( !is_null($mov_cxc) )
         {
             $mov_cxc->delete();
@@ -272,7 +284,6 @@ class AccountingServices
         {
             $obj_docu_head_serv = new DocumentHeaderService();
             $obj_docu_head_serv->cancel_document( $doc_encabezado  );
-            return 1;
         }
 
         // Validar si la nota se creo como un documento de Cartera

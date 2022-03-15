@@ -761,6 +761,7 @@ class ContabReportesController extends Controller
                                 'datos_grupo_hijo' => 0,
                                 'datos_cuenta' => 0
                                 ];
+                                
             // Caja cuenta debe estar, obligatoriamente, asignada a un grupo hijo
             $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos( array_keys( $obj_repor_serv->movimiento->groupBy('contab_cuenta_id')->all() ) );
             if( !empty( $grupos_invalidos ) )

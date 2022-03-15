@@ -478,7 +478,6 @@ class ContabilizacionDocumentoNomina
 
 	public function retirar_contabilizacion()
 	{
-
         $array_wheres2 = [ 'core_empresa_id'=>$this->encabezado_doc->core_empresa_id, 
             'core_tipo_transaccion_id' => $this->encabezado_doc->core_tipo_transaccion_id,
             'core_tipo_doc_app_id' => $this->encabezado_doc->core_tipo_doc_app_id,
@@ -496,8 +495,8 @@ class ContabilizacionDocumentoNomina
             return 'Documento NO puede ser retirado. Algunos registros tienen abonos de CxC.';
         }
 
+		// Se retira moiiento de cartera y anticipos
         CxcMovimiento::where( $array_wheres2 )->delete();
-
 
         // VALIDACION DE ABONOS DE CXP
         $array_where = ['core_empresa_id'=>$this->encabezado_doc->core_empresa_id, 
@@ -512,6 +511,7 @@ class ContabilizacionDocumentoNomina
             return 'Documento NO puede ser retirado. Algunos registros tienen abonos de CxP.';
         }
 
+        // Se retira moiiento de cartera y anticipos
         CxpMovimiento::where( $array_wheres2 )->delete();
 
         // RETIRO DEL MOVIMIENTO CONTABLE

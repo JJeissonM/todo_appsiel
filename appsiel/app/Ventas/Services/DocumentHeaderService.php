@@ -37,11 +37,10 @@ class DocumentHeaderService
                             ->where('doc_cxc_tipo_doc_id',$document_header->core_tipo_doc_app_id)
                             ->where('doc_cxc_consecutivo',$document_header->consecutivo)
                             ->get();
-        
         if (!empty($abonos->toArray())) {
             $lista_abonos = '';
             foreach ($abonos as $abono) {
-                $lista_abonos .= ' - ' . $abono->payment_document_header()->get_label_documento();
+                $lista_abonos .= ' *** ' . $abono->payment_document_header()->get_label_documento();
             }
             return (object)[
                 'status'=>'mensaje_error',

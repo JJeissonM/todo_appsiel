@@ -2,15 +2,12 @@
 
 namespace App\Tesoreria;
 
-use Illuminate\Database\Eloquent\Model;
-
 use DB;
 use Auth;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
-class TesoDocEncabezadoPago extends Model
+class TesoDocEncabezadoPago extends TesoDocEncabezado
 {
     // Apunta a la misma tabla del modelo de Recaudos
     protected $table = 'teso_doc_encabezados';

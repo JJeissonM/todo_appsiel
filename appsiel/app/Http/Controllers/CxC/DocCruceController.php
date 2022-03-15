@@ -335,9 +335,10 @@ class DocCruceController extends TransaccionController
                           ->where('doc_cruce_transacc_id', $doc_encabezado->core_tipo_transaccion_id )
                           ->where('doc_cruce_tipo_doc_id', $doc_encabezado->core_tipo_doc_app_id )
                           ->where('doc_cruce_consecutivo', $doc_encabezado->consecutivo )
+                          ->where('core_tercero_id', $doc_encabezado->core_tercero_id )
                           ->get();
 
-                          //dd( $doc_encabezado );
+                          //dd( $registros_cruce );
 
         $i = 0;
         $registros = [];
@@ -351,6 +352,7 @@ class DocCruceController extends TransaccionController
                           ->where('consecutivo', $registro->doc_cxc_consecutivo )
                           ->get()
                           ->first();
+
           $doc_app_cartera = TipoDocApp::where( 'id', $doc_cartera->core_tipo_doc_app_id )->value('prefijo').' '.$doc_cartera->consecutivo;
 
           // DOC RECAUDO
@@ -474,11 +476,11 @@ class DocCruceController extends TransaccionController
         // Se debe actualizar el movimiento de cxc tanto para la cartera como para el documento a favor
         // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
         $mov_documento_cartera = CxcMovimiento::where('core_tipo_transaccion_id', $linea->doc_cxc_transacc_id)
-                                                    ->where('core_tipo_doc_app_id', $linea->doc_cxc_tipo_doc_id)
-                                                    ->where('consecutivo', $linea->doc_cxc_consecutivo)
-                                                    ->where('core_tercero_id', $linea->core_tercero_id)
-                                                    ->get()
-                                                    ->first();
+                                          ->where('core_tipo_doc_app_id', $linea->doc_cxc_tipo_doc_id)
+                                          ->where('consecutivo', $linea->doc_cxc_consecutivo)
+                                          ->where('core_tercero_id', $linea->core_tercero_id)
+                                          ->get()
+                                          ->first();
       
         $this->actualizar_mov_cxc( $mov_documento_cartera, $linea, 'cartera', $linea->abono );
 
@@ -490,6 +492,7 @@ class DocCruceController extends TransaccionController
                                                     ->where('core_tercero_id', $linea->core_tercero_id)
                                                     ->get()
                                                     ->first();
+
         $this->actualizar_mov_cxc( $mov_documento_afavor, $linea, 'afavor', $linea->abono ); // Para saldo afavor el movimiento es negativo, los abonos también deben ser negativos
 
         $this->anular_recaudo_cartera_estudiante( $mov_documento_afavor, $linea->abono );
@@ -507,7 +510,11 @@ class DocCruceController extends TransaccionController
     }
 
     public function anular_recaudo_cartera_estudiante( $movimiento_afavor, $abono )
-    {      
+    { 
+      if ($movimiento_afavor == null ) {
+        return 0;
+      }
+         
       // Si es el Recaudo de una o varias facturas asociadas a un registro de Plan de Pagos de una libreta de pagos
       $recaudo_libreta = TesoRecaudosLibreta::where([
                                                   ['core_tipo_transaccion_id','=',$movimiento_afavor->core_tipo_transaccion_id],
@@ -525,6 +532,10 @@ class DocCruceController extends TransaccionController
     public function actualizar_mov_cxc( $linea_movimiento, $linea_abono, $tipo_movimiento, $valor_abono )
     {
       $valor_abonos_aplicados = 0;
+
+      if ($linea_movimiento == null) {
+        return 0;
+      }
 
       if ( $linea_movimiento->estado == 'Pagado' )
         {

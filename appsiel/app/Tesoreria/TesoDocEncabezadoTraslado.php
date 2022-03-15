@@ -16,7 +16,7 @@ use App\Contabilidad\ContabMovimiento;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
-class TesoDocEncabezadoTraslado extends Model
+class TesoDocEncabezadoTraslado extends TesoDocEncabezado
 {
     // Apunta a la misma tabla del modelo de Recaudos
     protected $table = 'teso_doc_encabezados';
