@@ -80,6 +80,10 @@ class DocumentosPendientesCxC
 
             // Sumar los abonos hechos al documento del movimiento para restarlos al valor del documento y mostrarlo en el saldo pendiente
             $abonos = CxcAbono::where( $array_wheres2 )->sum('abono'); // Siempre positivo
+
+            if ($abonos > abs($linea_movimiento->valor_documento)) {
+                $abonos = abs($linea_movimiento->valor_documento);
+            }
             
             if ( $linea_movimiento->valor_documento < 0 )
             {
