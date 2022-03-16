@@ -61,6 +61,7 @@ Route::resource('matriculas', 'Matriculas\MatriculaController', ['except' => ['s
 
 
 // FACTURACION ESTUDIANTES
+Route::get('facturas_estudiantes_index_facturas_plan_pagos', 'Matriculas\FacturaEstudianteController@index_facturas_plan_pagos');
 Route::resource('facturas_estudiantes', 'Matriculas\FacturaEstudianteController');
 
 // para pruebas

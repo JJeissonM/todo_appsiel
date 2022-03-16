@@ -2,6 +2,8 @@
 
 namespace App\Matriculas;
 
+use App\Tesoreria\TesoPlanPagosEstudiante;
+use App\Ventas\VtasDocEncabezado;
 use Illuminate\Database\Eloquent\Model;
 
 class FacturaAuxEstudiante extends Model
@@ -12,7 +14,7 @@ class FacturaAuxEstudiante extends Model
 
     public function encabezado_factura()
     {
-        return $this->belongsTo('App\Ventas\VtasDocEncabezado', 'vtas_doc_encabezado_id');
+        return $this->belongsTo(VtasDocEncabezado::class, 'vtas_doc_encabezado_id');
     }
     
     public function matricula()
@@ -22,7 +24,6 @@ class FacturaAuxEstudiante extends Model
     
     public function cartera_estudiante()
     {
-        return $this->belongsTo('App\Tesoreria\TesoPlanPagosEstudiante', 'cartera_estudiante_id');
+        return $this->belongsTo(TesoPlanPagosEstudiante::class, 'cartera_estudiante_id');
     }
-
 }

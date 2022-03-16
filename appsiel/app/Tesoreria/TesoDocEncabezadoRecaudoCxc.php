@@ -23,6 +23,8 @@ use App\Core\Transactions\TransactionDocumentLines;
 use App\Core\Transactions\TransactionMovements;
 
 use App\Tesoreria\Services\AccountsReceivableServices;
+use App\Tesoreria\Services\FacturaEstudiantesService;
+use Illuminate\Support\Facades\Schema;
 
 class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 {
@@ -225,6 +227,14 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
             $registro_documento_pendiente->actualizar_saldos($abono);
 
             $total_abonos_cxc += $abono;
+
+            if ( Schema::hasTable( 'sga_facturas_estudiantes' ) )
+            {
+                
+                $fact_estudiante_serv = new FacturaEstudiantesService();
+                $fact_estudiante_serv->registrar_recaudo_cartera_estudiante( $this, $registro_documento_pendiente, $abono );
+            }
+
         }
 
         return $total_abonos_cxc;

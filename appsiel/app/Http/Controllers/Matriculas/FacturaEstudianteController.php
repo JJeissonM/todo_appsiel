@@ -3,17 +3,9 @@
 namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
+
 use Auth;
-use DB;
 use View;
-use Lava;
-use Input;
-use Form;
-
-
-use Spatie\Permission\Models\Permission;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
@@ -21,8 +13,6 @@ use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Inventarios\InventarioController;
 
-use App\Http\Controllers\Contabilidad\ContabilidadController;
-use App\Http\Controllers\Ventas\ReportesController;
 use App\Http\Controllers\Ventas\VentaController;
 
 // Objetos 
@@ -30,19 +20,13 @@ use App\Sistema\Html\TablaIngresoLineaRegistros;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
-use App\Sistema\Modelo;
-use App\Sistema\Campo;
 use App\Core\Tercero;
 
 use App\Matriculas\Estudiante;
 use App\Matriculas\FacturaAuxEstudiante;
 
 use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
-use App\Inventarios\InvCostoPromProducto;
-use App\Inventarios\InvMotivo;
 
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
@@ -50,21 +34,16 @@ use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\Cliente;
 use App\Ventas\ResolucionFacturacion;
-use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\ListaDctoDetalle;
 use App\Ventas\NotaCredito;
 
-use App\CxC\DocumentosPendientes;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
-use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Contabilidad\Impuesto;
-
+use App\Matriculas\Services\FacturaEstudiantesService;
+use Illuminate\Support\Facades\Input;
 
 class FacturaEstudianteController extends TransaccionController
 {
@@ -338,47 +317,26 @@ class FacturaEstudianteController extends TransaccionController
         
     }
 
-}
-
-
-
-/*
+    public function index_facturas_plan_pagos()
+    {
+        $factura_estudiante_serv = new FacturaEstudiantesService();
         
-        array:34 [▼
-  "_token" => "IxUvccKD8qxnyeRzlgISLXdTW1DUTwDuvrIqkgIn"
-              "core_empresa_id" => "1"
-              "core_tipo_doc_app_id" => "18"
-              "fecha" => "2020-10-29"
-              "cliente_input" => "VALENTINA  PEREZ CUARTAS"
-              "vendedor_id" => "1"
-              "forma_pago" => "credito"
-              "fecha_vencimiento" => "2020-10-29"
-              "inv_bodega_id" => "1"
-              "orden_compras" => ""
-              "descripcion" => ""
-              "consecutivo" => ""
-              "core_tipo_transaccion_id" => "23"
-              "url_id" => "3"
-              "url_id_modelo" => "234"
-              "url_id_transaccion" => "23"
-              "estudiante_id" => "19"
-              "matricula_id" => "14"
-              "cartera_estudiante_id" => "29"
-              "libreta_id" => "3"
-              "inv_bodega_id_aux" => ""
-              "cliente_id" => "214"
-              "zona_id" => "1"
-              "clase_cliente_id" => "1"
-              "core_tercero_id" => "479"
-              "lista_precios_id" => "1"
-              "lista_descuentos_id" => "1"
-              "liquida_impuestos" => "1"
-              "lineas_registros" => "[{"inv_motivo_id":"10","inv_bodega_id":"1","inv_producto_id":"25","costo_unitario":"0","precio_unitario":"150000","base_impuesto":"150000","tasa_impuesto":"0","valor_impuesto":"0","base_impuesto_total":"150000","cantidad":"1","costo_total":"0","precio_total":"150000","tasa_descuento":"0","valor_total_descuento":"0","Item":"25 25 - Pensión","Motivo":"Ventas POS","Stock":"0","Cantidad":"1","Precio Unit. (IVA incluido)":"$ 150.000","Dcto. (%)":"0%","Dcto. Tot. ($)":"$ 0","IVA":"0%","Total":"$ 150.000"}]"
-              "lineas_registros_medios_recaudo" => "0"
-              "tipo_transaccion" => "factura_directa"
-              "rm_tipo_transaccion_id" => "24"
-              "dvc_tipo_transaccion_id" => "34"
-              "saldo_original" => "0"
-            ]
+        $fecha_desde = date('Y-01-01');
+        $fecha_hasta = date('Y-m-d');
+        if (Input::get('fecha_desde')!=null) {
+            $fecha_desde = Input::get('fecha_desde');
+            $fecha_hasta = Input::get('fecha_hasta');
+        }
 
-*/
+        $plan_pagos = $factura_estudiante_serv->get_rows_planes_pagos($fecha_desde,$fecha_hasta);     
+
+        $miga_pan = [
+                ['url'=>'tesoreria?id='.Input::get('id'),'etiqueta'=>'Tesorería'],
+                ['url'=>'web?id='.Input::get('id').'&id_modelo=31','etiqueta'=>'Libretas de pagos'],
+                ['url'=>'NO','etiqueta'=>'Planes de pagos de estudiantes']
+            ];
+
+        return view('tesoreria.ver_facturas_aux_estudiantes', compact( 'plan_pagos', 'miga_pan') );
+    }
+
+}

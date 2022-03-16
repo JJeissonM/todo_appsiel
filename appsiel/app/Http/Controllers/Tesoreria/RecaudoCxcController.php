@@ -55,7 +55,7 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
 use App\CxP\CxpMovimiento;
-
+use App\Tesoreria\Services\FacturaEstudiantesService;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\DescuentoPpEncabezado;
 
@@ -477,7 +477,9 @@ class RecaudoCxcController extends Controller
             // Cuando NO se esta haciendo un Recaudo desde Libreta de Pagos
             if ( Schema::hasTable( 'sga_facturas_estudiantes' ) && !isset( $request->vtas_doc_encabezado_id ) )
             {
-                $this->registrar_recaudo_cartera_estudiante( $doc_encabezado, $registro_documento_pendiente, $abono );
+                $fact_estudiante_serv = new FacturaEstudiantesService();
+
+                $fact_estudiante_serv->registrar_recaudo_cartera_estudiante( $doc_encabezado, $registro_documento_pendiente, $abono );
             }
 
         } // FIN FOR CADA LINEA DEL PAGO
@@ -541,7 +543,7 @@ class RecaudoCxcController extends Controller
     }
 
     // Por cada linea del Recaudo de CxC
-    public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
+    /*public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
     {
         $factura = VtasDocEncabezado::where([
                                                 [ 'core_tipo_transaccion_id','=', $registro_cxc_pendiente->core_tipo_transaccion_id ],
@@ -578,4 +580,5 @@ class RecaudoCxcController extends Controller
         $recaudo->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $abono );
         $recaudo->libreta->actualizar_estado();
     }
+    */
 }
