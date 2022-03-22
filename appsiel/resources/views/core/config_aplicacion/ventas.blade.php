@@ -445,6 +445,36 @@
 
 				</div>
 
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$detallar_iva_cotizaciones = 0;
+								if( isset($parametros['detallar_iva_cotizaciones'] ) )
+								{
+									$detallar_iva_cotizaciones = $parametros['detallar_iva_cotizaciones'];
+								}
+							?>
+							{{ Form::bsSelect('detallar_iva_cotizaciones', $detallar_iva_cotizaciones, 'Detallar IVA en cotizaciones', [ '0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$detallar_condicion_ventas = 0;
+								if( isset($parametros['detallar_condicion_ventas'] ) )
+								{
+									$detallar_condicion_ventas = $parametros['detallar_condicion_ventas'];
+								}
+							?>
+							{{ Form::bsSelect('detallar_condicion_ventas', $detallar_condicion_ventas, 'Detallar condición de ventas en cotizaciones', [ '0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 
 
 				<br>

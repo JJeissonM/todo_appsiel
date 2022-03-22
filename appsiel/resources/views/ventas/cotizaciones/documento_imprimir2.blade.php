@@ -41,7 +41,7 @@ use App\Core\Tercero;
     </tr>
 </table>
 <div class="info">
-<p>{{ $empresa->descripcion }}</p>
+<p>{{ $empresa->razon_social }}</p>
 <p>{{ config("configuracion.tipo_identificador") }}: {{ $empresa->numero_identificacion }} - {{ $empresa->digito_verificacion }}</p>
 </div>
 
@@ -130,7 +130,11 @@ use App\Core\Tercero;
 <hr>
 <b>Oferta Económica: &nbsp;&nbsp;</b> 
 <table class="contenido">
-    {{ Form::bsTableHeader(['Item','Producto','Cant.','Vr. unit.','IVA','DTO','Total']) }}
+    @if(config('ventas.detallar_iva_cotizaciones'))
+        {{ Form::bsTableHeader(['Item','Producto','Cant.','Vr. unit.','IVA','DTO','Total']) }}
+    @else
+        {{ Form::bsTableHeader(['Item','Producto','Cant.','Vr. unit.','DTO','Total']) }}
+    @endif
     <tbody>
         <?php 
         $i = 1;
@@ -160,7 +164,9 @@ use App\Core\Tercero;
             <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
             <td class="text-right"> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 2, ',', '.') }}
             </td>
-            <td class="text-right"> {{ '$  '.number_format( $linea->valor_impuesto, 2, ',', '.') }} </td>
+            @if(config('ventas.detallar_iva_cotizaciones'))
+                <td class="text-right"> {{ '$  '.number_format( $linea->valor_impuesto, 2, ',', '.') }} </td>
+            @endif            
             <td style="text-align: right;"> $ &nbsp;{{ number_format( $linea->valor_total_descuento, 2, ',', '.') }} </td>
             <td class="text-right"> {{ '$  '.number_format( $linea->precio_total, 2, ',', '.') }} </td>
         </tr>
@@ -210,7 +216,11 @@ use App\Core\Tercero;
         <tr style="font-weight: bold;">
             <td colspan="2"> Cantidad de items: {{ $cantidad_items }} </td>
             <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
-            <td colspan="4">&nbsp;</td>
+            @if(config('ventas.detallar_iva_cotizaciones'))
+                <td colspan="4">&nbsp;</td>
+            @else
+                <td colspan="3">&nbsp;</td>
+            @endif
         </tr>
     </tfoot>
 </table>
@@ -222,12 +232,17 @@ use App\Core\Tercero;
         <td width="30%"><b>Cotizó:</b></td>
         <td>{{ $doc_encabezado->vendedor->tercero->descripcion }}</td>
     </tr>
-    <tr>
-        <td width="30%"><b>Condición de Venta:</b></td>
-        <td>
-            {{ $doc_encabezado->texto_condicion_venta() }}
-        </td>
-    </tr>
+
+    @if(config('ventas.detallar_condicion_ventas'))
+        <tr>
+            <td width="30%"><b>Condición de Venta:</b></td>
+            <td>
+                {{ $doc_encabezado->texto_condicion_venta() }}
+            </td>
+        </tr>
+    @endif
+
+    
     <tr>
         <td width="30%"><b>Plazo de entrega:</b></td>
         <td>
