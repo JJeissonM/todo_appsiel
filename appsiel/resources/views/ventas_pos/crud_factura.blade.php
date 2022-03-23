@@ -266,6 +266,7 @@ use App\Http\Controllers\Sistema\VistaController;
             </td>
             <td>
                 <input class="form-control" id="cantidad" width="30px" name="cantidad" type="text" autocomplete="off">
+                <span id="existencia_actual" style="display: none; color:#574696; font-size:0.9em;"></span>
             </td>
             <td>
                 <input class="form-control" id="precio_unitario" name="precio_unitario" type="text">

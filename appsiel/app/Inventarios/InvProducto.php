@@ -318,12 +318,15 @@ class InvProducto extends Model
             $item->tasa_impuesto = Impuesto::get_tasa( $item->id, 0, 0 );
 
             $costo_prom = $item->precio_compra;
+            $existencia_actual = 0;
             if ( !is_null( $bodega_id ) )
             {
                 $costo_prom = $item->get_costo_promedio( $bodega_id );
+                $existencia_actual = $item->get_existencia_actual( $bodega_id, date('Y-m-d') );
             }
 
             $item->costo_promedio = $costo_prom;
+            $item->existencia_actual = $existencia_actual;
         }
 
         return $registros;

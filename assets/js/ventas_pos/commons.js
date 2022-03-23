@@ -96,6 +96,10 @@ $(document).ready(function () {
                     costo_unitario = producto.costo_promedio;
 
                     $(this).val(producto.descripcion);
+                    
+                    $('#existencia_actual').html('Stock: ' + producto.existencia_actual.toFixed(2));
+                    $('#existencia_actual').show();
+                    console.log(producto.existencia_actual, );
                     $('#precio_unitario').val(get_precio(producto.id));
                     $('#tasa_descuento').val(get_descuento(producto.id));
 
@@ -433,6 +437,8 @@ $(document).ready(function () {
         }
 
         $('#popup_alerta').hide();
+        $('#existencia_actual').html('');
+        $('#existencia_actual').hide();
 
         // Se escogen los campos de la fila ingresada
         var fila = $('#linea_ingreso_default');
