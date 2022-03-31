@@ -14,7 +14,7 @@ class CierreEncabezado extends Model
 
     public $vistas = '{"show":"ventas_pos.index"}';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Detalle', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Detalle', 'Fecha creación', 'Estado'];
     public static function consultar_registros($nro_registros, $search)
     {
         return CierreEncabezado::leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_cierre_encabezados.pdv_id')
@@ -26,8 +26,9 @@ class CierreEncabezado extends Model
                 'users.name AS campo3',
                 'vtas_pos_puntos_de_ventas.descripcion AS campo4',
                 'vtas_pos_cierre_encabezados.detalle AS campo5',
-                'vtas_pos_cierre_encabezados.estado AS campo6',
-                'vtas_pos_cierre_encabezados.id AS campo7'
+                'vtas_pos_cierre_encabezados.updated_at AS campo6',
+                'vtas_pos_cierre_encabezados.estado AS campo7',
+                'vtas_pos_cierre_encabezados.id AS campo8'
             )
             ->where("vtas_pos_cierre_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_cierre_encabezados.consecutivo)'), "LIKE", "%$search%")

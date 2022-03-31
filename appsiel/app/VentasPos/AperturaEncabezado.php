@@ -17,7 +17,7 @@ class AperturaEncabezado extends Model
 
     public $vistas = '{"show":"ventas_pos.index"}';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Efectivo Base ', 'Detalle', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cajero', 'PDV', 'Efectivo Base ', 'Detalle', 'Fecha creación', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -31,8 +31,9 @@ class AperturaEncabezado extends Model
                 'vtas_pos_puntos_de_ventas.descripcion AS campo4',
                 'vtas_pos_apertura_encabezados.efectivo_base AS campo5',
                 'vtas_pos_apertura_encabezados.detalle AS campo6',
-                'vtas_pos_apertura_encabezados.estado AS campo7',
-                'vtas_pos_apertura_encabezados.id AS campo8'
+                'vtas_pos_apertura_encabezados.updated_at AS campo7',
+                'vtas_pos_apertura_encabezados.estado AS campo8',
+                'vtas_pos_apertura_encabezados.id AS campo9'
             )
             ->where("vtas_pos_apertura_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_apertura_encabezados.consecutivo)'), "LIKE", "%$search%")

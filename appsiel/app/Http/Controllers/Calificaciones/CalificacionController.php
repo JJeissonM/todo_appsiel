@@ -546,4 +546,11 @@ class CalificacionController extends Controller
         }
         return "false";
     }
+
+    public function get_id_periodo_lectivo_del_periodo($periodo_id)
+    {
+        return Periodo::find($periodo_id)->periodo_lectivo_id;
+    }
+
+    
 }

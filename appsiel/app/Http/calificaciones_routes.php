@@ -116,6 +116,8 @@ Route::get('get_select_asignaturas/{curso_id}/{periodo_lectivo_id?}', 'Calificac
 Route::get('get_select_escala_valoracion/{periodo_id}/{curso_id}/{asignatura_id}', 'Calificaciones\CalificacionController@get_select_escala_valoracion');
 
 
+Route::get('get_id_periodo_lectivo_del_periodo/{periodo_id}', 'Calificaciones\CalificacionController@get_id_periodo_lectivo_del_periodo');
+
 
 /*
 		PROCESOS

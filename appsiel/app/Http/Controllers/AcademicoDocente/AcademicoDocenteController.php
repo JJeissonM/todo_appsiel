@@ -438,7 +438,7 @@ class AcademicoDocenteController extends Controller
 
     public function ingresar_notas_nivelaciones($curso_id, $asignatura_id)
     {
-        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
+        //$colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
         $periodos = Periodo::opciones_campo_select();
 
@@ -482,7 +482,8 @@ class AcademicoDocenteController extends Controller
             'asignatura_id' => $request->asignatura_id,
             'estudiante_id' => $request->estudiante_id
         ])->get()->first();
-        if (!is_null($registro)) {
+
+        if ($registro!=null) {
             $nota_nivelacion = $registro;
         }
 

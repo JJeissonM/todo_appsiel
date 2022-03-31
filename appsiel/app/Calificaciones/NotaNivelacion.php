@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Periodo;
-use App\Calificaciones\Calificacion;
 
 class NotaNivelacion extends Model
 {
@@ -16,7 +15,9 @@ class NotaNivelacion extends Model
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Estudiante', 'Año lectivo', 'Curso', 'Periodo', 'Asignatura', 'Calificación de nivelación', 'Observaciones', 'Creada por'];
 
-	public $urls_acciones = '{"show":"no"}';
+	public $urls_acciones = '{"create":"web/create","show":"no"}';
+
+	public $vistas = '{"create":"academico_docente.nivelaciones.formulario_precreate_admin"}';
 
 	public function periodo()
 	{
