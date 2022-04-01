@@ -144,7 +144,7 @@
 
 
 @else
-	<h2>Estudiante no tiene matrículas para este Año Lectivo: {{ $periodo_lectivo->descripcion }}</h2>
+	<h2>Estudiante no tiene matrícula <u>ACTIVA</u> para este periodo Lectivo: {{ $periodo_lectivo->descripcion }}</h2>
 @endif
 
 <?php

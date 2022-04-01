@@ -412,6 +412,8 @@ class ReporteController extends Controller
 
         $maxima_escala_valoracion = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','DESC')->first()->calificacion_maxima;
 
+        $resultado_academico = $request->resultado_academico;
+
         $periodo_id = $request->periodo_id;
         $observacion_adicional = $request->observacion_adicional;
         $tam_hoja = $request->tam_hoja;
@@ -429,7 +431,7 @@ class ReporteController extends Controller
         $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
         $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
 
-        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja', 'maxima_escala_valoracion', 'periodo' )  )->render();
+        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja', 'maxima_escala_valoracion', 'periodo', 'resultado_academico' )  )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

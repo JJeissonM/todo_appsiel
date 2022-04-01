@@ -1,5 +1,5 @@
 <div style="text-align: justify;">
-	Observaciones: APROBÓ( &nbsp;&nbsp; )  &nbsp;&nbsp;&nbsp;&nbsp;    REPROBÓ( &nbsp;&nbsp; )    &nbsp;&nbsp;&nbsp;&nbsp;    APLAZÓ( &nbsp;&nbsp; )
+	Observaciones:
 	<br>
 	{{ $observacion_adicional }}
 </div>

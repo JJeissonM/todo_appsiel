@@ -18,8 +18,9 @@ use App\Inventarios\InvCostoPromProducto;
 
 use App\Compras\ComprasMovimiento;
 use App\Contabilidad\ContabMovimiento;
-
-use Input;
+use App\Inventarios\Services\AccountingServices;
+use App\Inventarios\Services\RecosteoService;
+use Illuminate\Support\Facades\Input;
 
 class ProcesoController extends Controller
 {
@@ -37,48 +38,8 @@ class ProcesoController extends Controller
 
     public static function recontabilizar_documento( $documento_id )
     {
-        $documento = InvDocEncabezado::find( $documento_id );
-
-        // Eliminar registros contables actuales
-        ContabMovimiento::where('core_tipo_transaccion_id',$documento->core_tipo_transaccion_id)
-                        ->where('core_tipo_doc_app_id',$documento->core_tipo_doc_app_id)
-                        ->where('consecutivo',$documento->consecutivo)
-                        ->delete();        
-
-        // Obtener líneas de registros del documento
-        $registros_documento = InvDocRegistro::where( 'inv_doc_encabezado_id', $documento->id )->get();
-
-        foreach ($registros_documento as $linea)
-        {
-            $motivo = InvMotivo::find( $linea->inv_motivo_id );
-
-            $detalle_operacion = 'Recontabilizado. '.$linea->descripcion;
-
-            // Si el movimiento es de ENTRADA de inventarios, se DEBITA la cta. de inventarios vs la cta. contrapartida
-            if ( $motivo->movimiento == 'entrada')
-            {
-                // Inventarios (DB)
-                $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
-                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, abs($linea->costo_total), 0);
-                
-                // Cta. Contrapartida (CR)
-                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, 0, abs($linea->costo_total) );
-            }
-
-            // Si el movimiento es de SALIDA de inventarios, se ACREDITA la cta. de inventarios vs la cta. contrapartida
-            if ( $motivo->movimiento == 'salida')
-            {
-                // Inventarios (CR)
-                $cta_inventarios_id = InvProducto::get_cuenta_inventarios( $linea->inv_producto_id );
-                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_inventarios_id, $detalle_operacion, 0, abs($linea->costo_total));
-                
-                // Cta. Contrapartida (DB)
-                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabilidadController::contabilizar_registro2( $documento->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, abs($linea->costo_total), 0 );
-            }
-                
-        }
+        $acco_service = new AccountingServices();
+        $acco_service->recontabilizar_documento($documento_id);
     }
 
 
@@ -186,70 +147,10 @@ class ProcesoController extends Controller
             $operador1 = '=';
         }
 
-        // Obtener TODOS los documentos de inventarios entre las fechas indicadas
-        // No se DEBEN recostear los documentos de Ensambles (Fabricación)
-        // Tampoco los documentos de Entradas de Almacén por compras (ID=35)
-        $documentos = InvDocEncabezado::where( 'estado', '<>', 'Anulado')
-                                    ->where( 'core_tipo_transaccion_id', '<>', 4)
-                                    ->where( 'core_tipo_transaccion_id', '<>', 35)
-                                    ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
-                                    ->get();
+        $recosteo_serv = new RecosteoService();
+        $response = $recosteo_serv->recostear($operador1,$inv_producto_id,$fecha_desde,$fecha_hasta);
 
-        $i = 1;
-        foreach ($documentos as $un_documento)
-        {
-            // Los registros de cada documento
-            $registros = InvDocRegistro::where('inv_doc_encabezado_id',$un_documento->id)
-                                        ->where('inv_producto_id', $operador1, $inv_producto_id)
-                                        ->get();
-
-            foreach ($registros as $un_registro)
-            {
-                // Por cada registro se obtiene el costo promedio ACTUAL del producto para la bodega
-                $costo_promedio = InvCostoPromProducto::get_costo_promedio( $un_registro->inv_bodega_id, $un_registro->inv_producto_id );
-                
-                $costo_total = $un_registro->cantidad * $costo_promedio;
-
-                // Se actualiza el costo_unitario y costo_total en cada línea de registro del documento
-                $un_registro->costo_unitario = $costo_promedio;
-                $un_registro->costo_total = $costo_total;
-                $un_registro->save();
-
-                // Se actualiza el movimiento de inventario
-                InvMovimiento::where('core_tipo_transaccion_id', $un_documento->core_tipo_transaccion_id )
-                            ->where('core_tipo_doc_app_id', $un_documento->core_tipo_doc_app_id )
-                            ->where('consecutivo', $un_documento->consecutivo )
-                            ->where('inv_bodega_id', $un_registro->inv_bodega_id )
-                            ->where('inv_producto_id', $un_registro->inv_producto_id )
-                            ->where('cantidad', $un_registro->cantidad )
-                            ->update( [ 'costo_unitario' => $costo_promedio, 'costo_total' => $costo_total  ] );
-
-
-                // Se actualiza el registro contable para la transacción de esa línea de registro (DB y CR)
-                ContabMovimiento::where('core_tipo_transaccion_id', $un_documento->core_tipo_transaccion_id )
-                                ->where('core_tipo_doc_app_id', $un_documento->core_tipo_doc_app_id )
-                                ->where('consecutivo', $un_documento->consecutivo )
-                                ->where('inv_bodega_id', $un_registro->inv_bodega_id )
-                                ->where('inv_producto_id', $un_registro->inv_producto_id )
-                                ->where('cantidad', $un_registro->cantidad )
-                                ->where('valor_credito', 0 )
-                                ->update( [ 'valor_debito' => abs( $costo_total ), 'valor_saldo' => abs( $costo_total ) ] );
-
-                ContabMovimiento::where('core_tipo_transaccion_id', $un_documento->core_tipo_transaccion_id )
-                                ->where('core_tipo_doc_app_id', $un_documento->core_tipo_doc_app_id )
-                                ->where('consecutivo', $un_documento->consecutivo )
-                                ->where('inv_bodega_id', $un_registro->inv_bodega_id )
-                                ->where('inv_producto_id', $un_registro->inv_producto_id )
-                                ->where('cantidad', $un_registro->cantidad )
-                                ->where('valor_debito', 0 )
-                                ->update( [ 'valor_credito' => (abs( $costo_total ) * -1), 'valor_saldo' => (abs( $costo_total ) * -1) ] );
-
-                echo $i.'  ';
-                $i++;
-            }
+        return redirect( 'inv_recosteo_form?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message',$response->message);
             
-        }
-
-        return redirect( 'inv_recosteo_form?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '.(($i-1) * 2).' registros contables.');
     }
 }
