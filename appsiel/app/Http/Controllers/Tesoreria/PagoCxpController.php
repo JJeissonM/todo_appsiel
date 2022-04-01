@@ -347,23 +347,23 @@ class PagoCxpController extends TransaccionController
         // Se reversan los pagos hecho por este documento: aumenta el saldo_pendiente en el documento de CxP
 
         $documentos_abonados = CxpAbono::get_documentos_abonados( $pago );
-
+        
+        $documentos_cxp_ya_aplicados = [];
         foreach ($documentos_abonados as $registro_abono)
         {
-            // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
+            // Se verifica si cada documento abonado por este pago aún tiene saldo pendiente por pagar
             $documento_cxp_pendiente = CxpMovimiento::where('core_tipo_transaccion_id', $registro_abono->doc_cxp_transacc_id)
-                                                        ->where('core_tipo_doc_app_id', $registro_abono->doc_cxp_tipo_doc_id)
-                                                        ->where('consecutivo', $registro_abono->doc_cxp_consecutivo)
-                                                        ->where('core_tercero_id', $registro_abono->core_tercero_id)
-                                                        ->get()
-                                                        ->first();
+                                    ->where('core_tipo_doc_app_id', $registro_abono->doc_cxp_tipo_doc_id)
+                                    ->where('consecutivo', $registro_abono->doc_cxp_consecutivo)
+                                    ->where('core_tercero_id', $registro_abono->core_tercero_id)
+                                    ->whereNotIn('id',$documentos_cxp_ya_aplicados)
+                                    ->get()
+                                    ->first();
 
             if ( $documento_cxp_pendiente->estado == 'Pagado' )
             {
                 // Se halla el total de todos los pagos que halla tenido (incluido el abono realizado por este pago)
                 // Ahi que diferenciar por el tercero
-
-
                 /*
 
                     ERROR. CUANDO SE PAGAN VARIOS REGISTROS DEL MISMO DOCUMENTO SOLO REVERSA UN REGISTRO DE CXC
@@ -387,6 +387,10 @@ class PagoCxpController extends TransaccionController
                 $valor_abonos_aplicados = CxpAbono::where( $array_wheres_abono_cxp )
                                                 ->sum('abono');
 
+                if ( $valor_abonos_aplicados > $documento_cxp_pendiente->valor_documento) {
+                    $valor_abonos_aplicados = $documento_cxp_pendiente->valor_documento;
+                }
+
                 $nuevo_saldo_pendiente = $documento_cxp_pendiente->valor_documento - $valor_abonos_aplicados + $registro_abono->abono;
 
                 $nuevo_valor_pagado = $valor_abonos_aplicados - $registro_abono->abono; // el valor_abonos_aplicados es como mínimo el valor de $registro_abono->abono
@@ -401,6 +405,8 @@ class PagoCxpController extends TransaccionController
             $documento_cxp_pendiente->saldo_pendiente = $nuevo_saldo_pendiente;
             $documento_cxp_pendiente->estado = 'Pendiente';
             $documento_cxp_pendiente->save();
+            
+            $documentos_cxp_ya_aplicados[] = $documento_cxp_pendiente->id;
 
             // Se elimina el abono
             $registro_abono->delete();
