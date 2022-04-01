@@ -110,7 +110,7 @@
                         }
                     ?>
                 <td width="250px"> {{ $descripcion_item }} </td>
-                <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                 <td class="text-right"> {{ '$  '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }}
                 </td>
                 <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
