@@ -170,6 +170,8 @@ class PagoCxpController extends TransaccionController
         $total_abonos_cxc = 0;
         
         $cantidad = count($lineas_registros);
+        $cuentas_ya_aplicadas = [];
+        $cuentas_ya_aplicadas[] = 9999;
         for ($i=0; $i < $cantidad; $i++) 
         {
             $abono = (float)$lineas_registros[$i]->abono;
@@ -202,12 +204,15 @@ class PagoCxpController extends TransaccionController
                                             ->where('consecutivo',$registro_documento_pendiente->consecutivo)
                                             ->where('core_tercero_id',$registro_documento_pendiente->core_tercero_id)
                                             ->where('valor_debito',0)
+                                            ->whereNotIn('contab_cuenta_id',$cuentas_ya_aplicadas)
                                             ->value('contab_cuenta_id');
 
             if( is_null( $cuenta_cxp_id ) )
             {
                 $cuenta_cxp_id = config('configuracion.cta_por_pagar_default');
             }
+
+            $cuentas_ya_aplicadas[] = $cuenta_cxp_id;
 
             ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $abono, 0);
 
