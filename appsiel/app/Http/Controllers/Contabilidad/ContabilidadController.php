@@ -183,6 +183,8 @@ class ContabilidadController extends TransaccionController
 
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Modificar: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo );
 
+        $doc_encabezado->actualizar_valor_total();
+
         $archivo_js = app($this->modelo->name_space)->archivo_js;
 
         $mensaje_duplicado = '';

@@ -34,6 +34,17 @@ class ContabDocEncabezado extends Model
     {
         return $this->hasMany('App\Contabilidad\ContabDocRegistro');
     }
+
+    public function lineas_registros()
+    {
+        return $this->hasMany(ContabDocRegistro::class, 'contab_doc_encabezado_id');
+    }
+
+    public function actualizar_valor_total()
+    {
+        $this->valor_total = $this->lineas_registros->sum('valor_debito');
+        $this->save();
+    }
     
     public function get_movimiento_contable()
     {
