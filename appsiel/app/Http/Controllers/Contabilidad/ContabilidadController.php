@@ -294,6 +294,8 @@ class ContabilidadController extends TransaccionController
         $registro_encabezado_doc->fill( $request->all() );
         $registro_encabezado_doc->save();
 
+        $registro_encabezado_doc->actualizar_valor_total();
+
         return redirect( 'contabilidad/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
