@@ -777,7 +777,7 @@ class ReporteController extends TesoreriaController
         // --------------------
         $key_cartera = 0;
 
-        $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->where('concepto',$concepto)->groupBy('id_cartera')->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo')->get();
+        $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->where('concepto',$concepto->id)->groupBy('id_cartera')->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo')->get();
 
         // se hizo recaudo para el concepto de la cartera del estudiante
         if ( count($recaudos_libreta) > 0 ) 

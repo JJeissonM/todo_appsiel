@@ -420,7 +420,6 @@ class LibretaPagoController extends ModeloController
                                   ->update(['estado' => 'Vencida']);
 
         $libreta = TesoLibretasPago::find($id_libreta);
-
         $matricula_estudiante = Matricula::get_registro_impresion( $libreta->matricula_id );
 
         if( is_null( $matricula_estudiante->estudiante ) )
