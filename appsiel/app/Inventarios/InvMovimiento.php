@@ -326,15 +326,14 @@ class InvMovimiento extends Model
     public static function get_movimiento_transacciones_ventas( $fecha_inicial, $fecha_final )
     {
         /*              MOTIVOS DE INVENTARIOS
-            ID  Desccrpcion             Transacción asociada        Movimiento
-            22  Ventas POS              Factura de ventas POS      salida
-            17  Remisión de ventas      Remisión de ventas         salida
-            15  Devolución en ventas    Devolución en ventas       entrada
-            10  Ventas Estándar         Venta                      salida
+            ID  Desccrpcion                         Transacción asociada        Movimiento
+            17  Remisión de ventas                  Remisión de ventas          salida
+            15  Devolución en ventas                Devolución en ventas        entrada
+            10  Ventas Estándar                     Venta                       salida
         */
 
         return InvMovimiento::leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
-                            ->whereIn( 'inv_movimientos.inv_motivo_id', [ 10, 15, 17, 22] )
+                            ->whereIn( 'inv_movimientos.inv_motivo_id', [ 10, 15, 17] )
                             ->whereBetween('inv_doc_encabezados.fecha', [ $fecha_inicial, $fecha_final ] )
                             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->get();

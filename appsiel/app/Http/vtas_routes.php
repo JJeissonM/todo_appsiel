@@ -76,6 +76,8 @@ Route::post('vtas_reporte_ventas', 'Ventas\ReportesController@vtas_reporte_venta
 Route::post('vtas_reporte_rentabilidad', 'Ventas\ReportesController@vtas_reporte_rentabilidad');
 Route::post('vtas_reporte_ventas_por_vendedor', 'Ventas\ReportesController@ventas_por_vendedor');
 
+Route::post('vtas_remisiones_sin_factura_real', 'Ventas\ReportesController@remisiones_estado_facturadas_sin_factura_real');
+
 
 // PROCESOS
 

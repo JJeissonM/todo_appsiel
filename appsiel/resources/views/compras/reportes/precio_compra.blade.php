@@ -45,7 +45,7 @@
         <thead>
             <tr>
                 <th> Producto </th>
-                <th> Proveedor </th>
+                <th> CC/NIT - Proveedor </th>
                 <th> Cantidad total </th>
                 <th> Precio promedio </th>
                 <th> Precio total </th>

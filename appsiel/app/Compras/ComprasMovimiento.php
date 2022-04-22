@@ -133,7 +133,7 @@ class ComprasMovimiento extends Model
             ->select(
                         'compras_movimientos.inv_producto_id',
                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'),
-                        'core_terceros.descripcion AS proveedor',
+                        DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS proveedor'),
                         DB::raw('SUM(compras_movimientos.cantidad) AS cantidad'),
                         DB::raw('SUM(compras_movimientos.precio_total) AS precio_total'),
                         DB::raw('SUM(compras_movimientos.base_impuesto) AS base_impuesto'))

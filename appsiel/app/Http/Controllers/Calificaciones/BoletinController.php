@@ -178,7 +178,7 @@ class BoletinController extends Controller
             $matriculas = $matriculas->where( 'id_estudiante', (int)$request->estudiante_id )->all();
         }
 
-        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, null, null);
+        //$asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, $periodo->periodo_lectivo_id, null);
 
         // Parametros enviados        
         $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
@@ -213,7 +213,7 @@ class BoletinController extends Controller
             }
         }
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio','asignaturas', 'periodos') )->render();
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos') )->render();//,'asignaturas'
         
         // Se prepara el PDF
         $orientacion='portrait';

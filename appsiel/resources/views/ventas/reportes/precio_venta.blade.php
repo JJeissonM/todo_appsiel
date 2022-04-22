@@ -5,7 +5,7 @@
         <thead>
             <tr>
                 <th> Producto </th>
-                <th> Cliente </th>
+                <th> CC/NIT - Cliente </th>
                 <th> Cantidad total </th>
                 <th> Precio promedio </th>
                 <th> Precio total </th>

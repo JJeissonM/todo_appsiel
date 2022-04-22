@@ -209,7 +209,12 @@ class VtasMovimiento extends Model
             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
             ->where('vtas_movimientos.inv_producto_id', $operador1, $producto_id)
             ->where('vtas_movimientos.cliente_id', $operador2, $cliente_id)
-            ->select('vtas_movimientos.inv_producto_id', DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'), 'core_terceros.descripcion AS cliente', DB::raw('SUM(vtas_movimientos.cantidad) AS cantidad'), DB::raw('SUM(vtas_movimientos.base_impuesto_total) AS base_impuesto_total'))
+            ->select(
+                'vtas_movimientos.inv_producto_id', 
+                DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, ")" ) AS producto'), 
+                DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'), 
+                DB::raw('SUM(vtas_movimientos.cantidad) AS cantidad'), 
+                DB::raw('SUM(vtas_movimientos.base_impuesto_total) AS base_impuesto_total'))
             ->groupBy('vtas_movimientos.inv_producto_id')
             ->groupBy('vtas_movimientos.cliente_id')
             ->get();
@@ -258,7 +263,7 @@ class VtasMovimiento extends Model
                             ->select(
                                         'vtas_movimientos.inv_producto_id',
                                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
-                                        'core_terceros.descripcion AS cliente',
+                                        DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'vtas_movimientos.cliente_id',
                                         'vtas_movimientos.core_tercero_id',
                                         'vtas_clases_clientes.descripcion AS clase_cliente',

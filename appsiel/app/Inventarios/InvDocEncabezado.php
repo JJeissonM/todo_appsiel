@@ -67,7 +67,9 @@ class InvDocEncabezado extends Model
 
     public function enlace_show_documento()
     {
-        $enlace = '<a href="' . url( 'inventarios/' . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+        $app_id = 8;
+        
+        $enlace = '<a href="' . url( 'inventarios/' . $this->id . '?id=' . $app_id . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
     }

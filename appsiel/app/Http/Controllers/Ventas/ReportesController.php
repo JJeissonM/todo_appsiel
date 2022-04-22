@@ -22,6 +22,8 @@ use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvDocEncabezado;
 
 use App\Contabilidad\Impuesto;
+use App\Ventas\VtasDocEncabezado;
+use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 
@@ -308,6 +310,39 @@ class ReportesController extends Controller
                                         ['core_tipo_transaccion_id',24]
                                     ])
                                 ->get();
+    }
+
+    public function remisiones_estado_facturadas_sin_factura_real(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $records = InvDocEncabezado::where([
+                                        ['estado','Facturada'],
+                                        ['core_tipo_transaccion_id',24]
+                                    ])
+                                ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                ->get();
+        
+        $remisiones = [];                    
+        foreach ($records as $record) {
+            $fact_vta = VtasDocEncabezado::where([['remision_doc_encabezado_id','LIKE','%'.$record->id.'%']])->get()->first();
+            
+            if ($fact_vta == null ) {
+                $fact_pos = FacturaPos::where([['remision_doc_encabezado_id','LIKE','%'.$record->id.'%']])->get()->first();
+                if ($fact_pos == null ) {
+                    $remisiones[] = $record;
+                }
+            }            
+        }
+
+        $titulo = 'Remisiones en estado Facturada, pero SIN factura relacionada';
+
+        $vista = View::make('ventas.incluir.lista_remisiones', compact('titulo','remisiones'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;     
     }
 
     public function ventas_por_vendedor(Request $request)

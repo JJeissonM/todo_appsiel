@@ -177,29 +177,10 @@
             --color-secundario: #42A3DC;
             --color-terciario: #50B794;
 
-            @if ($configuracion !=null) --color-primario: {
-                    {
-                    $configuracion->color_primario
-                }
-            }
-
-            ;
-
-            --color-secundario: {
-                    {
-                    $configuracion->color_segundario
-                }
-            }
-
-            ;
-
-            --color-terciario: {
-                    {
-                    $configuracion->color_terciario
-                }
-            }
-
-            ;
+            @if ($configuracion !=null) 
+            --color-primario: {{$configuracion->color_primario}};
+            --color-secundario: {{$configuracion->color_segundario}};
+            --color-terciario: {{$configuracion->color_terciario}};
             @endif
         }
 
