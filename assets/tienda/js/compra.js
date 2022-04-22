@@ -32,6 +32,8 @@ comprar.addEventListener('click',function (event) {
                   comprar.style.display  = 'block';
                   let data = resp.data;
                   if(data.status == 'error' ){
+                    loading.style.display = 'block';
+                    comprar.style.display  = 'none';
                       toastr.warning(data.mensaje);
                   }else if (data.status == 'ok'){
                       //toastr.success(data.mensaje);

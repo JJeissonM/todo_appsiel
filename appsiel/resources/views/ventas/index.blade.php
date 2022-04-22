@@ -19,7 +19,6 @@
 
 
 	$remisiones = ReportesController::remisiones_pendientes_por_facturar();
-	//$remisiones2 = ReportesController::remisiones_estado_facturadas_sin_factura_real();
 ?>
 
 
@@ -84,7 +83,7 @@
 	@else
 		<div class="container-fluid">
 
-		@if( !empty( $remisiones->toArray() ) || !empty( $remisiones2->toArray() ) )
+		@if( !empty( $remisiones->toArray() ) )
 			<div class="marco_formulario">
 				<div class="row">
 					<div class="col-md-6">
