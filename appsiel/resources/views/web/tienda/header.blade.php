@@ -24,6 +24,10 @@
                                     {{ $empresa->direccion1 }}
                                 </span>
                             </li>
+
+                            <li> &nbsp; </li>
+                            <li> &nbsp; </li>
+                            <li> &nbsp; </li>
                             
                             <li>
                                 <i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;

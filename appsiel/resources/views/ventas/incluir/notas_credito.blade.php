@@ -15,12 +15,19 @@
                         <?php 
                             
                             $transaccion = App\Sistema\TipoTransaccion::find( $doc_encabezado->core_tipo_transaccion_id );
+                            
+                            if($transaccion == null)
+                            {
+                                continue;
+                            }
                             $el_documento = app( $transaccion->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                                                 ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                                                 ->where('consecutivo',$doc_encabezado->consecutivo)
                                                 ->get()
                                                 ->first();
-                            if ($el_documento == null) {
+                            
+                            if($el_documento == null)
+                            {
                                 continue;
                             }
                             $modelo = App\Sistema\Modelo::find( $transaccion->core_modelo_id );

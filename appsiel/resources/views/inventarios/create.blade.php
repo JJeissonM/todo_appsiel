@@ -76,7 +76,7 @@
 @endsection
 
 @section('scripts')
-	<script src="{{ asset( 'assets/js/inventarios/commons.js' ) }}"></script>
+	<script src="{{ asset( 'assets/js/inventarios/commons.js?aux=' . uniqid() ) }}"></script>
 	<script src="{{ asset( 'assets/js/modificar_con_doble_click_sin_recargar.js' ) }}"></script>
 
 	<script type="text/javascript">	

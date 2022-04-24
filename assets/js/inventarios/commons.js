@@ -324,11 +324,7 @@ $(document).ready(function(){
 			$('#inv_producto_id_aux').val('');
 			$('#inv_producto_id').val('');
 
-			// Se incrementa variable auxiliar para llevar control del ingreso 
-			// de productos al agregar o elminiar
-			var hay_productos = $('#hay_productos').val();
-			hay_productos = parseFloat(hay_productos) + 1;
-			$('#hay_productos').val(hay_productos);
+			aumentar_productos();
 
 			// se inactiva la bodega para que ya no se pueda cambiar, pues el motiviemto está amarrado a la bodega
 			// 1ro. Se pasa el valor del id de la bodega (select) a un input hidden bodega
@@ -353,6 +349,15 @@ $(document).ready(function(){
 			$('#btn_agregar').hide();
 		}
 	});
+
+	function aumentar_productos()
+	{
+		// Se incrementa variable auxiliar para llevar control del ingreso 
+		// de productos al agregar o elminiar
+		var hay_productos = $('#hay_productos').val();
+		hay_productos = parseFloat(hay_productos) + 1;
+		$('#hay_productos').val(hay_productos);
+	}
 
 	/*
 	** Al eliminar una fila
@@ -499,8 +504,95 @@ $(document).ready(function(){
 		$('#inv_bodega_id').removeAttr('disabled');
 	}
 
+	var item_entrada_fabricacion_id,cantidad_fabricar;
+	$('#btn_cargar_ingredientes').click(function(event){
+		event.preventDefault();
+
+
+		var hay_item_entrada = 0;
+		$('.movimiento').each(function()
+		{
+			if($(this).val() == 'entrada')
+			{
+				var fila = $(this).closest("tr");
+				item_entrada_fabricacion_id = fila.attr("id");
+				
+				var cantidad = fila.find('.cantidad').text();
+				// Se elimina la cadena "UND" del texto de la cantidad
+				var pos_espacio = cantidad.search(" ");
+				cantidad = cantidad.substring(0,pos_espacio);
+
+				cantidad_fabricar = parseFloat(cantidad);
+				hay_item_entrada++;
+			}
+		});
+
+		if (hay_item_entrada == 0) {
+			alert('No se ha ingresado ningún Producto a producir (Motivo Entrada)');
+			return false;
+		}
+
+		if (hay_item_entrada > 1) {
+			alert('Solo puede ingresar un solo (1) Producto a producir (Motivo Entrada). Ha ingresado más de uno.');
+			return false;
+		}
+
+        var url = url_raiz + '/' + 'inv_cargar_lista_ingredientes_fabricacion' + '/' + item_entrada_fabricacion_id + '/' + cantidad_fabricar;
+
+        $.get( url )
+            .done( function( data ) {
+                if ( data == '' )
+                {
+                    $('#popup_alerta_danger').show();
+                    $('#popup_alerta_danger').text( 'El producto ingresado no tiene Ingredientes asociados.' );
+                }else{
+                    $('#popup_alerta_danger').hide();
+					$('#ingreso_productos').find('tbody:last').append(data);
+					
+					suma_costo_total_prod_salida = 0;
+					var sum = 0.0;
+					$('.costo_total').each(function()
+					{
+						var fila = $(this).closest("tr");
+
+						console.log(fila.find('.movimiento').val());
+
+						if(fila.find('.movimiento').val() == 'salida')
+						{
+							var cadena = $(this).text();
+		    				sum = parseFloat(cadena.substring(1));
+
+							suma_costo_total_prod_salida = suma_costo_total_prod_salida + parseFloat(sum);
+
+							aumentar_productos();
+							
+							console.log(suma_costo_total_prod_salida);
+						}
+					});
+
+					
+
+                }
+            });
+	});
+
 	$('#btn_calcular_costos_finales').click(function(event){
 		event.preventDefault();
+		
+		var hay_item_entrada = 0;
+		$('.movimiento').each(function()
+		{
+			if($(this).val() == 'entrada')
+			{
+				hay_item_entrada++;
+			}
+		});
+
+		if (hay_item_entrada > 1) {
+			alert('Solo puede ingresar un solo (1) Producto a producir (Motivo Entrada). Ha ingresado más de uno.');
+			return false;
+		}
+
 		if (suma_cantidades_prod_entrada>0 && suma_costo_total_prod_salida>0) {
 			costo_promedio = suma_costo_total_prod_salida / suma_cantidades_prod_entrada;
 			$('.costo_unitario').text('$'+costo_promedio.toFixed(2));

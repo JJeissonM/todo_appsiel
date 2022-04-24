@@ -31,6 +31,7 @@ use App\Inventarios\InvMotivo;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvCostoPromProducto;
+use App\Inventarios\RecetaCocina;
 
 class InvFisicoController extends TransaccionController
 {
@@ -545,6 +546,29 @@ class InvFisicoController extends TransaccionController
         }
 
         return $productos;
+    }
+
+    public function cargar_lista_ingredientes_fabricacion($item_platillo_id,$cantidad_fabricar)
+    {
+        $motivo_salida = InvMotivo::find( (int)config('inventarios.motivo_salida_id') );
+
+        $receta_platillo = RecetaCocina::where('item_platillo_id', $item_platillo_id)->get()->first();
+
+        if ($receta_platillo == null) {
+            return '';
+        }
+
+        $ingredientes = $receta_platillo->ingredientes();
+        $lineas_desarme = '';
+        foreach ($ingredientes as $ingrediente) {
+            $cantidad_a_sacar = $ingrediente['cantidad_porcion'] * $cantidad_fabricar;
+
+            $costo_unitario_ingrediente = $ingrediente['ingrediente']->get_costo_promedio( 0 );
+
+            // Una linea de salida por cada ingrediente
+            $lineas_desarme .= '<tr id="' . $ingrediente['ingrediente']->id . '"> <td style="display:none;">0</td> <td class="text-center">' . $ingrediente['ingrediente']->id . '</td> <td class="nom_prod">' . $ingrediente['ingrediente']->descripcion . ' (' . $ingrediente['ingrediente']->unidad_medida1 . ')' . '</td> <td><span style="color:white;">' . $motivo_salida->id . '-</span><span style="color:red;">' . $motivo_salida->descripcion . '</span><input type="hidden" class="movimiento" value="' . $motivo_salida->movimiento . '"></td><td>$' . $costo_unitario_ingrediente . '</td><td class="text-center cantidad">' . $cantidad_a_sacar . ' ' . $ingrediente['ingrediente']->unidad_medida1 . '</td><td class="costo_total">$' . ($cantidad_a_sacar * $costo_unitario_ingrediente) . '</td><td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
+        }
+        return $lineas_desarme;
     }
 
 }

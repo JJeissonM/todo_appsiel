@@ -29,6 +29,7 @@ Route::get('inv_validacion_saldo_movimientos_posteriores/{bodega_id}/{producto_i
 Route::get('inv_fisico_imprimir/{id}','Inventarios\InvFisicoController@imprimir');
 Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajuste');
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
+Route::get('inv_cargar_lista_ingredientes_fabricacion/{item_producir_id}/{cantidad_fabricar}','Inventarios\InvFisicoController@cargar_lista_ingredientes_fabricacion');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');
 
 

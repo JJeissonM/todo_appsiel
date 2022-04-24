@@ -45,7 +45,8 @@
 			</td>
             <td colspan="2">
             	@if($id_transaccion==4)
-            		<button type="button" class="btn btn-warning btn-xs" id="btn_calcular_costos_finales"><i class="fa fa-btn fa-calculator"></i> Calcular costos</button>
+                <button type="button" class="btn btn-primary btn-xs" id="btn_cargar_ingredientes"><i class="fa fa-btn fa-arrow-up"></i> Cargar ingredientes</button>
+                <button type="button" class="btn btn-warning btn-xs" id="btn_calcular_costos_finales"><i class="fa fa-btn fa-calculator"></i> Calcular costos</button>
             	@else
             		&nbsp;
             	@endif
