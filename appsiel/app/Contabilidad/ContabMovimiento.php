@@ -44,6 +44,11 @@ class ContabMovimiento extends Model
         return $this->belongsTo(TipoDocApp::class, 'core_tipo_doc_app_id');
     }
 
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')

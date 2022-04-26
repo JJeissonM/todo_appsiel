@@ -37,6 +37,21 @@ class VtasMovimiento extends Model
     {
         return $this->belongsTo( 'App\Core\Tercero', 'core_tercero_id');
     }
+    
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo( 'App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id' );
+    }
+    
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+    
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

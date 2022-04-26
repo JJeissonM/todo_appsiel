@@ -223,6 +223,10 @@ Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config
 Route::resource('transaction', 'Core\TransaccionController');
 
 
+//          REPORTES
+Route::post('core_movimiento_con_fecha_distinta_a_su_creacion','Core\ReporteController@movimiento_con_fecha_distinta_a_su_creacion');
+
+
 // RUTAS PARA LA EXPORTACIÓN DE TABLAS EN FORMATOS PDF Y EXCEL
 
 Route::post('table/export', 'Sistema\ExporttableController@export')->name('export.table');

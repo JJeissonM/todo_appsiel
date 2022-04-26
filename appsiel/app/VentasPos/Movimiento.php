@@ -10,6 +10,26 @@ class Movimiento extends Model
 	protected $fillable = ['pdv_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'cajero_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_producto_id', 'inv_bodega_id', 'vtas_motivo_id', 'inv_motivo_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'estado', 'creado_por', 'modificado_por'];
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Producto', 'Precio Unit.', 'Cantidad', 'Precio total', 'Estado'];
+    
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo( 'App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id' );
+    }
+    
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

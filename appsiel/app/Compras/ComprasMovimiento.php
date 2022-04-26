@@ -19,6 +19,26 @@ class ComprasMovimiento extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Producto', 'Proveedor', 'Precio unit.', 'Cantidad', 'Precio total', 'IVA', 'Base IVA Total'];
 
     public $vistas = '{"index":"layouts.index3"}';
+    
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo( 'App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id' );
+    }
+    
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

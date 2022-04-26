@@ -1056,4 +1056,28 @@ class ReporteController extends TesoreriaController
 
         return $vista;
     }
+
+    public function movimiento_con_fecha_distinta_a_su_creacion()
+    {
+        $fecha_desde = '2022-04-01' . ' 00:00:00';
+        $fecha_hasta = '2022-04-25' . ' 23:59:00';
+
+        $movimientos = TesoMovimiento::whereBetween( 'created_at', [$fecha_desde, $fecha_hasta] )->get();
+
+        $arr_movin = [];
+        foreach ($movimientos as $movimiento) {
+            $created_at = explode(" ",$movimiento->created_at)[0];
+            
+            if($created_at != $movimiento->fecha)
+            {
+                $arr_movin[] = $movimiento;
+            }
+        }
+        
+        $vista = View::make( 'tesoreria.reportes.auditoria_movin_fecha_distinta_creacion', compact( 'fecha_desde', 'fecha_hasta', 'arr_movin') )->render();
+
+        //Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
 }

@@ -53,6 +53,11 @@ class TesoMovimiento extends Model
         return $this->belongsTo( TesoCuentaBancaria::class,'teso_cuenta_bancaria_id');
     }
 
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
+
     // Para cualquier tipo de transacción
     public static function get_registros_un_documento( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
     {
