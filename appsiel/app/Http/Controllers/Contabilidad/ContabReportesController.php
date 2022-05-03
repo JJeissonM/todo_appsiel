@@ -25,7 +25,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\ContabReporteEeff;
 use App\Contabilidad\ContabArbolGruposCuenta;
 use App\Contabilidad\ClaseCuenta;
-
+use App\Contabilidad\Impuesto;
 use App\Contabilidad\Services\ReportsServices;
 
 use App\CxC\CxcDocEncabezado;
@@ -852,4 +852,194 @@ class ContabReportesController extends Controller
         return View::make('contabilidad.reportes.tabla_eeff', compact('filas', 'anio', 'gran_total') )->render();
     }
 
+    
+    public function taxes_general_report( Request $request )
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+
+        $reports_list = [
+            (object)[
+                'title' => 'Impuestos en ventas (generados)',
+                'arr_transactions_types' => [23,44,49,50,52],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
+                                            ->get()
+                                            ->pluck('cta_ventas_id')
+                                            ->toArray()
+            ],
+            (object)[
+                'title' => 'Impuestos por devoluciones en ventas',
+                'arr_transactions_types' => [41,38,53,54],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
+                                            ->get()
+                                            ->pluck('cta_ventas_devol_id')
+                                            ->toArray()
+            ],
+            (object)[
+                'title' => 'Impuestos en compras (descontables)',
+                'arr_transactions_types' => [25,29,48],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_id' )
+                                            ->get()
+                                            ->pluck('cta_compras_id')
+                                            ->toArray()
+            ],
+            (object)[
+                'title' => 'Impuestos por devoluciones en compras',
+                'arr_transactions_types' => [36,40],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_devol_id' )
+                                            ->get()
+                                            ->pluck('cta_compras_devol_id')
+                                            ->toArray()
+            ]
+       ];
+
+       $vista = '<table><tr><td>';
+       foreach ($reports_list as $report) {
+            $movements = ContabMovimiento::whereIn('core_tipo_transaccion_id',$report->arr_transactions_types)
+                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                    ->whereIn('contab_cuenta_id',$report->campo_filtrar_ctas)
+                    ->select( 
+                            DB::raw( 'CAST(tasa_impuesto AS CHAR) as tasa_impuesto','' ),
+                            'valor_saldo'
+                        )
+                    ->get();
+
+            $group_taxes = $this->get_totals_by_tax($movements, 'tasa_impuesto', 'tasa_impuesto');
+            $title = $report->title;
+
+            $vista .= View::make( 'contabilidad.incluir.listado_iva_por_tasas', compact('group_taxes','title') )->render();
+       }
+
+       $vista .='</td></tr></table>';
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+    public function tax_reporting_by_third_parties( Request $request )
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
+
+        $reports_list = [
+            'sales_taxes' => (object)[
+                'title' => 'Impuestos en ventas (generados)',
+                'arr_transactions_types' => [23,44,49,50,52],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
+                                            ->get()
+                                            ->pluck('cta_ventas_id')
+                                            ->toArray()
+            ],
+            'sales_return_taxes' => (object)[
+                'title' => 'Impuestos por devoluciones en ventas',
+                'arr_transactions_types' => [41,38,53,54],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
+                                            ->get()
+                                            ->pluck('cta_ventas_devol_id')
+                                            ->toArray()
+            ],
+            'purchases_taxes' => (object)[
+                'title' => 'Impuestos en compras (descontables)',
+                'arr_transactions_types' => [25,29,48],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_id' )
+                                            ->get()
+                                            ->pluck('cta_compras_id')
+                                            ->toArray()
+            ],
+            'purchases_return_taxes' => (object)[
+                'title' => 'Impuestos por devoluciones en compras',
+                'arr_transactions_types' => [36,40],
+                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_devol_id' )
+                                            ->get()
+                                            ->pluck('cta_compras_devol_id')
+                                            ->toArray()
+            ]
+        ];
+
+        $params = $reports_list[$request->tax_report_type];
+
+        $vista = '<table><tr><td>';
+
+        $arr_third_parties = ContabMovimiento::whereIn('core_tipo_transaccion_id',$params->arr_transactions_types)
+                ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                ->whereIn('contab_cuenta_id',$params->campo_filtrar_ctas)
+                ->groupBy( 'core_tercero_id' )
+                ->get()
+                ->pluck('core_tercero_id')
+                ->toArray();
+
+        $group_taxes_third_parties = [];
+        foreach ($arr_third_parties as $key => $core_tercero_id) {
+
+            $tercero = Tercero::find($core_tercero_id);
+
+            $movements = ContabMovimiento::whereIn('core_tipo_transaccion_id',$params->arr_transactions_types)
+                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                    ->whereIn('contab_cuenta_id',$params->campo_filtrar_ctas)
+                    ->where('core_tercero_id',$core_tercero_id)
+                    ->select( 
+                            DB::raw( 'CAST(tasa_impuesto AS CHAR) as tasa_impuesto','' ),
+                            'valor_saldo'
+                        )
+                    ->get();
+
+            $group_taxes = $this->get_totals_by_tax($movements, 'tasa_impuesto', 'tasa_impuesto');
+            
+            foreach ($group_taxes as $key => $tax) {
+                $group_taxes_third_parties[] = (object)[
+                    'tercero_numero_identificacion' => $tercero->numero_identificacion,
+                    'tercero_descripcion' => $tercero->descripcion,
+                    'group' => $tax['group'],
+                    'base_impuesto' => $tax['base_impuesto'],
+                    'valor_impuesto' => $tax['valor_impuesto']
+                ];
+            }
+        }
+
+        $title = $params->title;
+
+        $vista .= View::make( 'contabilidad.incluir.listado_iva_por_terceros', compact('group_taxes_third_parties','title') )->render();
+
+        $vista .='</td></tr></table>';
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+    public function get_totals_by_tax($lines, $column_to_group, $column_method_name)
+    {
+        $grouped_data = $lines->groupBy($column_to_group)->map(function ($row) use ($column_method_name) {
+            return  [
+                'group' => $row->first()->$column_method_name,
+                'valor_impuesto' => $row->sum('valor_saldo')
+            ];
+        });
+
+
+        $arr_grouped_data = [];
+        foreach ($grouped_data as $line) {
+
+            if ($line['group'] == null) {
+                continue;
+            }
+            
+            $valor_impuesto = abs((float)$line['valor_impuesto']);
+            $tasa = (float)$line['group'] / 100;
+            $base_impuesto = 0;
+            if ($tasa != 0) {
+                $base_impuesto = $valor_impuesto / $tasa;
+            }
+
+            $arr_grouped_data[] = [
+                'group' => 'IVA ' . $line['group'] . '%',
+                'base_impuesto' => $base_impuesto,
+                'valor_impuesto' => $valor_impuesto
+            ];
+            
+        }
+
+        return $arr_grouped_data;
+    }
 }

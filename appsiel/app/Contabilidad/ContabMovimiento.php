@@ -49,6 +49,11 @@ class ContabMovimiento extends Model
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
     }
 
+    public function tasa_impuesto()
+    {
+        return $this->hasOne(Impuesto::class,'tasa_impuesto','tasa_impuesto');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')

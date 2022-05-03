@@ -233,6 +233,8 @@ class NotaCreditoController extends TransaccionController
 
                 $valor_total_descuento = ( $precio_unitario - $precio_unitario_con_descuento ) * $un_registro->cantidad;
 
+                $valor_impuesto = ( $precio_unitario_con_descuento - $base_impuesto ) * $cantidad;
+
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
@@ -241,7 +243,7 @@ class NotaCreditoController extends TransaccionController
                                 [ 'precio_total' => $precio_total_con_descuento ] +
                                 [ 'base_impuesto' =>  $base_impuesto ] +
                                 [ 'tasa_impuesto' => $linea_factura->tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario_con_descuento - $base_impuesto ) ] +
+                                [ 'valor_impuesto' =>  $valor_impuesto ] +
                                 [ 'base_impuesto_total' => ( $base_impuesto * $un_registro->cantidad ) ] +
                                 [ 'tasa_descuento' => $linea_factura->tasa_descuento ] +
                                 [ 'valor_total_descuento' => $valor_total_descuento ] +

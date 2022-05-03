@@ -136,15 +136,15 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center;">DATOS DEL CONDUCTOR 2</td>
             <td class="border_center" style="width: 32%; font-size: 12px;">@if(isset($conductores[1])){{$conductores[1]->conductor->tercero->descripcion}}@endif</td>
             <td class="border_center" style="width: 13%; font-size: 12px;">@if(isset($conductores[1])){{$conductores[1]->conductor->tercero->numero_identificacion}}@endif</td>
-            <td class="border_center" style="width: 19%; font-size: 12px;">@if(isset($conductores[1])) @if($conductores[1]->licencia!=null) {{$conductores[0]->licencia->nro_documento}} @endif @endif</td>
-            <td class="border_center" style="width: 10%; font-size: 12px;">@if(isset($conductores[1])) @if($conductores[1]->licencia!=null) {{$conductores[0]->licencia->vigencia_fin}} @endif @endif</td>
+            <td class="border_center" style="width: 19%; font-size: 12px;">@if(isset($conductores[1])) @if($conductores[1]->licencia!=null) {{$conductores[1]->licencia->nro_documento}} @endif @endif</td>
+            <td class="border_center" style="width: 10%; font-size: 12px;">@if(isset($conductores[1])) @if($conductores[1]->licencia!=null) {{$conductores[1]->licencia->vigencia_fin}} @endif @endif</td>
         </tr>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center;">DATOS DEL CONDUCTOR 3</td>
             <td class="border_center" style="width: 32%; font-size: 12px;">@if(isset($conductores[2])){{$conductores[2]->conductor->tercero->descripcion}}@endif</td>
             <td class="border_center" style="width: 13%; font-size: 12px;">@if(isset($conductores[2])){{$conductores[2]->conductor->tercero->numero_identificacion}}@endif</td>
-            <td class="border_center" style="width: 19%; font-size: 12px;">@if(isset($conductores[2])) @if($conductores[2]->licencia!=null) {{$conductores[0]->licencia->nro_documento}} @endif @endif</td>
-            <td class="border_center" style="width: 10%; font-size: 12px;">@if(isset($conductores[2])) @if($conductores[2]->licencia!=null) {{$conductores[0]->licencia->vigencia_fin}} @endif @endif</td>
+            <td class="border_center" style="width: 19%; font-size: 12px;">@if(isset($conductores[2])) @if($conductores[2]->licencia!=null) {{$conductores[2]->licencia->nro_documento}} @endif @endif</td>
+            <td class="border_center" style="width: 10%; font-size: 12px;">@if(isset($conductores[2])) @if($conductores[2]->licencia!=null) {{$conductores[2]->licencia->vigencia_fin}} @endif @endif</td>
         </tr>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; border-bottom: none;"></td>

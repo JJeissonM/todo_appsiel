@@ -4,6 +4,8 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Facades\DB;
+
 class RecetaCocina extends Model
 {
     protected $table = 'inv_recetas_cocina';
@@ -43,8 +45,8 @@ class RecetaCocina extends Model
     return RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
       ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
       ->select(
-        'items_consumir.descripcion AS campo1',
-        'items_producir.descripcion AS campo2',
+        DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS campo1'),
+        DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS campo2'),
         'inv_recetas_cocina.cantidad_porcion AS campo3',
         'inv_recetas_cocina.id AS campo4'
       )
@@ -60,8 +62,8 @@ class RecetaCocina extends Model
     $string = RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
       ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
       ->select(
-        'items_consumir.descripcion AS campo1',
-        'items_producir.descripcion AS campo2',
+        DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS campo1'),
+        DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS campo2'),
         'inv_recetas_cocina.cantidad_porcion AS campo3',
         'inv_recetas_cocina.id AS campo4'
       )
