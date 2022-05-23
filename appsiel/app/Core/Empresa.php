@@ -28,7 +28,7 @@ class Empresa extends Model
 
     public function representante_legal()
     {
-        $tercero_empresa = Tercero::where('numero_identificacion',$this->id)->get()->first();
+        $tercero_empresa = Tercero::where('numero_identificacion',$this->numero_identificacion)->get()->first();
 
         if ( !is_null($tercero_empresa) )
         {

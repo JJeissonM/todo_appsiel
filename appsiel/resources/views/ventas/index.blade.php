@@ -90,7 +90,6 @@
 						@include('ventas.incluir.lista_remisiones',['titulo'=>'Remisiones pendientes por facturar'])
 					</div>
 					<div class="col-md-6">
-						<!-- @ include('ventas.incluir.lista_remisiones',['titulo'=>'Remisiones SIN facturas','remisiones'=>$remisiones2]) -->
 					</div>
 				</div>
 			</div>

@@ -31,9 +31,21 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
     <tbody>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">CONTRATANTE</td>
-            <td class="border_center" style="width: 50%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} @endif</td>
+            <td class="border_center" style="width: 50%; font-size: 12px;">
+                @if($c->contratante_id==null || $c->contratante_id=='null') 
+                    {{$c->contratanteText}} 
+                @else 
+                    {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} 
+                @endif
+            </td>
             <td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} /CC</td>
-            <td class="border_center" style="width: 20%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
+            <td class="border_center" style="width: 20%; font-size: 12px;">
+                @if($c->contratante_id==null || $c->contratante_id=='null') 
+                    {{$c->contratanteIdentificacion}}
+                @else 
+                    {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif 
+                @endif
+            </td>
         </tr>
     </tbody>
 </table>
@@ -45,7 +57,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         </tr>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">ORIGEN - DESTINO</td>
-            <td class="border_center" style="width: 80%; font-size: 12px;">{{$c->origen." - ".$c->destino}}</td>
+            <td class="border_center" style="width: 80%; font-size: 12px;">{{$c->origen." - ".$c->destino}} / {{$c->tipo_servicio}}</td>
         </tr>
     </tbody>
 </table>
@@ -155,10 +167,34 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         </tr>
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
-            <td class="border_center" style="width: 32%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} @endif</td>
-            <td class="border_center" style="width: 13%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
-            <td class="border_center" style="width: 19%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->direccion1}} @endif</td>
-            <td class="border_center" style="width: 10%; font-size: 12px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->telefono1}} @endif</td>
+            <td class="border_center" style="width: 32%; font-size: 12px;">
+                @if($c->contratante_id==null || $c->contratante_id=='null') 
+                    {{$c->contratanteText}} 
+                @else 
+                    {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} 
+                @endif
+            </td>
+            <td class="border_center" style="width: 13%; font-size: 12px;">
+                @if($c->contratante_id==null || $c->contratante_id=='null') 
+                    {{$c->contratanteIdentificacion}} 
+                @else 
+                    {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif 
+                @endif
+            </td>
+            <td class="border_center" style="width: 19%; font-size: 12px;">
+                @if($c->contratante_id==null || $c->contratante_id=='null') 
+                    {{$c->contratanteDireccion}}
+                @else 
+                    {{$c->contratante->tercero->direccion1}} 
+                @endif
+            </td>
+            <td class="border_center" style="width: 10%; font-size: 12px;">
+                @if($c->contratante_id==null || $c->contratante_id=='null') 
+                    {{$c->contratanteTelefono}}
+                @else {
+                    {$c->contratante->tercero->telefono1}} 
+                @endif
+            </td>
         </tr>
     </tbody>
 </table>
