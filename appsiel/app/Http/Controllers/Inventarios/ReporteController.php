@@ -187,7 +187,7 @@ class ReporteController extends Controller
 
         $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial );
 
-        $sql_productos = InvMovimiento::get_movimiento($id_producto, $bodega_id, $fecha_inicial, $fecha_final );
+        $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final );
 
         $cantidad_saldo = 0;
         $costo_total_saldo = 0;  
@@ -219,7 +219,8 @@ class ReporteController extends Controller
         {
             $productos[$i]['fecha'] = $fila->fecha;
             // Se obtinen las descripciones de los datos del encabezado
-            $sql_datos_encabezado_doc = InvDocEncabezado::get_registro($fila->id);
+            $sql_datos_encabezado_doc = InvDocEncabezado::get_registro2($fila->core_tipo_transaccion_id,$fila->core_tipo_doc_app_id,$fila->consecutivo);
+
             $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
             $productos[$i]['documento_id'] = $datos_encabezado_doc['campo9'];
             $productos[$i]['documento'] = $datos_encabezado_doc['campo2'];

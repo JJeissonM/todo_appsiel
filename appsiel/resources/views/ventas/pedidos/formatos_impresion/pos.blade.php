@@ -112,13 +112,14 @@
             </tr>
         </tfoot>
     </table>
+    
+    <br>
+    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
 
     <p style="text-align: right;">
-        Generado: {{ $doc_encabezado->created_at }}    
+        Generado: {{ $doc_encabezado->created_at }}
     </p>
     
-    <br><br><br>
-    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
     <script type="text/javascript">
         window.onload = function() { window.print(); }
     </script>

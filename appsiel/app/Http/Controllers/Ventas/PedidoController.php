@@ -87,12 +87,14 @@ class PedidoController extends TransaccionController
         $request['estado'] = "Pendiente";
 
         $empresa = Empresa::all()->first();
-        $request['descripcion'] = "<address>
+        
+        /*$request['descripcion'] = "<address>
                                     <b>Recoger en: $empresa->descripcion</b><br>
                                     $empresa->direccion1, $empresa->barrio<br>".
                                     $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", $empresa->codigo_postal<br>
                                     Tel.: $empresa->telefono1<br>                                           
-                                </address>";
+                                </address>";*/
+
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 

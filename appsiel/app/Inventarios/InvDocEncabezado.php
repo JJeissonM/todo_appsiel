@@ -289,6 +289,39 @@ class InvDocEncabezado extends Model
         return $registro;
     }
 
+    public static function get_registro2($core_tipo_transaccion_id,$core_tipo_doc_app_id,$consecutivo)
+    {
+        $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2';
+
+        $select_raw2 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3';
+
+        $registro = InvDocEncabezado::where([
+            ['core_tipo_transaccion_id','=',$core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$core_tipo_doc_app_id],
+            ['consecutivo','=',$consecutivo]
+        ])
+                    ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
+                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
+                    ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
+                    ->select(
+                                DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
+                                DB::raw($select_raw),
+                                DB::raw($select_raw2),
+                                'inv_doc_encabezados.descripcion AS campo4',
+                                'inv_doc_encabezados.documento_soporte AS campo5',
+                                'inv_doc_encabezados.descripcion AS campo6',
+                                'inv_bodegas.descripcion AS campo7',
+                                'inv_doc_encabezados.core_tipo_transaccion_id AS campo8',
+                                'inv_doc_encabezados.id AS campo9',
+                                'inv_doc_encabezados.creado_por AS campo10',
+                                'inv_doc_encabezados.consecutivo AS campo11',
+                                'inv_doc_encabezados.core_tipo_doc_app_id AS campo12')
+                    ->get()
+                    ->toArray();
+
+        return $registro;
+    }
+
     /*
         Obtener un registro de encabezado de documento con sus datos relacionados
     */

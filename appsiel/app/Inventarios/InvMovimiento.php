@@ -329,10 +329,34 @@ class InvMovimiento extends Model
                                         'inv_doc_encabezados.fecha',
                                         'inv_motivos.movimiento',
                                         'inv_movimientos.inv_doc_encabezado_id',
+                                        'inv_movimientos.core_tipo_doc_app_id',
+                                        'inv_movimientos.consecutivo',
                                         'inv_movimientos.cantidad',
                                         'inv_movimientos.costo_unitario',
                                         'inv_movimientos.costo_total',
                                         'inv_movimientos.core_tipo_transaccion_id')
+                                ->orderBy('inv_movimientos.fecha')
+                                ->orderBy('inv_movimientos.created_at')
+                                ->get();
+    }
+
+    public static function get_movimiento2($id_producto, $id_bodega, $fecha_inicial, $fecha_final )
+    {
+        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                                ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
+                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('inv_movimientos.inv_bodega_id','=',$id_bodega)
+                                ->where('inv_movimientos.inv_producto_id','=',$id_producto)
+                                ->whereBetween('inv_movimientos.fecha', [$fecha_inicial, $fecha_final])
+                                ->select('inv_movimientos.core_tipo_doc_app_id',
+                                        'inv_movimientos.fecha',
+                                        'inv_motivos.movimiento',
+                                        'inv_movimientos.inv_doc_encabezado_id',
+                                        'inv_movimientos.cantidad',
+                                        'inv_movimientos.costo_unitario',
+                                        'inv_movimientos.costo_total',
+                                        'inv_movimientos.core_tipo_transaccion_id',
+                                        'inv_movimientos.consecutivo')
                                 ->orderBy('inv_movimientos.fecha')
                                 ->orderBy('inv_movimientos.created_at')
                                 ->get();
