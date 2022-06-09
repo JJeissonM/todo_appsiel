@@ -7,17 +7,6 @@ $(document).ready( function(){
 		$(this).select();
 	});
 
-	/*$(document).on('blur', '.text_input_sugerencias', function(e){
-		
-		//var codigo_tecla_presionada = event.which || event.keyCode;
-
-
-		if( codigo_tecla_presionada != 38 && codigo_tecla_presionada != 40 && se_puede_quitar_lista  ) // flecha arriba (38), flecha abajo (40)
-		{
-			$('#lista_sugerencias').remove();
-		}
-	});*/
-
 	function closeAllLists( div_lista_sugerencias )
 	{
 		if( $('#lista_sugerencias').attr('class') !== div_lista_sugerencias.id )
@@ -61,7 +50,6 @@ $(document).ready( function(){
 			
 				item_activo.next().attr('class','list-group-item list-group-item-sugerencia active');
 				item_activo.attr('class','list-group-item list-group-item-sugerencia');
-				//$('#text_input_sugerencias').val( item_activo.next().html() );
     			break;
 
     		case 38:// Flecha hacia arriba
@@ -74,7 +62,6 @@ $(document).ready( function(){
 
 				item_activo.prev().attr('class','list-group-item list-group-item-sugerencia active');
 				item_activo.attr('class','list-group-item list-group-item-sugerencia');
-				//$('#text_input_sugerencias').val( item_activo.prev().html() );
     			break;
 
     		case 13:// Al presionar Enter

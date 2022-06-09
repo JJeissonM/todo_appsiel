@@ -15,7 +15,9 @@ $(document).ready(function () {
     if ( $('#action').val() != 'create' )
     {
         reset_efectivo_recibido();
-        $('#efectivo_recibido').attr( 'readonly', 'readonly');
+        $('#btn_nuevo').show();
+        alert('edit');
+        //$('#efectivo_recibido').attr( 'readonly', 'readonly');
     }
 
     if ( $('#action').val() != 'edit' )

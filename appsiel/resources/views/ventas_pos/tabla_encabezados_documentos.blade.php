@@ -47,7 +47,7 @@
                             
                             &nbsp;&nbsp;&nbsp;
                             
-                            @if( $fila['campo8'] != 'Anulado' && $fila['campo8'] == 'Pendiente' )
+                            @if( $fila['campo8'] != 'Anulado' && $fila['campo8'] == 'Pendiente' && $view != 'index')
                                 
                             
                                 @can('vtas_pos_modificar_documento_en_consultar_facturas_pdv')

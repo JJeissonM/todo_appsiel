@@ -1,9 +1,22 @@
 {{ Form::open([ 'url' => 'ventas_pos_form_registro_ingresos_gastos','id'=>'form_registrar_ingresos_gastos','files' => true]) }}
+
+<?php 
+	
+	$movimiento = '';
+
+	if ($id_transaccion == 17) { // Pagos de tesorería
+		$movimiento = 'salida';
+	}
+
+	if ($id_transaccion == 8) { // Recaudo
+		$movimiento = 'entrada';
+	}
+?>
 	<div class="container-fluid">
 		<div class="form-group">
 			<label class="control-label col-sm-3" for="motivo_input">*Motivo:</label>
 			<div class="col-sm-9">
-				<input class="form-control text_input_sugerencias" id="motivo_input" data-url_busqueda="{{url('/')}}/teso_consultar_motivos" autocomplete="off" name="motivo_input" type="text">
+				<input class="form-control text_input_sugerencias" id="motivo_input" data-url_busqueda="{{url('/')}}/teso_consultar_motivos?movimiento={{$movimiento}}" autocomplete="off" name="motivo_input" type="text">
 				<input type="hidden" name="campo_motivos" id="combobox_motivos" required="required" value="">
 			</div>
 		</div>

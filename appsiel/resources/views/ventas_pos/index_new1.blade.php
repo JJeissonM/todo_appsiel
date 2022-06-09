@@ -44,12 +44,12 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
+
+			<input type="hidden" id="ids_facturas" name="ids_faturas">
 			<?php
 				$cant_cols = 3;
 				$i=$cant_cols;
 		      ?>
-
-			  <h1> y entonces </h1>
 
 			@foreach( $pdvs as $pdv )
 
@@ -59,7 +59,7 @@
 
 		        	<?php 
 		        		
-		        		$num_facturas = App\VentasPos\FacturaPos::where('pdv_id', $pdv->id)->where('estado', 'Pendiente')->count();
+		        		$num_facturas = App\VentasPos\FacturaPos::where('pdv_id', $pdv->id)->where('estado', 'Pendiente')->orderBy('id')->get()->pluck('id')->toArray();
 		        		
 		        		$fecha_primera_factura = date('Y-m-d');
 		        		$primera_factura = App\VentasPos\FacturaPos::where('pdv_id', $pdv->id)->where('estado', 'Pendiente')->first();
@@ -68,8 +68,6 @@
 		        			$fecha_primera_factura = $primera_factura->fecha;
 		        		}
 		        		$fecha_hoy = date('Y-m-d');
-
-
 
 		        		$apertura = App\VentasPos\AperturaEncabezado::where('pdv_id', $pdv->id)->get()->last();
 		        		$cierre = App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->get()->last();
@@ -82,10 +80,11 @@
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
-		        		$btn_acumular = '<button class="btn btn-xs btn-warning btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  > Acumular </button>';
+		        		$btn_acumular = '<button class="btn btn-xs btn-warning btn_acumular" data-pdv_id="'.$pdv->id.'" data-pdv_descripcion="'.$pdv->descripcion.'"  data-ids_facturas="'.json_encode($num_facturas).'" > Acumular </button>';
 
 		        		$btn_hacer_arqueo = '<a href="'.url( '/web/create' . '?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id='.$pdv->caja_default_id ) .'" class="btn btn-xs btn-info" id="btn_hacer_arqueo"> Hacer arqueo </a>';
 
+		        		//$btn_consultar_estado = '<button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="'.$pdv->id.'" data-lbl_ventana="Ingresos"> <i class="fa fa-btn fa-search"></i> Estado PDV </button>';
 		        		$btn_consultar_estado = '';
 
 		        		$color = 'red';
@@ -102,6 +101,8 @@
 		        			{
 		        				$fecha_desde = $apertura->created_at;
 		        			}
+		        			
+
 		        		}
 
 		        		if ( $pdv->estado == 'Cerrado' )
@@ -109,10 +110,9 @@
 		        			$btn_cerrar = '';
 		        			$btn_facturar = '';
 
-		        			if ($num_facturas == 0)
+		        			if (empty($num_facturas))
 		        			{
 			        			$btn_acumular = '';
-			        			//$btn_hacer_arqueo = '';
 		        			}
 
 		        			if ( !is_null( $cierre ) )
@@ -148,8 +148,8 @@
 											
 												<div>
 													<b> # facturas: </b>
-													<span class="badge">{{ $num_facturas }}</span>
-													@if( $num_facturas > 0 )
+													<span class="badge">{{ count($num_facturas) }}</span>
+													@if( !empty($num_facturas) )
 														<button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" class="btn_consultar_facturas" href="#" data-pdv_id="{{$pdv->id}}" data-lbl_ventana="Facturas de ventas" data-fecha_primera_factura="{{$fecha_primera_factura}}" data-fecha_hoy="{{$fecha_hoy}}" data-view="index"> Consultar </button>
 													@endif
 												</div>
@@ -191,6 +191,8 @@
 		          @endif
 
 			@endforeach
+
+
 		</div>
 	</div>
 
@@ -206,10 +208,12 @@
 		
 		var pdv_id;
 		var continuar = true;
+		var arr_ids_facturas,index;
 
 		$(document).ready(function(){
 
 			var btn_acumular;
+
 
 			$(".btn_acumular").click(function(event){
 
@@ -220,9 +224,60 @@
 		        $(".btn_edit_modal").hide();
 		        $(".btn_save_modal").hide();
 
-				btn_acumular = $(this);
+				var btn_acumular = $(this);
 
-		        validar_existencias().then( acumular ).then( contabilizar ).then(function() {
+				$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Validando Existencias... </h1>' );
+				pdv_id = btn_acumular.attr('data-pdv_id');
+		        var url_0 = "{{url('pos_factura_validar_existencias')}}" + "/" + pdv_id;
+
+				$("#ids_facturas").val($(this).attr('data-ids_facturas'));
+
+				$.get( url_0 )
+                .done(function( data ) {
+
+                    if ( data != 1 ) // Cuando falla la validacion. data = vista_html
+					{
+						$('#contenido_modal').html( '<h1 style="text-align:center;"> Validación de existencias: <i class="fa fa-remove"></i> </h1>' + data );
+
+						$("#ids_facturas").val('[]');
+						$(".btn_close_modal").show();
+					    $("#div_spin").hide();
+						continuar = false;
+					}else{
+						continuar = true;
+					}
+                })
+                .error(function(xhr, status, error){
+                    $('#contenido_modal').html( '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error en Validacion de existencias. </small> <br> Code: ' + xhr.status + '  <br> Status: ' + xhr.statusText + " - " + xhr.responseText + ' </h1>' );
+                });
+
+				if ( continuar )
+				{
+					// Paso la validacion de existencias
+					arr_ids_facturas = JSON.parse($("#ids_facturas").val());
+
+					console.log(arr_ids_facturas);
+
+					for (let index = 0; index < arr_ids_facturas.length; index++) {//arr_ids_facturas.length
+
+						$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i></h1>' );
+
+						const factura_id = arr_ids_facturas[index];
+						var restantes = arr_ids_facturas.length - index - 1;
+						acumular_una_factura(factura_id,restantes);						
+						
+						//acumular_factura(element);
+					}
+
+				}
+
+				async function acumular_una_factura(factura_id,restantes) {
+					const num = await acumular_factura(factura_id,restantes);
+
+					return num;
+				}
+
+		        /*validar_existencias().then( acumular ).then( contabilizar ).then(function() {
 
 		        	if ( !continuar )
 					{
@@ -236,10 +291,23 @@
 				}, function( error ) { //, data, textStatus, xhr
 				    $('#contenido_modal').html( error );
 		        	$(".btn_close_modal").fadeIn(1000);
-				});
+				});*/
 		    });
 
+			function acumular_factura(factura_id,restantes)
+			{
+				return new Promise(function(resolve, reject){
+					var url_1 = "{{url('pos_acumular_una_factura')}}" + "/" + factura_id;
 
+					$.get(url_1, function(data) {
+						$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i> <br> Acumulando facturas POS... <span id="contador_facturas" style="color=purple">' + restantes + '</span> facturas restantes.</h1>' );
+						resolve(data); 
+					});
+					
+				});
+			}
+
+			/*
 			function validar_existencias()
 			{
 				$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Validando Existencias... </h1>' );
@@ -260,7 +328,7 @@
 			    }, function( data, textStatus, xhr ) {
 			        return '<h1 style="text-align:center;">  <small style="color:red;"> <i class="fa fa-times-circle"></i> Error en Validacion de existencias. </small> <br> Code: ' + data.status + '  <br> Status: ' + textStatus + " - " + xhr + ' </h1>';
 			    });
-			}
+			}*/
 
 			function acumular()
 			{

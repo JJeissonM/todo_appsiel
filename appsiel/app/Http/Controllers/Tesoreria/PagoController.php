@@ -465,7 +465,7 @@ class PagoController extends TransaccionController
 
         $tr = '<tr id="linea_ingreso_default" class="linea_ingreso_default">
                     <td>
-                        '.Form::text( 'motivo_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'motivo_input', 'data-url_busqueda' => url( 'teso_consultar_motivos' ), 'autocomplete'  => 'off' ] ).'
+                        '.Form::text( 'motivo_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'motivo_input', 'data-url_busqueda' => url( 'teso_consultar_motivos' ).'?movimiento=salida', 'autocomplete'  => 'off' ] ).'
                         '.Form::hidden( 'campo_motivos', null, [ 'id' => 'combobox_motivos' ] ).'
                     </td>
                     <td>

@@ -148,9 +148,21 @@ class TesoreriaController extends TransaccionController
 
         $texto_busqueda_descripcion = '%'.Input::get('texto_busqueda').'%';
 
-        $datos = TesoMotivo::where('teso_motivos.estado','Activo')
-                            ->where('teso_motivos.core_empresa_id', Auth::user()->empresa_id)
-                            ->where('teso_motivos.'.$campo_busqueda, 'LIKE', $texto_busqueda)
+        $array_wheres = [
+            ['teso_motivos.estado','=','Activo'],
+            ['teso_motivos.core_empresa_id','=', Auth::user()->empresa_id],
+            ['teso_motivos.'.$campo_busqueda, 'LIKE', $texto_busqueda]
+        ];
+
+        if (Input::get('movimiento') == 'salida') {
+            $array_wheres = array_merge($array_wheres,[['teso_motivos.movimiento','=','salida']]);
+        }
+
+        if (Input::get('movimiento') == 'entrada') {
+            $array_wheres = array_merge($array_wheres,[['teso_motivos.movimiento','=','entrada']]);
+        }
+
+        $datos = TesoMotivo::where($array_wheres)
                             ->select(
                                         'teso_motivos.id',
                                         'teso_motivos.descripcion',

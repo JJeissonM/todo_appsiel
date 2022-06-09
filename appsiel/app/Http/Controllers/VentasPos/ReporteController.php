@@ -8,6 +8,7 @@ use App\Http\Requests;
 use Auth;
 use DB;
 use View;
+use Input;
 
 // Modelos
 use App\VentasPos\Pdv;
@@ -50,9 +51,11 @@ class ReporteController extends Controller
 
         $encabezados_documentos2 = FacturaPos::where( 'pdv_id', $pdv_id)->where( 'estado', 'Pendiente')->whereBetween( 'fecha', [$fecha_desde, $fecha_hasta] )->get();
 
+        $view = Input::get('view');
+
         //$this->resumen_por_medios_recaudos( $encabezados_documentos2 );
 
-        $tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_encabezados_documentos', compact( 'encabezados_documentos', 'pdv' ) )->render();
+        $tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_encabezados_documentos', compact( 'encabezados_documentos', 'pdv','view' ) )->render();
         
         return $tabla_encabezados_documentos;
 

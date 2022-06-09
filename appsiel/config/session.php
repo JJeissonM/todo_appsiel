@@ -28,8 +28,8 @@ return [
     | to immediately expire on the browser closing, set that option.
     |
     */
-    // 7200 minutos = 5 días
-    'lifetime' => 7200,
+    // 144.000 minutos = 100 días
+    'lifetime' => 144000,
 
     'expire_on_close' => false,
 

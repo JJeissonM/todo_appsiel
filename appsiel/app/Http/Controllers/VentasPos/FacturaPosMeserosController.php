@@ -69,7 +69,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvGrupo;
 
-class FacturaPosController extends TransaccionController
+class FacturaPosMeserosController extends TransaccionController
 {
     protected $doc_encabezado;
 
@@ -256,7 +256,7 @@ class FacturaPosController extends TransaccionController
 
         // Crear Registros del documento de ventas
         $request['creado_por'] = Auth::user()->email;
-        FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+        FacturaPosMeserosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         if ( !is_null( $pedido ) )
         {
@@ -602,9 +602,9 @@ class FacturaPosController extends TransaccionController
 
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($registro->lineas_registros);
 
-        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
+        //$cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
 
-        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
+        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias'))->render();
 
         //$total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
         $total_efectivo_recibido = 0;
@@ -708,7 +708,7 @@ class FacturaPosController extends TransaccionController
         // Crear nuevamente las líneas de registros
         $request['creado_por'] = Auth::user()->email;
         $request['modificado_por'] = Auth::user()->email;
-        FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+        FacturaPosMeserosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         return $doc_encabezado->consecutivo;
     }
@@ -912,24 +912,6 @@ class FacturaPosController extends TransaccionController
         return 1;
     }
 
-    public function acumular_una_factura($factura_id)
-    {
-        $until = random_int(100000,1000000);
-        $k=0;
-        for ($i=0; $i < $until; $i++) { 
-            $k+=$i;
-        }
-        return $k;
-
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accumulate_one_invoice($factura_id);
-
-        return 1;
-    }
-
-    
-
     /*
         CONTABILIZAR
         => Genera Movimiento Contable para:
@@ -947,15 +929,6 @@ class FacturaPosController extends TransaccionController
         }
 
         $obj_acumm_serv->store_accounting();
-
-        return 1;
-    }
-
-    public function contabilizar_una_factura($factura_id)
-    {
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accounting_one_invoice($factura_id);
 
         return 1;
     }
@@ -982,7 +955,7 @@ class FacturaPosController extends TransaccionController
             'id_modelo' => $id_modelo
         ];
 
-        return View::make('ventas_pos.form_registro_ingresos_gastos', compact('pdv', 'campos','id_transaccion'))->render();
+        return View::make('ventas_pos.form_registro_ingresos_gastos', compact('pdv', 'campos'))->render();
     }
 
     /*
