@@ -8,7 +8,6 @@
 	{{ Form::open(['url'=> $reporte->url_form_action,'id'=>'form_consulta']) }}
 
 		@foreach( $lista_campos as $campo)
-
 			<?php 
 				$requerido = '';
 				if ( $campo['requerido'] )

@@ -976,6 +976,7 @@ class ReporteController extends TesoreriaController
 
         $teso_caja_id = $request->teso_caja_id;
         $teso_cuenta_bancaria_id = $request->teso_cuenta_bancaria_id;
+        $teso_motivo_id = $request->teso_motivo_id;
 
         if ( $request->teso_caja_id == '')
         {
@@ -987,12 +988,17 @@ class ReporteController extends TesoreriaController
             $teso_cuenta_bancaria_id = 0;
         }
 
+        if ( $request->teso_motivo_id == '')
+        {
+            $teso_motivo_id = 0;
+        }
+
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
 
         $saldo_inicial = TesoMovimiento::get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde );
 
-        $movimiento = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta );
+        $movimiento = TesoMovimiento::get_movimiento2( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta,null, $teso_motivo_id );
         
         $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria') )->render();
 

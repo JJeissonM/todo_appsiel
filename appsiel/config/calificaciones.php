@@ -13,15 +13,7 @@
   'estudiante_activar_foros_discucion' => 'No',
   'activar_aula_virtual' => '1',
   'url_correo_institucional' => '',
-  'periodos_activos_visualizar_calificaciones' => 
-  array (
-    0 => '',
-    1 => '1',
-    2 => '2',
-    3 => '3',
-    4 => '4',
-    5 => '7',
-  ),
+  'periodos_activos_visualizar_calificaciones' => [],
   'detallar_curso_grado' => 'grado',
   'url_id_modelo' => '0',
 ) ;

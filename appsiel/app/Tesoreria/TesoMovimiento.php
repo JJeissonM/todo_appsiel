@@ -107,8 +107,13 @@ class TesoMovimiento extends Model
     public function get_datos_referencia_tercero()
     {
         $codigo_referencia_tercero = json_decode($this->codigo_referencia_tercero,true);
-
+        
         if ( is_null($codigo_referencia_tercero) )
+        {
+            return null;
+        }
+        
+        if ( !isset($codigo_referencia_tercero['ruta_modelo']) )
         {
             return null;
         }
@@ -322,6 +327,55 @@ class TesoMovimiento extends Model
         if ( $teso_cuenta_bancaria_id != 0 ) 
         {
             $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+        }
+
+        return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
+                            ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
+                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->where( $array_wheres )
+                            ->select(
+                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
+                                        'teso_motivos.descripcion AS motivo_descripcion',
+                                        'teso_movimientos.fecha',
+                                        'teso_movimientos.valor_movimiento',
+                                        'teso_movimientos.teso_motivo_id',
+                                        'teso_movimientos.descripcion',
+                                        'teso_movimientos.codigo_referencia_tercero',
+                                        'teso_movimientos.core_tipo_transaccion_id',
+                                        'teso_movimientos.core_tipo_doc_app_id',
+                                        'teso_movimientos.consecutivo',
+                                        'teso_movimientos.teso_caja_id',
+                                        'teso_movimientos.teso_cuenta_bancaria_id',
+                                        'core_terceros.descripcion as tercero_descripcion' )
+                            ->orderBy('teso_movimientos.fecha')
+                            ->orderBy('teso_movimientos.created_at')
+                            ->get();
+    }
+
+    public static function get_movimiento2( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, $tipo_movimiento, $teso_motivo_id )
+    {
+
+        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
+        
+        if ( !is_null($tipo_movimiento) ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_motivos.movimiento' => $tipo_movimiento ]);
+        }
+        
+        if ( $teso_caja_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
+        }
+        
+        if ( $teso_cuenta_bancaria_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+        }
+        
+        if ( $teso_motivo_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_motivo_id' => (int) $teso_motivo_id ]);
         }
 
         return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
