@@ -90,13 +90,12 @@ class ReporteController extends Controller
         $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->toArray() );
         $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
         
+        $stock_serv = new StockAmountService();
         $productos = [];
         $i = 0;
         foreach ( $lista_items as $key => $item_id )
         {
             $item = InvProducto::find( $item_id );
-
-            $stock_serv = new StockAmountService();
 
             $total_cantidad_item = 0;
             $total_costo_item = 0;

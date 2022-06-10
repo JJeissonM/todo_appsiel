@@ -3,6 +3,7 @@
 namespace App\Inventarios\Services;
 
 use App\Inventarios\InvMovimiento;
+use App\VentasPos\Movimiento;
 
 class FiltroMovimientos
 {
@@ -47,17 +48,30 @@ class FiltroMovimientos
 		}
 	}
 
-	public function aplicar_filtros( $fecha_ini, $fecha_fin, $bodega_id, $inv_grupo_id, $item_id )
+	public function aplicar_filtros( $fecha_ini, $fecha_fin, $inv_bodega_id, $inv_grupo_id, $item_id )
 	{
-		$this->filtro_entre_fechas( $fecha_ini, $fecha_fin );
-        
-        $this->filtro_por_bodega_id( $bodega_id );
-        
-        $this->filtro_por_inv_grupo_id( $inv_grupo_id );
-        
-        $this->filtro_por_item_id( $item_id );
+        $array_wheres = [ ['inv_movimientos.fecha' ,'<=', $fecha_fin] ];
 
-		return $this->get_movimiento_filtrado()->get();
+        if ( $inv_grupo_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $inv_grupo_id] );
+        }
+
+        if ( $inv_bodega_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id] );
+        }
+
+        if ( $item_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_movimientos.item_id' => $item_id] );
+        }
+		
+
+		return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+					->where($array_wheres)
+					->select('inv_movimientos.*')
+					->get();
 	}
 
 	public function get_movimiento_filtrado()
