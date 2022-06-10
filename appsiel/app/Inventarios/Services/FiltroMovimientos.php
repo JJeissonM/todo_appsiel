@@ -64,9 +64,8 @@ class FiltroMovimientos
 
         if ( $item_id != '' )
         {
-            $array_wheres = array_merge( $array_wheres, ['inv_movimientos.item_id' => $item_id] );
-        }
-		
+            $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_producto_id' => $item_id] );
+        }	
 
 		return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
 					->where($array_wheres)
