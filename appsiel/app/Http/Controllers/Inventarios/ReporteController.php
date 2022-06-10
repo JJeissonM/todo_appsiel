@@ -89,13 +89,16 @@ class ReporteController extends Controller
     {
         $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->toArray() );
         $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
+
+        $bodegas = InvBodega::all();
+        $items = InvProducto::all();
         
         $stock_serv = new StockAmountService();
         $productos = [];
         $i = 0;
         foreach ( $lista_items as $key => $item_id )
         {
-            $item = InvProducto::find( $item_id );
+            $item = $items->where( 'id',$item_id )->first();
 
             $total_cantidad_item = 0;
             $total_costo_item = 0;
@@ -105,16 +108,16 @@ class ReporteController extends Controller
                 $productos[$i]['descripcion'] = $item->descripcion;
                 $productos[$i]['unidad_medida1'] = $item->unidad_medida1;
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
-                $bodega = InvBodega::find( $bodega_id );
+                $bodega = $bodegas->where( 'id',$bodega_id )->first();
                 $productos[$i]['bodega'] = $bodega->descripcion;
 
                 $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
 
-                $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
-
                 if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
                 {
                     $productos[$i]['Costo'] = $item->get_costo_promedio( 0 ) * $productos[$i]['Cantidad'];
+                }else{
+                    $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
                 }
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];
