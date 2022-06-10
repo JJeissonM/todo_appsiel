@@ -890,7 +890,6 @@ class FacturaPosController extends TransaccionController
 
     }
 
-
     /*
         ACUMULAR
         => Hacer desarme automático de productos
@@ -914,13 +913,6 @@ class FacturaPosController extends TransaccionController
 
     public function acumular_una_factura($factura_id)
     {
-        $until = random_int(100000,1000000);
-        $k=0;
-        for ($i=0; $i < $until; $i++) { 
-            $k+=$i;
-        }
-        return $k;
-
         $obj_acumm_serv = new AccumulationService( 0 );
 
         $obj_acumm_serv->accumulate_one_invoice($factura_id);

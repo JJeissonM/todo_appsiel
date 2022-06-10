@@ -26,6 +26,7 @@ use App\Inventarios\MinStock;
 use App\Inventarios\Services\FiltroMovimientos;
 
 use App\Compras\ComprasMovimiento;
+use App\Inventarios\Services\StockAmountService;
 
 class ReporteController extends Controller
 {
@@ -86,16 +87,16 @@ class ReporteController extends Controller
 
     public function get_vista_inv_movimiento_corte( $movin_filtrado, $mostrar_costo, $mostrar_cantidad, $fecha_corte )
     {
-
         $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->toArray() );
         $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
-        //dd($lista_items, $lista_bodegas);
         
         $productos = [];
         $i = 0;
         foreach ( $lista_items as $key => $item_id )
         {
             $item = InvProducto::find( $item_id );
+
+            $stock_serv = new StockAmountService();
 
             $total_cantidad_item = 0;
             $total_costo_item = 0;
@@ -108,9 +109,9 @@ class ReporteController extends Controller
                 $bodega = InvBodega::find( $bodega_id );
                 $productos[$i]['bodega'] = $bodega->descripcion;
 
-                $productos[$i]['Cantidad'] = $movin_filtrado->where('inv_producto_id',$item_id)->where('inv_bodega_id',$bodega_id)->sum('cantidad');
+                $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
 
-                $productos[$i]['Costo'] = $movin_filtrado->where('inv_producto_id',$item_id)->where('inv_bodega_id',$bodega_id)->sum('costo_total');
+                $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
 
                 if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
                 {
@@ -147,8 +148,6 @@ class ReporteController extends Controller
                 $bodega = "VARIAS";
                 break;
         }
-
-        //dd( $bodega );
 
         $view_1 = View::make('inventarios.incluir.existencias_encabezado',compact('bodega','fecha_corte'));
 

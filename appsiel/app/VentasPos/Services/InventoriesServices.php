@@ -38,10 +38,16 @@ class InventoriesServices
 	{
 		$obj = new ValidacionExistencias( $bodega_id, $fecha_corte );
         $lista_items_existencia_negativa = $obj->lista_items_con_existencias_negativas( $lista_items );
+        
         $items = [];
         foreach ($lista_items_existencia_negativa as $linea)
         {
         	$item = InvProducto::find($linea->item_id);
+
+        	if ( $item == null )
+        	{
+        		continue;
+        	}
 
         	if ( $item->tipo == 'servicio' )
         	{
