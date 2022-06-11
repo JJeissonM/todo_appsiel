@@ -26,6 +26,7 @@ use App\Inventarios\MinStock;
 use App\Inventarios\Services\FiltroMovimientos;
 
 use App\Compras\ComprasMovimiento;
+use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;
 
 class ReporteController extends Controller
@@ -279,8 +280,6 @@ class ReporteController extends Controller
 
         return $view;
     }
-
-
     
     // REPORTE STOCK MINIMO
     public function inv_stock_minimo()
@@ -307,7 +306,6 @@ class ReporteController extends Controller
         return view('inventarios.repo_stock_minimo',compact('bodegas','tabla','miga_pan'));
     }
 
-
     public function inv_etiquetas_codigos_barra(Request $request)
     {
         $grupo_inventario_id = $request->grupo_inventario_id;
@@ -326,7 +324,6 @@ class ReporteController extends Controller
         return $vista;
 
     }
-
 
     public function balance_inventarios(Request $request)
     {
@@ -351,7 +348,6 @@ class ReporteController extends Controller
         return $vista;
 
     }
-
 
     public function inv_existencias_corte(Request $request)
     {
@@ -384,8 +380,23 @@ class ReporteController extends Controller
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
         return $vista;
-
     }
 
+    public function movements_by_purpose(Request $request)
+    {
+        $init_date = $request->fecha_desde;
+        $end_date = $request->fecha_hasta;
+        $transaction_type_id = $request->transaction_type_id;
+        $purpose_id = $request->purpose_id;
+
+        $movements = (new MovementService())->movements_by_purpose($init_date,$end_date,$transaction_type_id,$purpose_id);
+        //dd($movements);
+        $vista = View::make( 'inventarios.incluir.movements_by_purposes', compact('movements') )->render();
+        
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
+
+        return $vista;
+   
+    }
     
 }

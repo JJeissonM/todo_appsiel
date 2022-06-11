@@ -30,14 +30,8 @@
                                         <div class="row">
                                             <div class="col-xs-12 col-md-6">
                                                 <div class="form-group">
-                                                    <label for="">*Nombres: </label>
-                                                    <input type="text" name="nombre" class="form-control" placeholder="nombres" required>
-                                                </div>
-                                            </div>
-                                            <div class="col-xs-12 col-md-6">
-                                                <div class="form-group">
-                                                    <label for="">*Apellidos: </label>
-                                                    <input type="text" name="apellido" class="form-control" placeholder="apellidos" required>
+                                                    <label for="">Nombre: </label>
+                                                    <input type="text" name="descripcion" class="form-control" placeholder="nombres" required>
                                                 </div>
                                             </div>
                                             <div class="col-xs-12 col-md-6">
@@ -107,47 +101,47 @@
     <script src="{{asset('assets/tienda/js/categories.js')}}"></script>
     <script type="text/javascript">
 
-$(document).on('blur', '#email', validarEmail);
-$(document).on('keyup', '#email', validarEmail);
+        $(document).on('blur', '#email', validarEmail);
+        $(document).on('keyup', '#email', validarEmail);
 
-$('#errormail').css({'display':'none'})
+        $('#errormail').css({'display':'none'})
 
-function validarEmail () {
-		var documento = $("#email").val();
+        function validarEmail () {
+            var documento = $("#email").val();
 
-		/* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
-		url = "{{ url('core/validar_numero_identificacion/') }}";*/
-        
+            /* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
+            url = "{{ url('core/validar_numero_identificacion/') }}";*/
+            
 
-        url = '../../ecommerce/validar_email/'; // crear
-		
+            url = '../../ecommerce/validar_email/'; // crear
+            
 
-		$.get(url + documento, function (datos) {
-            console.log(datos);
-			if (datos != '') {
-				if (datos == documento) {
-					// No hay problema
-                    $('#errormail').css({'display':'block'})
-					//alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");  
-                    $('#btn_crear_cuenta').attr('type','button')
-                    console.log('false')  ;  
-                    return false;   
-                               
-				}else{
+            $.get(url + documento, function (datos) {
+                console.log(datos);
+                if (datos != '') {
+                    if (datos == documento) {
+                        // No hay problema
+                        $('#errormail').css({'display':'block'})
+                        //alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");  
+                        $('#btn_crear_cuenta').attr('type','button')
+                        console.log('false')  ;  
+                        return false;   
+                                
+                    }else{
+                        $('#errormail').css({'display':'none'})
+                        $('#btn_crear_cuenta').attr('type','submit')
+                        console.log('true')
+                        return true;
+                    }
+                }else{
                     $('#errormail').css({'display':'none'})
                     $('#btn_crear_cuenta').attr('type','submit')
                     console.log('true')
                     return true;
                 }
-			}else{
-                $('#errormail').css({'display':'none'})
-                $('#btn_crear_cuenta').attr('type','submit')
-                console.log('true')
-                return true;
-            }
-		});
-        
-	};
+            });
+            
+        };
 
     </script>
 @endsection

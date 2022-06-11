@@ -31,17 +31,17 @@ class InvMovimiento extends Model
     
     public function producto()
     {
-        return $this->belongsTo(InvProducto::class);
+        return $this->belongsTo(InvProducto::class,'inv_producto_id');
     }
     
     public function motivo()
     {
-        return $this->belongsTo(InvMotivo::class);
+        return $this->belongsTo(InvMotivo::class,'inv_motivo_id');
     }
     
     public function bodega()
     {
-        return $this->belongsTo(InvBodega::class);
+        return $this->belongsTo(InvBodega::class,'inv_bodega_id');
     }
     
     public function tercero()
@@ -52,8 +52,22 @@ class InvMovimiento extends Model
     public function get_label_documento()
     {
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
-    } 
+    }
 
+    public function enlace_show_documento()
+    {
+        $app_id = 8;
+        
+        $document_header_id = InvDocEncabezado::where([
+            ['core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
+            ['consecutivo','=',$this->consecutivo]
+        ])->get()->first()->id;
+
+        $enlace = '<a href="' . url( 'inventarios/' . $document_header_id . '?id=' . $app_id . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+
+        return $enlace;
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -175,8 +189,6 @@ class InvMovimiento extends Model
         return $registros;
     }
 
-
-
     public static function get_movimiento_corte( $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id)
     {
         
@@ -231,7 +243,6 @@ class InvMovimiento extends Model
                                 ->toArray();
     }
 
-
     public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial )
     {
         $sql_saldo_inicial = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
@@ -245,8 +256,6 @@ class InvMovimiento extends Model
                     ->toArray();    
         return $sql_saldo_inicial[0];
     }
-
-
 
     public static function get_saldos_iniciales_items( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial )
     {
@@ -276,8 +285,6 @@ class InvMovimiento extends Model
                             ->groupBy( 'inv_movimientos.inv_producto_id' )
                             ->get();
     }
-
-
 
     public static function get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento )
     {
@@ -314,7 +321,6 @@ class InvMovimiento extends Model
                             ->groupBy( 'inv_movimientos.inv_producto_id' )
                             ->get();
     }
-
 
     public static function get_movimiento($id_producto, $id_bodega, $fecha_inicial, $fecha_final )
     {
@@ -377,8 +383,6 @@ class InvMovimiento extends Model
                             ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->get();
     }
-
-
 
     public static function get_existencia_producto( $producto_id, $bodega_id, $fecha_corte )
     {

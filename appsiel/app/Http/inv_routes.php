@@ -58,6 +58,8 @@ Route::post('inv_balance_inventarios', 'Inventarios\ReporteController@balance_in
 Route::post('inv_etiquetas_codigos_barra', 'Inventarios\ReporteController@inv_etiquetas_codigos_barra');
 Route::post('inv_existencias_corte', 'Inventarios\ReporteController@inv_existencias_corte');
 
+Route::post('inv_movements_by_purpose', 'Inventarios\ReporteController@movements_by_purpose');
+
 
 // inv_consultar_existencias desde el index para cada bodega
 Route::get('inv_consultar_existencias/{bodega_id}', 'Inventarios\ReporteController@inv_consultar_existencias');
