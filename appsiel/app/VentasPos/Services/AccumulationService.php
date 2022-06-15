@@ -2,6 +2,7 @@
 
 namespace App\VentasPos\Services;
 
+use App\Contabilidad\ContabMovimiento;
 use Illuminate\Http\Request;
 
 use Auth;
@@ -133,9 +134,8 @@ class AccumulationService
     {
         $invoice = FacturaPos::find($invoice_id);
 
-        if( $invoice->estado == 'Acumulado' )
+        if( !$this->is_pending($invoice) )
         {
-            // La factura se pudo haber acumulado (y no Contabilizado) en un proceso anterior que se haya "caido"
             return 0;
         }
 
@@ -193,6 +193,39 @@ class AccumulationService
         $this->accounting_one_invoice($invoice_id);
 
         return 1;
+    }
+
+    public function is_pending($invoice)
+    {
+        if( $invoice->estado != 'Pendiente' )
+        {
+            // La factura se pudo haber acumulado (y no Contabilizado) en un proceso anterior que se haya "caido"
+            return false;
+        }
+        
+        $sales_movement = VtasMovimiento::where([
+            ['core_tipo_transaccion_id','=',$invoice->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$invoice->core_tipo_doc_app_id],
+            ['consecutivo','=',$invoice->consecutivo]
+        ])->get()->first();
+
+        if( $sales_movement != null )
+        {
+            return false;
+        }
+        
+        $contab_movement = ContabMovimiento::where([
+            ['core_tipo_transaccion_id','=',$invoice->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$invoice->core_tipo_doc_app_id],
+            ['consecutivo','=',$invoice->consecutivo]
+        ])->get()->first();
+
+        if( $contab_movement != null )
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     public function crear_registro_pago( $forma_pago, $datos, $total_documento )
