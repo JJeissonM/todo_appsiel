@@ -308,6 +308,12 @@ class InventarioController extends TransaccionController
         $cantidad_registros = count($lineas_registros);
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
+            $item = InvProducto::find($lineas_registros[$i]->inv_producto_id);
+
+            if ($item == null) {
+                continue;
+            }
+            
             $costo_unitario = (float) $lineas_registros[$i]->costo_unitario;
             $cantidad = (float) $lineas_registros[$i]->cantidad;
             $costo_total = (float) $lineas_registros[$i]->costo_total;
@@ -341,7 +347,7 @@ class InventarioController extends TransaccionController
                     $linea_datos
             );
 
-            $tipo_producto = InvProducto::find($lineas_registros[$i]->inv_producto_id)->tipo;
+            $tipo_producto = $item->tipo;
 
             // Solo los productos generan movimiento de inventario y contabilización.
             if ($tipo_producto == 'servicio' )

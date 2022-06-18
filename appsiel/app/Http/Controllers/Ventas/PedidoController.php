@@ -32,7 +32,7 @@ use App\Ventas\VtasDocRegistro;
 
 use App\Contabilidad\Impuesto;
 use App\Ventas\ListaDctoDetalle;
-
+use App\Ventas\Vendedor;
 
 class PedidoController extends TransaccionController
 {
@@ -85,6 +85,10 @@ class PedidoController extends TransaccionController
 
         $lineas_registros = json_decode($request->lineas_registros);
         $request['estado'] = "Pendiente";
+
+        if (!isset($request['vendedor_id'])) {
+            $request['vendedor_id'] = Vendedor::get()->first()->id;
+        }
 
         $empresa = Empresa::all()->first();
         
