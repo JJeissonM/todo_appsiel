@@ -170,6 +170,43 @@ class NominaController extends TransaccionController
         } // Fin Por cada concepto
     }
 
+    
+    public function liquidacion_sp($id)
+    {
+        $this->registros_procesados = 0;
+
+        $usuario = Auth::user();
+
+        $core_empresa_id = $usuario->empresa_id;
+
+        $documento = NomDocEncabezado::find($id);
+
+        // Se obtienen los Empleados del documento
+        $empleados_documento = $documento->empleados;
+
+        /**
+         * 10: Fondo de solidaridad pensional
+         * 12: Salud Obligatoria
+         * 13: Pensión Obligatoria
+         */
+        $array_ids_modos_liquidacion_automaticos = [ 10, 12, 13];
+        
+        // Guardar los valores para cada empleado 
+        foreach ( $empleados_documento as $empleado ) 
+        {
+            $cant = count( $array_ids_modos_liquidacion_automaticos );
+
+            for ( $i=0; $i < $cant; $i++ ) 
+            {                
+                $this->liquidar_automaticos_empleado( $array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
+            }
+        }
+
+        $this->actualizar_totales_documento($id);
+
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+    }
+
     public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $registro, $usuario)
     {
         NomDocRegistro::create(

@@ -137,6 +137,7 @@ class Vacaciones implements Estrategia
         }
 
         $this->novedad_id = $programacion_vacaciones->id;
+        
         // El registro en el libro de vacaciones se creó al crear la programación de la vacación 
         $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();
 

@@ -34,6 +34,8 @@
 						[ 
 							['link' => 'nomina/liquidacion/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
 							'etiqueta' => 'Registros automáticos (todo)'],
+							['link' => 'nomina/liquidacion_sp/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
+							'etiqueta' => 'Solo salud y pensión'],
 							['link' => 'nom_liquidar_prima_antiguedad/'.$encabezado_doc_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&id_transaccion='. Input::get('id_transaccion'), 
 							'etiqueta' => 'Primas de antigüedad']
 						] ) }}

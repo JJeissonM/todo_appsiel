@@ -1172,7 +1172,6 @@ class FacturaPosController extends TransaccionController
 
         $numero_linea = count($pedido->lineas_registros) + 1;
 
-
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
         $motivos = ['10-salida' => 'Ventas POS'];

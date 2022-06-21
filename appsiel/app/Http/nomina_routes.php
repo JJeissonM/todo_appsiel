@@ -19,6 +19,7 @@ Route::post('nom_guardar_asignacion', 'Nomina\NominaController@guardar_asignacio
 
 // Documentos de nómina
 Route::get('nomina/liquidacion/{id}', 'Nomina\NominaController@liquidacion');
+Route::get('nomina/liquidacion_sp/{id}', 'Nomina\NominaController@liquidacion_sp');
 Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_liquidacion');
 Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
 
