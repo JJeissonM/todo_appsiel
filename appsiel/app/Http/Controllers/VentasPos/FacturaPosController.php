@@ -260,14 +260,21 @@ class FacturaPosController extends TransaccionController
 
         if ( !is_null( $pedido ) )
         {
-            $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+            if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
+                $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
-            foreach ($todos_los_pedidos as $un_pedido) {
-                $un_pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
-                $un_pedido->estado = 'Facturado';
-                $un_pedido->save(); 
-                
-                self::actualizar_cantidades_pendientes( $un_pedido, 'restar' );
+                foreach ($todos_los_pedidos as $un_pedido) {
+                    $un_pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
+                    $un_pedido->estado = 'Facturado';
+                    $un_pedido->save(); 
+                    
+                    self::actualizar_cantidades_pendientes( $un_pedido, 'restar' );
+                }
+            }else{
+                $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
+                $pedido->estado = 'Facturado';
+                $pedido->save();
+                self::actualizar_cantidades_pendientes( $pedido, 'restar' );
             }
         }
 
@@ -738,14 +745,22 @@ class FacturaPosController extends TransaccionController
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( !is_null($pedido) )
         {
-            $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+            if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
+                $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
-            foreach ($todos_los_pedidos as $un_pedido) {
-                $un_pedido->estado = "Pendiente";
-                $un_pedido->ventas_doc_relacionado_id = 0;
-                $un_pedido->save();
+                foreach ($todos_los_pedidos as $un_pedido) {
+                    $un_pedido->estado = "Pendiente";
+                    $un_pedido->ventas_doc_relacionado_id = 0;
+                    $un_pedido->save();
 
-                self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+                    self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+                }
+            }else{
+                $pedido->estado = "Pendiente";
+                $pedido->ventas_doc_relacionado_id = 0;
+                $pedido->save();
+
+                self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
             }                
         }
 
@@ -827,14 +842,22 @@ class FacturaPosController extends TransaccionController
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( !is_null($pedido) )
         {
-            $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+            if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
+                $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
-            foreach ($todos_los_pedidos as $un_pedido) {
-                $un_pedido->estado = "Pendiente";
-                $un_pedido->ventas_doc_relacionado_id = 0;
-                $un_pedido->save();
+                foreach ($todos_los_pedidos as $un_pedido) {
+                    $un_pedido->estado = "Pendiente";
+                    $un_pedido->ventas_doc_relacionado_id = 0;
+                    $un_pedido->save();
 
-                self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+                    self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+                }
+            }else{
+                $pedido->estado = "Pendiente";
+                $pedido->ventas_doc_relacionado_id = 0;
+                $pedido->save();
+
+                self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
             }
         }
 
@@ -1258,10 +1281,14 @@ class FacturaPosController extends TransaccionController
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
 
         $redondear_centena = config('ventas_pos.redondear_centena');
+        
+        if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
+            $todas_las_lineas_registros = $this->unificar_lineas_registros_pedidos($pedido);
 
-        $todas_las_lineas_registros = $this->unificar_lineas_registros_pedidos($pedido);
-
-        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($todas_las_lineas_registros);
+            $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($todas_las_lineas_registros);
+        }else{
+            $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($pedido->lineas_registros);
+        }
 
         $valor_subtotal = 0;
         $valor_descuento = 0;

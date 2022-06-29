@@ -16,7 +16,6 @@ $(document).ready(function () {
     {
         reset_efectivo_recibido();
         $('#btn_nuevo').show();
-        alert('edit');
         //$('#efectivo_recibido').attr( 'readonly', 'readonly');
     }
 

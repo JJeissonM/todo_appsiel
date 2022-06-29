@@ -133,6 +133,31 @@
 
 				</div>
 
+				<h4> Parámetros de Pedidos  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$agrupar_pedidos_por_cliente = '0';
+								if( isset($parametros['agrupar_pedidos_por_cliente'] ) )
+								{
+									$agrupar_pedidos_por_cliente = $parametros['agrupar_pedidos_por_cliente'];
+								}
+							?>
+							{{ Form::bsSelect('agrupar_pedidos_por_cliente', $agrupar_pedidos_por_cliente, 'Agrupar todos los pedidos del mismo cliente para facturar', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

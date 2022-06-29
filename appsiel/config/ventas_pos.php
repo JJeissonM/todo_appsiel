@@ -7,5 +7,6 @@
   'redondear_centena' => '1',
   'permite_facturacion_con_archivo_plano' => '0',
   'validar_existencias_al_acumular' => '0',
+  'agrupar_pedidos_por_cliente' => '1',
   'url_id_modelo' => '0',
 ) ;
