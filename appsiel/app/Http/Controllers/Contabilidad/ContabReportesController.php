@@ -219,6 +219,14 @@ class ContabReportesController extends Controller
     */
     public function contab_auxiliar_por_cuenta()
     {
+        $opciones = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
+
+        $grupo_cuentas[''] = '';
+        foreach ($opciones as $opcion) {
+            $grupo_cuentas[$opcion->id] = $opcion->descripcion;
+        }
+
+        
         $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
         $cuentas[''] = '';
         foreach ($registros as $fila) {
@@ -250,16 +258,22 @@ class ContabReportesController extends Controller
                 ['url'=>'NO','etiqueta'=>'Auxiliar por cuenta']
             ];
 
-        return view('contabilidad.auxiliar_por_cuenta', compact('cuentas','miga_pan','terceros','propiedades') );      
+        return view('contabilidad.auxiliar_por_cuenta', compact('cuentas','miga_pan','terceros','grupo_cuentas') );      
     }
 
     public function contab_ajax_auxiliar_por_cuenta(Request $request)
     {
+        $grupo_cuenta_id = $request->grupo_cuenta_id;
         $contab_cuenta_id = $request->contab_cuenta_id;
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
 
         $core_tercero_id = $request->core_tercero_id;
+
+        if ( $grupo_cuenta_id == '' )
+        {
+            $grupo_cuenta_id = null;
+        }
 
         if ( $contab_cuenta_id == '' )
         {
@@ -271,30 +285,16 @@ class ContabReportesController extends Controller
             $core_tercero_id = null;
         }
 
-        if ( is_null($contab_cuenta_id ) && is_null( $core_tercero_id ) )
+        if ( is_null($contab_cuenta_id ) && is_null( $core_tercero_id ) && is_null( $grupo_cuenta_id ))
         {
-            return '<h1>Debe ingresar al menos una Cuenta o un Tercero</h1>';
+            return '<h1>Debe ingresar al menos un Grupo de cuentas, Cuenta o Tercero</h1>';
         }
 
-        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2( $fecha_desde, $contab_cuenta_id, $core_tercero_id );
+        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2( $fecha_desde, $contab_cuenta_id, $core_tercero_id,$grupo_cuenta_id );
 
-        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id );
+        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id );
 
         return View::make( 'contabilidad.incluir.tabla_movimiento_contable', compact( 'movimiento_contable','fecha_desde', 'saldo_inicial' ) )->render();
-
-        // 
-        $total_debito = 0;
-        $total_credito = 0;
-        $saldo = 0;
-        $j = 0;
-        $i = 0;
-
-        // OJO, esto es para una sola cuenta
-        $cuenta = ContabCuenta::where( 'codigo', $request->contab_cuenta_id )->get()[0];
-
-        $tabla2 = '<h3>Cuenta: '.$cuenta->codigo.' '.$cuenta->descripcion.'</h3>';
-
-        return $tabla2;
     }
 
     public function contab_pdf_estados_de_cuentas()

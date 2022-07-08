@@ -8,8 +8,7 @@
 	{{ Form::bsMigaPan($miga_pan) }}
 
 	<div class="row">
-		<div class="col-md-10 col-md-offset-1">
-
+		<div class="col-md-12">
 			
 			{{ Form::open(['url'=>'contab_ajax_auxiliar_por_cuenta','id'=>'form_consulta']) }}
 				<div class="row">
@@ -21,12 +20,17 @@
 						{{ Form::label('fecha_hasta','Fecha final') }}
 						{{ Form::date('fecha_hasta',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_hasta']) }}
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
+						{{ Form::label('grupo_cuenta_id','Grupo de cuentas') }}
+						<br/>
+						{{ Form::select('grupo_cuenta_id',$grupo_cuentas,null,['class'=>'combobox','id'=>'grupo_cuenta_id']) }}
+					</div>
+					<div class="col-sm-2">
 						{{ Form::label('contab_cuenta_id','Cuenta') }}
 						<br/>
 						{{ Form::select('contab_cuenta_id',$cuentas,null,['class'=>'combobox','id'=>'contab_cuenta_id']) }}
 					</div>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						{{ Form::label('core_tercero_id','Tercero') }}
 						<br/>
 						{{ Form::select('core_tercero_id',$terceros,null,['class'=>'combobox','id'=>'core_terecero_id']) }}

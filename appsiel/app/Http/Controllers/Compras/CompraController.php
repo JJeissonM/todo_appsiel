@@ -93,9 +93,11 @@ class CompraController extends TransaccionController
      */
     public function store(Request $request)
     {
+        
+        $lineas_registros_originales = json_decode( $request->all()['lineas_registros'] );
         $registros_medio_pago = new RegistrosMediosPago;
-
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );
+        
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros_originales ) );
 
         // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
         // WARNING. HECHO MANUALMENTE
@@ -166,6 +168,21 @@ class CompraController extends TransaccionController
         return true;
     }
 
+
+    public static function get_total_documento_desde_lineas_registros( $lineas_registros )
+    {
+        $total_documento = 0;
+        
+        $cantidad_registros = count( $lineas_registros );
+        
+        $entrada_almacen_id = '';
+        $primera = true;
+        for ($i=0; $i < $cantidad_registros ; $i++)
+        {
+            $total_documento += (float)$lineas_registros[$i]->precio_total;
+        }
+        return $total_documento;
+    }
 
     // Se crean los registros con base en los registros de las entradas de almacén
     public static function crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros )

@@ -52,6 +52,7 @@ class AccountingServices
                             ->where('core_tipo_transaccion_id', $document_head->core_tipo_transaccion_id)
                             ->where('core_tipo_doc_app_id', $document_head->core_tipo_doc_app_id)
                             ->where('consecutivo', $document_head->consecutivo)
+                            ->where('core_tercero_id', $document_head->core_tercero_id)
                             ->get()->first()->id;
     }
 
@@ -249,6 +250,7 @@ class AccountingServices
                             ->where('core_tipo_transaccion_id', $linea_abono_cxc->core_tipo_transaccion_id)
                             ->where('core_tipo_doc_app_id', $linea_abono_cxc->core_tipo_doc_app_id)
                             ->where('consecutivo', $linea_abono_cxc->consecutivo)
+                            ->where('core_tercero_id', $linea_abono_cxc->core_tercero_id)
                             ->get()
                             ->first();
 
@@ -261,6 +263,7 @@ class AccountingServices
                                 ->where('core_tipo_transaccion_id', $linea_abono_cxc->core_tipo_transaccion_id)
                                 ->where('core_tipo_doc_app_id', $linea_abono_cxc->core_tipo_doc_app_id)
                                 ->where('consecutivo', $linea_abono_cxc->consecutivo)
+                                ->where('core_tercero_id', $linea_abono_cxc->core_tercero_id)
                                 ->get()->first();
 
         if( !is_null($mov_cxc) )
@@ -276,7 +279,8 @@ class AccountingServices
         $array_wheres = [
                             [ 'core_tipo_transaccion_id','=',$linea_abono_cxc->core_tipo_transaccion_id],
                             [ 'core_tipo_doc_app_id','=',$linea_abono_cxc->core_tipo_doc_app_id],
-                            [ 'consecutivo','=',$linea_abono_cxc->consecutivo]
+                            [ 'consecutivo','=',$linea_abono_cxc->consecutivo],
+                            [ 'core_tercero_id','=',$linea_abono_cxc->core_tercero_id]
                         ];
         $doc_encabezado = ContabDocEncabezado::where( $array_wheres )->get()->first();
       
@@ -290,7 +294,8 @@ class AccountingServices
         $array_wheres = [
                         [ 'core_tipo_transaccion_id','=',$linea_abono_cxc->doc_cxc_transacc_id],
                         [ 'core_tipo_doc_app_id','=',$linea_abono_cxc->doc_cxc_tipo_doc_id],
-                        [ 'consecutivo','=',$linea_abono_cxc->doc_cxc_consecutivo]
+                        [ 'consecutivo','=',$linea_abono_cxc->doc_cxc_consecutivo],
+                        [ 'core_tercero_id','=',$linea_abono_cxc->core_tercero_id]
                     ];
         $doc_encabezado = ContabDocEncabezado::where( $array_wheres )->get()->first();
 

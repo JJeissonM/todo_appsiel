@@ -57,7 +57,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         </tr>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">ORIGEN - DESTINO</td>
-            <td class="border_center" style="width: 80%; font-size: 12px;">{{$c->origen." - ".$c->destino}} / {{$c->tipo_servicio}}</td>
+            <td class="border_center" style="width: 80%; font-size: 12px;">{{$c->origen." - ".$c->destino}} / <b>{{$c->tipo_servicio}}</b></td>
         </tr>
     </tbody>
 </table>

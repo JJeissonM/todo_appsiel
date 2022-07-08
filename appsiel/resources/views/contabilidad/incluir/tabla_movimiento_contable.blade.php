@@ -1,9 +1,9 @@
 <div class="table-responsive">
     <table id="myTable" class="table table-striped" style="margin-top: -4px;">
-        {{ Form::bsTableHeader(['Fecha','Cuenta','Tercero','Documento','Detalle','Mov. Débito','Mov. Crédito','Saldo']) }}
+        {{ Form::bsTableHeader(['Fecha','Cod. Cta.','Cuenta','CC/NIT','Tercero','Documento','Detalle','Mov. Débito','Mov. Crédito','Saldo']) }}
         <tr>
             <td> {{ $fecha_desde }} </td>
-            <td colspan="6"> &nbsp; </td>
+            <td colspan="8"> &nbsp; </td>
             <td> {{ number_format( $saldo_inicial , 0, ',', '.') }} </td>
         </tr>
             <?php
@@ -36,8 +36,10 @@
                 ?>
                 <tr>
                     <td> {{ $linea->fecha }}</td>
-                    <td class="text-center"> {{ $cuenta_codigo }} {{ $cuenta_descripcion }}</td>
-                    <td class="text-center"> {{ $tercero_numero_identificacion }} {{ $tercero_descripcion }}</td>
+                    <td class="text-center"> {{ $cuenta_codigo }}</td>
+                    <td class="text-center"> {{ $cuenta_descripcion }}</td>
+                    <td class="text-center"> {{ $tercero_numero_identificacion }}</td>
+                    <td class="text-center"> {{ $tercero_descripcion }}</td>
                     <td> {{ $linea->tipo_documento_app->prefijo }} {{ $linea->consecutivo }}</td>
                     <td> {{ $linea->detalle_operacion }}</td>
                     <td class="text-center"> {{ number_format( $linea->valor_debito , 0, ',', '.') }} </td>
@@ -54,7 +56,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5"> &nbsp; </td>
+                <td colspan="7"> &nbsp; </td>
                 <td class="text-center"> {{ number_format($total_debito, 0, ',', '.') }} </td>
                 <td class="text-center"> {{ number_format($total_credito, 0, ',', '.') }} </td>
                 <td class="text-center"> {{ number_format($saldo, 0, ',', '.') }} </td>

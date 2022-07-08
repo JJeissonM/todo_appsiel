@@ -227,36 +227,53 @@ class ContabMovimiento extends Model
         return $saldo_inicial_sql['valor_saldo'];
     }
 
-    public static function get_saldo_inicial_v2($fecha_desde, $cuenta_id, $tercero_id)
+    public static function get_saldo_inicial_v2($fecha_desde, $cuenta_id, $tercero_id, $grupo_cuenta_id)
     {
         $array_wheres = [
             ['fecha', '<', $fecha_desde],
             ['core_empresa_id', '=', Auth::user()->empresa_id]
         ];
 
-        if (!is_null($cuenta_id)) {
-            $array_wheres = array_merge($array_wheres, [['contab_cuenta_id', '=', $cuenta_id]]);
-        }
-
         if (!is_null($tercero_id)) {
             $array_wheres = array_merge($array_wheres, [['core_tercero_id', '=', $tercero_id]]);
+        }
+
+        if (!is_null($grupo_cuenta_id)) {
+            $arr_ids_cuentas_del_grupo = ContabCuenta::where('contab_cuenta_grupo_id',$grupo_cuenta_id)->get()->pluck('id')->toArray();
+            return ContabMovimiento::where($array_wheres)
+                            ->whereIn('contab_cuenta_id',$arr_ids_cuentas_del_grupo)
+                            ->sum('valor_saldo');
+        }
+
+        if (!is_null($cuenta_id)) {
+            $array_wheres = array_merge($array_wheres, [['contab_cuenta_id', '=', $cuenta_id]]);
         }
 
         return ContabMovimiento::where($array_wheres)->sum('valor_saldo');
     }
 
-    public static function get_movimiento_contable($fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id)
+    public static function get_movimiento_contable($fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id, $grupo_cuenta_id)
     {
         $array_wheres = [
             ['core_empresa_id', '=', Auth::user()->empresa_id]
         ];
 
-        if (!is_null($cuenta_id)) {
-            $array_wheres = array_merge($array_wheres, ['contab_cuenta_id' => $cuenta_id]);
-        }
-
         if (!is_null($tercero_id)) {
             $array_wheres = array_merge($array_wheres, ['core_tercero_id' => $tercero_id]);
+        }
+
+        if (!is_null($grupo_cuenta_id)) {
+            $arr_ids_cuentas_del_grupo = ContabCuenta::where('contab_cuenta_grupo_id',$grupo_cuenta_id)->get()->pluck('id')->toArray();
+            
+            return ContabMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                ->where($array_wheres)
+                                ->whereIn('contab_cuenta_id',$arr_ids_cuentas_del_grupo)
+                                ->orderBy('fecha')
+                                ->get();
+        }
+
+        if (!is_null($cuenta_id)) {
+            $array_wheres = array_merge($array_wheres, ['contab_cuenta_id' => $cuenta_id]);
         }
 
         return ContabMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])

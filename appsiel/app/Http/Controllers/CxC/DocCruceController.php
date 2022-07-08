@@ -280,9 +280,13 @@ class DocCruceController extends TransaccionController
                         'core_empresa_id' => $movimiento_afavor->core_empresa_id, 
                         'core_tipo_transaccion_id' => $movimiento_afavor->core_tipo_transaccion_id,
                         'core_tipo_doc_app_id' => $movimiento_afavor->core_tipo_doc_app_id,
-                        'consecutivo' => $movimiento_afavor->consecutivo
+                        'consecutivo' => $movimiento_afavor->consecutivo,
+                        'core_tercero_id' => $movimiento_afavor->core_tercero_id
                       ];
       $contab_cuenta_id = ContabMovimiento::where($array_wheres)->where( 'valor_debito', 0 )->value('contab_cuenta_id');
+      if ($contab_cuenta_id == null) {
+        $contab_cuenta_id = (int)config('contabilidad.cta_anticipo_clientes_default');
+      }
       $valor_debito = $valor_aplicar;      
       $valor_credito = 0;          
       $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
@@ -295,9 +299,13 @@ class DocCruceController extends TransaccionController
                       'core_empresa_id' => $movimiento_cartera->core_empresa_id, 
                       'core_tipo_transaccion_id' => $movimiento_cartera->core_tipo_transaccion_id,
                       'core_tipo_doc_app_id' => $movimiento_cartera->core_tipo_doc_app_id,
-                      'consecutivo' => $movimiento_cartera->consecutivo
+                      'consecutivo' => $movimiento_cartera->consecutivo,
+                      'core_tercero_id' => $movimiento_cartera->core_tercero_id
                     ];
       $contab_cuenta_id = ContabMovimiento::where($array_wheres)->where( 'valor_credito', 0 )->value('contab_cuenta_id');
+      if ($contab_cuenta_id == null) {
+        $contab_cuenta_id = (int)config('contabilidad.cta_cartera_default');
+      }
       $valor_debito = 0;
       $valor_credito = $valor_aplicar;
       $this->contabilizar_registro( $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
@@ -350,6 +358,7 @@ class DocCruceController extends TransaccionController
                           ->where('core_tipo_transaccion_id', $registro->doc_cxc_transacc_id )
                           ->where('core_tipo_doc_app_id', $registro->doc_cxc_tipo_doc_id )
                           ->where('consecutivo', $registro->doc_cxc_consecutivo )
+                          ->where('core_tercero_id', $registro->core_tercero_id )
                           ->get()
                           ->first();
 
@@ -361,6 +370,7 @@ class DocCruceController extends TransaccionController
                           ->where('core_tipo_transaccion_id', $registro->core_tipo_transaccion_id )
                           ->where('core_tipo_doc_app_id', $registro->core_tipo_doc_app_id )
                           ->where('consecutivo', $registro->consecutivo )
+                          ->where('core_tercero_id', $registro->core_tercero_id )
                           ->get()
                           ->first();
           $doc_app_recaudo = TipoDocApp::where('id', $doc_recaudo->core_tipo_doc_app_id)->value('prefijo').' '.$doc_recaudo->consecutivo;
@@ -411,6 +421,7 @@ class DocCruceController extends TransaccionController
           ->where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
           ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
           ->where('consecutivo', $documento->consecutivo)
+          ->where('core_tercero_id', $documento->core_tercero_id)
           ->get()[0];
     }
 
@@ -464,6 +475,7 @@ class DocCruceController extends TransaccionController
       // 2do. Por cada abono, se reversa el valor que el doc. cruce descontó en el movimiento cartera y se elimina el abono
       $array_wheres = [
                       'core_empresa_id' => $documento->core_empresa_id, 
+                      'core_tercero_id' => $documento->core_tercero_id, 
                       'doc_cruce_transacc_id' => $documento->core_tipo_transaccion_id,
                       'doc_cruce_tipo_doc_id' => $documento->core_tipo_doc_app_id,
                       'doc_cruce_consecutivo' => $documento->consecutivo

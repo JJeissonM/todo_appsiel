@@ -145,7 +145,7 @@ class VentaController extends TransaccionController
 
         $registros_medio_pago = new RegistrosMediosPago;
 
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros ) );
 
         // TRES TRANSACCIONES
 
@@ -195,6 +195,58 @@ class VentaController extends TransaccionController
         }
     }
 
+    
+    public static function get_total_documento_desde_lineas_registros( array $lineas_registros )
+    {
+        $total_documento = 0;
+
+        $cantidad_registros = count($lineas_registros);
+        for ($i=0; $i < $cantidad_registros; $i++) 
+        {
+            $total_documento += (float)$lineas_registros[$i]->precio_total;
+        } // Fin por cada registro
+
+        return $total_documento;        
+    }
+
+    
+
+
+    // Se crean los registros con base en los registros de la remisión o remisiones
+    public static function get_total_documento_desde_lineas_registros_desde_remision( $datos, $lineas_registros )
+    {
+        $total_documento = 0;
+        // Por cada remisión pendiente
+        $cantidad_registros = count( $lineas_registros );
+        $remision_doc_encabezado_id = '';
+        $primera = true;
+        for ($i=0; $i < $cantidad_registros ; $i++)
+        {
+            $doc_remision_id = (int)$lineas_registros[$i]->id_doc;
+
+            $registros_remisiones = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_remision_id )->get();
+            foreach ($registros_remisiones as $un_registro)
+            {
+                // Nota: $un_registro contiene datos de inventarios 
+                $cantidad = $un_registro->cantidad * -1;
+
+                $datos_precio_descuento = self::get_datos_precio_descuento( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id, InvDocEncabezado::find($doc_remision_id) );
+                
+                $precio_unitario = $datos_precio_descuento->precio_unitario;
+
+                $valor_unitario_descuento = $precio_unitario * ( $datos_precio_descuento->tasa_descuento / 100 );
+
+                $precio_venta_unitario = $precio_unitario - $valor_unitario_descuento;
+
+                $precio_total = $precio_venta_unitario * $cantidad;
+
+                $total_documento += $precio_total;
+            } // Fin por cada registro de la remisión
+        }
+
+        return $total_documento;
+    }
+
     /*
         Crea los registros, el movimiento y la contabilización de un documento. 
         Todas estas operaciones se crean juntas porque se almacenena en cada iteración de las lineas de registros
@@ -210,6 +262,10 @@ class VentaController extends TransaccionController
         $cantidad_registros = count($lineas_registros);
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
+            if ( (int)$lineas_registros[$i]->cantidad == 0 ) {
+                continue;
+            }
+
             $linea_datos = [ 'vtas_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id ] +
                             [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
                             [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +
@@ -1299,7 +1355,7 @@ class VentaController extends TransaccionController
         $lineas_registros = json_decode( $request->lineas_registros );
 
         $registros_medio_pago = new RegistrosMediosPago;
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'] );        
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ) );        
         $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
 
         VentaController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
