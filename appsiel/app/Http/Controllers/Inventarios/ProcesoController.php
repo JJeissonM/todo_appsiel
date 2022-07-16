@@ -66,7 +66,7 @@ class ProcesoController extends Controller
         foreach ($documentos as $un_documento)
         {
             ProcesoController::recontabilizar_documento( $un_documento->id );
-            echo $i.'  ';
+            echo $un_documento->id.'  ';
             $i++;            
         }
 

@@ -9,7 +9,6 @@ use Auth;
 
 class DocumentosPendientes extends Model
 {
-
 	protected $table = 'cxp_movimientos';
 
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','core_empresa_id','core_tercero_id','modelo_referencia_tercero_index','referencia_tercero_id','doc_proveedor_prefijo','doc_proveedor_consecutivo','fecha','fecha_vencimiento','valor_documento','valor_pagado','saldo_pendiente','creado_por','modificado_por','estado'];

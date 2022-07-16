@@ -40,6 +40,7 @@ class ReportesController extends Controller
                 
         $operador = '=';
         $cadena = $request->core_tercero_id;
+        $clase_proveedor_id = (int)$request->clase_proveedor_id;
 
         if ( $request->core_tercero_id == '' )
         {
@@ -48,6 +49,7 @@ class ReportesController extends Controller
         }
     
         $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena );
+
         if (count($movimiento) > 0) {
             $movimiento = collect($movimiento);
             $group = $movimiento->groupBy('core_tercero_id');
@@ -56,7 +58,24 @@ class ReportesController extends Controller
             foreach ($group as $key => $item) {
                 $aux = $item->pluck('saldo_pendiente');
                 $sum = $aux->sum();
+                
+                // Filtrar clase de proveedor
+                if ($clase_proveedor_id != '') {
+                    $proveedor = Proveedor::where([
+                        ['core_tercero_id','=',$item[0]['core_tercero_id']]
+                    ])->get()->first();
+                    if ($proveedor == null) {
+                        continue;
+                    }
+
+                    if ($proveedor->clase_proveedor_id != $clase_proveedor_id) {
+                        continue;
+                    }                    
+                }
+                
                 foreach ($item as $value){
+
+
                     $collection[] = $value;
                 }
                 $obj = ["id" => 0,

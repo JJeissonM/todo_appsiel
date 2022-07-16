@@ -6,6 +6,7 @@
             <tr>
                 <th style="display: none;"> ID Proveedor </th>
                 <th> Proveedor </th>
+                <th> CC/NIT </th>
                 <th> Documento interno </th>
                 <th> Factura del proveedor </th>
                 <th> Fecha </th>
@@ -42,6 +43,7 @@
                     <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
                         <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
                         <td> {{ $movimiento[$i]['tercero'] }} </td>
+                        <td> {{ $movimiento[$i]['numero_identificacion'] }} </td>
                         <td> {{ $movimiento[$i]['documento'] }} </td>
                         <td> {{ $movimiento[$i]['doc_proveedor_prefijo'] }} - {{ $movimiento[$i]['doc_proveedor_consecutivo'] }} </td>
                         <td> {{ $movimiento[$i]['fecha'] }} </td>
@@ -63,13 +65,9 @@
                     ?>
                     <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}" style="background: #4a4a4a; color: white;">
                         <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td colspan="5"></td>
                         <td><strong>Sub Total</strong></td>
+                        <td colspan="2"></td>
                         <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['sub_total']}}"><strong> ${{ number_format($movimiento[$i]['sub_total'], 2, ',', '.') }} </strong></td>
                     </tr>
                 @endif
@@ -87,7 +85,7 @@
 
             <tr  class="fila-{{$j}}" >
                 <td style="display: none;"> &nbsp; </td>
-                <td colspan="5"> &nbsp; </td>
+                <td colspan="6"> &nbsp; </td>
                 <td> ${{ number_format($total_valor_documento, 2, ',', '.') }} </td>
                 <td> ${{ number_format($total_valor_pagado, 2, ',', '.') }} </td>
                 <td> ${{ number_format($total_saldo_pendiente, 2, ',', '.') }} </td>
