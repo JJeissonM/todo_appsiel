@@ -28,7 +28,7 @@ class NomDocEncabezado extends Model
     */
     protected $fillable = ['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'descripcion', 'tiempo_a_liquidar', 'total_devengos', 'total_deducciones', 'presupuesto', 'estado', 'creado_por', 'modificado_por', 'tipo_liquidacion'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Presupuesto', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Descripción', 'Total devengos', 'Total deducciones', 'Tipo Liq.', 'Presupuesto', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"nomina/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"web_eliminar/id_fila"}';
 
@@ -190,9 +190,10 @@ class NomDocEncabezado extends Model
                 'nom_doc_encabezados.descripcion AS campo3',
                 'nom_doc_encabezados.total_devengos AS campo4',
                 'nom_doc_encabezados.total_deducciones AS campo5',
-                'nom_doc_encabezados.presupuesto AS campo6',
-                'nom_doc_encabezados.estado AS campo7',
-                'nom_doc_encabezados.id AS campo8'
+                'nom_doc_encabezados.tipo_liquidacion AS campo6',
+                'nom_doc_encabezados.presupuesto AS campo7',
+                'nom_doc_encabezados.estado AS campo8',
+                'nom_doc_encabezados.id AS campo9'
             )
             ->where("nom_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_doc_encabezados.consecutivo)'), "LIKE", "%$search%")

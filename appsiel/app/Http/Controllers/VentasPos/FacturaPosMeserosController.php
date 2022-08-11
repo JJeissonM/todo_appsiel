@@ -717,7 +717,7 @@ class FacturaPosMeserosController extends TransaccionController
     /*
         Proceso de eliminar FACTURA POS (Antes de acumulación)
     */
-    public static function anular_factura_pos($doc_encabezado_id)
+    public function anular_factura_pos($doc_encabezado_id)
     {
         $factura = FacturaPos::find($doc_encabezado_id);
 
@@ -738,7 +738,7 @@ class FacturaPosMeserosController extends TransaccionController
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( !is_null($pedido) )
         {
-            $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+            $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
             foreach ($todos_los_pedidos as $un_pedido) {
                 $un_pedido->estado = "Pendiente";
@@ -770,7 +770,7 @@ class FacturaPosMeserosController extends TransaccionController
         }
     }
 
-    public static function anular_factura_acumulada(Request $request)
+    public function anular_factura_acumulada(Request $request)
     {
         $factura = FacturaPos::find($request->factura_id);
 
@@ -827,7 +827,7 @@ class FacturaPosMeserosController extends TransaccionController
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
         if( !is_null($pedido) )
         {
-            $todos_los_pedidos = self::get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+            $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
             foreach ($todos_los_pedidos as $un_pedido) {
                 $un_pedido->estado = "Pendiente";

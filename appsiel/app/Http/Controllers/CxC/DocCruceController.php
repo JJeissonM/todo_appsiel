@@ -616,6 +616,10 @@ class DocCruceController extends TransaccionController
         {
             return false;
         }
+
+        if ($aux_factura->cartera_estudiante == null) {
+          return false;
+        }
         
         $recaudo = TesoRecaudosLibreta::create( [
                                     'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
