@@ -78,13 +78,18 @@
                     $lbl_cr = '  CR';
                 }
             ?>
+            <?php 
+                if (abs($value) == 0) {
+                    continue;
+                }
+            ?>
             <tr class="{{$tr_class}}">
                 <td>
                     {{ $label }}
                 </td>
                 <td align="right">
                     <span class="simbolo_moneda">$</span>
-                    {{ number_format( abs($value), 0, ',', '.') }}              
+                    {{ number_format( abs($value), 2, ',', '.') }}              
                 </td>
                 <td align="center">
                     {{ $lbl_cr }}                    
@@ -105,7 +110,7 @@
                 </td>
                 <td align="right">
                     <span class="simbolo_moneda">$</span>
-                    {{ number_format( abs($gran_total), 0, ',', '.') }}              
+                    {{ number_format( abs($gran_total), 2, ',', '.') }}              
                 </td>
                 <td align="center">
                     {{ $lbl_cr }}                    

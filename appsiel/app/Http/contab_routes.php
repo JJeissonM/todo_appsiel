@@ -30,7 +30,7 @@ Route::get('contab_auxiliar_por_cuenta','Contabilidad\ContabReportesController@c
 Route::get('contab_pdf_estados_de_cuentas', 'Contabilidad\ContabReportesController@contab_pdf_estados_de_cuentas');
 Route::get('contab_balance_comprobacion','Contabilidad\ContabReportesController@balance_comprobacion');
 
-Route::post('contab_ajax_generacion_eeff', 'Contabilidad\ContabReportesController@contab_ajax_generacion_eeff2');
+Route::post('contab_ajax_generacion_eeff', 'Contabilidad\ContabReportesController@contab_ajax_generacion_eeff');
 Route::get('contab_pdf_eeff', 'Contabilidad\ContabReportesController@contab_pdf_eeff');
 Route::get('contab_generacion_eeff','Contabilidad\ContabReportesController@generacion_eeff');
 

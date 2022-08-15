@@ -709,7 +709,7 @@ class ContabReportesController extends Controller
     ** Cada EEFF es un reporte que tiene asociados grupos de cuentas. Se deben asignar GRUPOS PADRES
     ** Los grupos de cuentas estan estructurados en forma de arbol en una tabla de la base de datos. De manera que al asignar un grupo padre al reporte, se traigan todo sus grupos descendientes hasta llegar a las cuentas
     */
-    public function contab_ajax_generacion_eeff2(Request $request)
+    public function contab_ajax_generacion_eeff(Request $request)
     {
         $anio = $request->lapso1_lbl;
         $fecha_inicial = $request->lapso1_ini;
