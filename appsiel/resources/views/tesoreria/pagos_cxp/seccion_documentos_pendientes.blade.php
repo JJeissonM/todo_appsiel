@@ -32,6 +32,7 @@
 						        <tr>
 						            <th style="display: none;" data-override="id_doc"> ID Doc. Pendiente </th>
 						            <th> Proveedor </th>
+						            <th> CC/NIT </th>
 						            <th> Documento interno </th>
 						            <th> Factura del proveedor </th>
 						            <th> Fecha </th>
@@ -47,7 +48,7 @@
 						    <tfoot>
 						        <tr>
 						            <td style="display: none;"> &nbsp; </td>
-						            <td colspan="8"> &nbsp; </td>
+						            <td colspan="9"> &nbsp; </td>
 						            <td> <div id="total_valor">$0</div> </td>
 						        </tr>						    	
 						    </tfoot>
