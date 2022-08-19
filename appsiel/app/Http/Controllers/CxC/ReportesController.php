@@ -87,8 +87,7 @@ class ReportesController extends Controller
 
         $factura_ventas = VtasDocEncabezado::where( $array_wheres )
                                             ->get()
-                                            ->first();
-        
+                                            ->first();        
 
         $lbl_estudiante = '';
         // Para colegios
@@ -100,16 +99,8 @@ class ReportesController extends Controller
             {                
                 if ( !is_null($factura_estudiante->matricula) )
                 {
-                    $reponsable_estudiante = Responsableestudiante::where( 'tercero_id', $core_tercero_id )
-                                                                ->where('estudiante_id', $factura_estudiante->matricula->id_estudiante)
-                                                                ->get()
-                                                                ->first();
-
-                    if( !is_null( $reponsable_estudiante ) )
-                    {
-                        $lbl_estudiante = $reponsable_estudiante->estudiante->tercero->descripcion;
-                    }
-                }                    
+                    $lbl_estudiante = $factura_estudiante->matricula->estudiante->tercero->descripcion;
+                }
             }                
         }
 
