@@ -53,8 +53,6 @@ class RecosteoService
             
             $costo_total = $linea_registro->cantidad * $costo_promedio;
 
-            dd($encabezado_documento->tipo_documento_app->prefijo . ' ' . $encabezado_documento->consecutivo,$costo_total_acumulado_item, $cantidad_acumulada_item, $costo_total, $linea_registro->cantidad, $costo_promedio);
-
             // Se actualiza el costo_unitario y costo_total en cada línea de registro del documento
             $linea_registro->costo_unitario = $costo_promedio;
             $linea_registro->costo_total = $costo_total;
