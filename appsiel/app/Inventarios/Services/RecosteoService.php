@@ -35,11 +35,17 @@ class RecosteoService
         {
             $encabezado_documento = $linea_registro->encabezado_documento;
             
-            $costo_total_acumulado_item = InvMovimiento::where('fecha','<=',$encabezado_documento->fecha)
+            $costo_total_acumulado_item = InvMovimiento::where([
+                ['fecha','<=',$encabezado_documento->fecha],
+                ['inv_producto_id','<=',$encabezado_documento->inv_producto_id]
+                ])
             ->whereIn('inv_motivo_id',[1,11,23])
             ->sum('costo_total');
             
-            $cantidad_acumulada_item = InvMovimiento::where('fecha','<=',$encabezado_documento->fecha)
+            $cantidad_acumulada_item = InvMovimiento::where([
+                    ['fecha','<=',$encabezado_documento->fecha],
+                    ['inv_producto_id','<=',$encabezado_documento->inv_producto_id]
+                ])
             ->whereIn('inv_motivo_id',[1,11,23])
             ->sum('cantidad');
 
