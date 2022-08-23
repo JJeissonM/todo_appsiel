@@ -60,7 +60,6 @@ class DocSoporte
          ]);
       } catch (\GuzzleHttp\Exception\RequestException $e) {
           $response = $e->getResponse();
-      dd($this->url_emision,$response);
       }
 
 
