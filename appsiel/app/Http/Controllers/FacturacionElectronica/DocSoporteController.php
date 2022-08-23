@@ -1,0 +1,43 @@
+<?php
+
+namespace App\Http\Controllers\FacturacionElectronica;
+
+use App\Http\Controllers\Core\TransaccionController;
+
+use App\FacturacionElectronica\DocSoporte;
+use Illuminate\Support\Facades\Input;
+
+class DocSoporteController extends TransaccionController
+{
+    // Llamado directamente
+    public function enviar_doc_soporte( $id )
+    {
+        $encabezado_factura = DocSoporte::find( $id );
+
+        if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
+        {
+            return redirect( 'compras/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
+        }
+
+        $mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();                
+
+        if ( $mensaje->tipo != 'mensaje_error' )
+        {
+            if ( $encabezado_factura->estado != 'Contabilizado - Sin enviar')
+            {
+                $encabezado_factura->crear_movimiento_ventas();
+
+                // Contabilizar
+                $encabezado_factura->contabilizar_movimiento_debito();
+                $encabezado_factura->contabilizar_movimiento_credito();
+
+                $encabezado_factura->crear_registro_pago();
+            }
+            
+            $encabezado_factura->estado = 'Enviada';
+            $encabezado_factura->save();
+        }
+
+        return redirect( 'compras/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+    }    
+}

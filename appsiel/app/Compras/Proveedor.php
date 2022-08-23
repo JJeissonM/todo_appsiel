@@ -14,6 +14,11 @@ class Proveedor extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de proveedor', 'Liquida impuestos', 'Condición de pago', 'Estado'];
 
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return Proveedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_proveedores.core_tercero_id')->leftJoin('compras_clases_proveedores', 'compras_clases_proveedores.id', '=', 'compras_proveedores.clase_proveedor_id')->leftJoin('compras_condiciones_pago', 'compras_condiciones_pago.id', '=', 'compras_proveedores.condicion_pago_id')

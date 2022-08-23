@@ -159,6 +159,29 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+								$url_documento_soporte = '';
+								if( isset($parametros['url_documento_soporte'] ) )
+								{
+									$url_documento_soporte = $parametros['url_documento_soporte'];
+								}
+							?>
+							{{ Form::bsText('url_documento_soporte', $url_documento_soporte, 'URL Servicio Emisión Doc. Soporte Compras', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
 								if( isset($parametros['WSREPORTES'] ) )
 								{
 									$WSREPORTES = $parametros['WSREPORTES'];

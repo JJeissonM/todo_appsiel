@@ -2,6 +2,7 @@
 
 namespace App\Compras;
 
+use App\FacturacionElectronica\ResultadoEnvioDocumentoSoporte;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
@@ -9,7 +10,7 @@ use Auth;
 use App\Sistema\TipoTransaccion;
 
 use App\Inventarios\InvDocEncabezado;
-
+use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
@@ -20,6 +21,37 @@ class ComprasDocEncabezado extends Model
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Proveedor', 'Fact. Proveedor', 'Detalle', 'Valor total',  'Forma de pago', 'Estado'];
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany(ComprasMovimiento::class);
+    }
+
+    public function actualizar_valor_total()
+    {
+        $this->valor_total = $this->lineas_registros->sum('precio_total');
+        $this->save();
+    }
+
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
+
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
@@ -28,6 +60,36 @@ class ComprasDocEncabezado extends Model
     public function lineas_registros()
     {
         return $this->hasMany( ComprasDocRegistro::class, 'compras_doc_encabezado_id' );
+    }
+
+    public function resolucion_facturacion()
+    {
+        return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )
+                            ->where('estado','Activo')
+                            ->get()
+                            ->last();
+    }
+
+    public function resultados_envios_fe_doc_soporte()
+    {
+        return ResultadoEnvioDocumentoSoporte::where([
+            ['core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
+            ['consecutivo','=',$this->consecutivo],
+        ])->get();
+
+    }
+
+    public function enviado_electronicamente()
+    {
+        $procesado = false;
+        $resultados_envios_fe_doc_soporte = $this->resultados_envios_fe_doc_soporte();
+        foreach ($resultados_envios_fe_doc_soporte as $resultado) {
+            if($resultado->resultado == 'Procesado'){
+                $procesado = true;
+            }
+        }
+        return $procesado;
     }
 
 	public static function consultar_registros($nro_registros, $search)

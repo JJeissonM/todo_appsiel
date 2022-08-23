@@ -647,6 +647,11 @@ class CompraController extends TransaccionController
     {
         $factura = ComprasDocEncabezado::find( $request->factura_id );
 
+        if($factura->enviado_electronicamente())
+        {
+            return redirect( 'compras/'.$request->factura_id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error','Documento NO puede ser anulado. Ya fue enviado electrónicamente a la DIAN.');
+        }
+
         $array_wheres = ['core_empresa_id'=>$factura->core_empresa_id, 
             'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
             'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,

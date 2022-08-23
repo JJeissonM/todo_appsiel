@@ -13,6 +13,8 @@
         	<a class="btn-gmail" href="{{ url('compras_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=166&id_transaccion=36') }}" title="Nota crédito"><i class="fa fa-file-text"></i></a>
         @endif
     @endif
+
+	@include('compras.doc_soporte.acciones_doc_soporte_electronico')
 @endsection
 
 @section('botones_imprimir_email')
