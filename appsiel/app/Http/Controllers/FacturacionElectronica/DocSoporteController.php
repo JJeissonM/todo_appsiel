@@ -28,19 +28,8 @@ class DocSoporteController extends TransaccionController
         $mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();                
 
         if ( $mensaje->tipo != 'mensaje_error' )
-        {
-            if ( $encabezado_factura->estado != 'Contabilizado - Sin enviar')
-            {
-                $encabezado_factura->crear_movimiento_ventas();
-
-                // Contabilizar
-                $encabezado_factura->contabilizar_movimiento_debito();
-                $encabezado_factura->contabilizar_movimiento_credito();
-
-                $encabezado_factura->crear_registro_pago();
-            }
-            
-            $encabezado_factura->estado = 'Enviada';
+        {            
+            $encabezado_factura->estado = 'Enviado';
             $encabezado_factura->save();
         }
 
