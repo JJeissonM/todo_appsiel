@@ -11,6 +11,7 @@ class ResultadoEnvioDocSoporte
 	{
         $resultado_almacenar = $this->formatear_resultado( $resultado_original, $obj_documento_enviado, $encabezado_factura_id );
         ResultadoEnvioDocumentoSoporte::create( $resultado_almacenar );
+        
         $resultado_original['reglasNotificacionDIAN'] = $resultado_almacenar['reglasNotificacionDIAN'];
         $resultado_original['fechaRespuesta'] = $resultado_almacenar['fechaRespuesta'];
 

@@ -161,14 +161,6 @@ class DocSoporte extends ComprasDocEncabezado
                 $mensaje = $factura_dataico->procesar_envio_factura();
                 break;
             
-            case 'TFHKA':
-                $resultado_original = $this->procesar_envio_factura( $this );
-
-                // Almacenar resultado en base de datos para Auditoria
-                $obj_resultado = new ResultadoEnvio;
-                $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $this->id );
-                break;
-            
             default:
                 // code...
                 break;
@@ -177,26 +169,48 @@ class DocSoporte extends ComprasDocEncabezado
         return $mensaje;
     }
 
-    // Este metodo es para TFHKA
-    public function procesar_envio_factura( $encabezado_factura, $adjuntos = 0 )
+    public function validate_customer_data()
     {
-        // Paso 1: Prepara documento electronico
-        $documento = new DocumentoElectronico();
-        $this->documento_factura = $documento->preparar_objeto_documento( $encabezado_factura );
-        $this->documento_factura->tipoOperacion = "10"; // Para facturas: Estándar
-        $this->documento_factura->tipoDocumento = "01"; //Facturas
+        $error = false;
+        $message = '<ul>';
 
-        // Paso 2: Preparar parámetros para envío
-        $params = array(
-                         'tokenEmpresa' =>  config('facturacion_electronica.tokenEmpresa'),
-                         'tokenPassword' => config('facturacion_electronica.tokenPassword'),
-                         'factura' => $this->documento_factura,
-                         'adjuntos' => $adjuntos 
-                        );
+        $tercero = $this->proveedor->tercero;
 
-        // Paso 3: Enviar Objeto Documento Electrónico
-        $resultado_original = $documento->WebService->enviar( config('facturacion_electronica.WSDL'), $documento->options, $params );
+        if ($tercero->descripcion == '') {
+            $error = true;
+            $message .= '<li>El NOMBRE DE ESTABLECIMIENTO está vacío.</li>';
+        }
 
-        return $resultado_original;
+        if ($tercero->nombre1 == '') {
+            $error = true;
+            $message .= '<li>El PRIMER NOMBRE está vacío.</li>';
+        }
+
+        if ($tercero->apellido1 == '') {
+            $error = true;
+            $message .= '<li>El PRIMER APELLIDO está vacío.</li>';
+        }
+
+        if ($tercero->direccion1 == '') {
+            $error = true;
+            $message .= '<li>La DIRECCIÓN está vacía.</li>';
+        }
+
+        if ($tercero->telefono1 == '' || (int)$tercero->telefono1 == 0) {
+            $error = true;
+            $message .= '<li>El TELÉFONO no es válido. Debe ser un valor numérico.: ' . $tercero->telefono1 . '</li>';
+        }
+
+        if (!filter_var($tercero->email, FILTER_VALIDATE_EMAIL)) {
+            $error = true;
+            $message .= '<li>El EMAIL no es válido: ' . $tercero->email . '</li>';
+        }
+
+        $message .= '</ul>';
+
+        return (object)[
+            'error' => $error,
+            'message' => $message
+        ];
     }
 }

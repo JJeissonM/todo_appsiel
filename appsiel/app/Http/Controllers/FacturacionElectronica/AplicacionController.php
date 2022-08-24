@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\FacturacionElectronica;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
+use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
 use App\Http\Controllers\Controller;
 
 use Redirect;
@@ -12,6 +10,7 @@ use Redirect;
 use App\FacturacionElectronica\Factura;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
+use App\FacturacionElectronica\DocSoporte;
 
 class AplicacionController extends Controller
 {
@@ -27,6 +26,12 @@ class AplicacionController extends Controller
         {
             case 'factura':
                 $encabezado_doc = Factura::find( $doc_encabezado_id );
+                $documento_electronico = new FacturaGeneral( $encabezado_doc, $tipo_operacion );
+                break;
+
+            case 'support_doc':
+                $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
+                $documento_electronico = new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
                 break;
             
             default:
@@ -35,8 +40,7 @@ class AplicacionController extends Controller
         }
             
 
-        $factura_dataico = new FacturaGeneral( $encabezado_doc, $tipo_operacion );
-        $pdf_url = $factura_dataico->consultar_documento()->pdf_url;
+        $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
     	
         return Redirect::away( $pdf_url );
     }

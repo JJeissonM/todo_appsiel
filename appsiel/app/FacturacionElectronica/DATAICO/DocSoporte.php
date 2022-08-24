@@ -58,14 +58,14 @@ class DocSoporte
              // array de datos del formulario
              'json' => json_decode( $json_doc_electronico_enviado )
          ]);
+         
       } catch (\GuzzleHttp\Exception\RequestException $e) {
           $response = $e->getResponse();
       }
 
-
       $array_respuesta = json_decode( (string) $response->getBody(), true );
       $array_respuesta['codigo'] = $response->getStatusCode();
-
+      
       $obj_resultado = new ResultadoEnvioDocSoporte;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );
 
@@ -73,6 +73,11 @@ class DocSoporte
    }
 
    public function preparar_cadena_json_doc_soporte()
+   {
+      return '{"support_doc": {' . $this->get_encabezado_factura() . '}}';
+   }
+
+   public function get_encabezado_factura()
    {
       $send_dian = 'true';
       $send_email = config('facturacion_electronica.enviar_email_clientes');
@@ -83,11 +88,6 @@ class DocSoporte
          $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
       }
 
-      return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
-   }
-
-   public function get_encabezado_factura()
-   {
       $payment_means_type = 'DEBITO'; // Contado
       if ( $this->doc_encabezado->forma_pago == 'credito' )
       {
@@ -105,12 +105,14 @@ class DocSoporte
 
       $flexible = 'true';
 
-      return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente();
+      return '"send_dian": "' . $send_dian . '","send_email": ' . $send_email . ',"email": "' . $lista_emails . '","env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente().',"items": ' . $this->get_lineas_registros() . ',"charges": []';
    }
 
    public function get_datos_cliente()
    {
       $cliente = $this->doc_encabezado->proveedor;
+
+      $party_identification_type = 'NIT';
 
       $party_type = 'PERSONA_JURIDICA';
       $tax_level_code = 'COMUN';
@@ -122,7 +124,7 @@ class DocSoporte
       }
       $regimen = 'ORDINARIO';
 
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $cliente->tercero->descripcion . '","first_name":"' . $cliente->tercero->nombre1 . '","family_name":"' . $cliente->tercero->apellido1 . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ) . '","city": "' . strtoupper( $cliente->tercero->ciudad->descripcion ) . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
+      return '{"email": "' . $cliente->tercero->email . '","phone": "' . (int)$cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $cliente->tercero->descripcion . '","first_name":"' . $cliente->tercero->nombre1 . '","family_name":"' . $cliente->tercero->apellido1 . '","party_identification_type": "' . $party_identification_type . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ) . '","city": "' . strtoupper( $cliente->tercero->ciudad->descripcion ) . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
    }
 
    public function get_lineas_registros()
@@ -139,7 +141,7 @@ class DocSoporte
             $string_items .= ',';
          }
 
-         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . $linea->item->descripcion . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
+         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . $linea->item->descripcion . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format($linea->base_impuesto / $linea->cantidad, $this->cantidadDecimales, '.', '') );
 
          if ( $linea->tasa_descuento != 0 )
          {
@@ -155,8 +157,6 @@ class DocSoporte
       return $string_items;
    }
 
-
-
    public function consultar_documento()
    {
       if ( $this->env == 'PRODUCCION' )
@@ -169,7 +169,7 @@ class DocSoporte
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
 
-         $response = $client->get( $this->url_emision . '?number=' .$resolucion->prefijo . $this->doc_encabezado->consecutivo, [
+         $response = $client->get( $this->url_emision . '?prefix=' . $resolucion->prefijo . '&number=' . $this->doc_encabezado->consecutivo, [
              // un array con la data de los headers como tipo de peticion, etc.
              'headers' => [
                            'content-type' => 'application/json',
@@ -182,6 +182,6 @@ class DocSoporte
 
       $json = json_decode( (string) $response->getBody() );
 
-      return $json->invoice;
+      return $json->support_doc;
    }
 }
