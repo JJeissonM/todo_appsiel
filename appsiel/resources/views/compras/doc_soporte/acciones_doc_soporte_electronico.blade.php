@@ -1,5 +1,5 @@
 
-@if(Input::get('id_transaccion') == 48)
+@if(Input::get('id_transaccion') == 48 && config('facturacion_electronica.documento_soporte_activo') == '1')
     <?php 
         $tipo_operacion2 = 'support_doc';
         $ultimo_envio = $doc_encabezado->resultados_envios_fe_doc_soporte()->last();

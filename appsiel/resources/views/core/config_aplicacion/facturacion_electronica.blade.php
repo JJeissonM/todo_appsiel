@@ -159,6 +159,19 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+								$documento_soporte_activo = '0';
+								if( isset($parametros['documento_soporte_activo'] ) )
+								{
+									$documento_soporte_activo = $parametros['documento_soporte_activo'];
+								}
+							?>							
+							{{ Form::bsSelect('documento_soporte_activo', $documento_soporte_activo, 'Activar emisión Doc. Soporte Compras', ['0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
 								$url_documento_soporte = '';
 								if( isset($parametros['url_documento_soporte'] ) )
 								{
@@ -166,12 +179,6 @@
 								}
 							?>
 							{{ Form::bsText('url_documento_soporte', $url_documento_soporte, 'URL Servicio Emisión Doc. Soporte Compras', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
 						</div>
 					</div>
 

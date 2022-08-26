@@ -9,6 +9,7 @@
   'url_notas_credito' => 'https://api.dataico.com/direct/dataico_api/v2/credit_notes',
   'url_notas_debito' => 'https://api.dataico.com/direct/dataico_api/v2/debit_notes',
   'WSANEXO' => '',
+  'documento_soporte_activo' => '0',
   'url_documento_soporte' => 'https://api.dataico.com/direct/dataico_api/v2/support_docs',
   'WSREPORTES' => '',
   'tokenEmpresa' => '01811c21-b104-8552-93da-57821c86e3db',
