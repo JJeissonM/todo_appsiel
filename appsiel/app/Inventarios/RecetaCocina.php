@@ -12,7 +12,9 @@ class RecetaCocina extends Model
 	
     protected $fillable = ['item_platillo_id','item_ingrediente_id','cantidad_porcion'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Platillo', 'Ingrediente', 'Cant. porción'];
+	  public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Platillo', 'Ingrediente', 'Cant. porción'];
+
+    public $vistas = '{"show":"inventarios.recetas.show"}';
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
 
@@ -33,6 +35,7 @@ class RecetaCocina extends Model
         $data = [];
         foreach ($lista as $platillo) {
             $data[] = [
+                    'id' => $platillo->id,
                     'ingrediente' => $platillo->item_ingrediente,
                     'cantidad_porcion' => $platillo->cantidad_porcion
                 ];

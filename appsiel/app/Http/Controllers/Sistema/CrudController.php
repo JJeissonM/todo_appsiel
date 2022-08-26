@@ -273,7 +273,17 @@ class CrudController extends Controller
 
         $registro->delete();
 
-        return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('flash_message','Registro ELIMINADO correctamente.');
+        $ruta = 'web';
+        
+        if (Input::get('ruta_redirect_completa') != null) {
+            return redirect(Input::get('ruta_redirect_completa'))->with('flash_message','Registro ELIMINADO correctamente.');
+        }
+
+        if (Input::get('ruta_redirect') != null) {
+            $ruta = Input::get('ruta_redirect_completa');
+        }
+
+        return redirect($ruta . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('flash_message','Registro ELIMINADO correctamente.');
     }
 
 
