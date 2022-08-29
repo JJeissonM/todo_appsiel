@@ -82,62 +82,62 @@ class ClienteController extends ModeloController
             $datos['nombre1'] = $descripcion;
         }
 
-        if( isset($datos['id_tipo_documento_id']) )
+        if( !isset($datos['id_tipo_documento_id']) )
         {
             $datos['id_tipo_documento_id'] = 13; // Cedula de ciudadania
         } 
 
-        if( isset($datos['tipo']) )
+        if( !isset($datos['tipo']) )
         {
             $datos['tipo'] = 'Persona natural';
         } 
 
-        if( isset($datos['codigo_ciudad']) )
+        if( !isset($datos['codigo_ciudad']) )
         {
             $datos['codigo_ciudad'] = '16920001'; // Valledupar
         } 
 
-        if( isset($datos['clase_cliente_id']) )
+        if( !isset($datos['clase_cliente_id']) )
         {
             $datos['clase_cliente_id'] = '1';
         } 
 
-        if( isset($datos['zona_id']) )
+        if( !isset($datos['zona_id']) )
         {
             $datos['zona_id'] = '1';
         } 
 
-        if( isset($datos['vendedor_id']) )
+        if( !isset($datos['vendedor_id']) )
         {
             $datos['vendedor_id'] = '1';
         } 
 
-        if( isset($datos['inv_bodega_id']) )
+        if( !isset($datos['inv_bodega_id']) )
         {
             $datos['inv_bodega_id'] = '1';
         } 
 
-        if( isset($datos['lista_precios_id']) )
+        if( !isset($datos['lista_precios_id']) )
         {
             $datos['lista_precios_id'] = '1';
         } 
 
-        if( isset($datos['lista_descuentos_id']) )
+        if( !isset($datos['lista_descuentos_id']) )
         {
             $datos['lista_descuentos_id'] = '1';
         } 
 
-        if( isset($datos['liquida_impuestos']) )
+        if( !isset($datos['liquida_impuestos']) )
         {
             $datos['liquida_impuestos'] = '1';
         } 
 
-        if( isset($datos['condicion_pago_id']) )
+        if( !isset($datos['condicion_pago_id']) )
         {
             $datos['condicion_pago_id'] = '1';
         } 
 
-        if( isset($datos['estado']) )
+        if( !isset($datos['estado']) )
         {
             $datos['estado'] = 'Activo';
         } 
