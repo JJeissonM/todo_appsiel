@@ -68,12 +68,19 @@ class ClienteController extends ModeloController
             $descripcion = $datos['descripcion'];
         } 
 
-        if ( $datos['razon_social'] != '' && $descripcion == '' )
-        {
-            $descripcion = $datos['razon_social'];
+        if (isset($datos['razon_social'])) {
+            if ( $datos['razon_social'] != '' && $descripcion == '' )
+            {
+                $descripcion = $datos['razon_social'];
+            }
         }
 
         $datos['descripcion'] = $descripcion;
+
+        if( !isset($datos['nombre1']))
+        {
+            $datos['nombre1'] = $descripcion;
+        }
 
         if( isset($datos['id_tipo_documento_id']) )
         {
