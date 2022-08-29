@@ -108,6 +108,30 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								if( isset($parametros['activar_ingreso_tactil_productos'] ) )
+								{
+									$activar_ingreso_tactil_productos = $parametros['activar_ingreso_tactil_productos'];
+								}else{
+									$activar_ingreso_tactil_productos = 1;
+								}
+							?>
+							{{ Form::bsSelect('activar_ingreso_tactil_productos', $activar_ingreso_tactil_productos, 'Activar ingreso Tactil de productos al crear factura', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros de la acumulación  </h4>
 				<hr>
 				<div class="row">

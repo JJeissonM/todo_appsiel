@@ -104,8 +104,74 @@ class FacturaPosController extends TransaccionController
         {
             return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
         }
-
+        
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
+
+        $lista_campos = $this->ajustar_campos($lista_campos,$pdv,$vendedor);
+
+        $fecha = $pdv->ultima_fecha_apertura();
+        $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
+
+        $modelo_controller = new ModeloController;
+        $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
+        
+        $form_create = [
+                            'url' => $acciones->store,
+                            'campos' => $lista_campos
+                        ];
+
+        $id_transaccion = 8; // 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
+        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
+
+        $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
+
+        $productosTemp = null;
+        foreach ($productos as $pr)
+        {
+            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+            if ( is_null($grupo_inventario) )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
+            }
+
+            $pr->categoria = $grupo_inventario->descripcion;
+            $productosTemp[$pr->categoria][] = $pr;
+        }
+        
+        $vista_categorias_productos = '';
+        if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
+            $vista_categorias_productos = View::make('ventas_pos.tags_lista_items', compact('productosTemp'))->render();
+        }
+        
+        // Para visualizar el listado de productos
+        $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
+
+        $plantilla_factura = $this->generar_plantilla_factura($pdv);
+
+        $pedido_id = 0;
+
+        $lineas_registros = '<tbody></tbody>';
+
+        $numero_linea = 1;
+
+        $valor_subtotal = 0;
+        $valor_descuento = 0;
+        $valor_total_impuestos = 0;
+        $valor_total_factura = 0;
+        $total_efectivo_recibido = 0;
+
+        $vendedores = Vendedor::where('estado','Activo')->get();
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento'));
+    }
+
+    public function ajustar_campos($lista_campos,$pdv,$vendedor)
+    {
         $cantidad_campos = count($lista_campos);
 
         $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
@@ -149,60 +215,7 @@ class FacturaPosController extends TransaccionController
             }
         }
 
-        $fecha = $pdv->ultima_fecha_apertura();
-        $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
-
-        $modelo_controller = new ModeloController;
-        $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
-        
-        $form_create = [
-                            'url' => $acciones->store,
-                            'campos' => $lista_campos
-                        ];
-
-        $id_transaccion = 8; // 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
-        $medios_recaudo = RecaudoController::get_medios_recaudo();
-        $cajas = RecaudoController::get_cajas();
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
-
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
-
-        $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
-
-        $productosTemp = null;
-        foreach ($productos as $pr)
-        {
-            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
-            if ( is_null($grupo_inventario) )
-            {
-                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
-            }
-
-            $pr->categoria = $grupo_inventario->descripcion;
-            $productosTemp[$pr->categoria][] = $pr;
-        }
-        //$vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
-        $vista_categorias_productos = '';
-        $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
-
-        $plantilla_factura = $this->generar_plantilla_factura($pdv);
-
-        $pedido_id = 0;
-
-        $lineas_registros = '<tbody></tbody>';
-
-        $numero_linea = 1;
-
-        $valor_subtotal = 0;
-        $valor_descuento = 0;
-        $valor_total_impuestos = 0;
-        $valor_total_factura = 0;
-        $total_efectivo_recibido = 0;
-
-        $vendedores = Vendedor::where('estado','Activo')->get();
-
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento'));
+        return $lista_campos;
     }
 
     public function verificar_datos_por_defecto( $pdv )

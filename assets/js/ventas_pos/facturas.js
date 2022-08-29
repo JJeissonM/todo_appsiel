@@ -196,6 +196,7 @@ $.fn.generar_string_celdas = function (fila) {
 
 	//celdas[ num_celda ] = '<td>' + cantidad + ' </td>';
 	celdas[num_celda] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' + unidad_medida + '</div>)' + ' </td>';
+	//celdas[num_celda] = '<td> <div class="number-input"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepDown()" class="minus"></button><input class="cantidad" min="1" name="cantidad" value="' + cantidad + '" type="number" readonly="readonly"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepUp()" class="plus"></button> </div> </td>';
 
 	num_celda++;
 
@@ -401,9 +402,10 @@ function reset_linea_ingreso_default2() {
 	$('#tasa_impuesto').val('');
 	$('#precio_total').val('');
 
-	$('#inv_producto_id').focus();
+	//$('#inv_producto_id').focus();
+	mostrar_mensaje_item_agregado();
 
-	$('#popup_alerta').hide();
+	//$('#popup_alerta').hide();
 
 	producto_id = 0;
 	precio_total = 0;
@@ -419,6 +421,16 @@ function reset_linea_ingreso_default2() {
 	base_impuesto_unitario = 0;
 	valor_impuesto_unitario = 0;
 	valor_unitario_descuento = 0;
+}
+
+function mostrar_mensaje_item_agregado()
+{
+	$('#popup_alerta').hide(200);
+	$('#popup_alerta').css('background-color', '#00b998');
+	$('#popup_alerta').css('color', 'black');
+	$('#popup_alerta').css('opacity', 'revert');
+	$('#popup_alerta').text('Producto agregado.');
+	$('#popup_alerta').show(200);
 }
 
 function deshabilitar_campos_encabezado2() {

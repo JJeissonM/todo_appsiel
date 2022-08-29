@@ -188,6 +188,12 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-md-12 well">
+                        <div class="container-fluid">
+                            {!! $vista_categorias_productos !!}
+                        </div>
+                    </div>
+
                     <div class="col-md-8 well">
                         <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
                         {!! str_replace("<tbody>
@@ -198,8 +204,6 @@ use App\Http\Controllers\Sistema\VistaController;
                         <br/><br/>
                         
                         @include('tesoreria.incluir.medios_recaudos')
-
-                        {!! $vista_categorias_productos !!}
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">

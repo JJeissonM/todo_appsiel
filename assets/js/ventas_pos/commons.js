@@ -149,6 +149,7 @@ $(document).ready(function () {
 
     $('#efectivo_recibido').on('keyup', function (event) {
 
+        $('#popup_alerta').hide();
         var codigo_tecla_presionada = event.which || event.keyCode;
 
         if (codigo_tecla_presionada == 27) 
@@ -476,6 +477,21 @@ $(document).ready(function () {
         numero_linea++;
         $('#efectivo_recibido').removeAttr('readonly');
     }
+    
+
+    $(document).on('click', '.minus', function(event) {
+        event.preventDefault();
+        var fila = $(this).closest("tr");
+        calcular_precio_total_lbl(fila);
+        calcular_totales();
+    });
+
+    $(document).on('click', '.plus', function(event) {
+        event.preventDefault();
+        var fila = $(this).closest("tr");
+        calcular_precio_total_lbl(fila);
+        calcular_totales();
+    });
 
     function deshabilitar_campos_encabezado() 
     {

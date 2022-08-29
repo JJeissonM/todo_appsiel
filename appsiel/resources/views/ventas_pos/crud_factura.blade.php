@@ -64,6 +64,68 @@ use App\Http\Controllers\Sistema\VistaController;
             padding-top: 4px;
         };
 
+        
+        input[type="number"] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+.number-input {
+  border: 2px solid #ddd;
+  display: inline-flex;
+}
+
+.number-input,
+.number-input * {
+  box-sizing: border-box;
+}
+
+.number-input button {
+  outline:none;
+  -webkit-appearance: none;
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
+  margin: 0;
+  position: relative;
+}
+
+.number-input button:before,
+.number-input button:after {
+  display: inline-block;
+  position: absolute;
+  content: '';
+  width: 1rem;
+  height: 2px;
+  background-color: #212121;
+  transform: translate(-50%, -50%);
+}
+.number-input button.plus:after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.number-input input[type=number] {
+  font-family: sans-serif;
+  max-width: 5rem;
+  padding: .5rem;
+  border: solid #ddd;
+  border-width: 0 2px;
+  font-size: 2rem;
+  height: 3rem;
+  font-weight: bold;
+  text-align: center;
+}
+
     </style>
 @endsection
 
@@ -179,15 +241,20 @@ use App\Http\Controllers\Sistema\VistaController;
 
             <hr>
 
-            <input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}">
-
-            
+            <input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}">            
 
     <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 
             <div class="container-fluid">
                 <div class="row">
+                    <div class="col-md-12 well">
+                        <div class="container-fluid">
+                            {!! $vista_categorias_productos !!}
+                        </div>
+                    </div>
+                    
                     <div class="col-md-8 well"><div class="container-fluid">
+
     <div class="marco_formulario">
                         <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
                         {!! str_replace("<tbody>
@@ -203,7 +270,6 @@ use App\Http\Controllers\Sistema\VistaController;
                             @include('tesoreria.incluir.medios_recaudos')
                         @endif
 
-                        {!! $vista_categorias_productos !!}
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">

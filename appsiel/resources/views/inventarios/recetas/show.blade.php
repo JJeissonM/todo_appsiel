@@ -56,10 +56,10 @@
 			    <h3 style="width: 100%;text-align: center;">Ingredientes para la receta "{{ $registro->item_platillo->descripcion }}"</h3>
 			    <div class="row">
 			    	<div class="col-md-4" style="padding:5px;"> 
-			    		&nbsp;
+			    		<b>Unid. Medida: </b> {{ $registro->item_platillo->unidad_medida1 }}
 			    	</div>
 			    	<div class="col-md-4" style="padding:5px;"> 
-			    		&nbsp;
+			    		<b>Categoría: </b> {{ $registro->item_platillo->grupo_inventario->descripcion }}
 			    	</div>
 			    	<div class="col-md-4" style="padding:5px;"> 
 			    		{!! $btn_nuevo !!}
