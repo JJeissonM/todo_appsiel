@@ -68,7 +68,6 @@ class Documentosconductor extends Model
         return "LISTADO DE DOCUMENTOS DE LOS CONDUCTORES";
     }
 
-
     public function conductor()
     {
         return $this->belongsTo(Conductor::class);

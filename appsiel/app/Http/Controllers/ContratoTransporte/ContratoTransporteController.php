@@ -9,6 +9,7 @@ use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Contrato;
 use App\Contratotransporte\Contratogrupou;
 use App\Contratotransporte\Documentosconductor;
+use App\Contratotransporte\Documentosvehiculo;
 use App\Contratotransporte\Planillac;
 use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
@@ -60,8 +61,16 @@ class ContratoTransporteController extends Controller
         }
         $mes_actual = $this->mes()[$mes_actual];
 
-        //valido documentos vencidos
+        $documentos_vencidos_conductores = $this->get_documentos_vencidos_condutores($user);
 
+        $documentos_vencidos_vehiculos = $this->get_documentos_vencidos_vehiculos($user);
+
+        return view('contratos_transporte.index', compact('miga_pan', 'contratos', 'mes_actual', 'documentos_vencidos_conductores','documentos_vencidos_vehiculos'));
+    }
+
+    public function get_documentos_vencidos_condutores($user)
+    {
+        //valido documentos vencidos
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
             $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
             if (!is_null($vehiculo)) {
@@ -72,15 +81,40 @@ class ContratoTransporteController extends Controller
             $docs = Documentosconductor::all();
         }
 
-        $documentos = null;
+        $documentos_vencidos = null;
         if (count($docs) > 0) {
             foreach ($docs as $d) {
                 if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
-                    $documentos[] = $d;
+                    $documentos_vencidos[] = $d;
                 }
             }
         }
-        return view('contratos_transporte.index', compact('miga_pan', 'contratos', 'mes_actual', 'documentos'));
+
+        return $documentos_vencidos;
+    }
+
+    public function get_documentos_vencidos_vehiculos($user)
+    {
+        //valido documentos vencidos
+        if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
+            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            if (!is_null($vehiculo)) {
+                $docs = Documentosvehiculo::where('vehiculo_id', $vehiculo->id)->get();
+            }
+        } else {
+            $docs = Documentosvehiculo::all();
+        }
+
+        $documentos_vencidos = null;
+        if (count($docs) > 0) {
+            foreach ($docs as $d) {
+                if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                    $documentos_vencidos[] = $d;
+                }
+            }
+        }
+
+        return $documentos_vencidos;
     }
 
     //crear contrato

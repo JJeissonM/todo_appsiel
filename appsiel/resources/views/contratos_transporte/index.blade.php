@@ -60,30 +60,23 @@
 					<div class="panel panel-primary">
 						<h4 style="padding: 15px;">Documentos Vencidos</h4>
 						<div class="panel-body">
-							<div class="table-responsive">
-								<table class="table table-striped table-responsive">
-									<thead>
-										<tr style=" vertical-align: middle !important;">
-											<th>Nro. Documento</th>
-											<th>Documento - Categoría</th>
-											<th>Vigencia</th>
-											<th>Conductor</th>
-										</tr>
-									</thead>
-									<tbody>
-										@if($documentos!=null)
-										@foreach($documentos as $d)
-										<tr>
-											<td>{{$d->nro_documento}}</td>
-											<td>{{$d->documento}} @if($d->categoria!=null) {{" - CATEGORIA: ".$d->categoria}} @endif</td>
-											<td>{{"DESDE: ".$d->vigencia_inicio." - HASTA: ".$d->vigencia_fin}}</td>
-											<td>{{$d->conductor->tercero->descripcion}}</td>
-										</tr>
-										@endforeach
-										@endif
-									</tbody>
-								</table>
-							</div>
+
+							<ul class="nav nav-tabs">
+								<li class="active"><a data-toggle="tab" href="#home">CONDUCTORES</a></li>
+								<li><a data-toggle="tab" href="#menu1">VEHÍCULOS</a></li>
+							  </ul>
+							  
+							  <div class="tab-content">
+
+								<div id="home" class="tab-pane fade in active">
+									@include('contratos_transporte.tabla_documentos_vencidos_conductores')
+								</div>
+
+								<div id="menu1" class="tab-pane fade">
+									@include('contratos_transporte.tabla_documentos_vencidos_vehiculos')
+								</div>
+								
+							  </div>
 						</div>
 					</div>
 				</div>

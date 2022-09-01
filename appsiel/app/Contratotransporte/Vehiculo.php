@@ -31,6 +31,11 @@ class Vehiculo extends Model
         return $vec;
     }
 
+    public function get_value_to_show()
+    {
+        return $this->clase . ' ' . $this->marca . ' ' . $this->modelo . ' ' . $this->placa . ')';
+    }
+
 
     public static function consultar_registros2($nro_registros, $search)
     {

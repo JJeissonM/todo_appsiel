@@ -63,23 +63,22 @@
 								<div class="form-group">
 									<label>En Representación de...</label>
 									<textarea required class="form-control" name="representacion_de">{{config('contrato_transporte.texto_en_representacion_de')}}</textarea>
-									<!-- <input type="text" required class="form-control" name="representacion_de" value="PARA UN GRUPO ESPECIFICO DE USUARIOS DE TRANSPORTE DE PERSONAL (TRANSPORTE PARTICULAR)"> -->
 								</div>
 								<div class="form-group">
 									<label>Objeto del Contrato</label>
 									<textarea class="form-control" required name="objeto">Prestacion del servicio transporte especial para un grupo especifico de usuarios de transporte de personal (transporte particular).</textarea>
-									<!-- <input type="text" class="form-control" required name="objeto" value="el objeto del contrato consiste en el transporte terrestre de pasajeros, mediante un servicio expreso al grupo específico descrito anteriormente" /> -->
 								</div>
 								<div class="form-group">
 									<label>Vehículo</label>
+									<a href="#" data-toggle="tooltip" data-placement="right" title="Solo se muestran los vehículos que tengan todos sus documentos en regla."> <i class="fa fa-question-circle"></i> </a>
 									<select class="form-control select2" name="vehiculo_id" id="vehiculo_id" required="required" onchange="conductores()">
 										@if($vehiculos!=null)
-										<option value="">-- Seleccione vehículo --</option>
-										@foreach($vehiculos as $key=>$value)
-										<option value="{{$key}}">{!!$value!!}</option>
-										@endforeach
+											<option value="">-- Seleccione vehículo --</option>
+											@foreach($vehiculos as $key=>$value)
+												<option value="{{$key}}">{!!$value!!}</option>
+											@endforeach
 										@else
-										<option value="">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
+											<option value="">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
 										@endif
 									</select>
 								</div>
