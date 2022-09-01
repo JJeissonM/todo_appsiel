@@ -126,7 +126,17 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<div class="row" style="padding:5px;">
+								<?php 
+									if( isset($parametros['asignar_fecha_apertura_a_facturas'] ) )
+									{
+										$asignar_fecha_apertura_a_facturas = $parametros['asignar_fecha_apertura_a_facturas'];
+									}else{
+										$asignar_fecha_apertura_a_facturas = 1;
+									}
+								?>
+								{{ Form::bsSelect('asignar_fecha_apertura_a_facturas', $asignar_fecha_apertura_a_facturas, 'Asignar la fecha de apertura en la creación de facturas', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
+							</div>
 						</div>
 					</div>
 

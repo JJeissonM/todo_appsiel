@@ -3,6 +3,8 @@
 namespace App\VentasPos;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Movimiento extends Model
 {
@@ -24,6 +26,11 @@ class Movimiento extends Model
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function pdv()
+    {
+        return $this->belongsTo(Pdv::class,'pdv_id');
     }
 
     public function get_label_documento()
@@ -100,5 +107,77 @@ class Movimiento extends Model
         }
 
         return $vec;
+    }
+
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por )
+    {
+        switch ( $agrupar_por )
+        {
+            case 'pdv_id':
+                $agrupar_por = 'pdv_id';
+                break;
+            case 'cliente_id':
+                $agrupar_por = 'cliente';
+                break;
+            case 'core_tercero_id':
+                $agrupar_por = 'core_tercero_id';
+                break;
+            case 'inv_producto_id':
+                $agrupar_por = 'producto';
+                break;
+                case 'tasa_impuesto':
+                    $agrupar_por = 'tasa_impuesto';
+                    break;
+            case 'vendedor_id':
+                $agrupar_por = 'vendedor_id';
+                break;
+            case 'clase_cliente_id':
+                $agrupar_por = 'clase_cliente';
+                break;
+            case 'core_tipo_transaccion_id':
+                $agrupar_por = 'descripcion_tipo_transaccion';
+                break;
+            case 'forma_pago':
+                $agrupar_por = 'forma_pago';
+                break;
+            
+            default:
+                break;
+        }
+
+        $movimiento = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_movimientos.core_tercero_id')
+                            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_pos_movimientos.clase_cliente_id')
+                            ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_movimientos.core_tipo_transaccion_id')
+                            ->where('vtas_pos_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->select(
+                                        'vtas_pos_movimientos.inv_producto_id',
+                                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
+                                        DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
+                                        'vtas_pos_movimientos.cliente_id',
+                                        'vtas_pos_movimientos.core_tercero_id',
+                                        'vtas_clases_clientes.descripcion AS clase_cliente',
+                                        'vtas_pos_movimientos.tasa_impuesto AS tasa_impuesto',
+                                        'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
+                                        'vtas_pos_movimientos.pdv_id',
+                                        'vtas_pos_movimientos.forma_pago',
+                                        'vtas_pos_movimientos.vendedor_id',
+                                        'vtas_pos_movimientos.cantidad',
+                                        'vtas_pos_movimientos.precio_total',
+                                        'vtas_pos_movimientos.base_impuesto_total',// AS base_imp_tot
+                                        'vtas_pos_movimientos.tasa_descuento',
+                                        'vtas_pos_movimientos.valor_total_descuento')
+                            ->get();
+
+        foreach ($movimiento as $fila)
+        {
+            $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
+
+
+            $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
+        }
+
+        return $movimiento->groupBy( $agrupar_por );
     }
 }

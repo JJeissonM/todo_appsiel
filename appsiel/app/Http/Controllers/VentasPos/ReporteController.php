@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use Auth;
 use DB;
-use View;
-use Input;
 
 // Modelos
 use App\VentasPos\Pdv;
@@ -20,6 +18,10 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
 
 use App\Ventas\VtasPedido;
+use App\VentasPos\Movimiento;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ReporteController extends Controller
 {
@@ -27,8 +29,6 @@ class ReporteController extends Controller
     public function get_saldos_caja_pdv( $pdv_id, $fecha_desde, $fecha_hasta )
     {
         $pdv = Pdv::find( $pdv_id );
-
-        //dd( $pdv );
 
         $encabezados_documentos = FacturaPos::where('pdv_id',$pdv_id)->where('estado','Pendiente')->get();
 
@@ -69,10 +69,6 @@ class ReporteController extends Controller
             $array_totales = $this->get_total_por_medios_recaudos( $documento->lineas_registros_medios_recaudos );
             dd( $array_totales[0] );
         }
-
-        //$tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_resumen_por_medios_recaudos', compact( 'encabezados_documentos', 'pdv' ) )->render();
-        
-        //return $tabla_encabezados_documentos;
     }
 
     public function get_total_por_medios_recaudos( $lineas_registros_medios_recaudos )
@@ -95,9 +91,6 @@ class ReporteController extends Controller
         return $array_totales;
 
     }
-
-
-
 
     public function teso_movimiento_caja_pdv( $fecha_desde, $fecha_hasta, $teso_caja_id )
     {
@@ -123,5 +116,31 @@ class ReporteController extends Controller
 
         return View::make( 'ventas_pos.lista_pedidos_pendientes_tabla', compact( 'pedidos', 'pdv_id' ) )->render();
 
+    }
+
+    public function movimientos_ventas(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $agrupar_por = $request->agrupar_por;
+        $detalla_productos  = (int)$request->detalla_productos;
+        $detalla_clientes  = (int)$request->detalla_clientes;
+        $iva_incluido  = (int)$request->iva_incluido;
+
+        $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+
+        // En el movimiento se trae el precio_total con IVA incluido
+        $mensaje = 'IVA Incluido en precio';
+        if ( !$iva_incluido )
+        {
+            $mensaje = 'IVA <b>NO</b> incluido en precio';
+        }
+
+        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
     }
 }

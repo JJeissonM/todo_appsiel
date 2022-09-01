@@ -109,8 +109,12 @@ class FacturaPosController extends TransaccionController
 
         $lista_campos = $this->ajustar_campos($lista_campos,$pdv,$vendedor);
 
-        $fecha = $pdv->ultima_fecha_apertura();
-        $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
+        $fecha = date('Y-m-d');
+        if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
+        {
+            $fecha = $pdv->ultima_fecha_apertura();
+        }
+        $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $fecha );
 
         $modelo_controller = new ModeloController;
         $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
@@ -134,6 +138,11 @@ class FacturaPosController extends TransaccionController
         foreach ($productos as $pr)
         {
             $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+
+            if (!$grupo_inventario->mostrar_en_pagina_web) {
+                continue;
+            }
+            
             if ( is_null($grupo_inventario) )
             {
                 return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
