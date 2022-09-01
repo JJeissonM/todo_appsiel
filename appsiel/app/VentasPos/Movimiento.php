@@ -2,6 +2,8 @@
 
 namespace App\VentasPos;
 
+use App\Inventarios\InvGrupo;
+use App\Inventarios\InvProducto;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,9 +30,19 @@ class Movimiento extends Model
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
     }
 
+    public function item()
+    {
+        return $this->belongsTo(InvProducto::class,'inv_producto_id');
+    }
+
     public function pdv()
     {
         return $this->belongsTo(Pdv::class,'pdv_id');
+    }
+
+    public function categoria_item()
+    {
+        return InvGrupo::where('id',$this->item->grupo_inventario->id)->get()->first();
     }
 
     public function get_label_documento()
@@ -116,6 +128,9 @@ class Movimiento extends Model
             case 'pdv_id':
                 $agrupar_por = 'pdv_id';
                 break;
+            case 'inv_grupo_id':
+                $agrupar_por = 'inv_grupo_id';
+                break;
             case 'cliente_id':
                 $agrupar_por = 'cliente';
                 break;
@@ -144,18 +159,26 @@ class Movimiento extends Model
             default:
                 break;
         }
+        $array_wheres = [
+            ['vtas_pos_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        if ($estado!='Todos') {
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.estado','=', $estado]]);
+        }
 
         $movimiento = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+                            ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_pos_movimientos.clase_cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_movimientos.core_tipo_transaccion_id')
-                            ->where('vtas_pos_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                            ->where('vtas_pos_movimientos.estado', $estado)
+                            ->where($array_wheres)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_pos_movimientos.inv_producto_id',
                                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
+                                        'inv_productos.inv_grupo_id',
                                         'vtas_pos_movimientos.cliente_id',
                                         'vtas_pos_movimientos.core_tercero_id',
                                         'vtas_clases_clientes.descripcion AS clase_cliente',

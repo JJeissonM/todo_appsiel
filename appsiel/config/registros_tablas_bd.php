@@ -22794,7 +22794,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Agrupar por',
       'tipo' => 'select',
       'name' => 'agrupar_por',
-      'opciones' => '{"pdv_id":"Puntos de Ventas","cliente_id":"Clientes","inv_producto_id":"Productos","tasa_impuesto":"Tasa de impuesto","clase_cliente_id":"Clase de clientes","core_tipo_transaccion_id":"Tipo de transacción","forma_pago":"Forma de pago"}',
+      'opciones' => '{"pdv_id":"Puntos de Ventas","inv_grupo_id":"Cat. productos","inv_producto_id":"Productos","cliente_id":"Clientes","forma_pago":"Forma de pago","tasa_impuesto":"Tasa de impuesto","core_tipo_transaccion_id":"Tipo de transacción"}',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -22802,7 +22802,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2022-08-31 21:43:35',
-      'updated_at' => '2022-08-31 21:44:46',
+      'updated_at' => '2022-09-01 05:27:42',
     ),
     1418 => 
     array (
@@ -22810,7 +22810,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'descripcion' => 'Estado facturas',
       'tipo' => 'select',
       'name' => 'estado_facturas',
-      'opciones' => '{"Contabilizado":"Contabilizado","Pendiente":"Pendiente","Anulado":"Anulado"}',
+      'opciones' => '{"Contabilizado":"Contabilizado","Pendiente":"Pendiente","Todos":"Todos"}',
       'value' => 'null',
       'atributos' => '',
       'definicion' => '',
@@ -22818,7 +22818,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
       'editable' => 1,
       'unico' => 0,
       'created_at' => '2022-08-31 22:20:59',
-      'updated_at' => '2022-08-31 22:23:56',
+      'updated_at' => '2022-09-01 05:22:44',
     ),
   ),
   'sys_reportes' => 
@@ -23346,12 +23346,22 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     52 => 
     array (
       'id' => 54,
-      'descripcion' => 'Movimientos de ventas',
+      'descripcion' => 'Resúmenes de ventas',
       'core_app_id' => 20,
       'url_form_action' => 'pos_movimientos_ventas',
       'estado' => 'Activo',
       'created_at' => '2022-08-31 21:30:38',
-      'updated_at' => '2022-08-31 21:32:41',
+      'updated_at' => '2022-09-01 05:04:47',
+    ),
+    53 => 
+    array (
+      'id' => 55,
+      'descripcion' => 'Movimiento de Caja/Bancos',
+      'core_app_id' => 20,
+      'url_form_action' => 'teso_movimiento_caja_bancos',
+      'estado' => 'Activo',
+      'created_at' => '2022-09-01 05:30:17',
+      'updated_at' => '2022-09-01 05:30:24',
     ),
   ),
   'sys_reporte_tiene_campos' => 
@@ -23454,995 +23464,1031 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     ),
     16 => 
     array (
+      'orden' => 6,
+      'core_reporte_id' => 55,
+      'core_campo_id' => 249,
+    ),
+    17 => 
+    array (
       'orden' => 7,
       'core_reporte_id' => 23,
       'core_campo_id' => 250,
     ),
-    17 => 
+    18 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 36,
       'core_campo_id' => 250,
     ),
-    18 => 
+    19 => 
+    array (
+      'orden' => 7,
+      'core_reporte_id' => 55,
+      'core_campo_id' => 250,
+    ),
+    20 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 20,
       'core_campo_id' => 287,
     ),
-    19 => 
+    21 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 45,
       'core_campo_id' => 289,
     ),
-    20 => 
+    22 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 7,
       'core_campo_id' => 293,
     ),
-    21 => 
+    23 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 9,
       'core_campo_id' => 293,
     ),
-    22 => 
+    24 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 10,
       'core_campo_id' => 293,
     ),
-    23 => 
+    25 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 16,
       'core_campo_id' => 293,
     ),
-    24 => 
+    26 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 17,
       'core_campo_id' => 293,
     ),
-    25 => 
+    27 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 18,
       'core_campo_id' => 293,
     ),
-    26 => 
+    28 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 32,
       'core_campo_id' => 293,
     ),
-    27 => 
+    29 => 
     array (
       'orden' => 1,
       'core_reporte_id' => 45,
       'core_campo_id' => 293,
     ),
-    28 => 
+    30 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 32,
       'core_campo_id' => 312,
     ),
-    29 => 
+    31 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 38,
       'core_campo_id' => 380,
     ),
-    30 => 
+    32 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 43,
       'core_campo_id' => 380,
     ),
-    31 => 
-    array (
-      'orden' => 3,
-      'core_reporte_id' => 1,
-      'core_campo_id' => 473,
-    ),
-    32 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 2,
-      'core_campo_id' => 473,
-    ),
     33 => 
     array (
       'orden' => 3,
-      'core_reporte_id' => 5,
+      'core_reporte_id' => 1,
       'core_campo_id' => 473,
     ),
     34 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 6,
+      'core_reporte_id' => 2,
       'core_campo_id' => 473,
     ),
     35 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 5,
+      'core_campo_id' => 473,
+    ),
+    36 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 6,
+      'core_campo_id' => 473,
+    ),
+    37 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 13,
       'core_campo_id' => 473,
     ),
-    36 => 
+    38 => 
     array (
       'orden' => 1,
       'core_reporte_id' => 15,
       'core_campo_id' => 473,
     ),
-    37 => 
+    39 => 
     array (
       'orden' => 1,
       'core_reporte_id' => 23,
-      'core_campo_id' => 473,
-    ),
-    38 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 24,
-      'core_campo_id' => 473,
-    ),
-    39 => 
-    array (
-      'orden' => 2,
-      'core_reporte_id' => 26,
       'core_campo_id' => 473,
     ),
     40 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 27,
+      'core_reporte_id' => 24,
       'core_campo_id' => 473,
     ),
     41 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 30,
+      'core_reporte_id' => 26,
       'core_campo_id' => 473,
     ),
     42 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 27,
       'core_campo_id' => 473,
     ),
     43 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 30,
       'core_campo_id' => 473,
     ),
     44 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 35,
+      'core_reporte_id' => 31,
       'core_campo_id' => 473,
     ),
     45 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 36,
+      'core_reporte_id' => 33,
       'core_campo_id' => 473,
     ),
     46 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 37,
+      'core_reporte_id' => 35,
       'core_campo_id' => 473,
     ),
     47 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 38,
+      'core_reporte_id' => 36,
       'core_campo_id' => 473,
     ),
     48 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 39,
+      'core_reporte_id' => 37,
       'core_campo_id' => 473,
     ),
     49 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 42,
+      'core_reporte_id' => 38,
       'core_campo_id' => 473,
     ),
     50 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 43,
+      'core_reporte_id' => 39,
       'core_campo_id' => 473,
     ),
     51 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 47,
+      'core_reporte_id' => 42,
       'core_campo_id' => 473,
     ),
     52 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 48,
+      'core_reporte_id' => 43,
       'core_campo_id' => 473,
     ),
     53 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 49,
+      'core_reporte_id' => 47,
       'core_campo_id' => 473,
     ),
     54 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 50,
+      'core_reporte_id' => 48,
       'core_campo_id' => 473,
     ),
     55 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 51,
+      'core_reporte_id' => 49,
       'core_campo_id' => 473,
     ),
     56 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 52,
+      'core_reporte_id' => 50,
       'core_campo_id' => 473,
     ),
     57 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 53,
+      'core_reporte_id' => 51,
       'core_campo_id' => 473,
     ),
     58 => 
     array (
       'orden' => 2,
-      'core_reporte_id' => 54,
+      'core_reporte_id' => 52,
       'core_campo_id' => 473,
     ),
     59 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 53,
+      'core_campo_id' => 473,
+    ),
+    60 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 54,
+      'core_campo_id' => 473,
+    ),
+    61 => 
+    array (
+      'orden' => 2,
+      'core_reporte_id' => 55,
+      'core_campo_id' => 473,
+    ),
+    62 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 1,
       'core_campo_id' => 474,
     ),
-    60 => 
+    63 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 2,
       'core_campo_id' => 474,
     ),
-    61 => 
+    64 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 5,
       'core_campo_id' => 474,
     ),
-    62 => 
+    65 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 13,
       'core_campo_id' => 474,
     ),
-    63 => 
+    66 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 15,
       'core_campo_id' => 474,
     ),
-    64 => 
+    67 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 23,
-      'core_campo_id' => 474,
-    ),
-    65 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 24,
-      'core_campo_id' => 474,
-    ),
-    66 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 26,
-      'core_campo_id' => 474,
-    ),
-    67 => 
-    array (
-      'orden' => 4,
-      'core_reporte_id' => 27,
       'core_campo_id' => 474,
     ),
     68 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 30,
+      'core_reporte_id' => 24,
       'core_campo_id' => 474,
     ),
     69 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 31,
+      'core_reporte_id' => 26,
       'core_campo_id' => 474,
     ),
     70 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 33,
+      'core_reporte_id' => 27,
       'core_campo_id' => 474,
     ),
     71 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 35,
+      'core_reporte_id' => 30,
       'core_campo_id' => 474,
     ),
     72 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 36,
+      'core_reporte_id' => 31,
       'core_campo_id' => 474,
     ),
     73 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 37,
+      'core_reporte_id' => 33,
       'core_campo_id' => 474,
     ),
     74 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 38,
+      'core_reporte_id' => 35,
       'core_campo_id' => 474,
     ),
     75 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 39,
+      'core_reporte_id' => 36,
       'core_campo_id' => 474,
     ),
     76 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 42,
+      'core_reporte_id' => 37,
       'core_campo_id' => 474,
     ),
     77 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 43,
+      'core_reporte_id' => 38,
       'core_campo_id' => 474,
     ),
     78 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 47,
+      'core_reporte_id' => 39,
       'core_campo_id' => 474,
     ),
     79 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 48,
+      'core_reporte_id' => 42,
       'core_campo_id' => 474,
     ),
     80 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 49,
+      'core_reporte_id' => 43,
       'core_campo_id' => 474,
     ),
     81 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 50,
+      'core_reporte_id' => 47,
       'core_campo_id' => 474,
     ),
     82 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 51,
+      'core_reporte_id' => 48,
       'core_campo_id' => 474,
     ),
     83 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 52,
+      'core_reporte_id' => 49,
       'core_campo_id' => 474,
     ),
     84 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 53,
+      'core_reporte_id' => 50,
       'core_campo_id' => 474,
     ),
     85 => 
     array (
       'orden' => 4,
-      'core_reporte_id' => 54,
+      'core_reporte_id' => 51,
       'core_campo_id' => 474,
     ),
     86 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 52,
+      'core_campo_id' => 474,
+    ),
+    87 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 53,
+      'core_campo_id' => 474,
+    ),
+    88 => 
+    array (
+      'orden' => 4,
+      'core_reporte_id' => 54,
+      'core_campo_id' => 474,
+    ),
+    89 => 
+    array (
+      'orden' => 3,
+      'core_reporte_id' => 55,
+      'core_campo_id' => 474,
+    ),
+    90 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 5,
       'core_campo_id' => 476,
     ),
-    87 => 
+    91 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 8,
       'core_campo_id' => 489,
     ),
-    88 => 
+    92 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 8,
       'core_campo_id' => 490,
     ),
-    89 => 
+    93 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 8,
       'core_campo_id' => 491,
     ),
-    90 => 
+    94 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 13,
       'core_campo_id' => 536,
     ),
-    91 => 
+    95 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 15,
       'core_campo_id' => 561,
     ),
-    92 => 
+    96 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 11,
       'core_campo_id' => 588,
     ),
-    93 => 
+    97 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 12,
       'core_campo_id' => 588,
     ),
-    94 => 
+    98 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 22,
       'core_campo_id' => 588,
     ),
-    95 => 
+    99 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 25,
       'core_campo_id' => 588,
     ),
-    96 => 
+    100 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 28,
       'core_campo_id' => 588,
     ),
-    97 => 
+    101 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 33,
       'core_campo_id' => 588,
     ),
-    98 => 
+    102 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 44,
       'core_campo_id' => 588,
     ),
-    99 => 
+    103 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 31,
       'core_campo_id' => 592,
     ),
-    100 => 
+    104 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 34,
       'core_campo_id' => 592,
     ),
-    101 => 
+    105 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 7,
       'core_campo_id' => 599,
     ),
-    102 => 
+    106 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 17,
       'core_campo_id' => 599,
     ),
-    103 => 
+    107 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 32,
       'core_campo_id' => 599,
     ),
-    104 => 
+    108 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 34,
       'core_campo_id' => 599,
     ),
-    105 => 
+    109 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 45,
       'core_campo_id' => 599,
     ),
-    106 => 
+    110 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 31,
       'core_campo_id' => 604,
     ),
-    107 => 
+    111 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 34,
       'core_campo_id' => 604,
     ),
-    108 => 
+    112 => 
     array (
       'orden' => 0,
       'core_reporte_id' => 17,
       'core_campo_id' => 613,
     ),
-    109 => 
+    113 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 17,
       'core_campo_id' => 614,
     ),
-    110 => 
+    114 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 18,
       'core_campo_id' => 614,
     ),
-    111 => 
+    115 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 17,
       'core_campo_id' => 615,
     ),
-    112 => 
+    116 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 18,
       'core_campo_id' => 615,
     ),
-    113 => 
+    117 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 17,
       'core_campo_id' => 616,
     ),
-    114 => 
+    118 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 18,
       'core_campo_id' => 616,
     ),
-    115 => 
+    119 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 17,
       'core_campo_id' => 617,
     ),
-    116 => 
+    120 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 17,
       'core_campo_id' => 618,
     ),
-    117 => 
+    121 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 18,
       'core_campo_id' => 619,
     ),
-    118 => 
+    122 => 
     array (
       'orden' => 5,
       'core_reporte_id' => 13,
       'core_campo_id' => 622,
     ),
-    119 => 
+    123 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 20,
       'core_campo_id' => 622,
     ),
-    120 => 
+    124 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 622,
     ),
-    121 => 
+    125 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 35,
       'core_campo_id' => 622,
     ),
-    122 => 
+    126 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 20,
       'core_campo_id' => 623,
     ),
-    123 => 
+    127 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 20,
       'core_campo_id' => 629,
     ),
-    124 => 
+    128 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 21,
       'core_campo_id' => 630,
     ),
-    125 => 
+    129 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 21,
       'core_campo_id' => 632,
     ),
-    126 => 
+    130 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 21,
       'core_campo_id' => 633,
     ),
-    127 => 
+    131 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 35,
       'core_campo_id' => 633,
     ),
-    128 => 
+    132 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 13,
       'core_campo_id' => 636,
     ),
-    129 => 
+    133 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 13,
       'core_campo_id' => 637,
     ),
-    130 => 
+    134 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 24,
       'core_campo_id' => 637,
     ),
-    131 => 
+    135 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 48,
       'core_campo_id' => 637,
     ),
-    132 => 
+    136 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 54,
       'core_campo_id' => 637,
     ),
-    133 => 
+    137 => 
     array (
       'orden' => 15,
       'core_reporte_id' => 13,
       'core_campo_id' => 638,
     ),
-    134 => 
+    138 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 13,
       'core_campo_id' => 639,
     ),
-    135 => 
+    139 => 
     array (
       'orden' => 17,
       'core_reporte_id' => 13,
       'core_campo_id' => 640,
     ),
-    136 => 
+    140 => 
     array (
       'orden' => 18,
       'core_reporte_id' => 13,
       'core_campo_id' => 641,
     ),
-    137 => 
+    141 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 24,
       'core_campo_id' => 723,
     ),
-    138 => 
+    142 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 24,
       'core_campo_id' => 724,
     ),
-    139 => 
+    143 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 48,
       'core_campo_id' => 724,
     ),
-    140 => 
+    144 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 54,
       'core_campo_id' => 724,
     ),
-    141 => 
+    145 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 29,
       'core_campo_id' => 739,
     ),
-    142 => 
+    146 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 30,
       'core_campo_id' => 766,
     ),
-    143 => 
+    147 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 33,
       'core_campo_id' => 767,
     ),
-    144 => 
+    148 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 35,
       'core_campo_id' => 768,
     ),
-    145 => 
+    149 => 
     array (
       'orden' => 3,
       'core_reporte_id' => 23,
       'core_campo_id' => 771,
     ),
-    146 => 
+    150 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 36,
       'core_campo_id' => 771,
     ),
-    147 => 
+    151 => 
+    array (
+      'orden' => 5,
+      'core_reporte_id' => 55,
+      'core_campo_id' => 771,
+    ),
+    152 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 22,
       'core_campo_id' => 773,
     ),
-    148 => 
+    153 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 28,
       'core_campo_id' => 773,
     ),
-    149 => 
+    154 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 37,
       'core_campo_id' => 816,
     ),
-    150 => 
+    155 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 47,
       'core_campo_id' => 816,
     ),
-    151 => 
+    156 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 38,
       'core_campo_id' => 953,
     ),
-    152 => 
+    157 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 38,
       'core_campo_id' => 954,
     ),
-    153 => 
+    158 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 46,
       'core_campo_id' => 954,
     ),
-    154 => 
+    159 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 20,
       'core_campo_id' => 991,
     ),
-    155 => 
+    160 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 38,
       'core_campo_id' => 1021,
     ),
-    156 => 
+    161 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 42,
       'core_campo_id' => 1024,
     ),
-    157 => 
+    162 => 
     array (
       'orden' => 10,
       'core_reporte_id' => 38,
       'core_campo_id' => 1044,
     ),
-    158 => 
+    163 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 40,
       'core_campo_id' => 1044,
     ),
-    159 => 
+    164 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 43,
       'core_campo_id' => 1044,
     ),
-    160 => 
+    165 => 
     array (
       'orden' => 12,
       'core_reporte_id' => 46,
       'core_campo_id' => 1044,
     ),
-    161 => 
+    166 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 41,
       'core_campo_id' => 1136,
     ),
-    162 => 
+    167 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 40,
       'core_campo_id' => 1137,
     ),
-    163 => 
+    168 => 
     array (
       'orden' => 5,
       'core_reporte_id' => 43,
       'core_campo_id' => 1137,
     ),
-    164 => 
+    169 => 
     array (
       'orden' => 7,
       'core_reporte_id' => 38,
       'core_campo_id' => 1143,
     ),
-    165 => 
+    170 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 43,
       'core_campo_id' => 1143,
     ),
-    166 => 
+    171 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 46,
       'core_campo_id' => 1143,
     ),
-    167 => 
+    172 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 40,
       'core_campo_id' => 1174,
     ),
-    168 => 
+    173 => 
     array (
       'orden' => 2,
       'core_reporte_id' => 46,
       'core_campo_id' => 1263,
     ),
-    169 => 
+    174 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 46,
       'core_campo_id' => 1313,
     ),
-    170 => 
+    175 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 22,
       'core_campo_id' => 1314,
     ),
-    171 => 
+    176 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 28,
       'core_campo_id' => 1314,
     ),
-    172 => 
+    177 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 44,
       'core_campo_id' => 1314,
     ),
-    173 => 
+    178 => 
     array (
       'orden' => 9,
       'core_reporte_id' => 17,
       'core_campo_id' => 1417,
     ),
-    174 => 
+    179 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 52,
       'core_campo_id' => 1418,
     ),
-    175 => 
+    180 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 23,
       'core_campo_id' => 1419,
     ),
-    176 => 
+    181 => 
     array (
       'orden' => 16,
       'core_reporte_id' => 36,
       'core_campo_id' => 1419,
     ),
-    177 => 
+    182 => 
+    array (
+      'orden' => 9,
+      'core_reporte_id' => 55,
+      'core_campo_id' => 1419,
+    ),
+    183 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 53,
       'core_campo_id' => 1420,
     ),
-    178 => 
+    184 => 
     array (
       'orden' => 8,
       'core_reporte_id' => 53,
       'core_campo_id' => 1421,
     ),
-    179 => 
+    185 => 
     array (
       'orden' => 4,
       'core_reporte_id' => 11,
       'core_campo_id' => 1424,
     ),
-    180 => 
+    186 => 
     array (
       'orden' => 6,
       'core_reporte_id' => 54,
       'core_campo_id' => 1425,
     ),
-    181 => 
+    187 => 
     array (
       'orden' => 14,
       'core_reporte_id' => 54,

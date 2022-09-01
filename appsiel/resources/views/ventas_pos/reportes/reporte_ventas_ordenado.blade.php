@@ -10,6 +10,9 @@
         case 'pdv_id':
             $primer_encabezado = 'Pto. de Ventas';
             break;
+        case 'inv_grupo_id':
+            $primer_encabezado = 'Cat. de productos';
+            break;
         case 'cliente_id':
             $primer_encabezado = 'Clientes';
             break;
@@ -60,11 +63,17 @@
                     $cantidad = $coleccion_movimiento->sum('cantidad');
                     $precio_total = $coleccion_movimiento->sum('precio_total');
                     $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
-                    //dd($campo_agrupado,$coleccion_movimiento);
+                    
                     $array_lista[$i]['descripcion'] = $campo_agrupado;
                     if ($agrupar_por=='pdv_id') {
                         $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->pdv->descripcion;
                     }
+                    if ($agrupar_por=='inv_grupo_id') {
+                        if ($coleccion_movimiento->first()->categoria_item()!=null) {
+                            $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->categoria_item()->descripcion;
+                        }
+                    }
+                    
                     $array_lista[$i]['cantidad'] = $cantidad;
 
                     if ( $iva_incluido )
