@@ -128,7 +128,7 @@ class ReporteController extends Controller
         $detalla_clientes  = (int)$request->detalla_clientes;
         $iva_incluido  = (int)$request->iva_incluido;
 
-        $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+        $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por,$request->estado_facturas);
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';

@@ -109,7 +109,7 @@ class Movimiento extends Model
         return $vec;
     }
 
-    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por )
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado )
     {
         switch ( $agrupar_por )
         {
@@ -150,6 +150,7 @@ class Movimiento extends Model
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_pos_movimientos.clase_cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_movimientos.core_tipo_transaccion_id')
                             ->where('vtas_pos_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->where('vtas_pos_movimientos.estado', $estado)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_pos_movimientos.inv_producto_id',
