@@ -23,7 +23,28 @@
 				  }
 				?>
 
+				<div class="well" style="font-size: 1.1em;">
+					<i class="fa fa-info-circle" style="color: blue;" ></i> El sistema va a generar las facturas con base en el plan de pago de cada estudiante. 
+					<br> 
+					Se tomarán los registros <u>Pendientes</u> del Plan de pagos con <b>Fecha de vencimiento</b> menor o igual a la fecha seleccionada en el campo <u>Fecha vencimiento plan de pagos</u>
+				</div>
+
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="form-group">
+								{{ Form::bsFecha( 'fecha_vencimiento', date('Y-m-d'), 'Fecha vencimiento plan de pagos', [], [] ) }}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+				</div>
 
 				<div class="row">
 					<div class="col-md-6">
@@ -34,9 +55,24 @@
 						</div>
 					</div>
 					<div class="col-md-6">
+						&nbsp;
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<div class="form-group">
-								{{ Form::bsSelect( 'generar_fact_electronica', null, '*Enviar facturas electrónicas', [ '' => '', '1' => 'Si', '0' => 'No' ], [ 'required' => 'required' ] ) }}
+								{{ Form::bsFecha( 'fecha', date('Y-m-d'), '*Fecha facturas', [], ['required' => 'required'] ) }}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="row" style="padding:5px;">
+								<div class="form-group">
+									{{ Form::bsFecha( 'fecha_vencimiento_factura', date('Y-m-d'), '*Fecha vencimiento facturas', [], ['required' => 'required'] ) }}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -45,17 +81,17 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<div class="form-group">
-								{{ Form::bsFecha( 'fecha_vencimiento', date('Y-m-d'), 'Fecha vencimiento factura', [], [] ) }}
+							<div class="row" style="padding:5px;">
+								<div class="form-group">
+									{{ Form::bsSelect( 'generar_fact_electronica', null, '*Enviar facturas electrónicas', [ '' => '', '1' => 'Si', '0' => 'No' ], [ 'required' => 'required' ] ) }}
+								</div>
 							</div>
 						</div>
 					</div>
 					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
-						</div>
+						&nbsp;
 					</div>
-				</div>				
+				</div>
 
 				<br><br>
 
@@ -173,6 +209,12 @@
 					return false;
 				}
 
+				if ( $('#fecha').val() > $('#fecha_vencimiento_factura').val() )
+				{
+					alert('Fecha de vencimiento de la factura debe ser mayor a la Fecha de la factura.')
+					return false;
+				}
+
 				$('#myModal').modal({keyboard: false, backdrop: "static"});
 				var form = $('#form_generar_consulta_preliminar_cxc');
 				var url = form.attr('action').replace("facturacion_masiva_estudiantes", "facturacion_masiva_estudiantes/generar_consulta_preliminar");
@@ -198,9 +240,14 @@
 					return false;
 				}
 
-				if ($('#confirmacion').is(":checked"))
+				if ( $('#fecha').val() > $('#fecha_vencimiento_factura').val() )
 				{
-					
+					alert('Fecha de vencimiento de la factura debe ser mayor a la Fecha de la factura.')
+					return false;
+				}
+
+				if ($('#confirmacion').is(":checked"))
+				{					
 					if(!confirm("¿Realmente desea generar todas las facturas consultadas?")){
 						return false;
 					}else{

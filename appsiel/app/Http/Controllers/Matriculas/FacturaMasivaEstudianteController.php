@@ -80,7 +80,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
                     <th>Estudiante</th> 
                     <th>Acudiente</th>
                     <th width="280px">Concepto</th>
-                    <th> Fecha vencimiento </th>
+                    <th> Fecha vencimiento Libreta </th>
                     <th> Precio Unit. </th>
                     <th>Cantidad</th>
                     <th>Precio Total</th>
@@ -108,6 +108,8 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
             $descripcion_acudiente = 'Sin responsable financiero. Asignar responsable aquí: <a href="' . url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' . $estudiante->id ) . '" target="_blank" title="Gestionar Responsables" class="btn btn-success btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
             
+            $error_esta_en = '';
+            
             if ( !is_null( $acudiente ) )
             {
                 $descripcion_acudiente = $acudiente->tercero->descripcion . ': Responsable financiero no está creado como cliente. Crear como cliente aquí: <a href="' . url( 'web/create?id=13&id_modelo=157' ) . '" target="_blank" title="Crear tercero como cliente" class="btn btn-primary btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
@@ -117,7 +119,6 @@ class FacturaMasivaEstudianteController extends TransaccionController
                     $descripcion_acudiente = $acudiente->tercero->descripcion . ': Responsable financiero NO tiene sus datos básicos creados correctamente (ciudad, direccion, teléfono, email, etc.). Puede actualizar sus datos aquí: <a href="' . url( 'web/'.$acudiente->tercero->id.'/edit?id=3&id_modelo=7&id_transaccion=' ) . '" target="_blank" title="Crear tercero como cliente" class="btn btn-primary btn-xs">  <i class="fa fa-arrow-right"></i> </a>';
 
                     $esta_bien_la_info = true;
-                    $error_esta_en = '';
 
                     if ( $acudiente->tercero->direccion1 == '' || strlen( $acudiente->tercero->direccion1 ) < 10 )
                     {
@@ -263,10 +264,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
                 continue;
             }
 
-            //$registro_plan_pagos->fecha_vencimiento = $request->fecha_vencimiento;
-            $registro_plan_pagos->fecha = $request->fecha;
+            $registro_plan_pagos->fecha = $request->fecha; // Aux. para asignar fecha a la factura
 
-            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, (int)$request->generar_fact_electronica );
+            $factura = $this->crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, (int)$request->generar_fact_electronica, $request->fecha_vencimiento_factura );
 
             $mensaje_alerta_fact_elect = '';
             $url_factura = 'ventas/' . $factura->id . '?id=13&id_modelo=139&id_transaccion=' . config('matriculas.transaccion_id_factura_estudiante');
@@ -339,9 +339,9 @@ class FacturaMasivaEstudianteController extends TransaccionController
         dd( VtasDocEncabezado::find( 105 )->tipo_documento_app );
     }
 
-    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, $generar_fact_electronica )
+    public function crear_factura_estudiante_desde_registro_plan_pagos( $registro_plan_pagos, $lote, $generar_fact_electronica, $fecha_vencimiento_factura )
     {
-        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica );
+        $request = $this->preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica, $fecha_vencimiento_factura );
 
         $request['remision_doc_encabezado_id'] = 0;
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -361,7 +361,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
     }
 
 
-    public function preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica )
+    public function preparar_datos_factura_estudiante( $registro_plan_pagos, $lote, $generar_fact_electronica, $fecha_vencimiento_factura )
     {
         $id_modelo = config('matriculas.modelo_id_factura_estudiante'); // Factura de Estudiantes
         $id_transaccion = config('matriculas.transaccion_id_factura_estudiante'); // Factura de Ventas
@@ -383,7 +383,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
         $cliente = $registro_plan_pagos->estudiante->responsable_financiero()->tercero->cliente();
         $datos["vendedor_id"] = $cliente->vendedor_id;
         $datos["forma_pago"] = "credito";
-        $datos["fecha_vencimiento"] = $registro_plan_pagos->fecha_vencimiento;
+        $datos["fecha_vencimiento"] = $fecha_vencimiento_factura;
         $datos["inv_bodega_id"] = $cliente->inv_bodega_id;
         $datos["cliente_id"] = $cliente->id;
         $datos["inv_bodega_id_aux"] = "";
