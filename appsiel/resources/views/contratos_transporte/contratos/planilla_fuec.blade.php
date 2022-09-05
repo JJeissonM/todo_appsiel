@@ -191,8 +191,8 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border_center" style="width: 10%; font-size: 12px;">
                 @if($c->contratante_id==null || $c->contratante_id=='null') 
                     {{$c->contratanteTelefono}}
-                @else {
-                    {$c->contratante->tercero->telefono1}} 
+                @else 
+                    {{$c->contratante->tercero->telefono1}} 
                 @endif
             </td>
         </tr>
