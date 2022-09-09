@@ -1005,11 +1005,17 @@ class FacturaPosController extends TransaccionController
 
         $tipo_docs_app_id = $tipo_transaccion->tipos_documentos->first()->id;
 
+        $fecha = date('Y-m-d');        
+        if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
+        {
+            $fecha = $pdv->ultima_fecha_apertura();
+        }
+
         $campos = (object)[
             'core_tipo_transaccion_id' => $id_transaccion,
             'core_tipo_doc_app_id' => $tipo_docs_app_id,
             'consecutivo' => 0,
-            'fecha' => date('Y-m-d'),
+            'fecha' => $fecha,
             'core_empresa_id' => Auth::user()->empresa_id,
             'teso_medio_recaudo_id' => 1,
             'teso_caja_id' => $pdv->caja_default_id,
