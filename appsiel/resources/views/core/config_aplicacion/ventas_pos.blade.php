@@ -33,7 +33,7 @@
 									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
 								}
 							?>
-							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho','plantilla_factura_remision_cocina' => 'Factura + RM cocina'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -595,6 +595,7 @@ $(document).ready(function () {
     function resetear_ventana()
     {
     	$('#tabla_productos_facturados').find('tbody').html('');
+    	$('#tabla_productos_facturados2').find('tbody').html('');
     	reset_campos_formulario();
     	reset_tabla_ingreso_items();
     	reset_resumen_de_totales();
@@ -621,8 +622,10 @@ $(document).ready(function () {
 
     function llenar_tabla_productos_facturados()
     {
-        var linea_factura;
+        var linea_factura,linea_factura2;
         var lbl_total_factura = 0;
+
+        var cantidad_total_productos = 0;
 
         $('.linea_registro').each(function( ){
 
@@ -635,7 +638,13 @@ $(document).ready(function () {
 
             $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
 
+            // Para El fomrato con Remisión
+            linea_factura2 = '<tr> <td style="border-bottom:solid 1px !important;"> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + '  </td></tr>';
+            $('#tabla_productos_facturados2').find('tbody:last').append( linea_factura2 );
+
             lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+            cantidad_total_productos++;
 
         });
 
@@ -647,6 +656,8 @@ $(document).ready(function () {
 
         $('.lbl_condicion_pago').text( $('#forma_pago').val() );
         $('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
+
+        $('#cantidad_total_productos').text( cantidad_total_productos );
 
         $('#tr_fecha_vencimiento').hide();
         if ($('#forma_pago').val() == 'credito')

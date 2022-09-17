@@ -99,7 +99,7 @@
 
 		        			if ( !is_null( $apertura ) )
 		        			{
-		        				$fecha_desde = $apertura->created_at;
+		        				$fecha_desde = $apertura->fecha;
 		        			}
 		        			
 

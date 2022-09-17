@@ -304,6 +304,11 @@ class RecaudoCxcController extends Controller
                                                         ->get()
                                                         ->first();
             
+            if($documento_cxc_pendiente == null)
+            {
+                continue;
+            }
+            
             if ( $documento_cxc_pendiente->estado == 'Pagado' )
             {
                 // Se halla el total de todos los abonos que halla tenido el documento de cxc abonado (incluido el abono realizado por este recaudo)

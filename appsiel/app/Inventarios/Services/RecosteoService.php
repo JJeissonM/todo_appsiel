@@ -12,6 +12,8 @@ use App\Inventarios\Services\TallaItem;
 
 class RecosteoService
 {
+    public $arr_motivos_entradas_ids = [1, 11, 16, 23];
+
 	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta )
 	{                                    
 
@@ -21,32 +23,41 @@ class RecosteoService
          * inv_motivo_id
          * 1> Entrada Almacen
          * 11> Compras Nacionales 
+         * 16> Entrada por compras
          * 23> Saldos iniciales
          */
+
         $registros = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                         ->whereBetween( 'inv_doc_encabezados.fecha', [ $fecha_desde, $fecha_hasta] )
-                        ->whereNotIn('inv_doc_registros.inv_motivo_id',[1,11,23])
+                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_entradas_ids)
                         ->where('inv_doc_registros.inv_producto_id', $operador1, $item_id)
                         ->select('inv_doc_registros.*')
                         ->orderBy('inv_doc_encabezados.fecha')
                         ->get();
-
+        
         foreach ($registros as $linea_registro)
         {
+
+            $this->calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id);
+
+            if ($linea_registro->motivo->movimiento == 'salida') {
+                # code...
+            }
+
             $encabezado_documento = $linea_registro->encabezado_documento;
-            
+
             $costo_total_acumulado_item = InvMovimiento::where([
                 ['fecha','<=',$encabezado_documento->fecha],
-                ['inv_producto_id','<=',$encabezado_documento->inv_producto_id]
+                ['inv_producto_id','=',$item_id]
                 ])
-            ->whereIn('inv_motivo_id',[1,11,23])
+            ->whereIn('inv_motivo_id',$this->arr_motivos_entradas_ids)
             ->sum('costo_total');
             
             $cantidad_acumulada_item = InvMovimiento::where([
                     ['fecha','<=',$encabezado_documento->fecha],
-                    ['inv_producto_id','<=',$encabezado_documento->inv_producto_id]
+                    ['inv_producto_id','=',$item_id]
                 ])
-            ->whereIn('inv_motivo_id',[1,11,23])
+            ->whereIn('inv_motivo_id',$this->arr_motivos_entradas_ids)
             ->sum('cantidad');
 
             if ($cantidad_acumulada_item == 0) {
@@ -63,6 +74,9 @@ class RecosteoService
             $linea_registro->costo_unitario = $costo_promedio;
             $linea_registro->costo_total = $costo_total;
             $linea_registro->save();
+
+            // Se actuliza el costo prom. de Item
+            $linea_registro->item->set_costo_promedio( $linea_registro->inv_bodega_id, $costo_promedio);
 
             // Se actualiza el movimiento de inventario
             InvMovimiento::where('core_tipo_transaccion_id', $encabezado_documento->core_tipo_transaccion_id )
@@ -101,4 +115,20 @@ class RecosteoService
             'message' => 'Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '.(($i-1) * 2).' registros contables.']
             ;
 	}
+
+    public function calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id)
+    {
+        $ultimo_registro = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+                        ->whereIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_entradas_ids)
+                        ->where([
+                            ['inv_doc_registros.inv_producto_id', '=', $item_id],
+                            ['inv_doc_encabezados.fecha', '<=', $fecha_desde]
+                        ])
+                        ->select('inv_doc_registros.*')
+                        ->orderBy('inv_doc_encabezados.fecha')
+                        ->get()
+                        ->last();
+
+                        dd($ultimo_registro);
+    }
 }

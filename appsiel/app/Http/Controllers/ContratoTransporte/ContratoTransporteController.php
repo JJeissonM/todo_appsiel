@@ -419,10 +419,15 @@ class ContratoTransporteController extends Controller
         $vehiculo = $c->vehiculo;
         $emp = null;
         $emp = Empresa::find(1);
+
+        $p = Planillac::where('contrato_id', $id)->first();
+        $v = $p->plantilla;
+
         return view('contratos_transporte.contratos.show')
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan)
             ->with('c', $c)
+            ->with('v', $v)
             ->with('contratante', $contratante)
             ->with('vehiculo', $vehiculo)
             ->with('e', $emp);

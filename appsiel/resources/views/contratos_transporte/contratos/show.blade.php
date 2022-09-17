@@ -34,10 +34,11 @@
 						<div class="col-md-12" style="padding: 50px;">
 						<a href="{{route('cte_contratos.planillaindex',[$c->id,'CONTRATOS']).$variables_url}}" class="btn btn-primary"><i class="fa fa-arrow-right"></i> GENERAR E IMPRIMIR PLANILLAS FUEC PARA ESTE CONTRATO</a>
 							<div class="col-md-12 page" style="margin-top: 30px;">
+								<h3 style="text-align: center;"><i class="fa fa-eye"></i> Vista Previa <i class="fa fa-eye"></i> </h3>
 								<table style="width: 100%;">
 									<tbody>
 										<tr>
-											<td class="border" style="width: 20%;"><img style="width: 100%;" src="{{ asset('img/logos/transporcol_back_contrato.jpg') }}"></td>
+											<td class="border" style="width: 20%;"><img style="width: 100%;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
 											<td class="border" style="width: 68%; text-align: center;">
 												<div class="col-md-8" style="border-right: 1px solid; font-size: 24px; line-height: 0.9em;">
 													<p style="font-weight: bold; color: #000;">{{$e->descripcion}}</p>
@@ -53,7 +54,7 @@
 													<p style="font-size: 20px; font-weight: bold;">CONTRATO</p>
 												</div>
 											</td>
-											<td class="border" style="width: 12%;"><img style="max-height: 150px;" src="{{ asset('img/logos/transporcol_rigth.jpg') }}"></td>
+											<td class="border" style="width: 12%;"><img style="max-height: 150px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$e->imagen }}"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -182,35 +183,9 @@
 									</div>
 								</div>
 								<br><br><br>
-								<table style="width: 100%;">
-									<tbody>
-										<tr>
-											<td style="width: 40%; text-align: left;">EL CONTRATANTE</td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">EL CONTRATISTA</td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left;"><br><br><br><br></td>
-											<td style="width: 20%; text-align: left;"><br><br><br><br></td>
-											<td style="width: 40%; text-align: left;"><br><br><br><br></td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
-										</tr>
-										<tr>
-											<td style="width: 40%; text-align: left;">Firma</td>
-											<td style="width: 20%; text-align: left;"></td>
-											<td style="width: 40%; text-align: left;">Firma</td>
-										</tr>
-									</tbody>
-								</table>
+								
+								@include('contratos_transporte.contratos.tabla_firma_sello',['empresa'=>$e])
+
 								<div class="col-md-12" style="margin-top: 50px; border-bottom: 10px solid; border-color: #6cf5ee;"></div>
 								<div class="row" style="margin-top: 50px;">
 									<div class="col-md-11" style="margin-top: 30px; text-align: center;">
