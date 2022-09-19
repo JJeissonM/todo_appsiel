@@ -78,8 +78,6 @@ $(document).ready(function () {
                     campo_busqueda = 'id';
                 }
 
-                console.log(producto);
-
                 // Una segunda busqueda por Código de barras
                 if (producto === undefined && $('#forma_lectura_codigo_barras').val() == 'codigo_cantidad') {
                     var producto = productos.find(item => item.codigo_barras === $(this).val());
