@@ -47,7 +47,6 @@ Route::get('inventarios/eliminar_grupo_inventario/{id}', 'Inventarios\Inventario
 Route::get('inventarios/eliminar_bodega/{id}', 'Inventarios\InventarioController@eliminar_bodega');
 Route::get('inventarios/eliminar_producto/{id}', 'Inventarios\InventarioController@eliminar_producto');
 
-
 Route::get('inv_anular_documento/{id}', 'Inventarios\InventarioController@anular_documento');
 
 // REPORTES
@@ -79,3 +78,5 @@ Route::get('inv_recosteo_form','Inventarios\InventarioController@recosteo_form')
 Route::get('inv_recosteo', 'Inventarios\ProcesoController@recosteo');
 
 Route::get('inv_corregir_cantidades', 'Inventarios\ProcesoController@corregir_cantidades');
+
+Route::get('inv_anulacion_masiva/{lista_id}', 'Inventarios\ProcesoController@anulacion_masiva');

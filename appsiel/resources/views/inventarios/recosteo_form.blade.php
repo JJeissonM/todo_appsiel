@@ -6,33 +6,47 @@
 	@include('layouts.mensajes')
 
 	<div class="row">
-		<div class="col-md-10 col-md-offset-1">
-			
-				<div class="row">
-					<div class="col-sm-3">
-						&nbsp;
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label('fecha_desde','*Fecha desde') }}
-						<br/>
-						{{ Form::date('fecha_desde', null,[ 'class' => 'form-control', 'id' => 'fecha_desde' ]) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label('fecha_hasta','*Fecha hasta') }}
-						<br/>
-						{{ Form::date('fecha_hasta', null,[ 'class' => 'form-control', 'id' => 'fecha_hasta' ]) }}
-					</div>
-					<div class="col-sm-3">
-						{{ Form::label('inv_producto_id','Producto') }}
-						<br/>
-						{{ Form::select('inv_producto_id',$productos,null, [ 'class' => 'combobox', 'id' => 'inv_producto_id' ]) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label(' ','.') }}
-						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i>  Continuar </a>
-					</div>
+		<div class="col-md-10 col-md-offset-1">			
+			<div class="row">
+				<div class="col-sm-3">
+					{{ Form::label('fecha_desde','*Fecha desde') }}
+					<br/>
+					{{ Form::date('fecha_desde', null,[ 'class' => 'form-control', 'id' => 'fecha_desde' ]) }}
 				</div>
-			
+				<div class="col-sm-3">
+					{{ Form::label('fecha_hasta','*Fecha hasta') }}
+					<br/>
+					{{ Form::date('fecha_hasta', null,[ 'class' => 'form-control', 'id' => 'fecha_hasta' ]) }}
+				</div>
+				<div class="col-sm-4">
+					{{ Form::label('inv_producto_id','Producto') }}
+					<br/>
+					{{ Form::select('inv_producto_id',$productos,null, [ 'class' => 'combobox', 'id' => 'inv_producto_id' ]) }}
+				</div>
+				<div class="col-sm-2">
+					&nbsp;
+				</div>
+			</div>
+			<br>		
+			<div class="row">
+				<div class="col-sm-2">
+					&nbsp;
+				</div>
+				<div class="col-sm-4">
+					{{ Form::label('modo_recosteo','*Modo de recosteo') }}
+					<br/>
+					{{ Form::select('modo_recosteo',['desde_costo_promedio'=>'Tomar del Costo promedio actual','recalcular_costo_promedio'=>'Recalcular Costo promedio'],null, [ 'class' => 'form-control', 'id' => 'modo_recosteo' ]) }}
+				</div>
+				<div class="col-sm-4">
+					{{ Form::label('tener_en_cuenta_movimientos_anteriores','*Tener en cuenta movimientos anteriores') }}
+					<br/>
+					{{ Form::select('tener_en_cuenta_movimientos_anteriores',['1'=>'Si','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'tener_en_cuenta_movimientos_anteriores' ]) }}
+				</div>
+				<div class="col-sm-2">
+					{{ Form::label(' ','.') }}
+					<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i>  Continuar </a>
+				</div>
+			</div>			
 		</div>
 	</div>
 
@@ -98,11 +112,11 @@
 				var url_recostear = $('#btn_recostear').attr('href');
 				var n = url_recostear.search('a3p0');
 				if ( n > 0) {
-					var new_url = url_recostear.replace( 'a3p0', 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() );
+					var new_url = url_recostear.replace( 'a3p0', 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() + '&modo_recosteo=' + $('#modo_recosteo').val() + '&tener_en_cuenta_movimientos_anteriores=' + $('#tener_en_cuenta_movimientos_anteriores').val() );
 				}else{
 					n = url_recostear.search('inv_recosteo');
 					var url_aux = url_recostear.substr(0,n);
-					var new_url = url_aux + 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val();
+					var new_url = url_aux + 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() + '&modo_recosteo=' + $('#modo_recosteo').val() + '&tener_en_cuenta_movimientos_anteriores=' + $('#tener_en_cuenta_movimientos_anteriores').val();
 				}
 				
 				

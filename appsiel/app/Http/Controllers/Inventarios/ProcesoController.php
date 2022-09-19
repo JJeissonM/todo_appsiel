@@ -148,9 +148,18 @@ class ProcesoController extends Controller
         }
 
         $recosteo_serv = new RecosteoService();
-        $response = $recosteo_serv->recostear($operador1,$inv_producto_id,$fecha_desde,$fecha_hasta);
+        $response = $recosteo_serv->recostear($operador1,$inv_producto_id,$fecha_desde,$fecha_hasta, Input::get('modo_recosteo'),Input::get('tener_en_cuenta_movimientos_anteriores'));
 
         return redirect( 'inv_recosteo_form?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message',$response->message);
             
+    }
+
+    // Pendiente
+    public function anulacion_masiva($lista_ids)
+    {
+        $lista = explode(',',$lista_ids);
+        foreach ($lista as $key => $remision_id) {
+            # code...
+        }
     }
 }

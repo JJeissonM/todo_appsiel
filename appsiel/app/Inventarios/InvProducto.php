@@ -77,14 +77,10 @@ class InvProducto extends Model
             $costo_prom = $this->precio_compra;
         }
 
-        if ( $costo_prom <= 0 )
-        {
-            $costo_prom = 1;
-        }
-
         return $costo_prom;
     }
 
+    // Only Store - Not calculate
     public function set_costo_promedio( $bodega_id, $costo_prom )
     {
         $array_wheres = [ 
