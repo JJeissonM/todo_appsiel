@@ -30,21 +30,6 @@ $(document).ready(function () {
         return false;
     });
 
-
-    // Al Activar/Inactivar modo de ingreso
-    $('#modo_ingreso').on('click', function () {
-
-        if ($(this).val() == "true") {
-            $(this).val("false");
-            setCookie("modo_ingreso_codigo_de_barra", "false", 365);
-        } else {
-            $(this).val("true");
-            setCookie("modo_ingreso_codigo_de_barra", "true", 365);
-        }
-
-        reset_linea_ingreso_default();
-    });
-
     $('[data-toggle="tooltip"]').tooltip();
     var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botón guardar
     // Al ingresar código, descripción o código de barras del producto
@@ -69,13 +54,15 @@ $(document).ready(function () {
                     return false;
                 }
 
-                // Si la longitud del codigo ingresado es mayor que 5
+                // Si la longitud del codigo ingresado es mayor que 5 (numero arbitrario)
                 // se supone que es un código de barras
                 var campo_busqueda = '';
                 if ($(this).val().length > 5) {
                     var barcode = $(this).val();
                     var barcode_precio_unitario = $('#precio_unitario').val();
+                    
                     console.log(barcode);
+                    
                     if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' ) {
                         var el_item_id = get_item_id_from_barcode( barcode );
                         var producto = productos.find(item => item.id === parseInt(el_item_id));
@@ -83,47 +70,25 @@ $(document).ready(function () {
                     }else{
                         var producto = productos.find(item => item.codigo_barras === $(this).val());
                     }
+
                     campo_busqueda = 'codigo_barras';
                 } else {
+                    
                     var producto = productos.find(item => item.id === parseInt($(this).val()));
                     campo_busqueda = 'id';
                 }
 
+                console.log(producto);
+
+                // Una segunda busqueda por Código de barras
+                if (producto === undefined && $('#forma_lectura_codigo_barras').val() == 'codigo_cantidad') {
+                    var producto = productos.find(item => item.codigo_barras === $(this).val());
+                } 
+
                 if (producto !== undefined) {
 
-                    tasa_impuesto = producto.tasa_impuesto;
-                    inv_producto_id = producto.id;
-                    unidad_medida = producto.unidad_medida1;
-                    costo_unitario = producto.costo_promedio;
+                    agregar_linea_producto_ingresado(producto, barcode, barcode_precio_unitario, campo_busqueda);
 
-                    $(this).val(producto.descripcion);
-                    
-                    $('#existencia_actual').html('Stock: ' + producto.existencia_actual.toFixed(2));
-                    $('#existencia_actual').show();
-                    
-                    $('#precio_unitario').val(get_precio(producto.id));
-                    $('#tasa_descuento').val(get_descuento(producto.id));
-
-                    if (campo_busqueda == 'id') {
-                        $('#cantidad').select();
-                    } else {
-                        // Por código de barras, se agrega la línea con un unidad de producto
-                        $('#cantidad').val(1);
-
-                        cantidad = 1;
-                        if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' ) {
-                            $('#cantidad').val(get_quantity_from_barcode( barcode ));
-                            cantidad = parseFloat( get_quantity_from_barcode( barcode ) );
-                            if ( barcode_precio_unitario != '') {
-                                $('#precio_unitario').val(barcode_precio_unitario);
-                            }
-                        }
-
-                        calcular_valor_descuento();
-                        calcular_impuestos();
-                        calcular_precio_total();
-                        agregar_nueva_linea();
-                    }
                 } else {
                     $('#popup_alerta').show();
                     $('#popup_alerta').css('background-color', 'red');
@@ -136,6 +101,43 @@ $(document).ready(function () {
         }
 
     });
+
+    function agregar_linea_producto_ingresado(producto, barcode, barcode_precio_unitario, campo_busqueda)
+    {
+        tasa_impuesto = producto.tasa_impuesto;
+        inv_producto_id = producto.id;
+        unidad_medida = producto.unidad_medida1;
+        costo_unitario = producto.costo_promedio;
+
+        $('#inv_producto_id').val(producto.descripcion);
+        
+        $('#existencia_actual').html('Stock: ' + producto.existencia_actual.toFixed(2));
+        $('#existencia_actual').show();
+        
+        $('#precio_unitario').val(get_precio(producto.id));
+        $('#tasa_descuento').val(get_descuento(producto.id));
+
+        if (campo_busqueda == 'id') {
+            $('#cantidad').select();
+        } else {
+            // Por código de barras, se agrega la línea con un unidad de producto
+            $('#cantidad').val(1);
+
+            cantidad = 1;
+            if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' && producto.codigo_barras < 13 ) {
+                $('#cantidad').val(get_quantity_from_barcode( barcode ));
+                cantidad = parseFloat( get_quantity_from_barcode( barcode ) );
+                if ( barcode_precio_unitario != '') {
+                    $('#precio_unitario').val(barcode_precio_unitario);
+                }
+            }
+
+            calcular_valor_descuento();
+            calcular_impuestos();
+            calcular_precio_total();
+            agregar_nueva_linea();
+        }
+    }
     
     function get_item_id_from_barcode( barcode )
     {
