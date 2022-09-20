@@ -48,7 +48,7 @@ class RegistrosDocumentosController extends TransaccionController
                                     ->get();
         $vec1['']='';
         foreach ($opciones1 as $opcion){
-            $vec1[$opcion->id] = $opcion->descripcion;
+            $vec1[$opcion->id] = $opcion->get_label_documento() . ' - ' . $opcion->descripcion;
         }
         $documentos = $vec1;
 

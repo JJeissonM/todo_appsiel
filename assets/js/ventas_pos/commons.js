@@ -120,9 +120,10 @@ $(document).ready(function () {
         } else {
             // Por código de barras, se agrega la línea con un unidad de producto
             $('#cantidad').val(1);
-
             cantidad = 1;
-            if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' && producto.codigo_barras < 13 ) {
+
+            // Para balazas Dibal, obtener la cantidad del mismo codigo de barras
+            if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' && barcode.substr(0, 1) == 0 ) {
                 $('#cantidad').val(get_quantity_from_barcode( barcode ));
                 cantidad = parseFloat( get_quantity_from_barcode( barcode ) );
                 if ( barcode_precio_unitario != '') {

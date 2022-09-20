@@ -47,6 +47,11 @@ class NomDocEncabezado extends Model
         return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
     }
 
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
+
     public function empleados()
     {
         return $this->belongsToMany(NomContrato::class, 'nom_empleados_del_documento', 'nom_doc_encabezado_id', 'nom_contrato_id');
@@ -239,12 +244,12 @@ class NomDocEncabezado extends Model
     public static function opciones_campo_select()
     {
         $opciones = NomDocEncabezado::where('estado', 'Activo')
-                                    ->orderBy('descripcion')
+                                    ->orderBy('fecha','DESC')
                                     ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->get_label_documento() . ' - ' . $opcion->descripcion;
         }
 
         return $vec;

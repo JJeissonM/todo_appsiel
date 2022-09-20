@@ -68,10 +68,10 @@ class ReporteController extends Controller
     {
         $app = Aplicacion::find(Input::get('id'));
 
-        $opciones1 = NomDocEncabezado::all();
+        $opciones1 = NomDocEncabezado::orderBy('fecha','DESC')->get();
         $vec1['']='';
         foreach ($opciones1 as $opcion){
-            $vec1[$opcion->id] = $opcion->descripcion;
+            $vec1[$opcion->id] = $opcion->get_label_documento() . ' - ' . $opcion->descripcion;
         }
         $documentos = $vec1;
 
