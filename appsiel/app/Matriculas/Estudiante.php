@@ -13,7 +13,6 @@ use App\Core\Tercero;
 
 class Estudiante extends Model
 {
-
     protected $table = 'sga_estudiantes';
     /**
      * The attributes that are mass assignable.

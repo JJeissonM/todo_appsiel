@@ -136,7 +136,7 @@ class RecosteoService
             return InvProducto::find($item_id)->precio_compra;
         }
 
-        $ultima_fecha = $registro_ultima_fecha->fecha;
+        $ultima_fecha = $registro_ultima_fecha->encabezado_documento->fecha;
 
         $ultimas_entradas = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                         ->whereIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_entradas_ids)
@@ -147,7 +147,7 @@ class RecosteoService
                         ->select('inv_doc_registros.*')
                         ->orderBy('inv_doc_encabezados.fecha')
                         ->get();
-        
+
         if (!$tener_en_cuenta_movimientos_anteriores) {
             return $ultimas_entradas->sum('costo_total') / $ultimas_entradas->sum('cantidad');
         }

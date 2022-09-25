@@ -17,6 +17,7 @@ use App\Inventarios\InvGrupo;
 use App\Contabilidad\Impuesto;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
+use Illuminate\Support\Facades\DB;
 
 class ItemDesarmeAutomatico extends Model
 {
@@ -46,8 +47,8 @@ class ItemDesarmeAutomatico extends Model
     return ItemDesarmeAutomatico::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_items_desarmes_automaticos.item_consumir_id')
       ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_items_desarmes_automaticos.item_producir_id')
       ->select(
-        'items_consumir.descripcion AS campo1',
-        'items_producir.descripcion AS campo2',
+        DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS campo1'),
+        DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS campo2'),
         'inv_items_desarmes_automaticos.cantidad_proporcional AS campo3',
         'inv_items_desarmes_automaticos.estado AS campo4',
         'inv_items_desarmes_automaticos.id AS campo5'

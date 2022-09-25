@@ -1,9 +1,10 @@
+
 <table class="table table-bordered table-striped">
 	<tr>
 		<td colspan="2"><h3> <strong>Datos básicos del estudiante</strong> </h3></td>
 	</tr>
 	<tr>
-		<td colspan="2"><strong>Curso: </strong> {{ $estudiante->matricula_activa()->curso->descripcion }} - {{ $estudiante->matricula_activa()->periodo_lectivo->descripcion }} </td>
+		<td colspan="2"><strong>Curso: </strong> {{ $estudiante->matriculas->last()->curso->descripcion }} - {{ $estudiante->matriculas->last()->periodo_lectivo->descripcion }} </td>
 	</tr>
 
 	<tr>

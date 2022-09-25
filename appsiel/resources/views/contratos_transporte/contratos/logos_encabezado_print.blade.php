@@ -10,7 +10,7 @@
                     </div>
                     <div style="width: 60%;float:right;">
                         <br/>
-                        <span style="color:{{ config('contrato_transporte.color_emp_label') }}; font-weight:bold;">{{ $emp->descripcion }}</span>
+                        <span style="color:{{ config('contrato_transporte.color_emp_label') }}; font-weight:bold; font-size:10px;">{{ $emp->descripcion }}</span>
                     </div>
                 </div>                
                 <div style="width: 100%;clear:both; font-size:9px;">

@@ -32,7 +32,10 @@ class AccumulationService
 
     public function thereis_documents()
     {
-        $this->invoices = FacturaPos::where('pdv_id', $this->pos->id)->whereIn('estado', ['Pendiente', 'Acumulado'])->get();
+        $this->invoices = FacturaPos::where('pdv_id', $this->pos->id)
+                                ->whereIn('estado', ['Pendiente', 'Acumulado'])
+                                ->orderBy('fecha')
+                                ->get();
 
         if (is_null($this->invoices)) {
             return false;

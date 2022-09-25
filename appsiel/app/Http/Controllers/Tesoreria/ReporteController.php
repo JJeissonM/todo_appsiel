@@ -562,15 +562,13 @@ class ReporteController extends TesoreriaController
                 break;
         }
 
-        //print_r($todas_las_matriculas_del_curso);
-
         $curso = Curso::find($curso_id);
 
         $tabla = '<p style="text-align: center; font-size: 15px; font-weight: bold;">' . $titulo . ' <br/> Curso ' . $curso->descripcion . '</p><table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>  </th>
-                            <th> Estudiante (Cod. Matrícula)</th>
+                            <th> Estudiante </th>
                             <th> MAT </th>
                             <th> FEB </th>
                             <th> MAR </th>
@@ -596,8 +594,7 @@ class ReporteController extends TesoreriaController
         foreach ( $todas_las_matriculas_del_curso as $una_matricula ) 
         {
             $total_linea = 0;
-            $num_columna = 0;
-            
+            $num_columna = 0;            
 
             // Se obtiene la libreta Activa de ese estudiante para el año de la matríula activa
             $libreta_pagos = TesoLibretasPago::where('estado','Activo')
@@ -611,7 +608,7 @@ class ReporteController extends TesoreriaController
                 // PRIMERAS DOS COLUMNAS DE LA TABLA
                 $tabla.='<tr>
                             <td>'.$fila.'</td>
-                            <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->codigo.')'.'</td>';
+                            <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->periodo_lectivo->descripcion.')'.'</td>';
 
                 //Matrícula
 
@@ -777,7 +774,11 @@ class ReporteController extends TesoreriaController
         // --------------------
         $key_cartera = 0;
 
-        $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera',$id_cartera)->where('concepto',$concepto->id)->groupBy('id_cartera')->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo')->get();
+        $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera',$id_cartera)
+                ->where('concepto',$concepto->id)
+                ->groupBy('id_cartera')
+                ->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo','comportamiento')
+                ->get();
 
         // se hizo recaudo para el concepto de la cartera del estudiante
         if ( count($recaudos_libreta) > 0 ) 
@@ -792,6 +793,10 @@ class ReporteController extends TesoreriaController
                 $color_f = '#33FFC1';
             }else{
                 $color_f = '#F7CE13';
+            }
+
+            if($medio_recaudo== null){
+                $medio_recaudo = TesoMedioRecaudo::find(1);
             }
 
             // Si pago en banco o en efectivo
