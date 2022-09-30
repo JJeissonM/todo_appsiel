@@ -82,5 +82,18 @@ class RecetaCocina extends Model
   public static function tituloExport()
   {
     return "ASIGNACIÓN DE INGREDIENTES A RECETAS DE COCINA";
+  }   
+
+  public static function opciones_campo_select()
+  {
+      $opciones = RecetaCocina::groupBy('item_platillo_id')
+                          ->get();
+
+      $vec['']='';
+      foreach ($opciones as $opcion){
+          $vec[$opcion->id] = $opcion->item_platillo->id.' '.$opcion->item_platillo->descripcion;
+      }
+
+      return $vec;
   }
 }

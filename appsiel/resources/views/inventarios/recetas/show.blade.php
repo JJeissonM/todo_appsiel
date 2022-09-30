@@ -20,10 +20,12 @@
                                                         ['item_platillo_id', '<>', $registro->item_platillo_id]
                                                     ])
                                                     ->min('id');
+
+		$platillos = \App\Inventarios\RecetaCocina::opciones_campo_select();
     ?>
 
 	<div class="row">
-		<div class="col-md-6">
+		<div class="col-md-4">
 			&nbsp;&nbsp;&nbsp;
 			<div class="btn-group">
 				@if( isset($url_crear) )
@@ -34,7 +36,20 @@
 			</div>
 		</div>
 
-		<div class="col-md-6">
+		<div class="col-md-4">
+			&nbsp;&nbsp;&nbsp;
+			<div class="btn-group">
+				<div style="vertical-align: center;">
+					<br/>
+					{{ Form::label('item_platillo_id','Platillo:') }}
+					{{ Form::select('item_platillo_id',$platillos,null,['class'=>'combobox','id'=>'item_platillo_id']) }}
+					&nbsp;&nbsp;&nbsp;
+					<a class="btn btn-info btn-xs cambiar_platillo"><i class="fa fa-arrow-right"></i> Cambiar </a>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-md-4">
 			<div class="btn-group pull-right">
 				@if($reg_anterior!='')
 					{{ Form::bsBtnPrev('web/'.$reg_anterior.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo')) }}
@@ -136,6 +151,13 @@
 			    var url = "{{url('')}}" + "/" + "web_eliminar/" + $(this).attr('data-linea_receta_id') + "?id=8&id_modelo=321&id_transaccion=&ruta_redirect_completa=" + $(this).attr('data-ruta_redirect_completa');
                 location.href = url;
 		    });
+
+			$(".cambiar_platillo").click(function(event){
+				event.preventDefault();		
+
+				var url = "{{url('')}}" + "/" + "web/" + $('#item_platillo_id').val() + "?id=8&id_modelo=321&id_transaccion=";
+				location.href = url;
+			});
 
 
 		});
