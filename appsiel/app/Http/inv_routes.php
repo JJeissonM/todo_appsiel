@@ -58,6 +58,7 @@ Route::post('inv_etiquetas_codigos_barra', 'Inventarios\ReporteController@inv_et
 Route::post('inv_existencias_corte', 'Inventarios\ReporteController@inv_existencias_corte');
 
 Route::post('inv_movements_by_purpose', 'Inventarios\ReporteController@movements_by_purpose');
+Route::post('inv_listado_recetas_e_ingredientes', 'Inventarios\ReporteController@listado_recetas_e_ingredientes');
 
 
 // inv_consultar_existencias desde el index para cada bodega

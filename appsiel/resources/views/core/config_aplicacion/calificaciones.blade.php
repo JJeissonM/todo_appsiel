@@ -31,6 +31,9 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
+				
+				<h4> Boletines y calificaciones  </h4>
+				<hr>
 				<div class="row">
 
 					<div class="col-md-6">
@@ -159,6 +162,9 @@
 
 				</div>
 
+				<h4> Académico Estudiantes  </h4>
+				<hr>
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -189,8 +195,6 @@
 
 				</div>
 
-				<h4> Académico Estudiantes  </h4>
-				<hr>
 				<div class="row">
 
 					<div class="col-md-6">

@@ -559,4 +559,43 @@ class ProcesoController extends Controller
 
         return response()->json($results,200);
     }
+
+    public function reconstruir_movimiento_documento($documento_id)
+    {
+        ProcesoController::reconstruir_movimiento_un_documento($documento_id);
+        return redirect('ventas/' . $documento_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Movimiento de ventas actualizado.');
+    }
+
+    public static function reconstruir_movimiento_un_documento($documento_id)
+    {
+        $documento = VtasDocEncabezado::find($documento_id);
+
+        // Eliminar movimientos actuales
+        VtasMovimiento::where([
+                ['core_tipo_transaccion_id','=', $documento->core_tipo_transaccion_id],
+                ['core_tipo_doc_app_id','=', $documento->core_tipo_doc_app_id],
+                ['consecutivo','=', $documento->consecutivo]
+            ])
+            ->delete();
+
+        // Obtener líneas de registros del documento
+        $registros_documento = VtasDocRegistro::where('vtas_doc_encabezado_id', $documento->id)->get();
+        
+        $datos = $documento->toarray();
+        $total_documento = 0;
+        $n = 1;
+        foreach ($registros_documento as $linea)
+        {
+            VtasMovimiento::create( 
+                $datos +
+                $linea
+            );
+            $total_documento += $linea->precio_total;
+            $n++;
+        }
+
+        $documento->valor_total = $total_documento;
+        $documento->save();
+    }
+
 }

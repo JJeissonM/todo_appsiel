@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Input;
-use Form;
-use Cache;
-use View;
-use DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Form;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 use App\Inventarios\InvBodega;
 use App\Inventarios\InvProducto;
@@ -26,6 +26,7 @@ use App\Inventarios\MinStock;
 use App\Inventarios\Services\FiltroMovimientos;
 
 use App\Compras\ComprasMovimiento;
+use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;
 
@@ -393,6 +394,25 @@ class ReporteController extends Controller
         //dd($movements);
         $vista = View::make( 'inventarios.incluir.movements_by_purposes', compact('movements') )->render();
         
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
+
+        return $vista;
+   
+    }
+
+    public function listado_recetas_e_ingredientes(Request $request)
+    {        
+		$platillos = RecetaCocina::groupBy('item_platillo_id')
+                                ->get();
+
+        $vista = '<div class="container-fluid"> <div class="container"> <br><br><br>';
+        foreach ($platillos as $platillo) {
+            $ingredientes = $platillo->ingredientes();
+            $vista .= View::make( 'inventarios.recetas.show_tabla_receta', compact('platillo','ingredientes') )->render();
+        }
+        
+        $vista .= '</div> </div>';
+
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
 
         return $vista;

@@ -1,8 +1,10 @@
 <?php
-	$nombre = '';
-	if ( !is_null( $linea->profesor_asignatura ) ) 
+	$nombre = 'no asignado';
+	if ( $linea->profesor_asignatura != null ) 
 	{
-		$nombre = $linea->profesor_asignatura->profesor->name;
+		if ($linea->profesor_asignatura->profesor != null) {
+			$nombre = $linea->profesor_asignatura->profesor->name;
+		}		
 	}
 ?>
 @if ( $mostrar_nombre_docentes == 'Si') 
