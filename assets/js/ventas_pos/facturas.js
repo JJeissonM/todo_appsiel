@@ -235,7 +235,11 @@ function reset_campos_formulario()
 	$('#cliente_id').val( cliente_default.id );
 	$('#cliente_input').val( cliente_default.descripcion );
 	$('#cliente_input').css('background-color', 'transparent');
+
 	$('#vendedor_id').val( cliente_default.vendedor_id );
+	$('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+	$("button[data-vendedor_id='" + cliente_default.vendedor_id +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
+
 	$('#inv_bodega_id').val( cliente_default.inv_bodega_id );
 	$('#forma_pago').val( forma_pago_default );
 	$('#fecha_vencimiento').val( fecha_vencimiento_default );

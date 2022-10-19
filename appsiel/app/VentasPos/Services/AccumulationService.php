@@ -66,168 +66,109 @@ class AccumulationService
         return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios );
     }
 
-    public function accumulate_invoicing()
-    {
-        $invoices_heads = $this->invoices;
-        
-        $lote = uniqid();
-
-        foreach ( $invoices_heads as $invoice )
-        {
-            if( $invoice->estado == 'Acumulado' )
-            {
-                // La factura se pudo haber acumulado (y no Contabilizado) en un proceso anterior que se haya "caido"
-                continue;
-            }
-
-            if ( $invoice->core_tercero_id == 0 )
-            {
-                $invoice->core_tercero_id = $this->pos->cliente->tercero->id;
-            }
-
-            $cliente = $invoice->cliente;
-
-            $lineas_registros = $invoice->lineas_registros;
-
-            $obj_inv_serv = new InventoriesServices();
-            $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $this->pos->bodega_default_id );
-
-            $invoice->remision_doc_encabezado_id = $doc_remision->id;
-
-            foreach ($lineas_registros as $linea)
-            {
-                if( $linea->estado == 'Acumulado' )
-                {
-                    // La línea se pudo haber acumulado (y no Contabilizado) en un proceso anterior que se haya "caido"
-                    continue;
-                }
-
-                $datos = $invoice->toArray() + $linea->toArray();
-
-                // Movimiento de Ventas
-                $datos['zona_id'] = $cliente->zona_id;
-                $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
-                $datos['equipo_ventas_id'] = $invoice->vendedor->equipo_ventas_id;
-                $datos['detalle'] = $lote;
-                $datos['estado'] = 'Activo';
-
-                VtasMovimiento::create( $datos );
-
-                $linea->estado = 'Acumulado';
-                $linea->save();
-            }
-            
-            // Actualiza Movimiento POS
-            Movimiento::where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
-                        ->where('core_tipo_doc_app_id', $invoice->core_tipo_doc_app_id)
-                        ->where('consecutivo', $invoice->consecutivo)
-                        ->update(['estado' => 'Acumulado']);
-
-            // Movimiento de Tesoreria ó CxC
-            $datos['estado'] = 'Activo';
-            $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total, $invoice->descripcion);
-
-            $invoice->estado = 'Acumulado';
-            $invoice->lote_acumulacion = $lote;
-            $invoice->save();
-        }
-    }
-
     public function accumulate_one_invoice($invoice_id)
     {
         $invoice = FacturaPos::find($invoice_id);
-
-        if( !$this->is_pending($invoice) )
-        {
-            return 0;
-        }
-
         if ( $invoice->core_tercero_id == 0 )
         {
             $invoice->core_tercero_id = $invoice->pdv->cliente->tercero->core_tercero_id;
             $invoice->cliente_id = $invoice->pdv->cliente->id;
+            $invoice->save();
+
             $cliente = $invoice->pdv->cliente;
         }else{
             $cliente = $invoice->cliente;
-        }        
+        }
 
-        $lineas_registros = $invoice->lineas_registros;
+        if ($invoice->remision_doc_encabezado_id == 0) {
+            $obj_inv_serv = new InventoriesServices();
+            $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $invoice->pdv->bodega_default_id );
+            $invoice->remision_doc_encabezado_id = $doc_remision->id;
+            $invoice->save();
+        }
 
-        $obj_inv_serv = new InventoriesServices();
-        $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $invoice->pdv->bodega_default_id );
+        $datos = $invoice->toArray();
+        
+        $array_wheres = [
+            [ 'core_tipo_transaccion_id','=',$invoice->core_tipo_transaccion_id],
+            [ 'core_tipo_doc_app_id','=',$invoice->core_tipo_doc_app_id],
+            [ 'consecutivo','=',$invoice->consecutivo]
+        ];
 
-        $invoice->remision_doc_encabezado_id = $doc_remision->id;
-
-        foreach ($lineas_registros as $linea)
-        {
-            if( $linea->estado == 'Acumulado' )
-            {
-                // La línea se pudo haber acumulado (y no Contabilizado) en un proceso anterior que se haya "caido"
-                continue;
-            }
-
-            $datos = $invoice->toArray() + $linea->toArray();
-
-            // Movimiento de Ventas
+        if ($this->is_pending_accounting($array_wheres)) {
+            $lineas_registros = $invoice->lineas_registros;
             $datos['zona_id'] = $cliente->zona_id;
             $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
             $datos['equipo_ventas_id'] = $invoice->vendedor->equipo_ventas_id;
             $datos['estado'] = 'Activo';
+            foreach ($lineas_registros as $linea)
+            {
+                // Movimiento de Ventas
+                VtasMovimiento::create( $datos + $linea->toArray() );
 
-            VtasMovimiento::create( $datos );
+                $linea->estado = 'Acumulado';
+                $linea->save();
+            }
+        }       
 
-            $linea->estado = 'Acumulado';
-            $linea->save();
-        }
-        
         // Actualiza Movimiento POS
-        Movimiento::where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id', $invoice->core_tipo_doc_app_id)
-                    ->where('consecutivo', $invoice->consecutivo)
+        Movimiento::where($array_wheres)
                     ->update(['estado' => 'Acumulado']);
 
-        // Movimiento de Tesoreria ó CxC
         $datos['estado'] = 'Activo';
-        $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total, $invoice->descripcion);
+
+        // Movimiento de Tesoreria ó CxC
+        if ($this->is_pending_registro_pago($invoice->forma_pago,$array_wheres)) {
+            $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total, $invoice->descripcion);
+        }
 
         $invoice->estado = 'Acumulado';
         $invoice->save();
 
-        $this->accounting_one_invoice($invoice_id);
+        if ($this->is_pending_accounting($array_wheres)) {
+            $this->accounting_one_invoice($invoice_id);
+        }
 
         return 1;
     }
 
-    public function is_pending($invoice)
+    public function is_pending_mov_ventas($array_wheres)
     {
-        if( $invoice->estado != 'Pendiente' )
-        {
-            // La factura se pudo haber acumulado (y no Contabilizado) en un proceso anterior que se haya "caido"
+        $doc = VtasMovimiento::where($array_wheres)->get()->first();
+        if ( $doc != null ) {
             return false;
         }
-        
-        $sales_movement = VtasMovimiento::where([
-            ['core_tipo_transaccion_id','=',$invoice->core_tipo_transaccion_id],
-            ['core_tipo_doc_app_id','=',$invoice->core_tipo_doc_app_id],
-            ['consecutivo','=',$invoice->consecutivo]
-        ])->get()->first();
 
-        if( $sales_movement != null )
-        {
-            return false;
-        }
-        
-        $contab_movement = ContabMovimiento::where([
-            ['core_tipo_transaccion_id','=',$invoice->core_tipo_transaccion_id],
-            ['core_tipo_doc_app_id','=',$invoice->core_tipo_doc_app_id],
-            ['consecutivo','=',$invoice->consecutivo]
-        ])->get()->first();
+        return true;
+    }
 
-        if( $contab_movement != null )
-        {
+    public function is_pending_registro_pago($forma_pago,$array_wheres)
+    {
+
+        if ($forma_pago == 'credito') {
+            $doc = DocumentosPendientes::where($array_wheres)->get()->first();
+            if ( $doc != null ) {
+                return false;
+            }
+        }
+
+        if ($forma_pago == 'contado') {
+            $doc = TesoMovimiento::where($array_wheres)->get()->first();
+            if ( $doc != null ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public function is_pending_accounting($array_wheres)
+    {
+        $doc = ContabMovimiento::where($array_wheres)->get()->first();
+        if ( $doc != null ) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -256,7 +197,7 @@ class AccumulationService
             
             $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
-            if ( !is_null($lineas_recaudos) ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            if ( !is_null($lineas_recaudos) )
             {
                 foreach ($lineas_recaudos as $linea)
                 {
@@ -269,62 +210,7 @@ class AccumulationService
                 }
             }
         }
-    }    
-
-    public function store_accounting()
-    {
-        $invoices_heads = $this->invoices;
-
-        $detalle_operacion = 'Acumulación PDV: ' . $this->pos->descripcion;
-        
-        $obj_sales_serv = new SalesServices();
-
-        foreach ( $invoices_heads as $invoice_head )
-        {
-            if( $invoice_head->estado == 'Pendiente')
-            {
-                continue;
-            }
-
-            $invoice_lines = $invoice_head->lineas_registros;
-
-            foreach ( $invoice_lines as $invoice_line )
-            {
-                if( $invoice_line->estado == 'Pendiente')
-                {
-                    continue;
-                }
-
-                $data_invoice_line = $invoice_head->toArray() + $invoice_line->toArray();
-
-                $data_invoice_line['estado'] = 'Activo';
-
-                $obj_sales_serv->contabilizar_movimiento_credito( $data_invoice_line, $detalle_operacion );
-
-                $invoice_line->estado = 'Contabilizado';
-                $invoice_line->save();
-            }
-
-            // Actualiza Movimiento POS
-            Movimiento::where('core_tipo_transaccion_id', $invoice_head->core_tipo_transaccion_id)
-                ->where('core_tipo_doc_app_id', $invoice_head->core_tipo_doc_app_id)
-                ->where('consecutivo', $invoice_head->consecutivo)
-                ->update(['estado' => 'Contabilizado']);
-
-            // Contabilizar Caja y Bancos ó Cartera de clientes
-            $datos = $invoice_head->toArray();
-            $datos['estado'] = 'Activo';
-            $obj_sales_serv->contabilizar_movimiento_debito( $invoice_head->forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $this->pos->caja_default_id );
-
-            // Inventarios (Inventarios y Costos)
-            $obj_inv_doc_serv = new InvDocumentsService();
-            $obj_inv_doc_serv->store_accounting_doc_head( $invoice_head->remision_doc_encabezado_id, $detalle_operacion );
-
-            // Actualizar encabezado de factura
-            $invoice_head->estado = 'Contabilizado';
-            $invoice_head->save();
-        }
-    } 
+    }
 
     public function accounting_one_invoice($invoice_id)
     {

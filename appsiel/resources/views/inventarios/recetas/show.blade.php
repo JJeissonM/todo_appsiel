@@ -126,6 +126,15 @@
                                     <td align="right"> ${{ number_format( $sum_costo_total, 2, ',', '.') }}</td>
                                     <td> &nbsp; </td>
                                 </tr>
+                                <!-- <tr>
+                                    <td> &nbsp; </td>
+                                    <td> &nbsp; </td>
+                                    <td> &nbsp; </td>
+                                    <td> &nbsp; </td>
+                                    <td align="right"> <a class="btn btn-primary btn-xs"><i class="fa fa-save"></i> Actualizar Costo Prom. Platillo</a></td>
+                                    <td> &nbsp; </td>
+                                </tr>
+							-->
 							</tbody>
 						</table>
 					</div>

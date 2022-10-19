@@ -4,22 +4,16 @@ namespace App\Http\Controllers\VentasPos;
 
 use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
+
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Input;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Inventarios\InventarioController;
-use App\Http\Controllers\Ventas\VentaController;
-
-use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -260,11 +254,10 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $pedido = VtasPedido::find($request->pedido_id);
-
         $lineas_registros = json_decode($request->lineas_registros);
+        $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
 
-        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request);
+        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request,$total_factura);
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -280,6 +273,7 @@ class FacturaPosController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
+        $pedido = VtasPedido::find($request->pedido_id);
         if ( !is_null( $pedido ) )
         {
             if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
@@ -303,6 +297,15 @@ class FacturaPosController extends TransaccionController
         return $doc_encabezado->consecutivo;
     }
 
+    public function get_total_factura_from_arr_lineas_registros($lineas_registros)
+    {
+        $total_factura = 0;
+        foreach ($lineas_registros as $linea) {
+            $total_factura += (float)$linea->precio_total;
+        }
+        return $total_factura;
+    }
+
     public function get_todos_los_pedidos_mesero_para_la_mesa($pedido)
     {
         return VtasPedido::where(
@@ -315,7 +318,7 @@ class FacturaPosController extends TransaccionController
                 ->get();
     }
 
-    public function actualizar_campo_lineas_registros_medios_recaudos_request(&$request_2)
+    public function actualizar_campo_lineas_registros_medios_recaudos_request(&$request_2,$total_factura)
     {
         $lineas_registros_medios_recaudos = json_decode($request_2->lineas_registros_medios_recaudos, true); // true convierte en un array asociativo al JSON
 
@@ -328,17 +331,15 @@ class FacturaPosController extends TransaccionController
         {
             $pdv = Pdv::find($request_2->pdv_id);
 
-            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' . $pdv->caja_default_id . '-' . $pdv->caja->descripcion . '","teso_cuenta_bancaria_id":"0-","valor":"$' . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio) . '"}]';
+            $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' . $pdv->caja_default_id . '-' . $pdv->caja->descripcion . '","teso_cuenta_bancaria_id":"0-","valor":"$' . $total_factura . '"}]';
         } else {
 
             // CUANDO HAY VARIOS MEDIOS DE RECAUDOS... ¿CÓMO CUADRAR CON EL TOTAL DE LA FACTURA?
 
-
             $valor = json_decode($medios_recaudos)[0]->valor;
-            $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . ($request_2->total_efectivo_recibido - $request_2->valor_total_cambio), $medios_recaudos);
+            $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . $total_factura, $medios_recaudos);
         }
     }
-
 
     /*
         Crea los registros de un documento.
@@ -443,16 +444,15 @@ class FacturaPosController extends TransaccionController
         return view($vista, compact('id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad', 'abonos', 'empresa', 'docs_relacionados', 'doc_registros', 'url_crear', 'id_transaccion', 'notas_credito'));
     }
 
-
     /*
         Imprimir
     */
     public function imprimir($id)
     {
         $documento_vista = $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
-
+        
         // Se prepara el PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
@@ -717,8 +717,9 @@ class FacturaPosController extends TransaccionController
     public function update(Request $request, $id)
     {
         $lineas_registros = json_decode($request->lineas_registros);
+        $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
 
-        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request);
+        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request,$total_factura);
 
         $doc_encabezado = FacturaPos::find($id);
         $doc_encabezado->fecha = $request->fecha;
@@ -937,37 +938,10 @@ class FacturaPosController extends TransaccionController
 
     /*
         ACUMULAR
-        => Hacer desarme automático de productos
-        => Validar existencias de Items
         => Genera movimiento de ventas
         => Genera Documentos de Remisión y movimiento de inventarios
         => Genera Movimiento de Tesorería O CxC
-    */
-    public function acumular($pdv_id)
-    {
-        $obj_acumm_serv = new AccumulationService( $pdv_id );
-        if( !$obj_acumm_serv->thereis_documents() )
-        {
-            return 1;
-        }
-
-        $obj_acumm_serv->accumulate_invoicing();
-
-        return 1;
-    }
-
-    public function acumular_una_factura($factura_id)
-    {
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accumulate_one_invoice($factura_id);
-
-        return 1;
-    }
-
-    
-
-    /*
+        y
         CONTABILIZAR
         => Genera Movimiento Contable para:
             * Movimiento de Ventas (Ingresos e Impuestos)
@@ -975,18 +949,14 @@ class FacturaPosController extends TransaccionController
             * Movimiento de Tesorería (Caja y Bancos)
             * Movimiento de CxC (Cartera de clientes)
     */
-    public function contabilizar($pdv_id)
+    public function acumular_una_factura($factura_id)
     {
-        $obj_acumm_serv = new AccumulationService( $pdv_id );
-        if( !$obj_acumm_serv->thereis_documents() )
-        {
-            return 1;
-        }
+        $obj_acumm_serv = new AccumulationService( 0 );
 
-        $obj_acumm_serv->store_accounting();
+        $obj_acumm_serv->accumulate_one_invoice($factura_id);
 
         return 1;
-    }
+    }   
 
     public function contabilizar_una_factura($factura_id)
     {
@@ -1212,7 +1182,6 @@ class FacturaPosController extends TransaccionController
 
         return ['encabezado' => $encabezado, 'pie_pagina' => $pie_pagina];
     }
-
 
     public function crear_desde_pedido($pedido_id)
     {

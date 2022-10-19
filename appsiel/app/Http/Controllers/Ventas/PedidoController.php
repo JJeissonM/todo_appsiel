@@ -87,17 +87,14 @@ class PedidoController extends TransaccionController
         $request['estado'] = "Pendiente";
 
         if (!isset($request['vendedor_id'])) {
-            $request['vendedor_id'] = Vendedor::get()->first()->id;
-        }
+            
+            $request['vendedor_id'] = config('ventas.vendedor_id');
 
-        $empresa = Empresa::all()->first();
-        
-        /*$request['descripcion'] = "<address>
-                                    <b>Recoger en: $empresa->descripcion</b><br>
-                                    $empresa->direccion1, $empresa->barrio<br>".
-                                    $empresa->ciudad->descripcion.", ".$empresa->ciudad->departamento->descripcion.", $empresa->codigo_postal<br>
-                                    Tel.: $empresa->telefono1<br>                                           
-                                </address>";*/
+            $cliente = Cliente::find($request['cliente_id']);
+            if ($cliente != null) {
+                $request['vendedor_id'] = $cliente->vendedor_id;
+            }
+        }
 
         // 2do. Crear documento de Ventas
         $ventas_doc_encabezado_id = PedidoController::crear_documento($request, $lineas_registros, $request->url_id_modelo);
@@ -117,7 +114,7 @@ class PedidoController extends TransaccionController
     }
 
     
-
+    // Desde la Web
     public function completar_request( $request )
     {
         $tercero = DB::select('select id from core_terceros where user_id = ?', [Auth::user()->id]);

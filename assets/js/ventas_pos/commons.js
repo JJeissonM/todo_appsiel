@@ -367,8 +367,10 @@ $(document).ready(function () {
 
         // Asignar resto de campos
         $('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
-        $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
+        $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+        $("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
 
+        $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
 
         $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
         $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
@@ -567,14 +569,11 @@ $(document).ready(function () {
         var url = $("#form_create").attr('action');
         var data = $("#form_create").serialize();
 
-        //setCookie( 'ultimo_valor_total_cambio', total_cambio, 1);
-        //setCookie( 'ultimo_valor_total_factura', total_factura, 1);
-        //setCookie( 'ultimo_valor_efectivo_recibido', parseFloat($('#efectivo_recibido').val()), 1);
-        //setCookie( 'ultimo_valor_ajuste_al_peso', valor_ajuste_al_peso, 1);
-
+        /*$("#form_create").submit();*/        
+        
         $.post(url, data, function (doc_encabezado_consecutivo) {
             $('title').append(doc_encabezado_consecutivo);
-            /**/
+            
             $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
 
             llenar_tabla_productos_facturados();
@@ -586,11 +585,9 @@ $(document).ready(function () {
                 resetear_ventana();
             }else{
                 location.href = url_raiz + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val() + '&action=create';
-            }
-            //location.reload();
-            
+            }            
         });
-
+        
     });
 
     function resetear_ventana()

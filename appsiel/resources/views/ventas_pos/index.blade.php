@@ -227,40 +227,11 @@
 			btn_acumular = $(this);
 
 			$("#ids_facturas").val($(this).attr('data-ids_facturas'));
-
 			
 			$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small> <br> Validando Existencias... </h1>' );
 
 			validar_existencias();
-		});
-		
-		// the recursive function 
-		function getShelfRecursive() { 
-			
-			// terminate if array exhausted 
-			if (arr_ids_facturas.length === 0) 
-			{
-				$("#div_spin").hide();
-				//$(".btn_close_modal").show();
-				location.reload();
-
-				return; 
-			}
-
-			// pop top value 
-			var factura_id = arr_ids_facturas[0]; 
-			arr_ids_facturas.shift(); 
-			
-			// ajax request 
-			$.get("{{url('pos_acumular_una_factura')}}" + "/" + factura_id, function(){ 
-				// call completed - so start next request 
-				restantes--;
-				document.getElementById('contador_facturas').innerHTML = restantes;
-				console.log(restantes);
-				getShelfRecursive();
-			}); 
-		} 
-	
+		});	
 
 		function validar_existencias()
 		{
@@ -286,7 +257,6 @@
 
 						// fires off the first call 
 						getShelfRecursive();
-
 					}
 				},
 				error : function( data, textStatus, xhr ) {
@@ -298,52 +268,30 @@
 
 			return continuar;
 		}
+		
+		// the recursive function 
+		function getShelfRecursive() { 
+			
+			// terminate if array exhausted 
+			if (arr_ids_facturas.length === 0) 
+			{
+				$("#div_spin").hide();
+				location.reload();
 
-		function acumular()
-		{
-			arr_ids_facturas = JSON.parse($("#ids_facturas").val());
+				return; 
+			}
 
-			console.log(arr_ids_facturas);
-
-			restantes = arr_ids_facturas.length;
-			$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i> <br> Acumulando facturas POS... <span id="contador_facturas" style="color:#9c27b0">' + restantes + '</span> facturas restantes.</h1>' );
-
-			var allAJAX = arr_ids_facturas.map(factura_id => {
-				$.ajax({
-					type: "GET",
-					url: "{{url('pos_acumular_una_factura')}}" + "/" + factura_id,
-					async: false,
-					success : function(data) {
-						restantes--;
-						document.getElementById('contador_facturas').innerHTML = restantes;
-						console.log(restantes);
-					}
-				});
-			});	
-		}
-
-		function contabilizar()
-		{
-			arr_ids_facturas = JSON.parse($("#ids_facturas").val());
-
-			console.log(arr_ids_facturas);
-
-			restantes = arr_ids_facturas.length;
-
-			$('#contenido_modal').html( '<h1 style="text-align:center;"> <small>Por favor espere</small>  <br> Validación de existencias completada exitosamente: <i class="fa fa-check"></i> <br> Acumulación completada exitosamente: <i class="fa fa-check"></i> <br> Contabilizando facturas POS... <span id="contador_facturas" style="color:#9c27b0">' + restantes + '</span> facturas restantes.</h1>' );
-
-			var allAJAX = arr_ids_facturas.map(factura_id => {
-				$.ajax({
-					type: "GET",
-					url: "{{url('pos_contabilizar_una_factura')}}" + "/" + factura_id,
-					async: true,
-					success : function(data) {
-						restantes--;
-						document.getElementById('contador_facturas').innerHTML = restantes;
-						console.log(restantes);
-					}
-				});
-			});
+			// pop top value 
+			var factura_id = arr_ids_facturas[0]; 
+			arr_ids_facturas.shift(); 
+			
+			// ajax request 
+			$.get("{{url('pos_acumular_una_factura')}}" + "/" + factura_id, function(){ 
+				// call completed - so start next request 
+				restantes--;
+				document.getElementById('contador_facturas').innerHTML = restantes;
+				getShelfRecursive();
+			}); 
 		}
 
 		$(document).on('click',".btn_consultar_facturas",function(event){
