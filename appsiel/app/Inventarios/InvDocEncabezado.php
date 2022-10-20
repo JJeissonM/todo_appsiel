@@ -4,9 +4,8 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-use Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 

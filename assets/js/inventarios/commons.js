@@ -32,10 +32,10 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 		$('#tipo_producto').val(respuesta.tipo);
 
 		if ( respuesta.existencia_actual >= 0) {
-			$('#existencia_actual').attr('style','background-color:#97D897;');
+			$('#existencia_actual').attr('style','background-color:#97D897;'); // Color Verde
 		}else{
 			
-			$('#existencia_actual').attr('style','background-color:#FF8C8C;');
+			$('#existencia_actual').attr('style','background-color:#FF8C8C;'); // Color Rojo
 			
 			// Si el tipo de producto es "producto" y el movimiento NO es de entrada, no se permite seguir con existencia 0
 			if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' )
@@ -188,6 +188,7 @@ $(document).ready(function(){
                     $('#costo_total').val('');
                     return false;
                 }
+
                 if (enfocar_el_incorrecto()!='cantidad')
                 {
 					if (enfocar_el_incorrecto()!='costo_unitario')
@@ -207,7 +208,7 @@ $(document).ready(function(){
 	});
 
 	/*
-	    validar_existencia_actual
+	    validar existencia actual
 	*/
 	function validar_existencia_actual()
 	{
@@ -662,31 +663,29 @@ $(document).ready(function(){
 	{
 		var costo_unitario = $('#costo_unitario').val();
 		var cantidad = $('#cantidad').val();
-		var ok;
+		var campo_incorrecto;
 		
 		if($.isNumeric(costo_unitario) && costo_unitario>0){
 			$('#costo_unitario').attr('style','background-color:white;');
 
 			if($.isNumeric(cantidad) && cantidad>0){
 				$('#cantidad').attr('style','background-color:white;');
-				ok = true;
+				campo_incorrecto = true;
 			}else{
-				$('#cantidad').attr('style','background-color:#FF8C8C;');
+				$('#cantidad').attr('style','background-color:#FF8C8C;'); // Color Rojo
 				$('#cantidad').select();
-				ok = 'cantidad';
+				campo_incorrecto = 'cantidad';
 			}
 		}else{
-			$('#costo_unitario').attr('style','background-color:#FF8C8C;');
+			$('#costo_unitario').attr('style','background-color:#FF8C8C;'); // Color Rojo
 			$('#costo_unitario').select();
-			ok = 'costo_unitario';
+			campo_incorrecto = 'costo_unitario';
 		}
-		return ok;
+		return campo_incorrecto;
 	}
             
     function validacion_saldo_movimientos_posteriores()
     {
-        //var url = "{{ url('inv_validacion_saldo_movimientos_posteriores' ) }}" + '/' + $('#inv_bodega_id').val() + '/' + $('#inv_producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#existencia_actual').val() + '/' + $('#motivo').val().split('-')[1];
-
         var url = url_raiz + '/' + 'inv_validacion_saldo_movimientos_posteriores' + '/' + $('#inv_bodega_id').val() + '/' + $('#inv_producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#existencia_actual').val() + '/' + $('#motivo').val().split('-')[1];
 
         $.get( url )

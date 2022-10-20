@@ -3,13 +3,17 @@
 namespace App\Http\Controllers\Inventarios;
 
 use Illuminate\Http\Request;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use Schema;
+
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
+
+use Khill\Lavacharts\Laravel\LavachartsFacade as Lava;
+
+use Illuminate\Support\Facades\Input;
+
+use Illuminate\Support\Facades\Schema;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -42,7 +46,8 @@ use App\Ventas\VtasDocRegistro;
 use App\VentasPos\DocRegistro;
 
 use App\Contabilidad\ContabMovimiento;
-
+use App\Inventarios\RecetaCocina;
+use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
 use App\VentasPos\FacturaPos;
 
@@ -169,6 +174,10 @@ class InventarioController extends TransaccionController
     {
         $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
 
+        if ($request->core_tipo_transaccion_id == 3) {
+            self::hacer_preparaciones_recetas($request->fecha, $request->inv_bodega_id, $lineas_registros, 'Doc. Creado automáticamente desde la creación de una Salida de Almacén.');
+        }
+
         $doc_encabezado_id = self::crear_documento($request, $lineas_registros, $request->url_id_modelo);
 
         if ( isset( $request->ruta_redirect ) )
@@ -274,6 +283,11 @@ class InventarioController extends TransaccionController
         return $lineas_registros;
     }
 
+    public static function hacer_preparaciones_recetas($fecha, $inv_bodega_id, $lineas_registros, $descripcion)
+    {
+        $obj_inv_doc_serv = new RecipeServices();
+        return $obj_inv_doc_serv->create_document_making( $lineas_registros, $inv_bodega_id, $fecha, $descripcion );
+    }
 
     /*
 
@@ -286,7 +300,7 @@ class InventarioController extends TransaccionController
     {
         $request['creado_por'] = Auth::user()->email;
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
-        //dd( $request->all() );
+        
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
         InventarioController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
@@ -470,7 +484,6 @@ class InventarioController extends TransaccionController
         }            
     }
 
-
     public static function crear_encabezado_remision_ventas( $datos, $estado = null )
     {
         // Llamar a los parámetros del archivo de configuración
@@ -643,7 +656,6 @@ class InventarioController extends TransaccionController
                     <b>Factura POS: </b> <a href="' . url('pos_factura/' . $fatura_venta->id . '?id=20&id_modelo=230&id_transaccion=' . $reg_factura_venta->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_venta->documento_transaccion_prefijo_consecutivo . '</a>';
         }
 
-
         $documento_vista = View::make('inventarios.incluir.documento_vista', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'enlace1', 'enlace2'))->render();
         $id_transaccion = $this->transaccion->id;
 
@@ -660,9 +672,8 @@ class InventarioController extends TransaccionController
     // VISTA PARA MOSTRAR UN DOCUMENTO DE TRANSACCION
     public function imprimir($id)
     {
-
         $encabezado_doc = InvDocEncabezado::find($id);
-
+        
         $tipo_transaccion = TipoTransaccion::find($encabezado_doc->core_tipo_transaccion_id);
 
         //$core_app = $tipo_transaccion->core_app;
@@ -726,7 +737,7 @@ class InventarioController extends TransaccionController
         $orientacion = 'portrait';
         $tam_hoja = 'Letter';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
 
         return $pdf->stream($descripcion_transaccion . '_' . $encabezado_doc->consecutivo . '.pdf');
@@ -1070,7 +1081,6 @@ class InventarioController extends TransaccionController
     // Parámetro enviados por GET
     public function consultar_existencia_producto()
     {
-
         $transaccion_id = Input::get('transaccion_id');
         $bodega_id = Input::get('bodega_id');
 
@@ -1121,10 +1131,25 @@ class InventarioController extends TransaccionController
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);
 
         $producto->existencia_actual = $existencia_actual;
+        if ($this->item_es_un_platillo($producto->id)) {
+            $producto->existencia_actual = 99999999;
+        }
 
         return $producto;
     }
 
+    public function item_es_un_platillo($item_id)
+    {
+        $receta = RecetaCocina::where([
+            ['item_platillo_id','=',$item_id]
+        ])->get()->first();
+
+        if ($receta == null) {
+            return false;
+        }
+
+        return true;
+    }
 
     //
     // FUNCIONES AUXILIARES

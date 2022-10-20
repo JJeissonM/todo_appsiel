@@ -16,7 +16,7 @@ use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\InvDocEncabezado;
 
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class InvDocumentsService
 {
