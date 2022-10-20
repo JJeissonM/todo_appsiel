@@ -3,6 +3,10 @@
 @section('campos_adicionales')
     <?php
         $valor_base = 0;
+        if (Input::get('pdv_id') != null) {
+            $pdv = \App\VentasPos\Pdv::find(Input::get('pdv_id'));
+            $valor_base = $pdv->get_valor_base_ultima_apertura();
+        }
     ?>
     <br>
     <div class="container-fluid">

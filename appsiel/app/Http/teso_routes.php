@@ -1,5 +1,7 @@
 <?php 
 
+use Illuminate\Support\Facades\Route;
+
 /* --------------- Libreta de pagos ------------------- */
 Route::get('tesoreria/libreta_pagos/eliminar/{id_fila}','Tesoreria\LibretaPagoController@eliminar_libreta_pagos');
 

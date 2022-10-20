@@ -49,6 +49,16 @@ class Pdv extends Model
         return $ultima_apertura->fecha;
     }
 
+    public function get_valor_base_ultima_apertura()
+    {
+        $ultima_apertura = AperturaEncabezado::where('pdv_id',$this->id)->orderBy('created_at', 'desc')->get()->first();
+
+        if ( $ultima_apertura == null ) {
+            return 0;
+        }
+        return $ultima_apertura->efectivo_base;
+    }
+
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 	

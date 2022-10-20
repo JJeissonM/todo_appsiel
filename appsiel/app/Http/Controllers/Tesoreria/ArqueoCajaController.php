@@ -13,7 +13,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 
 use Illuminate\Support\Facades\View;
-use Input;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\App;
 
 use App\Http\Controllers\Sistema\ModeloController;
 
@@ -71,7 +72,7 @@ class ArqueoCajaController extends ModeloController
 
         
         // Crear vista
-        $view = \View::make('tesoreria.arqueo_caja.'.$formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
+        $view = View::make('tesoreria.arqueo_caja.'.$formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
 
         return $view;
     }
@@ -154,7 +155,7 @@ class ArqueoCajaController extends ModeloController
             $tam_hoja = 'Letter';
 
             // Crear PDF
-            $pdf = \App::make('dompdf.wrapper');
+            $pdf = App::make('dompdf.wrapper');
             $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
             return $pdf->stream('arqueocaja.pdf');//stream();    
         }else{
@@ -164,7 +165,7 @@ class ArqueoCajaController extends ModeloController
             $tam_hoja = 'Letter';
 
             // Crear PDF
-            $pdf = \App::make('dompdf.wrapper');
+            $pdf = App::make('dompdf.wrapper');
             $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
             return $pdf->stream('arqueocaja.pdf');//stream(); 
         }

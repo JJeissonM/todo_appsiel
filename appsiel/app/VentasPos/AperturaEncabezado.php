@@ -2,6 +2,7 @@
 
 namespace App\VentasPos;
 
+use App\Tesoreria\Services\CashBalanceServices;
 use Illuminate\Database\Eloquent\Model;
 
 use Input;
@@ -92,8 +93,6 @@ class AperturaEncabezado extends Model
         return $vec;
     }
 
-
-
     public static function get_campos_adicionales_create($lista_campos)
     {
         $pdv = Pdv::find(Input::get('pdv_id'));
@@ -142,6 +141,20 @@ class AperturaEncabezado extends Model
             "editable" => 1,
             "unico" => 0
         ]);
+
+        // Personalizar campos
+        $cantida_campos = count($lista_campos);
+        for ($i=0; $i <  $cantida_campos; $i++)
+        {
+            if ( $lista_campos[$i]['name'] == 'efectivo_base' ) 
+            {
+                $lista_campos[$i]['value'] = 0;
+                $pdv = Pdv::find(Input::get('pdv_id'));
+                if ($pdv != null) {
+                    $lista_campos[$i]['value'] = (new CashBalanceServices())->cash_balance_amount($pdv->caja_default_id, date('Y-m-d'));
+                }
+            }
+        }
 
         return $lista_campos;
     }
