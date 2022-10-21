@@ -56,11 +56,13 @@
                         Total CxC: ${{ number_format($result->total_credito,0,',','.') }}
                     </td>
                 </tr>
+                <tr> 
+                    <td class="subject" style="color: black;" colspan="3">
+                        <div style="text-align: center; color:black;">TOTAL VENTAS: $ {{ number_format($result->total_contado + $result->total_credito + $total_consignaciones, 0, ',', '.') }}</div>
+                    </td>
+                </tr>
             </tbody>
         </table>
-    </div>
-    <div class="col-md-12" style="font-size: 15px;">
-        <div style="background-color: #50B794; text-align: center; color:black;">TOTAL VENTAS: $ {{ number_format($result->total_contado + $result->total_credito + $total_consignaciones, 0, ',', '.') }}</div>
     </div>
     <br>
 @else

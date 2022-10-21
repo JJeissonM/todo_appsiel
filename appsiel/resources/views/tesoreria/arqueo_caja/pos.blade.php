@@ -123,11 +123,12 @@
                 <td class="subject text-right">
                     ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
             </tr>
-            <tr class="read" style="background-color: #ddd;">
-                <td class="contact"><b>Total esperado</b></td>
+            <tr class="read">
+                <td class="contact"><b>TOTAL ESPERADO</b></td>
                 <td class="subject text-center"></td>
                 <td class="subject text-right">
-                    ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
+                    <b>${{number_format($registro->lbl_total_sistema,'0',',','.')}}</b>
+                </td>
             </tr>
             
                 <tr>
@@ -172,11 +173,12 @@
                 <td class="subject text-center"></td>
                 <td class="subject text-right">${{number_format($registro->total_monedas,'0',',','.')}}</td>
             </tr>
-            <tr class="read" style="background-color: #ddd;">
-                <td class="contact"><b>Total Efectivo</b></td>
+            <tr class="read">
+                <td class="contact"><b>TOTAL EFECTIVO</b></td>
                 <td class="subject text-center"></td>
                 <td class="subject text-right">
-                    ${{number_format($registro->lbl_total_efectivo,'0',',','.')}}</td>
+                    <b>${{number_format($registro->lbl_total_efectivo,'0',',','.')}}</b>
+                </td>
             </tr>
             <tr class="read">
                 <td class="contact"><b>Diferencia</b></td>
