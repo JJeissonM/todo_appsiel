@@ -20,6 +20,11 @@ class ArqueoCaja extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Caja', 'Observaciones', 'Total saldo', 'Estado'];
 
+    public function caja()
+    {
+        return $this->belongsTo('App\Tesoreria\TesoCaja','teso_caja_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return ArqueoCaja::leftJoin('teso_cajas', 'teso_cajas.id', '=', 'teso_arqueos_caja.teso_caja_id')

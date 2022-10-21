@@ -155,8 +155,8 @@ class Movimiento extends Model
             case 'forma_pago':
                 $agrupar_por = 'forma_pago';
                 break;
-            
             default:
+                $agrupar_por = 'ninguno';
                 break;
         }
         $array_wheres = [
@@ -179,6 +179,8 @@ class Movimiento extends Model
                                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'inv_productos.inv_grupo_id',
+                                        'vtas_pos_movimientos.core_tipo_transaccion_id','vtas_pos_movimientos.core_tipo_doc_app_id',
+                                        'vtas_pos_movimientos.consecutivo',
                                         'vtas_pos_movimientos.cliente_id',
                                         'vtas_pos_movimientos.core_tercero_id',
                                         'vtas_clases_clientes.descripcion AS clase_cliente',
@@ -198,8 +200,11 @@ class Movimiento extends Model
         {
             $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
 
-
             $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
+        }
+
+        if ($agrupar_por == 'ninguno') {
+            return $movimiento;
         }
 
         return $movimiento->groupBy( $agrupar_por );

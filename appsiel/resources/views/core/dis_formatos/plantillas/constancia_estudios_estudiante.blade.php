@@ -99,7 +99,7 @@
 		<br><br><br>
 
 		<div style="text-align: justify;">
-			Él estudiante <b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->abreviatura }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, se encuentra matriculado en el grado <b>{{ $curso->grado->descripcion }}</b> de Educación Básica {{ $curso->nivel->descripcion }} en nuestra institución educativa en el {{ $periodo_lectivo->descripcion }}.
+			Él estudiante <b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->tipo_documento }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, se encuentra matriculado en el grado <b>{{ $curso->grado->descripcion }}</b> de Educación Básica {{ $curso->nivel->descripcion }} en nuestra institución educativa en el {{ $periodo_lectivo->descripcion }}.
 		</div>		
 
 		<br><br>

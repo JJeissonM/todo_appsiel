@@ -22,7 +22,7 @@
 ?>
 
 <div style="text-align: justify;">
-<b>{{ $estudiante->nombre_completo }}</b> {!! $texto_resultado !!} en esta institución educativa los estudios correspondientes al {!! $label !!} de educación en Nivel <b>{{ $curso->nivel->descripcion }}</b>, según pensum oficial. Habiendo obtenido en el periodo lectivo {{ $periodo_lectivo->descripcion }} los resultados que a continuación se registran:
+<b>{{ $estudiante->nombre_completo }}</b>, identificado con {{ $estudiante->tipo_documento }} No. {{ number_format( $estudiante->numero_identificacion, 0, ',', '.' ) }}, {!! $texto_resultado !!} en esta institución educativa los estudios correspondientes al {!! $label !!} de educación en Nivel <b>{{ $curso->nivel->descripcion }}</b>, según pensum oficial. Habiendo obtenido en el periodo lectivo {{ $periodo_lectivo->descripcion }} los resultados que a continuación se registran:
 </div>		
 
 <br>

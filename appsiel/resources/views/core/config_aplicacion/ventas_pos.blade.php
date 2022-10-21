@@ -142,6 +142,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_resumen_ventas_pos_en_arqueo = '0';
+								if( isset($parametros['mostrar_resumen_ventas_pos_en_arqueo'] ) )
+								{
+									$mostrar_resumen_ventas_pos_en_arqueo = $parametros['mostrar_resumen_ventas_pos_en_arqueo'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_resumen_ventas_pos_en_arqueo', $mostrar_resumen_ventas_pos_en_arqueo, 'Mostra resúmen de Ventas en Arqueo', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros de la acumulación  </h4>
 				<hr>
 				<div class="row">

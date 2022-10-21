@@ -162,14 +162,18 @@
                         </tr>
                     </table>    
                 </div>
-            
+
+                @if(config('ventas_pos.mostrar_resumen_ventas_pos_en_arqueo'))
+                    @include('tesoreria.arqueo_caja.resumen_ventas_pos')
+                @endif
+
                 <div class="row clearfix">
                     <div class="col-md-12">
                         <table class="table table-hover">
                             <tbody>
                             <tr>
                                 <td colspan="3">
-                                    <center><strong>ACTA DE ARQUEO DE CAJA</strong></center>
+                                    <center><strong>ARQUEO DE CAJA</strong></center>
                                 </td>
                             </tr>
                             <tr>

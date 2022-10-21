@@ -284,6 +284,7 @@ class Estudiante extends Model
                 'core_terceros.apellido2',
                 'core_terceros.telefono1',
                 'core_terceros.id_tipo_documento_id',
+                'core_tipos_docs_id.abreviatura as tipo_documento',
                 'core_terceros.numero_identificacion',
                 'core_terceros.direccion1',
                 'core_terceros.barrio',

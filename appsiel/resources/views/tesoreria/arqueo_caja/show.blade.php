@@ -78,20 +78,27 @@
                             </tr>
                             <tr>
                                 <td style="border: solid 1px #ddd;">
-                                    <b>Responsable:</b> {{$user->name}}
+                                    <b>Caja:</b> {{$registro->caja->descripcion}}
                                     <br/>
-                                    <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
+                                    <b>Observaciones:</b> {{$registro->observaciones}}
                                     <br/>
                                 </td>
                                 <td style="border: solid 1px #ddd;">
-                                    <b>Observaciones:</b> {{$registro->observaciones}}
+                                    <b>Responsable:</b> {{$user->name}}
+                                    <br/>
+                                    <b>Fecha y Hora de Realización: &nbsp;&nbsp;</b> {{$registro->created_at}}
                                     <br/>
                                 </td>
                             </tr>
                         </table>
                     </div>
                     <hr>
-                    <h1 class="card-inside-title">Datos de la fecha {{$registro->fecha}}</h1>
+                    <h3 class="card-inside-title">Datos de la fecha {{$registro->fecha}}</h3>
+
+                    @if(config('ventas_pos.mostrar_resumen_ventas_pos_en_arqueo'))
+                        @include('tesoreria.arqueo_caja.resumen_ventas_pos')
+                    @endif
+                    
                     <div class="row clearfix">
                         <div class="col-md-12">
                             <div class="table-responsive">

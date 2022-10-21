@@ -36,7 +36,7 @@ class ArqueoCajaController extends ModeloController
         return redirect('web/create?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&vista=tesoreria.arqueo_caja.create');
     }
 
-    // Generar vista para SHOW  o IMPRIMIR
+    // Generar vista para SHOW o IMPRIMIR
     public function vista_preliminar($id,$formato_impresion)
     {
         $registro = ArqueoCaja::find($id);
@@ -47,8 +47,6 @@ class ArqueoCajaController extends ModeloController
         $registro->monedas_contadas = json_decode($registro->monedas_contadas);
         $registro->detalles_mov_entradas = json_decode($registro->detalles_mov_entradas);
         $registro->detalles_mov_salidas = json_decode($registro->detalles_mov_salidas);
-
-
 
         if ( is_null( $registro->billetes_contados ) )
         {
@@ -69,7 +67,6 @@ class ArqueoCajaController extends ModeloController
         {
             $registro->detalles_mov_salidas = [];
         }
-
         
         // Crear vista
         $view = View::make('tesoreria.arqueo_caja.'.$formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
@@ -85,7 +82,6 @@ class ArqueoCajaController extends ModeloController
      */
     public function show($id)
     {
-
         $registro = ArqueoCaja::find($id);
         $empresa = Empresa::find($registro->core_empresa_id);
         $doc_encabezado =['documento'=>'ARQUEO DE CAJA No. ' . $registro->id,'fecha'=>$registro->fecha,'titulo'=>'ARQUEO DE CAJA'];
@@ -140,10 +136,7 @@ class ArqueoCajaController extends ModeloController
             $registro->detalles_mov_salidas = [];
         }
 
-        //return view( 'matriculas.show_matricula',compact('reg_anterior','reg_siguiente','miga_pan','view_pdf','id') );
         return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));
-
-        //  return view('tesoreria.arqueo_caja.show',compact('form_create','miga_pan','registro','archivo_js','url_action'));
     }
 
     public function imprimir($id)

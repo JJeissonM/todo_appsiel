@@ -410,7 +410,11 @@ class ReporteController extends Controller
 
         $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
 
-        $maxima_escala_valoracion = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','DESC')->first()->calificacion_maxima;
+        $maxima_escala_valoracion = 1;
+        $calificacion_maxima = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','DESC')->first();
+        if ($calificacion_maxima != null) {
+            $maxima_escala_valoracion = $calificacion_maxima->calificacion_maxima;
+        }        
 
         $resultado_academico = $request->resultado_academico;
 
