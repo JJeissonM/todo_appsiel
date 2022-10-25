@@ -227,7 +227,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td style="width: 40%; text-align: left;"><br><br><br><br></td>
 						<td style="width: 20%; text-align: left;"><br><br><br><br></td>
-						<td style="width: 40%; text-align: left;"><img src="{{config('contrato_transporte.url_imagen_sello_empresa')}}" style="max-height: 70px;"></td>
+						<td style="width: 40%; text-align: left;"><img src="{{config('contrato_transporte.url_imagen_firma_y_sello_empresa')}}" style="max-height: 70px;"></td>
 					</tr>
 					<tr>
 						<td style="width: 40%; text-align: left; border-bottom: 1px solid;"></td>
@@ -237,12 +237,12 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 					<tr>
 						<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
 						<td style="width: 20%; text-align: left;"></td>
-						<td style="width: 40%; text-align: left;">CC/{{ config("configuracion.tipo_identificador") }} </td>
+						<td style="width: 40%; text-align: left;"> Firma y Sello </td>
 					</tr>
 					<tr>
 						<td style="width: 40%; text-align: left;">Firma</td>
 						<td style="width: 20%; text-align: left;"></td>
-						<td style="width: 40%; text-align: left;">Firma</td>
+						<td style="width: 40%; text-align: left;">&nbsp;</td>
 					</tr>
 				</tbody>
 			</table>

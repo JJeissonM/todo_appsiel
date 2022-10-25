@@ -202,14 +202,8 @@ class ContratoTransporteController extends Controller
         $p = Plantilla::where('estado', 'SI')->first();
 
         $ciudades = \App\Core\Ciudad::opciones_campo_select_2();
-        /*
-        $contratantes = null;
-        $cont = Contratante::all();
-        if (count($cont) > 0) {
-            foreach ($cont as $c) {
-                $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion;
-            }
-        }*/
+
+        $permitir_ingreso_contrato_en_mes_distinto_al_actual = config('contrato_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual');
 
         return view('contratos_transporte.contratos.create')
             ->with('variables_url', $variables_url)
@@ -219,6 +213,7 @@ class ContratoTransporteController extends Controller
             ->with('vehiculos', $vehiculos)
             ->with('source', $source)
             ->with('ciudades', $ciudades)
+            ->with('permitir_ingreso_contrato_en_mes_distinto_al_actual', $permitir_ingreso_contrato_en_mes_distinto_al_actual)
             ->with('v', $p);
     }
 
@@ -229,12 +224,15 @@ class ContratoTransporteController extends Controller
         $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
-        if ((int) $mes_fecha_fin > (int) $mes_actual) {
+        
+        if ((int) $mes_fecha_fin > (int) $mes_actual && config('contrato_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual') == 0) {
             return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. La fecha final debe estar en el mes actual', $request->source);
         }
+
         if ($request->vehiculo_id == "0") {
             return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. Debe indicar el vehículo para guardar el contrato', $request->source);
         }
+        
         $contrato_id = $this->storeContract($request);
         if ($contrato_id > 0) {
             //verifico si el vehiculo ya hizo 4 contratos este mes, si los hizo se bloquea... debe pagar para hacerlo la proxima

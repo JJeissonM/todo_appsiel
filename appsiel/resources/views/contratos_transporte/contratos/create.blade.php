@@ -32,10 +32,11 @@
 					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Crear Contrato</h4>
 					<!-- <div class="panel-body"> -->
 						<div class="col-md-12 page"><!-- -->
-							{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal']) }}
+							{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal', 'id' => 'form_create']) }}
 							<input type="hidden" name="variables_url" value="{{$variables_url}}" />
 							<input type="hidden" name="source" value="{{$source}}" />
 							<input type="hidden" name="plantilla_id" value="{{$v->id}}" />
+							<input type="hidden" name="permitir_ingreso_contrato_en_mes_distinto_al_actual" value="{{$permitir_ingreso_contrato_en_mes_distinto_al_actual}}" id="permitir_ingreso_contrato_en_mes_distinto_al_actual" />
 							<div class="col-md-12" style="padding: 30px;">
 								<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Información del Contrato</h4>
 							</div>
@@ -182,7 +183,7 @@
 								</div>-->
 							<div class="form-group">
 								<div class="col-md-12" style="margin-top: 50px; text-align: center;">
-									<button type="submit" class="btn btn-primary" title="Guardar Contrato y FUEC"><i class="fa fa-save"></i> Guardar Contrato y FUEC</a>
+									<button id="btn_guardar" class="btn btn-primary" title="Guardar Contrato y FUEC"><i class="fa fa-save"></i> Guardar Contrato y FUEC</a>
 								</div>
 							</div>
 							</form>
@@ -263,20 +264,23 @@
 		$("#contratanteTelefono").prop('required',false);
 	}
 
-
 	function validar() {
 		var f = $("#fecha_fin").val();
 		var v = f.split("-");
 		var hoy = new Date();
 		var mes = hoy.getMonth() + 1;
-		if (mes != parseInt(v[1])) {
+		if (mes != parseInt(v[1]) && $("#permitir_ingreso_contrato_en_mes_distinto_al_actual").val() == 0) {
 			Swal.fire({
 				icon: 'error',
 				title: 'Oh no!',
 				text: 'La fecha final no puede ser de un mes diferente al actual, si continua sin corregir el contrato no será guardado y perderá los datos',
-				footer: '<a href>¿Desea continuar?</a>'
+				footer: 'Para cambiar esta configuración, comuníquese con soporte.'
 			});
+
+			return false;
 		}
+
+		return true;
 	}
 
 	function conductores() {
@@ -318,5 +322,17 @@
 		$("#conductor2").append("<option value=''>-- Seleccione opción --</option>");
 		$("#conductor3").append("<option value=''>-- Seleccione opción --</option>");
 	}
+
+	
+	$("#btn_guardar").on('click',function(event){
+		event.preventDefault();
+
+		if (validar()) {
+			$('#form_create').submit();	
+		}
+
+		return false;
+	});
+
 </script>
 @endsection
