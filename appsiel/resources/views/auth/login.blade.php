@@ -17,21 +17,43 @@
         $email = old('email');
         $contrasenia = '';
       } else {
-        $mensaje = '<div class="alert alert-warning">
-                              <strong>¡Advertencia!</strong> Los datos de la plataforma demo serán borrados periodicamente.
-                            </div>';
+        
+        $mensaje = '<div class="alert alert-warning"><strong>¡Advertencia!</strong> Los datos de la plataforma demo serán borrados periodicamente.</div>';
+        
         $mensaje2 = '<div style="color: red; width: 100%; text-align: center;">Presione el botón para ingresar. <i class="fa fa-arrow-up"></i><div>';
-        $email = 'demo@appsiel.com.co';
+        
+          $email = 'demo@appsiel.com.co';
         $contrasenia = 'demo123*';
+        $options = [ 
+          'administrador@appsiel.com.co' => 'Administrador Negocio',
+          'demo@appsiel.com.co' => 'Admin. Empresa Transporte Especial',
+          'rector@appsiel.com.co' => 'Rector Colegio',
+          'docente@appsiel.com.co' => 'Docente Colegio'
+        ];
       }
       ?>
 
-      {!! $mensaje !!}
+      <div class="col-md-12" style="text-align: center;">
+        {!! $mensaje !!}
+      </div>    
 
       <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
+        
+        @if (app()->environment() == 'demo')
+          <h6 class="info">.: Escoja el perfil con el que desea ingresar :.</h6>
+        @endif
         <div class="input-group">
           <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-          <input id="email" type="text" class="form-control2" name="email" placeholder="Usuario" value="{{ $email }}" required="required">
+          @if (app()->environment() != 'demo')
+            <input id="email" type="text" class="form-control2" name="email" placeholder="Usuario" value="{{ $email }}" required="required">
+          @else 
+            <select id="email" class="form-control form-control" name="email">
+              <option value="administrador@appsiel.com.co">Administrador Negocio</option>
+              <option value="demo@appsiel.com.co">Admin. Empresa Transporte Especial</option>
+              <option value="rector@appsiel.com.co">Rector Colegio</option>
+              <option value="docente@appsiel.com.co">Docente Colegio</option>
+            </select>
+          @endif 
         </div>
         @if ($errors->has('email'))
         <span class="help-block">
