@@ -10,6 +10,8 @@ Route::get('matriculas/inscripcion_print/{id_fila}', 'Matriculas\InscripcionCont
 Route::get('inscripciones_crear_matricula/{id_inscripcion}', 'Matriculas\InscripcionController@crear_matricula');
 Route::resource('matriculas/inscripcion', 'Matriculas\InscripcionController');
 
+Route::resource('inscripciones_en_linea', 'Matriculas\InscripcionesEnLineaController');
+
 // Usado para la lista de estudiantes
 Route::get('get_cursos_del_grado/{grado_id}', 'Matriculas\ReportesController@get_cursos_del_grado');
 

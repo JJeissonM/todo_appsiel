@@ -5,9 +5,9 @@ namespace App\Matriculas;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
-use Auth;
 
 use App\Core\Colegio;
+use Illuminate\Support\Facades\Auth;
 
 class Grado extends Model
 {
@@ -61,10 +61,10 @@ class Grado extends Model
 
     public static function opciones_campo_select()
     {
-        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
+        //$colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
-        $opciones = Grado::where('id_colegio', $colegio->id)
-                        ->where('estado', 'Activo')
+        $opciones = Grado::where('estado', 'Activo')
+                        //->where('id_colegio', $colegio->id)
                         ->get();
 
         $vec[''] = '';

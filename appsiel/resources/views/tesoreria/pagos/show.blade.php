@@ -33,13 +33,16 @@
 	{{ Form::bsBtnCreate( 'tesoreria/pagos/create'.$variables_url ) }}
 	@if($doc_encabezado->estado != 'Anulado')
 
-        {{ Form::bsBtnEdit2( 'tesoreria/pagos/'.$id.'/edit'.$variables_url,'Editar') }}
+        @can('teso_modificar_pago_general')
+            {{ Form::bsBtnEdit2( 'tesoreria/pagos/'.$id.'/edit'.$variables_url,'Editar') }}
+        @endcan
         
         <a class="btn-gmail" id="btn_duplicar" href="{{ url( 'teso_pagos_duplicar_documento/'.$id.$variables_url ) }}" title="Duplicar"><i class="fa fa-btn fa-clone"></i></a>
-
-        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
-
-        <!-- <a class="btn-gmail" href="{ { url( 'teso_recontabilizar_documento_pago/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a> -->
+        
+        @can('teso_anular_pago_general')
+            <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+        @endcan
+        
     @endif
 @endsection
 

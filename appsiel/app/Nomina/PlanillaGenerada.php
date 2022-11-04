@@ -134,7 +134,6 @@ class PlanillaGenerada extends Model
         $i = 1;
         foreach ( $empleados_con_registros as $linea_registro_nomina )
         {
-
             $contrato = $linea_registro_nomina->contrato;
 
             if ( $contrato->genera_planilla_integrada ) 

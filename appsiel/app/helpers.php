@@ -44,7 +44,7 @@ if (! function_exists('generado_por_appsiel'))
     function generado_por_appsiel()
     {
         return '<div style="width: 100%;text-align: center; font-size: 11px; color: #aaa; text-decoration: none;">
-                    <i>Formato generado por <a href="https://appsiel.com.co" target="_blank" style="color: #aaa;">Appsiel &reg;</a></i>&nbsp;&nbsp;&nbsp;
+                    <i>Generado por <a href="https://appsiel.com.co" target="_blank" style="color: #aaa;">Appsiel &reg;</a></i>&nbsp;&nbsp;&nbsp;
                 </div>';
     }
 }

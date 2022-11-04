@@ -31,8 +31,6 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
-
-
 				<br>
 				<h4> Parámetros para el observador  </h4>
 				<hr>
@@ -244,6 +242,36 @@
 						</div>
 					</div>
 
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$etiqueta_datos_aspirante = 'DATOS DEL ASPIRANTE';
+								if( isset($parametros['etiqueta_datos_aspirante'] ) )
+								{
+									$etiqueta_datos_aspirante = $parametros['etiqueta_datos_aspirante'];
+								}
+							?>
+							{{ Form::bsText('etiqueta_datos_aspirante', $etiqueta_datos_aspirante, 'Etiqueta datos aspirantes en inscripciones en línea', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mensaje_inscripcion_creada = 'GRACIAS. Su inscripción ha sido registrada correctamente. Pronto no comunicaremos con usted';
+								if( isset($parametros['mensaje_inscripcion_creada'] ) )
+								{
+									$mensaje_inscripcion_creada = $parametros['mensaje_inscripcion_creada'];
+								}
+							?>
+							{{ Form::bsTextArea('mensaje_inscripcion_creada', $mensaje_inscripcion_creada, 'Mensaje registro existoso de inscripciones en línea', ['class'=>'form-control']) }}
+
+							
+						</div>
+					</div>
 				</div>
 
 				<br><br>

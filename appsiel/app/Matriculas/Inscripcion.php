@@ -28,6 +28,11 @@ class Inscripcion extends Model
         return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
     }
 
+    public function estudiante()
+    {
+        return Estudiante::where('core_tercero_id',$this->core_tercero_id)->get()->first();
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         return Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')

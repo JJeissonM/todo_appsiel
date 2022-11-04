@@ -182,7 +182,7 @@ class FacturaPosMeserosController extends TransaccionController
             $pr->categoria = $grupo_inventario->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        //$vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        
         $vista_categorias_productos = '';
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
@@ -615,7 +615,8 @@ class FacturaPosMeserosController extends TransaccionController
             $productosTemp[$pr->categoria][] = $pr;
         }
 
-        $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $vista_categorias_productos = '';
+        
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);
@@ -1234,7 +1235,8 @@ class FacturaPosMeserosController extends TransaccionController
             $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
-        $vista_categorias_productos = '';//View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $vista_categorias_productos = '';
+        
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $this->generar_plantilla_factura($pdv);

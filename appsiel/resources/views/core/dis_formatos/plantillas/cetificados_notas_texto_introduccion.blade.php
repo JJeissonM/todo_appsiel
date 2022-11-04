@@ -1,7 +1,7 @@
 
 <br>
 <div align="center">
-	EL SUSCRITO RECTOR Y SECRETARIA DE: {{ $colegio->descripcion }}
+	{{ config('calificaciones.texto_titulo_inicial') }} {{ $colegio->descripcion }}
 </div>		
 <div align="center">
 	CERTIFICAN QUE:

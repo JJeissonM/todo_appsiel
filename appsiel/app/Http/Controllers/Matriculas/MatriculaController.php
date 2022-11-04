@@ -100,7 +100,7 @@ class MatriculaController extends ModeloController
     }
 
     /**
-        FORMULARIO PARA CREAR MATRICULA DE UN ESTUDIANTE, Con base en el id de la INSCRIPCION
+     * FORMULARIO PARA CREAR MATRICULA DE UN ESTUDIANTE, Con base en el id de la INSCRIPCION
      */
     public function crear_nuevo(Request $request)
     {
@@ -152,7 +152,6 @@ class MatriculaController extends ModeloController
                         $lista_campos[$i]['value'] = '20' . $secuencia->anio;
                     }
 
-
                     break;
                 case 'acudiente':
 
@@ -171,16 +170,14 @@ class MatriculaController extends ModeloController
             'campos' => $lista_campos
         ];
 
-
         // Consultar matriculas del estudiante
         $estudiante = Estudiante::get_estudiante_x_tercero_id($tercero->id);
 
-        if ( !is_null( $estudiante ) ) {
+        $matriculas = [];
+        $estudiante_existe = 0;
+        if ( $estudiante != null ) {
             $matriculas = Matricula::get_matriculas_un_estudiante($estudiante->id);
             $estudiante_existe = 1;
-        } else {
-            $matriculas = array();
-            $estudiante_existe = 0;
         }
 
         $miga_pan = [
@@ -220,30 +217,7 @@ class MatriculaController extends ModeloController
         // Si el estudiante no existe, Se crea usuario y Estudiante
         if ( $request->estudiante_existe == 0 )
         {
-            /**/
-            $tercero = Tercero::find( $request->core_tercero_id );
-            $name = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
-            if ( $name == '' )
-            {
-                $name = $tercero->descripcion;
-            }
-            $email = $request->email;
-            $password = str_random(8);
-            $user = User::crear_y_asignar_role($name, $email, 4, $password); // 4 = Role Estudiante
-
-            if ( is_null( $user ) )
-            {
-                $user_id = 0;
-            }else{
-                $user_id = $user->id;
-            }
-
-            $datos = array_merge(
-                                    $request->all(),
-                                    ['user_id' => $user_id]
-                                );
-
-            $estudiante = Estudiante::create( $datos );
+            $estudiante = Estudiante::create( $request->all() );
             
             $datos_responsables = json_decode( $request->lineas_registros );
             $cantidad_registros = count($datos_responsables) - 1;// no se tiene en cuenta el ultimo elemento del array
@@ -257,11 +231,11 @@ class MatriculaController extends ModeloController
             }
 
         } else {
-
             // Si ya existe, obtengo el registro según el tercero asociado
             $estudiante = Estudiante::get_estudiante_x_tercero_id( $request->core_tercero_id );
-
         }
+
+        $this->crear_y_asignar_usuario($estudiante);
 
         $requisitos = $request->requisito1 . "-" . $request->requisito2 . "-" . $request->requisito3 . "-" . $request->requisito4
             . "-" . $request->requisito5 . "-" . $request->requisito6;
@@ -269,7 +243,6 @@ class MatriculaController extends ModeloController
         // Generar el código de la matrícula
         $vec_grado = explode("-", $request->sga_grado_id);
         $codigo = SecuenciaCodigo::get_codigo('matriculas', (object)['grado_id' => $vec_grado[0]]);
-
 
         $datos2 = array_merge(
                                 $request->all(),
@@ -300,6 +273,34 @@ class MatriculaController extends ModeloController
         return redirect('matriculas/show/' . $matricula->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Matrícula creada correctamente. Código: ' . $matricula->codigo);
     }
 
+    public function crear_y_asignar_usuario($estudiante)
+    {
+        $user = User::where('email',$estudiante->tercero->email)->get()->first();
+        if ($user != null) {
+            return false;
+        }
+
+        $name = $estudiante->tercero->nombre1 . " " . $estudiante->tercero->otros_nombres . " " . $estudiante->tercero->apellido1 . " " . $estudiante->tercero->apellido2;
+
+        if ( $name == '' )
+        {
+            $name = $estudiante->tercero->descripcion;
+        }
+        
+        $password = str_random(8);
+        $user = User::crear_y_asignar_role($name, $estudiante->tercero->email, 4, $password); // 4 = Role Estudiante
+
+            $user_id = 0;
+        if ( $user != null )
+        {
+            $user_id = $user->id;
+        }
+
+        $estudiante->user_id = $user_id;
+
+        return true;
+    }
+
     public function actualizar_estado_ultima_inscripcion( $core_tercero_id )
     {
         $inscripcion = Inscripcion::where( 'core_tercero_id', $core_tercero_id )
@@ -319,7 +320,6 @@ class MatriculaController extends ModeloController
     //crea un responsable para los papás
     public function setResponsable($data)
     {
-
         $r = new Responsableestudiante();
         $r->fill( $data );
         $r->save();

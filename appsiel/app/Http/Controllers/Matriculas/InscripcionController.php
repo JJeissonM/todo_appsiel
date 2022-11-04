@@ -136,7 +136,9 @@ class InscripcionController extends ModeloController
         $empresa = Empresa::find( Auth::user()->empresa_id );
         $descripcion_transaccion = 'Ficha de Inscripción';
 
-        return View::make('matriculas.formatos.inscripcion1',compact('inscripcion','descripcion_transaccion','empresa','vista') )->render();
+        $estudiante = $inscripcion->estudiante();
+
+        return View::make('matriculas.formatos.inscripcion1',compact('inscripcion','descripcion_transaccion','empresa','vista', 'estudiante') )->render();
     }
 	
 	public function update(Request $request, $id)

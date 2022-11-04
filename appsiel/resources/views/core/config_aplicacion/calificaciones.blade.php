@@ -290,7 +290,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$texto_titulo_inicial = 'EL SUSCRITO RECTOR Y SECRETARIA DE: ';
+								if( isset($parametros['texto_titulo_inicial'] ) )
+								{
+									$texto_titulo_inicial = $parametros['texto_titulo_inicial'];
+								}
+							?>
+							{{ Form::bsText('texto_titulo_inicial', $texto_titulo_inicial, 'Texto título inicial', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

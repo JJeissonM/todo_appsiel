@@ -14,24 +14,18 @@
 				</div>
 				<div id="collapse{{$i}}" class="collapse2" aria-labelledby="heading{{$i}}" data-parent="#accordionExample">
 					<div class="card-body">
-						@if(count($value)>0)
-						@foreach($value as $item)
-							<div class="col-md-3 col-xs-6" style="padding: 10px;" id="btn_{{ $item->id }}">
-									<button onclick="mandar_codigo2({{ $item->id }})" class="btn btn-block btn-default btn-xs" title="{{ $item->descripcion }}">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit,minmax(auto,150px)); gap:10px;">
+							@if(count($value)>0)
+								@foreach($value as $item)
+									<div id="btn_{{ $item->id }}">
+										@include('ventas_pos.tags_lista_items_dibujar_item')
 										<br>
-										@if($item->imagen!='')
-											<img style="width: 100px; height: 100px; border-radius:4px;" src="{{url('')}}/appsiel/storage/app/inventarios/{{$item->imagen}}">
-										@else
-											<img style="width: 100px; height: 100px;" src="{{url('')}}/assets/img/box.png">
-										@endif
-										<p style="text-align: center; white-space: nowrap; overflow: hidden; white-space: initial;">{{ $item->descripcion }}</p>
-									</button>
-									<br>
-							</div>
-						@endforeach
-						@else
-						<h5>No hay productos en esta categoría</h5>
-						@endif
+									</div>
+								@endforeach
+							@else
+								<h5>No hay productos en esta categoría</h5>
+							@endif
+						</div>
 					</div>
 				</div>
 			</div>

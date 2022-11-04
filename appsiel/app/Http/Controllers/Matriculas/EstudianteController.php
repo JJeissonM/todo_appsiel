@@ -425,40 +425,40 @@ class EstudianteController extends ModeloController
         // Se le asigna a cada variable url, su valor en el modelo correspondiente
         $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion . '&estudiante_id=' . $estudiante->id;
 
-        $lista = $estudiante->responsableestudiantes;
+        $responsables_estudiante = $estudiante->responsableestudiantes;
         $lista2 = null;
-        if (count($lista) > 0) {
-            foreach ($lista as $ll)
+        if (count($responsables_estudiante) > 0) {
+            foreach ($responsables_estudiante as $responsable)
             {
                 $o = null;
-                $o['tdid'] = $ll->tercero->id_tipo_documento_id;
-                $o['trid'] = $ll->tiporesponsable_id;
-                $o['id'] = $ll->id;
-                $o['td'] = TipoDocumentoId::find($ll->tercero->id_tipo_documento_id)->descripcion;
-                $o['doc'] = $ll->tercero->numero_identificacion;
-                $o['nom'] = $ll->tercero->descripcion;
-                $o['tr'] = $ll->tiporesponsable->descripcion;
-                $o['tel'] = $ll->tercero->telefono1;
-                $o['email'] = $ll->tercero->email;
-                $o['estado'] = $ll->tercero->estado;
-                $o['ocu'] = $ll->ocupacion;
-                $o['dt'] = $ll->direccion_trabajo;
-                $o['tt'] = $ll->telefono_trabajo;
-                $o['pt'] = $ll->puesto_trabajo;
-                $o['indt'] = $ll->descripcion_trabajador_independiente;
-                $o['et'] = $ll->empresa_labora;
-                $o['jt'] = $ll->jefe_inmediato;
-                $o['tjt'] = $ll->telefono_jefe;
-                $o['pne'] = $ll->tercero->nombre1;
-                $o['sne'] = $ll->tercero->otros_nombres;
-                $o['pae'] = $ll->tercero->apellido1;
-                $o['sae'] = $ll->tercero->apellido2;
+                $o['tdid'] = $responsable->tercero->id_tipo_documento_id;
+                $o['trid'] = $responsable->tiporesponsable_id;
+                $o['id'] = $responsable->id;
+                $o['td'] = TipoDocumentoId::find($responsable->tercero->id_tipo_documento_id)->descripcion;
+                $o['doc'] = $responsable->tercero->numero_identificacion;
+                $o['nom'] = $responsable->tercero->descripcion;
+                $o['tr'] = $responsable->tiporesponsable->descripcion;
+                $o['tel'] = $responsable->tercero->telefono1;
+                $o['email'] = $responsable->tercero->email;
+                $o['estado'] = $responsable->tercero->estado;
+                $o['ocu'] = $responsable->ocupacion;
+                $o['dt'] = $responsable->direccion_trabajo;
+                $o['tt'] = $responsable->telefono_trabajo;
+                $o['pt'] = $responsable->puesto_trabajo;
+                $o['indt'] = $responsable->descripcion_trabajador_independiente;
+                $o['et'] = $responsable->empresa_labora;
+                $o['jt'] = $responsable->jefe_inmediato;
+                $o['tjt'] = $responsable->telefono_jefe;
+                $o['pne'] = $responsable->tercero->nombre1;
+                $o['sne'] = $responsable->tercero->otros_nombres;
+                $o['pae'] = $responsable->tercero->apellido1;
+                $o['sae'] = $responsable->tercero->apellido2;
                 $lista2[] = $o;
             }
         }
         $tipos = Tiporesponsable::all();
         $tiposdoc = TipoDocumentoId::all();
-        return view('matriculas.estudiantes.gestionresponsables', compact('miga_pan', 'lista2', 'tipos', 'tiposdoc', 'tercero', 'estudiante', 'variables_url', 'lista'));
+        return view('matriculas.estudiantes.gestionresponsables', compact('miga_pan', 'lista2', 'tipos', 'tiposdoc', 'tercero', 'estudiante', 'variables_url', 'responsables_estudiante'));
     }
 
     //guarda un responsable

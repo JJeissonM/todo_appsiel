@@ -407,7 +407,7 @@ class ModeloController extends Controller
                 $request[$key] = implode(",", $value);
             }
         }
-//dd($request->all());
+
         // Crear el nuevo registro
         return app($this->modelo->name_space)->create($request->all());
     }
@@ -867,10 +867,16 @@ class ModeloController extends Controller
         return $lista_campos;
     }
 
-
-
     public static function ajustar_valores_lista_campos_segun_accion($lista_campos, $registro, $modelo, $accion)
     {
+        $user_id = 0;
+        $user_email = 'guest@appsiel.com.co';
+        $user = Auth::user();
+        if ($user != null) {
+            $user_id = $user->id;
+            $user_email = $user->email;
+        }
+
         $cant = count($lista_campos);
         for ($i = 0; $i < $cant; $i++) {
             $nombre_campo = $lista_campos[$i]['name'];
@@ -880,13 +886,13 @@ class ModeloController extends Controller
                 // Valores predeterminados para Algunos campos ocultos
                 switch ($lista_campos[$i]['name']) {
                     case 'creado_por':
-                        $lista_campos[$i]['value'] = Auth::user()->email;
+                        $lista_campos[$i]['value'] = $user_email;
                         break;
                     case 'modificado_por':
                         $lista_campos[$i]['value'] = 0;
                         break;
                     case 'user_id':
-                        $lista_campos[$i]['value'] = Auth::user()->id;
+                        $lista_campos[$i]['value'] = $user_id;
                         break;
                     default:
                         # code...
@@ -933,7 +939,7 @@ class ModeloController extends Controller
                         break;
 
                     case 'modificado_por':
-                        $lista_campos[$i]['value'] = Auth::user()->email;
+                        $lista_campos[$i]['value'] = $user_email;
                         break;
 
                     case 'role':

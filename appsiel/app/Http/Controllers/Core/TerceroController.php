@@ -20,7 +20,7 @@ class TerceroController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
     }
 
 
@@ -39,16 +39,14 @@ class TerceroController extends Controller
         if ( is_null( $tercero ) )
         {
             return 'tercero_no_existe';
-        }
-        
-        $tercero->email2 = $tercero->email;
+        }        
 
         $inscripcion = Inscripcion::where('core_tercero_id',$tercero->id)
-                                    ->where('estado','Pendiente')
                                     ->get()->first();
 
         if ( is_null($inscripcion) )
         {
+            $tercero->email2 = $tercero->email;
             return response()->json( $tercero->toArray() );
         }
 

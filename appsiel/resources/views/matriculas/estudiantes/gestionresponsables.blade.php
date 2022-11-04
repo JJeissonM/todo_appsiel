@@ -40,7 +40,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						@foreach($lista as $l)
+						@foreach($responsables_estudiante as $l)
 						<tr>
 							<td>{{$l->tercero->numero_identificacion}}</td>
 							<td>{{$l->tercero->descripcion}}</td>

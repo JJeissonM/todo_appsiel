@@ -36,7 +36,6 @@
 				echo $view_pdf;
 			?>
 			
-			{!! generado_por_appsiel() !!}
 		</div>
 	</div>
 

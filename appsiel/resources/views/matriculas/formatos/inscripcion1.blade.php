@@ -5,6 +5,7 @@
     <style>
         body {
             border: solid 1px #333333;
+            font-size: 12px;
         }
         @page{
             size: 612pt 410pt;
@@ -33,7 +34,9 @@
             return floor($edad/365)." Años";
         }
 ?>
+
 @include('banner_colegio')
+
 <table class="table table-bordered" width="100%" style="border-collapse: collapse;">
     <tr>
         <td style="border: solid 1px black;" colspan="4" height="19">
@@ -87,35 +90,38 @@
     </tr>
     <tr>
         <td style="border: solid 1px black;" colspan="2">
-            <b>Nombre acudiente:</b> {{ $inscripcion->acudiente }}
-        </td>
-        <td style="border: solid 1px black;" colspan="2">
             <b>Colegio anterior:</b> {{ $inscripcion->colegio_anterior }}
         </td>
-    </tr>
-    <tr>
         <td style="border: solid 1px black;" colspan="4">
             <b>Observación:</b> {{ $inscripcion->observacion }}
         </td>
     </tr>
 </table>
-<br/>
-<table border="no" width="100%">
+
+<br>
+@include('matriculas.estudiantes.datos_basicos_padres')
+
+<br><br>
+
+<table width="100%">
     <tr>
-        <td width="60px"></td>
+        <td width="160px"></td>
         <td> ______________________________ </td>
         <td width="20px"></td>
         <td> ______________________________ </td>
         <td width="50px"> </td>
     </tr>
     <tr>
-        <td width="60px"> </td>
+        <td width="160px"> </td>
         <td align="center"> Director(a) </td>
         <td width="20px"> </td>
         <td align="center"> Padre de familia o acudiente </td>
         <td width="50px"> </td>
     </tr>
 </table>
-{!! generado_por_appsiel() !!}
+
+<div style="bottom: 50px;">
+    {!! generado_por_appsiel() !!}
+</div>
 </body>
 </html>
