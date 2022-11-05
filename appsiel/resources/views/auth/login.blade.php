@@ -83,6 +83,6 @@
 </div>
 
 <div class="footer">
-  <p>Desarrollado por: <a href="http://admin.appsiel.com.co/" target="_blank" style="color: #000;">APPSIEL S.A.S.</a></p>
+  <p>Desarrollado por: <a href="https://appsiel.com.co/" target="_blank" style="color: #000;">APPSIEL S.A.S.</a></p>
 </div>
 @endsection

@@ -23,7 +23,12 @@ use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
 class InscripcionesEnLineaController extends Controller
-{	
+{
+    public function index()
+    {
+        return redirect( 'inscripciones_en_linea/create' );
+    }
+
     public function create()
     {
         $modelo = Modelo::find( 323 );

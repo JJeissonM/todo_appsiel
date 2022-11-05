@@ -30,10 +30,10 @@
                 
                         <ul class="nav nav-tabs">
                             <li class="active">
-                                <a data-toggle="tab" href="#info_estudiante">{{ config('matriculas.etiqueta_datos_aspirante') }}</a>
+                                <a data-toggle="tab" href="#info_estudiante"><span class="label label-info">1</span>&nbsp;{{ config('matriculas.etiqueta_datos_aspirante') }}</a>
                             </li>
                             <li>
-                                <a data-toggle="tab" href="#info_padres">DATOS DE PADRES Y ACUDIENTE</a>
+                                <a data-toggle="tab" href="#info_padres"><span class="label label-info">2</span>&nbsp;DATOS DE PADRES Y ACUDIENTE</a>
                             </li>
                         </ul>
                         
