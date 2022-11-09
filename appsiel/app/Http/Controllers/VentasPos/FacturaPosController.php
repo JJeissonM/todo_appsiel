@@ -905,10 +905,13 @@ class FacturaPosController extends TransaccionController
         }
         
         // Un documento de desarme (MK) por acumulación
-        $obj_acumm_serv->hacer_desarme_automatico();
+        $obj_acumm_serv->hacer_desarme_automatico();        
         
-        // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
-        $obj_acumm_serv->hacer_preparaciones_recetas();
+        if ( (int)config( 'ventas_pos.crear_ensamble_de_recetas' ) )
+        {
+            // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
+            $obj_acumm_serv->hacer_preparaciones_recetas();
+        }        
 
         if ( !(int)config( 'ventas_pos.validar_existencias_al_acumular' ) )
         {

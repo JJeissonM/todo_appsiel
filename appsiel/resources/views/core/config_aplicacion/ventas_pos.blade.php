@@ -184,7 +184,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$crear_ensamble_de_recetas = '1';
+								if( isset($parametros['crear_ensamble_de_recetas'] ) )
+								{
+									$crear_ensamble_de_recetas = $parametros['crear_ensamble_de_recetas'];
+								}
+							?>
+							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crearensa,ble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
