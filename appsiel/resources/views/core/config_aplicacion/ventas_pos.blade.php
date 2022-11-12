@@ -191,7 +191,7 @@
 									$crear_ensamble_de_recetas = $parametros['crear_ensamble_de_recetas'];
 								}
 							?>
-							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crearensa,ble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crear ensamble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

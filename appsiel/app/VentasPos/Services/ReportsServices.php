@@ -21,33 +21,38 @@ class ReportsServices
             ];
         }
 
-        $movimientos = Movimiento::get_movimiento_ventas($fecha, $fecha, null,'Contabilizado');
+        $movimientos_pdv = Movimiento::get_movimiento_ventas($fecha, $fecha, null,'Contabilizado');
 
-        $total_contado = 0;
         $total_credito = 0;
         $arr_consecutivos = [];
-        foreach ($movimientos as $movimiento) {
+        foreach ($movimientos_pdv as $movimiento) {
 
             if ($movimiento->pdv_id != $pdv->id) {
                 continue;
             }
 
-            if ($movimiento->forma_pago == 'contado') {
-                $total_contado += $movimiento->precio_total;
-            }else{
+            if ($movimiento->forma_pago == 'credito') {
                 $total_credito += $movimiento->precio_total;
             }
+
             $arr_consecutivos[] = $movimiento->consecutivo;
             $core_tipo_transaccion_id = $movimiento->core_tipo_transaccion_id;
             $core_tipo_doc_app_id = $movimiento->core_tipo_doc_app_id;
         }
         
-        $movimientos_tesoreria = TesoMovimiento::where([
+        $movimientos_tesoreria_para_pdv = TesoMovimiento::where([
                             ['core_tipo_transaccion_id', '=', $core_tipo_transaccion_id ],
                             ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ]
                         ])
                         ->whereIn('consecutivo',$arr_consecutivos)
                         ->get();
+
+        $total_contado = 0;
+        foreach ($movimientos_tesoreria_para_pdv as $movimiento) {
+            if ($movimiento->teso_caja_id == $teso_caja_id) {
+                $total_contado += $movimiento->valor_movimiento;
+            }
+        }
 
         $cuentas_bancarias = TesoCuentaBancaria::where('estado','Activo')->get();
 
@@ -58,7 +63,7 @@ class ReportsServices
             }
 
             $total_cuenta_bancaria = 0;
-            foreach ($movimientos_tesoreria as $movimiento) {
+            foreach ($movimientos_tesoreria_para_pdv as $movimiento) {
                 if ($movimiento->teso_cuenta_bancaria_id == $cuenta_bancaria->id) {
                     $total_cuenta_bancaria += $movimiento->valor_movimiento;
                 }

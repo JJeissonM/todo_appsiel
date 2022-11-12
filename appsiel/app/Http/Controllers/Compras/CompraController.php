@@ -129,7 +129,7 @@ class CompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
         
         $lineas_registros = json_decode($request->lineas_registros);
-
+        
         // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
         $core_tipo_doc_app_id_original = $request['core_tipo_doc_app_id'];

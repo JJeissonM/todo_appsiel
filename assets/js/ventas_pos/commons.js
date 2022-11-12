@@ -367,6 +367,7 @@ $(document).ready(function () {
 
         // Asignar resto de campos
         $('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
+        $('#vendedor_id').attr('data-vendedor_descripcion',item_sugerencia.attr('data-vendedor_descripcion'));
         $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
         $("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
 
@@ -645,7 +646,6 @@ $(document).ready(function () {
             cantidad_total_productos++;
 
         });
-
 
         $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
         $('.lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_ajuste_al_peso));
