@@ -325,8 +325,7 @@ class VtasMovimiento extends Model
 
     public static function mov_ventas_totales_por_fecha( $fecha_inicial, $fecha_final )
     {
-        return VtasMovimiento::where('core_empresa_id', Auth::user()->empresa_id)
-                                ->whereBetween('fecha',[$fecha_inicial, $fecha_final])
+        return VtasMovimiento::whereBetween('fecha',[$fecha_inicial, $fecha_final])
                                 ->select(
                                             DB::raw('SUM(base_impuesto) as total_ventas'),
                                             DB::raw('SUM(precio_total) as total_ventas_netas'),

@@ -51,10 +51,10 @@ class ReportesController extends Controller
         {
             $fecha  = date("d-m-Y", strtotime("$linea->fecha"));
 
-            $stocksTable1->addRow( [ $linea->fecha, (float)$linea->total_ventas ]);
+            $stocksTable1->addRow( [ $linea->fecha, (float)$linea->total_ventas_netas ]);
 
             $tabla[$i]['fecha'] = $linea->fecha;
-            $tabla[$i]['valor'] = (float)$linea->total_ventas;
+            $tabla[$i]['valor'] = (float)$linea->total_ventas_netas;
             $i++;
         }
 
