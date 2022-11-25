@@ -327,13 +327,13 @@
 			$("*[required]").each(function() {
 				if ($(this).val() == "") {
 					$(this).focus();
-					//alert( 'Este campo es requerido: ' + $(this).attr('name') );
+					var name_campo = $(this).attr('name');
 					var lbl_campo = $(this).parent().prev('label').text();
 					if( lbl_campo === '' )
 					{
 						lbl_campo = $(this).prev('label').text();
 					}
-					alert( 'Este campo es requerido: ' + lbl_campo );
+					alert( 'Este campo es requerido: ' + lbl_campo + ' (' + name_campo + ')' );
 
 					control_requeridos = false;
 					return false;

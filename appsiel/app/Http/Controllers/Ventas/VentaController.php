@@ -864,7 +864,7 @@ class VentaController extends TransaccionController
                             '" data-numero_identificacion="'.$linea->numero_identificacion.
                             '" data-vendedor_id="'.$linea->vendedor_id.
                             '" data-vendedor_descripcion="'.$linea->vendedor->tercero->descripcion.
-                            '" data-equipo_ventas_id="'.$linea->equipo_ventas_id.
+                            '" data-equipo_ventas_id="0'.
                             '" data-inv_bodega_id="'.$linea->inv_bodega_id.
                             '" data-email="'.$linea->email.
                             '" data-dias_plazo="'.$linea->dias_plazo.

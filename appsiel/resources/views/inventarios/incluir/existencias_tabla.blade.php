@@ -1,3 +1,7 @@
+<?php 
+    $referencia = '';
+    dd();
+?>
 <div class="table-responsive">
     <table class="table table-bordered">
         {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Costo Prom.','Costo Total']) }}
@@ -7,6 +11,7 @@
             $total_costo_total=0;
             for($i=0;$i<count($productos);$i++){
                     $costo_promedio = 0;
+
                     if( $productos[$i]['Cantidad'] != 0)
                     {
                         $costo_promedio = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];

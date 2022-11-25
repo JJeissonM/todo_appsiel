@@ -80,7 +80,6 @@ Cliente:
                 }
 
                 $total_cantidad += $linea->cantidad;
-                $subtotal += (float)$linea->base_impuesto * (float)$linea->cantidad;
                 $total_impuestos += (float)$linea->valor_impuesto * (float)$linea->cantidad;
                 $total_factura += $linea->precio_total;
                 $total_descuentos += $linea->valor_total_descuento;
@@ -94,6 +93,8 @@ Cliente:
                     $impuesto_iva = $linea->tasa_impuesto;
                 }
             }
+
+            $subtotal += $total_factura + $total_descuentos - $total_impuestos;
         ?>
     @include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
     @include('ventas.incluir.factura_detalles_impuestos',compact('array_tasas'))

@@ -122,7 +122,13 @@ class InvProducto extends Model
             ->get();
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion;
+            $referencia = '';
+            if($opcion->referencia != '')
+            {
+                $referencia = ' - ' . $opcion->referencia;
+            }
+
+            $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion . $referencia;
         }
 
         return $vec;
@@ -305,6 +311,7 @@ class InvProducto extends Model
                                             'inv_productos.imagen',
                                             'inv_productos.mostrar_en_pagina_web',
                                             'inv_productos.codigo_barras',
+                                            'inv_productos.referencia',
                                             'inv_productos.inv_grupo_id')
                                 ->orderBy('inv_grupos.descripcion','ASC')
                                 ->get();
@@ -352,6 +359,7 @@ class InvProducto extends Model
                                 'inv_productos.tipo',
                                 'inv_productos.estado',
                                 'inv_productos.imagen',
+                                'inv_productos.referencia',
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
                     ->orderBy('grupo_descripcion', 'ASC')
@@ -401,6 +409,7 @@ class InvProducto extends Model
                                 'inv_productos.tipo',
                                 'inv_productos.estado',
                                 'inv_productos.imagen',
+                                'inv_productos.referencia',
                                 'inv_productos.mostrar_en_pagina_web',
                                 'inv_productos.codigo_barras')
                     ->where('inv_productos.mostrar_en_pagina_web',1)
@@ -427,7 +436,12 @@ class InvProducto extends Model
                             ->get();
         $vec['']='';
         foreach ($opciones as $opcion){
-            $vec[$opcion->id]=$opcion->id.' '.$opcion->descripcion;
+            $referencia = '';
+            if($opcion->referencia != '')
+            {
+                $referencia = ' - ' . $opcion->referencia;
+            }
+            $vec[$opcion->id]=$opcion->id.' '.$opcion->descripcion . $referencia;
         }
 
         return $vec;

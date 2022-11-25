@@ -913,6 +913,7 @@ class InventarioController extends TransaccionController
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
+                                            'referencia',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
@@ -928,6 +929,7 @@ class InventarioController extends TransaccionController
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
+                                            'referencia',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                 ->get()
@@ -942,6 +944,7 @@ class InventarioController extends TransaccionController
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
+                                            'referencia',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
@@ -980,10 +983,15 @@ class InventarioController extends TransaccionController
 
             $descripcion_item = $linea->nueva_cadena . ' (' . $linea->unidad_medida1 . ')';
 
+            $talla = '';
             if( $linea->unidad_medida2 != '' )
             {
-                $descripcion_item = $linea->nueva_cadena . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+                $talla = ' - Talla: ' . $linea->unidad_medida2;
             }
+            
+            $referencia = '';
+
+            $descripcion_item .= $talla . $referencia;
 
             $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
 
@@ -1022,6 +1030,7 @@ class InventarioController extends TransaccionController
                             ->select(
                                         'id',
                                         'descripcion',
+                                        'referencia',
                                         'unidad_medida1',
                                         'unidad_medida2')
                             ->get()
@@ -1056,10 +1065,19 @@ class InventarioController extends TransaccionController
 
             $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ')';
 
+            $talla = '';
             if( $linea->unidad_medida2 != '' )
             {
-                $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+                $talla = ' - Talla: ' . $linea->unidad_medida2;
             }
+            
+            $referencia = '';
+            if($linea->referencia != '')
+            {
+                $referencia = ' - ' . $linea->referencia;
+            }
+
+            $descripcion_item .= $talla . $referencia;
 
             $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
 

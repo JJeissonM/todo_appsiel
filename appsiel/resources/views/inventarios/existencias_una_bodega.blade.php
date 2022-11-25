@@ -37,8 +37,15 @@
 				        $total_costo_total=0;
 				        for($i=0;$i<count($productos);$i++){ 
 							$item = App\Inventarios\InvProducto::find((int)$productos[$i]['id']);
-				        		$productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
-				        		$costo_unitario = 0;
+				        	$productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
+				        	
+							$costo_unitario = 0;
+							$referencia = '';
+							if($productos[$i]['referencia'] != '')
+							{
+								$referencia = ' - ' . $productos[$i]['referencia'];
+							}
+							
 				        		if( $productos[$i]['Cantidad'] != 0)
 				        		{
 				        			$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
@@ -63,7 +70,7 @@
 				        	?>
 					            <tr>
 					                <td class="text-center">{{ $productos[$i]['id'] }}</td>
-					                <td>{{ $productos[$i]['descripcion'] }} ({{ $unidad_medida }})</td>
+					                <td>{{ $productos[$i]['descripcion'] }} {{ $referencia }} ({{ $unidad_medida }})</td>
 					                <td class="text-center">{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }}</td>
 					                <td class="text-right">{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
 					                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>

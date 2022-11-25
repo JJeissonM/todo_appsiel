@@ -212,6 +212,7 @@ class InvMovimiento extends Model
                                             'inv_productos.descripcion',
                                             'inv_productos.unidad_medida1',
                                             'inv_productos.unidad_medida2',
+                                            'inv_productos.referencia',
                                             'inv_bodegas.descripcion AS bodega',
                                             DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
                                             DB::raw('sum(inv_movimientos.costo_total) as Costo') )

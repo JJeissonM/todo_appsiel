@@ -55,7 +55,7 @@
 
 <span style="size: 1.1em; font-weight: bold;"> IF = Inventario Físico </span>
 <table class="table table-bordered table-striped">
-    {{ Form::bsTableHeader(['Cód.','Producto','Cantidad IF','Costo Total IF','Cantidad sistema','Costo Total sistema','DIF. Cantidad','DIF. Total sistema','']) }}
+    {{ Form::bsTableHeader(['Cód.','Producto','Cant. IF','Costo Unit. IF','Costo Tot. IF','Cant. sistema','Costo Tot. sistema','DIF. Cant.','DIF. Costo Tot.','']) }}
     <tbody>
         <?php 
         
@@ -90,6 +90,13 @@
 
                 <!-- Datos del conteo físico -->
                 <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }}  </td>
+                <?php 
+                    $costo_unit_conteo = 0;
+                    if ($linea->cantidad != 0) {
+                        $costo_unit_conteo = $linea->costo_total / $linea->cantidad;
+                    }
+                ?>
+                <td class="text-right"> ${{ number_format( $costo_unit_conteo, 0, ',', '.') }} </td>
                 <td class="text-right"> ${{ number_format( $linea->costo_total, 0, ',', '.') }} </td>
 
                 <!-- Datos del sistema -->
@@ -133,6 +140,7 @@
             ?>
             <td colspan="2">&nbsp;</td>
             <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+            <td class="text-right"> &nbsp; </td>
             <td class="text-right"> {{ '$ '.number_format($total_documento, 0, ',', '.') }} </td>
             <td class="text-center"> {{ number_format($total_cantidad_sistema, 0, ',', '.') }} </td>
             <td class="text-right"> {{ '$ '.number_format($total_documento_sistema, 0, ',', '.') }} </td>

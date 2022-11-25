@@ -5,8 +5,7 @@
     border-radius: 20px;
     @if($modal->path != null || $modal->path!='')
         background: url('{{$modal->path}}') no-repeat;
-        height: 100%;
-        width: 54%;
+        height: 95vh;
         background-size: contain;
         border: 0px;
         object-position: center center;
@@ -40,7 +39,7 @@
                         </p>
                         
                         @if($modal->enlace!=null || $modal->enlace!='')
-                            <a target="_blank" class="btn btn-primary modal-font" href="{{$modal->enlace}}">Conoce más...</a>
+                            <a target="_blank" class="btn btn-danger modal-font" href="{{$modal->enlace}}">Conoce más...</a>
                         @endif
                     </div>
                 </div>
