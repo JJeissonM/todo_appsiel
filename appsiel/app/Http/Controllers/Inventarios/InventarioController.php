@@ -990,6 +990,10 @@ class InventarioController extends TransaccionController
             }
             
             $referencia = '';
+            if($linea->referencia != '')
+            {
+                $referencia = ' - ' . $linea->referencia;
+            }
 
             $descripcion_item .= $talla . $referencia;
 

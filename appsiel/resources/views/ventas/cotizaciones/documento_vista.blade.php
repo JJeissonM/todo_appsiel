@@ -18,12 +18,22 @@
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
                     <?php 
+                        
                         $descripcion_item = $linea->producto_descripcion;
-
+                        
+                        $talla = '';
                         if( $linea->unidad_medida2 != '' )
                         {
-                            $descripcion_item = $linea->producto_descripcion . ' - Talla: ' . $linea->unidad_medida2;
+                            $talla = ' - Talla: ' . $linea->unidad_medida2;
                         }
+                        
+                        $referencia = '';
+                        if($linea->referencia != '')
+                        {
+                            $referencia = ' - ' . $linea->referencia;
+                        }
+
+                        $descripcion_item .= $talla . $referencia;
                     ?>
                     <td> {{ $descripcion_item }} </td>
                     <td class="text-center"> {{ $linea->unidad_medida1 }} </td>

@@ -23,10 +23,21 @@
                     {
                         $unidad_medida = $linea->item->unidad_medida1 . ' - Talla: ' . $linea->item->unidad_medida2;
                     }
+
+                    $producto_descripcion = $linea->producto_descripcion;
+                    
+                    $referencia = '';
+                    if($linea->referencia != '')
+                    {
+                        $referencia = ' - ' . $linea->referencia;
+                    }
+                    
+                    $producto_descripcion .= $referencia;
+
                 ?>
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
-                    <td> {{ $linea->producto_descripcion }} </td>
+                    <td> {{ $producto_descripcion }} </td>
                     <td style="text-align: center;"> {{ $unidad_medida }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $precio_original, 2, ',', '.') }} </td>

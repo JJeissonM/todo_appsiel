@@ -330,6 +330,11 @@ class InvProducto extends Model
 
             $item->costo_promedio = $costo_prom;
             $item->existencia_actual = $existencia_actual;
+
+            if($item->referencia != '')
+            {
+                $item->descripcion .= ' - ' . $item->referencia;
+            }
         }
 
         return $registros;

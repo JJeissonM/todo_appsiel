@@ -59,7 +59,14 @@ Cliente:
             ?>
         @foreach($doc_registros as $linea )
         <tr>
-            <td> {{ $linea->producto_descripcion }} </td>
+            <?php 
+                $referencia = '';
+                if($linea->referencia != '')
+                {
+                    $referencia = ' - ' . $linea->referencia;
+                }
+            ?>
+            <td> {{ $linea->producto_descripcion . $referencia }} </td>
             <td class="text-right">
                 {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }}
                 (${{ number_format( $linea->precio_unitario, 0, ',', '.') }})

@@ -20,10 +20,19 @@
 
                         $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
 
-                        if( $linea->item->unidad_medida2 != '' )
+                        $talla = '';
+                        if( $linea->unidad_medida2 != '' )
                         {
-                            $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
+                            $talla = ' - Talla: ' . $linea->unidad_medida2;
                         }
+                        
+                        $referencia = '';
+                        if($linea->referencia != '')
+                        {
+                            $referencia = ' - ' . $linea->referencia;
+                        }
+
+                        $descripcion_item .= $talla . $referencia;
 
                         $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 2);
 

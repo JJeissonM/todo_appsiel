@@ -645,6 +645,9 @@ class FacturaPosController extends TransaccionController
         }
 
         $vista_categorias_productos = '';
+        if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
+            $vista_categorias_productos = View::make('ventas_pos.tags_lista_items', compact('productosTemp'))->render();
+        }
         
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
