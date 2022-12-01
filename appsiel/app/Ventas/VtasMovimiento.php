@@ -249,9 +249,9 @@ class VtasMovimiento extends Model
             case 'inv_producto_id':
                 $agrupar_por = 'producto';
                 break;
-                case 'tasa_impuesto':
-                    $agrupar_por = 'tasa_impuesto';
-                    break;
+            case 'tasa_impuesto':
+                $agrupar_por = 'tasa_impuesto';
+                break;
             case 'vendedor_id':
                 $agrupar_por = 'vendedor_id';
                 break;
@@ -304,8 +304,6 @@ class VtasMovimiento extends Model
         return $movimiento->groupBy( $agrupar_por );
     }
 
-
-
     public static function get_ultimo_precio_producto($cliente_id, $producto_id)
     {
         $registro = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
@@ -334,5 +332,21 @@ class VtasMovimiento extends Model
                                 ->orderBy('fecha')
                                 ->get();
 
+    }
+    
+    public static function get_movimiento_entre_fechas( $fecha_desde, $fecha_hasta )
+    {
+        $movimiento = VtasMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->get();
+
+        foreach ($movimiento as $fila)
+        {
+            $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
+
+
+            $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
+        }
+
+        return $movimiento;
     }
 }

@@ -370,4 +370,21 @@ class ReportesController extends Controller
         return $vista;
     }
 
+
+    public function vtas_lineas_repetidas_movimientos(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $movimiento = VtasMovimiento::get_movimiento_entre_fechas($fecha_desde, $fecha_hasta);
+
+        $mensaje = 'IVA <b>NO</b> incluido en precio';
+
+        $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
 }

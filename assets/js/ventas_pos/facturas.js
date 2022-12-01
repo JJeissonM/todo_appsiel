@@ -302,7 +302,7 @@ function ventana_imprimir() {
 
 // Se llama desde el listado de productos (boton de la lupa)
 function mandar_codigo(item_id) {
-	$('#myModal').modal("hide");
+	//$('#myModal').modal("hide");
 
 	var producto = productos.find(item => item.id === parseInt(item_id));
 
@@ -312,10 +312,28 @@ function mandar_codigo(item_id) {
 	costo_unitario = producto.costo_promedio;
 
 	$('#inv_producto_id').val(producto.descripcion);
+	
+	$('#existencia_actual').html('Stock: ' + producto.existencia_actual.toFixed(2));
+	$('#existencia_actual').show();
+	
+	$('#precio_unitario').val(get_precio(producto.id));
+	$('#tasa_descuento').val(get_descuento(producto.id));
+
+	$('#cantidad').val(1);
+	cantidad = 1;
+
+	calcular_valor_descuento2();
+	calcular_impuestos2();
+	calcular_precio_total2();
+	agregar_la_linea2();
+
+	/*
+	$('#inv_producto_id').val(producto.descripcion);
 	$('#precio_unitario').val(get_precio(producto.id));
 	$('#tasa_descuento').val(get_descuento(producto.id));
 
 	$('#cantidad').select();
+	*/
 }
 
 function mandar_codigo2(item_id) {
@@ -330,6 +348,7 @@ function mandar_codigo2(item_id) {
 	$('#inv_producto_id').val(producto.descripcion);
 	$('#precio_unitario').val(get_precio(producto.id));
 	$('#tasa_descuento').val(get_descuento(producto.id));
+
 	cantidad = 1;
 	$('#cantidad').val(cantidad);
 	calcular_valor_descuento2();
