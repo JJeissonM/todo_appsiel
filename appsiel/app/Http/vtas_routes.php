@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 
 Route::post('vtas_agregar_precio_lista', 'Ventas\VentaController@agregar_precio_lista');
 Route::post('vtas_doc_registro_guardar', 'Ventas\VentaController@doc_registro_guardar');
@@ -77,6 +78,8 @@ Route::post('vtas_reporte_rentabilidad', 'Ventas\ReportesController@vtas_reporte
 Route::post('vtas_reporte_ventas_por_vendedor', 'Ventas\ReportesController@ventas_por_vendedor');
 
 Route::post('vtas_remisiones_sin_factura_real', 'Ventas\ReportesController@remisiones_estado_facturadas_sin_factura_real');
+
+Route::post('vtas_lineas_de_movimiento_repetidas', 'Ventas\ReportesController@lineas_de_movimiento_repetidas');
 
 
 // PROCESOS

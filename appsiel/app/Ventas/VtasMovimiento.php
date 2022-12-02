@@ -22,15 +22,14 @@ class VtasMovimiento extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
-
     public function producto()
     {
-        return $this->belongsTo(InvProducto::class);
+        return $this->belongsTo(InvProducto::class,'inv_producto_id');
     }
 
     public function cliente()
     {
-        return $this->belongsTo( Cliente::class);
+        return $this->belongsTo( Cliente::class, 'cliente_id');
     }
 
     public function tercero()
@@ -234,7 +233,6 @@ class VtasMovimiento extends Model
             ->groupBy('vtas_movimientos.cliente_id')
             ->get();
     }
-
 
     public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por )
     {

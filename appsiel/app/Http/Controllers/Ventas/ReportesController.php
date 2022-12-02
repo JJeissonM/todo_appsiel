@@ -371,16 +371,46 @@ class ReportesController extends Controller
     }
 
 
-    public function vtas_lineas_repetidas_movimientos(Request $request)
+    public function lineas_de_movimiento_repetidas(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $movimiento = VtasMovimiento::get_movimiento_entre_fechas($fecha_desde, $fecha_hasta);
+        $movimientos_ventas = VtasMovimiento::get_movimiento_entre_fechas($fecha_desde, $fecha_hasta);
 
+        $movimiento_inventarios = InvMovimiento::get_movimiento_transacciones_ventas( $fecha_desde, $fecha_hasta );
+
+        $resumen_ventas = collect([]);
+        $arr_registros_unicos = [];
+        foreach ($movimientos_ventas as $linea_movimiento) {
+            $llave = $linea_movimiento->remision_doc_encabezado_id . $linea_movimiento->inv_producto_id;
+            if (in_array($llave,$arr_registros_unicos)) {
+                continue;
+            }
+
+            $cant_venta = abs( $linea_movimiento->where( 'remision_doc_encabezado_id', $linea_movimiento->remision_doc_encabezado_id )
+                    ->where( 'inv_producto_id', $linea_movimiento->inv_producto_id )
+                    ->sum('cantidad') );
+
+            $cant_inventario = abs( $movimiento_inventarios->where( 'inv_doc_encabezado_id', $linea_movimiento->remision_doc_encabezado_id )
+                    ->where( 'inv_producto_id', $linea_movimiento->inv_producto_id )
+                    ->sum('cantidad') );
+
+            $resumen_ventas->push([
+                'fecha' => $linea_movimiento->fecha,
+                'doc_ventas' => $linea_movimiento->get_label_documento(),
+                'item' => $linea_movimiento->producto->descripcion,
+                'cant_venta' => $cant_venta,
+                'cant_inventario' => $cant_inventario,
+                'diferencia' => $cant_venta - $cant_inventario
+            ]);
+
+            $arr_registros_unicos[] = $llave;
+        }
+        
         $mensaje = 'IVA <b>NO</b> incluido en precio';
 
-        $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje') )->render();
+        $vista = View::make('ventas.reportes.lineas_de_movimiento_repetidas', compact( 'resumen_ventas',  'mensaje') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
