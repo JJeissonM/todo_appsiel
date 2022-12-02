@@ -1,6 +1,10 @@
 <h3 style="width: 100%; text-align: center;">
     Auditoría en movimientos de ventas 
 </h3>
+    <h6 style="width: 100%; text-align: center;">
+        Los siguientes registros tienen diferencias entre las Cantidades vendidas y 
+        las Cantidades que salieron del inventario. 
+        <br>Por favor, informe a soporte técnico.</h6> 
 <hr>
 
 <div class="table-responsive">
@@ -19,12 +23,11 @@
             @foreach($resumen_ventas as $linea)
 
                 <?php
-                    $clase = '';
-                    if ($linea['diferencia'] != 0) {
-                        $clase = 'danger';
+                    if ($linea['diferencia'] == 0) {
+                        continue;
                     }            
                 ?>
-                <tr class="{{$clase}}">
+                <tr>
                     <td> {{ $linea['fecha'] }} </td>
                     <td> {{ $linea['doc_ventas'] }} </td>
                     <td> {{ $linea['item'] }} </td>
