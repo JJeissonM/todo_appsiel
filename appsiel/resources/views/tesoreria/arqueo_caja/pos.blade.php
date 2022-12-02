@@ -127,7 +127,7 @@
                 <td class="contact"><b>TOTAL ESPERADO</b></td>
                 <td class="subject text-center"></td>
                 <td class="subject text-right">
-                    <b>${{number_format($registro->lbl_total_sistema,'0',',','.')}}</b>
+                    <b>${{number_format($registro->base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}</b>
                 </td>
             </tr>
             

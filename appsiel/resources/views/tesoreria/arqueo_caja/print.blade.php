@@ -224,7 +224,7 @@
                                 <td class="contact"><b>Total esperado</b></td>
                                 <td class="subject"></td>
                                 <td class="subject">
-                                    ${{number_format($registro->lbl_total_sistema,'0',',','.')}}</td>
+                                    ${{number_format($registro->base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}</td>
                             </tr>
                             <tr>
                                 <td colspan="3">
