@@ -397,6 +397,11 @@ class ReportesController extends Controller
                     ->sum('cantidad') );
 
             $resumen_ventas->push([
+                'core_tipo_transaccion_id' => $linea_movimiento->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $linea_movimiento->core_tipo_doc_app_id,
+                'consecutivo' => $linea_movimiento->consecutivo,
+                'remision_doc_encabezado_id' => $linea_movimiento->remision_doc_encabezado_id,
+                'inv_producto_id' => $linea_movimiento->inv_producto_id,
                 'fecha' => $linea_movimiento->fecha,
                 'doc_ventas' => $linea_movimiento->get_label_documento(),
                 'item' => $linea_movimiento->producto->descripcion,
@@ -407,7 +412,7 @@ class ReportesController extends Controller
 
             $arr_registros_unicos[] = $llave;
         }
-        
+
         $mensaje = 'IVA <b>NO</b> incluido en precio';
 
         $vista = View::make('ventas.reportes.lineas_de_movimiento_repetidas', compact( 'resumen_ventas',  'mensaje') )->render();

@@ -11,6 +11,11 @@
     <table id="myTable" class="table table-striped">
         <thead>
             <tr>
+                <th style="display: none;">core_tipo_transaccion_id </th>
+                <th style="display: none;">core_tipo_doc_app_id </th>
+                <th style="display: none;">consecutivo </th>
+                <th style="display: none;">remision_doc_encabezado_id </th>
+                <th style="display: none;">inv_producto_id </th>
                 <th> Fecha </th>
                 <th> Doc. Ventas </th>
                 <th> Producto </th>
@@ -28,6 +33,11 @@
                     }            
                 ?>
                 <tr>
+                    <td style="display: none;"> {{ $linea['core_tipo_transaccion_id'] }} </td>
+                    <td style="display: none;"> {{ $linea['core_tipo_doc_app_id'] }} </td>
+                    <td style="display: none;"> {{ $linea['consecutivo'] }} </td>
+                    <td style="display: none;"> {{ $linea['remision_doc_encabezado_id'] }} </td>
+                    <td style="display: none;"> {{ $linea['inv_producto_id'] }} </td>
                     <td> {{ $linea['fecha'] }} </td>
                     <td> {{ $linea['doc_ventas'] }} </td>
                     <td> {{ $linea['item'] }} </td>
