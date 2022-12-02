@@ -33,7 +33,7 @@
                     <td> {{ $linea['item'] }} </td>
                     <td> {{ number_format( $linea['cant_venta'], 2, ',', '.') }} </td>
                     <td> {{ number_format( $linea['cant_inventario'], 2, ',', '.') }} </td>
-                    <td> {{ number_format( $linea['diferencia'], 0, ',', '.') }} </td>
+                    <td> {{ number_format( $linea['diferencia'], 2, ',', '.') }} </td>
                 </tr>
                 
             @endforeach
