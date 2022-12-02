@@ -1,5 +1,5 @@
 <h3 style="width: 100%; text-align: center;">
-    REPORTE DE LÍNEAS DE MOVIMIENTOS REPETIDAS EN VENTAS 
+    Auditoría en movimientos de ventas 
 </h3>
 <hr>
 
