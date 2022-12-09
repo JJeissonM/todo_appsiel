@@ -157,7 +157,7 @@ class CxcMovimiento extends Model
                             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_movimientos.core_tipo_doc_app_id')
                             ->where('cxc_movimientos.core_empresa_id', Auth::user()->empresa_id)
                             ->where('cxc_movimientos.core_tercero_id', '=', $core_tercero_id)
-                            ->where('cxc_movimientos.saldo_pendiente', '<>', 0)
+                            ->whereNotBetween('cxc_movimientos.saldo_pendiente', [-0.1, 0.1])
                             ->where('cxc_movimientos.fecha', '<=', $fecha)
                             ->select(
                               'cxc_movimientos.id',

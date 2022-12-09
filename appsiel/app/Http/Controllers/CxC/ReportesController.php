@@ -59,7 +59,7 @@ class ReportesController extends Controller
 
             $linea_movimiento->show = 1;
             // Para NO mostrar saldos con saldo pendientes cero
-            if ( $linea_movimiento->saldo_pendiente == 0)// && $linea_movimiento->id != 0 
+            if ( $linea_movimiento->saldo_pendiente >= -0.1 && $linea_movimiento->saldo_pendiente <= 0.1 )
             {
                 $linea_movimiento->show = 0;
             }
