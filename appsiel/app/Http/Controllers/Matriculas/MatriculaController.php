@@ -63,11 +63,15 @@ class MatriculaController extends ModeloController
             $colegio = Colegio::get_colegio_user();
         }
 
-        if (is_null($colegio)) {
+        if ($colegio == null) {
             return redirect('inicio')->with('mensaje_error', 'La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.');
         }
 
         $periodo_lectivo = PeriodoLectivo::get_actual();
+
+        if ($periodo_lectivo == null) {
+            return redirect('web/create?id=1&id_modelo=179&id_transaccion=')->with('mensaje_error', 'Debe crear un Año Lectivo para empezar.');
+        }        
 
         /**   ALGUNAS ESTADISTICAS            **/
         $alumnos_por_curso = ReportesController::grafica_estudiantes_x_curso($periodo_lectivo->id);
