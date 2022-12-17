@@ -3,16 +3,9 @@
 namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Matriculas\ReportesController;
-use App\Http\Requests;
-
-use DB;
-use PDF;
-use View;
-use Input;
-use Hash;
 
 use App\User;
 
@@ -33,18 +26,15 @@ use App\Calificaciones\Calificacion;
 use App\Calificaciones\ObservacionesBoletin;
 
 use App\Tesoreria\TesoLibretasPago;
-use App\Tesoreria\TesoMovimiento;
-use App\Contabilidad\ContabMovimiento;
 use App\Core\TipoDocumentoId;
 use App\Matriculas\Responsableestudiante;
 use App\Matriculas\Tiporesponsable;
 
-//Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-use App\Core\PasswordReset;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class MatriculaController extends ModeloController
 {
@@ -372,7 +362,7 @@ class MatriculaController extends ModeloController
         $tam_hoja = 'Letter';
 
         // Crear PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
         return $pdf->stream('matricula.pdf'); //stream();
 
