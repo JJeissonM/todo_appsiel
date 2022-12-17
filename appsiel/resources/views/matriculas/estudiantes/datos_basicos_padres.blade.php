@@ -1,9 +1,12 @@
 <?php 
+
 	$tiene_reponsables = false;
 	$listado_responsableestudiantes = [];
 	if ($estudiante != null) {
 		$listado_responsableestudiantes = $estudiante->responsableestudiantes;
 	}
+
+	//dd($estudiante);
 ?>	
 	<table width="100%">
 		<tr>
@@ -33,5 +36,8 @@
 @if( !$tiene_reponsables )
 	<span class="text-danger"> <i class="fa fa-warning"></i> Sin datos de padres ni acudiente.</span>
 	<br><br>
+	@if ($estudiante != null) {
+		<a class="btn btn-info btn-xs" href="{{url('matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' . $estudiante->id )}}"><i class="fa fa-plus"></i> Gestionar Responsables</a>
+	@endif
 @endif
 	
