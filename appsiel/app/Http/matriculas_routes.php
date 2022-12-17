@@ -4,6 +4,9 @@
 
 
 // Inscripciones
+
+use Illuminate\Support\Facades\Route;
+
 Route::get('matriculas/inscripciones/creacion_masiva', 'Matriculas\InscripcionController@creacion_masiva');
 Route::get('matriculas/inscripciones/eliminar/{id}', 'Matriculas\InscripcionController@eliminar');
 Route::get('matriculas/inscripcion_print/{id_fila}', 'Matriculas\InscripcionController@inscripcion_print');

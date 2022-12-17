@@ -18,6 +18,7 @@ use App\Sistema\SecuenciaCodigo;
 use App\Matriculas\Inscripcion;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Responsableestudiante;
+use App\Matriculas\Services\ResponsablesEstudiantesService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -126,101 +127,12 @@ class InscripcionesEnLineaController extends Controller
         $inscripcion->origen = 'Página web';
         $inscripcion->save();
 
-        $this->crear_datos_padres_y_acudiente($request,$empresa_id,$estudiante->id);
+        (new ResponsablesEstudiantesService())->crear_datos_padres_y_acudiente($request,$empresa_id,$estudiante->id);
 
         // se llama la vista de show
         return redirect( 'inscripciones_en_linea/' . $inscripcion->id )->with('flash_message', config('matriculas.mensaje_inscripcion_creada'));
 	}
 
-    public function crear_datos_padres_y_acudiente($request,$empresa_id,$estudiante_id)
-    {
-        $datos_generales = [
-            'codigo_ciudad' => $request->codigo_ciudad,
-            'id_tipo_documento_id' => 13,
-            'core_empresa_id' => $empresa_id, 
-            'tipo' => 'Persona natural', 
-            'estado' => 'Activo'
-        ];
-
-        if ($request->cedula_mama != '') {
-            $mama = Tercero::where( 'numero_identificacion', $request->cedula_mama )->get()->first();
-            if ($mama == null) {
-                $mama = Tercero::create( array_merge( $datos_generales, [
-                                            'email' => $request->email_mama, 
-                                            'numero_identificacion' => $request->cedula_mama, 
-                                            'descripcion' => $request->mama, 
-                                            'nombre1' => $request->mama, 
-                                            'telefono1' => $request->telefono_mama, 
-                                            'direccion1' => $request->direccion_mama
-                                        ] ) );
-            }
-            
-            Responsableestudiante::create( [
-                'tiporesponsable_id' => 2,
-                'estudiante_id' => $estudiante_id,
-                'tercero_id' => $mama->id
-            ] );
-        }
-        
-        if ($request->cedula_papa != '') {
-            $papa = Tercero::where( 'numero_identificacion', $request->cedula_papa )->get()->first();
-            if ($papa == null) {
-                $papa = Tercero::create( array_merge( $datos_generales, [
-                                            'email' => $request->email_papa, 
-                                            'numero_identificacion' => $request->cedula_papa, 
-                                            'descripcion' => $request->papa, 
-                                            'nombre1' => $request->papa, 
-                                            'telefono1' => $request->telefono_papa,
-                                            'direccion1' => $request->direccion_papa
-                                        ] ));
-            }
-                            
-            Responsableestudiante::create( [
-                'tiporesponsable_id' => 1,
-                'estudiante_id' => $estudiante_id,
-                'tercero_id' => $papa->id
-            ] );
-        }
-        
-        if ($request->cedula_acudiente != '') {
-            $acudiente = Tercero::where( 'numero_identificacion', $request->cedula_acudiente )->get()->first();
-            if ($acudiente == null) {
-                $acudiente = Tercero::create( array_merge( $datos_generales, [
-                                            'email' => $request->email_acudiente, 
-                                            'numero_identificacion' => $request->cedula_acudiente, 
-                                            'descripcion' => $request->acudiente, 
-                                            'nombre1' => $request->acudiente, 
-                                            'telefono1' => $request->telefono_acudiente,
-                                            'direccion1' => $request->direccion_acudiente
-                                        ] ));
-            }
-        }
-
-        switch ($request->acudiente_seleccionado) {
-            case 'madre':
-                $acudiente_tercero_id = $mama->id;
-                break;
-            
-            case 'padre':
-                $acudiente_tercero_id = $papa->id;
-                break;
-            
-            case 'otro':
-                $acudiente_tercero_id = $acudiente->id;
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-
-        Responsableestudiante::create( [
-            'tiporesponsable_id' => 3,
-            'estudiante_id' => $estudiante_id,
-            'tercero_id' => $acudiente_tercero_id
-        ] );
-
-    }
 
 	public function show($id)
     {

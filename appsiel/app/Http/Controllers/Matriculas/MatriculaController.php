@@ -16,8 +16,6 @@ use Hash;
 
 use App\User;
 
-use Auth;
-
 // Modelos
 use App\Sistema\Modelo;
 use App\Sistema\SecuenciaCodigo;
@@ -46,6 +44,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 use App\Core\PasswordReset;
+use Illuminate\Support\Facades\Auth;
 
 class MatriculaController extends ModeloController
 {
@@ -58,12 +57,14 @@ class MatriculaController extends ModeloController
      */
     public function index()
     {
+        $colegio = null;
+
         if (Auth::check()) {
             $colegio = Colegio::get_colegio_user();
         }
 
         if (is_null($colegio)) {
-            return "La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.";
+            return redirect('inicio')->with('mensaje_error', 'La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.');
         }
 
         $periodo_lectivo = PeriodoLectivo::get_actual();

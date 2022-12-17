@@ -16,11 +16,12 @@ class RecosteoService
     /**
      * inv_motivo_id
      * 1> Entrada Almacen
+     * 9> Entrada bodega destino (en Transferencias)
      * 11> Compras Nacionales 
      * 16> Entrada por compras
      * 23> Saldos iniciales
      */
-    public $arr_motivos_entradas_ids = [1, 11, 16, 23];
+    public $arr_motivos_entradas_ids = [1, 9, 11, 16, 23];
 
     /**
      * 3> Salida (producto a consumir). Fabricacion

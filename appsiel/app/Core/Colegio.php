@@ -3,9 +3,8 @@
 namespace App\Core;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Colegio extends Model
 {

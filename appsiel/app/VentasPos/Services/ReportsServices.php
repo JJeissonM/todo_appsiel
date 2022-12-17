@@ -25,6 +25,8 @@ class ReportsServices
 
         $total_credito = 0;
         $arr_consecutivos = [];
+        $core_tipo_transaccion_id = 0;
+        $core_tipo_doc_app_id = 0;
         foreach ($movimientos_pdv as $movimiento) {
 
             if ($movimiento->pdv_id != $pdv->id) {

@@ -11,27 +11,22 @@ use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Http\Controllers\Matriculas\MatriculaController;
 
-use DB;
-use PDF;
-use View;
-use Auth;
-use Storage;
-use Input;
-
 use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Sistema\Modelo;
-use App\Sistema\ModelAction;
-use App\Core\TipoDocumentoId;
+
 use App\Sistema\SecuenciaCodigo;
 
 // Modelos
 use App\Matriculas\Inscripcion;
 use App\Matriculas\Estudiante;
-use App\Matriculas\Curso;
-use App\Matriculas\Grado;
-use App\Calificaciones\Asignatura;
-use App\Calificaciones\Boletin;
+
+use App\Core\Colegio;
+use App\Matriculas\Services\ResponsablesEstudiantesService;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class InscripcionController extends ModeloController
 {	
@@ -88,13 +83,28 @@ class InscripcionController extends ModeloController
         }else{
             $tercero->fill( $request->all() );
             $tercero->save();
-        }            
+        }
+
+        $estudiante = Estudiante::where('core_tercero_id',$tercero->id)->get()->first();
+        if ( $estudiante == null )
+        {
+            $estudiante = Estudiante::create( [
+                                            'id_colegio' => Colegio::get()->first()->id, 
+                                            'core_tercero_id' => $tercero->id, 
+                                            'genero' => $request->genero,
+                                            'fecha_nacimiento' => $request->fecha_nacimiento, 
+                                            'ciudad_nacimiento' => $request->ciudad_nacimiento
+                                        ] );
+        }
 
         // Almacenar datos restantes de la inscripcion
         $registro_creado->codigo = $codigo;
         $registro_creado->core_tercero_id = $tercero->id;
         $registro_creado->estado = 'Pendiente';
+        $registro_creado->origen = 'Interna';
         $registro_creado->save();
+
+        (new ResponsablesEstudiantesService())->crear_datos_padres_y_acudiente($request,$empresa_id,$estudiante->id);
 
         // se llama la vista de show
         return redirect( 'matriculas/inscripcion/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo );
@@ -122,7 +132,7 @@ class InscripcionController extends ModeloController
 
       $tam_hoja = 'Letter';
       $orientacion='portrait';
-      $pdf = \App::make('dompdf.wrapper');
+      $pdf = App::make('dompdf.wrapper');
       $pdf->loadHTML(($view_pdf))->setPaper($tam_hoja,$orientacion);
       return $pdf->stream('inscripcion.pdf');
     }  
