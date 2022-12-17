@@ -85,8 +85,6 @@ class Estudiante extends Model
             ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
             ->orderBy('sga_estudiantes.id', 'desc')
             ->paginate($nro_registros);
     }
@@ -101,8 +99,8 @@ class Estudiante extends Model
                 'sga_estudiantes.genero AS GENERO',
                 'sga_estudiantes.fecha_nacimiento AS FECHA_DE_NACIMIENTO',
                 'core_terceros.telefono1 AS TELEFONO',
-                'core_terceros.direccion1 AS EMAIL_PAPÁ',
-                'core_terceros.email AS EMAIL_MAMÁ',
+                'core_terceros.direccion1 AS DIRECCION',
+                'core_terceros.email AS EMAIL',
                 'sga_estudiantes.id AS ESTUDIANTE_ID',
                 'core_terceros.id AS TERCERO_ID'
             )
@@ -111,8 +109,6 @@ class Estudiante extends Model
             ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.email_papa", "LIKE", "%$search%")
-            ->orWhere("sga_estudiantes.email_mama", "LIKE", "%$search%")
             ->orderBy('sga_estudiantes.id', 'desc')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
@@ -253,16 +249,6 @@ class Estudiante extends Model
                 'sga_estudiantes.fecha_nacimiento',
                 'sga_estudiantes.ciudad_nacimiento',
                 'sga_estudiantes.core_tercero_id',
-                'sga_estudiantes.papa',
-                'sga_estudiantes.cedula_papa',
-                'sga_estudiantes.ocupacion_papa',
-                'sga_estudiantes.telefono_papa',
-                'sga_estudiantes.email_papa',
-                'sga_estudiantes.mama',
-                'sga_estudiantes.cedula_mama',
-                'sga_estudiantes.ocupacion_mama',
-                'sga_estudiantes.telefono_mama',
-                'sga_estudiantes.email_mama',
                 'sga_estudiantes.grupo_sanguineo',
                 'sga_estudiantes.alergias',
                 'sga_estudiantes.medicamentos',
