@@ -112,6 +112,20 @@ class InscripcionController extends ModeloController
 
 	public function show($id)
     {
+        $inscripcion = Inscripcion::find($id);
+
+        $estudiante = Estudiante::where('core_tercero_id',$inscripcion->core_tercero_id)->get()->first();
+        if ( $estudiante == null )
+        {
+            $estudiante = Estudiante::create( [
+                                'id_colegio' => Colegio::get()->first()->id, 
+                                'core_tercero_id' => $inscripcion->core_tercero_id, 
+                                'genero' => $inscripcion->genero,
+                                'fecha_nacimiento' => $inscripcion->fecha_nacimiento, 
+                                'ciudad_nacimiento' => $inscripcion->ciudad_nacimiento
+                            ] );
+        }
+
 		$reg_anterior = Inscripcion::where('id', '<', $id)->max('id');
         $reg_siguiente = Inscripcion::where('id', '>', $id)->min('id');
 

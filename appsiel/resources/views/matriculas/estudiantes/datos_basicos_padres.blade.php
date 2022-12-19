@@ -5,13 +5,12 @@
 	if ($estudiante != null) {
 		$listado_responsableestudiantes = $estudiante->responsableestudiantes;
 	}
-
-	//dd($estudiante);
 ?>	
-	@if ($estudiante != null) {
+	@if ($estudiante != null && $vista == 'show')
 		<a class="btn btn-info btn-xs" href="{{url('matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' . $estudiante->id )}}"><i class="fa fa-plus"></i> Gestionar Responsables</a>
+		<br><br>
 	@endif
-	
+
 	<table width="100%">
 		<tr>
 			@foreach( $listado_responsableestudiantes AS $responsable )

@@ -3,18 +3,8 @@
 namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Http\Controllers\Sistema\ModeloController;
-
-use DB;
-use PDF;
-use View;
-use Auth;
-use Storage;
-use Input;
-use Cache;
 
 use App\Sistema\Modelo;
 use App\Sistema\Html\Boton;
@@ -27,8 +17,7 @@ use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Grado;
 use App\Matriculas\Curso;
-use App\Calificaciones\Asignatura;
-use App\Calificaciones\Boletin;
+
 use App\Core\Colegio;
 use App\Core\Tercero;
 use App\Core\TipoDocumentoId;
@@ -36,6 +25,10 @@ use App\Matriculas\Responsableestudiante;
 use App\Matriculas\Tiporesponsable;
 
 use App\Ventas\Cliente;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class EstudianteController extends ModeloController
 {

@@ -5,7 +5,6 @@
     <style>
         body {
             border: solid 1px #333333;
-            font-size: 12px;
         }
         @page{
             size: 612pt 410pt;

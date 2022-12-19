@@ -4,7 +4,14 @@
 		<td colspan="2"><h3> <strong>Datos básicos del estudiante</strong> </h3></td>
 	</tr>
 	<tr>
-		<td colspan="2"><strong>Curso: </strong> {{ $estudiante->matriculas->last()->curso->descripcion }} - {{ $estudiante->matriculas->last()->periodo_lectivo->descripcion }} </td>
+		<?php 
+			$curso_label = 'Sin matricula registrada';
+			if($estudiante->matriculas->last() != null)
+			{
+				$curso_label = $estudiante->matriculas->last()->curso->descripcion . ' - ' .  $estudiante->matriculas->last()->periodo_lectivo->descripcion;
+			}
+		?>
+		<td colspan="2"><strong>Curso actual: </strong> {{ $curso_label }} </td>
 	</tr>
 
 	<tr>
@@ -41,7 +48,7 @@
 	</tr>
 </table>
 
-@include('matriculas.estudiantes.datos_basicos_padres')
+@include('matriculas.estudiantes.datos_basicos_padres',['vista'=>'show'])
 
 <?php
 	function calcular_edad($fecha_nacimiento)
