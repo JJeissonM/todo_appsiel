@@ -16,7 +16,7 @@ class Inscripcion extends Model
 
     protected $fillable = ['codigo', 'fecha', 'sga_grado_id', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'origen', 'enterado_por', 'observacion', 'acudiente', 'colegio_anterior', 'estado', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Candidato', 'Identificación', 'Código inscripción', 'Fecha', 'Grado', 'Origen', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombres', 'Apellidos', 'Identificación', 'Cód. inscripción', 'Fecha', 'Grado', 'Origen', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","store":"matriculas/inscripcion","update":"matriculas/inscripcion/id_fila","edit":"web/id_fila/edit","show":"matriculas/inscripcion/id_fila","imprimir":"matriculas/inscripcion_print/id_fila","eliminar":"matriculas/inscripciones/eliminar/id_fila"}';
 
@@ -39,14 +39,15 @@ class Inscripcion extends Model
             ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1'),
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS campo2'),
-                'sga_inscripciones.codigo AS campo3',
-                'sga_inscripciones.fecha AS campo4',
-                'sga_grados.descripcion AS campo5',
-                'sga_inscripciones.origen AS campo6',
-                'sga_inscripciones.estado AS campo7',
-                'sga_inscripciones.id AS campo8'
+                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1'),
+                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2) AS campo2'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ", core_terceros.numero_identificacion ) AS campo3'),
+                'sga_inscripciones.codigo AS campo4',
+                'sga_inscripciones.fecha AS campo5',
+                'sga_grados.descripcion AS campo6',
+                'sga_inscripciones.origen AS campo7',
+                'sga_inscripciones.estado AS campo8',
+                'sga_inscripciones.id AS campo9'
             )
             ->where("sga_inscripciones.codigo", "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
@@ -116,14 +117,30 @@ class Inscripcion extends Model
         // cambiar nombre de campo email
         $registro->tercero->email = $datos['email2'];
         $registro->tercero->numero_identificacion = $datos['numero_identificacion2'];
-        dd($datos);
+        //dd($datos);
         $registro->tercero->save();
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         if ($registro->estado == 'Activo') {
-            return [null, 'La incripción ya tiene matrículas asociadas. No puede ser modificada. Estudiante: ' . $registro->tercero->descripcion];
+            return [
+                [
+                    "id" => 999,
+                    "descripcion" => "Label no se puede ingresar registros desde esta opción.",
+                    "tipo" => "personalizado",
+                    "name" => "lbl_planilla",
+                    "opciones" => "",
+                    "value" => '<div class="form-group">                    
+                                                    <label class="control-label col-sm-3" style="color: red;" > <b> La incripción ya tiene matrículas asociadas y no puede ser modificada. Para modificar los datos del estudiante debe ir al Menú Catálogos. Estudiante: ' . $registro->tercero->descripcion . '</b> </label>
+                                                </div>',
+                    "atributos" => [],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ]
+            ];
         }
 
         $cantida_campos = count($lista_campos);

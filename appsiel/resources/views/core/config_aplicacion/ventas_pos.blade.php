@@ -159,7 +159,16 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<div class="row" style="padding:5px;">
+								<?php 
+									$mostrar_solo_items_con_precios_en_lista_cliente_default = '0';
+									if( isset($parametros['mostrar_solo_items_con_precios_en_lista_cliente_default'] ) )
+									{
+										$mostrar_solo_items_con_precios_en_lista_cliente_default = $parametros['mostrar_solo_items_con_precios_en_lista_cliente_default'];
+									}
+								?>
+								{{ Form::bsSelect('mostrar_solo_items_con_precios_en_lista_cliente_default', $mostrar_solo_items_con_precios_en_lista_cliente_default, 'Mostra solo ítems que tienen precios en la lista del cliente por defecto del PDV', ['No','Sí'], ['class'=>'form-control']) }}
+							</div>
 						</div>
 					</div>
 

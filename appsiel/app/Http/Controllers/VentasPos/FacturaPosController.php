@@ -127,24 +127,8 @@ class FacturaPosController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
-
-        $productosTemp = null;
-        foreach ($productos as $pr)
-        {
-            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
-
-            if (!$grupo_inventario->mostrar_en_pagina_web) {
-                continue;
-            }
-            
-            if ( is_null($grupo_inventario) )
-            {
-                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
-            }
-
-            $pr->categoria = $grupo_inventario->descripcion;
-            $productosTemp[$pr->categoria][] = $pr;
-        }
+        
+        $productosTemp = $this->get_productos($pdv,$productos);
         
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
@@ -171,6 +155,37 @@ class FacturaPosController extends TransaccionController
         $vendedores = Vendedor::where('estado','Activo')->get();
 
         return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento'));
+    }
+
+    public function get_productos($pdv,$productos)
+    {
+        $items_en_lista_precios = ListaPrecioDetalle::where('lista_precios_id',$pdv->cliente->lista_precios_id)->get()->pluck('inv_producto_id')->toArray();
+
+        $productosTemp = null;
+        foreach ($productos as $pr)
+        {
+            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+
+            if (!$grupo_inventario->mostrar_en_pagina_web) {
+                continue;
+            }
+
+            if ((int)config('ventas_pos.mostrar_solo_items_con_precios_en_lista_cliente_default')) {
+                if (!in_array($pr->id,$items_en_lista_precios)) {
+                    continue;
+                }
+            }            
+            
+            if ( is_null($grupo_inventario) )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
+            }
+
+            $pr->categoria = $grupo_inventario->descripcion;
+            $productosTemp[$pr->categoria][] = $pr;
+        }
+
+        return $productosTemp;
     }
 
     public function ajustar_campos($lista_campos,$pdv,$vendedor)
@@ -638,11 +653,7 @@ class FacturaPosController extends TransaccionController
         //$total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
         $total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
-        $productosTemp = null;
-        foreach ($productos as $pr) {
-            $pr->categoria = InvGrupo::find($pr->inv_grupo_id)->descripcion;
-            $productosTemp[$pr->categoria][] = $pr;
-        }
+        $productosTemp = $this->get_productos($pdv,$productos);
 
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
