@@ -1,3 +1,18 @@
+<div class="container-fluid well">
+    <div class="col-sm-6">
+        <div class="row" style="padding:5px;">
+            <div class="form-group">
+                    {{ Form::bsSelect('acudiente_seleccionado', null, '<i class="fa fa-asterisk"></i>¿Quién es el acudiente?', [''=>'', 'padre'=>'El padre', 'madre'=>'La madre','otro'=>'Otro'], ['class'=>'form-control','required'=>'required']) }}
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        &nbsp;
+    </div>
+    <br>
+    <br>
+</div>
+
 <div class="row">
     <div class="col-sm-6">
         <div class="panel panel-success">
@@ -62,21 +77,6 @@
             </div>
         </div>
     </div>
-</div>
-
-<div class="container-fluid">
-    <div class="col-sm-6">
-        <div class="row" style="padding:5px;">
-            <div class="form-group">
-                    {{ Form::bsSelect('acudiente_seleccionado', null, '<i class="fa fa-asterisk"></i>¿Quién es el acudiente?', [''=>'', 'padre'=>'El padre', 'madre'=>'La madre','otro'=>'Otro'], ['class'=>'form-control','required'=>'required']) }}
-            </div>
-        </div>
-    </div>
-    <div class="col-sm-6">
-        &nbsp;
-    </div>
-    <br>
-    <br>
 </div>
 
 <div class="row" id="div_acudiente" style="display: none;">

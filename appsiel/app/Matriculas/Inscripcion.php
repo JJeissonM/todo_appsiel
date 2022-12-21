@@ -19,6 +19,8 @@ class Inscripcion extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombres', 'Apellidos', 'Identificación', 'Cód. inscripción', 'Fecha', 'Grado', 'Origen', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","store":"matriculas/inscripcion","update":"matriculas/inscripcion/id_fila","edit":"web/id_fila/edit","show":"matriculas/inscripcion/id_fila","imprimir":"matriculas/inscripcion_print/id_fila","eliminar":"matriculas/inscripciones/eliminar/id_fila"}';
+    
+	public $vistas = '{"create":"matriculas.inscripciones.en_linea.create"}';
 
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/matriculas/inscripcion.js';
@@ -207,6 +209,11 @@ class Inscripcion extends Model
 
     public static function get_registro_impresion($id)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+        }
+
         return Inscripcion::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_inscripciones.core_tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_inscripciones.sga_grado_id')
@@ -216,7 +223,7 @@ class Inscripcion extends Model
                 'sga_inscripciones.codigo',
                 'sga_inscripciones.core_tercero_id',
                 'sga_inscripciones.fecha',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
+                DB::raw($raw_nombre_completo),
                 DB::raw('CONCAT(core_tipos_docs_id.abreviatura," ",core_terceros.numero_identificacion) AS tipo_y_numero_documento_identidad'),
                 'sga_inscripciones.acudiente',
                 'sga_grados.descripcion AS nombre_grado',

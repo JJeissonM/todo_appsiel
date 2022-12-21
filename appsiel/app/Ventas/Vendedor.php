@@ -97,6 +97,9 @@ class Vendedor extends Model
     public static function opciones_campo_select()
     {
         $raw = 'CONCAT(core_terceros.apellido1, " ",core_terceros.apellido2, " ",core_terceros.nombre1, " ",core_terceros.otros_nombres) AS descripcion';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS descripcion';
+        }
 
         $opciones = Vendedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_vendedores.core_tercero_id')->where('vtas_vendedores.estado', 'Activo')
             ->select('vtas_vendedores.id', DB::raw($raw))

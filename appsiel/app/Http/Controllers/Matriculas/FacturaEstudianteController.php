@@ -133,6 +133,19 @@ class FacturaEstudianteController extends TransaccionController
     {
         // Crear documento de Ventas
         $request['remision_doc_encabezado_id'] = 0;
+
+        if (!isset($request['vendedor_id'])) {
+            $request['vendedor_id'] = 1;
+        }
+
+        if (!isset($request['fecha_vencimiento'])) {
+            $request['fecha_vencimiento'] = $request['fecha'];
+        }
+
+        if (!isset($request['forma_pago'])) {
+            $request['forma_pago'] = 'credito';
+        }        
+        
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
         // Crear Líneas de registros del documento de ventas

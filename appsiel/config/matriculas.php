@@ -1,8 +1,9 @@
 <?php
  return array (
   'titulo' => '<h3>Configuraciones generales <br> <small style="color: red;"> Si no está completamente seguro, no modifique ningún valor de este formulario. Consulte con el administrador del sistema. </small></h3>',
-  'formato_impresion_observador' => '2',
+  'modo_visualizacion_nombre_completo_estudiante' => 'nombres_apellidos',
   'convenciones_valoraciones_aspectos' => '2',
+  'formato_impresion_observador' => '2',
   'manejar_control_disciplinario' => '0',
   'manejar_matriz_dofa' => '1',
   'inv_producto_id_default_matricula' => '',

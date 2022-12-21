@@ -32,6 +32,39 @@
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
 				<br>
+				<h4> Parámetros generales  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$modo_visualizacion_nombre_completo_estudiante = 'apellidos_nombres';
+								if( isset($parametros['modo_visualizacion_nombre_completo_estudiante'] ) )
+								{
+									$modo_visualizacion_nombre_completo_estudiante = $parametros['modo_visualizacion_nombre_completo_estudiante'];
+								}
+							?>
+							{{ Form::bsSelect('modo_visualizacion_nombre_completo_estudiante', $modo_visualizacion_nombre_completo_estudiante, 'Forma de visualizar el nombre completo de estudiantes', [ 'apellidos_nombres' => 'Apellidos y Nombre', 'nombres_apellidos' => 'Nombres y Apellidos' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$convenciones_valoraciones_aspectos = 'S= Siempre      CS= Casi siempre      AV= Algunas veces      N= Nunca';
+								if( isset($parametros['convenciones_valoraciones_aspectos'] ) )
+								{
+									$convenciones_valoraciones_aspectos = $parametros['convenciones_valoraciones_aspectos'];
+								}
+							?>
+							{{ Form::bsSelect('convenciones_valoraciones_aspectos', $convenciones_valoraciones_aspectos, 'Convenciones valoraciones de aspectos', [ 1 => 'S= Siempre      CS= Casi siempre      AV= Algunas veces      N= Nunca', 2 => 'Db= Desempeño bajo      DB= Desempeño Básico      DA= Desempeño Alto      DS= Desempeño Superior' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<br>
 				<h4> Parámetros para el observador  </h4>
 				<hr>
 				<div class="row">
@@ -94,6 +127,7 @@
 
 				</div>
 
+				<br>
 				<h4> Parámetros de facturas de estudiantes  </h4>
 				<hr>
 				<div class="row">
