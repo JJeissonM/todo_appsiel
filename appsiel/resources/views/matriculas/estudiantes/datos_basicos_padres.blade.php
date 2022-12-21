@@ -28,7 +28,7 @@
 							<td><strong>Ocupación: </strong> <br> {{ $responsable->ocupacion }}</td>
 						</tr>
 						<tr>
-							<td><strong>Teléfono: </strong> <br> {{ $responsable->tercero->descripcion }}</td>
+							<td><strong>Teléfono: </strong> <br> {{ $responsable->tercero->telefono1 }}</td>
 							<td colspan="2"><strong>E-mail: </strong> <br> {{ $responsable->tercero->email }}</td>
 						</tr>
 					</table>

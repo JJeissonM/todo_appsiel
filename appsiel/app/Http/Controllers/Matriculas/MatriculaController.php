@@ -529,7 +529,6 @@ class MatriculaController extends ModeloController
             }
         }
 
-
         // Verificadion 2: Calificaciones y observaciones
         $cant_calificaciones = 0;
         $cant_calificaciones = Calificacion::where([
@@ -558,7 +557,7 @@ class MatriculaController extends ModeloController
 
         $this->actualizar_estado_ultima_inscripcion( $registro->estudiante->core_tercero_id );
 
-        // Si hay SOLO una (1) matrícula, se elimina al usuario y al estudiante
+        // Si hay SOLO una (1) matrícula, se elimina al usuario
         if (count($todas_las_matriculas->toArray()) == 1)
         {
 
@@ -574,9 +573,6 @@ class MatriculaController extends ModeloController
                     $user->roles()->sync([]); // borrar todos los roles y asignar los del array (en este caso vacío)
                     $user->delete();
                 }
-
-                //Borrar Estudiante
-                $estudiante->delete();
             }
         }       
         
