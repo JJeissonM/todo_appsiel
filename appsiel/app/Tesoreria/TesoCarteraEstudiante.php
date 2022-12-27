@@ -46,6 +46,11 @@ class TesoCarteraEstudiante extends Model
             $curso_id = '%%';
         }
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+        }
+
     	return TesoCarteraEstudiante::leftJoin('sga_estudiantes','sga_estudiantes.id','=','teso_cartera_estudiantes.id_estudiante')
                         ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
                         ->leftJoin('teso_libretas_pagos','teso_libretas_pagos.id_estudiante','=','sga_estudiantes.id')
@@ -57,7 +62,7 @@ class TesoCarteraEstudiante extends Model
                         ->where('teso_cartera_estudiantes.estado','=','Vencida')
                         ->where('teso_cartera_estudiantes.saldo_pendiente','<>',0)
                         ->select(
-                        			DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo' ),
+                        			DB::raw( $raw_nombre_completo ),
                         			'core_terceros.numero_identificacion AS doc_identidad',
                         			'core_terceros.apellido1',
                         			'teso_cartera_estudiantes.valor_cartera',

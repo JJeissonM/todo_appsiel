@@ -173,7 +173,6 @@ class TesoDocEncabezado extends Model
     */
     public static function get_registro_impresion($id)
     {
-
         return TesoDocEncabezado::where('teso_doc_encabezados.id',$id)
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')

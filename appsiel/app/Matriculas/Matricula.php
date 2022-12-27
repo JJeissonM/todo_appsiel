@@ -136,6 +136,11 @@ class Matricula extends Model
         if ($estudiante_id != null) {
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.id_estudiante' => $estudiante_id]);
         }
+        
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+        }
 
         return Matricula::where($array_wheres)
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
@@ -143,7 +148,7 @@ class Matricula extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
+                DB::raw($raw_nombre_completo),
                 'sga_matriculas.id AS matricula_id',
                 'sga_matriculas.id',
                 'sga_matriculas.codigo',
@@ -187,6 +192,11 @@ class Matricula extends Model
         if ($periodo_lectivo_id != null) {
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.periodo_lectivo_id' => $periodo_lectivo_id]);
         }
+        
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+        }
 
         return Matricula::where($array_wheres)
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
@@ -194,7 +204,7 @@ class Matricula extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
+                DB::raw($raw_nombre_completo),
                 'sga_matriculas.id AS matricula_id',
                 'sga_matriculas.id',
                 'sga_matriculas.codigo',
@@ -234,6 +244,11 @@ class Matricula extends Model
         if ($estado != null) {
             $array_wheres = array_merge($array_wheres, ['sga_matriculas.estado' => $estado]);
         }
+        
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_estudiante';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_estudiante';
+        }
 
         return Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -247,7 +262,7 @@ class Matricula extends Model
                 'sga_matriculas.periodo_lectivo_id',
                 'sga_periodos_lectivos.descripcion',
                 'sga_matriculas.fecha_matricula',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_estudiante'),
+                DB::raw($raw_nombre_completo),
                 'sga_matriculas.cedula_acudiente',
                 'sga_matriculas.acudiente',
                 'sga_cursos.descripcion AS nombre_curso',
@@ -290,7 +305,12 @@ class Matricula extends Model
 
 
     public static function get_registro_impresion($id)
-    {
+    {        
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_estudiante';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_estudiante';
+        }
+
         return Matricula::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
@@ -304,7 +324,7 @@ class Matricula extends Model
                 'sga_matriculas.curso_id',
                 'sga_periodos_lectivos.descripcion',
                 'sga_matriculas.fecha_matricula',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_estudiante'),
+                DB::raw($raw_nombre_completo),
                 'core_terceros.numero_identificacion',
                 'sga_estudiantes.core_tercero_id',
                 'sga_matriculas.cedula_acudiente',

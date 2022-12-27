@@ -46,12 +46,17 @@ class TesoLibretasPago extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
+        }
+
         return TesoLibretasPago::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'teso_libretas_pagos.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_matriculas', 'sga_matriculas.id', '=', 'teso_libretas_pagos.matricula_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
             ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1'),
+                DB::raw($raw_nombre_completo),
                 'sga_cursos.descripcion AS campo2',
                 'sga_matriculas.codigo AS campo3',
                 'teso_libretas_pagos.fecha_inicio AS campo4',
@@ -78,12 +83,17 @@ class TesoLibretasPago extends Model
 
     public static function sqlString($search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
+        }
+
         $string = TesoLibretasPago::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'teso_libretas_pagos.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_matriculas', 'sga_matriculas.id', '=', 'teso_libretas_pagos.matricula_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
             ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                DB::raw($raw_nombre_completo),
                 'sga_cursos.descripcion AS CURSO',
                 'sga_matriculas.codigo AS CÓD._MATRICULA',
                 'teso_libretas_pagos.fecha_inicio AS FECHA_INICIO',
@@ -115,8 +125,11 @@ class TesoLibretasPago extends Model
     }
 
     public static function consultar_un_registro($id)
-    {       
-        $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS campo1';
+    {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
+        }
 
         $registros = TesoLibretasPago::leftJoin('sga_estudiantes','sga_estudiantes.id','=','teso_libretas_pagos.id_estudiante')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -124,7 +137,7 @@ class TesoLibretasPago extends Model
                     ->leftJoin('sga_cursos','sga_cursos.id','=','sga_matriculas.curso_id')
                     ->where('teso_libretas_pagos.id', $id)
                     ->select(
-                                DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1' ),
+                                DB::raw( $raw_nombre_completo ),
                                 'sga_cursos.descripcion AS campo2',
                                 'sga_matriculas.codigo AS campo3',
                                 'teso_libretas_pagos.fecha_inicio AS campo4',
