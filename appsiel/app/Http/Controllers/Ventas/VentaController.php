@@ -293,7 +293,11 @@ class VentaController extends TransaccionController
                                 );
 
             // CONTABILIZAR INGRESOS
-            $detalle_operacion = $datos['descripcion'];
+            $detalle_operacion = '';
+            if (isset($datos['descripcion'])) {
+                $detalle_operacion = $datos['descripcion'];
+            }
+            
             VentaController::contabilizar_movimiento_credito( $datos + $linea_datos, $detalle_operacion );
 
             $total_documento += (float)$lineas_registros[$i]->precio_total;
