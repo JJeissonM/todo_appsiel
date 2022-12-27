@@ -118,6 +118,7 @@ class MatriculaController extends ModeloController
                 }
             }
         }
+
         //Algunas personalizaciones
         $cantidad_campos = count($lista_campos);
         for ($i = 0; $i < $cantidad_campos; $i++) {
@@ -228,6 +229,12 @@ class MatriculaController extends ModeloController
         } else {
             // Si ya existe, obtengo el registro según el tercero asociado
             $estudiante = Estudiante::get_estudiante_x_tercero_id( $request->core_tercero_id );
+
+            $estudiante->grupo_sanguineo = $request->grupo_sanguineo;
+            $estudiante->alergias = $request->alergias;
+            $estudiante->medicamentos = $request->medicamentos;
+            $estudiante->eps = $request->eps;
+            $estudiante->save();
         }
 
         $this->crear_y_asignar_usuario($estudiante);

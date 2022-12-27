@@ -412,7 +412,9 @@ class EstudianteController extends ModeloController
 
         $estudiante = Estudiante::find(Input::get('estudiante_id')); // Se obtiene el registro del modelo indicado
         $tercero = $estudiante->getTercero($estudiante->id);
+
         $miga_pan = $this->get_miga_pan($mod, $mod->descripcion);
+        
         $id_transaccion = '';
 
         // Se le asigna a cada variable url, su valor en el modelo correspondiente

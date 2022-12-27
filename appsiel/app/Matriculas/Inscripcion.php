@@ -197,7 +197,7 @@ class Inscripcion extends Model
         // Agregar NUEVO campo con el core_tercero_id
         $lista_campos[$i]['tipo'] = 'hidden';
         $lista_campos[$i]['name'] = 'core_tercero_id';
-        $lista_campos[$i]['descripcion'] = '';
+        $lista_campos[$i]['descripcion'] = 'core_tercero_id';
         $lista_campos[$i]['opciones'] = [];
         $lista_campos[$i]['value'] = $registro->tercero->id;
         $lista_campos[$i]['atributos'] = [];

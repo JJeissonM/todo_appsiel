@@ -52,7 +52,13 @@
                     </div>
                 </div>
 
-                {{ Form::hidden('url_id_modelo', 323) }}
+                {{ Form::hidden('url_id', 1) }}
+
+                @if( Input::get('id_modelo') != null )
+                    {{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
+                @else
+                    {{ Form::hidden('url_id_modelo', 323) }}
+                @endif
 
                 <div style="width: 100%; text-align: center;">
                     <a href="#" class="btn btn-primary btn-lg" id="bs_boton_guardar">Guardar</a>

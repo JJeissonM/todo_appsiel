@@ -552,10 +552,11 @@ $(document).ready(function () {
 
         // Desactivar el click del botón
         //$( this ).off( event );
+        $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
         $( this ).attr( 'disabled', 'disabled' );
+        $( this ).attr( 'id', 'btn_guardando' );
 
         $('#linea_ingreso_default').remove();
-        //$('#linea_ingreso_default_aux').remove();
 
         var table = $('#ingreso_registros').tableToJSON();
         var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();                
@@ -568,9 +569,7 @@ $(document).ready(function () {
         habilitar_campos_encabezado();
 
         var url = $("#form_create").attr('action');
-        var data = $("#form_create").serialize();
-
-        /*$("#form_create").submit();*/        
+        var data = $("#form_create").serialize();     
         
         $.post(url, data, function (doc_encabezado_consecutivo) {
             $('title').append(doc_encabezado_consecutivo);
@@ -584,6 +583,8 @@ $(document).ready(function () {
             if ( $('#action').val() == 'create' )
             {
                 resetear_ventana();
+                $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar factura' );
+                $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
             }else{
                 location.href = url_raiz + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val() + '&action=create';
             }            

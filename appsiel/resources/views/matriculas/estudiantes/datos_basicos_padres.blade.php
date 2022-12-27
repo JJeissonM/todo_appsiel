@@ -7,7 +7,7 @@
 	}
 ?>	
 	@if ($estudiante != null && $vista == 'show')
-		<a class="btn btn-info btn-xs" href="{{url('matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo=29&estudiante_id=' . $estudiante->id )}}"><i class="fa fa-plus"></i> Gestionar Responsables</a>
+		<a class="btn btn-info btn-xs" href="{{url('matriculas/estudiantes/gestionresponsables/estudiante_id?id=1&id_modelo='.Input::get('id_modelo').'&estudiante_id=' . $estudiante->id )}}"><i class="fa fa-plus"></i> Gestionar Responsables</a>
 		<br><br>
 	@endif
 

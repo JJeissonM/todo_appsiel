@@ -60,9 +60,10 @@ class InscripcionController extends ModeloController
 
         $tercero = Tercero::where( 'numero_identificacion', $request->numero_identificacion2 )->get()->first();
 
+        $empresa_id = 1;
+
         if ( is_null($tercero) )
         {
-            $empresa_id = 1;
             $user = Auth::user();
             if ( !is_null($user) )
             {
@@ -107,7 +108,7 @@ class InscripcionController extends ModeloController
         (new ResponsablesEstudiantesService())->crear_datos_padres_y_acudiente($request,$empresa_id,$estudiante->id);
 
         // se llama la vista de show
-        return redirect( 'matriculas/inscripcion/'.$registro_creado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo );
+        return redirect( 'matriculas/inscripcion/' . $registro_creado->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo )->with('flash_message','Registro CREADO correctamente.');
 	}
 
 	public function show($id)

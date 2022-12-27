@@ -53,78 +53,34 @@
                 </div>
             </div>
 
-            @if( !$estudiante_existe )
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Controles médicos</div>
+                        <div class="panel-body">
+                            <div class="row" style="padding:5px;">
+                                {{ Form::bsText('grupo_sanguineo', $estudiante->grupo_sanguineo, 'Grupo sanguíneo', []) }}
+                            </div>
 
-                <div class="panel panel-primary">
-                    <div class="panel-heading">DATOS DE PADRES, ACUDIENTE, RESPONSABLE FINANCIERO, ETC.</div>
-                    <div class="panel-body">
-                        <div class="alert alert-warning" role="alert">
-                            <h4><b>Atención! </b>Debe incluir, como mínimo, al responsable financiero (acudiente). Luego puede completar la información de los padres</h4>
-                        </div>
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover" id="ingreso_lineas_registros">
-                                <thead>
-                                    <tr>
-                                        <th scope="col" style="display: none;">tercero_id</th>
-                                        <th scope="col" style="display: none;">tiporesponsable_id</th>
-                                        <th scope="col">Tercero</th>
-                                        <th scope="col">Dirección</th>
-                                        <th scope="col">Teléfono</th>
-                                        <th scope="col">Correo</th>
-                                        <th scope="col">Tipo de responsable</th>
-                                        <th scope="col"><i class="fa fa-remove"></i></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                            <div class="row" style="padding:5px;">
+                                {{ Form::bsText('medicamentos', $estudiante->medicamentos, 'Medicamento', []) }}
+                            </div>
 
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td>
-                                            <input id="tercero_responsable_id" placeholder="*Nombre del tercero" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{ url('core_consultar_terceros_v2') }}" data-clase_modelo="App\Core\Tercero" name="numero_docp[]" type="text" value="">
-                                        </td>
-                                        <td colspan="3"></td>
-                                        <td>
-                                            {{ Form::bsSelect('tiporesponsable_idp', null, '', App\Matriculas\Tiporesponsable::opciones_campo_select(), ['class'=>'form-control']) }}
-                                        </td>
-                                        <td> <button class="btn btn-success btn-xs" id="btn_agregar_linea"> <i class="fa fa-check"></i> </button></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                            
-                    </div>
-                </div>
+                            <div class="row" style="padding:5px;">
+                                {{ Form::bsText('alergias', $estudiante->alergias, 'Alergias', []) }}
+                            </div>
 
-                <div class="row">
-                    <div class="col-sm-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">Controles médicos</div>
-                            <div class="panel-body">
-                                <div class="row" style="padding:5px;">
-                                    {{ Form::bsText('grupo_sanguineo', null, 'Grupo sanguíneo', []) }}
-                                </div>
-
-                                <div class="row" style="padding:5px;">
-                                    {{ Form::bsText('medicamentos', null, 'Medicamento', []) }}
-                                </div>
-
-                                <div class="row" style="padding:5px;">
-                                    {{ Form::bsText('alergias', null, 'Alergias', []) }}
-                                </div>
-
-                                <div class="row" style="padding:5px;">
-                                    {{ Form::bsText('eps', null, 'EPS', []) }}
-                                </div>
+                            <div class="row" style="padding:5px;">
+                                {{ Form::bsText('eps', $estudiante->eps, 'EPS', []) }}
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-sm-6">
-                        &nbsp;
-                    </div>
                 </div>
-            @endif
+
+                <div class="col-sm-6">
+                    &nbsp;
+                </div>
+            </div>
 
             <div align="center">
 
