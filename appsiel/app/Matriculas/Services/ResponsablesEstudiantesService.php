@@ -4,7 +4,8 @@ namespace App\Matriculas\Services;
 
 use App\Core\Tercero;
 use App\Matriculas\Responsableestudiante;
-use App\Tesoreria\TesoPlanPagosEstudiante;
+
+use App\Ventas\Cliente;
 
 class ResponsablesEstudiantesService
 {
@@ -95,6 +96,28 @@ class ResponsablesEstudiantesService
             'estudiante_id' => $estudiante_id,
             'tercero_id' => $acudiente_tercero_id
         ] );
+
+        if ( Cliente::where( 'core_tercero_id', $acudiente_tercero_id)->get()->first() == null )
+        {
+            // Datos del Cliente
+            $cliente = new Cliente;
+            $cliente->fill( 
+                            [
+                                'core_tercero_id' => $acudiente_tercero_id,
+                                'encabezado_dcto_pp_id' => 1,
+                                'clase_cliente_id' => 1,
+                                'lista_precios_id' => 1,
+                                'lista_descuentos_id' => 1,
+                                'vendedor_id' => 1,
+                                'inv_bodega_id' => 1,
+                                'zona_id' => 1,
+                                'liquida_impuestos' => 1,
+                                'condicion_pago_id' => 1,
+                                'estado' => 'Activo' 
+                            ]
+                        );
+            $cliente->save();
+        }
 
     }
 }
