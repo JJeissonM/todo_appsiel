@@ -34,10 +34,15 @@ class FodaEstudiante extends Model
 
     public static function sqlString($search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTES';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTES';
+        }
+
         $string = FodaEstudiante::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_foda_estudiantes.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->select(
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTES'),
+                DB::raw($raw_nombre_completo),
                 'sga_foda_estudiantes.fecha_novedad AS FECHA',
                 'sga_foda_estudiantes.tipo_caracteristica AS TIPO_CARACTERISTICA',
                 'sga_foda_estudiantes.descripcion AS DESCRIPCIÓN'
@@ -58,11 +63,16 @@ class FodaEstudiante extends Model
 
     public static function get_foda_un_estudiante( $estudiante_id )
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
+        }
+
         return FodaEstudiante::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_foda_estudiantes.id_estudiante')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
                     ->where('sga_foda_estudiantes.id_estudiante',$estudiante_id)
                     ->select(
-                        DB::raw( 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1' ),
+                        DB::raw( $raw_nombre_completo ),
                         'sga_foda_estudiantes.fecha_novedad AS campo2',
                         'sga_foda_estudiantes.tipo_caracteristica AS campo3',
                         'sga_foda_estudiantes.descripcion AS campo4',

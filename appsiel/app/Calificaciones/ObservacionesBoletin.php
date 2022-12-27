@@ -18,6 +18,11 @@ class ObservacionesBoletin extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo4';
+        }
+
         return ObservacionesBoletin::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_observaciones_boletines.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_observaciones_boletines.curso_id')
@@ -27,7 +32,7 @@ class ObservacionesBoletin extends Model
                 'sga_periodos_lectivos.descripcion AS campo1',
                 'sga_periodos.descripcion AS campo2',
                 'sga_cursos.descripcion AS campo3',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
+                DB::raw($raw_nombre_completo),
                 'sga_observaciones_boletines.puesto AS campo5',
                 'sga_observaciones_boletines.observacion AS campo6',
                 'sga_observaciones_boletines.id AS campo7'
@@ -43,6 +48,11 @@ class ObservacionesBoletin extends Model
 
     public static function sqlString_consultar_registros($search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
+        }
+
         $string = ObservacionesBoletin::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_observaciones_boletines.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_observaciones_boletines.curso_id')
@@ -52,7 +62,7 @@ class ObservacionesBoletin extends Model
                 'sga_periodos_lectivos.descripcion AS AÑO',
                 'sga_periodos.descripcion AS PERÍODO',
                 'sga_cursos.descripcion AS CURSO',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                DB::raw($raw_nombre_completo),
                 'sga_observaciones_boletines.puesto AS PUESTO',
                 'sga_observaciones_boletines.observacion AS OBSERVACIÓN'
             )->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
@@ -68,6 +78,11 @@ class ObservacionesBoletin extends Model
 
     public static function consultar_registros_director_grupo($nro_registros, $search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo4';
+        }
+
         $collection = ObservacionesBoletin::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_observaciones_boletines.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_observaciones_boletines.curso_id')
@@ -79,7 +94,7 @@ class ObservacionesBoletin extends Model
                 'sga_periodos_lectivos.descripcion AS campo1',
                 'sga_periodos.descripcion AS campo2',
                 'sga_cursos.descripcion AS campo3',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
+                DB::raw($raw_nombre_completo),
                 'sga_observaciones_boletines.puesto AS campo5',
                 'sga_observaciones_boletines.observacion AS campo6',
                 'sga_observaciones_boletines.id AS campo7'
@@ -149,6 +164,11 @@ class ObservacionesBoletin extends Model
 
     public static function sqlString_registros_director_grupo($search)
     {
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
+        }
+
         $string = ObservacionesBoletin::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_observaciones_boletines.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_observaciones_boletines.curso_id')
@@ -160,7 +180,7 @@ class ObservacionesBoletin extends Model
                 'sga_periodos_lectivos.descripcion AS AÑO',
                 'sga_periodos.descripcion AS PERÍODO',
                 'sga_cursos.descripcion AS CURSO',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                DB::raw($raw_nombre_completo),
                 'sga_observaciones_boletines.puesto AS PUESTO',
                 'sga_observaciones_boletines.observacion AS OBSERVACIÓN'
             )->orWhere("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")

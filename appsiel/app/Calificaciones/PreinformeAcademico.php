@@ -26,6 +26,11 @@ class PreinformeAcademico extends Model
     {
         $user = Auth::user();
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo4';
+        }
+
         $array_wheres = [['sga_preinformes_academicos.id', '>', 0]];
 
         if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
@@ -46,7 +51,7 @@ class PreinformeAcademico extends Model
                     'sga_preinformes_academicos.codigo_matricula AS campo1',
                     'sga_periodos.descripcion AS campo2',
                     'sga_cursos.descripcion AS campo3',
-                    DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
+                    DB::raw($raw_nombre_completo),
                     'sga_asignaturas.descripcion AS campo5',
                     'sga_preinformes_academicos.anotacion AS campo6',
                     'sga_preinformes_academicos.id AS campo7'
@@ -60,8 +65,6 @@ class PreinformeAcademico extends Model
                 ->paginate($nro_registros);
         }
 
-
-
         return PreinformeAcademico::where($array_wheres)
             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_preinformes_academicos.id_periodo')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_preinformes_academicos.curso_id')
@@ -72,7 +75,7 @@ class PreinformeAcademico extends Model
                 'sga_preinformes_academicos.codigo_matricula AS campo1',
                 'sga_periodos.descripcion AS campo2',
                 'sga_cursos.descripcion AS campo3',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
+                DB::raw($raw_nombre_completo),
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_preinformes_academicos.anotacion AS campo6',
                 'sga_preinformes_academicos.id AS campo7'
@@ -92,6 +95,11 @@ class PreinformeAcademico extends Model
 
         $array_wheres = [['sga_preinformes_academicos.id', '>', 0]];
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
+        }
+
         if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
             $asignaturas = AsignacionProfesor::get_asignaturas_x_curso($user->id, $periodo_lectivo_id = null);
 
@@ -110,7 +118,7 @@ class PreinformeAcademico extends Model
                     'sga_preinformes_academicos.codigo_matricula AS CÓD_MATRÍCULA',
                     'sga_periodos.descripcion AS PERIODO',
                     'sga_cursos.descripcion AS CURSO',
-                    DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                    DB::raw($raw_nombre_completo),
                     'sga_asignaturas.descripcion AS ASIGNATURA',
                     'sga_preinformes_academicos.anotacion AS ASIGNATURA',
                     'sga_preinformes_academicos.id AS ANOTACIÓN'
@@ -125,8 +133,6 @@ class PreinformeAcademico extends Model
             return str_replace('?', '"%' . $search . '%"', $string);
         }
 
-
-
         $string = PreinformeAcademico::where($array_wheres)
             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_preinformes_academicos.id_periodo')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_preinformes_academicos.curso_id')
@@ -137,7 +143,7 @@ class PreinformeAcademico extends Model
                 'sga_preinformes_academicos.codigo_matricula AS CÓD_MATRÍCULA',
                 'sga_periodos.descripcion AS PERIODO',
                 'sga_cursos.descripcion AS CURSO',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                DB::raw($raw_nombre_completo),
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_preinformes_academicos.anotacion AS ASIGNATURA',
                 'sga_preinformes_academicos.id AS ANOTACIÓN'

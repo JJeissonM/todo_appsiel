@@ -1,9 +1,5 @@
 @extends('layouts.principal')
 
-<?php  
-	dd($miga_pan);
-?>
-
 @section('content')
 {{ Form::bsMigaPan($miga_pan) }}
 <hr>

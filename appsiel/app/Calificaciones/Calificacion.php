@@ -57,6 +57,11 @@ class Calificacion extends Model
             $array_wheres = array_merge($array_wheres, ['sga_calificaciones.id_periodo' => $periodo_id]);
         }
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo4';
+        }
+
         $collection = Calificacion::where($array_wheres)
             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
@@ -67,7 +72,7 @@ class Calificacion extends Model
                 'sga_calificaciones.anio AS campo1',
                 'sga_periodos.descripcion AS campo2',
                 'sga_cursos.descripcion AS campo3',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo4'),
+                DB::raw($raw_nombre_completo),
                 'sga_asignaturas.descripcion AS campo5',
                 'sga_calificaciones.calificacion AS campo6',
                 'sga_calificaciones.id AS campo7')
@@ -150,6 +155,11 @@ class Calificacion extends Model
             $array_wheres = array_merge($array_wheres, ['sga_calificaciones.id_periodo' => $periodo_id]);
         }
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
+        }
+
         $string = Calificacion::where($array_wheres)
             ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
@@ -160,7 +170,7 @@ class Calificacion extends Model
                 'sga_calificaciones.anio AS AÑO',
                 'sga_periodos.descripcion AS PERÍODO',
                 'sga_cursos.descripcion AS CURSO',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE'),
+                DB::raw($raw_nombre_completo),
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_calificaciones.calificacion AS CALIFICACIÓN'
             )->orWhere("sga_calificaciones.anio", "LIKE", "%$search%")
@@ -397,6 +407,12 @@ class Calificacion extends Model
 
     public static function calificaciones_promedio_por_estudiante($periodo_id)
     {
+
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+        }
+
         return Calificacion::leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
             ->leftJoin('sga_niveles', 'sga_niveles.id', '=', 'sga_cursos.nivel_grado')
             ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id')
@@ -408,7 +424,7 @@ class Calificacion extends Model
                 'sga_cursos.descripcion AS Curso',
                 'sga_niveles.descripcion AS Nivel',
                 'sga_grados.descripcion AS Grado',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo'),
+                DB::raw($raw_nombre_completo),
                 'sga_estudiantes.imagen',
                 'sga_calificaciones.id_estudiante'
             )

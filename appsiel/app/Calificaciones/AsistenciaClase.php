@@ -27,6 +27,11 @@ class AsistenciaClase extends Model
             $array_wheres = array_merge($array_wheres, ['sga_asistencia_clases.asignatura_id' => Input::get('asignatura_id')]);
         }
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo2';
+        }
+
         return AsistenciaClase::where($array_wheres)
                                 ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -34,7 +39,7 @@ class AsistenciaClase extends Model
                                 ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
                                 ->select(
                                     'sga_asistencia_clases.fecha AS campo1',
-                                    DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2'),
+                                    DB::raw($raw_nombre_completo),
                                     'sga_cursos.descripcion AS campo3',
                                     'sga_asignaturas.descripcion AS campo4',
                                     'sga_asistencia_clases.asistio AS campo5',
@@ -56,6 +61,11 @@ class AsistenciaClase extends Model
             $array_wheres = array_merge($array_wheres, ['sga_asistencia_clases.asignatura_id' => Input::get('asignatura_id')]);
         }
 
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
+        }
+
         $string = AsistenciaClase::where($array_wheres)
             ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
@@ -63,7 +73,7 @@ class AsistenciaClase extends Model
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
             ->select(
                 'sga_asistencia_clases.fecha AS FECHA',
-                DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESRUDIANTE'),
+                DB::raw($raw_nombre_completo),
                 'sga_cursos.descripcion AS CURSO',
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_asistencia_clases.asistio AS ASISTIÓ',
