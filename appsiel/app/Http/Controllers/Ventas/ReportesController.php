@@ -6,14 +6,8 @@ use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Ventas\Cliente;
-use Input;
-use DB;
-use Auth;
-use Form;
-use Lava;
 
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
@@ -21,11 +15,12 @@ use App\Ventas\VtasPedido;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvDocEncabezado;
 
-use App\Contabilidad\Impuesto;
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\FacturaPos;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class ReportesController extends Controller
 {
@@ -40,7 +35,7 @@ class ReportesController extends Controller
         $registros = VtasMovimiento::mov_ventas_totales_por_fecha( $fecha_inicial, $fecha_final );
 
         // Gráfica de rendimiento académico
-        $stocksTable1 = Lava::DataTable();
+        $stocksTable1 = LavachartsFacade::DataTable();
       
         $stocksTable1->addStringColumn('Ventas')
                     ->addNumberColumn('$');
@@ -59,7 +54,7 @@ class ReportesController extends Controller
         }
 
         // Se almacena la gráfica en ventas_diarias, luego se llama en la vista [ como mágia :) ]
-        Lava::BarChart('ventas_diarias', $stocksTable1, [
+        LavachartsFacade::BarChart('ventas_diarias', $stocksTable1, [
             'is3D' => True,
             'colors' => ['#574696'],
             'orientation' => 'horizontal',
@@ -302,13 +297,21 @@ class ReportesController extends Controller
         return $pedidos;
     }
 
-
     public static function remisiones_pendientes_por_facturar()
     {
         return InvDocEncabezado::where([
                                         ['estado','Pendiente'],
                                         ['core_tipo_transaccion_id',24]
                                     ])
+                                ->get();
+    }
+
+    public static function facturas_electronicas_pendientes_por_enviar()
+    {
+        return VtasDocEncabezado::where([
+                                        ['core_tipo_transaccion_id',52]
+                                    ])
+                                ->whereIn('estado',['Sin enviar','Contabilizado - Sin enviar'])
                                 ->get();
     }
 

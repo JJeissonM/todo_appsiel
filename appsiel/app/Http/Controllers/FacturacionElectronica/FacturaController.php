@@ -4,15 +4,7 @@ namespace App\Http\Controllers\FacturacionElectronica;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Core\TransaccionController;
-
-use Auth;
-use View;
-use Input;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 use App\Core\TipoDocApp;
@@ -29,6 +21,9 @@ use App\Tesoreria\TesoMovimiento;
 
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class FacturaController extends TransaccionController
 {
@@ -123,6 +118,12 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $encabezado_factura->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
         }
 
+        $result = $this->validar_datos_tercero($encabezado_factura->cliente->tercero);
+        if ( $result->status == 'error' )
+        {
+            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. <br> El cliente presenta inconsistencia en sus datos básicos: ' . $result->message);
+        }
+
         $mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();                
 
         if ( $mensaje->tipo != 'mensaje_error' )
@@ -143,6 +144,50 @@ class FacturaController extends TransaccionController
         }
 
         return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+    }
+
+    public function validar_datos_tercero($tercero)
+    {
+        $status = 'success';
+        $message = '';
+
+        if ( $tercero->direccion1 == '' || strlen( $tercero->direccion1 ) < 10 )
+        {
+            $status = 'error';
+            $message .= ' - Revisar dirección';
+        }
+
+        if ( $tercero->email == '' || gettype( filter_var($tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
+        {
+            $status = 'error';
+            $message .= ' - Revisar email - ';
+        }
+
+        if ( $tercero->telefono1 == '' || !is_numeric( $tercero->telefono1 ) )
+        {
+            $status = 'error';
+            $message .= ' - Revisar teléfono - ';
+        }
+
+        if ( $tercero->tipo == 'Persona natural' )
+        {
+            if ( $tercero->nombre1 == '' || strlen( $tercero->nombre1 ) < 2 )
+            {
+                $status = 'error';
+                $message .= ' - Revisar nombre completo. No tiene asignado el primer nombre. ';
+            }
+
+            if ( $tercero->apellido1 == '' || strlen( $tercero->apellido1 ) < 2 )
+            {
+                $status = 'error';
+                $message .= 'No tiene asignado el primer apellido.';
+            }
+        }
+
+        return (object)[
+            'status' => $status,
+            'message' => $message
+        ];
     }
 
     public function convertir_en_factura_electronica( $vtas_doc_encabezado_id, $parent_transaction_id )

@@ -66,7 +66,9 @@
             <br/>
             <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->direccion1 }}, {{ $doc_encabezado->tercero->ciudad->descripcion }} - {{ $doc_encabezado->tercero->ciudad->departamento->descripcion }}
             <br/>
-            <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+            <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->telefono1 }}
+            <br/>
+            <b>Email: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->email }}
         </td>
         <td style="border: solid 1px #ddd;">
             <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}

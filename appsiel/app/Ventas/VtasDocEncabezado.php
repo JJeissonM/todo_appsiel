@@ -4,10 +4,6 @@ namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-use Input;
-
 use App\Inventarios\InvDocEncabezado;
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -16,13 +12,11 @@ use App\CxC\CxcMovimiento;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoMotivo;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvMovimiento;
 use App\Ventas\ResolucionFacturacion;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 use App\Core\ModeloEavValor;
 use App\Ventas\CondicionPago;
@@ -30,6 +24,9 @@ use App\Ventas\CondicionPago;
 use App\VentasPos\FacturaPos;
 
 use App\Matriculas\FacturaAuxEstudiante;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class VtasDocEncabezado extends Model
 {
@@ -167,6 +164,11 @@ class VtasDocEncabezado extends Model
             
             case '30':
                 $url = 'vtas_cotizacion/';
+                break;
+        
+        
+            case '52':
+                $url = 'fe_factura/';
                 break;
             
             default:

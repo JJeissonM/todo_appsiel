@@ -19,6 +19,7 @@
 
 
 	$remisiones = ReportesController::remisiones_pendientes_por_facturar();
+	$facturas = ReportesController::facturas_electronicas_pendientes_por_enviar();
 ?>
 
 
@@ -90,6 +91,7 @@
 						@include('ventas.incluir.lista_remisiones',['titulo'=>'Remisiones pendientes por facturar'])
 					</div>
 					<div class="col-md-6">
+						@include('ventas.incluir.lista_facturas_electronicas',['titulo'=>'Fact. Electrónicas pendientes por enviar'])
 					</div>
 				</div>
 			</div>
