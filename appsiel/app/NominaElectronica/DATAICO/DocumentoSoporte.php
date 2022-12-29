@@ -140,57 +140,7 @@ class DocumentoSoporte extends Model
       }
 
       $flexible = 'true';
-      /*
-      return '"env => ' . $this->env,
-      'dataico_account_id'=> ' . config('facturacion_electronica.tokenEmpresa'),
-      'number':'.$this->doc_encabezado->consecutivo.',
-      'issue_date => ' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y'),
-      'payment_date'=> ' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y'),
-      'invoice_type_code'=> ' . $this->invoice_type_code,
-      'payment_means_type'=> ' . $payment_means_type,
-      'payment_means'=> ' . $payment_means,
-      'numbering':{"resolution_number":"' . $resolucion->numero_resolucion,
-         "prefix":"' . $resolucion->prefijo,
-         "flexible":' . $flexible}, "customer" =>  $this->get_datos_cliente();
-         */
-   }
-
-   public function get_encabezado_nota_credito( $factura_doc_encabezado )
-   {
-
-      $factura_dataico = new FacturaGeneral( $factura_doc_encabezado, 'factura' );
-      $invoice_id = $factura_dataico->consultar_documento()->uuid;
-
-      $payment_means_type = 'CREDITO';
-
-      $payment_means = 'CREDITO'; //  Medio de pago
-
-      if ( $this->env == 'PRODUCCION' )
-      {
-         $resolucion = $this->doc_encabezado->resolucion_facturacion();
-      }else{
-         $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
-      }
-
-      $flexible = 'true';
-      /*
-      $reason = 'DEVOLUCION'; /**********  List [ "DEVOLUCION", "ANULACION", "REBAJA", "DESCUENTO", "RECISION", "OTROS" ]    PENDIENTE    
-      $issue_date = date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y');
-      $fecha_vencimiento = date_create( $this->doc_encabezado->fecha_vencimiento );
-      $payment_date = date_format( date_add( $fecha_vencimiento, date_interval_create_from_date_string("1 month")),'d/m/Y');
-
-      return '"env => ' . $this->env,
-      'dataico_account_id'=> ' . config('facturacion_electronica.tokenEmpresa'),
-      'issue_date'=> ' . $issue_date,
-      'payment_means_type'=> ' . $payment_means_type,
-      'payment_means'=> ' . $payment_means,
-      'payment_date'=> ' . $payment_date,
-      'reason'=> ' . $reason,
-      'invoice_id'=> ' . $invoice_id,
-      'number':'.$this->doc_encabezado->consecutivo.',
-      'numbering":{"prefix":"' . $this->doc_encabezado->tipo_documento_app->prefijo,
-         "flexible":' . $flexible}';
-      */
+   
    }
 
    public function get_datos_cliente()
@@ -206,86 +156,6 @@ class DocumentoSoporte extends Model
          $tax_level_code = 'SIMPLIFICADO';
       }
       $regimen = 'ORDINARIO';
-
-      /*
-      return '{"email => ' . $cliente->tercero->email,
-         "phone => ' . $cliente->tercero->telefono1,
-         "party_type => ' . $party_type,
-         "company_name => ' . $cliente->tercero->descripcion,
-         "first_name":"' . $cliente->tercero->nombre1,
-         "family_name":"' . $cliente->tercero->apellido1,
-         "party_identification => ' . $cliente->tercero->numero_identificacion,
-         "tax_level_code => ' . $tax_level_code,
-         "regimen => ' . $regimen,
-         "department => ' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ),
-         "city => ' . strtoupper( $cliente->tercero->ciudad->descripcion ),
-         "address_line => ' . $cliente->tercero->direccion1"}';
-         */
    }
 
-   public function get_lineas_registros()
-   {
-      $string_items = '[';
-      
-      $lineas_registros = $this->doc_encabezado->lineas_registros;
-      $es_primera_linea = true;
-      foreach ($lineas_registros as $linea)
-      {
-
-         if ( !$es_primera_linea )
-         {
-            $string_items .= ',';
-         }
-
-         $string_items .= '{"sku => ' . $linea->item->id,
-            "description => ' . $linea->item->descripcion,
-            "quantity" =>  abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ),
-            'price" =>  abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
-
-         if ( $linea->tasa_descuento != 0 )
-         {
-            $string_items .= ',
-            'discount_rate" =>  $linea->tasa_descuento;
-         } 
-
-         $string_items .= ',
-         'taxes": [  {    "tax_rate" =>  $linea->tasa_impuesto,
-            'tax_category => IVA"}]}';
-         $es_primera_linea = false;
-      }
-
-      $string_items .= ']';
-
-      return $string_items;
-   }
-
-
-
-   public function consultar_documento()
-   {
-      if ( $this->env == 'PRODUCCION' )
-      {
-         $resolucion = $this->doc_encabezado->resolucion_facturacion();
-      }else{
-         $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
-      }      
-         
-      try {
-         $client = new Client(['base_uri' => $this->url_emision]);
-
-         $response = $client->get( $this->url_emision?number=' .$resolucion->prefijo . $this->doc_encabezado->consecutivo, [
-             // un array con la data de los headers como tipo de peticion, etc.
-             'headers' => [
-                           'content-type' => 'application/json',
-                           'auth-token' => config('facturacion_electronica.tokenPassword')
-                        ]
-         ]);
-      } catch (\GuzzleHttp\Exception\RequestException $e) {
-          $response = $e->getResponse();
-      }  /**/      
-
-      $json = json_decode( (string) $response->getBody() );
-
-      return $json->invoice;
-   }
 }

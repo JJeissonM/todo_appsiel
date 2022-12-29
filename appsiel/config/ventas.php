@@ -8,6 +8,7 @@
   'inv_bodega_id' => '1',
   'zona_id' => '1',
   'condicion_pago_id' => '1',
+  'etiqueta_impuesto_principal' => 'INC',
   'factura_ventas_modelo_id' => '139',
   'factura_ventas_tipo_transaccion_id' => '23',
   'factura_ventas_tipo_doc_app_id' => '18',

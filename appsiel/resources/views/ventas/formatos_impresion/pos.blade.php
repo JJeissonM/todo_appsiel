@@ -47,7 +47,7 @@ Cliente:
 
 @section('tabla_registros_1')
 <table style="width: 100%;">
-    {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
+    {{ Form::bsTableHeader(['Producto','Cant. (Precio)',config('ventas.etiqueta_impuesto_principal'),'Total']) }}
     <tbody>
         <?php 
             

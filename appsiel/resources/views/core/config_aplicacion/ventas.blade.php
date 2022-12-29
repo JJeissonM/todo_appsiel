@@ -136,7 +136,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$etiqueta_impuesto_principal = 'IVA';
+								if( isset($parametros['etiqueta_impuesto_principal'] ) )
+								{
+									$etiqueta_impuesto_principal = $parametros['etiqueta_impuesto_principal'];
+								}
+							?>
+							{{ Form::bsText('etiqueta_impuesto_principal', $etiqueta_impuesto_principal, 'Etiqueta impuesto principal (TaxCategory FE)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

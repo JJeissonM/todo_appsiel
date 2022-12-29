@@ -122,7 +122,7 @@
     </div>
 
     <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
-        {{ Form::bsTableHeader(['Producto','Cant. (Precio)','IVA','Total']) }}
+        {{ Form::bsTableHeader(['Producto','Cant. (Precio)',config('ventas.etiqueta_impuesto_principal'),'Total']) }}
         <tbody>
         </tbody>
     </table>

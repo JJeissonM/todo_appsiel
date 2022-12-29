@@ -204,7 +204,7 @@ class FacturaGeneral
             $string_items .= ',"discount_rate": ' . $linea->tasa_descuento;
          } 
 
-         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "IVA"}]}';
+         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "' . config('ventas.etiqueta_impuesto_principal') . '"}]}';
          $es_primera_linea = false;
       }
 
