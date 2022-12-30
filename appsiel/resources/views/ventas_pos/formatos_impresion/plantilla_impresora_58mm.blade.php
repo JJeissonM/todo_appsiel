@@ -11,7 +11,7 @@
 
         @page {
           margin: 15px;
-          size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 38.5in;
+          size: 2.28in 38.5in;
         }
 
         .page-break {
@@ -30,7 +30,7 @@
 </head>
 <body>
     <?php
-        $tamanino_fuente_2 = '0.9em';
+        $tamanino_fuente_2 = '1em';
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where( 'id', $empresa->codigo_ciudad )->get()[0];
