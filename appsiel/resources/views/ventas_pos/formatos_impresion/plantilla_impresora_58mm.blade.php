@@ -30,7 +30,7 @@
 </head>
 <body>
     <?php
-        $tamanino_fuente_2 = '0.9em';
+        $tamanino_fuente_2 = '0.7em';
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where( 'id', $empresa->codigo_ciudad )->get()[0];
