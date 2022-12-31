@@ -631,6 +631,11 @@ $(document).ready(function () {
 
             linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
+            // Para formato impresora 58mm
+            if ( $('#tabla_productos_facturados thead th').length == 3) {
+                linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+            }
+
             if( parseFloat( $(this).find('.valor_total_descuento').text() ) != 0 )
             {
                 linea_factura += '<tr> <td colspan="2" style="text-align: right;">Dcto.</td> <td colspan="2"> ( -$' + new Intl.NumberFormat("de-DE").format( parseFloat( $(this).find('.valor_total_descuento').text() ).toFixed(0) ) + ' ) </td> </tr>';
@@ -638,7 +643,7 @@ $(document).ready(function () {
 
             $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
 
-            // Para El fomrato con Remisión
+            // Para El formato con Remisión
             linea_factura2 = '<tr> <td style="border-bottom:solid 1px !important;"> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + '  </td></tr>';
             $('#tabla_productos_facturados2').find('tbody:last').append( linea_factura2 );
 

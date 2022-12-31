@@ -1,4 +1,4 @@
-<div style="text-align: center;">
+<div style="text-align: center; font-size: 1.1em;">
     <b>{{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b>
     <br>
     <b>{{ config("configuracion.tipo_identificador") }}:

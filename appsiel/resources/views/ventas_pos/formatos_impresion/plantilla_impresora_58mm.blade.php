@@ -11,7 +11,7 @@
 
         @page {
           margin: 15px;
-          size: 2.28in 38.5in;
+          size: 2in 38.5in;
         }
 
         .page-break {
@@ -30,7 +30,7 @@
 </head>
 <body>
     <?php
-        $tamanino_fuente_2 = '1em';
+        $tamanino_fuente_2 = '0.9em';
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where( 'id', $empresa->codigo_ciudad )->get()[0];
@@ -65,15 +65,14 @@
                         {{ $pdv->tipo_doc_app->prefijo }}
                     @endif
                     <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div>
-                </td>
-                <td>
+                    <br>
                     <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;"></div> / 
                     <b>Hora:</b> <div id="lbl_hora" style="display: inline;"></div>
                 </td>
             </tr>
 
             <tr id="tr_fecha_vencimiento" style="display: none;">
-                <td colspan="2">
+                <td>
                     <b>Condición pago:</b> <div class="lbl_condicion_pago" style="display: inline;"></div>
                     <br>
                     <b>Fecha vencimiento:</b> <div class="lbl_fecha_vencimiento" style="display: inline;"></div>
@@ -91,8 +90,7 @@
             <tr>
                 <td>
                     <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
-                </td>
-                <td>
+                    <br>
                     <b>{{ config("configuracion.tipo_identificador") }}/CC:</b> <div class="lbl_cliente_nit" style="display: inline;">
 					@if( config("configuracion.tipo_identificador") == 'NIT') 
                     {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}	
@@ -102,8 +100,7 @@
             <tr>
                 <td>
                     <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"> {{ $pdv->cliente->tercero->direccion1 }} </div>
-                </td>
-                <td>
+                    <br>
                     <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $pdv->cliente->tercero->telefono1 }} </div>
                 </td>
             </tr>
@@ -120,13 +117,13 @@
         </table>        
     </div>
 
-    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
-        {{ Form::bsTableHeader(['Producto','Cant. (Precio)',config('ventas.etiqueta_impuesto_principal'),'Total']) }}
+    <table  style="width: 100%; font-size: 11px;" id="tabla_productos_facturados">
+        {{ Form::bsTableHeader(['Producto','Cant. (Precio)','Total']) }}
         <tbody>
         </tbody>
     </table>
 
-    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};">
+    <table style="width: 100%; font-size: 11px;">
         <tbody>
             <tr style="font-weight: bold;">
                 <td style="text-align: right;"> Total factura: </td>
@@ -154,14 +151,6 @@
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
 
     <table style="width: 100%; font-size: 11px;" class="table table-bordered">
-        <!-- <thead>
-            <tr>
-                <th>Tipo producto</th>
-                <th>Vlr. Compra</th>
-                <th>Base IVA</th>
-                <th>Vlr. IVA</th>
-            </tr>            
-        </thead> -->
         <tbody>
             <tr>
                 <td colspan="4">
