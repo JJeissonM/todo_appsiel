@@ -3,57 +3,27 @@
 namespace App\Http\Controllers\CxP;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use NumerosEnLetras;
-
-
-use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 // Objetos
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
-// Modelos
-
-use App\Sistema\Aplicacion;
 use App\Sistema\TipoTransaccion;
 use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Sistema\Campo;
-use App\Core\Tercero;
-
-use App\Matriculas\Grado;
-use App\Matriculas\Estudiante;
-use App\Core\Colegio;
-use App\Core\Empresa;
-
 
 use App\CxP\CxpMovimiento;
 use App\CxP\CxpDocEncabezado;
 use App\CxP\CxpAbono;
 
-use App\Tesoreria\TesoLibretasPago;
-use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoEntidadFinanciera;
-use App\Tesoreria\TesoMotivo;
-use App\Tesoreria\TesoMedioRecaudo;
-use App\Tesoreria\TesoDocEncabezadoRecaudo;
-use App\Tesoreria\TesoDocRegistroRecaudo;
-use App\Tesoreria\TesoMovimiento;
-
-use App\PropiedadHorizontal\Propiedad;
 use App\Contabilidad\ContabMovimiento;
-use App\Contabilidad\ContabCuenta;
+use App\CxC\CxcMovimiento;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class DocCruceController extends TransaccionController
 {
@@ -340,7 +310,16 @@ class DocCruceController extends TransaccionController
                           ->where('consecutivo', $registro->doc_cxp_consecutivo )
                           ->get()
                           ->first();
-          $doc_app_cartera = TipoDocApp::where( 'id', $doc_cartera->core_tipo_doc_app_id )->value('prefijo').' '.$doc_cartera->consecutivo;
+                          
+          $doc_app_cartera = 'nulo';
+          $fecha_doc_app_cartera = '';
+          if($doc_cartera != null)
+          {
+              $doc_app_cartera = TipoDocApp::where( 'id', $doc_cartera->core_tipo_doc_app_id )->value('prefijo').' '.$doc_cartera->consecutivo;
+              $fecha_doc_app_cartera = $doc_cartera->fecha;
+          }
+                          
+          
 
           // DOC RECAUDO
           $transaccion = TipoTransaccion::find( $registro->core_tipo_transaccion_id );
@@ -350,10 +329,18 @@ class DocCruceController extends TransaccionController
                           ->where('consecutivo', $registro->consecutivo )
                           ->get()
                           ->first();
-          $doc_app_recaudo = TipoDocApp::where('id', $doc_recaudo->core_tipo_doc_app_id)->value('prefijo').' '.$doc_recaudo->consecutivo;
 
-          $registros[$i]['cartera'] = [ $doc_app_cartera, $doc_cartera->fecha ];
-          $registros[$i]['recaudo'] = [ $doc_app_recaudo, $doc_recaudo->fecha ];
+          $doc_app_recaudo = 'nulo';
+          $fecha_doc_app_recaudo = '';
+          if($doc_recaudo != null)
+          {
+              $doc_app_recaudo = TipoDocApp::where('id', $doc_recaudo->core_tipo_doc_app_id)->value('prefijo').' '.$doc_recaudo->consecutivo;
+              $fecha_doc_app_recaudo = $doc_recaudo->fecha;
+          }
+          
+
+          $registros[$i]['cartera'] = [ $doc_app_cartera, $fecha_doc_app_cartera ];
+          $registros[$i]['recaudo'] = [ $doc_app_recaudo, $fecha_doc_app_recaudo ];
           $registros[$i]['valor_pagado'] = $registro->abono;
           $i++;
         }
@@ -383,7 +370,7 @@ class DocCruceController extends TransaccionController
       $orientacion='portrait';
       $tam_hoja='Letter';
 
-      $pdf = \App::make('dompdf.wrapper');
+      $pdf = App::make('dompdf.wrapper');
       //$pdf->set_option('isRemoteEnabled', TRUE);
       $pdf->loadHTML( $view_pdf )->setPaper($tam_hoja,$orientacion);
 
@@ -539,7 +526,7 @@ class DocCruceController extends TransaccionController
           ->where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
           ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
           ->where('consecutivo', $documento->consecutivo)
-          ->get()[0];;
+          ->get()[0];
     }
 
 
@@ -569,6 +556,11 @@ class DocCruceController extends TransaccionController
 
     function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
     {
+        if($contab_cuenta_id == null)
+        {
+            return 0;
+        }
+        
         ContabMovimiento::create( $this->datos + 
                             [ 'contab_cuenta_id' => $contab_cuenta_id ] +
                             [ 'detalle_operacion' => $detalle_operacion] + 

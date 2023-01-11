@@ -386,6 +386,11 @@ class ReportesController extends Controller
         $resumen_ventas = collect([]);
         $arr_registros_unicos = [];
         foreach ($movimientos_ventas as $linea_movimiento) {
+
+            if ( $linea_movimiento->producto->tipo == 'servicio' ) {
+                continue;
+            }
+            
             $llave = $linea_movimiento->remision_doc_encabezado_id . $linea_movimiento->inv_producto_id;
             if (in_array($llave,$arr_registros_unicos)) {
                 continue;

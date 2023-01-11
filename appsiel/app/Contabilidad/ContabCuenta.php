@@ -152,6 +152,7 @@ class ContabCuenta extends Model
     public static function opciones_campo_select()
     {
         $opciones = ContabCuenta::where('contab_cuentas.core_empresa_id', Auth::user()->empresa_id)
+            ->where('estado','Activo')
             ->select('contab_cuentas.id', 'contab_cuentas.codigo', 'contab_cuentas.descripcion')
             ->get();
 

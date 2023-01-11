@@ -353,29 +353,50 @@ class DocCruceController extends TransaccionController
         foreach ($registros_cruce as $registro) 
         {
           // DOC CARTERA
+          $array_wheres_cartera = [
+            'core_tipo_transaccion_id' => $registro->doc_cxc_transacc_id, 
+            'core_tipo_doc_app_id' => $registro->doc_cxc_tipo_doc_id, 
+            'consecutivo' => $registro->doc_cxc_consecutivo
+          ];
+
+          if ( $registro->core_tipo_transaccion_id != 14 ) // Doc. Nomina
+          {
+            $array_wheres_cartera = array_merge( $array_wheres_cartera, [ 'core_tercero_id' => $registro->core_tercero_id ] );
+          }
           $transaccion = TipoTransaccion::find( $registro->doc_cxc_transacc_id );
           $doc_cartera = app( $transaccion->modelo_encabezados_documentos )
-                          ->where('core_tipo_transaccion_id', $registro->doc_cxc_transacc_id )
-                          ->where('core_tipo_doc_app_id', $registro->doc_cxc_tipo_doc_id )
-                          ->where('consecutivo', $registro->doc_cxc_consecutivo )
-                          ->where('core_tercero_id', $registro->core_tercero_id )
+                          ->where( $array_wheres_cartera )
                           ->get()
                           ->first();
-
-          $doc_app_cartera = TipoDocApp::where( 'id', $doc_cartera->core_tipo_doc_app_id )->value('prefijo').' '.$doc_cartera->consecutivo;
+            
+          $doc_app_cartera = 'nulo';
+          $fecha_doc_app_cartera = '';
+          if($doc_cartera != null)
+          {
+              $doc_app_cartera = TipoDocApp::where( 'id', $doc_cartera->core_tipo_doc_app_id )->value('prefijo').' '.$doc_cartera->consecutivo;
+              $fecha_doc_app_cartera = $doc_cartera->fecha;
+          }
 
           // DOC RECAUDO
+          $array_wheres_recaudos = [
+            'core_tipo_transaccion_id' => $registro->core_tipo_transaccion_id, 
+            'core_tipo_doc_app_id' => $registro->core_tipo_doc_app_id, 
+            'consecutivo' => $registro->consecutivo
+          ];
+
+          if ( $registro->core_tipo_transaccion_id != 14 ) // Doc. Nomina
+          {
+            $array_wheres_recaudos = array_merge( $array_wheres_recaudos, [ 'core_tercero_id' => $registro->core_tercero_id ] );
+          }
+
           $transaccion = TipoTransaccion::find( $registro->core_tipo_transaccion_id );
           $doc_recaudo = app( $transaccion->modelo_encabezados_documentos )
-                          ->where('core_tipo_transaccion_id', $registro->core_tipo_transaccion_id )
-                          ->where('core_tipo_doc_app_id', $registro->core_tipo_doc_app_id )
-                          ->where('consecutivo', $registro->consecutivo )
-                          ->where('core_tercero_id', $registro->core_tercero_id )
+                          ->where( $array_wheres_recaudos )
                           ->get()
                           ->first();
           $doc_app_recaudo = TipoDocApp::where('id', $doc_recaudo->core_tipo_doc_app_id)->value('prefijo').' '.$doc_recaudo->consecutivo;
 
-          $registros[$i]['cartera'] = [ $doc_app_cartera, $doc_cartera->fecha ];
+          $registros[$i]['cartera'] = [ $doc_app_cartera, $fecha_doc_app_cartera ];
           $registros[$i]['recaudo'] = [ $doc_app_recaudo, $doc_recaudo->fecha ];
           $registros[$i]['valor_pagado'] = $registro->abono;
           $i++;

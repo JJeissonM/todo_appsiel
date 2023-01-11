@@ -33,7 +33,7 @@ class AccumulationService
     public function thereis_documents()
     {
         $this->invoices = FacturaPos::where('pdv_id', $this->pos->id)
-                                ->whereIn('estado', ['Pendiente', 'Acumulado'])
+                                ->where('estado', 'Pendiente')
                                 ->orderBy('fecha')
                                 ->get();
 
@@ -83,11 +83,13 @@ class AccumulationService
         if ($invoice->remision_doc_encabezado_id == 0) {
             $obj_inv_serv = new InventoriesServices();
             $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $invoice->pdv->bodega_default_id );
+            
             $invoice->remision_doc_encabezado_id = $doc_remision->id;
             $invoice->save();
         }
 
         $datos = $invoice->toArray();
+        unset($datos['id']);
         
         $array_wheres = [
             [ 'core_tipo_transaccion_id','=',$invoice->core_tipo_transaccion_id],
@@ -95,14 +97,18 @@ class AccumulationService
             [ 'consecutivo','=',$invoice->consecutivo]
         ];
 
+        $datos['zona_id'] = $cliente->zona_id;
+        $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
+        $datos['equipo_ventas_id'] = $invoice->vendedor->equipo_ventas_id;
+        $datos['estado'] = 'Activo';
         if ($this->is_pending_accounting($array_wheres)) {
             $lineas_registros = $invoice->lineas_registros;
-            $datos['zona_id'] = $cliente->zona_id;
-            $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
-            $datos['equipo_ventas_id'] = $invoice->vendedor->equipo_ventas_id;
-            $datos['estado'] = 'Activo';
             foreach ($lineas_registros as $linea)
             {
+                if ($linea->estado == 'Acumulado') {
+                    continue;
+                }
+                
                 // Movimiento de Ventas
                 VtasMovimiento::create( $datos + $linea->toArray() );
 
@@ -144,7 +150,6 @@ class AccumulationService
 
     public function is_pending_registro_pago($forma_pago,$array_wheres)
     {
-
         if ($forma_pago == 'credito') {
             $doc = DocumentosPendientes::where($array_wheres)->get()->first();
             if ( $doc != null ) {
@@ -165,11 +170,11 @@ class AccumulationService
     public function is_pending_accounting($array_wheres)
     {
         $doc = ContabMovimiento::where($array_wheres)->get()->first();
-        if ( $doc != null ) {
-            return false;
+        if ( $doc == null ) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public function crear_registro_pago( $forma_pago, $datos, $total_documento )

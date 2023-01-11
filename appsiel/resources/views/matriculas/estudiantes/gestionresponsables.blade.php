@@ -75,7 +75,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="alert alert-success" role="alert">
-					Al escribir la identificación del responsable el sistema buscará automáticamente y rrellenará los campos en caso de que ya exista.
+					Al escribir la identificación del responsable el sistema buscará automáticamente y rellenará los campos en caso de que ya exista.
 				</div>
 				<form action="{{ url('matriculas/estudiantes/gestionresponsables/store') }}" method="POST">
 					{{ csrf_field() }}
@@ -87,16 +87,16 @@
 						<h4 style="text-align: center;">DATOS BÁSICOS</h4>
 						<div class="col-md-4">
 							<div class="form-group">
+								<label class="control-label">Número de Identificación*</label>
+								<input type="text" onkeyup="buscar()" class="form-control" id="txtID" name="numero_identificacion" required>
+							</div>
+							<div class="form-group">
 								<label class="control-label">Tipo Documento*</label>
 								<select class="form-control" name="id_tipo_documento_id" id="txt1" required>
 									@foreach($tiposdoc as $td)
 									<option value="{{$td->id}}">{{$td->descripcion}}</option>
 									@endforeach
 								</select>
-							</div>
-							<div class="form-group">
-								<label class="control-label">Número de Identificación*</label>
-								<input type="text" onkeyup="buscar()" class="form-control" id="txtID" name="numero_identificacion" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Primer Nombre*</label>
@@ -262,13 +262,13 @@
 						<h4 style="text-align: center;">DATOS BÁSICOS</h4>
 						<div class="col-md-4">
 							<div class="form-group">
+								<label class="control-label">Número de Identificación*</label>
+								<input type="text" class="form-control" id="txtDoce" name="numero_identificacion" required>
+							</div>
+							<div class="form-group">
 								<label class="control-label">Tipo Documento*</label>
 								<select class="form-control" name="id_tipo_documento_id" id="txtTde" required>
 								</select>
-							</div>
-							<div class="form-group">
-								<label class="control-label">Número de Identificación*</label>
-								<input type="text" class="form-control" id="txtDoce" name="numero_identificacion" required>
 							</div>
 							<div class="form-group">
 								<label class="control-label">Primer Nombre*</label>

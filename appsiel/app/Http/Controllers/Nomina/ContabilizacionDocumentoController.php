@@ -4,31 +4,10 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
-
 use App\Http\Controllers\Core\TransaccionController;
 
-
-// Modelos
-use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\Empresa;
-
-use App\Nomina\NomConcepto;
-use App\Nomina\NomDocEncabezado;
-use App\Nomina\NomDocRegistro;
-use App\Nomina\NomContrato;
-
 use App\Nomina\Services\ContabilizacionDocumentoNomina;
+use Illuminate\Support\Facades\View;
 
 class ContabilizacionDocumentoController extends TransaccionController
 {
@@ -46,7 +25,10 @@ class ContabilizacionDocumentoController extends TransaccionController
 
         if ( $request->almacenar_registros )
         {
-            // COntabilizar y generar movimientos de CxC y CxP
+            if ($this->hay_errores_equivalencias_contables($lineas_html_movimiento_contable)) {
+                return View::make( 'nomina.procesos.incluir.errores_equivalencia_contable')->render();
+            }
+            // Contabilizar y generar movimientos de CxC y CxP
             $servicio_contabilizacion->almacenar_movimiento_contable();
             //$servicio_contabilizacion->encabezado_doc->estado = 'Cerrado';
             //$servicio_contabilizacion->encabezado_doc->save();
@@ -55,6 +37,17 @@ class ContabilizacionDocumentoController extends TransaccionController
         $vista = View::make( 'nomina.procesos.incluir.resultado_contabilizacion_documento', [ 'encabezado_doc' => $servicio_contabilizacion->encabezado_doc, 'lineas_tabla' => $lineas_html_movimiento_contable, 'valor_debito_total' => $servicio_contabilizacion->valor_debito_total, 'valor_credito_total' => $servicio_contabilizacion->valor_credito_total, 'contabilizado' => $request->almacenar_registros ] )->render();
         
         return $vista;
+    }
+
+
+    public function hay_errores_equivalencias_contables($lineas_html_movimiento_contable)
+    {
+        foreach ($lineas_html_movimiento_contable as $linea) {
+            if ($linea->error) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function retirar( $doc_encabezado_id )

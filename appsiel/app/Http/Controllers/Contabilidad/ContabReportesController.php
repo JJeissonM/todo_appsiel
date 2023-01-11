@@ -227,7 +227,10 @@ class ContabReportesController extends Controller
         }
 
         
-        $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)->orderBy('codigo')->get();
+        $registros = ContabCuenta::where('core_empresa_id','=',Auth::user()->empresa_id)
+                                ->where('estado','Activo')
+                                ->orderBy('codigo')
+                                ->get();
         $cuentas[''] = '';
         foreach ($registros as $fila) {
             $cuentas[$fila->id]=$fila->codigo." ".$fila->descripcion; 

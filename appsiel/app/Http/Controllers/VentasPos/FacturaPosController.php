@@ -473,7 +473,6 @@ class FacturaPosController extends TransaccionController
         return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
     }
 
-
     /*
         Generar la vista para los métodos show(), imprimir() o enviar_por_email()
     */
@@ -704,7 +703,6 @@ class FacturaPosController extends TransaccionController
         return $cuerpo_tabla_lineas_registros;
     }
 
-
     public function armar_cuerpo_tabla_medios_recaudos($doc_encabezado)
     {
         $cuerpo_tabla = '';
@@ -728,7 +726,6 @@ class FacturaPosController extends TransaccionController
 
         return $cuerpo_tabla;
     }
-
 
     /**
      * ACTUALIZA FACTURA POS
@@ -912,6 +909,9 @@ class FacturaPosController extends TransaccionController
 
     /*
         VALIDAR EXISTENCIAS
+
+        Esta es la funcion principal que se llama desde el boton ACUMULAR: RUTA GET pos_factura_validar_existencias
+
         => Hacer desarme automático de productos
         => Validar existencias de Items
     */
@@ -1050,7 +1050,7 @@ class FacturaPosController extends TransaccionController
 
     public function store_registro_ingresos_gastos(Request $request)
     {
-
+        // $this->datos es una variable de 
         $this->datos = $request->all();
         $this->datos['core_tercero_id'] = $request->cliente_proveedor_id;
         $this->datos['descripcion'] = $request->detalle_operacion;

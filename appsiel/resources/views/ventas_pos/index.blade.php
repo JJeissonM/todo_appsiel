@@ -84,7 +84,6 @@
 
 		        		$btn_hacer_arqueo = '<a href="'.url( '/web/create' . '?id=20&id_modelo=158&vista=tesoreria.arqueo_caja.create&teso_caja_id='.$pdv->caja_default_id . '&pdv_id='.$pdv->id ) .'" class="btn btn-xs btn-info" id="btn_hacer_arqueo"> Hacer arqueo </a>';
 
-		        		//$btn_consultar_estado = '<button class="btn btn-primary btn-xs btn_consultar_estado_pdv" data-pdv_id="'.$pdv->id.'" data-lbl_ventana="Ingresos"> <i class="fa fa-btn fa-search"></i> Estado PDV </button>';
 		        		$btn_consultar_estado = '';
 
 		        		$color = 'red';
@@ -120,6 +119,10 @@
 		        				$fecha_desde = $cierre->created_at;
 		        			}
 		        		}
+
+						if ($btn_acumular != '') {
+							$btn_hacer_arqueo = '';
+						}
 		        	?>
 
 			     	<div class="col-md-{{12/$cant_cols}} col-xs-12 col-sm-12" style="padding: 5px;">
@@ -216,6 +219,10 @@
 		var btn_acumular;
 
 		$(".btn_acumular").click(function(event){
+
+			// Desactivar el click del botón
+			$( this ).attr( 'disabled', 'disabled');
+			$( this ).off( event );
 
 			$("#myModal").modal({backdrop: "static"});
 			$("#div_spin").show();

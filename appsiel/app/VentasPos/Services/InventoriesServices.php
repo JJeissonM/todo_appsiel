@@ -19,14 +19,9 @@ use App\Inventarios\InvMovimiento;
 
 use App\VentasPos\FacturaPos;
 use App\VentasPos\DocRegistro;
-
-/*use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvCostoPromProducto;*/
-
-use View;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 
 class InventoriesServices
 {
@@ -101,7 +96,7 @@ class InventoriesServices
             {
                 $existencia_item_facturado = 0;
             }
-
+            
             $cantidad_requerida_a_producir = $cantidad_facturada - $existencia_item_facturado;
 
             if ( $cantidad_requerida_a_producir <= 0 )
