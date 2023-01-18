@@ -5,10 +5,8 @@ namespace App\VentasPos;
 use Illuminate\Database\Eloquent\Model;
 
 use App\UserHasRole;
-use DB;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class Cajero extends Model
 {

@@ -4,8 +4,8 @@ namespace App\VentasPos;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Input;
-use DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class CierreEncabezado extends Model
 {

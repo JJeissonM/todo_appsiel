@@ -4,6 +4,7 @@
   'plantilla_factura_pos_default' => 'plantilla_factura_3',
   'tamanio_fuente_factura' => '12',
   'ancho_formato_impresion' => '3.15',
+  'cerrar_modal_al_seleccionar_producto' => '1',
   'redondear_centena' => '1',
   'permite_facturacion_con_archivo_plano' => '0',
   'activar_ingreso_tactil_productos' => '1',

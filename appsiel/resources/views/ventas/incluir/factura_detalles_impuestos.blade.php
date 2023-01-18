@@ -4,7 +4,7 @@
         <table style="width: 100%;" class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Tipo producto</th>
+                    <th>Tipo</th>
                     <th>Vlr. Compra</th>
                     <th>Base IVA</th>
                     <th>Vlr. IVA</th>

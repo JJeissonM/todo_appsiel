@@ -70,7 +70,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$cerrar_modal_al_seleccionar_producto = '1';
+								if( isset($parametros['cerrar_modal_al_seleccionar_producto'] ) )
+								{
+									$cerrar_modal_al_seleccionar_producto = $parametros['cerrar_modal_al_seleccionar_producto'];
+								}
+							?>
+							{{ Form::bsSelect('cerrar_modal_al_seleccionar_producto', $cerrar_modal_al_seleccionar_producto, 'Cerrar modal al seleccionar producto', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -3,13 +3,7 @@
 namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-
-use App\Inventarios\InvGrupo;
-
-use App\Contabilidad\Impuesto;
-
+use Illuminate\Support\Facades\Auth;
 
 class InvProductoCalzado extends Model
 {

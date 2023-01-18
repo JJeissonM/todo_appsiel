@@ -5,11 +5,10 @@ namespace App\VentasPos;
 use App\Tesoreria\Services\CashBalanceServices;
 use Illuminate\Database\Eloquent\Model;
 
-use Input;
-use DB;
-
 use App\VentasPos\Pdv;
 use App\VentasPos\Cajero;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class AperturaEncabezado extends Model
 {

@@ -203,7 +203,7 @@ class BoletinController extends Controller
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
-        $periodos = Periodo::get_activos_periodo_lectivo( PeriodoLectivo::get_actual()->id );
+        $periodos = Periodo::get_activos_periodo_lectivo( $periodo->periodo_lectivo_id );
         // Excluir el periodo final
         foreach ($periodos as $key => $value)
         {

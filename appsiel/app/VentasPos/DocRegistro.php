@@ -4,8 +4,6 @@ namespace App\VentasPos;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-
 class DocRegistro extends Model
 {
     protected $table = 'vtas_pos_doc_registros';

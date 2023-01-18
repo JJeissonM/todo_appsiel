@@ -150,12 +150,21 @@
 
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
 
-    <table style="width: 100%; font-size: 11px;" class="table table-bordered">
+    <table style="width: 100%; font-size: 11px; border-collapse: collapse;" class="table table-bordered">
+        <thead>
+            <tr>
+                <th style="border: 1px solid;">Tipo Impuesto</th>
+                <th style="border: 1px solid;">Vlr. Compra</th>
+                <th style="border: 1px solid;">Base IVA</th>
+                <th style="border: 1px solid;">Vlr. IVA</th>
+            </tr>            
+        </thead>
         <tbody>
             <tr>
-                <td colspan="4">
-                    &nbsp;
-                </td>
+                <td style="border: 1px solid;"> {{ config('ventas.etiqueta_impuesto_principal') }}=8% </td>
+                <td style="border: 1px solid;"> <div class="lbl_total_factura" style="display: inline;"> </div> </td>
+                <td style="border: 1px solid;"> <div class="lbl_base_impuesto_total" style="display: inline;"> </div> </td>
+                <td style="border: 1px solid;"> <div class="lbl_valor_impuesto" style="display: inline;"> </div> </td>
             </tr>
             @if( !is_null($resolucion) ) 
                 <tr>

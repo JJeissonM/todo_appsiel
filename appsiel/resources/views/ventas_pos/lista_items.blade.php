@@ -12,9 +12,15 @@
 				@foreach( $productos as $item)
 					<tr>
 						<td class="table-text">
-							<button onclick="mandar_codigo({{ $item->id }});" class="btn btn-info btn-sm">
-								{{ $item->id }}
-							</button>
+							@if((int)config('ventas_pos.cerrar_modal_al_seleccionar_producto'))
+								<button onclick="mandar_codigo3({{ $item->id }});" class="btn btn-info btn-sm">
+									{{ $item->id }}
+								</button>
+							@else 
+								<button onclick="mandar_codigo({{ $item->id }});" class="btn btn-info btn-sm">
+									{{ $item->id }}
+								</button>
+							@endif
 						</td>
 						<td class="table-text"><div>{{ $item->descripcion }}</div></td>
 						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio, 0, ',', '.' ) }}</div></td>

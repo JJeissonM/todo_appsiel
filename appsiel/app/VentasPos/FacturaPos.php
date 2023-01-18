@@ -4,13 +4,13 @@ namespace App\VentasPos;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-use Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
 use App\Tesoreria\TesoMovimiento;
+use Illuminate\Support\Facades\Auth;
 
 class FacturaPos extends Model
 {

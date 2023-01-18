@@ -3,9 +3,6 @@
 namespace App\VentasPos\Services;
 
 use App\Contabilidad\ContabMovimiento;
-use Illuminate\Http\Request;
-
-use Auth;
 
 use App\VentasPos\Pdv;
 use App\VentasPos\FacturaPos;

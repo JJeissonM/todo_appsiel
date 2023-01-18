@@ -624,16 +624,22 @@ $(document).ready(function () {
     {
         var linea_factura,linea_factura2;
         var lbl_total_factura = 0;
+        var lbl_base_impuesto_total = 0;
+        var lbl_valor_impuesto = 0;
 
         var cantidad_total_productos = 0;
 
         $('.linea_registro').each(function( ){
-
+            
             linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
             // Para formato impresora 58mm
             if ( $('#tabla_productos_facturados thead th').length == 3) {
                 linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+
+                // WARNING!!! Esto esta manual, puede estar errado
+                lbl_base_impuesto_total += parseFloat( $(this).find('.base_impuesto_total').text() );
+                lbl_valor_impuesto += parseFloat( $(this).find('.valor_impuesto').text() );
             }
 
             if( parseFloat( $(this).find('.valor_total_descuento').text() ) != 0 )
@@ -654,6 +660,11 @@ $(document).ready(function () {
         });
 
         $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
+        
+        $('.lbl_base_impuesto_total').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_base_impuesto_total)));
+        
+        $('.lbl_valor_impuesto').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_valor_impuesto)));
+
         $('.lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_ajuste_al_peso));
         $('.lbl_total_recibido').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat($('#efectivo_recibido').val())));
         $('.lbl_total_cambio').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(total_cambio)));
