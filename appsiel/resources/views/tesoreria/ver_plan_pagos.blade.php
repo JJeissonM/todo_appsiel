@@ -21,6 +21,12 @@
 	<div class="row">
 		<div class="col-md-10 col-md-offset-1">
 
+			<div class="row">
+				<div class="col-md-12 botones-gmail">
+					<a href="{{ url('/') . '/matriculas/show/' . $matricula_estudiante->id . '?id=1&id_modelo=19&id_transaccion=' }}" class="btn-gmail" title="Consultar matrícula"><i class="fa fa-btn fa-book"></i> </a>
+				</div>
+			</div>
+
 			@include('tesoreria.libretas_pagos.encabezados_datos_basicos', [ 'estudiante' => $matricula_estudiante->estudiante, 'matricula' => $matricula_estudiante ])
 
 			@include('tesoreria.libretas_pagos.tabla_resumen_libreta_pagos', [ 'libreta' => $libreta ])

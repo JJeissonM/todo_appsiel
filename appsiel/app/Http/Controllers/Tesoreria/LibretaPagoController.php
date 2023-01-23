@@ -420,9 +420,14 @@ class LibretaPagoController extends ModeloController
                                   ->update(['estado' => 'Vencida']);
 
         $libreta = TesoLibretasPago::find($id_libreta);
+        if( $libreta == null )
+        {
+            return redirect( 'web?id=3&id_modelo=31' )->with('mensaje_error','Libreta de estudiante no existe. Debe crear una.');
+        }
+        
         $matricula_estudiante = Matricula::get_registro_impresion( $libreta->matricula_id );
 
-        if( is_null( $matricula_estudiante->estudiante ) )
+        if( $matricula_estudiante->estudiante == null )
         {
             return redirect( 'web?id=3&id_modelo=31' )->with('mensaje_error','La matrícula no tiene un estudiante asociado. Por favor, consulte con el adminitrador del sistema.');
         }

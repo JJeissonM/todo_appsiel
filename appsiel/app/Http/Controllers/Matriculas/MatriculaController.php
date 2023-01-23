@@ -355,11 +355,21 @@ class MatriculaController extends ModeloController
             ['url' => 'web?id=' . $app . '&id_modelo=' . $modelo, 'etiqueta' => 'Matrículas'],
             ['url' => 'NO', 'etiqueta' => 'Consulta']
         ];
-
         
         $matriculas = Matricula::get_matriculas_un_estudiante($matricula->estudiante->id);
 
-        return view('matriculas.show_matricula', compact('modelo', 'app', 'matricula', 'matriculas', 'reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id'));
+        $libreta_id = null;
+        $libreta = TesoLibretasPago::where([
+                                        ['matricula_id','=', $id]
+                                    ])
+                                  ->get()
+                                  ->first();
+
+        if ($libreta != null) {
+            $libreta_id = $libreta->id;
+        }
+
+        return view('matriculas.show_matricula', compact('modelo', 'app', 'matricula', 'matriculas', 'reg_anterior', 'reg_siguiente', 'miga_pan', 'view_pdf', 'id', 'libreta_id'));
     }
 
     public function imprimir($id)
