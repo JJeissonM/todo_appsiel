@@ -52,6 +52,28 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$buscar_por_estudiante_en_inputs = 0;
+								if( isset($parametros['buscar_por_estudiante_en_inputs'] ) )
+								{
+									$buscar_por_estudiante_en_inputs = $parametros['buscar_por_estudiante_en_inputs'];
+								}
+							?>
+							{{ Form::bsSelect('buscar_por_estudiante_en_inputs', $buscar_por_estudiante_en_inputs, 'Buscar por Estudiante en Campos input_suggestions', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+				</div>
+
 				<h4> Parámetros por defecto de Libreta de pagos  </h4>
 				<hr>
 				<div class="row">

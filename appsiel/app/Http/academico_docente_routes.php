@@ -1,5 +1,7 @@
 <?php 
 
+use Illuminate\Support\Facades\Route;
+
 //      A C A D É M I C O   D O C E N T E
 
 // Gestión de Profesores

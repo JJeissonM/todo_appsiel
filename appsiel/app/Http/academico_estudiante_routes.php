@@ -1,5 +1,7 @@
 <?php 
 
+use Illuminate\Support\Facades\Route;
+
 //  A C A D E M I C O  E S T U D I A N T E 
 Route::get('academico_estudiante/horario', 'AcademicoEstudianteController@horario');
 

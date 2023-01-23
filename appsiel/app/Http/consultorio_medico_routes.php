@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::resource('consultorio_medico/pacientes', 'Salud\PacienteController');
 
 Route::resource('consultorio_medico', 'Salud\ConsultorioMedicoController', ['except' => ['show']]);

@@ -1,5 +1,6 @@
 <?php 
 
+use Illuminate\Support\Facades\Route;
 
 Route::get('contab_consultar_cuentas', 'Contabilidad\ContabilidadController@consultar_cuentas');
 

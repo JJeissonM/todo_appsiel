@@ -2,19 +2,15 @@
 
 namespace App\Http\Controllers\Core;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Auth;
-use Input;
 
 use App\Sistema\Aplicacion;
 
 use App\User;
 use App\Core\Tercero;
+use App\Matriculas\Estudiante;
 use App\Matriculas\Inscripcion;
+use Illuminate\Support\Facades\Input;
 
 class TerceroController extends Controller
 {
@@ -234,14 +230,21 @@ class TerceroController extends Controller
                 break;
         }
 
+        if (config('tesoreria.buscar_por_estudiante_en_inputs')) {
+            return $this->get_datos_desdes_estudiantes($campo_busqueda,$operador,$texto_busqueda);
+        }
+
+        return $this->get_datos_desdes_terceros($campo_busqueda,$operador,$texto_busqueda);
+    }
+
+    public function get_datos_desdes_terceros($campo_busqueda,$operador,$texto_busqueda)
+    {
         $datos = Tercero::where('core_terceros.estado','Activo')
                     //->where('core_terceros.core_empresa_id',Auth::user()->empresa_id)
                     ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
                     ->select('core_terceros.id AS tercero_id','core_terceros.descripcion','core_terceros.numero_identificacion')
                     ->get()
                     ->take(7);
-
-        //dd($datos);
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
@@ -257,6 +260,62 @@ class TerceroController extends Controller
                                 '" data-tercero_id="'.$linea->tercero_id.
                                 '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
         }
+
+        $html .= '</div>';
+
+        return $html;
+    }
+
+    public function get_datos_desdes_estudiantes($campo_busqueda,$operador,$texto_busqueda)
+    {
+        $estudiantes = Estudiante::leftJoin('core_terceros','core_terceros.id','=','sga_estudiantes.core_tercero_id')
+                                ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
+                                ->where('core_terceros.estado','Activo')
+                                ->get()
+                                ->take(7);
+
+        $datos = [];
+        foreach ($estudiantes as $estudiante) {
+
+            if ($estudiante->responsable_financiero() == null) {
+                continue;
+            }
+
+            if ($estudiante->matricula_activa() == null) {
+                continue;
+            }
+            
+            $curso = $estudiante->matricula_activa()->curso->descripcion;
+
+            $nombre_completo = $estudiante->tercero->apellido1 . " " . $estudiante->tercero->apellido2 . " " . $estudiante->tercero->nombre1 . " " . $estudiante->tercero->otros_nombres;
+            if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+                $nombre_completo = $estudiante->tercero->nombre1 . " " . $estudiante->tercero->otros_nombres . " " . $estudiante->tercero->apellido1 . " " . $estudiante->tercero->apellido2;
+            }
+            
+            $responsable_financiero = $estudiante->responsable_financiero()->tercero;
+            $datos[] = (object)[
+                'id' => $responsable_financiero->id,
+                'tercero_id' => $responsable_financiero->id,
+                'descripcion' => $nombre_completo . ' (' . $curso . ')',
+                'numero_identificacion' => $estudiante->tercero->numero_identificacion,
+            ];
+        }
+
+        $html = '<div class="list-group">';
+        $es_el_primero = true;
+        foreach ($datos as $linea)
+        {
+            $clase = '';
+            if ($es_el_primero) {
+                $clase = 'active';
+                $es_el_primero = false;
+            }
+
+            $html .= '<a class="list-group-item list-group-item-autocompletar '.$clase.'" data-tipo_campo="tercero" data-id="'.$linea->id.
+                                '" data-tercero_id="'.$linea->tercero_id.
+                                '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+        }
+
         $html .= '</div>';
 
         return $html;

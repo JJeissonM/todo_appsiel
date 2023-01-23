@@ -1,4 +1,7 @@
 <?php 
+
+use Illuminate\Support\Facades\Route;
+
 //              A P P   C A L I F I C A C I O N E S
 
 //Logros

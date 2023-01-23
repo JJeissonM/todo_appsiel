@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 Route::post('compras_doc_registro_guardar', 'Compras\CompraController@doc_registro_guardar');
 
 Route::get('compras_get_formulario_edit_registro', 'Compras\CompraController@get_formulario_edit_registro');

@@ -238,21 +238,21 @@
                             <div class="acciones">
                                 <div class="d-flex justify-content-center">
                                     @if ($doc_encabezado->estado != 'Pendiente' || $total_pagar == 0)
-                                    <a class="btn text-light btn-secondary btn-block"  style="width: 162px" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
+                                        <a class="btn text-light btn-secondary btn-block"  style="width: 162px" href="{{route('tienda.micuenta').'/nav-ordenes-tab'}}">Ver pedidos</a>
                                     @else  
                                         @if ($direccion_por_defecto != null)
-                                        <form>
-                                            <script
-                                            src="https://checkout.wompi.co/widget.js"
-                                            data-render="button"
-                                            data-public-key="{{ config('pagina_web.public_key_wompi') }}"
-                                            data-currency="COP"
-                                            data-amount-in-cents="{{ number_format(($total_pagar+5000),2,'','') }}"
-                                            data-reference="{{ $doc_encabezado->id }}"
-                                            data-redirect-url="{{ url('ecommerce/public/detallepedido').'/'.$doc_encabezado->id.'?compra=domicil' }}"
-                                            >
-                                            </script>
-                                        </form>   
+                                            <form>
+                                                <script
+                                                src="https://checkout.wompi.co/widget.js"
+                                                data-render="button"
+                                                data-public-key="{{ config('pagina_web.public_key_wompi') }}"
+                                                data-currency="COP"
+                                                data-amount-in-cents="{{ number_format(($total_pagar+5000),2,'','') }}"
+                                                data-reference="{{ $doc_encabezado->id }}"
+                                                data-redirect-url="{{ url('ecommerce/public/detallepedido').'/'.$doc_encabezado->id.'?compra=domicil' }}"
+                                                >
+                                                </script>
+                                            </form>   
                                         @else   
                                             <p class="text-danger">Agregue una dirección de envio para poder hacer el pago</p>
                                         @endif                    
