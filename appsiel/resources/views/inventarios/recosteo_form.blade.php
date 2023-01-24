@@ -37,7 +37,7 @@
 				<div class="col-sm-4">
 					{{ Form::label('modo_recosteo','*Modo de recosteo') }}
 					<br/>
-					{{ Form::select('modo_recosteo',['desde_costo_promedio'=>'Tomar del Costo promedio actual','recalcular_costo_promedio'=>'Recalcular Costo promedio'],null, [ 'class' => 'form-control', 'id' => 'modo_recosteo' ]) }}
+					{{ Form::select('modo_recosteo',['recalcular_costo_promedio'=>'Recalcular Costo promedio (recomendado)','desde_costo_promedio'=>'Tomar del Costo promedio actual'],null, [ 'class' => 'form-control', 'id' => 'modo_recosteo' ]) }}
 				</div>
 				<div class="col-sm-3">
 					{{ Form::label('tener_en_cuenta_movimientos_anteriores','*Tener en cuenta movimientos anteriores') }}
