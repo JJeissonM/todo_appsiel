@@ -760,7 +760,6 @@ class FacturaPosController extends TransaccionController
         return $doc_encabezado->consecutivo;
     }
 
-
     /*
         Proceso de eliminar FACTURA POS (Antes de acumulación)
     */

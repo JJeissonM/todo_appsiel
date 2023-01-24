@@ -3,19 +3,16 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
+
 use Auth;
-use DB;
+
 use View;
 use Lava;
 use Input;
 
-
 use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Tesoreria\RecaudoCxcController;
-
 
 // Modelos
 use App\Matriculas\Estudiante;
@@ -26,26 +23,15 @@ use App\Core\Colegio;
 use App\Core\Empresa;
 use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
-use App\Core\Tercero;
 
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoEntidadFinanciera;
-use App\Tesoreria\TesoMotivo;
-use App\Tesoreria\TesoMedioRecaudo;
-use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\TesoDocEncabezado;
 
 use App\Contabilidad\ContabMovimiento;
 
-use App\Inventarios\InvProducto;
-
 use App\Ventas\VtasDocEncabezado;
-use App\Ventas\Cliente;
-
 
 use App\CxC\CxcMovimiento;
 use App\Tesoreria\Services\PaymentBookServices;
@@ -55,7 +41,6 @@ class LibretaPagoController extends ModeloController
     protected $total_valor_movimiento = 0;
     protected $saldo = 0;
     protected $j;
-
 
     public function actualizar_estado_cartera()
     {
@@ -424,7 +409,7 @@ class LibretaPagoController extends ModeloController
         {
             return redirect( 'web?id=3&id_modelo=31' )->with('mensaje_error','Libreta de estudiante no existe. Debe crear una.');
         }
-        
+
         $matricula_estudiante = Matricula::get_registro_impresion( $libreta->matricula_id );
 
         if( $matricula_estudiante->estudiante == null )

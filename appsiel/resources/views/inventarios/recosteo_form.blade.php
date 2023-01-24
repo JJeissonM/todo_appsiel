@@ -29,18 +29,20 @@
 			</div>
 			<br>		
 			<div class="row">
-				<div class="col-sm-2">
-					&nbsp;
+				<div class="col-sm-3">
+					{{ Form::label('recontabilizar_contabilizar_movimientos','*Recontabilizar movimientos') }}
+					<br/>
+					{{ Form::select('recontabilizar_contabilizar_movimientos',['1'=>'Si (recomendado)','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'recontabilizar_contabilizar_movimientos' ]) }}
 				</div>
 				<div class="col-sm-4">
 					{{ Form::label('modo_recosteo','*Modo de recosteo') }}
 					<br/>
 					{{ Form::select('modo_recosteo',['desde_costo_promedio'=>'Tomar del Costo promedio actual','recalcular_costo_promedio'=>'Recalcular Costo promedio'],null, [ 'class' => 'form-control', 'id' => 'modo_recosteo' ]) }}
 				</div>
-				<div class="col-sm-4">
+				<div class="col-sm-3">
 					{{ Form::label('tener_en_cuenta_movimientos_anteriores','*Tener en cuenta movimientos anteriores') }}
 					<br/>
-					{{ Form::select('tener_en_cuenta_movimientos_anteriores',['1'=>'Si','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'tener_en_cuenta_movimientos_anteriores' ]) }}
+					{{ Form::select('tener_en_cuenta_movimientos_anteriores',['1'=>'Si (recomendado)','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'tener_en_cuenta_movimientos_anteriores' ]) }}
 				</div>
 				<div class="col-sm-2">
 					{{ Form::label(' ','.') }}
