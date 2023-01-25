@@ -94,6 +94,11 @@ class VtasDocEncabezado extends Model
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
     } 
 
+    public function get_link_pedido()
+    {
+        return '<a href="' . url('/') . '/vtas_pedidos/' . $this->id . '?id=13&id_modelo=175&id_transaccion=42" target="_blank"> ' . $this->get_label_documento() . ' </a>';
+    }
+
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {

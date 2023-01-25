@@ -4,12 +4,11 @@ namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
 use App\Inventarios\InvProducto;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class VtasMovimiento extends Model
 {
@@ -50,6 +49,17 @@ class VtasMovimiento extends Model
     public function get_label_documento()
     {
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
+    
+    public function encabezado_documento()
+    {
+        return VtasDocEncabezado::where([
+                                    ['core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
+                                    ['core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
+                                    ['consecutivo','=',$this->consecutivo]
+                                ])
+                                ->get()
+                                ->first();
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -234,7 +244,7 @@ class VtasMovimiento extends Model
             ->get();
     }
 
-    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por )
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $core_tipo_transaccion_id = null )
     {
         switch ( $agrupar_por )
         {
@@ -266,12 +276,20 @@ class VtasMovimiento extends Model
             default:
                 break;
         }
+        
+        $array_wheres = [
+            ['vtas_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        if ($core_tipo_transaccion_id != null ) {
+            $array_wheres = array_merge($array_wheres,[['vtas_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
+        }
 
         $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_movimientos.core_tipo_transaccion_id')
-                            ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->where($array_wheres)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_movimientos.inv_producto_id',
@@ -300,6 +318,22 @@ class VtasMovimiento extends Model
         }
 
         return $movimiento->groupBy( $agrupar_por );
+    }
+
+    public static function get_documentos_ventas_por_transaccion( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, $estado )
+    {        
+        $array_wheres = [
+            ['vtas_doc_encabezados.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        if ($estado!='Todos') {
+            $array_wheres = array_merge($array_wheres,[['vtas_doc_encabezados.estado','=', $estado]]);
+        }
+
+        return VtasDocEncabezado::where($array_wheres)
+                            ->whereIn('vtas_doc_encabezados.core_tipo_transaccion_id',$arr_tipo_transaccion_id)
+                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->get();
     }
 
     public static function get_ultimo_precio_producto($cliente_id, $producto_id)

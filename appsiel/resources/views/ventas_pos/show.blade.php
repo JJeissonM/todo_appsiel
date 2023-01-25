@@ -36,6 +36,23 @@
 @section('datos_adicionales_encabezado')
 	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
+	@if (!empty($pedidos_padres->toArray()))
+		<br/>
+		<b>Pedidos: </b>
+		<?php 
+			$es_el_primero = true;
+		?>
+		@foreach ( $pedidos_padres AS $pedido )
+			@if($es_el_primero)
+				{!! $pedido->get_link_pedido() !!}
+			@else
+				, {!! $pedido->get_link_pedido() !!}
+			@endif
+			<?php 
+				$es_el_primero = false;
+			?>
+		@endforeach
+	@endif
 @endsection
 
 @section('filas_adicionales_encabezado')

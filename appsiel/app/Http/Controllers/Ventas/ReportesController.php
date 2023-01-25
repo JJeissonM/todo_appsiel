@@ -373,7 +373,6 @@ class ReportesController extends Controller
         return $vista;
     }
 
-
     public function lineas_de_movimiento_repetidas(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -424,6 +423,22 @@ class ReportesController extends Controller
         $mensaje = 'IVA <b>NO</b> incluido en precio';
 
         $vista = View::make('ventas.reportes.lineas_de_movimiento_repetidas', compact( 'resumen_ventas',  'mensaje') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function reporte_pedidos(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $documentos_ventas = VtasMovimiento::get_documentos_ventas_por_transaccion($fecha_desde, $fecha_hasta, [42,60], $request->estado);
+
+        $mensaje = 'Estado: ' . $request->estado;
+
+        $vista = View::make('ventas.reportes.pedidos_de_ventas', compact( 'documentos_ventas',  'mensaje') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

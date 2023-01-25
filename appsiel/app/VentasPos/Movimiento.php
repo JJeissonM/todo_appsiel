@@ -121,7 +121,7 @@ class Movimiento extends Model
         return $vec;
     }
 
-    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado )
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado, $core_tipo_transaccion_id = null )
     {
         switch ( $agrupar_por )
         {
@@ -159,12 +159,17 @@ class Movimiento extends Model
                 $agrupar_por = 'ninguno';
                 break;
         }
+        
         $array_wheres = [
             ['vtas_pos_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
         ];
 
         if ($estado!='Todos') {
             $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.estado','=', $estado]]);
+        }
+
+        if ($core_tipo_transaccion_id != null ) {
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
         }
 
         $movimiento = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
@@ -179,7 +184,8 @@ class Movimiento extends Model
                                         DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'inv_productos.inv_grupo_id',
-                                        'vtas_pos_movimientos.core_tipo_transaccion_id','vtas_pos_movimientos.core_tipo_doc_app_id',
+                                        'vtas_pos_movimientos.core_tipo_transaccion_id',
+                                        'vtas_pos_movimientos.core_tipo_doc_app_id',
                                         'vtas_pos_movimientos.consecutivo',
                                         'vtas_pos_movimientos.cliente_id',
                                         'vtas_pos_movimientos.core_tercero_id',

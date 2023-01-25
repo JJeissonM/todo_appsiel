@@ -456,7 +456,13 @@ class FacturaPosController extends TransaccionController
             $vista = Input::get('vista');
         }
 
-        return view($vista, compact('id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad', 'abonos', 'empresa', 'docs_relacionados', 'doc_registros', 'url_crear', 'id_transaccion', 'notas_credito'));
+        $pedidos_padres = VtasDocEncabezado::where([
+            ['ventas_doc_relacionado_id','=',$doc_encabezado->id]
+        ])
+        ->whereIn('core_tipo_transaccion_id',[42,60])
+        ->get();
+
+        return view($vista, compact('id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad', 'abonos', 'empresa', 'docs_relacionados', 'doc_registros', 'url_crear', 'id_transaccion', 'notas_credito','pedidos_padres'));
     }
 
     /*

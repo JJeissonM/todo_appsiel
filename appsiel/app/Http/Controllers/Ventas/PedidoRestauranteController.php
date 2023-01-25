@@ -4,42 +4,16 @@ namespace App\Http\Controllers\Ventas;
 
 use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
-use App\Http\Controllers\Inventarios\InventarioController;
-use App\Http\Controllers\Ventas\VentaController;
-
-use App\Http\Controllers\Contabilidad\ContabilidadController;
-
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
-use App\Sistema\Html\BotonesAnteriorSiguiente;
-use App\Sistema\TipoTransaccion;
-
-// Modelos
-use App\Sistema\Modelo;
-use App\Core\TipoDocApp;
-
-use App\VentasPos\Services\AccumulationService;
-use App\VentasPos\Services\InventoriesServices;
-use App\VentasPos\Services\SalesServices;
-
-use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvProducto;
 
 use App\VentasPos\PreparaTransaccion;
 
-use App\Ventas\VtasDocEncabezado AS FacturaPos;
 use App\Ventas\VtasDocRegistro AS DocRegistro;
 
 use App\Ventas\VtasPedido;
@@ -48,27 +22,17 @@ use App\Ventas\Vendedor;
 use App\VentasPos\Pdv;
 
 use App\Ventas\Cliente;
-use App\Ventas\ResolucionFacturacion;
+
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
-use App\Ventas\VtasDocEncabezado;
-use App\Ventas\NotaCredito;
 
-use App\Ventas\VtasMovimiento;
-
-use App\CxC\CxcMovimiento;
-use App\CxC\CxcAbono;
-
-use App\CxP\CxpMovimiento;
-
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
-use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvGrupo;
 use App\Ventas\Services\PedidosRestauranteServices;
-use Symfony\Component\HttpKernel\Client;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class PedidoRestauranteController extends TransaccionController
 {
@@ -182,10 +146,12 @@ class PedidoRestauranteController extends TransaccionController
         $productosTemp = null;
         foreach ($productos as $pr)
         {
-            if ( $pr->inv_grupo_id != $categoria_cocina->id) {
-                continue;
+            if ( $categoria_cocina != null) {
+                if ( $pr->inv_grupo_id != $categoria_cocina->id) {
+                    continue;
+                }
             }
-
+            
             $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
             if ( is_null($grupo_inventario) )
             {
