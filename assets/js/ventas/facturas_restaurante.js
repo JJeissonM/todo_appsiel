@@ -626,9 +626,9 @@ $(document).ready(function () {
 
     $("#btn_validate_password").on('click', function(e){            
 		e.preventDefault();
+		$(this).children('.fa-check').attr('class','fa fa-spinner fa-spin');
         validate_password();
     });
-
 
     function validate_password()
     {
@@ -639,6 +639,10 @@ $(document).ready(function () {
         var url = url_raiz + "/" + "core/validate_password" + "/" + $('#vendedor_id').attr( 'data-user_id') + "/" + password;
 
         $.get(url, function (respuesta) {
+			
+			document.getElementById('btn_validate_password').children[0].className = 'fa fa-check';
+			
+			//$("#").children('.fa fa-spinner fa-spin').attr('class','fa-check');
             if (respuesta == 'ok') {
                 $('#lbl_vendedor_mesero').text( $('#lbl_vendedor_modal').text() );
                 $("#modal_password").modal("hide");

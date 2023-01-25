@@ -29,7 +29,7 @@
         <div class="modal-footer">
             <br>
             <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
-            <button type="button" class="btn btn-success" id="btn_validate_password">Aceptar</button>
+            <button type="button" class="btn btn-success" id="btn_validate_password"> <i class="fa fa-check"></i>Aceptar</button>
         </div>
       </div>
     </div>

@@ -661,7 +661,7 @@ $(document).ready(function () {
         $('#total_valor_total').actualizar_medio_recaudo();
         $('#lbl_efectivo_recibido').text('$ 0');
         $('#efectivo_recibido').removeAttr('readonly');
-    });   
+    });
 
     function llenar_tabla_productos_facturados(doc_encabezado)
     {
@@ -749,7 +749,6 @@ $(document).ready(function () {
         $('#total_valor_total').text('$0.00');
     }
 
-
     function reset_linea_ingreso_default()
     {
         $('#inv_producto_id').val('');
@@ -795,7 +794,6 @@ $(document).ready(function () {
         }
     }
 
-
     function calcular_totales() 
     {
         var total_cantidad = 0.0;
@@ -840,7 +838,6 @@ $(document).ready(function () {
         $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
     }
 
-
     $("#btn_listar_items").click(function (event) {
 
         $("#myModal").modal({keyboard: true});
@@ -852,7 +849,6 @@ $(document).ready(function () {
     });
 
     var fila;
-
 
     function guardar_valor_nuevo(fila) 
     {
@@ -876,7 +872,6 @@ $(document).ready(function () {
 
         elemento_padre.find('#valor_nuevo').remove();
     }
-
 
     function calcular_precio_total_lbl(fila) 
     {
@@ -935,7 +930,6 @@ $(document).ready(function () {
 	});
 
     function seleccionar_mesa(item_sugerencia) {
-
 
         // Asignar descripción al TextInput
         $('#lbl_mesa_seleccionada').text(item_sugerencia.attr('data-nombre_cliente'));
@@ -998,6 +992,7 @@ $(document).ready(function () {
     {
         $('#ingreso_registros').find('tbody').html('');
         $('#numero_lineas').text('0');
+        $('#total_factura').text('$ 0');
 
         mostrar_botones_productos();
 
@@ -1173,11 +1168,11 @@ $(document).ready(function () {
     
         var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
     
-        celdas[num_celda] = '<td> ' + btn_borrar + ' &nbsp;&nbsp; <div class="lbl_producto_descripcion" style="display: inline;"> ' + linea.lbl_producto_descripcion + ' </div> </td>';
+        celdas[num_celda] = '<td> &nbsp;&nbsp; <div class="lbl_producto_descripcion" style="display: inline;"> ' + linea.lbl_producto_descripcion + ' </div> </td>';
     
         num_celda++;
     
-        celdas[num_celda] = '<td> <div class="number-input"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepDown()" class="minus"></button><input class="quantity" min="1" name="quantity" value="' + linea.cantidad + '" type="number" readonly="readonly"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepUp()" class="plus"></button> </div> </td>';
+        celdas[num_celda] = '<td> ' + linea.cantidad + ' </td>';
     
         num_celda++;
     
