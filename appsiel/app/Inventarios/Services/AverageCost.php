@@ -9,7 +9,7 @@ use App\Inventarios\InvProducto;
 class AverageCost
 {
     // COSTO PROMEDIO PONDERADO
-    public function calcular_costo_promedio(InvDocRegistro $linea_registro_documento, $arr_ids_movim_recosteados)
+    public function calcular_costo_promedio(InvDocRegistro $linea_registro_documento, $arr_ids_lineas_recosteadas)
     {
         /**
          * 3> Salida (producto a consumir). Fabricacion
@@ -20,22 +20,24 @@ class AverageCost
         // NOTA: Ya el registro del item está agregado en el movimiento
 
         $array_wheres = [
-            ['inv_producto_id','=',$linea_registro_documento->inv_producto_id],
-            ['fecha', '<=', $linea_registro_documento->encabezado_documento->fecha]
+            ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento->inv_producto_id],
+            ['inv_doc_encabezados.fecha', '<=', $linea_registro_documento->encabezado_documento->fecha]
         ];
         
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
             $array_wheres = array_merge($array_wheres, [['inv_bodega_id','=',$linea_registro_documento->inv_bodega_id]]);
         }
         
-        $costo_total_movim = InvMovimiento::where($array_wheres)
-                                        ->whereNotIn('inv_motivo_id',$arr_motivos_no_recosteables_ids)
-                                        ->whereIn('id', $arr_ids_movim_recosteados)
-                                        ->sum('costo_total');
-        $cantidad_total_movim = InvMovimiento::where($array_wheres)
-                                        ->whereNotIn('inv_motivo_id',$arr_motivos_no_recosteables_ids)
-                                        ->whereIn('id', $arr_ids_movim_recosteados)
-                                        ->sum('cantidad');
+        $costo_total_movim = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+                                        ->where($array_wheres)
+                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
+                                        ->whereIn('inv_doc_registros.id', $arr_ids_lineas_recosteadas)
+                                        ->sum('inv_doc_registros.costo_total');
+        $cantidad_total_movim = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+                                        ->where($array_wheres)
+                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
+                                        ->whereIn('inv_doc_registros.id', $arr_ids_lineas_recosteadas)
+                                        ->sum('inv_doc_registros.cantidad');
 
         // Si la existencia del item estaba en cero. (antes del registro)
         if (($cantidad_total_movim - $linea_registro_documento->cantidad) == 0) {
