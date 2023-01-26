@@ -118,7 +118,10 @@ class RecosteoService
                         ->where('inv_producto_id', $linea_registro->inv_producto_id )
                         ->where('cantidad', $linea_registro->cantidad )
                         ->where('valor_credito', 0 )
-                        ->update( [ 'valor_debito' => abs( $costo_total ), 'valor_saldo' => abs( $costo_total ) ] );
+                        ->update( [ 
+                            'valor_debito' => abs( $costo_total ), 'valor_saldo' => abs( $costo_total ),
+                            'modificado_por' => Auth::user()->email
+                        ] );
 
         ContabMovimiento::where('core_tipo_transaccion_id', $encabezado_documento->core_tipo_transaccion_id )
                         ->where('core_tipo_doc_app_id', $encabezado_documento->core_tipo_doc_app_id )
@@ -127,7 +130,10 @@ class RecosteoService
                         ->where('inv_producto_id', $linea_registro->inv_producto_id )
                         ->where('cantidad', $linea_registro->cantidad )
                         ->where('valor_debito', 0 )
-                        ->update( [ 'valor_credito' => (abs( $costo_total ) * -1), 'valor_saldo' => (abs( $costo_total ) * -1) ] );
+                        ->update( [ 
+                            'valor_credito' => (abs( $costo_total ) * -1), 'valor_saldo' => (abs( $costo_total ) * -1),
+                            'modificado_por' => Auth::user()->email
+                        ] );
     }
 
     public function calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id, $tener_en_cuenta_movimientos_anteriores)
