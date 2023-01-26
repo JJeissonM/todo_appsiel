@@ -9,6 +9,7 @@ use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use App\Inventarios\Services\TallaItem;
+use Illuminate\Support\Facades\Auth;
 use League\Fractal\Resource\Item;
 
 class RecosteoService
@@ -100,7 +101,10 @@ class RecosteoService
                     ->where('inv_bodega_id', $linea_registro->inv_bodega_id )
                     ->where('inv_producto_id', $linea_registro->inv_producto_id )
                     ->where('cantidad', $linea_registro->cantidad )
-                    ->update( [ 'costo_unitario' => $costo_promedio_actual, 'costo_total' => $costo_total  ] );
+                    ->update( [ 
+                        'costo_unitario' => $costo_promedio_actual, 'costo_total' => $costo_total,
+                        'modificado_por' => Auth::user()->email
+                    ] );
 
         if (!$recontabilizar_contabilizar_movimientos) {
             return 0;
