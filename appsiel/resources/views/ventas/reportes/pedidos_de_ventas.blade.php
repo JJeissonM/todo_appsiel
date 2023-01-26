@@ -30,61 +30,33 @@
 
                     $cantidadMinutos = $fechaAntigua->diffInMinutes($fechaReciente);
                 ?>
-                <tr class="success">
-                    <td> {{ $documento->fecha }} </td>
-                    <td> {!! $documento->get_link_pedido() !!} </td>
-                    <td> {{ $documento->cliente->tercero->descripcion }} </td>
-                    <td> {{ $documento->vendedor->tercero->descripcion }} </td>
-                    <td> {{ $documento->estado }} </td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td> ${{ number_format( $documento->valor_total, 0, ',', '.') }} </td>
-                    <td> {{ $documento->created_at }} </td>
-                    <td> 
-                        @if( $documento->created_at != $documento->updated_at)
-                            {{ $documento->updated_at }} 
-                        @endif
-                    </td>
-                    <td> 
-                        @if( $documento->estado == 'Pendiente')
-                            {{ $cantidadMinutos }} 
-                        @endif
-                    </td>
-                </tr>
                 <?php 
                     $lineas_registros = $documento->lineas_registros;
                 ?>
                 @foreach($lineas_registros as $linea)
                     <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td> {{ $documento->fecha }} </td>
+                        <td> {!! $documento->get_link_pedido() !!} </td>
+                        <td> {{ $documento->cliente->tercero->descripcion }} </td>
+                        <td> {{ $documento->vendedor->tercero->descripcion }} </td>
+                        <td> {{ $documento->estado }} </td>
                         <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
                         <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                         <td> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
                         <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
+                        <td> {{ $documento->created_at }} </td>
+                        <td> 
+                            @if( $documento->created_at != $documento->updated_at)
+                                {{ $documento->updated_at }} 
+                            @endif
+                        </td>
+                        <td> 
+                            @if( $documento->estado == 'Pendiente')
+                                {{ $cantidadMinutos }} 
+                            @endif
+                        </td>
                     </tr>
                 @endforeach
-                <tr>
-                    <td>&nbsp;</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
             @endforeach
         </tbody>
     </table>
