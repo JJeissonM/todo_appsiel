@@ -12,6 +12,7 @@
 					{{ Form::label('fecha_desde','*Fecha desde') }}
 					<br/>
 					{{ Form::date('fecha_desde', null,[ 'class' => 'form-control', 'id' => 'fecha_desde' ]) }}
+					
 				</div>
 				<div class="col-sm-3">
 					{{ Form::label('fecha_hasta','*Fecha hasta') }}
@@ -30,19 +31,22 @@
 			<br>		
 			<div class="row">
 				<div class="col-sm-3">
+					<span style="color: red;">Nota: La <b>Fecha desde</b> debe empezar un día donde haya alguna entrada de mercancía.</span>
+				</div>
+				<div class="col-sm-4">
 					{{ Form::label('recontabilizar_contabilizar_movimientos','*Recontabilizar movimientos') }}
 					<br/>
 					{{ Form::select('recontabilizar_contabilizar_movimientos',['1'=>'Si (recomendado)','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'recontabilizar_contabilizar_movimientos' ]) }}
-				</div>
-				<div class="col-sm-4">
-					{{ Form::label('modo_recosteo','*Modo de recosteo') }}
+					<!-- { { Form::label('modo_recosteo','*Modo de recosteo') }}
 					<br/>
-					{{ Form::select('modo_recosteo',['recalcular_costo_promedio'=>'Recalcular Costo promedio (recomendado)','desde_costo_promedio'=>'Tomar del Costo promedio actual'],null, [ 'class' => 'form-control', 'id' => 'modo_recosteo' ]) }}
+					{ { Form::select('modo_recosteo',['recalcular_costo_promedio'=>'Recalcular Costo promedio (recomendado)','desde_costo_promedio'=>'Tomar del Costo promedio actual'],null, [ 'class' => 'form-control', 'id' => 'modo_recosteo' ]) }}
+					-->
 				</div>
 				<div class="col-sm-3">
-					{{ Form::label('tener_en_cuenta_movimientos_anteriores','*Tener en cuenta movimientos anteriores') }}
+					<!-- { { Form::label('tener_en_cuenta_movimientos_anteriores','*Tener en cuenta movimientos anteriores') }}
 					<br/>
-					{{ Form::select('tener_en_cuenta_movimientos_anteriores',['1'=>'Si (recomendado)','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'tener_en_cuenta_movimientos_anteriores' ]) }}
+					{ { Form::select('tener_en_cuenta_movimientos_anteriores',['1'=>'Si (recomendado)','0'=>'No'],null, [ 'class' => 'form-control', 'id' => 'tener_en_cuenta_movimientos_anteriores' ]) }}
+					-->
 				</div>
 				<div class="col-sm-2">
 					{{ Form::label(' ','.') }}
