@@ -39,7 +39,7 @@ class RecosteoService
         $item = InvProducto::find($item_id);
 
         if ($modo_recosteo == 'recalcular_costo_promedio') {
-            $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id, $tener_en_cuenta_movimientos_anteriores);
+            $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id, $tener_en_cuenta_movimientos_anteriores, []);
         }else{
             $costo_promedio_actual = $item->get_costo_promedio( $inv_bodega_id );
         }
@@ -52,6 +52,7 @@ class RecosteoService
                         ->orderBy('inv_doc_registros.cantidad')
                         ->get();
 
+        $arr_ids_movim_recosteados = [];
         foreach ($registros_sin_filtro as $linea_registro)
         {
             // No se recostean los Ensambles
@@ -61,11 +62,14 @@ class RecosteoService
 
             // Se cambia el costo promedio
             if (in_array($linea_registro->motivo->id, $this->arr_motivos_entradas_ids) && $modo_recosteo == 'recalcular_costo_promedio') {
-                $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($linea_registro->encabezado_documento->fecha, $item_id, $tener_en_cuenta_movimientos_anteriores);
+                $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($linea_registro->encabezado_documento->fecha, $item_id, $tener_en_cuenta_movimientos_anteriores, $arr_ids_movim_recosteados);
+                $arr_ids_movim_recosteados[] = $linea_registro->id;
                 continue; // No se recostean arr_motivos_entradas_ids
             }
 
             $this->actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos);
+
+            $arr_ids_movim_recosteados[] = $linea_registro->id;
             
             $i++;
         }
@@ -136,9 +140,9 @@ class RecosteoService
                         ] );
     }
 
-    public function calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id, $tener_en_cuenta_movimientos_anteriores)
+    public function calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id, $tener_en_cuenta_movimientos_anteriores, $arr_ids_movim_recosteados)
     {
-        $registro_ultima_fecha = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+        $registro_entrada_ultima_fecha = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                         ->whereIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_entradas_ids)
                         ->where([
                             ['inv_doc_registros.inv_producto_id', '=', $item_id],
@@ -148,16 +152,20 @@ class RecosteoService
                         ->orderBy('inv_doc_encabezados.fecha','DESC')
                         ->get()
                         ->first();
-
-        if ($registro_ultima_fecha == null) {
+        
+        if ( !in_array($registro_entrada_ultima_fecha->id,$arr_ids_movim_recosteados)) {
+            $arr_ids_movim_recosteados[] = $registro_entrada_ultima_fecha->id;
+        }
+        
+        if ($registro_entrada_ultima_fecha == null) {
             return InvProducto::find($item_id)->precio_compra;
         }
 
         if ( $tener_en_cuenta_movimientos_anteriores ) {
-            return (new AverageCost())->calcular_costo_promedio($registro_ultima_fecha);
+            return (new AverageCost())->calcular_costo_promedio($registro_entrada_ultima_fecha,$arr_ids_movim_recosteados);
         }
 
-        $ultima_fecha = $registro_ultima_fecha->encabezado_documento->fecha;
+        $ultima_fecha = $registro_entrada_ultima_fecha->encabezado_documento->fecha;
 
         // Pueden haber varias entradas el mismo dia
         $ultimas_entradas = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
