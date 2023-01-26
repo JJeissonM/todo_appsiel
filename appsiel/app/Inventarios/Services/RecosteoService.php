@@ -46,8 +46,9 @@ class RecosteoService
         $registros_sin_filtro = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                         ->whereBetween( 'inv_doc_encabezados.fecha', [ $fecha_desde, $fecha_hasta] )
                         ->where('inv_doc_registros.inv_producto_id', $operador1, $item_id)
-                        ->select('inv_doc_registros.*')
+                        ->select('inv_doc_registros.*','inv_doc_encabezados.fecha')
                         ->orderBy('inv_doc_encabezados.fecha')
+                        ->orderBy('inv_doc_registros.cantidad')
                         ->get();
 
         foreach ($registros_sin_filtro as $linea_registro)

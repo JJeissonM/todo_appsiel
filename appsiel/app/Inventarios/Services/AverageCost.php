@@ -11,6 +11,12 @@ class AverageCost
     // COSTO PROMEDIO PONDERADO
     public function calcular_costo_promedio(InvDocRegistro $linea_registro_documento)
     {
+        /**
+         * 3> Salida (producto a consumir). Fabricacion
+         * 4> Entrada (producto final). Fabricacion
+         */
+        $arr_motivos_no_recosteables_ids = [3, 4];
+
         // NOTA: Ya el registro del item está agregado en el movimiento
 
         $array_wheres = [
@@ -22,8 +28,12 @@ class AverageCost
             $array_wheres = array_merge($array_wheres, [['inv_bodega_id','=',$linea_registro_documento->inv_bodega_id]]);
         }
         
-        $costo_total_movim = InvMovimiento::where($array_wheres)->sum('costo_total');
-        $cantidad_total_movim = InvMovimiento::where($array_wheres)->sum('cantidad');
+        $costo_total_movim = InvMovimiento::where($array_wheres)
+                                        ->whereNotIn('inv_motivo_id',$arr_motivos_no_recosteables_ids)
+                                        ->sum('costo_total');
+        $cantidad_total_movim = InvMovimiento::where($array_wheres)
+                                        ->whereNotIn('inv_motivo_id',$arr_motivos_no_recosteables_ids)
+                                        ->sum('cantidad');
 
         // Si la existencia del item estaba en cero. (antes del registro)
         if (($cantidad_total_movim - $linea_registro_documento->cantidad) == 0) {
