@@ -43,7 +43,7 @@ class RecosteoService
         if ( $costo_promedio_actual == 0 || $costo_promedio_actual == null ) {
             return (object)[
                 'status'=>'mensaje_error',
-                'message' => 'La <Fecha desde> debe empezar un día donde haya alguna entrada de mercancía.']
+                'message' => 'La Fecha desde debe empezar un día donde haya alguna entrada de mercancía.']
                 ;
         }
 
