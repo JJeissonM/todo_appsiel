@@ -118,11 +118,11 @@
 				var url_recostear = $('#btn_recostear').attr('href');
 				var n = url_recostear.search('a3p0');
 				if ( n > 0) {
-					var new_url = url_recostear.replace( 'a3p0', 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() + '&modo_recosteo=' + $('#modo_recosteo').val() + '&tener_en_cuenta_movimientos_anteriores=' + $('#tener_en_cuenta_movimientos_anteriores').val() );
+					var new_url = url_recostear.replace( 'a3p0', 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() + '&recontabilizar_contabilizar_movimientos=' + $('#recontabilizar_contabilizar_movimientos').val() );
 				}else{
 					n = url_recostear.search('inv_recosteo');
 					var url_aux = url_recostear.substr(0,n);
-					var new_url = url_aux + 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() + '&modo_recosteo=' + $('#modo_recosteo').val() + '&tener_en_cuenta_movimientos_anteriores=' + $('#tener_en_cuenta_movimientos_anteriores').val();
+					var new_url = url_aux + 'inv_recosteo?id='+getParameterByName('id')+'&fecha_desde=' + $('#fecha_desde').val() + '&fecha_hasta=' + $('#fecha_hasta').val() + '&inv_producto_id=' + $('#inv_producto_id').val() + '&recontabilizar_contabilizar_movimientos=' + $('#recontabilizar_contabilizar_movimientos').val();
 				}
 				
 				

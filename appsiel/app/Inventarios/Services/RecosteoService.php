@@ -66,7 +66,7 @@ class RecosteoService
             }
 
             // Se cambia el costo promedio
-            if (in_array($linea_registro->motivo->id, $this->arr_motivos_entradas_ids) && $modo_recosteo == 'recalcular_costo_promedio') {
+            if ( in_array($linea_registro->motivo->id, $this->arr_motivos_entradas_ids) ) {
                 $arr_ids_movim_recosteados[] = $linea_registro->id;
 
                 $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_movim_recosteados);
