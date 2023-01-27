@@ -24,8 +24,9 @@ class RecosteoService
     /**
      * 3> Salida (producto a consumir). Fabricacion
      * 4> Entrada (producto final). Fabricacion
+     * 12> 	Inventario Físico: no afectan los movimientos.
      */
-    public $arr_motivos_no_recosteables_ids = [3, 4];
+    public $arr_motivos_no_recosteables_ids = [3, 4, 12];
 
 	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta, $recontabilizar_contabilizar_movimientos )
 	{
