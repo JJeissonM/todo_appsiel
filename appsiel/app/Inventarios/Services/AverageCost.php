@@ -3,7 +3,7 @@
 namespace App\Inventarios\Services;
 
 use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvMovimiento;
+
 use App\Inventarios\InvProducto;
 
 class AverageCost
@@ -18,8 +18,9 @@ class AverageCost
         /**
          * 3> Salida (producto a consumir). Fabricacion
          * 4> Entrada (producto final). Fabricacion
+         * 12> 	Inventario Físico: no afectan los movimientos.
          */
-        $arr_motivos_no_recosteables_ids = [3, 4];
+        $arr_motivos_no_recosteables_ids = [3, 4, 12];
 
         // NOTA: Ya el registro del item está agregado en el movimiento
 

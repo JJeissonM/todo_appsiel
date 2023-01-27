@@ -25,6 +25,7 @@ class RecosteoService
      * 3> Salida (producto a consumir). Fabricacion
      * 4> Entrada (producto final). Fabricacion
      * 12> 	Inventario Físico: no afectan los movimientos.
+     * Nota: esta variable tambien sta en la clase AverageCost.
      */
     public $arr_motivos_no_recosteables_ids = [3, 4, 12];
 
