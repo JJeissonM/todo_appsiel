@@ -89,7 +89,7 @@ class RecosteoService
             
         return (object)[
             'status'=>'flash_message',
-            'message' => 'Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.' . json_encode([$arr_ids_lineas_recosteadas+$aux]) ]
+            'message' => 'Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.']
             ;
 	}
 
