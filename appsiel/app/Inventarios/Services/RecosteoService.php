@@ -29,7 +29,7 @@ class RecosteoService
 
 	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta, $recontabilizar_contabilizar_movimientos )
 	{
-        $i = 1;
+        $i = 0;
         $inv_bodega_id = 0;
         
         $item = InvProducto::find($item_id);
@@ -54,7 +54,6 @@ class RecosteoService
                         ->get();
                         
         $arr_ids_lineas_recosteadas = [];
-        $aux = [];
         foreach ($registros_sin_filtro as $linea_registro)
         {
             // No se recostean los Ensambles
@@ -72,7 +71,6 @@ class RecosteoService
             }
 
             $this->actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos);
-            $aux[] = $costo_promedio_actual;
 
             $arr_ids_lineas_recosteadas[] = $linea_registro->id;
             
@@ -82,14 +80,14 @@ class RecosteoService
         // Se actualiza el costo prom. de Item
         $item->set_costo_promedio( $inv_bodega_id, $costo_promedio_actual);
 
-        $num_reg_contab = ($i-1) * 2;
+        $num_reg_contab = $i * 2;
         if (!$recontabilizar_contabilizar_movimientos) {
             $num_reg_contab = 0;
         }
             
         return (object)[
             'status'=>'flash_message',
-            'message' => 'Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.']
+            'message' => 'Se actualizaron '. $i .' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.']
             ;
 	}
 
