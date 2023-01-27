@@ -41,7 +41,9 @@ class GuiaAcademica extends Model
 
         $periodos = $periodo_lectivo_actual->periodos->pluck('id')->toArray();
 
-        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
+        $array_wheres = [
+            ['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]
+        ];
 
         if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo'))
         {

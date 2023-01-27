@@ -58,12 +58,12 @@ class RecosteoService
         foreach ($registros_sin_filtro as $linea_registro)
         {
             // No se recostean los Ensambles
-            if (in_array($linea_registro->motivo->id, $this->arr_motivos_no_recosteables_ids)) {
+            if (in_array($linea_registro->inv_motivo_id, $this->arr_motivos_no_recosteables_ids)) {
                 continue;
             }
 
             // Se cambia el costo promedio
-            if ( in_array($linea_registro->motivo->id, $this->arr_motivos_entradas_ids) ) {
+            if ( in_array($linea_registro->inv_motivo_id, $this->arr_motivos_entradas_ids) ) {
                 $arr_ids_lineas_recosteadas[] = $linea_registro->id;
 
                 $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_lineas_recosteadas);
@@ -103,15 +103,20 @@ class RecosteoService
         $linea_registro->costo_total = $costo_total;
         $linea_registro->save();
 
+        $array_wheres = [
+                    ['core_tipo_transaccion_id', '=', $encabezado_documento->core_tipo_transaccion_id],
+                    ['core_tipo_doc_app_id', '=', $encabezado_documento->core_tipo_doc_app_id],
+                    ['consecutivo', '=', $encabezado_documento->consecutivo],
+                    ['inv_bodega_id', '=', $linea_registro->inv_bodega_id],
+                    ['inv_producto_id', '=', $linea_registro->inv_producto_id],
+                    ['cantidad', '=', $linea_registro->cantidad],
+        ];
+
         // Se actualiza el movimiento de inventario
-        InvMovimiento::where('core_tipo_transaccion_id', $encabezado_documento->core_tipo_transaccion_id )
-                    ->where('core_tipo_doc_app_id', $encabezado_documento->core_tipo_doc_app_id )
-                    ->where('consecutivo', $encabezado_documento->consecutivo )
-                    ->where('inv_bodega_id', $linea_registro->inv_bodega_id )
-                    ->where('inv_producto_id', $linea_registro->inv_producto_id )
-                    ->where('cantidad', $linea_registro->cantidad )
+        InvMovimiento::where( $array_wheres )
                     ->update( [ 
-                        'costo_unitario' => $costo_promedio_actual, 'costo_total' => $costo_total,
+                        'costo_unitario' => $costo_promedio_actual,
+                        'costo_total' => $costo_total,
                         'modificado_por' => Auth::user()->email
                     ] );
 
