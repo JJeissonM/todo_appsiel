@@ -94,13 +94,15 @@ class RecosteoService
 	}
 
     public function actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos)
-    {            
+    {
+        $user_email = Auth::user()->email;
         $encabezado_documento = $linea_registro->encabezado_documento;
         $costo_total = $linea_registro->cantidad * $costo_promedio_actual;
 
         // Se actualiza el costo_unitario y costo_total en cada línea de registro del documento
         $linea_registro->costo_unitario = $costo_promedio_actual;
         $linea_registro->costo_total = $costo_total;
+        $linea_registro->modificado_por = $user_email;
         $linea_registro->save();
 
         $array_wheres = [
@@ -117,7 +119,7 @@ class RecosteoService
                     ->update( [ 
                         'costo_unitario' => $costo_promedio_actual,
                         'costo_total' => $costo_total,
-                        'modificado_por' => Auth::user()->email
+                        'modificado_por' => $user_email
                     ] );
 
         if (!$recontabilizar_contabilizar_movimientos) {
@@ -134,7 +136,7 @@ class RecosteoService
                         ->where('valor_credito', 0 )
                         ->update( [ 
                             'valor_debito' => abs( $costo_total ), 'valor_saldo' => abs( $costo_total ),
-                            'modificado_por' => Auth::user()->email
+                            'modificado_por' => $user_email
                         ] );
 
         ContabMovimiento::where('core_tipo_transaccion_id', $encabezado_documento->core_tipo_transaccion_id )
@@ -146,7 +148,7 @@ class RecosteoService
                         ->where('valor_debito', 0 )
                         ->update( [ 
                             'valor_credito' => (abs( $costo_total ) * -1), 'valor_saldo' => (abs( $costo_total ) * -1),
-                            'modificado_por' => Auth::user()->email
+                            'modificado_por' => $user_email
                         ] );
     }
 
