@@ -54,7 +54,7 @@ class RecosteoService
                         ->orderBy('inv_doc_encabezados.created_at')
                         ->get();
                         
-        $arr_ids_lineas_recosteadas = [];
+        $arr_ids_lineas_aceptadas_misma_fecha = [];
         foreach ($registros_sin_filtro as $linea_registro)
         {
             // No se recostean los Ensambles
@@ -64,16 +64,16 @@ class RecosteoService
 
             // Se cambia el costo promedio
             if ( in_array($linea_registro->inv_motivo_id, $this->arr_motivos_entradas_ids) ) {
-                $arr_ids_lineas_recosteadas[] = $linea_registro->id;
+                $arr_ids_lineas_aceptadas_misma_fecha[] = $linea_registro->id;
 
-                $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_lineas_recosteadas);
+                $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_lineas_aceptadas_misma_fecha);
                 
                 continue; // No se recostean arr_motivos_entradas_ids
             }
 
             $this->actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos);
 
-            $arr_ids_lineas_recosteadas[] = $linea_registro->id;
+            $arr_ids_lineas_aceptadas_misma_fecha[] = $linea_registro->id;
             
             $i++;
         }
