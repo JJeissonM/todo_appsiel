@@ -1,4 +1,8 @@
 <div style="text-align: center; font-size: 1.1em;">
+    @if($empresa->razon_social != '')
+        <b>{{ $empresa->razon_social }} </b>
+        <br>
+    @endif
     <b>{{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b>
     <br>
     <b>{{ config("configuracion.tipo_identificador") }}:

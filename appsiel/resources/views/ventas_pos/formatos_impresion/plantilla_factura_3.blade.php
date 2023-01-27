@@ -38,7 +38,7 @@
     <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
         <tr>
             <td style="text-align: center;">
-                <img src="{{ $url_img }}" style="max-height: 110px; width: 100%;" />
+                <img src="{{ $url_img }}" style="max-height: 110px;" />
                 <br>
                 @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
             </td>
