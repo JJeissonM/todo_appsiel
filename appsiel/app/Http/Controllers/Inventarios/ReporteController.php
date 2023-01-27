@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Inventarios;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Form;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 
@@ -17,15 +14,11 @@ use App\Inventarios\InvBodega;
 use App\Inventarios\InvProducto;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
-use App\Inventarios\InvMotivo;
 use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\MinStock;
 
 use App\Inventarios\Services\FiltroMovimientos;
 
-use App\Compras\ComprasMovimiento;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;

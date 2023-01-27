@@ -3,14 +3,10 @@
 namespace App\Inventarios\Services;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Inventarios\InvCostoPromProducto;
-use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
-use App\Inventarios\Services\TallaItem;
 use Illuminate\Support\Facades\Auth;
-use League\Fractal\Resource\Item;
 
 class RecosteoService
 {
@@ -31,14 +27,14 @@ class RecosteoService
      */
     public $arr_motivos_no_recosteables_ids = [3, 4];
 
-	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta, $modo_recosteo, $tener_en_cuenta_movimientos_anteriores, $recontabilizar_contabilizar_movimientos )
+	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta, $recontabilizar_contabilizar_movimientos )
 	{
         $i = 1;
         $inv_bodega_id = 0;
         
         $item = InvProducto::find($item_id);
 
-        $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id, $tener_en_cuenta_movimientos_anteriores, []);
+        $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id);
 
         if ( $costo_promedio_actual == 0 || $costo_promedio_actual == null ) {
             return (object)[
@@ -54,10 +50,11 @@ class RecosteoService
                         ->where('inv_doc_registros.inv_producto_id', $operador1, $item_id)
                         ->select('inv_doc_registros.*','inv_doc_encabezados.fecha')
                         ->orderBy('inv_doc_encabezados.fecha')
-                        ->orderBy('inv_doc_registros.cantidad')
+                        ->orderBy('inv_doc_encabezados.created_at')
                         ->get();
-
+                        
         $arr_ids_lineas_recosteadas = [];
+        $aux = [];
         foreach ($registros_sin_filtro as $linea_registro)
         {
             // No se recostean los Ensambles
@@ -70,11 +67,12 @@ class RecosteoService
                 $arr_ids_lineas_recosteadas[] = $linea_registro->id;
 
                 $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_lineas_recosteadas);
-
+                
                 continue; // No se recostean arr_motivos_entradas_ids
             }
 
             $this->actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos);
+            $aux[] = $costo_promedio_actual;
 
             $arr_ids_lineas_recosteadas[] = $linea_registro->id;
             
@@ -91,7 +89,7 @@ class RecosteoService
             
         return (object)[
             'status'=>'flash_message',
-            'message' => 'Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.']
+            'message' => 'Se actualizaron '.($i-1).' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.' . json_encode([$arr_ids_lineas_recosteadas+$aux]) ]
             ;
 	}
 
