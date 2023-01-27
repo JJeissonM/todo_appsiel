@@ -27,7 +27,7 @@ class AverageCost
         $array_wheres = [
             ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento->inv_producto_id],
             ['inv_doc_encabezados.fecha', '<', $linea_registro_documento->encabezado_documento->fecha],
-            ['estado','<>','Anulado']
+            ['inv_doc_registros.estado','<>','Anulado']
         ]; // Fecha menor
         
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
@@ -47,7 +47,7 @@ class AverageCost
         $array_wheres = [
             ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento->inv_producto_id],
             ['inv_doc_encabezados.fecha', '=', $linea_registro_documento->encabezado_documento->fecha],
-            ['estado','<>','Anulado']
+            ['inv_doc_registros.estado','<>','Anulado']
         ]; // Fecha igual
         $costo_total_movim_misma_fecha = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                                         ->where($array_wheres)
