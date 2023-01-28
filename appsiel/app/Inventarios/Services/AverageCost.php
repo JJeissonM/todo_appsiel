@@ -24,49 +24,54 @@ class AverageCost
 
         // NOTA: Ya el registro del item está agregado en el movimiento
 
-        $array_wheres = [
+        $array_wheres1 = [
             ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento->inv_producto_id],
             ['inv_doc_encabezados.fecha', '<', $linea_registro_documento->encabezado_documento->fecha],
             ['inv_doc_registros.estado','<>','Anulado']
         ]; // Fecha menor
         
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
-            $array_wheres = array_merge($array_wheres, [['inv_bodega_id','=',$linea_registro_documento->inv_bodega_id]]);
+            $array_wheres1 = array_merge($array_wheres1, [['inv_bodega_id','=',$linea_registro_documento->inv_bodega_id]]);
         }
         
         $costo_total_movim_anterior = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
-                                        ->where($array_wheres)
+                                        ->where($array_wheres1)
                                         ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
                                         ->sum('inv_doc_registros.costo_total');
         $cantidad_total_movim_anterior = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
-                                        ->where($array_wheres)
+                                        ->where($array_wheres1)
                                         ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
                                         ->sum('inv_doc_registros.cantidad');
 
           
-        $array_wheres = [
+        $array_wheres2 = [
             ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento->inv_producto_id],
             ['inv_doc_encabezados.fecha', '=', $linea_registro_documento->encabezado_documento->fecha],
             ['inv_doc_registros.estado','<>','Anulado']
         ]; // Fecha igual
+        
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
+            $array_wheres2 = array_merge($array_wheres2, [['inv_bodega_id','=',$linea_registro_documento->inv_bodega_id]]);
+        }
+
         $costo_total_movim_misma_fecha = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
-                                        ->where($array_wheres)
+                                        ->where($array_wheres2)
                                         ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
                                         ->whereIn('inv_doc_registros.id', $arr_ids_lineas_aceptadas_misma_fecha)
                                         ->sum('inv_doc_registros.costo_total');
         $cantidad_total_movim_misma_fecha = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
-                                        ->where($array_wheres)
+                                        ->where($array_wheres2)
                                         ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
                                         ->whereIn('inv_doc_registros.id', $arr_ids_lineas_aceptadas_misma_fecha)
                                         ->sum('inv_doc_registros.cantidad');
         
         $cantidad_total_movim = $cantidad_total_movim_anterior + $cantidad_total_movim_misma_fecha;
-        // Si la existencia del item estaba en cero. (antes del registro)
-        if (round($cantidad_total_movim - $linea_registro_documento->cantidad,0) == 0) {
+        // Si la existencia del item estaba en cero o menor que cero. (antes del registro)
+        if (round($cantidad_total_movim - $linea_registro_documento->cantidad,0) <= 0) {
             return $linea_registro_documento->costo_unitario;
         }
         
-        if (round($cantidad_total_movim,0) == 0) {
+        if (round($cantidad_total_movim,0) <= 0) {
             return $linea_registro_documento->costo_unitario;
         }
 
