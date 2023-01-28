@@ -70,7 +70,7 @@ class AverageCost
             return $linea_registro_documento->costo_unitario;
         }
 
-        return ($costo_total_movim_anterior + $costo_total_movim_misma_fecha) / $cantidad_total_movim;
+        return round(($costo_total_movim_anterior + $costo_total_movim_misma_fecha) / $cantidad_total_movim,3);
     }
 
     // Almacenar el costo promedio en la tabla de la BD
