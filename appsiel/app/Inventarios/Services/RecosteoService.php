@@ -83,7 +83,7 @@ class RecosteoService
         $item->set_costo_promedio( $inv_bodega_id, $costo_promedio_actual);
 
         $num_reg_contab = $i * 2;
-        if (!$recontabilizar_contabilizar_movimientos) {
+        if ($recontabilizar_contabilizar_movimientos == 0) {
             $num_reg_contab = 0;
         }
             
@@ -122,7 +122,7 @@ class RecosteoService
                         'modificado_por' => $user_email
                     ] );
 
-        if (!$recontabilizar_contabilizar_movimientos) {
+        if ($recontabilizar_contabilizar_movimientos == 0) {
             return 0;
         }
 
