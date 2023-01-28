@@ -11,10 +11,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sistema\ModeloController;
 
 // Facades
-use Auth;
-use DB;
-use Input;
-use Form;
 use Exception;
 
 // Modelos del core
@@ -40,6 +36,10 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Core\Transactions\TransactionDocument;
+use Collective\Html\FormFacade;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class TransaccionController extends Controller
 {
@@ -124,7 +124,7 @@ class TransaccionController extends Controller
             $key++;
         }
 
-        return Form::bsBtnDropdown( 'Crear', 'primary', 'plus', $opciones );
+        return FormFacade::bsBtnDropdown( 'Crear', 'primary', 'plus', $opciones );
     }
 
     public function get_array_miga_pan( $app, $modelo_crud, $etiqueta_final )
@@ -240,49 +240,29 @@ class TransaccionController extends Controller
 
         // NOTA: Ya el registro del item está agregado en el movimiento
 
+        $array_wheres = [
+            ['inv_movimientos.inv_producto_id','=',$id_producto],
+            ['inv_movimientos.fecha', '<=', $fecha_transaccion]
+        ];
+
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
-            
-            // COSTO PROMEDIO PONDERADO
-
-            // NOTA: EL COSTO SE CALCULA TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE TIENE EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
-            $costo_prom = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
-                    ->where('inv_movimientos.inv_producto_id','=',$id_producto)
-                    ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
-                    ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
-                    ->get()
-                    ->toArray();
-            
-            $cant = InvMovimiento::where('inv_movimientos.inv_bodega_id','=',$id_bodega)
-            ->where('inv_movimientos.inv_producto_id','=',$id_producto)
-            ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
-            ->select(DB::raw('sum(inv_movimientos.cantidad) AS cantidad_total'))
-            ->get()
-            ->toArray();
-
-            if ($cant[0]['cantidad_total'] <= 0 ) {
-                $costo_prom[0]['Costo'] = 0;
-            }
-
-        }else{
-            
-            $costo_prom = InvMovimiento::where('inv_movimientos.inv_producto_id','=',$id_producto)
-                    ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
-                    ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
-                    ->get()
-                    ->toArray();
-            
-            $cant = InvMovimiento::where('inv_movimientos.inv_producto_id','=',$id_producto)
-            ->where('inv_movimientos.fecha', '<=', $fecha_transaccion)
-            ->select(DB::raw('sum(inv_movimientos.cantidad) AS cantidad_total'))
-            ->get()
-            ->toArray();
-
-            if ($cant[0]['cantidad_total'] <= 0 ) {
-                $costo_prom[0]['Costo'] = 0;
-            }
+            $array_wheres = array_merge( $array_wheres, [ ['inv_movimientos.inv_bodega_id','=',$id_bodega] ] );
         }
 
-        if ($costo_prom[0]['Costo']==0) {
+        // COSTO PROMEDIO PONDERADO
+
+        // NOTA: EL COSTO SE CALCULA TENIENDO EN CUENTA LA FECHA DE INGRESO DE LA TRANSACCION, SOLO SE TIENE EN CUENTA LA SUMATORIA DESDE LA FECHA DE LA TRANSACCIÓN HACIA ATRÁS
+        $costo_prom = InvMovimiento::where( $array_wheres )
+                                ->select(DB::raw('(sum(inv_movimientos.costo_total)/sum(inv_movimientos.cantidad)) AS Costo'))
+                                ->get()
+                                ->toArray();
+
+        $cant = InvMovimiento::where( $array_wheres )
+                            ->select(DB::raw('sum(inv_movimientos.cantidad) AS cantidad_total'))
+                            ->get()
+                            ->toArray();
+
+        if ($cant[0]['cantidad_total'] <= 0 ) {
             $costo_prom = $valor_default;
         }else{
             $costo_prom = $costo_prom[0]['Costo'];
