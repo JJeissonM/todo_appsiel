@@ -69,7 +69,10 @@ class RecosteoService
 
                 $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_lineas_aceptadas_misma_fecha);
                 
-                continue; // No se recostean arr_motivos_entradas_ids
+                if ( $linea_registro->inv_motivo_id != 9 ) {
+                    continue; // No se recostean arr_motivos_entradas_ids, a excepcion de Entrada bodega destino (en Transferencias)
+                }
+                
             }
 
             $this->actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos);
