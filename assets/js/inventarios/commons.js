@@ -87,6 +87,12 @@ $(document).ready(function(){
 
 	$('#core_empresa_id').val(1);
 
+	// Si la TRANSACCIÓN es Fabricación		
+	if ( $('#id_transaccion').val() == 4 )
+	{
+		$('#fila_totales').hide();
+	}
+
 	if ( $('#hay_productos_aux').val() > 1 )
 	{
 		$('#btn_nuevo').show();
@@ -423,6 +429,8 @@ $(document).ready(function(){
 
 	$('#btn_guardar').click(function(event){
 		event.preventDefault();
+
+		$('#fila_totales').show();
 
 		var object = $('#ingreso_productos').val();
 		
