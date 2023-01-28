@@ -62,11 +62,11 @@ class AverageCost
         
         $cantidad_total_movim = $cantidad_total_movim_anterior + $cantidad_total_movim_misma_fecha;
         // Si la existencia del item estaba en cero. (antes del registro)
-        if (($cantidad_total_movim - $linea_registro_documento->cantidad) == 0) {
+        if (round($cantidad_total_movim - $linea_registro_documento->cantidad,0) == 0) {
             return $linea_registro_documento->costo_unitario;
         }
         
-        if ($cantidad_total_movim == 0) {
+        if (round($cantidad_total_movim,0) == 0) {
             return $linea_registro_documento->costo_unitario;
         }
 
