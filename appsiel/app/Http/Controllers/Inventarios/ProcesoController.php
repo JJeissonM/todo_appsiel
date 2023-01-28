@@ -148,7 +148,7 @@ class ProcesoController extends Controller
         }
 
         $recosteo_serv = new RecosteoService();
-        $response = $recosteo_serv->recostear($operador1,$inv_producto_id,$fecha_desde,$fecha_hasta, Input::get('modo_recosteo'),Input::get('tener_en_cuenta_movimientos_anteriores'),Input::get('recontabilizar_contabilizar_movimientos'));
+        $response = $recosteo_serv->recostear($operador1, $inv_producto_id, $fecha_desde, $fecha_hasta, Input::get('recontabilizar_contabilizar_movimientos'));
 
         return redirect( 'inv_recosteo_form?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with($response->status,$response->message);
             
