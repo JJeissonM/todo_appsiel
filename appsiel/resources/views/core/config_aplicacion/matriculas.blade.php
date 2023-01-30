@@ -308,6 +308,36 @@
 					</div>
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">							
+							<?php 
+								$url_escudo_colegio = '';
+								if( isset($parametros['url_escudo_colegio'] ) )
+								{
+									$url_escudo_colegio = $parametros['url_escudo_colegio'];
+								}
+							?>
+							{{ Form::bsText('url_escudo_colegio', $url_escudo_colegio, 'URL de la imágen para el banner de reportes', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$formato_default_fichas_incripcion_y_matricula = 'estandar';
+								if( isset($parametros['formato_default_fichas_incripcion_y_matricula'] ) )
+								{
+									$formato_default_fichas_incripcion_y_matricula = $parametros['formato_default_fichas_incripcion_y_matricula'];
+								}
+							?>
+							{{ Form::bsSelect('formato_default_fichas_incripcion_y_matricula', $formato_default_fichas_incripcion_y_matricula, 'Mostrar contraseña del estudiante en la Ficha de matrícula', ['estandar'=>'Estandar','con_escudo'=>'Con Escudo'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

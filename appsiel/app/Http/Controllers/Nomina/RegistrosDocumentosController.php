@@ -4,36 +4,14 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
-
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
-
-
-// Modelos
-use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\Empresa;
 
 use App\Nomina\NomConcepto;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
-use App\Nomina\NomCuota;
-use App\Nomina\NomPrestamo;
-use App\Nomina\AgrupacionConcepto;
-
-use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
-use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class RegistrosDocumentosController extends TransaccionController
 {
@@ -194,8 +172,6 @@ class RegistrosDocumentosController extends TransaccionController
         $datos = [];
         $usuario = Auth::user();
 
-        $core_empresa_id = $usuario->empresa_id;
-
         $concepto = NomConcepto::find($request->nom_concepto_id);
         $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
 
@@ -210,7 +186,6 @@ class RegistrosDocumentosController extends TransaccionController
         // Guardar los valores para cada persona      
         for( $i=0; $i < (int)$request->cantidad_empleados; $i++)
         {
-
             if ( isset( $request->valor ) )
             {
                 $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i) );
@@ -233,7 +208,10 @@ class RegistrosDocumentosController extends TransaccionController
         {
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor );
 
-            $contrato = NomContrato::where('core_tercero_id',$core_tercero_id)->get()->first();
+            $contrato = NomContrato::where([
+                                        ['core_tercero_id','=',$core_tercero_id],
+                                        ['estado','=','Activo']
+                                    ])->get()->first();
 
             NomDocRegistro::create(
                                     $datos +
@@ -249,7 +227,10 @@ class RegistrosDocumentosController extends TransaccionController
     {
         if ( $cantidad_horas > 0 )
         {
-            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->value('sueldo');
+            $sueldo = NomContrato::where([
+                    ['core_tercero_id','=',$core_tercero_id],
+                    ['estado','=','Activo']
+                ])->value('sueldo');
 
             if ( is_null( $sueldo ) )
             {
@@ -262,7 +243,10 @@ class RegistrosDocumentosController extends TransaccionController
 
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor_a_liquidar );
 
-            $contrato = NomContrato::where('core_tercero_id',$core_tercero_id)->get()->first();
+            $contrato = NomContrato::where([
+                    ['core_tercero_id','=',$core_tercero_id],
+                    ['estado','=','Activo']
+                ])->get()->first();
 
             NomDocRegistro::create(
                                     $datos +
@@ -376,7 +360,10 @@ class RegistrosDocumentosController extends TransaccionController
             $registro->delete();
         }else{
 
-            $sueldo = NomContrato::where('core_tercero_id',$core_tercero_id)->value('sueldo');
+            $sueldo = NomContrato::where([
+                    ['core_tercero_id','=',$core_tercero_id],
+                    ['estado','=','Activo']
+                ])->value('sueldo');
 
             if ( is_null( $sueldo ) )
             {

@@ -6,8 +6,8 @@
   'formato_impresion_observador' => '2',
   'manejar_control_disciplinario' => '0',
   'manejar_matriz_dofa' => '1',
-  'inv_producto_id_default_matricula' => '',
-  'inv_producto_id_default_pension' => '',
+  'inv_producto_id_default_matricula' => '213',
+  'inv_producto_id_default_pension' => '214',
   'transaccion_id_factura_estudiante' => '23',
   'modelo_id_factura_estudiante' => '234',
   'cantidad_facturas_vencidas_permitidas' => '2',
@@ -17,5 +17,7 @@
   'url_imagen_banner' => 'http://localhost/appsiel_2020./nube/banner-col-santa-teresitajpg.jpg',
   'etiqueta_datos_aspirante' => 'DATOS DEL ASPIRANTE',
   'mensaje_inscripcion_creada' => 'GRACIAS. Su inscripción ha sido registrada correctamente. Pronto nos comunicaremos con usted.',
+  'url_escudo_colegio' => 'http://localhost/appsiel_2021./nube/escudo.png',
+  'formato_default_fichas_incripcion_y_matricula' => 'con_escudo',
   'url_id_modelo' => '0',
 ) ;

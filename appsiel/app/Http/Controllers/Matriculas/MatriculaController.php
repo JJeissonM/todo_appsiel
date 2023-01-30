@@ -334,9 +334,14 @@ class MatriculaController extends ModeloController
         $matricula = Matricula::get_registro_impresion($id);
 
         $estudiante = Estudiante::get_datos_basicos($matricula->id_estudiante);
+        
+        $formato = 'formatos.matriculas.estandar';
+        if ( !in_array(config('matriculas.formato_default_fichas_incripcion_y_matricula'), [null,'']) ) {
+            $formato = 'formatos.matriculas.' . config('matriculas.formato_default_fichas_incripcion_y_matricula');
+        }
 
         // Crear vista
-        $view =  View::make('matriculas.pdf_matricula', compact('matricula', 'estudiante'))->render();
+        $view =  View::make('matriculas.' . $formato, compact('matricula', 'estudiante'))->render();
 
         return $view;
     }

@@ -271,6 +271,7 @@ class TerceroController extends Controller
         $estudiantes = Estudiante::leftJoin('core_terceros','core_terceros.id','=','sga_estudiantes.core_tercero_id')
                                 ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
                                 ->where('core_terceros.estado','Activo')
+                                ->select('sga_estudiantes.id','sga_estudiantes.core_tercero_id')
                                 ->get();
 
         $datos = [];

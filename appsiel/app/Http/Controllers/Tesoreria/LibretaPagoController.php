@@ -174,6 +174,10 @@ class LibretaPagoController extends ModeloController
         $matricula_estudiante = Matricula::get_registro_impresion( $request->matricula_id );
         $request['id_estudiante'] = $matricula_estudiante->id_estudiante;
 
+        if (!isset($request['valor_pension_anual'])) {
+            $request['valor_pension_anual'] = $request['valor_pension_mensual'] * $request['numero_periodos'];
+        }
+
         // Crear la libreta
         $registro = $this->crear_nuevo_registro( $request );
 
