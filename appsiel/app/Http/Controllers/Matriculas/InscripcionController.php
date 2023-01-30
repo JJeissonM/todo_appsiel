@@ -163,7 +163,12 @@ class InscripcionController extends ModeloController
 
         $estudiante = $inscripcion->estudiante();
 
-        return View::make('matriculas.formatos.inscripcion1',compact('inscripcion','descripcion_transaccion','empresa','vista', 'estudiante') )->render();
+        $formato = 'formatos.inscripciones.estandar';
+        if ( !in_array(config('matriculas.formato_default_fichas_incripcion_y_matricula'), [null,'']) ) {
+            $formato = 'formatos.inscripciones.' . config('matriculas.formato_default_fichas_incripcion_y_matricula');
+        }
+
+        return View::make( 'matriculas.' . $formato,compact('inscripcion','descripcion_transaccion','empresa','vista', 'estudiante') )->render();
     }
 	
 	public function update(Request $request, $id)
