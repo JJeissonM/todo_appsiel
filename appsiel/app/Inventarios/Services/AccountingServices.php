@@ -6,7 +6,9 @@ use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvMotivo;
+use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
+use Illuminate\Support\Facades\Auth;
 
 class AccountingServices
 {    
@@ -68,5 +70,52 @@ class AccountingServices
                 
         }
     }
+
+    
+	public function recontabilizar_costos_movimientos( $operador1, $item_id, $fecha_desde, $fecha_hasta )
+	{
+        $i = 0;
+        $user_email = Auth::user()->email;
+        
+        $registros_sin_filtro = InvMovimiento::whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
+                        ->where('inv_producto_id', $operador1, $item_id)
+                        ->orderBy('fecha')
+                        ->orderBy('created_at')
+                        ->get();
+                        
+        foreach ($registros_sin_filtro as $linea_movimiento)
+        {
+            $array_wheres = [
+                ['core_tipo_transaccion_id', '=', $linea_movimiento->core_tipo_transaccion_id],
+                ['core_tipo_doc_app_id', '=', $linea_movimiento->core_tipo_doc_app_id],
+                ['consecutivo', '=', $linea_movimiento->consecutivo],
+                ['inv_bodega_id', '=', $linea_movimiento->inv_bodega_id],
+                ['inv_producto_id', '=', $linea_movimiento->inv_producto_id],
+                ['cantidad', '=', $linea_movimiento->cantidad ]
+            ];
+            
+            // Se actualiza el registro contable para la transacción de esa línea de registro (DB y CR)
+            ContabMovimiento::where( $array_wheres )
+                        ->where('valor_credito', 0 )
+                        ->update( [ 
+                            'valor_debito' => abs( $linea_movimiento->costo_total ), 'valor_saldo' => abs( $linea_movimiento->costo_total ),
+                            'modificado_por' => $user_email
+                        ] );
+
+            ContabMovimiento::where( $array_wheres )
+                        ->where('valor_debito', 0 )
+                        ->update( [ 
+                            'valor_credito' => (abs( $linea_movimiento->costo_total ) * -1), 'valor_saldo' => (abs( $linea_movimiento->costo_total ) * -1),
+                            'modificado_por' => $user_email
+                        ] );
+            
+            $i++;
+        }
+            
+        return (object)[
+            'status'=>'flash_message',
+            'message' => 'Se actualizaron '. $i .' registros contables.']
+            ;
+	}
         
 }

@@ -76,6 +76,8 @@ Route::get('inv_stock_minimo', 'Inventarios\ReporteController@inv_stock_minimo')
 Route::get('recontabilizar_documentos_inventarios', 'Inventarios\ProcesoController@recontabilizar_documentos_inventarios');
 Route::get('inv_recontabilizar_un_documento/{id}', 'Inventarios\ProcesoController@recontabilizar_un_documento');
 
+Route::get('inv_recontabilizar_costos_movimientos_un_item', 'Inventarios\ProcesoController@recontabilizar_costos_movimientos_un_item');
+
 Route::get('inv_recosteo_form','Inventarios\InventarioController@recosteo_form');
 Route::get('inv_recosteo', 'Inventarios\ProcesoController@recosteo');
 

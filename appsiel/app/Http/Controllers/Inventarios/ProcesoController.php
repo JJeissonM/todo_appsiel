@@ -154,6 +154,33 @@ class ProcesoController extends Controller
             
     }
 
+    public function recontabilizar_costos_movimientos_un_item()
+    {
+        $fecha_desde = Input::get('fecha_desde');//'2019-10-28';
+        $fecha_hasta = Input::get('fecha_hasta');//'2019-10-28';
+
+        if ( is_null( $fecha_desde ) || is_null( $fecha_hasta) )
+        {
+            echo 'Se deben enviar las fechas como parámetros en la url. <br> Ejemplo: <br> inv_recontabilizar_costos_movimientos_un_item?fecha_desde=2019-10-28&fecha_hasta=2019-10-28&inv_producto_id=1';
+            dd('Operación cancelada.');
+        }
+
+        $inv_producto_id = '%%';
+        $operador1 = 'LIKE';
+
+        if ( Input::get('inv_producto_id') != '' )
+        {
+            $inv_producto_id = Input::get('inv_producto_id');
+            $operador1 = '=';
+        }
+
+        $acco_serv = new AccountingServices();
+        $response = $acco_serv->recontabilizar_costos_movimientos($operador1, $inv_producto_id, $fecha_desde, $fecha_hasta );
+
+        dd($response);
+            
+    }
+
     // Pendiente
     public function anulacion_masiva($lista_ids)
     {
