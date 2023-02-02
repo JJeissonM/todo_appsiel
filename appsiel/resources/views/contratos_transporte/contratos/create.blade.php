@@ -63,7 +63,7 @@
 								</div>
 								<div class="form-group">
 									<label>En Representación de...</label>
-									<textarea required class="form-control" name="representacion_de">{{config('contrato_transporte.texto_en_representacion_de')}}</textarea>
+									<textarea required class="form-control" name="representacion_de">{{config('contratos_transporte.texto_en_representacion_de')}}</textarea>
 								</div>
 								<div class="form-group">
 									<label>Objeto del Contrato</label>

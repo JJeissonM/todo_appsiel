@@ -203,7 +203,7 @@ class ContratoTransporteController extends Controller
 
         $ciudades = \App\Core\Ciudad::opciones_campo_select_2();
 
-        $permitir_ingreso_contrato_en_mes_distinto_al_actual = config('contrato_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual');
+        $permitir_ingreso_contrato_en_mes_distinto_al_actual = config('contratos_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual');
 
         return view('contratos_transporte.contratos.create')
             ->with('variables_url', $variables_url)
@@ -225,7 +225,7 @@ class ContratoTransporteController extends Controller
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
         
-        if ((int) $mes_fecha_fin > (int) $mes_actual && config('contrato_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual') == 0) {
+        if ((int) $mes_fecha_fin > (int) $mes_actual && config('contratos_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual') == 0) {
             return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. La fecha final debe estar en el mes actual', $request->source);
         }
 
@@ -245,7 +245,7 @@ class ContratoTransporteController extends Controller
                         $total = $total + 1;
                     }
                 }
-                $limite = config('contrato_transporte.bloqueado_x_contratos');
+                $limite = config('contratos_transporte.bloqueado_x_contratos');
                 if ($total >= $limite) {
                     $vehi = Vehiculo::find($request->vehiculo_id);
                     $vehi->bloqueado_cuatro_contratos = 'SI';
@@ -720,7 +720,7 @@ class ContratoTransporteController extends Controller
         }
         $hoy = getdate();
         $consecutivo = count(Planillac::all());
-        $nro_planilla = config('contrato_transporte.numero_territorial') . config('contrato_transporte.resolucion_habilitacion') . config('contrato_transporte.anio_creacion_empresa');
+        $nro_planilla = config('contratos_transporte.numero_territorial') . config('contratos_transporte.resolucion_habilitacion') . config('contratos_transporte.anio_creacion_empresa');
         $nro_planilla = $nro_planilla . $hoy['year'] . $co->numero_contrato . ($consecutivo + 1);
         $fi = explode('-', $co->fecha_inicio);
         $ff = explode('-', $co->fecha_fin);
@@ -768,7 +768,7 @@ class ContratoTransporteController extends Controller
         $p->contrato_id = $contrato;
         $p->plantilla_id = $request->plantilla_id;
         $hoy = getdate();
-        $nro_planilla = config('contrato_transporte.numero_territorial') . config('contrato_transporte.resolucion_habilitacion') . config('contrato_transporte.anio_creacion_empresa');
+        $nro_planilla = config('contratos_transporte.numero_territorial') . config('contratos_transporte.resolucion_habilitacion') . config('contratos_transporte.anio_creacion_empresa');
         //$nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $this->nroFUEC();
         $nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $c->numero_contrato;
         $p->nro = $nro_planilla;

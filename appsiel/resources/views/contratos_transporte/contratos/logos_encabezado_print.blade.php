@@ -1,20 +1,30 @@
 <table class="table table-bordered table-striped">
     <tbody>
         <tr>
-            <td class="border" style="width: 48%;"><img style="width: 380px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
+            <td class="border" style="width: 30%;"><img style="width: 250px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
             <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
+
+            <?php 
+                $porcentaje_ancho_ultima_celda = '50%';
+            ?>
+            @if( config('contratos_transporte.url_imagen_sello_icontec') != '')
+                <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="{{config('contratos_transporte.url_imagen_sello_icontec')}}" /></td>
+                <?php 
+                    $porcentaje_ancho_ultima_celda = '38%';
+                ?>
+            @endif
             <td class="border" style="width: 40%; text-align:center;">
                 <div style="width: 100%;">
-                    <div style="width: 40%;float:left;">
+                    <div style="width: {{$porcentaje_ancho_ultima_celda}};float:left;">
                         <img style="max-height: 70px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$emp->imagen }}">
                     </div>
                     <div style="width: 60%;float:right;">
                         <br/>
-                        <span style="color:{{ config('contrato_transporte.color_emp_label') }}; font-weight:bold; font-size:10px;">{{ $emp->descripcion }}</span>
+                        <span style="color:{{ config('contratos_transporte.color_emp_label') }}; font-weight:bold; font-size:10px;">{{ $emp->descripcion }}</span>
                     </div>
                 </div>                
                 <div style="width: 100%;clear:both; font-size:9px;">
-                    <span style="color:{{ config('contrato_transporte.color_slogan') }}; font-weight:bold;">{{ config('contrato_transporte.slogan') }}</span></div>
+                    <span style="color:{{ config('contratos_transporte.color_slogan') }}; font-weight:bold;">{{ config('contratos_transporte.slogan') }}</span></div>
             </td>
         </tr>
     </tbody>

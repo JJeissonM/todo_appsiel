@@ -3,33 +3,18 @@
 namespace App\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\VistaController;
-
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use App\User;
-
-use DB;
-use Auth;
-use Storage;
-use Input;
-use File;
-use Artisan;
 
 use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Sistema\Permiso;
-use App\Matriculas\Matriculas;
-
-use App\Http\Requests\ExcelRequest;
-use \Excel;
-
-use App\Calificaiones\Asignatura;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Input;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ConfiguracionController extends ModeloController
 {
@@ -173,7 +158,7 @@ class ConfiguracionController extends ModeloController
                 }
             }
 
-            $tabla .= VistaController::campos_en_fila($lista_campos);         
+            $tabla .= VistaController::campos_dos_colummnas($lista_campos);         
 
         }
 
