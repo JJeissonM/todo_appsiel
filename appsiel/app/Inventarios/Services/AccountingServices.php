@@ -70,7 +70,6 @@ class AccountingServices
                 
         }
     }
-
     
 	public function recontabilizar_costos_movimientos( $operador1, $item_id, $fecha_desde, $fecha_hasta )
 	{
@@ -93,7 +92,7 @@ class AccountingServices
                 ['inv_producto_id', '=', $linea_movimiento->inv_producto_id],
                 ['cantidad', '=', $linea_movimiento->cantidad ]
             ];
-            
+
             // Se actualiza el registro contable para la transacción de esa línea de registro (DB y CR)
             ContabMovimiento::where( $array_wheres )
                         ->where('valor_credito', 0 )
@@ -114,7 +113,7 @@ class AccountingServices
             
         return (object)[
             'status'=>'flash_message',
-            'message' => 'Se actualizaron '. $i .' registros contables.']
+            'message' => 'Se actualizaron '. $i * 2 .' registros contables.']
             ;
 	}
         

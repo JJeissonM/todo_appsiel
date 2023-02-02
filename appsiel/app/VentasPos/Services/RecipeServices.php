@@ -4,29 +4,16 @@ namespace App\VentasPos\Services;
 
 use Illuminate\Http\Request;
 
-use App\Inventarios\Services\ValidacionExistencias;
 use App\Inventarios\Services\InvDocumentsService;
 use App\Inventarios\Services\InvDocumentsLinesService;
 
-/**
-        * !!!!! No se deberia acceder directamente a los modelos de Inventarios
- */
-use App\Inventarios\InvProducto;
-use App\Inventarios\InvBodega;
 use App\Inventarios\InvMotivo;
-
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\RecetaCocina;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\DocRegistro;
-
-/*use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvCostoPromProducto;*/
-
-use View;
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RecipeServices
 {
@@ -46,7 +33,6 @@ class RecipeServices
 
         $items_con_receta = RecetaCocina::whereIn('item_platillo_id', $ids_items_facturados)->groupBy('item_platillo_id')->get();
 
-
         /**
          * $lineas_desarme se puede rerfactorizar, no es necesario elaborar un String, sino un Array, que se convierte más fácil a JSON
          */
@@ -57,6 +43,13 @@ class RecipeServices
         foreach ($items_con_receta as $receta_platillo)
         {
             $cantidad_facturada = (float)$cantidades_facturadas->where('inv_producto_id', $receta_platillo->item_platillo_id)->sum('cantidad_facturada');
+            
+            // Verificar las existencias actuales del producto terminado (platillo).
+            $existencia_actual = InvMovimiento::get_cantidad_existencia_item( $receta_platillo->item_platillo_id, $bodega_default_id, $fecha );
+            $cantidad_facturada -= $existencia_actual;
+            if ($cantidad_facturada <= 0) {
+                continue;
+            }
 
             $ingredientes = $receta_platillo->ingredientes();
             $costo_total_ingredientes = 0;
