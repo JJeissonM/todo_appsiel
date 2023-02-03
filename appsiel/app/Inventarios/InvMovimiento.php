@@ -4,10 +4,9 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use App\Inventarios\InvMotivo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InvMovimiento extends Model
 {
@@ -231,17 +230,12 @@ class InvMovimiento extends Model
                                 ->where( $array_wheres )
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->select(
-                                            'inv_productos.id',
-                                            'inv_productos.descripcion',
-                                            'inv_productos.unidad_medida1',
-                                            'inv_productos.unidad_medida2',
-                                            'inv_bodegas.descripcion AS bodega',
-                                            DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
-                                            DB::raw('sum(inv_movimientos.costo_total) as Costo') )
+                                            'inv_movimientos.*',
+                                            DB::raw('sum(inv_movimientos.cantidad) as suma_cantidad'),
+                                            DB::raw('sum(inv_movimientos.costo_total) as suma_costo') )
                                 ->groupBy('inv_productos.descripcion')
                                 ->groupBy('inv_productos.unidad_medida2')
-                                ->get()
-                                ->toArray();
+                                ->get();
     }
 
     public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial )

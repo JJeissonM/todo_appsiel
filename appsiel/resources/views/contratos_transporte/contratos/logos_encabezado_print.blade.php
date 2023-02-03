@@ -8,7 +8,7 @@
                 $porcentaje_ancho_ultima_celda = '50%';
             ?>
             @if( config('contratos_transporte.url_imagen_sello_icontec') != '')
-                <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="{{config('contratos_transporte.url_imagen_sello_icontec')}}" /></td>
+                <td class="border" style="width: 12%; text-align: center;"><img style="width: 90px; height: 90px;" src="{{config('contratos_transporte.url_imagen_sello_icontec')}}" /></td>
                 <?php 
                     $porcentaje_ancho_ultima_celda = '38%';
                 ?>

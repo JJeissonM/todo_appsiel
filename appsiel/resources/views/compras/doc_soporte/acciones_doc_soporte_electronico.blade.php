@@ -21,5 +21,6 @@
             $color = 'red';
         ?>
         <a class="btn-gmail" href="{{ url( 'fe_doc_soporte_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar"><i class="fa fa-btn fa-send"></i></a>
+        <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
     @endif
 @endif
