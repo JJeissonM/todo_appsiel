@@ -102,7 +102,7 @@ class NomDocRegistro extends Model
                 'nom_doc_registros.valor_devengo AS DEVENGO',
                 'nom_doc_registros.valor_deduccion AS DEDUCCIÓN',
                 'nom_doc_registros.estado AS ESTADO',
-                'nom_doc_registros.id AS ID',
+                'nom_doc_registros.id AS ID'
             )
             ->where("nom_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")

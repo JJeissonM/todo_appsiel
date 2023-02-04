@@ -3,32 +3,17 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Cache;
 
 use App\Core\Acl;
 
+use Lava;
+
 use App\Http\Controllers\Core\ConfiguracionController;
-use App\Http\Controllers\Sistema\ModeloController;
-
-
-// Modelos
-use App\Matriculas\Grado;
-use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
 
 use App\Core\Colegio;
-use App\Core\Empresa;
 use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\ConsecutivoDocumento;
 use App\Core\Tercero;
 use App\Sistema\Aplicacion;
 
@@ -41,9 +26,12 @@ use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
-
-use App\Contabilidad\ContabMovimiento;
-
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ReporteController extends TesoreriaController
 {
@@ -529,7 +517,7 @@ class ReporteController extends TesoreriaController
 
         $tam_hoja = 'folio';
         $orientacion = 'landscape';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja, $orientacion);
 
         return $pdf->download('reporte_cartera_por_curso.pdf');
@@ -777,7 +765,7 @@ class ReporteController extends TesoreriaController
         $recaudos_libreta = TesoRecaudosLibreta::where('id_cartera',$id_cartera)
                 ->where('concepto',$concepto->id)
                 ->groupBy('id_cartera')
-                ->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo','comportamiento')
+                ->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo')
                 ->get();
 
         // se hizo recaudo para el concepto de la cartera del estudiante
