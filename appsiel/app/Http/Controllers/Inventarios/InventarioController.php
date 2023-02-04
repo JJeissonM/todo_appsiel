@@ -328,8 +328,14 @@ class InventarioController extends TransaccionController
                 continue;
             }
             
+            $cantidad = (float)$lineas_registros[$i]->cantidad;
+            if( $cantidad == 0 )
+            {
+                continue;
+            }
+            
             $costo_unitario = (float) $lineas_registros[$i]->costo_unitario;
-            $cantidad = (float) $lineas_registros[$i]->cantidad;
+            
             $costo_total = (float) $lineas_registros[$i]->costo_total;
 
             $motivo = InvMotivo::find($lineas_registros[$i]->inv_motivo_id);

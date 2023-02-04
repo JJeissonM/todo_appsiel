@@ -3,26 +3,11 @@
 namespace App\Http\Controllers\Compras;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-
-
-use Spatie\Permission\Models\Permission;
 
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Compras\NotaCreditoController;
-
-use App\Http\Controllers\Contabilidad\ContabilidadController;
-use App\Http\Controllers\Compras\ReportesController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -32,7 +17,6 @@ use App\Core\EncabezadoDocumentoTransaccion;
 // Modelos
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvProducto;
 
 use App\Compras\ComprasTransaccion;
 use App\Compras\ComprasDocEncabezado;
@@ -45,6 +29,7 @@ use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 
 use App\Contabilidad\Impuesto;
+use Illuminate\Support\Facades\Auth;
 
 class NotaCreditoDirectaController extends TransaccionController
 {
