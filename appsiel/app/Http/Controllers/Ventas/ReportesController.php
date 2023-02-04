@@ -127,7 +127,6 @@ class ReportesController extends Controller
         return $vista;
     }
 
-
     public function vtas_reporte_rentabilidad(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -445,4 +444,17 @@ class ReportesController extends Controller
         return $vista;
     }
 
+    public function movimientos(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $movimiento = VtasMovimiento::get_movimiento_entre_fechas($fecha_desde, $fecha_hasta);
+
+        $vista = View::make('ventas.reportes.movimientos', compact('movimiento'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
 }

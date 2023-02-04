@@ -2,6 +2,8 @@
 
 namespace App\Ventas;
 
+use App\Inventarios\InvBodega;
+use App\Inventarios\InvMotivo;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvProducto;
@@ -29,6 +31,26 @@ class VtasMovimiento extends Model
     public function cliente()
     {
         return $this->belongsTo( Cliente::class, 'cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo(Vendedor::class, 'vendedor_id');
+    }
+
+    public function zona()
+    {
+        return $this->belongsTo(Zona::class, 'zona_id');
+    }
+
+    public function bodega()
+    {
+        return $this->belongsTo(InvBodega::class, 'inv_bodega_id');
+    }
+
+    public function motivo()
+    {
+        return $this->belongsTo(InvMotivo::class, 'vtas_motivo_id');
     }
 
     public function tercero()
