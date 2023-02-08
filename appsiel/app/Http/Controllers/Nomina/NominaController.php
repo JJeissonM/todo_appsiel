@@ -4,17 +4,6 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
-
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
@@ -28,13 +17,13 @@ use App\Nomina\NomConcepto;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
-use App\Nomina\NomCuota;
-use App\Nomina\NomPrestamo;
-use App\Nomina\AgrupacionConcepto;
-use App\Nomina\ProgramacionVacacion;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
-use App\Nomina\ModosLiquidacion\ModoLiquidacion; // Facade
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class NominaController extends TransaccionController
 {
@@ -272,7 +261,7 @@ class NominaController extends TransaccionController
 
       $tam_hoja = 'folio';
       $orientacion='landscape';
-      $pdf = \App::make('dompdf.wrapper');
+      $pdf = App::make('dompdf.wrapper');
       $pdf->loadHTML(($view_pdf))->setPaper($tam_hoja,$orientacion);
       return $pdf->stream('nomina'.$this->encabezado_doc->documento_app.'.pdf');
     }

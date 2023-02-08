@@ -3,26 +3,12 @@
 namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-
-
-use Spatie\Permission\Models\Permission;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
 
-use App\Http\Controllers\Inventarios\InventarioController;
-
 use App\Http\Controllers\Contabilidad\ContabilidadController;
-use App\Http\Controllers\Ventas\ReportesController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -30,7 +16,6 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
 use App\Core\Tercero;
 use App\Core\EncabezadoDocumentoTransaccion;
 use App\Core\TransaccionOtrosCampos;
@@ -53,9 +38,7 @@ use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\NotaCredito;
 
-
 use App\CxC\DocumentosPendientes;
-use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
 use App\Ventas\Services\TreasuryServices;
@@ -63,15 +46,17 @@ use App\Ventas\Services\TreasuryServices;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\RegistrosMediosPago;
-use App\Tesoreria\TesoDocEncabezadoRecaudoCxc;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
 
 use App\Matriculas\FacturaAuxEstudiante;
 use App\Ventas\Services\DocumentHeaderService;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class VentaController extends TransaccionController
 {
@@ -513,7 +498,7 @@ class VentaController extends TransaccionController
         $documento_vista = $this->generar_documento_vista( $id, 'ventas.formatos_impresion.'.Input::get('formato_impresion_id') );
 
         // Se prepara el PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;

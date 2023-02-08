@@ -8,7 +8,7 @@ use App\web\Pagina;
 
 use App\Http\Controllers\Controller;
 use App\web\Configuracionfuente;
-use App\web\RedesSociales;
+
 use App\web\Seccion;
 use App\web\Widget;
 use App\web\WidgetsElementsDesign;
@@ -16,6 +16,7 @@ use App\User;
 
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class PaginaController extends Controller
 {
@@ -230,6 +231,11 @@ class PaginaController extends Controller
 
     public function showPage($slug)
     {
+        if ( !Schema::hasTable('pw_paginas') )
+        {
+            return redirect('/inicio')->with('flash_message','La página a la que intenta acceder no existe.');
+        }
+
         $pagina = Pagina::where('slug', $slug)->first();
 
         if (is_null($pagina)) {

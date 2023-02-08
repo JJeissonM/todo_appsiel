@@ -7,6 +7,7 @@ use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class RecosteoService
 {
@@ -20,19 +21,18 @@ class RecosteoService
     public $arr_motivos_entradas_ids = [1, 11, 16, 23];
 
     /**
+     * Todos los ids de entradas y ademas
      * 3> Salida (producto a consumir). Fabricacion
      * 4> Entrada (producto final). Fabricacion
      * 12> 	Inventario Físico: no afectan los movimientos.
      * Nota: esta variable tambien sta en la clase AverageCost.
      */
-    public $arr_motivos_no_recosteables_ids = [3, 4, 12];
+    public $arr_motivos_no_recosteables_ids = [1, 11, 16, 23, 3, 4, 12];
 
 	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta, $recontabilizar_contabilizar_movimientos )
 	{
-        $i = 0;
         $inv_bodega_id = 0;
-        
-        $item = InvProducto::find($item_id);
+        $user_email = Auth::user()->email;
 
         $costo_promedio_actual = $this->calcular_costo_promedio_ultima_entrada($fecha_desde, $item_id);
 
@@ -45,52 +45,119 @@ class RecosteoService
 
         $costo_prom_serv = new AverageCost();
 
-        $registros_sin_filtro = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+        $registros_de_entradas = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                         ->whereBetween( 'inv_doc_encabezados.fecha', [ $fecha_desde, $fecha_hasta] )
                         ->where('inv_doc_registros.inv_producto_id', $operador1, $item_id)
-                        ->select('inv_doc_registros.*','inv_doc_encabezados.fecha')
+                        ->whereIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_entradas_ids)
+                        ->select('inv_doc_registros.*','inv_doc_encabezados.fecha','inv_doc_encabezados.created_at')
                         ->orderBy('inv_doc_encabezados.fecha')
-                        ->orderBy('inv_doc_encabezados.created_at')
-                        ->get();
-                        
-        $arr_ids_lineas_aceptadas_misma_fecha = [];
-        foreach ($registros_sin_filtro as $linea_registro)
-        {
-            // No se recostean los Ensambles
-            if (in_array($linea_registro->inv_motivo_id, $this->arr_motivos_no_recosteables_ids)) {
-                continue;
-            }
+                        ->get()
+                        ->toArray();
 
-            // Se cambia el costo promedio
-            if ( in_array($linea_registro->inv_motivo_id, $this->arr_motivos_entradas_ids) ) {
-                $arr_ids_lineas_aceptadas_misma_fecha[] = $linea_registro->id;
-
-                $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio($linea_registro,$arr_ids_lineas_aceptadas_misma_fecha);
-                
-                if ( $linea_registro->inv_motivo_id != 9 ) {
-                    continue; // No se recostean arr_motivos_entradas_ids, a excepcion de Entrada bodega destino (en Transferencias)
-                }
-                
-            }
-
-            $this->actualizar_costo_una_linea_registro($linea_registro, $costo_promedio_actual,$recontabilizar_contabilizar_movimientos);
-
-            $arr_ids_lineas_aceptadas_misma_fecha[] = $linea_registro->id;
+        $arr_fechas = [];
+        $cant_lineas = count($registros_de_entradas);
+        for ($i=0; $i < $cant_lineas; $i++) {
             
-            $i++;
+            // Nota: Ya el $costo_promedio_actual esta calculado.
+
+            if (isset($registros_de_entradas[$i + 1])) {
+                $fecha_siguiente = $registros_de_entradas[$i + 1]['fecha'];
+                $operador_fecha_siguiente = '<';
+            }else{
+                $fecha_siguiente = $fecha_hasta;
+                $operador_fecha_siguiente = '<=';
+            }
+
+            $arr_fechas[] = [
+                'costo_promedio_actual' =>$costo_promedio_actual,
+                'actual' => '>=' . 'que ' .$registros_de_entradas[$i]['fecha'],
+                'sig' => $operador_fecha_siguiente . ' que ' . $fecha_siguiente
+            ];
+
+            $array_wheres = [
+                [ 'inv_doc_encabezados.fecha', '>=', $registros_de_entradas[$i]['fecha'] ],
+                [ 'inv_doc_encabezados.fecha',$operador_fecha_siguiente, $fecha_siguiente ],
+                [ 'inv_doc_registros.inv_producto_id', $operador1, $item_id ]
+            ];
+
+            // Actualizar todos los costos de los items hasta antes del siguiente registro de entrada
+            // 1ro. El costo unitario
+            InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+            ->where( $array_wheres )
+            ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+            ->toBase()
+            ->update(
+                [
+                    'inv_doc_registros.costo_unitario' => $costo_promedio_actual,
+                    'inv_doc_registros.updated_at' => date('Y-m-d H:i:s'),
+                    'inv_doc_registros.modificado_por' => $user_email
+                ]
+            );
+            // 2do. El costo total
+            InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+                    ->where( $array_wheres )
+                    ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+                    ->toBase()
+                    ->update(
+                        [
+                            'inv_doc_registros.costo_total' => DB::raw('inv_doc_registros.costo_unitario * inv_doc_registros.cantidad'),
+                            'inv_doc_registros.updated_at' => date('Y-m-d H:i:s'),
+                            'inv_doc_registros.modificado_por' => $user_email
+                        ]
+                    );
+    
+            // Se actualiza el movimiento de inventario
+            $array_wheres = [
+                [ 'inv_doc_encabezados.fecha', '>=', $registros_de_entradas[$i]['fecha'] ],
+                [ 'inv_doc_encabezados.fecha',$operador_fecha_siguiente, $fecha_siguiente ],
+                [ 'inv_movimientos.inv_producto_id', $operador1, $item_id ]
+            ];
+            // 1ro. El costo unitario
+            InvMovimiento::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+            ->where( $array_wheres )
+            ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+            ->toBase()
+            ->update(
+                [
+                    'inv_movimientos.costo_unitario' => $costo_promedio_actual,
+                    'inv_movimientos.updated_at' => date('Y-m-d H:i:s'),
+                    'inv_movimientos.modificado_por' => $user_email
+                ]
+            );
+            // 2do. El costo total
+            InvMovimiento::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                    ->where( $array_wheres )
+                    ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+                    ->toBase()
+                    ->update(
+                        [
+                            'inv_movimientos.costo_total' => DB::raw('inv_movimientos.costo_unitario * inv_movimientos.cantidad'),
+                            'inv_movimientos.updated_at' => date('Y-m-d H:i:s'),
+                            'inv_movimientos.modificado_por' => $user_email
+                        ]
+                    );
+            
+            if (isset($registros_de_entradas[$i + 1])) {
+                // Se cambia el costo promedio para el siguiente registro de entrada
+                $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i+1] );
+            }           
+            
         }
 
         // Se actualiza el costo prom. de Item
+        $item = InvProducto::find($item_id);
         $item->set_costo_promedio( $inv_bodega_id, $costo_promedio_actual);
 
-        $num_reg_contab = $i * 2;
+        $num_reg_contab = ' junto con sus registros contables';
         if ($recontabilizar_contabilizar_movimientos == 0) {
-            $num_reg_contab = 0;
+            $num_reg_contab = ', pero ningun registro contable';
         }
-            
+        
+        dd('Se actualizaron las líneas de registros de inventarios'. $num_reg_contab,$arr_fechas);
+
         return (object)[
             'status'=>'flash_message',
-            'message' => 'Se actualizaron '. $i .' líneas de registros de inventarios,<br> y '. $num_reg_contab .' registros contables.']
+            'message' => 'Se actualizaron las líneas de registros de inventarios'. $num_reg_contab]
             ;
 	}
 
@@ -128,24 +195,14 @@ class RecosteoService
         }
 
         // Se actualiza el registro contable para la transacción de esa línea de registro (DB y CR)
-        ContabMovimiento::where('core_tipo_transaccion_id', $encabezado_documento->core_tipo_transaccion_id )
-                        ->where('core_tipo_doc_app_id', $encabezado_documento->core_tipo_doc_app_id )
-                        ->where('consecutivo', $encabezado_documento->consecutivo )
-                        ->where('inv_bodega_id', $linea_registro->inv_bodega_id )
-                        ->where('inv_producto_id', $linea_registro->inv_producto_id )
-                        ->where('cantidad', $linea_registro->cantidad )
+        ContabMovimiento::where( $array_wheres )
                         ->where('valor_credito', 0 )
                         ->update( [ 
                             'valor_debito' => abs( $costo_total ), 'valor_saldo' => abs( $costo_total ),
                             'modificado_por' => $user_email
                         ] );
 
-        ContabMovimiento::where('core_tipo_transaccion_id', $encabezado_documento->core_tipo_transaccion_id )
-                        ->where('core_tipo_doc_app_id', $encabezado_documento->core_tipo_doc_app_id )
-                        ->where('consecutivo', $encabezado_documento->consecutivo )
-                        ->where('inv_bodega_id', $linea_registro->inv_bodega_id )
-                        ->where('inv_producto_id', $linea_registro->inv_producto_id )
-                        ->where('cantidad', $linea_registro->cantidad )
+        ContabMovimiento::where( $array_wheres )
                         ->where('valor_debito', 0 )
                         ->update( [ 
                             'valor_credito' => (abs( $costo_total ) * -1), 'valor_saldo' => (abs( $costo_total ) * -1),

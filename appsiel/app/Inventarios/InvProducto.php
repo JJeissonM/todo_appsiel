@@ -9,8 +9,6 @@ use Illuminate\Database\Eloquent\Model;
     CORREGIR PARA LOS CLIENTES NO LOGUEADOS EN LA WEB
     SE COMENTÓ LA LÍNEA DE PEDIR AUTENCIACIÓN
 */
-use Auth;
-
 
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
@@ -21,7 +19,7 @@ use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class InvProducto extends Model
 {
@@ -98,7 +96,7 @@ class InvProducto extends Model
                                         ->get()
                                         ->first();
 
-        $costo_prom = round( abs( $costo_prom ), 2 );
+        $costo_prom = abs( $costo_prom );
         if ( is_null( $registro_costo_prom ) )
         {
             $registro_costo_prom = new InvCostoPromProducto();

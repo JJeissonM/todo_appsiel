@@ -9,9 +9,8 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomConcepto;
 
 use App\Contabilidad\ContabMovimiento;
-
-use DB;
-use Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class NomDocEncabezado extends Model
 {
