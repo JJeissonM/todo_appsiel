@@ -28,8 +28,10 @@ class AverageCost
          * 3> Salida (producto a consumir). Fabricacion
          * 4> Entrada (producto final). Fabricacion
          * 12> 	Inventario Físico: no afectan los movimientos.
+         * 9> Entrada bodega destino. Transferencia (entrada)
+         * 2> Transferencia. Transferencia (salida)
          */
-        $arr_motivos_no_recosteables_ids = [3, 4, 12];
+        $arr_motivos_ids_no_afectan_costo_promedio = [3, 4, 12, 9, 2];
         
         // Fecha menor
         $array_wheres1 = [
@@ -44,11 +46,11 @@ class AverageCost
         
         $costo_total_movim_anterior = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                                         ->where($array_wheres1)
-                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
+                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_ids_no_afectan_costo_promedio)
                                         ->sum('inv_doc_registros.costo_total');
         $cantidad_total_movim_anterior = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                                         ->where($array_wheres1)
-                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_no_recosteables_ids)
+                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_ids_no_afectan_costo_promedio)
                                         ->sum('inv_doc_registros.cantidad');
 
         // Fecha igual
