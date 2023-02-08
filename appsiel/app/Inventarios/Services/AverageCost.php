@@ -30,8 +30,6 @@ class AverageCost
          * 12> 	Inventario Físico: no afectan los movimientos.
          */
         $arr_motivos_no_recosteables_ids = [3, 4, 12];
-
-        // NOTA: Ya el registro del item está agregado en el movimiento
         
         // Fecha menor
         $array_wheres1 = [
@@ -71,21 +69,17 @@ class AverageCost
                         ->orderBy('inv_doc_encabezados.fecha')
                         ->get();
 
-        $costo_total_movim_misma_fecha = $ultimas_entradas->sum('costo_total');
+        $costo_total_ultimas_entradas = $ultimas_entradas->sum('costo_total');
 
-        $cantidad_total_movim_misma_fecha = $ultimas_entradas->sum('cantidad');
+        $cantidad_total_ultimas_entradas = $ultimas_entradas->sum('cantidad');
         
-        $cantidad_total_movim = $cantidad_total_movim_anterior + $cantidad_total_movim_misma_fecha;
-        // Si la existencia del item estaba en cero o menor que cero. (antes del registro)
-        if (round($cantidad_total_movim - $linea_registro_documento['cantidad'],0) <= 0) {
-            return $linea_registro_documento['costo_unitario'];
-        }
+        $cantidad_total_movim = $cantidad_total_movim_anterior + $cantidad_total_ultimas_entradas;
         
         if (round($cantidad_total_movim,0) <= 0) {
             return $linea_registro_documento['costo_unitario'];
         }
 
-        return round(($costo_total_movim_anterior + $costo_total_movim_misma_fecha) / $cantidad_total_movim,3);
+        return ($costo_total_movim_anterior + $costo_total_ultimas_entradas) / $cantidad_total_movim;
     }
 
     // Almacenar el costo promedio en la tabla de la BD
