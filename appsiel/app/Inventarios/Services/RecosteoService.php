@@ -58,7 +58,8 @@ class RecosteoService
         $cant_lineas = count($registros_de_entradas);
         for ($i=0; $i < $cant_lineas; $i++) {
             
-            // Nota: Ya el $costo_promedio_actual esta calculado.
+            // Se calcula el costo promedio
+            $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i] );
 
             if (isset($registros_de_entradas[$i + 1])) {
                 $fecha_siguiente = $registros_de_entradas[$i + 1]['fecha'];
@@ -135,12 +136,7 @@ class RecosteoService
                             'inv_movimientos.updated_at' => date('Y-m-d H:i:s'),
                             'inv_movimientos.modificado_por' => $user_email
                         ]
-                    );
-            
-            if (isset($registros_de_entradas[$i + 1])) {
-                // Se cambia el costo promedio para el siguiente registro de entrada
-                $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i+1] );
-            }           
+                    );         
             
         }
 
