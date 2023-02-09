@@ -27,7 +27,7 @@ class RecosteoService
      * 12> 	Inventario Físico: no afectan los movimientos.
      * Nota: esta variable tambien sta en la clase AverageCost.
      */
-    public $arr_motivos_no_recosteables_ids = [1, 11, 16, 23, 3, 4, 12];
+    public $arr_motivos_ids_no_recosteables = [1, 11, 16, 23, 3, 4, 12];
 
 	public function recostear( $operador1, $item_id, $fecha_desde, $fecha_hasta, $recontabilizar_contabilizar_movimientos )
 	{
@@ -85,7 +85,7 @@ class RecosteoService
             // 1ro. El costo unitario
             InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
             ->where( $array_wheres )
-            ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+            ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_ids_no_recosteables)
             ->toBase()
             ->update(
                 [
@@ -97,7 +97,7 @@ class RecosteoService
             // 2do. El costo total
             InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                     ->where( $array_wheres )
-                    ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+                    ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_ids_no_recosteables)
                     ->toBase()
                     ->update(
                         [
@@ -116,7 +116,7 @@ class RecosteoService
             // 1ro. El costo unitario
             InvMovimiento::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
             ->where( $array_wheres )
-            ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+            ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_ids_no_recosteables)
             ->toBase()
             ->update(
                 [
@@ -128,7 +128,7 @@ class RecosteoService
             // 2do. El costo total
             InvMovimiento::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                     ->where( $array_wheres )
-                    ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_no_recosteables_ids)
+                    ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_ids_no_recosteables)
                     ->toBase()
                     ->update(
                         [
@@ -138,13 +138,41 @@ class RecosteoService
                         ]
                     );         
             
+            if ($recontabilizar_contabilizar_movimientos == 1) {
+
+                // 2 = Transferencia, 3 = Salida de almacén, 24 = Remisión de ventas, 28 = Ajuste de iventarios, 34 = Devolución en ventas
+                $arr_ids_transacciones_recosteables = [2, 3, 24, 28, 34];
+
+                // Se actualiza el registro contable para la transacción de esa línea de registro (DB y CR)
+                $array_wheres = [
+                    [ 'fecha', '>=', $registros_de_entradas[$i]['fecha'] ],
+                    [ 'fecha',$operador_fecha_siguiente, $fecha_siguiente ],
+                    [ 'inv_producto_id', $operador1, $item_id ]
+                ];
+
+                ContabMovimiento::where( $array_wheres )
+                            ->whereIn('core_tipo_transaccion_id', $arr_ids_transacciones_recosteables)
+                            ->where('valor_credito', 0 )
+                            ->update( [ 
+                                'valor_debito' => abs( $costo_promedio_actual ), 'valor_saldo' => abs( $costo_promedio_actual ),
+                                'modificado_por' => $user_email
+                            ] );
+
+                ContabMovimiento::where( $array_wheres )
+                            ->whereIn('core_tipo_transaccion_id', $arr_ids_transacciones_recosteables)
+                            ->where('valor_debito', 0 )
+                            ->update( [ 
+                                'valor_credito' => (abs( $costo_promedio_actual ) * -1), 'valor_saldo' => (abs( $costo_promedio_actual ) * -1),
+                                'modificado_por' => $user_email
+                            ] );
+            }
         }
 
         // Se actualiza el costo prom. de Item
         $item = InvProducto::find($item_id);
         $item->set_costo_promedio( $inv_bodega_id, $costo_promedio_actual);
 
-        $num_reg_contab = ' junto con sus registros contables';
+        $num_reg_contab = ' junto con sus registros contables.';
         if ($recontabilizar_contabilizar_movimientos == 0) {
             $num_reg_contab = ', pero ningun registro contable';
         }
