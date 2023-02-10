@@ -95,7 +95,7 @@ class FacturaController extends TransaccionController
         
         // NOTA: No se crea el movimiento de ventas, ni de tesoreria, ni de contabilidad
 
-        $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento almacenado creado correctamente.' ];
+        $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento creado correctamente.' ];
 
         // Paso 3: Validar Resolución (secuenciales) del documento
         if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )

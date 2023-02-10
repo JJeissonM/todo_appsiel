@@ -4,17 +4,9 @@ namespace App\Http\Controllers\FacturacionElectronica;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Core\TransaccionController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Contabilidad\ContabilidadController;
-
-use Auth;
-use View;
-use Input;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -33,7 +25,6 @@ use App\Ventas\Cliente;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
-use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoMovimiento;
 
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
@@ -44,6 +35,9 @@ use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\NotaCredito;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class NotaCreditoController extends TransaccionController
 {
@@ -74,23 +68,23 @@ class NotaCreditoController extends TransaccionController
 
         $factura = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
 
-        $this->movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+        $movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
                             ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
                             ->where('consecutivo', $factura->consecutivo)
                             ->get()
                             ->first();
 
-        if ( is_null( $this->movimiento_cxc ) )
+        if ( is_null( $movimiento_cxc ) )
         {
             return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
         }
 
-        if ( $this->movimiento_cxc->saldo_pendiente == 0 && $factura->forma_pago == 'credito' )
+        if ( $movimiento_cxc->saldo_pendiente == 0 && $factura->forma_pago == 'credito' )
         {
             return redirect('fe_factura/'.$factura->id.'?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '&id_transaccion=' . $fe_factura_transaccion_id)->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
         }
         
-        $vec_saldos = [$this->movimiento_cxc->valor_documento, $this->movimiento_cxc->valor_pagado, $this->movimiento_cxc->saldo_pendiente];
+        $vec_saldos = [$movimiento_cxc->valor_documento, $movimiento_cxc->valor_pagado, $movimiento_cxc->saldo_pendiente];
 
         // Información de la Factura de ventas
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
@@ -199,12 +193,16 @@ class NotaCreditoController extends TransaccionController
     	$factura = VtasDocEncabezado::get_registro_impresion( $request->ventas_doc_relacionado_id ); 
 
     	// Paso 1
-    	$devolucion = new DevolucionVentas;
-    	$documento_devolucion = $devolucion->crear_nueva( $datos, $factura->remision_doc_encabezado_id );
+        $datos['remision_doc_encabezado_id'] = 0;
+        if (!in_array($factura->remision_doc_encabezado_id, [null, 0, '']))
+        {
+            $devolucion = new DevolucionVentas;
+            $documento_devolucion = $devolucion->crear_nueva( $datos, $factura->remision_doc_encabezado_id );
+            $datos['remision_doc_encabezado_id'] = $documento_devolucion->id;
+        }
 
     	// Paso 2
     	$datos['creado_por'] = Auth::user()->email;
-        $datos['remision_doc_encabezado_id'] = $documento_devolucion->id;
         $datos['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
         $datos['forma_pago'] = 'credito';
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
@@ -239,7 +237,7 @@ class NotaCreditoController extends TransaccionController
 
                 // Almacenar resultado en base de datos para Auditoria
                 $obj_resultado = new ResultadoEnvio;
-                $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $encabezado_nota_credito->id );
+                $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $factura_doc_encabezado, $encabezado_nota_credito->id );
                 break;
             
             default:
