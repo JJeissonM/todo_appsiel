@@ -16,7 +16,7 @@ use App\VentasPos\FacturaPos;
 use App\Tesoreria\TesoCaja;
 
 use App\Tesoreria\TesoMovimiento;
-
+use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 use App\VentasPos\Movimiento;
 use Illuminate\Support\Facades\Cache;
@@ -129,6 +129,25 @@ class ReporteController extends Controller
         $iva_incluido  = (int)$request->iva_incluido;
 
         $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por,$request->estado_facturas);
+        
+        $array_lista = [];
+        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, 'POS');
+
+        /**
+         * 23 = Factura de venta
+         * 38 = Nota crédito ventas
+         * 41 = Nota crédito directa
+         * 44 = Factura Médica
+         * 49 = Factura de estudiantes
+         * 50 = Facturación Masiva de estudiantes
+         * 52 = Factura Electrónica de Ventas
+         * 53 = Nota Crédito Electrónica de Ventas
+         * 54 = Nota Débito Electrónica de Ventas
+         * 55 = Factura Electrónica de Contingencia de Ventas
+         */        
+        $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por,[23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
+
+        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE');
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
@@ -137,10 +156,92 @@ class ReporteController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    public function get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, $app_movimiento)
+    {
+        $i = count($array_lista);
+
+        foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
+        {
+            $cantidad = $coleccion_movimiento->sum('cantidad');
+            $precio_total = $coleccion_movimiento->sum('precio_total');
+            $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
+            
+            $array_lista[$i]['descripcion'] = $campo_agrupado;
+            if ( $app_movimiento == 'Estandar_FE' ) {
+                $array_lista[$i]['descripcion'] = 'Ventas Estándar/Electrónica/Notas';
+            }else{
+                if ($agrupar_por=='pdv_id') {
+                    $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->pdv->descripcion;
+                }
+                if ($agrupar_por=='inv_grupo_id') {
+                    if ($coleccion_movimiento->first()->categoria_item()!=null) {
+                        $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->categoria_item()->descripcion;
+                    }
+                }
+            }            
+            
+            $array_lista[$i]['cantidad'] = $cantidad;
+
+            if ( $iva_incluido )
+            {
+                $precio = $precio_total;
+            }else{
+                $precio = $base_impuesto_total;
+            }
+
+            $precio_promedio = 0; 
+            if( $cantidad != 0 )
+            { 
+                $precio_promedio = $precio / $cantidad; 
+            }
+            $array_lista[$i]['precio_promedio'] = $precio_promedio;
+            $array_lista[$i]['precio'] = $precio;
+
+            $array_lista[$i]['array_detalle_productos'] = [];
+
+            if($detalla_productos)
+            {
+                $items = $coleccion_movimiento->groupBy('inv_producto_id');
+                $array_detalle_productos = [];
+                $p = 0;
+
+                foreach( $items AS $item )
+                {
+                    $cantidad_item = $item->sum('cantidad');
+
+                    $array_detalle_productos[$p]['descripcion'] = $item->first()->producto;
+                    $array_detalle_productos[$p]['cantidad_item'] = $cantidad_item;
+
+                    if ( $iva_incluido )
+                    {
+                        $precio_item = $item->sum('precio_total');
+                    }else{
+                        $precio_item = $item->sum('base_impuesto_total');
+                    }
+
+                    $precio_promedio_item = 0; 
+                    if( $cantidad_item != 0 )
+                    { 
+                        $precio_promedio_item = $precio_item / $cantidad_item; 
+                    }
+                    
+                    $array_detalle_productos[$p]['precio_promedio_item'] = $precio_promedio_item;
+                    $array_detalle_productos[$p]['precio_item'] = $precio_item;
+                    $p++;
+                }
+                $array_lista[$i]['array_detalle_productos'] = $array_detalle_productos;
+            }
+
+            $i++;
+        }
+
+        return $array_lista;
     }
 }

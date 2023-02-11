@@ -52,93 +52,16 @@
 
             <?php
 
-                $total_1_producto = 0;
-                $total_2_producto = 0;
-
-                $array_lista = [];
-                $i = 0;
-
-                foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
-                {
-                    $cantidad = $coleccion_movimiento->sum('cantidad');
-                    $precio_total = $coleccion_movimiento->sum('precio_total');
-                    $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
-                    
-                    $array_lista[$i]['descripcion'] = $campo_agrupado;
-                    if ($agrupar_por=='pdv_id') {
-                        $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->pdv->descripcion;
-                    }
-                    if ($agrupar_por=='inv_grupo_id') {
-                        if ($coleccion_movimiento->first()->categoria_item()!=null) {
-                            $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->categoria_item()->descripcion;
-                        }
-                    }
-                    
-                    $array_lista[$i]['cantidad'] = $cantidad;
-
-                    if ( $iva_incluido )
-                    {
-                        $precio = $precio_total;
-                    }else{
-                        $precio = $base_impuesto_total;
-                    }
-
-                    $precio_promedio = 0; 
-                    if( $cantidad != 0 )
-                    { 
-                        $precio_promedio = $precio / $cantidad; 
-                    }
-                    $array_lista[$i]['precio_promedio'] = $precio_promedio;
-                    $array_lista[$i]['precio'] = $precio;
-
-                    $array_lista[$i]['array_detalle_productos'] = [];
-
-                    if($detalla_productos)
-                    {
-                        $items = $coleccion_movimiento->groupBy('inv_producto_id');
-                        $array_detalle_productos = [];
-                        $p = 0;
-
-                        foreach( $items AS $item )
-                        {
-                            $cantidad_item = $item->sum('cantidad');
-
-                            $array_detalle_productos[$p]['descripcion'] = $item->first()->producto;
-                            $array_detalle_productos[$p]['cantidad_item'] = $cantidad_item;
-
-                            if ( $iva_incluido )
-                            {
-                                $precio_item = $item->sum('precio_total');
-                            }else{
-                                $precio_item = $item->sum('base_impuesto_total');
-                            }
-
-                            $precio_promedio_item = 0; 
-                            if( $cantidad_item != 0 )
-                            { 
-                                $precio_promedio_item = $precio_item / $cantidad_item; 
-                            }
-                            
-                            $array_detalle_productos[$p]['precio_promedio_item'] = $precio_promedio_item;
-                            $array_detalle_productos[$p]['precio_item'] = $precio_item;
-                            $p++;
-                        }
-                        $array_lista[$i]['array_detalle_productos'] = $array_detalle_productos;
-                    }
-
-                
-
-                    $total_1_producto += $cantidad;
-                    $total_2_producto += $precio;
-
-                    $i++;
-                }
-
                 $columna_precio  = array_column($array_lista, 'precio');
+                
                 array_multisort($columna_precio, SORT_DESC, $array_lista);
+                        
                 $cantidad_elementos = count($columna_precio);
 
                 $j = 1;
+                
+                $total_1_producto = 0;
+                $total_2_producto = 0;
             ?>
 
             @for( $i = 0; $i < $cantidad_elementos; $i++)
@@ -176,6 +99,9 @@
                 @endif
 
                 <?php
+                    
+                    $total_1_producto += $array_lista[$i]['cantidad'];
+                    $total_2_producto += $array_lista[$i]['precio'];
 
                     $j++;
                     if ($j==3) {
