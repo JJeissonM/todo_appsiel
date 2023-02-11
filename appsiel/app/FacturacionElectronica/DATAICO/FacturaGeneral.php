@@ -180,7 +180,11 @@ class FacturaGeneral
       }
       $regimen = 'ORDINARIO';
 
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $cliente->tercero->descripcion . '","first_name":"' . $cliente->tercero->nombre1 . '","family_name":"' . $cliente->tercero->apellido1 . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ) . '","city": "' . strtoupper( $cliente->tercero->ciudad->descripcion ) . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
+      // 16925001 = 169 pais, 25 departamento, 001 ciudad
+      $department_id = substr($cliente->tercero->ciudad->id,3,2);
+      $city_id = substr($cliente->tercero->ciudad->id, 5, strlen($cliente->tercero->ciudad->id)-1);
+      
+      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $cliente->tercero->descripcion . '","first_name":"' . $cliente->tercero->nombre1 . '","family_name":"' . $cliente->tercero->apellido1 . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
    }
 
    public function get_lineas_registros()

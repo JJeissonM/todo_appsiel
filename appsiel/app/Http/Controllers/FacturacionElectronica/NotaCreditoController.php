@@ -315,17 +315,131 @@ class NotaCreditoController extends TransaccionController
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         $datos = $request->all();
 
-        // Se crean los registro con base en el documento de inventario ya creado
-        // lineas_registros solo tiene el ID del documentos de inventario
-        // remision_doc_encabezado_id es el ID de una devolución en ventas
-        $lineas_registros = [(object)[ 'id_doc' => $nota_credito->remision_doc_encabezado_id ]];
+        if (!in_array($nota_credito->remision_doc_encabezado_id, [null, 0, '']))
+        {
+            // Se crean los registro con base en el documento de inventario ya creado
+            // lineas_registros solo tiene el ID del documentos de inventario
+            // remision_doc_encabezado_id es el ID de una devolución en ventas
+            $lineas_registros = [(object)[ 'id_doc' => $nota_credito->remision_doc_encabezado_id ]];
 
-        //dd( $lineas_registros );
+            NotaCreditoController::crear_lineas_registros_ventas( $datos, $nota_credito, $lineas_registros, $factura );
+        }else{
 
-        NotaCreditoController::crear_lineas_registros_ventas( $datos, $nota_credito, $lineas_registros, $factura );
+        }       
 
         return true;
     }
+
+
+    // Se crean los registros con base en los registros de la Nota crédito
+    public static function crear_lineas_registros_con_base_en_factura( $datos, $nota_credito, $lineas_registros, $factura )
+    {
+        $total_documento = 0;
+        
+        $lineas_registros = $factura->lineas_registros;
+
+        $cantidad_registros = count( $lineas_registros );
+        $remision_doc_encabezado_id = '';
+        $primera = true;
+        foreach ($lineas_registros as $linea_factura)
+        {
+            $doc_devolucion_id = (int)$lineas_registros[$i]->id_doc;
+
+            $registros_devolucion = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_devolucion_id )->get();
+
+            foreach ($registros_devolucion as $un_registro)
+            {
+                // Nota: $un_registro contiene datos de inventarios 
+                $cantidad = $un_registro->cantidad * -1; // Fue una entrada de inventarios, se vuelve la cantidad negativa, porque es una diminución de las ventas
+
+                // Los precios se deben traer de la linea de la factura
+                $linea_factura = VtasDocRegistro::where( 'vtas_doc_encabezado_id', $factura->id)
+                                                ->where( 'inv_producto_id', $un_registro->inv_producto_id )
+                                                ->get()
+                                                ->first();
+
+                $precio_unitario = $linea_factura->precio_unitario;
+
+                $precio_unitario_con_descuento = $linea_factura->precio_unitario * ( 1 - $linea_factura->tasa_descuento / 100 );
+
+                $base_impuesto = $linea_factura->base_impuesto;
+
+                $precio_total = $precio_unitario * $cantidad;
+
+                $precio_total_con_descuento = $precio_unitario_con_descuento * $cantidad;
+
+                $valor_total_descuento = ( $precio_unitario - $precio_unitario_con_descuento ) * $un_registro->cantidad;
+
+                $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
+                                [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
+                                [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
+                                [ 'precio_unitario' => $precio_unitario ] +
+                                [ 'cantidad' => $cantidad ] +
+                                [ 'precio_total' => $precio_total_con_descuento ] +
+                                [ 'base_impuesto' =>  $base_impuesto ] +
+                                [ 'tasa_impuesto' => $linea_factura->tasa_impuesto ] +
+                                [ 'valor_impuesto' => ( $precio_unitario_con_descuento - $base_impuesto ) ] +
+                                [ 'base_impuesto_total' => ( $base_impuesto * $un_registro->cantidad ) ] +
+                                [ 'tasa_descuento' => $linea_factura->tasa_descuento ] +
+                                [ 'valor_total_descuento' => $valor_total_descuento ] +
+                                [ 'creado_por' => Auth::user()->email ] +
+                                [ 'estado' => 'Activo' ];
+
+                VtasDocRegistro::create( 
+                                        $datos + 
+                                        [ 'vtas_doc_encabezado_id' => $nota_credito->id ] +
+                                        $linea_datos
+                                    );
+
+                $datos['consecutivo'] = $nota_credito->consecutivo;
+                VtasMovimiento::create( 
+                                        $datos +
+                                        $linea_datos
+                                    );
+
+                // Contabilizar
+                $detalle_operacion = $datos['descripcion'];
+
+                // Reversar ingresos e impuestos
+                NotaCreditoController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
+
+                $total_documento += $precio_total_con_descuento;
+
+                // Actualizar campo de cantidad_devuelta en cada línea de registro de la factura de ventas
+                $nueva_cantidad_devuelta = $linea_factura->cantidad_devuelta + abs($un_registro->cantidad);
+                $linea_factura->cantidad_devuelta = $nueva_cantidad_devuelta;
+                $linea_factura->save();
+
+            } // Fin por cada registro de la entrada
+
+            // Marcar la entrada como facturada
+            InvDocEncabezado::find( $doc_devolucion_id )->update( [ 'estado' => 'Facturada' ] );
+
+            // Se va creando un listado de entradas separadas por coma 
+            if ($primera)
+            {
+                $remision_doc_encabezado_id = $doc_devolucion_id;
+                $primera = false;
+            }else{
+                $remision_doc_encabezado_id .= ','.$doc_devolucion_id;
+            }
+
+        }
+
+        $nota_credito->valor_total = $total_documento;
+        $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
+        $nota_credito->save();
+        
+        // Un solo registro para reversar la cuenta por cobrar (CR)
+        NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
+
+        // Actualizar registro del pago de la factura a la que afecta la nota
+        NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 
+
+        return true;
+    }
+
+
 
 
     // Se crean los registros con base en los registros de la devolución
