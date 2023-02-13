@@ -9,9 +9,6 @@ use DB;
 
 use App\Ventas\VtasDocEncabezado;
 
-use App\Tesoreria\RegistrosMediosPago;
-
-
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 
 use App\FacturacionElectronica\ResultadoEnvio;

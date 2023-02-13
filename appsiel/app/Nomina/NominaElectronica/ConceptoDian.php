@@ -3,9 +3,7 @@
 namespace App\Nomina\NominaElectronica;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use App\Nomina\EquivalenciaContable;
+use Illuminate\Support\Facades\DB;
 
 class ConceptoDian extends Model
 {

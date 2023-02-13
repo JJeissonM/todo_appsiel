@@ -4,21 +4,10 @@ namespace App\FacturacionElectronica;
 
 use App\Compras\ComprasDocEncabezado;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
-
-use App\Tesoreria\RegistrosMediosPago;
-
-
-use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
-
-use App\FacturacionElectronica\ResultadoEnvio;
-
-use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DocSoporte extends ComprasDocEncabezado
 {

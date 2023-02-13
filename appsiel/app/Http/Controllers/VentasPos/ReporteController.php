@@ -185,7 +185,7 @@ class ReporteController extends Controller
                         $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->categoria_item()->descripcion;
                     }
                 }
-            }            
+            }
             
             $array_lista[$i]['cantidad'] = $cantidad;
 

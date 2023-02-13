@@ -6,9 +6,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Core\TipoDocApp;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
-use App\Http\Controllers\Inventarios\InventarioController;
-use App\Inventarios\InvDocEncabezado;
-use App\Matriculas\FacturaAuxEstudiante;
+
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
