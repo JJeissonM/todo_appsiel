@@ -4,13 +4,11 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 
-use Auth;
 use Carbon\Carbon;
 
 use App\Nomina\NovedadTnl;
 use App\Nomina\NomDocRegistro;
-use App\Nomina\LibroVacacion;
-use App\Nomina\ProgramacionVacacion;
+use Illuminate\Support\Facades\Auth;
 
 class TiempoNoLaborado implements Estrategia
 {

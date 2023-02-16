@@ -22,7 +22,7 @@
             <tbody>
                 <tr>
                     <td style="color: black;text-align: center;">
-                        <b>Ventas Contado</b>
+                        <b>Ventas en efectivo</b>
                     </td>
                 </tr>
                 <tr>

@@ -20,7 +20,7 @@
                 </tr>
                 <tr>
                     <td style="color: black;text-align: center;">
-                        Ventas Contado
+                        Ventas en efectivo
                     </td>
                     <td style="color: black;text-align: center;">
                         Consignaciones
