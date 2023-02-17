@@ -21,6 +21,11 @@
 ?>
 {{ Form::bsBtnExcel('movimiento_inventarios') }}
 <h3>Movimiento de inventarios <small>{{ $bodega->descripcion }}</small></h3>
+@if($mensaje_advertencia != '')
+    <div class="alert alert-warning">
+        <strong>Advertencia!</strong> {{$mensaje_advertencia}}
+    </div>
+@endif
 <div class="table-responsive">
     <table class="table table-striped table-bordered tabla_pdf">
         <thead>

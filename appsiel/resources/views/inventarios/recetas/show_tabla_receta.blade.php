@@ -11,7 +11,7 @@
 </div>
 
 <div class="table-responsive">
-    <table class="table table-bordered table-striped" id="myTable">
+    <table class="table table-bordered table-striped">
             <thead>
                 <tr>
                     <th>ID item ingred.</th>

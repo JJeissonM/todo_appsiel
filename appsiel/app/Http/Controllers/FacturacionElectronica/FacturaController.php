@@ -20,6 +20,7 @@ use App\CxC\CxcAbono;
 use App\Tesoreria\TesoMovimiento;
 
 use App\FacturacionElectronica\Factura;
+use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -31,7 +32,40 @@ class FacturaController extends TransaccionController
 
     public function index()
     {
+        /*
+            $documentos = $this->grafica_documentos_x_mes();
+        */
     	return view('facturacion_electronica.index');
+    }
+
+    public function grafica_documentos_x_mes( $periodo_lectivo )
+    {
+        //  PENDIENTE 
+        $fecha_ini = date('Y-m-01');
+        //$fecha_fin = ;
+        $documentos = ResultadoEnvioDocumento::where([
+            ['codigo','=',201]
+        ])
+            ->leftJoin('vtas_doc_encabezados', 'vtas_doc_encabezados.id', '=', 'fe_resultados_envios_documentos.vtas_doc_encabezado_id')
+            ->select(DB::raw('COUNT(sga_matriculas.id_estudiante) AS Cantidad'), 'sga_estudiantes.genero AS Genero')
+            ->groupBy('sga_estudiantes.genero')
+            ->get();
+
+        // Creación de gráfico de Barras
+        $stocksTable2 = Lava::DataTable();
+        
+        $stocksTable2->addStringColumn('Genero')
+                    ->addNumberColumn('Cantidad');
+        
+        foreach($documentos as $registro){
+            $stocksTable2->addRow([
+              $registro->Genero, (int)$registro->Cantidad
+            ]);
+        }
+
+        Lava::PieChart('Documentos', $stocksTable2);
+        
+        return $documentos;
     }
 
     public function show( $id )

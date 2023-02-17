@@ -941,7 +941,7 @@ class CompraController extends TransaccionController
                             ] );
 
         // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-        $costo_prom = TransaccionController::calcular_costo_promedio($inv_doc_registro->inv_bodega_id,$linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha);
+        $costo_prom = TransaccionController::calcular_costo_promedio($inv_doc_registro->inv_bodega_id,$linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha, $cantidad);
 
         // Actualizo/Almaceno el costo promedio
         TransaccionController::set_costo_promedio($inv_doc_registro->inv_bodega_id,$linea_registro->inv_producto_id,$costo_prom);

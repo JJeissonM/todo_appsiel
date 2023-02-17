@@ -97,6 +97,7 @@ class ReporteController extends Controller
 
             $total_cantidad_item = 0;
             $total_costo_item = 0;
+            $aux = [];
             foreach ( $lista_bodegas as $key2 => $bodega_id )
             {
                 $productos[$i]['id'] = $item_id;
@@ -107,13 +108,8 @@ class ReporteController extends Controller
                 $productos[$i]['bodega'] = $bodega->descripcion;
 
                 $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
-
-                if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
-                {
-                    $productos[$i]['Costo'] = $item->get_costo_promedio( 0 ) * $productos[$i]['Cantidad'];
-                }else{
-                    $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
-                }
+                
+                $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];
                 $total_costo_item += $productos[$i]['Costo'];
@@ -184,7 +180,7 @@ class ReporteController extends Controller
         $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial );
 
         $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final );
-
+        
         $cantidad_saldo = 0;
         $costo_total_saldo = 0;  
         $costo_unit_saldo = 0;          
@@ -217,6 +213,10 @@ class ReporteController extends Controller
             // Se obtinen las descripciones de los datos del encabezado
             $sql_datos_encabezado_doc = InvDocEncabezado::get_registro2($fila->core_tipo_transaccion_id,$fila->core_tipo_doc_app_id,$fila->consecutivo);
 
+            if (!isset($sql_datos_encabezado_doc[0])) {
+                dd('Error en la línea del movimiento.',$fila->core_tipo_transaccion_id,$fila->core_tipo_doc_app_id,$fila->consecutivo,$sql_datos_encabezado_doc);
+            }
+
             $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
             $productos[$i]['documento_id'] = $datos_encabezado_doc['campo9'];
             $productos[$i]['documento'] = $datos_encabezado_doc['campo2'];
@@ -247,7 +247,7 @@ class ReporteController extends Controller
 
             $cantidad_saldo += $fila->cantidad;
             $costo_unit_saldo = $fila->costo_unitario;
-            $costo_total_saldo += $fila->costo_total;
+            $costo_total_saldo += $fila->cantidad * $fila->costo_unitario;
                         
             if ( $cantidad_saldo != 0 )
             {
@@ -260,7 +260,6 @@ class ReporteController extends Controller
             $productos[$i]['costo_unit_saldo'] = $costo_unit_saldo;
             $productos[$i]['costo_total_saldo'] = $costo_total_saldo;
 
-
             $productos[$i]['core_tipo_transaccion_id'] = $fila->core_tipo_transaccion_id;
 
             $i++;
@@ -268,7 +267,12 @@ class ReporteController extends Controller
 
         $bodega = InvBodega::find($bodega_id);
 
-        $view = View::make('inventarios.incluir.movim_productos',compact('productos','bodega'));
+        $mensaje_advertencia = '';
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0 ) {
+            $mensaje_advertencia = 'El sistema maneja un solo costo para todas las bodegas. El costo VISUALIZADO en el Saldo total puede parecer incoherente. Debe revisar el costo promedio en otro reporte.';
+        }
+
+        $view = View::make('inventarios.incluir.movim_productos',compact('productos','bodega','mensaje_advertencia'));
 
         return $view;
     }
@@ -400,13 +404,13 @@ class ReporteController extends Controller
 		$platillos = RecetaCocina::groupBy('item_platillo_id')
                                 ->get();
 
-        $vista = '<div class="container-fluid"> <div class="container"> <br><br><br>';
+        $vista = '<div class="container-fluid"> <div class="container"> <br><br><br> <table class="table table-bordered table-striped" id="myTable"> <tr> <td>';
         foreach ($platillos as $platillo) {
             $ingredientes = $platillo->ingredientes();
             $vista .= View::make( 'inventarios.recetas.show_tabla_receta', compact('platillo','ingredientes') )->render();
         }
         
-        $vista .= '</div> </div>';
+        $vista .= '</td> </tr> </table></div> </div>';
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
 

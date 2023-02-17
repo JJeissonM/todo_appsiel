@@ -59,7 +59,7 @@ class RecosteoService
         for ($i=0; $i < $cant_lineas; $i++) {
             
             // Se calcula el costo promedio
-            $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i] );
+            $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i], $costo_promedio_actual );
 
             if (isset($registros_de_entradas[$i + 1])) {
                 $fecha_siguiente = $registros_de_entradas[$i + 1]['fecha'];

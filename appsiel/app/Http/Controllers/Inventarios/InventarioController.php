@@ -421,7 +421,7 @@ class InventarioController extends TransaccionController
             if ($motivo->movimiento == 'entrada')
             {
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-                $costo_prom = TransaccionController::calcular_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha);
+                $costo_prom = TransaccionController::calcular_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha, $cantidad);
                 
                 self::actualizar_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom, $request->core_tipo_transaccion_id);
             }
@@ -483,7 +483,7 @@ class InventarioController extends TransaccionController
         {
             // PARA LA BODEGA DESTINO
             // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-            $costo_prom = TransaccionController::calcular_costo_promedio($bodega_destino_id, $inv_producto_id, $costo_unitario, $fecha);
+            $costo_prom = TransaccionController::calcular_costo_promedio($bodega_destino_id, $inv_producto_id, $costo_unitario, $fecha, $cantidad);
 
             // Actualizo/Almaceno el costo promedio
             TransaccionController::set_costo_promedio( $bodega_destino_id, $inv_producto_id, $costo_prom);
@@ -1340,7 +1340,7 @@ class InventarioController extends TransaccionController
             if ($motivo->movimiento == 'entrada')
             {
                 // Se CALCULA el nuevo costo promedio del movimiento con el producto YA retirado
-                $costo_prom = TransaccionController::calcular_costo_promedio($linea->inv_bodega_id, $linea->inv_producto_id, $linea->costo_unitario, $documento->fecha);
+                $costo_prom = TransaccionController::calcular_costo_promedio($linea->inv_bodega_id, $linea->inv_producto_id, $linea->costo_unitario, $documento->fecha, $linea->cantidad);
                 
                 self::actualizar_costo_promedio($linea->inv_bodega_id, $linea->inv_producto_id, $costo_prom, $documento->core_tipo_transaccion_id);
 
@@ -1410,8 +1410,6 @@ class InventarioController extends TransaccionController
         return $formulario;
     }
 
-
-
     // Modificar una línea de un documento
     public function doc_registro_guardar(Request $request)
     {
@@ -1453,7 +1451,7 @@ class InventarioController extends TransaccionController
             // 2. Si es un motivo de entrada, se calcula el costo promedio
             if ($motivo->movimiento == 'entrada') {
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-                $costo_prom = TransaccionController::calcular_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha);
+                $costo_prom = TransaccionController::calcular_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha, $cantidad);
                 
                 self::actualizar_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_prom, $doc_encabezado->core_tipo_transaccion_id);
 

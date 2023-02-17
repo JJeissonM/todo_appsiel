@@ -119,9 +119,6 @@
 									<tr>
 										@foreach($pedidos_de_la_semana as $s)
 										<td>
-											<!-- <div class="alert alert-success" style="padding: 5px" role="alert">
-												{ {$s['fecha']}}
-											</div> -->
 											<?php
 												$hoy = getdate();
 												$fechah = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
@@ -253,8 +250,6 @@
 
 		<div class="container-fluid">
 			<div class="marco_formulario">
-				
-
 				<?php
 				echo Lava::render('BarChart', 'ventas_diarias', 'grafica1');
 				$cant = count($tabla);

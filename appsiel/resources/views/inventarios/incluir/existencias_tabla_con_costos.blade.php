@@ -15,11 +15,11 @@
             $total_costo_total=0;
             for($i=0;$i<count($productos);$i++){
 
-                    $productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
+                    $cantidad = round($productos[$i]['Cantidad'],2);
 
                     $costo_promedio = 0;
 
-                    if( $productos[$i]['Cantidad'] != 0)
+                    if( $cantidad != 0)
                     {
                         $costo_promedio = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
                     }else{

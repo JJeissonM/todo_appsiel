@@ -353,6 +353,7 @@ class InvMovimiento extends Model
                                         'inv_movimientos.fecha',
                                         'inv_motivos.movimiento',
                                         'inv_movimientos.inv_doc_encabezado_id',
+                                        'inv_movimientos.inv_producto_id',
                                         'inv_movimientos.cantidad',
                                         'inv_movimientos.costo_unitario',
                                         'inv_movimientos.costo_total',

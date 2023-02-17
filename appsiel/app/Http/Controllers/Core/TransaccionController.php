@@ -235,7 +235,7 @@ class TransaccionController extends Controller
 
     //
     // CALCULAR EL COSTO PROMEDIO
-    public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion)
+    public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
     {
 
         // NOTA: Ya el registro del item está agregado en el movimiento
@@ -271,42 +271,80 @@ class TransaccionController extends Controller
         return $costo_prom;
     }
 
+    public static function calcular_costo_promedio_new($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
+    {
+        /**
+         * inv_motivo_id de entradas que traen un costo "externo" (No calculado por el sistema)
+         * 1> Entrada Almacen
+         * 11> Compras Nacionales
+         * 16> Entrada por compras
+         * 23> Saldos iniciales
+         */
+        $arr_motivos_entradas_ids = [1, 11, 16, 23];
+        
+        // Fecha menor
+        $array_wheres1 = [
+            ['inv_producto_id','=',$id_producto],
+            ['fecha', '<=', $fecha_transaccion]
+        ];
+        
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
+            $array_wheres1 = array_merge($array_wheres1, [['inv_bodega_id','=',$id_bodega]]);
+        }else{
+            $bodega_id = 0;
+        }
+        
+        $cantidad_total_movim_anterior_a_la_entrada = InvMovimiento::where($array_wheres1)->sum('cantidad') - $cantidad;
+        
+        // Fecha igual
+        $array_wheres2 = [
+            ['inv_producto_id','=',$id_producto],
+            ['fecha', '=', $fecha_transaccion]
+        ]; 
+        
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
+            $array_wheres2 = array_merge($array_wheres2, [['inv_bodega_id','=',$id_bodega]]);
+        }
+
+        // Pueden haber varias entradas en el mismo día
+        $entradas_del_dia = InvMovimiento::where( $array_wheres2 )
+                        ->whereIn('inv_motivo_id',$arr_motivos_entradas_ids)
+                        ->select('*')
+                        ->orderBy('fecha')
+                        ->get();
+
+        $costo_total_entradas_del_dia = $entradas_del_dia->sum('costo_total');
+
+        $cantidad_total_entradas_del_dia = $entradas_del_dia->sum('cantidad');
+        
+        if (round($cantidad_total_movim_anterior_a_la_entrada,0) <= 0) {
+            if ($cantidad_total_entradas_del_dia != 0) {
+                return $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia;
+            }
+            return $valor_default;
+        }
+        
+        $cantidad_total_movim = $cantidad_total_movim_anterior_a_la_entrada + $cantidad_total_entradas_del_dia;
+        
+        if (round($cantidad_total_movim,0) <= 0) {
+            if ($cantidad_total_entradas_del_dia != 0) {
+                return $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia;
+            }
+            return $valor_default;
+        }
+
+        $item = InvProducto::find($id_producto);
+        $costo_promedio_actual = $item->get_costo_promedio( $bodega_id );
+        $costo_total_movim_anterior = $cantidad_total_movim_anterior_a_la_entrada * $costo_promedio_actual;
+
+        return ($costo_total_movim_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim;
+    }
+
     // Almacenar el costo promedio en la tabla de la BD
     public static function set_costo_promedio($id_bodega,$id_producto,$costo_prom)
     {
-        
         $item = InvProducto::find( $id_producto );
         $item->set_costo_promedio( $id_bodega, $costo_prom );
-
-        /*
-        $costo_prom = round( $costo_prom, 2 );
-        
-        $existe = InvCostoPromProducto::where('inv_bodega_id',$id_bodega)
-                                ->where('inv_producto_id',$id_producto)
-                                ->value('id');                  
-        if( !is_null($existe))
-        {
-            // Si ya existe el costo promedio para ese producto en esa bodega, se actualiza
-            InvCostoPromProducto::where('inv_bodega_id',$id_bodega)
-                        ->where('inv_producto_id',$id_producto)
-                        ->update(['costo_promedio' => abs( $costo_prom ) ]);
-        }else{
-            // Armo el vector de almacenamiento
-            $datos = [
-                        'inv_bodega_id'=>$id_bodega,
-                        'inv_producto_id'=>$id_producto,
-                        'costo_promedio'=> abs( $costo_prom )
-                    ];
-                         
-            // Almaceno en la base de datos
-            InvCostoPromProducto::create( $datos );
-        }
-
-        // Se actualiza el costo estándar del Item
-        $item = InvProducto::find( $id_producto );
-        $item->precio_compra = abs( $costo_prom );
-        $item->save();
-        */
     }
 
     public function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
