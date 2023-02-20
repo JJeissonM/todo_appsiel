@@ -27,28 +27,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+									$banner_colegio_mostrar_slogan = 1;
 								if( isset($parametros['banner_colegio_mostrar_slogan'] ) )
 								{
 									$banner_colegio_mostrar_slogan = $parametros['banner_colegio_mostrar_slogan'];
-								}else{
-									$banner_colegio_mostrar_slogan = 1;
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_slogan', $banner_colegio_mostrar_slogan, 'Mostrar Slogan', ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('banner_colegio_mostrar_slogan', $banner_colegio_mostrar_slogan, 'Mostrar Slogan', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$banner_colegio_mostrar_direccion = '';
 								if( isset($parametros['banner_colegio_mostrar_direccion'] ) )
 								{
 									$banner_colegio_mostrar_direccion = $parametros['banner_colegio_mostrar_direccion'];
-								}else{
-									$banner_colegio_mostrar_direccion = 1;
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_direccion', $banner_colegio_mostrar_direccion, 'Mostrar Dirección', ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('banner_colegio_mostrar_direccion', $banner_colegio_mostrar_direccion, 'Mostrar Dirección', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -59,28 +57,27 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$banner_colegio_mostrar_telefono = '';
 								if( isset($parametros['banner_colegio_mostrar_telefono'] ) )
 								{
 									$banner_colegio_mostrar_telefono = $parametros['banner_colegio_mostrar_telefono'];
-								}else{
-									$banner_colegio_mostrar_telefono = 1;
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_telefono', $banner_colegio_mostrar_telefono, 'Mostrar Teléfono', ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('banner_colegio_mostrar_telefono', $banner_colegio_mostrar_telefono, 'Mostrar Teléfono', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$banner_colegio_mostrar_ciudad = '';
 								if( isset($parametros['banner_colegio_mostrar_ciudad'] ) )
 								{
 									$banner_colegio_mostrar_ciudad = $parametros['banner_colegio_mostrar_ciudad'];
 								}else{
-									$banner_colegio_mostrar_ciudad = 1;
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_ciudad', $banner_colegio_mostrar_ciudad, 'Mostrar Ciudad', ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('banner_colegio_mostrar_ciudad', $banner_colegio_mostrar_ciudad, 'Mostrar Ciudad', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -91,14 +88,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$banner_colegio_mostrar_nit = '';
 								if( isset($parametros['banner_colegio_mostrar_nit'] ) )
 								{
 									$banner_colegio_mostrar_nit = $parametros['banner_colegio_mostrar_nit'];
-								}else{
-									$banner_colegio_mostrar_nit = 1;
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_nit', $banner_colegio_mostrar_nit, 'Mostrar '.{{ config("configuracion.tipo_identificador") }} , ['1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('banner_colegio_mostrar_nit', $banner_colegio_mostrar_nit, 'Mostrar '.{{ config("configuracion.tipo_identificador") }} , [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

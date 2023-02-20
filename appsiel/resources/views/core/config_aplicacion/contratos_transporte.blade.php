@@ -27,7 +27,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$numero_territorial = '220444';
+								$numero_territorial = '';
 								if( isset($parametros['numero_territorial'] ) )
 								{
 									$numero_territorial = $parametros['numero_territorial'];
@@ -40,7 +40,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$resolucion_habilitacion = '12';
+								$resolucion_habilitacion = '';
 								if( isset($parametros['resolucion_habilitacion'] ) )
 								{
 									$resolucion_habilitacion = $parametros['resolucion_habilitacion'];
@@ -58,7 +58,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$anio_creacion_empresa = '12';
+								$anio_creacion_empresa = '';
 								if( isset($parametros['anio_creacion_empresa'] ) )
 								{
 									$anio_creacion_empresa = $parametros['anio_creacion_empresa'];
@@ -101,7 +101,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$color_emp_label = '#000066';
+								$color_emp_label = '';
 								if( isset($parametros['color_emp_label'] ) )
 								{
 									$color_emp_label = $parametros['color_emp_label'];
@@ -118,7 +118,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$slogan = 'SEGURIDAD Y COMODIDAD EN CADA VIAJE';
+								$slogan = '';
 								if( isset($parametros['slogan'] ) )
 								{
 									$slogan = $parametros['slogan'];
@@ -131,7 +131,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$color_slogan = '#cc9900';
+								$color_slogan = '';
 								if( isset($parametros['color_slogan'] ) )
 								{
 									$color_slogan = $parametros['color_slogan'];
@@ -171,7 +171,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$url_imagen_sello_empresa = 'https://delcaribe.appsiel.com.co/nube/sello.png';
+								$url_imagen_sello_empresa = '';
 								if( isset($parametros['url_imagen_sello_empresa'] ) )
 								{
 									$url_imagen_sello_empresa = $parametros['url_imagen_sello_empresa'];
@@ -184,7 +184,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$url_imagen_firma_rep_legal = 'https://delcaribe.appsiel.com.co/nube/firma.png';
+								$url_imagen_firma_rep_legal = '';
 								if( isset($parametros['url_imagen_firma_rep_legal'] ) )
 								{
 									$url_imagen_firma_rep_legal = $parametros['url_imagen_firma_rep_legal'];
@@ -201,7 +201,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$url_imagen_sello_icontec = 'https://delcaribe.appsiel.com.co/nube/firma_y_sello.png';
+								$url_imagen_sello_icontec = '';
 								if( isset($parametros['url_imagen_sello_icontec'] ) )
 								{
 									$url_imagen_sello_icontec = $parametros['url_imagen_sello_icontec'];
@@ -214,7 +214,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$url_imagen_firma_y_sello_empresa = 'https://delcaribe.appsiel.com.co/nube/firma_y_sello.png';
+								$url_imagen_firma_y_sello_empresa = '';
 								if( isset($parametros['url_imagen_firma_y_sello_empresa'] ) )
 								{
 									$url_imagen_firma_y_sello_empresa = $parametros['url_imagen_firma_y_sello_empresa'];

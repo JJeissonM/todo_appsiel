@@ -38,13 +38,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$SMMLV = 908526; // Valor año 2021
+								$SMMLV = '';
 								if( isset($parametros['SMMLV'] ) )
 								{
 									$SMMLV = $parametros['SMMLV'];
 								}
 							?>
-							{{ Form::bsText('SMMLV', $SMMLV, 'Salario Mínimo Mensual Legal Vigente', ['class'=>'form-control']) }}
+							{{ Form::bsText('SMMLV', $SMMLV, 'Salario Mínimo Mensual Legal Vigente', ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -81,13 +81,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$valor_uvt_actual = 36308; // Año 2021 
+								$valor_uvt_actual = '';
 								if( isset($parametros['valor_uvt_actual'] ) )
 								{
 									$valor_uvt_actual = $parametros['valor_uvt_actual'];
 								}
 							?>
-							{{ Form::bsText('valor_uvt_actual', $valor_uvt_actual, 'Valor UVT año actual', ['class'=>'form-control']) }}
+							{{ Form::bsText('valor_uvt_actual', $valor_uvt_actual, 'Valor UVT año actual', ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -141,13 +141,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$concepto_salud_obligatoria = 64;
+								$concepto_salud_obligatoria = 0;
 								if( isset($parametros['concepto_salud_obligatoria'] ) )
 								{
 									$concepto_salud_obligatoria = $parametros['concepto_salud_obligatoria'];
 								}
 							?>
-							{{ Form::bsSelect('concepto_salud_obligatoria', $concepto_salud_obligatoria, 'Concepto Salud Obligatoria', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('concepto_salud_obligatoria', $concepto_salud_obligatoria, 'Concepto Salud Obligatoria', App\Nomina\NomConcepto::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -286,7 +286,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$cuenta_id_salarios_por_pagar = 206;
+								$cuenta_id_salarios_por_pagar = '';
 								if( isset($parametros['cuenta_id_salarios_por_pagar'] ) )
 								{
 									$cuenta_id_salarios_por_pagar = $parametros['cuenta_id_salarios_por_pagar'];
@@ -331,13 +331,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$nom_elec_ambiente = 'PRUEBAS';
+								$nom_elec_ambiente = '';
 								if( isset($parametros['nom_elec_ambiente'] ) )
 								{
 									$nom_elec_ambiente = $parametros['nom_elec_ambiente'];
 								}
 							?>
-							{{ Form::bsSelect('nom_elec_ambiente', $nom_elec_ambiente, 'Ambiente', ['PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('nom_elec_ambiente', $nom_elec_ambiente, 'Ambiente', [ ''=>'', 'PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -348,13 +348,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$pin_software = 1234567;
+								$pin_software = '';
 								if( isset($parametros['pin_software'] ) )
 								{
 									$pin_software = $parametros['pin_software'];
 								}
 							?>
-							{{ Form::bsText('pin_software', $pin_software, 'PIN del software del prov. tec.', ['class'=>'form-control']) }}
+							{{ Form::bsText('pin_software', $pin_software, 'PIN del software del prov. tec.', ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -371,7 +371,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$enviar_email_empleados = 'false';
+								$enviar_email_empleados = 'true';
 								if( isset($parametros['enviar_email_empleados'] ) )
 								{
 									$enviar_email_empleados = $parametros['enviar_email_empleados'];

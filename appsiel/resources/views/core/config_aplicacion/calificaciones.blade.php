@@ -39,26 +39,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$permitir_calificaciones_sin_logros = 'Si';
+								$permitir_calificaciones_sin_logros = '';
 								if( isset($parametros['permitir_calificaciones_sin_logros'] ) )
 								{
 									$permitir_calificaciones_sin_logros = $parametros['permitir_calificaciones_sin_logros'];
 								}
 							?>
-							{{ Form::bsSelect('permitir_calificaciones_sin_logros', $permitir_calificaciones_sin_logros, 'Permitir ingreso de calificaciones sin haber ingresado logros', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('permitir_calificaciones_sin_logros', $permitir_calificaciones_sin_logros, 'Permitir ingreso de calificaciones sin haber ingresado logros', [''=>'','Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$manejar_preinformes_academicos = 'No';
+								$manejar_preinformes_academicos = '';
 								if( isset($parametros['manejar_preinformes_academicos'] ) )
 								{
 									$manejar_preinformes_academicos = $parametros['manejar_preinformes_academicos'];
 								}
 							?>
-							{{ Form::bsSelect('manejar_preinformes_academicos', $manejar_preinformes_academicos, 'Manejar pre-informes académicos', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('manejar_preinformes_academicos', $manejar_preinformes_academicos, 'Manejar pre-informes académicos', [''=>'','No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -69,26 +69,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$colegio_maneja_metas = 'No';
+								$colegio_maneja_metas = '';
 								if( isset($parametros['colegio_maneja_metas'] ) )
 								{
 									$colegio_maneja_metas = $parametros['colegio_maneja_metas'];
 								}
 							?>
-							{{ Form::bsSelect('colegio_maneja_metas', $colegio_maneja_metas, 'Manejar metas en boletines', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('colegio_maneja_metas', $colegio_maneja_metas, 'Manejar metas en boletines', [''=>'','Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$etiqueta_calificacion_boletines = 'numero_y_letras';
+								$etiqueta_calificacion_boletines = '';
 								if( isset($parametros['etiqueta_calificacion_boletines'] ) )
 								{
 									$etiqueta_calificacion_boletines = $parametros['etiqueta_calificacion_boletines'];
 								}
 							?>
-							{{ Form::bsSelect('etiqueta_calificacion_boletines', $etiqueta_calificacion_boletines, 'Calificación a mostrar en boletines', ['numero_y_letras'=>'Número y letras','solo_numeros'=>'Solo números','solo_letras'=>'Solo letras'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('etiqueta_calificacion_boletines', $etiqueta_calificacion_boletines, 'Calificación a mostrar en boletines', [''=>'','numero_y_letras'=>'Número y letras','solo_numeros'=>'Solo números','solo_letras'=>'Solo letras'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -99,13 +99,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$mostrar_peso_asignaturas_boletines = 0;
+								$mostrar_peso_asignaturas_boletines = '';
 								if( isset($parametros['mostrar_peso_asignaturas_boletines'] ) )
 								{
 									$mostrar_peso_asignaturas_boletines = $parametros['mostrar_peso_asignaturas_boletines'];
 								}
 							?>
-							{{ Form::bsSelect('mostrar_peso_asignaturas_boletines', $mostrar_peso_asignaturas_boletines, 'Mostrar peso de asignaturas en boletines', ['No','Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('mostrar_peso_asignaturas_boletines', $mostrar_peso_asignaturas_boletines, 'Mostrar peso de asignaturas en boletines', [''=>'','0'=>'No','1'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -129,13 +129,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$permitir_imprimir_boletin_a_estudiantes = 'Si';
+								$permitir_imprimir_boletin_a_estudiantes = '';
 								if( isset($parametros['permitir_imprimir_boletin_a_estudiantes'] ) )
 								{
 									$permitir_imprimir_boletin_a_estudiantes = $parametros['permitir_imprimir_boletin_a_estudiantes'];
 								}
 							?>
-							{{ Form::bsSelect('permitir_imprimir_boletin_a_estudiantes', $permitir_imprimir_boletin_a_estudiantes, 'Permitir imprimir boletin a estudiantes', ['Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('permitir_imprimir_boletin_a_estudiantes', $permitir_imprimir_boletin_a_estudiantes, 'Permitir imprimir boletin a estudiantes', [''=>'','Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -170,26 +170,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$estudiante_revisar_guia_academicas = 'No';
+								$estudiante_revisar_guia_academicas = '';
 								if( isset($parametros['estudiante_revisar_guia_academicas'] ) )
 								{
 									$estudiante_revisar_guia_academicas = $parametros['estudiante_revisar_guia_academicas'];
 								}
 							?>
-							{{ Form::bsSelect('estudiante_revisar_guia_academicas', $estudiante_revisar_guia_academicas, 'Estudiante puede revisar guías académicas', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('estudiante_revisar_guia_academicas', $estudiante_revisar_guia_academicas, 'Estudiante puede revisar guías académicas', [''=>'','No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$estudiante_activar_foros_discucion = 'No';
+								$estudiante_activar_foros_discucion = '';
 								if( isset($parametros['estudiante_activar_foros_discucion'] ) )
 								{
 									$estudiante_activar_foros_discucion = $parametros['estudiante_activar_foros_discucion'];
 								}
 							?>
-							{{ Form::bsSelect('estudiante_activar_foros_discucion', $estudiante_activar_foros_discucion, 'Estudiante puede participar en foros', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('estudiante_activar_foros_discucion', $estudiante_activar_foros_discucion, 'Estudiante puede participar en foros', [''=>'','No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -200,13 +200,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$activar_aula_virtual = 1;
+								$activar_aula_virtual = '';
 								if( isset($parametros['activar_aula_virtual'] ) )
 								{
 									$activar_aula_virtual = $parametros['activar_aula_virtual'];
 								}
 							?>
-							{{ Form::bsSelect('activar_aula_virtual', $activar_aula_virtual, 'Activar Aula Virtual', ['No','Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('activar_aula_virtual', $activar_aula_virtual, 'Activar Aula Virtual', [''=>'','0'=>'No','1'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -278,13 +278,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$detallar_curso_grado = 'grado';
+								$detallar_curso_grado = '';
 								if( isset($parametros['detallar_curso_grado'] ) )
 								{
 									$detallar_curso_grado = $parametros['detallar_curso_grado'];
 								}
 							?>
-							{{ Form::bsSelect('detallar_curso_grado', $detallar_curso_grado, 'Detallar etiqueta del...', [ 'grado' => 'Grado', 'curso' => 'Curso'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('detallar_curso_grado', $detallar_curso_grado, 'Detallar etiqueta del...', [ ''=>'', 'grado' => 'Grado', 'curso' => 'Curso'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

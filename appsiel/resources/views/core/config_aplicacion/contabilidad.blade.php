@@ -245,7 +245,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$tercero_default_cierre_ejercicio = 1;
+								$tercero_default_cierre_ejercicio = 0;
 
 								if( isset($parametros['tercero_default_cierre_ejercicio'] ) )
 								{

@@ -235,7 +235,7 @@ class TransaccionController extends Controller
 
     //
     // CALCULAR EL COSTO PROMEDIO
-    public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
+    public static function calcular_costo_promedio_old($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
     {
 
         // NOTA: Ya el registro del item está agregado en el movimiento
@@ -271,65 +271,33 @@ class TransaccionController extends Controller
         return $costo_prom;
     }
 
-    public static function calcular_costo_promedio_new($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
+    public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
     {
-        /**
-         * inv_motivo_id de entradas que traen un costo "externo" (No calculado por el sistema)
-         * 1> Entrada Almacen
-         * 11> Compras Nacionales
-         * 16> Entrada por compras
-         * 23> Saldos iniciales
-         */
-        $arr_motivos_entradas_ids = [1, 11, 16, 23];
-        
-        // Fecha menor
-        $array_wheres1 = [
+        $array_wheres = [
             ['inv_producto_id','=',$id_producto],
             ['fecha', '<=', $fecha_transaccion]
         ];
         
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
-            $array_wheres1 = array_merge($array_wheres1, [['inv_bodega_id','=',$id_bodega]]);
+            $array_wheres = array_merge($array_wheres, [['inv_bodega_id','=',$id_bodega]]);
         }else{
             $bodega_id = 0;
         }
         
-        $cantidad_total_movim_anterior_a_la_entrada = InvMovimiento::where($array_wheres1)->sum('cantidad') - $cantidad;
+        // Obtener todas las cantidades del movimiento
+        $cantidad_total_movim = InvMovimiento::where($array_wheres)->sum('cantidad');
         
-        // Fecha igual
-        $array_wheres2 = [
-            ['inv_producto_id','=',$id_producto],
-            ['fecha', '=', $fecha_transaccion]
-        ]; 
-        
-        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
-            $array_wheres2 = array_merge($array_wheres2, [['inv_bodega_id','=',$id_bodega]]);
-        }
-
-        // Pueden haber varias entradas en el mismo día
-        $entradas_del_dia = InvMovimiento::where( $array_wheres2 )
-                        ->whereIn('inv_motivo_id',$arr_motivos_entradas_ids)
-                        ->select('*')
-                        ->orderBy('fecha')
-                        ->get();
-
-        $costo_total_entradas_del_dia = $entradas_del_dia->sum('costo_total');
-
-        $cantidad_total_entradas_del_dia = $entradas_del_dia->sum('cantidad');
+        // Restar las cantidades de entrada
+        $cantidad_total_movim_anterior_a_la_entrada = $cantidad_total_movim - $cantidad;
         
         if (round($cantidad_total_movim_anterior_a_la_entrada,0) <= 0) {
-            if ($cantidad_total_entradas_del_dia != 0) {
-                return $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia;
-            }
             return $valor_default;
         }
         
-        $cantidad_total_movim = $cantidad_total_movim_anterior_a_la_entrada + $cantidad_total_entradas_del_dia;
+        $costo_total_entrada = $cantidad * $valor_default;
         
+        // Validar si con las entradas quedan las cantidades en cero
         if (round($cantidad_total_movim,0) <= 0) {
-            if ($cantidad_total_entradas_del_dia != 0) {
-                return $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia;
-            }
             return $valor_default;
         }
 
@@ -337,7 +305,7 @@ class TransaccionController extends Controller
         $costo_promedio_actual = $item->get_costo_promedio( $bodega_id );
         $costo_total_movim_anterior = $cantidad_total_movim_anterior_a_la_entrada * $costo_promedio_actual;
 
-        return ($costo_total_movim_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim;
+        return ($costo_total_movim_anterior + $costo_total_entrada) / $cantidad_total_movim;
     }
 
     // Almacenar el costo promedio en la tabla de la BD

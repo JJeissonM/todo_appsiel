@@ -15,6 +15,9 @@
             @foreach($doc_registros as $linea )
 
                 <?php 
+                    if ($linea->cantidad == 0) {
+                        continue;
+                    }
                     $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
                     $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
 

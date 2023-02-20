@@ -135,26 +135,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$inv_producto_id_default_matricula = 24;
+								$inv_producto_id_default_matricula = 0;
 								if( isset($parametros['inv_producto_id_default_matricula'] ) )
 								{
 									$inv_producto_id_default_matricula = $parametros['inv_producto_id_default_matricula'];
 								}
 							?>
-							{{ Form::bsSelect('inv_producto_id_default_matricula', $inv_producto_id_default_matricula, 'Concepto por defecto para Matrícula', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('inv_producto_id_default_matricula', $inv_producto_id_default_matricula, 'Concepto por defecto para Matrícula', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'form-control', 'required' => 'required']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$inv_producto_id_default_pension = 25; 
+								$inv_producto_id_default_pension = 0; 
 								if( isset($parametros['inv_producto_id_default_pension'] ) )
 								{
 									$inv_producto_id_default_pension = $parametros['inv_producto_id_default_pension'];
 								}
 							?>
-							{{ Form::bsSelect('inv_producto_id_default_pension', $inv_producto_id_default_pension, 'Concepto por defecto para Pensión', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('inv_producto_id_default_pension', $inv_producto_id_default_pension, 'Concepto por defecto para Pensión', App\Inventarios\Servicio::opciones_campo_select(), [ 'class'=>'form-control', 'required' => 'required']) }}
 						</div>
 					</div>
 
@@ -351,9 +351,6 @@
 		</div>
 	</div>
 	<br/><br/>
-
-
-
 
 	<div id="div_cargando">Cargando...</div>
 @endsection

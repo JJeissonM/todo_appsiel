@@ -27,26 +27,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$motivo_recibo_caja_id = 1;
+								$motivo_recibo_caja_id = '';
 								if( isset($parametros['motivo_recibo_caja_id'] ) )
 								{
 									$motivo_recibo_caja_id = $parametros['motivo_recibo_caja_id'];
 								}
 							?>
-							{{ Form::bsSelect('motivo_recibo_caja_id', $motivo_recibo_caja_id, 'Motivo para Recibos de caja', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('motivo_recibo_caja_id', $motivo_recibo_caja_id, 'Motivo para Recibos de caja', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$motivo_comprobante_egresos_id = 5;
+								$motivo_comprobante_egresos_id = '';
 								if( isset($parametros['motivo_comprobante_egresos_id'] ) )
 								{
 									$motivo_comprobante_egresos_id = $parametros['motivo_comprobante_egresos_id'];
 								}
 							?>
-							{{ Form::bsSelect('motivo_comprobante_egresos_id', $motivo_comprobante_egresos_id, 'Motivo para Comprobantes de egreso', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('motivo_comprobante_egresos_id', $motivo_comprobante_egresos_id, 'Motivo para Comprobantes de egreso', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -133,26 +133,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$recaudo_tipo_transaccion_id = 32;
+								$recaudo_tipo_transaccion_id = '';
 								if( isset($parametros['recaudo_tipo_transaccion_id'] ) )
 								{
 									$recaudo_tipo_transaccion_id = $parametros['recaudo_tipo_transaccion_id'];
 								}
 							?>
-							{{ Form::bsSelect('recaudo_tipo_transaccion_id', $recaudo_tipo_transaccion_id, 'Tipo de transacción recaudos', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('recaudo_tipo_transaccion_id', $recaudo_tipo_transaccion_id, 'Tipo de transacción recaudos', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$recaudo_tipo_doc_app_id = 3;
+								$recaudo_tipo_doc_app_id = '';
 								if( isset($parametros['recaudo_tipo_doc_app_id'] ) )
 								{
 									$recaudo_tipo_doc_app_id = $parametros['recaudo_tipo_doc_app_id'];
 								}
 							?>
-							{{ Form::bsSelect('recaudo_tipo_doc_app_id', $recaudo_tipo_doc_app_id, 'Tipo de documento de recaudos', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('recaudo_tipo_doc_app_id', $recaudo_tipo_doc_app_id, 'Tipo de documento de recaudos', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -163,13 +163,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$recaudo_motivo_id = 21;
+								$recaudo_motivo_id = '';
 								if( isset($parametros['recaudo_motivo_id'] ) )
 								{
 									$recaudo_motivo_id = $parametros['recaudo_motivo_id'];
 								}
 							?>
-							{{ Form::bsSelect('recaudo_motivo_id', $recaudo_motivo_id, 'Motivo de recaudos', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('recaudo_motivo_id', $recaudo_motivo_id, 'Motivo de recaudos', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

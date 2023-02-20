@@ -27,20 +27,20 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$plantilla_factura_pos_default = 'plantilla_factura';
+								$plantilla_factura_pos_default = '';
 								if( isset($parametros['plantilla_factura_pos_default'] ) )
 								{
 									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
 								}
 							?>
-							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', ['plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho','plantilla_factura_remision_cocina' => 'Factura + RM cocina'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', [ ''=>'', 'plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho','plantilla_factura_remision_cocina' => 'Factura + RM cocina'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$tamanio_fuente_factura = '12';
+								$tamanio_fuente_factura = '';
 								if( isset($parametros['tamanio_fuente_factura'] ) )
 								{
 									$tamanio_fuente_factura = $parametros['tamanio_fuente_factura'];
@@ -71,13 +71,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$cerrar_modal_al_seleccionar_producto = '1';
+								$cerrar_modal_al_seleccionar_producto = '';
 								if( isset($parametros['cerrar_modal_al_seleccionar_producto'] ) )
 								{
 									$cerrar_modal_al_seleccionar_producto = $parametros['cerrar_modal_al_seleccionar_producto'];
 								}
 							?>
-							{{ Form::bsSelect('cerrar_modal_al_seleccionar_producto', $cerrar_modal_al_seleccionar_producto, 'Cerrar modal al seleccionar producto', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('cerrar_modal_al_seleccionar_producto', $cerrar_modal_al_seleccionar_producto, 'Cerrar modal al seleccionar producto', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -88,25 +88,23 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$redondear_centena = '';
 								if( isset($parametros['redondear_centena'] ) )
 								{
 									$redondear_centena = $parametros['redondear_centena'];
-								}else{
-									$redondear_centena = 1;
 								}
 							?>
-							{{ Form::bsSelect('redondear_centena', $redondear_centena, 'Redondear el precio total de la factura a la centena más cercana', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('redondear_centena', $redondear_centena, 'Redondear el precio total de la factura a la centena más cercana', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$permite_facturacion_con_archivo_plano = 0;
 								if( isset($parametros['permite_facturacion_con_archivo_plano'] ) )
 								{
 									$permite_facturacion_con_archivo_plano = $parametros['permite_facturacion_con_archivo_plano'];
-								}else{
-									$permite_facturacion_con_archivo_plano = 0;
 								}
 							?>
 							{{ Form::bsSelect('permite_facturacion_con_archivo_plano', $permite_facturacion_con_archivo_plano, 'Permite facturación con archivo plano', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
@@ -120,14 +118,14 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$activar_ingreso_tactil_productos = '';
 								if( isset($parametros['activar_ingreso_tactil_productos'] ) )
 								{
 									$activar_ingreso_tactil_productos = $parametros['activar_ingreso_tactil_productos'];
 								}else{
-									$activar_ingreso_tactil_productos = 1;
 								}
 							?>
-							{{ Form::bsSelect('activar_ingreso_tactil_productos', $activar_ingreso_tactil_productos, 'Activar ingreso Tactil de productos al crear factura', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('activar_ingreso_tactil_productos', $activar_ingreso_tactil_productos, 'Activar ingreso Tactil de productos al crear factura', [ ''=>'', '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -135,14 +133,13 @@
 						<div class="row" style="padding:5px;">
 							<div class="row" style="padding:5px;">
 								<?php 
+									$asignar_fecha_apertura_a_facturas = '';
 									if( isset($parametros['asignar_fecha_apertura_a_facturas'] ) )
 									{
 										$asignar_fecha_apertura_a_facturas = $parametros['asignar_fecha_apertura_a_facturas'];
-									}else{
-										$asignar_fecha_apertura_a_facturas = 1;
 									}
 								?>
-								{{ Form::bsSelect('asignar_fecha_apertura_a_facturas', $asignar_fecha_apertura_a_facturas, 'Asignar la fecha de apertura en la creación de facturas', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control']) }}
+								{{ Form::bsSelect('asignar_fecha_apertura_a_facturas', $asignar_fecha_apertura_a_facturas, 'Asignar la fecha de apertura en la creación de facturas', [ ''=>'', '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 							</div>
 						</div>
 					</div>
@@ -154,7 +151,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$mostrar_resumen_ventas_pos_en_arqueo = '0';
+								$mostrar_resumen_ventas_pos_en_arqueo = '1';
 								if( isset($parametros['mostrar_resumen_ventas_pos_en_arqueo'] ) )
 								{
 									$mostrar_resumen_ventas_pos_en_arqueo = $parametros['mostrar_resumen_ventas_pos_en_arqueo'];
@@ -188,7 +185,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$validar_existencias_al_acumular = '0';
+								$validar_existencias_al_acumular = '1';
 								if( isset($parametros['validar_existencias_al_acumular'] ) )
 								{
 									$validar_existencias_al_acumular = $parametros['validar_existencias_al_acumular'];
@@ -201,13 +198,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$crear_ensamble_de_recetas = '1';
+								$crear_ensamble_de_recetas = '';
 								if( isset($parametros['crear_ensamble_de_recetas'] ) )
 								{
 									$crear_ensamble_de_recetas = $parametros['crear_ensamble_de_recetas'];
 								}
 							?>
-							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crear ensamble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('crear_ensamble_de_recetas', $crear_ensamble_de_recetas, 'Crear ensamble de recetas en la acumulación', ['No','Sí'], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -220,13 +217,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$agrupar_pedidos_por_cliente = '0';
+								$agrupar_pedidos_por_cliente = '';
 								if( isset($parametros['agrupar_pedidos_por_cliente'] ) )
 								{
 									$agrupar_pedidos_por_cliente = $parametros['agrupar_pedidos_por_cliente'];
 								}
 							?>
-							{{ Form::bsSelect('agrupar_pedidos_por_cliente', $agrupar_pedidos_por_cliente, 'Agrupar todos los pedidos del mismo cliente para facturar', ['No','Sí'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('agrupar_pedidos_por_cliente', $agrupar_pedidos_por_cliente, 'Agrupar todos los pedidos del mismo cliente para facturar', [ ''=>'', 'No','Sí'], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

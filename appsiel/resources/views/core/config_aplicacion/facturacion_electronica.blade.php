@@ -40,13 +40,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$fe_ambiente = 'PRUEBAS';
+								$fe_ambiente = '';
 								if( isset($parametros['fe_ambiente'] ) )
 								{
 									$fe_ambiente = $parametros['fe_ambiente'];
 								}
 							?>
-							{{ Form::bsSelect('fe_ambiente', $fe_ambiente, 'Ambiente', ['PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('fe_ambiente', $fe_ambiente, 'Ambiente', [''=>'', 'PRUEBAS' => 'PRUEBAS', 'PRODUCCION' => 'PRODUCCION'], ['class'=>'form-control','required'=>'required']) }}
 						</div>
 					</div>
 
@@ -57,7 +57,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$enviar_email_clientes = 'false';
+								$enviar_email_clientes = 'true';
 								if( isset($parametros['enviar_email_clientes'] ) )
 								{
 									$enviar_email_clientes = $parametros['enviar_email_clientes'];
@@ -141,11 +141,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+									$WSANEXO = '';
 								if( isset($parametros['WSANEXO'] ) )
 								{
 									$WSANEXO = $parametros['WSANEXO'];
-								}else{
-									$WSANEXO = '';
 								}
 							?>
 							{{ Form::bsText('WSANEXO', $WSANEXO, 'URL Servicio Adjuntos', ['class'=>'form-control']) }}
@@ -159,13 +158,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$documento_soporte_activo = '0';
+								$documento_soporte_activo = '';
 								if( isset($parametros['documento_soporte_activo'] ) )
 								{
 									$documento_soporte_activo = $parametros['documento_soporte_activo'];
 								}
 							?>							
-							{{ Form::bsSelect('documento_soporte_activo', $documento_soporte_activo, 'Activar emisión Doc. Soporte Compras', ['0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('documento_soporte_activo', $documento_soporte_activo, 'Activar emisión Doc. Soporte Compras', [''=>'', '0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -189,11 +188,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+									$WSREPORTES = '';
 								if( isset($parametros['WSREPORTES'] ) )
 								{
 									$WSREPORTES = $parametros['WSREPORTES'];
-								}else{
-									$WSREPORTES = '';
 								}
 							?>
 							{{ Form::bsText('WSREPORTES', $WSREPORTES, 'URL Servicio Reportes', ['class'=>'form-control']) }}
@@ -213,11 +211,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+									$tokenEmpresa = '';
 								if( isset($parametros['tokenEmpresa'] ) )
 								{
 									$tokenEmpresa = $parametros['tokenEmpresa'];
-								}else{
-									$tokenEmpresa = '';
 								}
 							?>
 							{{ Form::bsText('tokenEmpresa', $tokenEmpresa, 'Token Empresa (Account Id)', ['class'=>'form-control']) }}
@@ -227,11 +224,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+									$tokenPassword = '';
 								if( isset($parametros['tokenPassword'] ) )
 								{
 									$tokenPassword = $parametros['tokenPassword'];
-								}else{
-									$tokenPassword = '';
 								}
 							?>
 							{{ Form::bsText('tokenPassword', $tokenPassword, 'Token Password (Auth Token)', ['class'=>'form-control']) }}
@@ -245,14 +241,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+								$modalidad_asignada = '';
 								if( isset($parametros['modalidad_asignada'] ) )
 								{
 									$modalidad_asignada = $parametros['modalidad_asignada'];
-								}else{
-									$modalidad_asignada = '2';
 								}
 							?>
-							{{ Form::bsSelect('modalidad_asignada', $modalidad_asignada, 'Modalidad asignada', ['1' => 'Automática', '2' => 'Manual Con Prefijo', '3' => 'Manual Sin Prefijo', '4' => 'Manual Contingencia'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('modalidad_asignada', $modalidad_asignada, 'Modalidad asignada', [''=>'', '1' => 'Automática', '2' => 'Manual Con Prefijo', '3' => 'Manual Sin Prefijo', '4' => 'Manual Contingencia'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -273,11 +268,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
+									$cantidadDecimales = 4;
 								if( isset($parametros['cantidadDecimales'] ) )
 								{
 									$cantidadDecimales = $parametros['cantidadDecimales'];
-								}else{
-									$cantidadDecimales = 4;
 								}
 							?>
 							{{ Form::bsText('cantidadDecimales', $cantidadDecimales, 'Cantidad decimales en los valores', ['class'=>'form-control']) }}
@@ -314,7 +308,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$document_type_id_default = 47;
+								$document_type_id_default = '';
 
 								if( isset($parametros['document_type_id_default'] ) )
 								{

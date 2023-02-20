@@ -41,7 +41,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$item_lista_precios_id = 1;
+								$item_lista_precios_id = 0;
 								if( isset($parametros['item_lista_precios_id'] ) )
 								{
 									$item_lista_precios_id = $parametros['item_lista_precios_id'];
@@ -58,7 +58,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$item_bodega_principal_id = 1;
+								$item_bodega_principal_id = 0;
 								if( isset($parametros['item_bodega_principal_id'] ) )
 								{
 									$item_bodega_principal_id = $parametros['item_bodega_principal_id'];
@@ -83,13 +83,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$maneja_costo_promedio_por_bodegas = 1;
+								$maneja_costo_promedio_por_bodegas = '';
 								if( isset($parametros['maneja_costo_promedio_por_bodegas'] ) )
 								{
 									$maneja_costo_promedio_por_bodegas = $parametros['maneja_costo_promedio_por_bodegas'];
 								}
 							?>
-							{{ Form::bsSelect('maneja_costo_promedio_por_bodegas', $maneja_costo_promedio_por_bodegas, 'Maneja costo promedio por bodegas', ['No','Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('maneja_costo_promedio_por_bodegas', $maneja_costo_promedio_por_bodegas, 'Maneja costo promedio por bodegas', [''=>'', 'No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -106,11 +106,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$core_tipo_transaccion_id = 4;
 								if( isset($parametros['core_tipo_transaccion_id'] ) )
 								{
 									$core_tipo_transaccion_id = $parametros['core_tipo_transaccion_id'];
-								}else{
-									$core_tipo_transaccion_id = 4;
 								}
 							?>
 							{{ Form::bsSelect('core_tipo_transaccion_id', $core_tipo_transaccion_id, 'Tipo de transacción Default', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
@@ -120,11 +119,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$core_tipo_doc_app_id = 9;
 								if( isset($parametros['core_tipo_doc_app_id'] ) )
 								{
 									$core_tipo_doc_app_id = $parametros['core_tipo_doc_app_id'];
-								}else{
-									$core_tipo_doc_app_id = 9;
 								}
 							?>
 							{{ Form::bsSelect('core_tipo_doc_app_id', $core_tipo_doc_app_id, 'Tipo Doc. Default', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
@@ -138,11 +136,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$core_tercero_id = 0;
 								if( isset($parametros['core_tercero_id'] ) )
 								{
 									$core_tercero_id = $parametros['core_tercero_id'];
-								}else{
-									$core_tercero_id = 1;
 								}
 							?>
 							{{ Form::bsSelect('core_tercero_id', $core_tercero_id, 'Tercero default', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
@@ -162,11 +159,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$motivo_salida_id = 0;
 								if( isset($parametros['motivo_salida_id'] ) )
 								{
 									$motivo_salida_id = $parametros['motivo_salida_id'];
-								}else{
-									$motivo_salida_id = 1;
 								}
 							?>
 							{{ Form::bsSelect('motivo_salida_id', $motivo_salida_id, 'Motivo salida default', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
@@ -176,11 +172,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$motivo_entrada_id = 0;
 								if( isset($parametros['motivo_entrada_id'] ) )
 								{
 									$motivo_entrada_id = $parametros['motivo_entrada_id'];
-								}else{
-									$motivo_entrada_id = 1;
 								}
 							?>
 							{{ Form::bsSelect('motivo_entrada_id', $motivo_entrada_id, 'Motivo entrada default', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
@@ -196,11 +191,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+									$ea_tipo_transaccion_id = 4;
 								if( isset($parametros['ea_tipo_transaccion_id'] ) )
 								{
 									$ea_tipo_transaccion_id = $parametros['ea_tipo_transaccion_id'];
-								}else{
-									$ea_tipo_transaccion_id = 4;
 								}
 							?>
 							{{ Form::bsSelect('ea_tipo_transaccion_id', $ea_tipo_transaccion_id, 'Tipo de transacción', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'combobox']) }}
@@ -210,11 +204,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+									$ea_tipo_doc_app_id = 9;
 								if( isset($parametros['ea_tipo_doc_app_id'] ) )
 								{
 									$ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
-								}else{
-									$ea_tipo_doc_app_id = 9;
 								}
 							?>
 							{{ Form::bsSelect('ea_tipo_doc_app_id', $ea_tipo_doc_app_id, 'Tipo Documento', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
@@ -228,11 +221,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+									$ea_tercero_id = 1;
 								if( isset($parametros['ea_tercero_id'] ) )
 								{
 									$ea_tercero_id = $parametros['ea_tercero_id'];
-								}else{
-									$ea_tercero_id = 1;
 								}
 							?>
 							{{ Form::bsSelect('ea_tercero_id', $ea_tercero_id, 'Tercero', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
@@ -242,11 +234,10 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+									$ea_motivo_id = 1;
 								if( isset($parametros['ea_motivo_id'] ) )
 								{
 									$ea_motivo_id = $parametros['ea_motivo_id'];
-								}else{
-									$ea_motivo_id = 1;
 								}
 							?>
 							{{ Form::bsSelect('ea_motivo_id', $ea_motivo_id, 'Motivo entrada', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'combobox']) }}
