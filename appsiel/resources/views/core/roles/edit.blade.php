@@ -31,7 +31,7 @@
                     }
                                         
                     echo Form::checkbox('permissions[]',  $permissions[$i]['id'], $role->permissions );
-                    echo Form::label($permissions[$i]['name'], ucfirst($permissions[$i]['name'])).'<br>';
+                    echo Form::label($permissions[$i]['name'], $permissions[$i]['id'] . ' - ' . ucfirst($permissions[$i]['name'])).'<br>';
                 }
 
             ?>
