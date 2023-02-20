@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 
 Route::get('cxp/get_cartera_tercero/{core_tercero_id}/{fecha}', 'CxP\DocCruceController@get_cartera_tercero');
 

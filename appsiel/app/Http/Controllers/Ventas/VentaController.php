@@ -979,6 +979,38 @@ class VentaController extends TransaccionController
         return redirect( 'vtas_clientes/'.$Cliente->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
     }
 
+    public function tercero_a_cliente_create_direct($tercero_id,$url_redirect)
+    {
+        $parametros_ventas = config('ventas');
+
+        $datos = [
+            'core_tercero_id' => $tercero_id,
+            'encabezado_dcto_pp_id' => 0,
+            'clase_cliente_id' => $parametros_ventas['clase_cliente_id'],
+            'lista_precios_id' => $parametros_ventas['lista_precios_id'],
+            'lista_descuentos_id' => $parametros_ventas['lista_descuentos_id'],
+            'vendedor_id' => $parametros_ventas['vendedor_id'],
+            'inv_bodega_id' => $parametros_ventas['inv_bodega_id'],
+            'zona_id' => $parametros_ventas['zona_id'],
+            'liquida_impuestos' => 1,
+            'condicion_pago_id' => $parametros_ventas['condicion_pago_id'],
+            'cupo_credito' => 0,
+            'bloquea_por_cupo' => 0,
+            'bloquea_por_mora' => 0,
+            'estado' => 'Activo'
+        ];
+
+        // Datos del Cliente
+        $Cliente = new Cliente;
+        $Cliente->fill( $datos );
+        $Cliente->save();
+
+        $arr = explode('-', $url_redirect);
+        //dd($arr[0] . '/' . $arr[1] . '/' . $arr[2] . '?' . $arr[3] . '&' . $arr[4] . '&' . $arr[5]);
+
+        return redirect( $arr[0] . '/' . $arr[1] . '/' . $arr[2] . '?' . $arr[3] . '&' . $arr[4] . '&' . $arr[5] )->with( 'flash_message','Tercero CREADO como Cliente correctamente.' );
+    }
+
 
     // Petición AJAX. Parámetro enviados por GET
     public function get_formulario_edit_registro()

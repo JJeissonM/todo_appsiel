@@ -1,4 +1,6 @@
 <?php 
+
+use Illuminate\Support\Facades\Route;
 //      C X C 
 
 

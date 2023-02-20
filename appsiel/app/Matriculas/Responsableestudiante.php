@@ -5,6 +5,7 @@ namespace App\Matriculas;
 use App\Core\Tercero;
 use App\Matriculas\Tiporesponsable;
 use App\Matriculas\Estudiante;
+use App\Ventas\Cliente;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
@@ -30,6 +31,15 @@ class Responsableestudiante extends Model
     public function tercero()
     {
         return $this->belongsTo(Tercero::class);
+    }
+
+    public function cliente()
+    {
+        return Cliente::where([
+            ['core_tercero_id','=',$this->tercero_id]
+        ])
+                    ->get()
+                    ->first();
     }
 
     public static function consultar_registros($nro_registros, $search)

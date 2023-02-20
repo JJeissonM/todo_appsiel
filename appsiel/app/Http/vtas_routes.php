@@ -54,6 +54,9 @@ Route::resource('vtas_vendedores', 'Ventas\VendedorController');
 
 Route::post('vtas_clientes_tercero_a_cliente_store', 'Ventas\VentaController@tercero_a_cliente_store');
 Route::get('vtas_clientes_tercero_a_cliente_create', 'Ventas\VentaController@tercero_a_cliente_create');
+
+Route::get('vtas_tercero_a_cliente_create_direct/{tercero_id}/{url_redirect}', 'Ventas\VentaController@tercero_a_cliente_create_direct');
+
 Route::resource('vtas_clientes', 'Ventas\ClienteController');
 
 // Cotizaciones
