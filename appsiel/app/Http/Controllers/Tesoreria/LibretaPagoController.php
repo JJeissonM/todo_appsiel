@@ -4,12 +4,6 @@ namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
 
-use Auth;
-
-use View;
-use Lava;
-use Input;
-
 use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Tesoreria\RecaudoCxcController;
@@ -35,6 +29,10 @@ use App\Ventas\VtasDocEncabezado;
 
 use App\CxC\CxcMovimiento;
 use App\Tesoreria\Services\PaymentBookServices;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class LibretaPagoController extends ModeloController
 {
@@ -208,6 +206,16 @@ class LibretaPagoController extends ModeloController
         {
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','La Libreta ya tiene pagos aplicados. No puede ser modificada.' );
         }
+
+        $plan_pagos = TesoPlanPagosEstudiante::where('id_libreta',$id)->get();
+        $se_puede_editar_libreta = true;
+        foreach($plan_pagos as $fila)
+        {
+            if( !empty( $fila->facturas_estudiantes->toArray() ) )
+            {
+                return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','La Libreta ya tiene facturas asociadas. No puede ser modificada.' );
+            }
+        }
         
         $matricula_estudiante = Matricula::get_registro_impresion( $registro->matricula_id );
 
@@ -296,7 +304,7 @@ class LibretaPagoController extends ModeloController
         $view =  View::make('tesoreria.'.$formato, compact('registro','colegio','empresa','cuenta'))->render();
 
         //crear PDF   echo $view;
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view);
         return $pdf->stream('libreta_pagos.pdf');
         /**/
@@ -446,8 +454,8 @@ class LibretaPagoController extends ModeloController
         $modelo = Modelo::find(Input::get('id_modelo'));
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
-        $recaudos_libreta = TesoRecaudosLibreta::where('id_libreta',$id)->get();
+        $registro = app($modelo->name_space)->find($cartera_id);
+        $recaudos_libreta = TesoRecaudosLibreta::where('id_libreta',$cartera_id)->get();
 
         // Si la libreta ya tiene recaudos, no se puede modificar.
         if ( isset($recaudos_libreta[0]) ) 
@@ -471,9 +479,9 @@ class LibretaPagoController extends ModeloController
 
         $miga_pan = $this->get_miga_pan($modelo,$registro->descripcion);
 
-        $url_action = 'web/'.$id;
+        $url_action = 'web/'.$cartera_id;
         if ($modelo->url_form_create != '') {
-            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
+            $url_action = $modelo->url_form_create.'/'.$cartera_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
         }
 
 
@@ -495,7 +503,7 @@ class LibretaPagoController extends ModeloController
         $orientacion='portrait';
 
         //crear PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
         return $pdf->stream('comprobante_recaudo.pdf');
     }

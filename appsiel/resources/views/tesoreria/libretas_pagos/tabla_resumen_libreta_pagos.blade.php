@@ -2,7 +2,22 @@
 <div class="row">
 	<div class="col-md-12 botones-gmail">
 		{{ Form::bsBtnPrint( url('tesoreria/imprimir_libreta/'.$libreta->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))  ) }}
-		{{ Form::bsBtnEdit( url('tesoreria/editar_libreta/'.$libreta->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))  ) }}
+
+		<?php 
+			$se_puede_editar_libreta = true;
+			foreach($plan_pagos as $fila)
+			{
+				if( !empty( $fila->facturas_estudiantes->toArray() ) )
+				{
+					$se_puede_editar_libreta = false;
+				}
+			}
+		?>
+
+		@if($se_puede_editar_libreta)
+			{{ Form::bsBtnEdit( url('tesoreria/editar_libreta/'.$libreta->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))  ) }}
+		@endif
+		
 	</div>
 </div>
 <div class="table-responsive">
