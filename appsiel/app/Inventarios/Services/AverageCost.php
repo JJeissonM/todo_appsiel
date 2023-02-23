@@ -5,6 +5,7 @@ namespace App\Inventarios\Services;
 use App\Inventarios\InvDocRegistro;
 
 use App\Inventarios\InvProducto;
+use Illuminate\Support\Facades\DB;
 
 class AverageCost
 {
@@ -23,31 +24,11 @@ class AverageCost
          * 23> Saldos iniciales
          */
         $arr_motivos_entradas_ids = [1, 11, 16, 23];
-
-        /**
-         * 3> Salida (producto a consumir). Fabricacion
-         * 4> Entrada (producto final). Fabricacion
-         * 12> 	Inventario Físico: no afectan los movimientos.
-         * 9> Entrada bodega destino. Transferencia (entrada)
-         * 2> Transferencia. Transferencia (salida)
-         */
-        $arr_motivos_ids_no_afectan_costo_promedio = [3, 4, 12, 9, 2];
         
         // Fecha menor
-        $array_wheres1 = [
-            ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento['inv_producto_id']],
-            ['inv_doc_encabezados.fecha', '<', $linea_registro_documento['fecha']],
-            ['inv_doc_registros.estado','<>','Anulado']
-        ];
+        $datos = $this->datos_fecha_antes_de_la_entrada($linea_registro_documento['inv_bodega_id'], $linea_registro_documento['inv_producto_id'], $linea_registro_documento['fecha']);
         
-        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
-            $array_wheres1 = array_merge($array_wheres1, [['inv_bodega_id','=',$linea_registro_documento['inv_bodega_id']]]);
-        }
-        
-        $cantidad_total_movim_anterior = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
-                                        ->where($array_wheres1)
-                                        ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_ids_no_afectan_costo_promedio)
-                                        ->sum('inv_doc_registros.cantidad');
+        $cantidad_total_movim_anterior = $datos->total_cantidad_anterior;
 
         // Fecha igual
         $array_wheres2 = [
@@ -87,9 +68,47 @@ class AverageCost
             return $linea_registro_documento['costo_unitario'];
         }
 
-        $costo_total_movim_anterior = $cantidad_total_movim_anterior * $costo_promedio_actual;
+        return ($datos->total_costo_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim;
+    }
 
-        return ($costo_total_movim_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim;
+    /**
+     * 
+     */
+    public function datos_fecha_antes_de_la_entrada($id_bodega, $id_producto, $fecha_transaccion)
+    {
+        /**
+         * 3> Salida (producto a consumir). Fabricacion
+         * 4> Entrada (producto final). Fabricacion
+         * 12> 	Inventario Físico: no afectan los movimientos.
+         * 9> Entrada bodega destino. Transferencia (entrada)
+         * 2> Transferencia. Transferencia (salida)
+         */
+        $arr_motivos_ids_no_afectan_costo_promedio = [3, 4, 12, 9, 2];
+
+        $array_wheres = [
+            ['inv_doc_registros.inv_producto_id','=',$id_producto],
+            ['inv_doc_encabezados.fecha', '<', $fecha_transaccion],
+            ['inv_doc_registros.estado','<>','Anulado']
+        ];
+
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
+            $array_wheres = array_merge( $array_wheres, [ ['inv_doc_registros.inv_bodega_id','=',$id_bodega] ] );
+        }
+
+        $datos = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
+                                ->where( $array_wheres )
+                                ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_ids_no_afectan_costo_promedio)
+                                ->select(
+                                    DB::raw( 'sum(inv_doc_registros.costo_total) AS costo_total'),
+                                    DB::raw( 'sum(inv_doc_registros.cantidad) AS cantidad_total')
+                                )
+                                ->get()
+                                ->toArray();
+
+        return (object)[
+            'total_costo_anterior' => $datos[0]['costo_total'],
+            'total_cantidad_anterior' => $datos[0]['cantidad_total']
+        ];
     }
 
     // Almacenar el costo promedio en la tabla de la BD

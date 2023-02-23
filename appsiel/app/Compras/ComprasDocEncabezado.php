@@ -12,7 +12,6 @@ use App\Sistema\TipoTransaccion;
 use App\Inventarios\InvDocEncabezado;
 use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class ComprasDocEncabezado extends Model
 {

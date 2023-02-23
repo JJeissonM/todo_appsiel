@@ -331,16 +331,17 @@ class CompraController extends TransaccionController
 
         if ( $forma_pago == 'contado')
         {
+            $caja = TesoCaja::get()->first();
+
             if ( empty( $datos['registros_medio_pago'] ) )
             {
-                $caja = TesoCaja::get()->first();
                 $cta_caja_id = $caja->contab_cuenta_id;
                 ContabilidadController::contabilizar_registro2( $datos, $cta_caja_id, $detalle_operacion, 0, abs($total_documento), $caja->id, 0 );
 
             }else{
 
                 // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
-                $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+                $contab_cuenta_id = $caja->contab_cuenta_id;
 
                 $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
                 if ($teso_caja_id != 0)

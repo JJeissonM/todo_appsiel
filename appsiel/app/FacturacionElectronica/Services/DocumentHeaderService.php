@@ -42,7 +42,7 @@ class DocumentHeaderService
             'core_tipo_doc_app_id' => $document_header->core_tipo_doc_app_id,
             'consecutivo' => $document_header->consecutivo];
 
-        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
+        // Verificar si la factura tiene abonos, si tiene no se puede convertir
         $cantidad = CxcAbono::where('doc_cxc_transacc_id',$document_header->core_tipo_transaccion_id)
                             ->where('doc_cxc_tipo_doc_id',$document_header->core_tipo_doc_app_id)
                             ->where('doc_cxc_consecutivo',$document_header->consecutivo)

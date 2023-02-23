@@ -94,7 +94,7 @@
 									$redondear_centena = $parametros['redondear_centena'];
 								}
 							?>
-							{{ Form::bsSelect('redondear_centena', $redondear_centena, 'Redondear el precio total de la factura a la centena más cercana', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+							{{ Form::bsSelect('redondear_centena', $redondear_centena, 'Redondear el precio total de la factura a la centena más cercana', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -125,7 +125,7 @@
 								}else{
 								}
 							?>
-							{{ Form::bsSelect('activar_ingreso_tactil_productos', $activar_ingreso_tactil_productos, 'Activar ingreso Tactil de productos al crear factura', [ ''=>'', '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+							{{ Form::bsSelect('activar_ingreso_tactil_productos', $activar_ingreso_tactil_productos, 'Activar ingreso Tactil de productos al crear factura', [ ''=>'', '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

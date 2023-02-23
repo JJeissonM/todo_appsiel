@@ -1,10 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Compras;
-
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Inventarios\ProcesoController as InvProcesoController;
@@ -12,18 +8,13 @@ use App\Http\Controllers\Inventarios\ProcesoController as InvProcesoController;
 use App\Http\Controllers\Compras\CompraController;
 use App\Http\Controllers\Compras\NotaCreditoController;
 
-
 use App\Compras\ComprasDocEncabezado;
 use App\Compras\ComprasDocRegistro;
-use App\Compras\ComprasMovimiento;
 
 use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
-
-use Input;
+use Illuminate\Support\Facades\Input;
 
 class ProcesoController extends Controller
 {
@@ -69,8 +60,7 @@ class ProcesoController extends Controller
             $n++;
         }
 
-        $forma_pago = 'credito';
-        CompraController::contabilizar_movimiento_credito( $forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );
+        CompraController::contabilizar_movimiento_credito( $documento->forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );
     }
 
 
@@ -250,5 +240,31 @@ class ProcesoController extends Controller
         }
 
         echo '<br>Se actualizaron ' . $i . ' documentos.';
+    }
+
+    public function recontabilizar_un_documento( $documento_id )
+    {
+        $documento = ComprasDocEncabezado::find( $documento_id );
+
+        // Eliminar registros contables actuales
+        ContabMovimiento::where('core_tipo_transaccion_id',$documento->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id',$documento->core_tipo_doc_app_id)
+                        ->where('consecutivo',$documento->consecutivo)
+                        ->delete();
+
+        // Obtener líneas de registros del documento
+        $registros_documento = ComprasDocRegistro::where( 'compras_doc_encabezado_id', $documento->id )->get();
+
+        $total_documento = 0;
+        foreach ($registros_documento as $linea)
+        {
+            $detalle_operacion = 'Recontabilizado. '.$linea->descripcion;
+            CompraController::contabilizar_movimiento_debito( $documento->toArray() + $linea->toArray(), $detalle_operacion );
+            $total_documento += $linea->precio_total;
+        }
+
+        CompraController::contabilizar_movimiento_credito( $documento->forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );
+        
+        return redirect( 'compras/'.$documento->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', 'Documento Recontabilizado.' );
     }
 }

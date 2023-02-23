@@ -235,7 +235,7 @@ class TransaccionController extends Controller
 
     //
     // CALCULAR EL COSTO PROMEDIO
-    public static function calcular_costo_promedio_old($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
+    public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
     {
 
         // NOTA: Ya el registro del item está agregado en el movimiento
@@ -271,7 +271,7 @@ class TransaccionController extends Controller
         return $costo_prom;
     }
 
-    public static function calcular_costo_promedio($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
+    public static function calcular_costo_promedio_new_no($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
     {
         $array_wheres = [
             ['inv_producto_id','=',$id_producto],

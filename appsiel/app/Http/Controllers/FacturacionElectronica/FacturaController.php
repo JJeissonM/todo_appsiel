@@ -22,6 +22,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
+use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -172,6 +173,14 @@ class FacturaController extends TransaccionController
 
                 $encabezado_factura->crear_registro_pago();
             }
+            
+            FacturaPos::where([
+                ['core_tipo_transaccion_id','=',$encabezado_factura->core_tipo_transaccion_id],
+                ['core_tipo_doc_app_id','=',$encabezado_factura->core_tipo_doc_app_id],
+                ['consecutivo','=',$encabezado_factura->consecutivo],
+            ])->update([
+                'estado'=>'Enviada'
+            ]);
             
             $encabezado_factura->estado = 'Enviada';
             $encabezado_factura->save();

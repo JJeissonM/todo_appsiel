@@ -9,14 +9,18 @@
 	
 	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 
-	    <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+		@if( $doc_encabezado->estado != 'Enviada' )
+	    	<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+		@endif
 
         @can('vtas_recontabilizar')
         	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endcan
 
         @can('Facturación Electrónica')
-        	<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . '/' . $doc_encabezado->core_tipo_transaccion_id .$variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
+			@if( $doc_encabezado->estado != 'Enviada' )
+        		<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . '/' . $doc_encabezado->core_tipo_transaccion_id .$variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
+			@endif
         @endcan
         
 	@endif

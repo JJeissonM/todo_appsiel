@@ -178,7 +178,7 @@ class DocSoporte
          ]);
       } catch (\GuzzleHttp\Exception\RequestException $e) {
           $response = $e->getResponse();
-      }  /**/      
+      }
 
       $json = json_decode( (string) $response->getBody() );
 

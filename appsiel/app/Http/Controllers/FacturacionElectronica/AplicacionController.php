@@ -5,12 +5,11 @@ namespace App\Http\Controllers\FacturacionElectronica;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
 use App\Http\Controllers\Controller;
 
-use Redirect;
-
 use App\FacturacionElectronica\Factura;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\FacturacionElectronica\DocSoporte;
+use Illuminate\Support\Facades\Redirect;
 
 class AplicacionController extends Controller
 {
@@ -37,8 +36,7 @@ class AplicacionController extends Controller
             default:
                 // code...
                 break;
-        }
-            
+        }            
 
         $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
     	

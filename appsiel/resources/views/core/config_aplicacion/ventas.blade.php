@@ -425,7 +425,7 @@
 									$permitir_inventarios_negativos = $parametros['permitir_inventarios_negativos'];
 								}
 							?>
-							{{ Form::bsSelect('permitir_inventarios_negativos', $permitir_inventarios_negativos, 'Permitir inventarios negativos', [ ''=>'', '0' => 'No', '1' => 'Si'], ['class'=>'form-control'], 'required' => 'required') }}
+							{{ Form::bsSelect('permitir_inventarios_negativos', $permitir_inventarios_negativos, 'Permitir inventarios negativos', [ ''=>'', '0' => 'No', '1' => 'Si'], ['class'=>'form-control', 'required' => 'required']) }}
 						</div>
 					</div>
 

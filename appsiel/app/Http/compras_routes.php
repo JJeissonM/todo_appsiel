@@ -56,3 +56,5 @@ Route::get('recalcular_entradas_almacen_recosteadas', 'Compras\ProcesoController
 
 Route::get('recontabilizar_documentos_compras', 'Compras\ProcesoController@recontabilizar_documentos_compras');
 Route::get('compras_recontabilizar_nota/{id}', 'Compras\ProcesoController@recontabilizar_documento_nota_credito');
+
+Route::get('compras_recontabilizar_un_documento/{id}', 'Compras\ProcesoController@recontabilizar_un_documento');
