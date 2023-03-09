@@ -19,14 +19,27 @@
 
                     $linea_movimiento->suma_cantidad = round($linea_movimiento->suma_cantidad,2);
 
+                    if( $linea_movimiento->suma_cantidad == 0)
+                    {
+                        continue;
+                    }
+
                     $costo_promedio = 0;
+
+                    /*$suma_costo = abs($linea_movimiento->suma_costo);
 
                     if( $linea_movimiento->suma_cantidad != 0)
                     {
-                        $costo_promedio = $linea_movimiento->suma_costo / $linea_movimiento->suma_cantidad;
+                        $costo_promedio = $suma_costo / $linea_movimiento->suma_cantidad;
                     }else{
                         $linea_movimiento->suma_costo = 0;
                     }
+
+                    $suma_costo = abs($costo_promedio) * $linea_movimiento->suma_cantidad;
+                    */
+
+                    $costo_promedio = $linea_movimiento->producto->get_costo_promedio(0);
+                    $suma_costo = $costo_promedio * $linea_movimiento->suma_cantidad;
 
                     $diferencia_costo_prom = 0;//$linea_movimiento->costo_promedio_ponderado -  $costo_promedio;
 
@@ -39,17 +52,17 @@
                 <!-- @ if($linea_movimiento->suma_cantidad!=0) -->
                     <tr>
                         <td> {{ $linea_movimiento->bodega->descripcion }} </td>
-                        <td>{{ $linea_movimiento->id }}</td>
+                        <td>{{ $linea_movimiento->producto->id }}</td>
                         <td>{{ $linea_movimiento->producto->descripcion }} </td>
                         <td>{{ $linea_movimiento->producto->unidad_medida2 }} </td> <!-- Talla -->
                         <td>{{ number_format($linea_movimiento->suma_cantidad, 2, ',', '.') }} </td>
                         <td>{{ '$'.number_format( $costo_promedio, 2, ',', '.') }}</td>
-                        <td>{{ '$'.number_format( $linea_movimiento->suma_costo, 2, ',', '.') }}</td>
+                        <td>{{ '$'.number_format( $suma_costo, 2, ',', '.') }}</td>
                     </tr>
                 <!-- @ endif -->
             <?php 
                 $total_cantidad+= $linea_movimiento->suma_cantidad;
-                $total_costo_total+= $linea_movimiento->suma_costo;
+                $total_costo_total+= $suma_costo;
             } 
             ?>
             <tr>

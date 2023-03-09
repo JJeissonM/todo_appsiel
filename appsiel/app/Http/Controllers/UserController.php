@@ -170,6 +170,39 @@ class UserController extends ModeloController
         return view('core.usuario.cambiarpasswd',compact('registro','miga_pan'));
     }
 
+    // Formulario para cambiar contraseña Modelo Vendedor
+    public function form_cambiar_passwd_vehiculo( $vehiculo_id )
+    {
+        /**
+         *                  PENDING
+         * 
+         */
+        $vehiculo = Vehiculo::find($vehiculo_id);
+        
+        $email = User::where([
+            ['email','=',$vehiculo->placa]
+            ])
+            ->get()
+            ->first();
+            
+            ( $vendedor->user_id );
+
+        if ( is_null($registro) )
+        {
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado. Debe editar el registro y el usuario se creará automáticamente.');
+        }
+
+        if (!isset($miga_pan)) {
+            $miga_pan = [
+                            [ 'url' => $this->aplicacion->app.'?id='.Input::get('id'), 'etiqueta' => $this->aplicacion->descripcion ],
+                            [ 'url' => 'NO','etiqueta' => 'Cambiar contraseña: '.$registro->name.' ('.$registro->email.')' ]
+                        ];
+        }
+        
+
+        return view('core.usuario.cambiarpasswd',compact('registro','miga_pan'));
+    }
+
     /**
      * Guardar cambio de contraseña del usuario
      *

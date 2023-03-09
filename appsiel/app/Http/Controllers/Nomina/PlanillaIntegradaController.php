@@ -969,7 +969,13 @@ class PlanillaIntegradaController extends Controller
 
         PilaParafiscales::create($datos);
     }
-
+    
+    /**
+     * ANEXO TÉCNICO 3
+     * Aportes a Seguridad Social de Pensionados
+     * ARCHIVO TIPO 2. INFORMACIÓN PLANILLA INTEGRADA
+     * 
+     */
     public function descargar_archivo_plano( $planilla_id )
     {
         $planilla = PlanillaGenerada::find($planilla_id);
@@ -994,6 +1000,9 @@ class PlanillaIntegradaController extends Controller
         echo $content;
     }
 
+    /**
+     * Registro Tipo 1 del archivo tipo 2. Encabezado
+     */
     public function get_datos_encabezado_para_plano( $planilla )
     {
 

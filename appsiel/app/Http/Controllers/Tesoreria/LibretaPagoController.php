@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class LibretaPagoController extends ModeloController
 {
@@ -80,7 +81,7 @@ class LibretaPagoController extends ModeloController
 
 
         // Creación de gráfico de Torta MATRICULAS
-        $stocksTable1 = Lava::DataTable();
+        $stocksTable1 = LavachartsFacade::DataTable();
         
         $stocksTable1->addStringColumn('Meses')
                     ->addNumberColumn('Valor');
@@ -110,14 +111,14 @@ class LibretaPagoController extends ModeloController
             }
         }
 
-        $chart1 = Lava::PieChart('torta_matriculas', $stocksTable1,[
+        $chart1 = LavachartsFacade::PieChart('torta_matriculas', $stocksTable1,[
                 'is3D'                  => True,
                 'pieSliceText'          => 'value'
             ]);
 
 
         // Creación de gráfico de Torta PENSIONES
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
         
         $stocksTable->addStringColumn('Meses')
                     ->addNumberColumn('Valor');
@@ -147,7 +148,7 @@ class LibretaPagoController extends ModeloController
             }
         }
 
-        $chart = Lava::PieChart('torta_pensiones', $stocksTable,[
+        $chart = LavachartsFacade::PieChart('torta_pensiones', $stocksTable,[
                 'is3D'                  => True,
                 'pieSliceText'          => 'value'
             ]);
@@ -407,7 +408,9 @@ class LibretaPagoController extends ModeloController
 
         $codigo_matricula = $matricula->codigo;
 
-        return view('tesoreria.ver_recaudos',compact('libreta','estudiante','recaudos','miga_pan','codigo_matricula','curso','matricula'));
+        $plan_pagos = TesoPlanPagosEstudiante::where('id_libreta',$id_libreta)->get();
+
+        return view('tesoreria.ver_recaudos',compact('libreta','estudiante','recaudos','miga_pan','codigo_matricula','curso','matricula','plan_pagos'));
     }
 
     public function ver_plan_pagos($id_libreta)

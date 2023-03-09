@@ -85,6 +85,7 @@ Route::post('vtas_remisiones_sin_factura_real', 'Ventas\ReportesController@remis
 Route::post('vtas_lineas_de_movimiento_repetidas', 'Ventas\ReportesController@lineas_de_movimiento_repetidas');
 Route::post('vtas_reporte_pedidos', 'Ventas\ReportesController@reporte_pedidos');
 Route::post('vtas_reporte_movimientos', 'Ventas\ReportesController@movimientos');
+Route::post('vtas_documentos_facturacion', 'Ventas\ReportesController@documentos_facturacion');
 
 
 // PROCESOS

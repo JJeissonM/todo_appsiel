@@ -4,17 +4,13 @@ namespace App\NominaElectronica\DATAICO;
 
 use Illuminate\Database\Eloquent\Model;
 
-use GuzzleHttp\Client;
-
 use App\Sistema\Services\AppDocType;
 
-use Auth;
-use DB;
 use App\Sistema\TipoTransaccion;
 
-use App\NominaElectronica\DATAICO\ResultadoEnvio;
-
 use App\Nomina\NomContrato;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 // declaramos factura
 class DocumentoSoporte extends Model
@@ -47,22 +43,16 @@ class DocumentoSoporte extends Model
             ->paginate($nro_registros);
    }
 
-   public function get_json( NomContrato $empleado, $lapso, $almacenar_registros )
+   public function get_data_for_json( NomContrato $empleado, $lapso, $almacenar_registros )
    {
-      //dd('hi');
-      $this->set_data_json( $empleado, $lapso, $almacenar_registros );
-      dd(  $this->array_head_data );
-      return json_decode( $this->array_head_data );
+      return array_merge(
+         $this->get_arr_head_data( $empleado, $lapso, $almacenar_registros ),
+         $this->get_arr_content_data( $empleado, $lapso ),
+         $this->get_arr_employee_data($empleado, $lapso)
+      );
    }
 
-   public function set_data_json( $empleado, $lapso, $almacenar_registros )
-   {
-      $this->set_head_data( $empleado, $lapso, $almacenar_registros );
-      dd( $this->array_head_data );
-      $this->set_accruals_data( $empleado, $lapso );
-   }
-
-   public function set_head_data( $empleado, $lapso, $almacenar_registros )
+   public function get_arr_head_data( $empleado, $lapso, $almacenar_registros )
    {      
       $transaccion = TipoTransaccion::find( self::CORE_TIPO_TRANSACCION_ID );
 
@@ -77,7 +67,7 @@ class DocumentoSoporte extends Model
          $app_doc_type->aumentar_consecutivo( $core_empresa_id, $core_tipo_doc_app->id );
       }
 
-      $this->array_head_data = [ 
+      return [ 
          'env' => 'PRUEBAS',
          'prefix' => $core_tipo_doc_app->prefijo,
          'number' => $consecutivo,
@@ -92,34 +82,97 @@ class DocumentoSoporte extends Model
 
    }
 
-   public function set_accruals_data( $empleado, $lapso )
+   public function get_arr_content_data( $empleado, $lapso )
    {
       $registros = $empleado->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final);
-      dd( $lapso->fecha_inicial, $lapso->fecha_final,$registros);
-      $concepto->cpto_dian->codigo;
+
+      $registros_por_conceptos = $registros->groupBy('nom_concepto_id');
       
-      /*
+      $line_accruals = [];
+      $line_deductions = [];
+      foreach ($registros_por_conceptos as $concepto_id => $registro_concepto) {         
+         
+         $concepto = $registro_concepto->all()[0]->concepto;
 
-      "accruals": [ { "code => BASICO", "amount": 1500000, "days": 5 }, { "code => VIATICO", "amount": 100000, "amount-ns": 200000 } ]
-      
-      */
-
-      $send_dian = 'true';
-      $send_email = config('facturacion_electronica.enviar_email_clientes');
-
-      $lista_emails = $this->doc_encabezado->cliente->tercero->email;
-      if ( config('facturacion_electronica.email_copia_factura') != '' )
-      {
-         $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
+         if ($concepto->naturaleza == 'devengo') {
+            $line_accruals[] = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'));
+         }else{
+            $line_deductions[] = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'));
+         }
       }
 
-      $this->array_accruals = [];
-      /*'actions': {"send_dian" =>  $send_dian,
-         'send_email" =>  $send_email,
-         'email => ' . $lista_emails"},
-      'credit_note": {' . $this->get_encabezado_nota_credito( $factura_doc_encabezado ),
-         'items" =>  $this->get_lineas_registros(),
-         'charges": []}}';*/
+      return [
+         'accruals' => $line_accruals,
+         'deductions' => $line_deductions
+      ];
+   }
+
+   public function get_linea_empleado($registro_concepto,$concepto,$amount)
+   {         
+      $one_line = [];
+      
+      if ($concepto->cpto_dian == null) {
+         $one_line['status'] = 'error';
+         $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN.';
+         return $one_line;
+      }
+      
+      $one_line['status'] = 'success';
+      $one_line['code'] = $concepto->cpto_dian->codigo;
+      
+      if ($concepto->cpto_dian->liquida_dias) {
+         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+      }
+      
+      if ($concepto->cpto_dian->liquida_horas) {
+         $one_line['hours'] = $registro_concepto->sum('cantidad_horas');
+      }
+      
+      if ($concepto->cpto_dian->porcentaje_del_basico != 0) {
+         $one_line['percentage'] = $concepto->cpto_dian->porcentaje_del_basico;
+      }         
+      
+      $one_line['amount'] = $amount;
+      //$registro_concepto->sum('valor_devengo') + $registro_concepto->sum('valor_deduccion');
+
+      return $one_line;
+   }
+
+   public function get_arr_employee_data($empleado, $lapso)
+   {
+      $data['code'] = $empleado->tercero->numero_identificacion;
+      $data['payment-means'] = 'EFECTIVO';
+      $data['worker-type'] = 'FUNCIONARIOS_PUBLICOS_SIN_TOPE_MAXIMO_DE_IBC';
+      $data['sub-code'] = 'NO_APLICA';
+      $data['start-date'] = '01/01/2001';
+      $data['fire-date'] = '';
+      $data['high-risk'] = false;
+      $data['integral-salary'] = false;
+      $data['contract-type'] = 'TERMINO_FIJO';
+      $data['identification-type'] = 'NUIP';
+      $data['identification'] = $empleado->tercero->numero_identificacion;
+      $data['first-name'] = $empleado->tercero->nombre1;
+      $data['other-names'] = $empleado->tercero->otros_nombres;
+      $data['last-name'] = $empleado->tercero->apellido1;
+      $data['second-last-name'] = $empleado->tercero->apellido2;
+      $data['bank'] = '';
+      $data['account-type-kw'] = '';
+      $data['account-number'] = '';
+
+      
+      // 16925001 = 169 pais, 25 departamento, 001 ciudad
+      $department_id = substr($empleado->tercero->ciudad->id,3,2);
+      $city_id = substr($empleado->tercero->ciudad->id, 5, strlen($empleado->tercero->ciudad->id)-1);
+
+      $data['address'] = [
+         'city' => $city_id,
+         'line' => $empleado->tercero->direccion1,
+         'department' => $department_id
+      ];
+
+      return [
+         'employee' => $data
+      ];
    }
 
    public function get_encabezado_factura()

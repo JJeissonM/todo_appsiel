@@ -428,6 +428,7 @@ class VtasMovimiento extends Model
         return VtasDocEncabezado::where($array_wheres)
                             ->whereIn('vtas_doc_encabezados.core_tipo_transaccion_id',$arr_tipo_transaccion_id)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->orderBy('fecha')
                             ->get();
     }
 

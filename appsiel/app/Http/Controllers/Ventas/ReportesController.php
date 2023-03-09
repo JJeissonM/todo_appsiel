@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Khill\Lavacharts\Laravel\LavachartsFacade;
+use PhpParser\Node\Stmt\Switch_;
 
 class ReportesController extends Controller
 {
@@ -452,6 +454,51 @@ class ReportesController extends Controller
         $movimiento = VtasMovimiento::get_movimiento_entre_fechas($fecha_desde, $fecha_hasta);
 
         $vista = View::make('ventas.reportes.movimientos', compact('movimiento'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function documentos_facturacion(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+
+        $detalla_productos = $request->detalla_productos;
+        
+        /**
+         * 23 = Factura de ventas
+         * 38 = Nota crédito ventas
+         * 41 = Nota crédito directa
+         * 44 = Factura Médica
+         * 47 = Factura de ventas POS
+         * 49 = Factura de estudiantes
+         * 52 = Factura Electrónica de Ventas
+         * 53 = Nota Crédito Electrónica de Ventas
+         * 54 = Nota Débito Electrónica de Ventas
+         */
+        switch ($request->transacciones_a_mostrar) {
+            case 'todas_las_facturas':
+                $arr_ids = [ 23, 38, 41, 44, 47, 49, 52, 53, 54];
+                break;
+
+            case 'solo_electronicas':
+                $arr_ids = [ 52, 53, 54];
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        $documentos_ventas = VtasMovimiento::get_documentos_ventas_por_transaccion($fecha_desde, $fecha_hasta, $arr_ids, 'Activo');
+
+        $mensaje = 'Estado: Activo';
+
+        $empresa = Empresa::find( Auth::user()->empresa_id );
+
+        $vista = View::make('ventas.reportes.documentos_de_facturacion', compact( 'documentos_ventas',  'mensaje','detalla_productos','empresa') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
