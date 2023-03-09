@@ -215,4 +215,13 @@ class Movimiento extends Model
 
         return $movimiento->groupBy( $agrupar_por );
     }
+
+    public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado )
+    {
+        return FacturaPos::whereIn('core_tipo_transaccion_id',$arr_tipo_transaccion_id)
+                        ->whereIn('estado', $arr_estado)
+                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                        ->orderBy('fecha')
+                        ->get();
+    }
 }

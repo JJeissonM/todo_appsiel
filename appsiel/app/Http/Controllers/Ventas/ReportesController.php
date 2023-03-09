@@ -18,6 +18,7 @@ use App\Inventarios\InvDocEncabezado;
 
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\Movimiento;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
@@ -492,13 +493,15 @@ class ReportesController extends Controller
                 break;
         }
 
-        $documentos_ventas = VtasMovimiento::get_documentos_ventas_por_transaccion($fecha_desde, $fecha_hasta, $arr_ids, 'Activo');
+        $documentos_ventas = VtasMovimiento::get_documentos_ventas_por_transaccion_arr_estados($fecha_desde, $fecha_hasta, $arr_ids, ['Enviada','Activo']);
 
-        $mensaje = 'Estado: Activo';
+        $documentos_ventas_pos = Movimiento::get_documentos_ventas_por_transaccion_arr_estados($fecha_desde, $fecha_hasta, $arr_ids, ['Contabilizado']);
+
+        $mensaje = '';
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
 
-        $vista = View::make('ventas.reportes.documentos_de_facturacion', compact( 'documentos_ventas',  'mensaje','detalla_productos','empresa') )->render();
+        $vista = View::make('ventas.reportes.documentos_de_facturacion', compact( 'documentos_ventas',  'mensaje','detalla_productos','empresa','documentos_ventas_pos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

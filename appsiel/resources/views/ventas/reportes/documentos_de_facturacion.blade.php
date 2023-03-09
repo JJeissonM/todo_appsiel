@@ -37,60 +37,117 @@
                 $gran_precio_total = 0;
             ?>
 
-            @foreach($documentos_ventas as $documento)
-                
-                @if($detalla_productos)
-                    
-                    <?php 
-                        $lineas_registros = $documento->lineas_registros;
-                    ?>
+@foreach($documentos_ventas as $documento)
+    
+    @if($detalla_productos)
+        
+        <?php 
+            $lineas_registros = $documento->lineas_registros;
+        ?>
 
-                    @foreach($lineas_registros as $linea)
+        @foreach($lineas_registros as $linea)
 
-                        <?php 
-                            $gran_base_impuesto_total += $linea->base_impuesto_total;
-                            $gran_precio_total += $linea->precio_total;
-                        ?>
+            <?php 
+                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $gran_precio_total += $linea->precio_total;
+            ?>
 
-                        <tr>
-                            <td> {{ $documento->tipo_transaccion->descripcion }} </td>
-                            <td> {{ $documento->fecha }} </td>
-                            <td> {!! $documento->get_label_documento() !!} </td>
-                            <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
-                            <td> {{ $documento->cliente->tercero->descripcion }} </td>
-                            <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
-                            <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                            <td> ${{ number_format( $linea->base_impuesto_total, 0, ',', '.') }} </td>
-                            <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total, 0, ',', '.') }} </td>
-                            <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
-                        </tr>
-                    @endforeach
-                @else
-                    <?php 
-                        $lineas_registros = $documento->lineas_registros;
-                        $base_impuesto_total = 0;
-                        $precio_total = 0;
-                        foreach($lineas_registros as $linea)
-                        {
-                            $base_impuesto_total += $linea->base_impuesto_total;
-                            $precio_total += $linea->precio_total;
+            <tr>
+                <td> {{ $documento->tipo_transaccion->descripcion }} </td>
+                <td> {{ $documento->fecha }} </td>
+                <td> {!! $documento->get_label_documento() !!} </td>
+                <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
+                <td> {{ $documento->cliente->tercero->descripcion }} </td>
+                <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
+                <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+            </tr>
+        @endforeach
+    @else
+        <?php 
+            $lineas_registros = $documento->lineas_registros;
+            $base_impuesto_total = 0;
+            $precio_total = 0;
+            foreach($lineas_registros as $linea)
+            {
+                $base_impuesto_total += $linea->base_impuesto_total;
+                $precio_total += $linea->precio_total;
 
-                            $gran_base_impuesto_total += $linea->base_impuesto_total;
-                            $gran_precio_total += $linea->precio_total;
-                        }
-                    ?>
-                        <tr>
-                            <td> {{ $documento->tipo_transaccion->descripcion }} </td>
-                            <td> {{ $documento->fecha }} </td>
-                            <td> {!! $documento->get_label_documento() !!} </td>
-                            <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
-                            <td> {{ $documento->cliente->tercero->descripcion }} </td>
-                            <td> ${{ number_format( $base_impuesto_total, 0, ',', '.') }} </td>
-                            <td> ${{ number_format( $precio_total - $base_impuesto_total, 0, ',', '.') }} </td>
-                            <td> ${{ number_format( $precio_total, 0, ',', '.') }} </td>
-                        </tr>
-                @endif                
-            @endforeach
+                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $gran_precio_total += $linea->precio_total;
+            }
+        ?>
+            <tr>
+                <td> {{ $documento->tipo_transaccion->descripcion }} </td>
+                <td> {{ $documento->fecha }} </td>
+                <td> {!! $documento->get_label_documento() !!} </td>
+                <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
+                <td> {{ $documento->cliente->tercero->descripcion }} </td>
+                <td> ${{ number_format( $base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $precio_total - $base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $precio_total, 0, ',', '.') }} </td>
+            </tr>
+    @endif                
+@endforeach
+
+@foreach($documentos_ventas_pos as $documento)
+    
+    @if($detalla_productos)
+        
+        <?php 
+            $lineas_registros = $documento->lineas_registros;
+        ?>
+
+        @foreach($lineas_registros as $linea)
+
+            <?php 
+                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $gran_precio_total += $linea->precio_total;
+            ?>
+
+            <tr>
+                <td> {{ $documento->tipo_transaccion->descripcion }} </td>
+                <td> {{ $documento->fecha }} </td>
+                <td> {!! $documento->get_label_documento() !!} </td>
+                <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
+                <td> {{ $documento->cliente->tercero->descripcion }} </td>
+                <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
+                <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+            </tr>
+        @endforeach
+    @else
+        <?php 
+            $lineas_registros = $documento->lineas_registros;
+            $base_impuesto_total = 0;
+            $precio_total = 0;
+            foreach($lineas_registros as $linea)
+            {
+                $base_impuesto_total += $linea->base_impuesto_total;
+                $precio_total += $linea->precio_total;
+
+                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $gran_precio_total += $linea->precio_total;
+            }
+        ?>
+            <tr>
+                <td> {{ $documento->tipo_transaccion->descripcion }} </td>
+                <td> {{ $documento->fecha }} </td>
+                <td> {!! $documento->get_label_documento() !!} </td>
+                <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
+                <td> {{ $documento->cliente->tercero->descripcion }} </td>
+                <td> ${{ number_format( $base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $precio_total - $base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $precio_total, 0, ',', '.') }} </td>
+            </tr>
+    @endif                
+@endforeach
+
+
         </tbody>
         <tfoot>
             <tr>

@@ -428,8 +428,21 @@ class VtasMovimiento extends Model
         return VtasDocEncabezado::where($array_wheres)
                             ->whereIn('vtas_doc_encabezados.core_tipo_transaccion_id',$arr_tipo_transaccion_id)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                            ->orderBy('fecha')
                             ->get();
+    }
+
+    public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado )
+    {        
+        $array_wheres = [
+            ['vtas_doc_encabezados.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        return VtasDocEncabezado::where($array_wheres)
+                        ->whereIn('vtas_doc_encabezados.core_tipo_transaccion_id',$arr_tipo_transaccion_id)
+                        ->whereIn('vtas_doc_encabezados.estado', $arr_estado)
+                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                        ->orderBy('fecha')
+                        ->get();
     }
 
     public static function get_ultimo_precio_producto($cliente_id, $producto_id)
