@@ -46,7 +46,7 @@
 							            if (strlen($num_mes)==1) {
 							                $num_mes="0".$num_mes;
 							            }
-							            $url='tesoreria/imprimir_cartera/matricula/mes/'.$num_mes.'?curso_id='.Input::get('curso_id');
+							            $url='tesoreria/imprimir_cartera/'.config('matriculas.inv_producto_id_default_matricula').'/mes/'.$num_mes.'?curso_id='.Input::get('curso_id');
 							            echo "<tr>
 							            <td>".ConfiguracionController::nombre_mes($num_mes)."</td>
 							             <td class='text-right'>$".number_format($cartera_matriculas[$num_mes], 0, ',', '.')."</td>";
@@ -84,7 +84,7 @@
 							            if (strlen($num_mes)==1) {
 							                $num_mes="0".$num_mes;
 							            }
-							            $url='tesoreria/imprimir_cartera/pension/mes/'.$num_mes.'?curso_id='.Input::get('curso_id');
+							            $url='tesoreria/imprimir_cartera/'.config('matriculas.inv_producto_id_default_pension').'/mes/'.$num_mes.'?curso_id='.Input::get('curso_id');
 							            echo "<tr>
 							            <td>".ConfiguracionController::nombre_mes($num_mes)."</td>
 							             <td class='text-right'>$".number_format($cartera_pensiones[$num_mes], 0, ',', '.')."</td>";

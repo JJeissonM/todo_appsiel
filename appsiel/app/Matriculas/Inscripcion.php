@@ -5,9 +5,7 @@ namespace App\Matriculas;
 use Illuminate\Database\Eloquent\Model;
 
 use DB;
-use Auth;
 
-use App\Core\Tercero;
 use App\Matriculas\Estudiante;
 
 class Inscripcion extends Model

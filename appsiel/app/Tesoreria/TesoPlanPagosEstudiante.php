@@ -106,7 +106,6 @@ class TesoPlanPagosEstudiante extends Model
 
     public static function get_cartera_estudiantes_curso( $curso_id, $fecha_vencimiento, $concepto)
     {
-
         $cadena="%-".$fecha_vencimiento."-%";
 
         if ( $curso_id == '') 

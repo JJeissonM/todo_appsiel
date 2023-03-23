@@ -2,46 +2,22 @@
 
 namespace App\Http\Controllers\Tesoreria;
 
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-
-
-use App\Http\Controllers\Core\ConfiguracionController;
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
-
-// Modelos
-use App\Matriculas\Grado;
 use App\Matriculas\Estudiante;
-use App\Matriculas\Matricula;
-use App\Matriculas\Curso;
 
 use App\Core\Colegio;
 use App\Core\Empresa;
 use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\ConsecutivoDocumento;
-use App\Core\Tercero;
 
-use App\Tesoreria\TesoLibretasPago;
-use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMotivo;
-use App\Tesoreria\TesoMedioRecaudo;
-use App\Tesoreria\TesoMovimiento;
-
-use App\Contabilidad\ContabMovimiento;
-
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class TesoreriaController extends TransaccionController
 {
@@ -99,7 +75,6 @@ class TesoreriaController extends TransaccionController
 
         switch ($tipo) {
             case 'mes':
-
                 $carteras = TesoPlanPagosEstudiante::get_cartera_estudiantes_curso( Input::get('curso_id'), $fecha_vencimiento, $concepto);
                 break;
             case 'estudiante':
@@ -121,7 +96,7 @@ class TesoreriaController extends TransaccionController
         $orientacion='portrait';
 
         //crear PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
         //return $pdf->stream();
         return $pdf->download('cartera.pdf');

@@ -252,12 +252,14 @@ class Tercero extends Model
             return null;
         }
 
-        if( (int)$datos['representante_legal_id'] != 0 )
-        {
-            DB::table('core_tercero_tiene_representante_legal')->insert([
-                                                                            'tercero_id' => $registro->id,
-                                                                            'representante_legal_id' => (int)$datos['representante_legal_id']
-                                                                        ]);
+        if (isset($datos['representante_legal_id'])) {
+            if( (int)$datos['representante_legal_id'] != 0 )
+            {
+                DB::table('core_tercero_tiene_representante_legal')->insert([
+                                                'tercero_id' => $registro->id,
+                                                'representante_legal_id' => (int)$datos['representante_legal_id']
+                                            ]);
+            }
         }
     }
 
@@ -319,13 +321,14 @@ class Tercero extends Model
         }else{
             // Si no tiene rep. legal
 
-            if ( (int)$datos['representante_legal_id'] != 0 )
-            {
-                // Se crea uno nuevo
-                DB::table('core_tercero_tiene_representante_legal')->insert([
-                                                                            'tercero_id' => $tercero->id,
-                                                                            'representante_legal_id' => (int)$datos['representante_legal_id']
-                                                                        ]);
+            if (isset($datos['representante_legal_id'])) {
+                if( (int)$datos['representante_legal_id'] != 0 )
+                {
+                    DB::table('core_tercero_tiene_representante_legal')->insert([
+                                                    'tercero_id' => $registro->id,
+                                                    'representante_legal_id' => (int)$datos['representante_legal_id']
+                                                ]);
+                }
             }
         }
     }

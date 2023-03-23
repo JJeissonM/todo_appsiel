@@ -151,9 +151,7 @@ class LibretaPagoController extends ModeloController
         $chart = LavachartsFacade::PieChart('torta_pensiones', $stocksTable,[
                 'is3D'                  => True,
                 'pieSliceText'          => 'value'
-            ]);
-
-        
+            ]);        
 
         $miga_pan = [
                 ['url'=>'NO','etiqueta'=>'Tesoreria']

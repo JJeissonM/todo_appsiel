@@ -8,9 +8,6 @@ use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 use App\Http\Controllers\Ventas\VentaController;
 
-use Input;
-use Auth;
-
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
 
@@ -18,6 +15,8 @@ use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\Matriculas\FacturaAuxEstudiante;
 use App\Ventas\VtasDocEncabezado;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class FacturaMasivaEstudianteController extends TransaccionController
 {
