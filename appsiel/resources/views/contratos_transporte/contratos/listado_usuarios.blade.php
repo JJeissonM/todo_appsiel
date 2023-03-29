@@ -2,7 +2,7 @@
 <table style="border: 1px solid; width: 100%; border-collapse: collapse;">
     <tbody>
         <tr>
-            <th style="border: 1px solid; padding-left: 5px; font-weight: bold; text-align:center;" colspan="2">GRUPO DE USUARIOS</th>
+            <th style="border: 1px solid; padding-left: 5px; font-weight: bold; text-align:center;" colspan="2">LISTADO GRUPO DE USUARIOS</th>
         </tr>
         <tr>
             <td style="border: 1px solid; padding-left: 5px; font-weight: bold; text-align:center;">IDENTIFICACIÓN</td>
