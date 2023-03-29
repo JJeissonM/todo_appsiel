@@ -209,14 +209,19 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 							</tr>
 						</tbody>
 					</table>
-					<p>
-						<b>TERCERA: PARQUE AUTOMOTOR:</b> Los vehículos relacionados a continuación son los asignados para la prestación del servicio y cuentan con las pólizas de Responsabilidad Civil Contractual y Extracontractual vigentes, así como el Seguro Obligatorio, extracto de contrato FUEC y demás documentos exigidos en el Decreto 348 de 2015 y/o normatividad legal vigente y cumpliendo demás reglamentación exigida por el Ministerio de Transporte y Superintendencia de Puerto y Transporte.
-						<b>CUARTA: PRECIO Y FORMA DE PAGO:</b> El servicio de Transporte tiene un costo acordado previamente por las partes, por valor _________________ <b>QUINTA: OBLIGACIONES DEL CONTRATANTE. EL CONTRATANTE</b> se obliga para <b>EL CONTRATISTA</b> a lo siguiente: (I) A suministrar previamente un listado con los usuarios a movilizar. (II) A suministrar oportunamente las novedades que surjan en el desarrollo del contrato y que alteren o puedan alterar de manera general o específica la marcha normal de actividades y horarios. ( III) Realizar las actividades turísticas de manera respetuosa y responsable con el medio natural, el patrimonio cultural y los valores de la comunidad; promoviendo el consumo de bienes y de servicios con intercambios económicos.
-						<b>SEXTA: OBLIGACIONES DEL CONTRATISTA: EL CONTRATISTA:</b> Se obliga para con el <b>CONTRATANTE</b> a lo siguiente (I) disponer de los vehículos determinados y contratados para la prestación del servicio. ( II) A procurar la armonía y convivencia requeridas entre los usuarios del servicio, <b>EL CONTRATANTE</b> y el personal que está a su cargo. (III) Garantizar la prestación del servicio en los términos convenidos, evitando sobre cupos, a la presencia de personas ajenas. (IV) En los eventos de fuerza mayor o en caso fortuito garantizar en cuanto sea posible la prestación del servicio. ( VIII) En <b>SÉPTIMA: CAUSALES DE TERMINACIÓN:</b> El presente contrato terminará por las siguientes causas: ( I) Por mutuo acuerdo de las partes manifestadas con una antelación de 10 días calendario. ( II) Por incumplimiento de alguna o algunas de las obligaciones que surjan del presente contrato. ( III) Por cancelación por parte del <b>CONTRATANTE</b>, en caso que, el vehículo se ubique en el lugar de origen y no se presta el servicio por causa del contratante se cobrara el 50% del valor del servicio.
-					</p>
+
+					@if(count($c->contratogrupous)>0)
+						<br>
+						@include('contratos_transporte.contratos.listado_usuarios')
+					@endif
+					<p><b>TERCERA: PARQUE AUTOMOTOR:</b> Los vehículos relacionados a continuación son los asignados para la prestación del servicio y cuentan con las pólizas de Responsabilidad Civil Contractual y Extracontractual vigentes, así como el Seguro Obligatorio, extracto de contrato FUEC y demás documentos exigidos en el Decreto 348 de 2015 y/o normatividad legal vigente y cumpliendo demás reglamentación exigida por el Ministerio de Transporte y Superintendencia de Puerto y Transporte.@if(count($c->contratogrupous)>0)<br>@endif	<b>CUARTA: PRECIO Y FORMA DE PAGO:</b> El servicio de Transporte tiene un costo acordado previamente por las partes, por valor _________________ @if(count($c->contratogrupous)>0)<br>@endif<b>QUINTA: OBLIGACIONES DEL CONTRATANTE. EL CONTRATANTE</b> se obliga para <b>EL CONTRATISTA</b> a lo siguiente: (I) A suministrar previamente un listado con los usuarios a movilizar. (II) A suministrar oportunamente las novedades que surjan en el desarrollo del contrato y que alteren o puedan alterar de manera general o específica la marcha normal de actividades y horarios. ( III) Realizar las actividades turísticas de manera respetuosa y responsable con el medio natural, el patrimonio cultural y los valores de la comunidad; promoviendo el consumo de bienes y de servicios con intercambios económicos.@if(count($c->contratogrupous)>0)<br>@endif<b>SEXTA: OBLIGACIONES DEL CONTRATISTA: EL CONTRATISTA:</b> Se obliga para con el <b>CONTRATANTE</b> a lo siguiente (I) disponer de los vehículos determinados y contratados para la prestación del servicio. ( II) A procurar la armonía y convivencia requeridas entre los usuarios del servicio, <b>EL CONTRATANTE</b> y el personal que está a su cargo. (III) Garantizar la prestación del servicio en los términos convenidos, evitando sobre cupos, a la presencia de personas ajenas. (IV) En los eventos de fuerza mayor o en caso fortuito garantizar en cuanto sea posible la prestación del servicio. ( VIII) En @if(count($c->contratogrupous)>0)<br>@endif<b>SÉPTIMA: CAUSALES DE TERMINACIÓN:</b> El presente contrato terminará por las siguientes causas: ( I) Por mutuo acuerdo de las partes manifestadas con una antelación de 10 días calendario. ( II) Por incumplimiento de alguna o algunas de las obligaciones que surjan del presente contrato. ( III) Por cancelación por parte del <b>CONTRATANTE</b>, en caso que, el vehículo se ubique en el lugar de origen y no se presta el servicio por causa del contratante se cobrara el 50% del valor del servicio.</p>
 					<p>En constancia se firma el presente contrato el día <b>({{$c->dia_contrato}})</b> del mes <b>{{$c->mes_contrato}}</b> de <b>{{$c->anio_contrato}}</b> </p>
 				</div>
-			</div>
+			
+			</div>@if(count($c->contratogrupous)>0)
+				<br>
+			@endif
+
 			<table style="width: 100%; font-size: 11px;">
 				<tbody>
 					<tr>
@@ -248,9 +253,9 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 			</table>
 		</div>
 
-
-		<!-- <div class="page-break"></div> -->
-
+		@if(count($c->contratogrupous)>0)
+			<div class="page-break"></div>
+		@endif		
 
 		<div class="row" style="font-size: 14px; line-height: 1.5;">
 			@include('contratos_transporte.contratos.logos_encabezado_print')

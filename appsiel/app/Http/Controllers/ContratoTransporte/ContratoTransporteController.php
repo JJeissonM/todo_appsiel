@@ -4,7 +4,6 @@ namespace App\Http\Controllers\ContratoTransporte;
 
 use App\Sistema\SecuenciaCodigo;
 
-use App\Contratotransporte\Conductor;
 use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Contrato;
 use App\Contratotransporte\Contratogrupou;
@@ -13,19 +12,17 @@ use App\Contratotransporte\Documentosvehiculo;
 use App\Contratotransporte\Planillac;
 use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
-use App\Contratotransporte\Propietario;
+
 use App\Contratotransporte\Vehiculo;
 use App\Contratotransporte\Vehiculoconductor;
 use App\Core\Empresa;
-use App\Core\Tercero;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-use Illuminate\View\View as ViewView;
-use View;
-
+use Illuminate\Support\Facades\View;
 
 class ContratoTransporteController extends Controller
 {
@@ -219,8 +216,6 @@ class ContratoTransporteController extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
-
         $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
         $hoy = getdate();
         $mes_actual = $hoy['mon'];

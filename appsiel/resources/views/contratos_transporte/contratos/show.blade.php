@@ -70,7 +70,7 @@
 											en representación de <b>{{$c->representacion_de}}</b>
 										</p>
 										<div class="table-responsive col-md-12" id="table_content">
-											<h4>DESCRIPCIÓN DEL GRUPO DE USUARIOS</h4>
+											<h4>LISTADO GRUPO DE USUARIOS</h4>
 											<table class="table table-bordered table-striped">
 												<thead>
 													<tr>
@@ -92,7 +92,7 @@
 												</tbody>
 											</table>
 											<a onclick="addRow('usuarios')" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Usuario</a>
-											{{ Form::open(['route'=>'cte_contratos.storegu','method'=>'post','class'=>'form-horizontal']) }}
+											{{ Form::open(['route'=>'cte_contratos.storegu','method'=>'post','class'=>'form-horizontal','id'=>'form_agregar_usuario']) }}
 											<input type="hidden" name="variables_url" value="{{$variables_url}}" />
 											<input type="hidden" name="id" value="{{$c->id}}" />
 											<table id="usuarios" class="table table-bordered table-striped">
@@ -100,18 +100,13 @@
 													<tr>
 														<th>Identificación</th>
 														<th>Persona</th>
-														<th>Quitar</th>
+														<th>Agregar</th>
 													</tr>
 												</thead>
 												<tbody>
 
 												</tbody>
 											</table>
-											<div class="form-group">
-												<div class="col-md-12" style="margin-top: 50px;">
-													<button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> Guardar Usuarios</button>
-												</div>
-											</div>
 											</form>
 										</div>
 										<p>
@@ -222,9 +217,16 @@
 		$(this).closest('tr').remove();
 	});
 
+	$(document).on('click', '#btn_agregar_usuario', function(event) {
+		event.preventDefault();
+		$(this).off(event);
+		$(this).attr('disabled','disabled');
+		$('#form_agregar_usuario').submit();
+	});
+
 	function addRow(tabla) {
-		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required /></td><td><input type='text' class='form-control' name='persona[]' required /></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
-		$('#' + tabla + ' tr:last').after(html);
+		var html = "<tr><td><input autocomplete='off' style='margin: 10px; border-right: 2px gray solid; border-bottom: 2px gray solid; width: 80%; background-color: #ddd;' type='text' class='form-control' name='identificacion[]' required /></td><td><input autocomplete='off' style='margin: 10px; border-right: 2px gray solid; border-bottom: 2px gray solid; width: 80%; background-color: #ddd;' type='text' class='form-control' name='persona[]' required /></td><td><a href='#' class='btn btn-success' id='btn_agregar_usuario' title='Agregar'><i class='fa fa-check'></i></a></td></tr>";
+		$('#' + tabla + ' tbody:last').after(html);
 	}
 </script>
 @endsection

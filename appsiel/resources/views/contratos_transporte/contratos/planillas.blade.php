@@ -60,19 +60,16 @@
 						</thead>
 						<tbody>
 							@if(count($planillas)>0)
-							@foreach($planillas as $p)
-							<tr>
-								<td>{{$p->id}}</td>
-								<td>{{$p->plantilla->titulo}}</td>
-								<td>{{$p->created_at}}</td>
-								<td>
-									<!--<a target="_blank" href="{{route('cte_contratos.planillaimprimir',$p->id)}}" class="btn btn-xs btn-success"><i class="fa fa-print"></i> IMPRIMIR FUEC</a>
-									<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn btn-xs btn-primary"><i class="fa fa-print"></i> IMPRIMIR CONTRATO</a>
--->
-									<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
-								</td>
-							</tr>
-							@endforeach
+								@foreach($planillas as $p)
+								<tr>
+									<td>{{$p->id}}</td>
+									<td>{{$p->plantilla->titulo}}</td>
+									<td>{{$p->created_at}}</td>
+									<td>
+										<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
+									</td>
+								</tr>
+								@endforeach
 							@endif
 						</tbody>
 					</table>
