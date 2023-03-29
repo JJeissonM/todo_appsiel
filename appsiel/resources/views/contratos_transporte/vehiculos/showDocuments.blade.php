@@ -62,7 +62,7 @@
 @section('scripts')
 <script>
 	function ir(id) {
-		var url = "{{url('')}}/appsiel/storage/app/" + id;
+		var url = "{{config('configuracion.url_instancia_cliente')}}/storage/app/" + id;
 		window.open(url, '', 'width=800,height=500,left=50,top=50,toolbar=yes');
 	}
 </script>
