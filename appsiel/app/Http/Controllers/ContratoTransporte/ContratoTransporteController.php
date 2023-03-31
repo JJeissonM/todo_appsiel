@@ -164,6 +164,15 @@ class ContratoTransporteController extends Controller
         $cont = Contratante::all();
         if (count($cont) > 0) {
             foreach ($cont as $c) {
+                
+                if ($c->estado == 'Inactivo') {
+                    continue;
+                }
+                
+                if ($c->tercero->estado == 'Inactivo') {
+                    continue;
+                }
+
                 $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion;
             }
         }
