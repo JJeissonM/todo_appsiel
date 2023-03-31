@@ -1,8 +1,6 @@
 <?php  
 	$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
 
-	//dd( $doc_encabezado->tercero );
-	//dd( [ $doc_encabezado->tercero->direccion1, $doc_encabezado->tercero->ciudad->descripcion, $doc_encabezado->tercero->ciudad->departamento->descripcion ] );
 	$color = 'black';
 
 	$tipo_operacion = 'factura';
@@ -43,9 +41,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
-	Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
+	&nbsp;
 @endsection
 
 @section('botones_anterior_siguiente')

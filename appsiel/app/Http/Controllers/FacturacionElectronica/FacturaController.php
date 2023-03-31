@@ -120,6 +120,7 @@ class FacturaController extends TransaccionController
     	$datos['creado_por'] = Auth::user()->email;
     	$datos['remision_doc_encabezado_id'] = $documento_remision->id;
         $datos['estado'] = 'Sin enviar';
+        $datos = $this->set_fields_default($datos);
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_factura = $encabezado_documento->crear_nuevo( $datos );
 
@@ -141,6 +142,27 @@ class FacturaController extends TransaccionController
 
     	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido );
 
+    }
+
+    public function set_fields_default($datos)
+    {
+        if (!isset($datos['inv_bodega_id'])) {
+            $datos['inv_bodega_id'] = (int)config('ventas.inv_bodega_id');
+        }else{
+            if (in_array($datos['inv_bodega_id'],[0,''])) {
+                $datos['inv_bodega_id'] = (int)config('ventas.inv_bodega_id');
+            }
+        }
+
+        if (!isset($datos['vendedor_id'])) {
+            $datos['vendedor_id'] = (int)config('ventas.vendedor_id');
+        }else{
+            if (in_array($datos['vendedor_id'],[0,''])) {
+                $datos['vendedor_id'] = (int)config('ventas.vendedor_id');
+            }
+        }
+
+        return $datos;
     }
 
     // Llamado directamente
