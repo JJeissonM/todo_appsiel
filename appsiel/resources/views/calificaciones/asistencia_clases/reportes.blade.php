@@ -23,7 +23,10 @@
 				</div>
 				<div class="col-sm-3">
 					{{ Form::label('tipo_reporte','Tipo reporte') }}
-					{{ Form::select('tipo_reporte',['1'=>'Fallas por estudiante'],null,['class'=>'form-control','id'=>'tipo_reporte']) }}
+					{{ Form::select('tipo_reporte',[
+							'planilla_asistencias'=>'Planilla de Asistencia',
+							'cantidad_inasistencias'=>'Fallas por estudiante'
+						],null,['class'=>'form-control','id'=>'tipo_reporte']) }}
 				</div>
 				<div class="col-sm-3">
 					{{ Form::label(' ','.') }}
@@ -65,7 +68,12 @@
 
 				var fecha_inicial = $("#fecha_inicial").val();
 				var fecha_final = $("#fecha_final").val();
-				var curso_id = $("#curso_id").val();
+				
+				var curso_id = 0;
+				if ($("#curso_id").val() != '') {
+					var curso_id = $("#curso_id").val();
+				}
+				
 				var tipo_reporte = $("#tipo_reporte").val();
 				
 				var url = '../asistencia_clases/generar_reporte/'+fecha_inicial+'/'+fecha_final+'/'+curso_id+'/'+tipo_reporte;

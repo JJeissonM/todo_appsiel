@@ -2,10 +2,11 @@
 
 namespace App\Calificaciones;
 
+use App\Matriculas\Curso;
+use App\Matriculas\Estudiante;
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class AsistenciaClase extends Model
 {
@@ -14,6 +15,21 @@ class AsistenciaClase extends Model
     protected $fillable = [ 'id_estudiante', 'curso_id', 'asignatura_id', 'fecha', 'asistio', 'anotacion' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Estudiante', 'Curso', 'Asignatura', 'Asistió?', 'Anotación'];
+
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class,'id_estudiante');
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class,'curso_id');
+    }
+
+    public function asignatura()
+    {
+        return $this->belongsTo(Estudiante::class,'asignatura_id');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

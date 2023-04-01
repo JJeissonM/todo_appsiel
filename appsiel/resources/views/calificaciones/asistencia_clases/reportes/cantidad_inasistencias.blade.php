@@ -1,5 +1,5 @@
-<h2 align="center">Reporte de fallas</h2>
-<h3 align="center">Curso {{$curso->descripcion}} </h3>
+<h4 align="center">Reporte de fallas</h4>
+<h5 align="center">Curso {{$curso->descripcion}} </h5>
 <div class="row">
         <div class="col-sm-4">
             <b>Fecha inicial: </b> {{ $fecha_inicial }}

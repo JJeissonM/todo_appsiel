@@ -4,23 +4,19 @@ namespace App\Http\Controllers\Calificaciones;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use Input;
-use View;
 
 use App\Matriculas\Curso;
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
-use App\Matriculas\Estudiante;
 
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\AsistenciaClase;
 
 use App\Core\Colegio;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class AsistenciaClaseController extends Controller
 { 
@@ -165,10 +161,32 @@ class AsistenciaClaseController extends Controller
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
 
-        $registros = AsistenciaClase::get_inasistencias( $curso_id, $fecha_inicial, $fecha_final, null, null);
+        $array_wheres = [ ['id', '>', 0] ];
+
+        if ($curso_id != 0)
+        {
+            $array_wheres = array_merge($array_wheres, [ ['curso_id', '=', $curso_id] ] );
+        }
+
+        $estudiantes_matriculados = Matricula::estudiantes_matriculados($curso_id, PeriodoLectivo::get_actual()->id, 'Activo');
+        
+        $estudiantes = [];
+        foreach ($estudiantes_matriculados as $key => $matricula) {
+            $estudiantes[] = $matricula->estudiante;
+        }
+
+        $registros = AsistenciaClase::whereBetween('fecha', [$fecha_inicial, $fecha_final])
+                                ->where( [ 
+                                        ['curso_id', '=', $curso_id] 
+                                    ] )
+                                ->get();
 
         $curso = Curso::find($curso_id);
 
-        return View::make('calificaciones.asistencia_clases.reportes.cantidad_inasistencias', compact('registros', 'fecha_inicial','fecha_final','curso' ));
+        /**
+         * $tipo_reporte = { planilla_asistencias | cantidad_inasistencias }
+         */
+
+        return View::make('calificaciones.asistencia_clases.reportes.' . $tipo_reporte, compact('registros', 'fecha_inicial','fecha_final','curso', 'estudiantes' ));
     }
 }

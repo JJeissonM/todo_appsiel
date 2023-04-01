@@ -23,6 +23,7 @@ Route::post('calificaciones/calificar2', 'Calificaciones\CalificacionController@
 //  Asistencia a clases
 Route::get('calificaciones/asistencia_clases/reportes', 'Calificaciones\AsistenciaClaseController@reportes');
 Route::get('calificaciones/asistencia_clases/generar_reporte/{fecha_inicial}/{fecha_final}/{curso_id}/{tipo_reporte}', 'Calificaciones\AsistenciaClaseController@generar_reporte');
+
 Route::post('calificaciones/asistencia_clases/continuar_creacion', 'Calificaciones\AsistenciaClaseController@continuar_creacion');
 Route::resource('calificaciones/asistencia_clases', 'Calificaciones\AsistenciaClaseController');
 
