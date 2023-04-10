@@ -69,13 +69,13 @@
             
             <br>
                     
-            <table class="contenido table-bordered" style="width: 92% !important; padding-left: 22px !important;">
+            <table class="contenido table-bordered" style="width: 92% !important; padding-left: 3% !important;">
                 <thead>
                     <tr>
-                        <th style="width:230px; padding: 10px;">{{ $lbl_asigatura }}</th>
-                        <th style="padding: 10px;">Logros</th>
+                        <th style="width:180px; padding: 5px;">{{ $lbl_asigatura }}</th>
+                        <th style="padding: 5px;">Logros</th>
                         @if($curso->maneja_calificacion==1)
-                            <th style="width:80px; padding: 10px;">Valoración</th>
+                            <th style="width:80px; padding: 5px;">Valoración</th>
                             <?php $cant_columnas++;  ?>
                         @endif
                     </tr>
@@ -87,11 +87,11 @@
 
                         <tr>
 
-                            <td style="width:150px; padding: 10px;">
+                            <td style="width:150px; padding: 5;">
                                 {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                             </td>
 
-                            <td style="padding: 10px;">
+                            <td style="padding: 5;">
                                 @include('calificaciones.boletines.proposito')
                                 
                                 @include('calificaciones.boletines.lista_logros')
@@ -100,7 +100,7 @@
                             </td>
                             
                             @if( $curso->maneja_calificacion == 1)
-                                <td align="center" style="padding: 10px;"> 
+                                <td align="center" style="padding: 5;"> 
                                     @if( !is_null( $linea->calificacion ) )
                                         @if( $linea->calificacion->calificacion > 0)
                                             @include('calificaciones.boletines.lbl_descripcion_calificacion')
