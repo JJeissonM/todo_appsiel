@@ -30,13 +30,12 @@ use App\AcademicoDocente\AsignacionProfesor;
 use App\Core\PasswordReset;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
-
-use Input;
-use DB;
-use PDF;
-use View;
-use Storage;
-use Auth;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 
 class BoletinController extends Controller
 {
@@ -47,7 +46,7 @@ class BoletinController extends Controller
     }
 	
 	/**
-     * Se muestra formulario para revisar boletines
+     * Se muestra formulario para revisar
      *
      */
     public function revisar1()
@@ -59,14 +58,14 @@ class BoletinController extends Controller
 
         $miga_pan = [
                         ['url' => $app->app.'?id='.Input::get('id'),'etiqueta'=> $app->descripcion],
-                        ['url'=>'NO','etiqueta'=>'Revisar boletines']
+                        ['url'=>'NO','etiqueta'=>'Revisar informes']
                     ];
 
 		return view('calificaciones.boletines.revisar1',compact('cursos','periodos','miga_pan'));
     }
 	
 	/**
-     * Se muestra el resultado de la petición del usuario para revisar boletines
+     * Se muestra el resultado de la petición del usuario para revisar
      *
      */
     public function revisar2(Request $request)
@@ -120,7 +119,7 @@ class BoletinController extends Controller
     }
 	
 	/**
-     * Muestra Formulario para imprimir boletines
+     * Muestra Formulario para imprimir
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -143,7 +142,8 @@ class BoletinController extends Controller
                         'pdf_boletines_1' => 'Formato # 1 (estándar)',
                         'pdf_boletines_2' => 'Formato # 2 (preescolar)',
                         'pdf_boletines_3' => 'Formato # 3 (moderno)',
-                        'pdf_boletines_4' => 'Formato # 4 (resúmen)'
+                        'pdf_boletines_4' => 'Formato # 4 (resúmen)',
+                        'pdf_boletines_6' => 'Formato # 5 (marca de agua)'
                     ];
 
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
@@ -153,7 +153,7 @@ class BoletinController extends Controller
 
 		$miga_pan = [
                         ['url'=>'calificaciones?id='.Input::get('id'),'etiqueta'=>'Calificaciones'],
-                        ['url'=>'NO','etiqueta'=>'Imprimir boletines']
+                        ['url'=>'NO','etiqueta'=>'Imprimir informes']
                     ];
 
         return view( 'calificaciones.boletines.form_imprimir', compact('cursos','periodos_lectivos', 'formatos', 'miga_pan' ) );
@@ -189,7 +189,8 @@ class BoletinController extends Controller
         $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
         $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
         $mostrar_etiqueta_final = $request->mostrar_etiqueta_final;
-        $mostrar_nota_nivelacion = $request->mostrar_nota_nivelacion; 
+        $mostrar_nota_nivelacion = $request->mostrar_nota_nivelacion;
+        $tam_hoja = $request->tam_hoja;
         $tam_letra = $request->tam_letra;
         
         $margenes = (object)[ 
@@ -213,12 +214,14 @@ class BoletinController extends Controller
             }
         }
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos') )->render();//,'asignaturas'
+        $url_imagen_marca_agua = config('matriculas.url_imagen_marca_agua');
+
+		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua') )->render();
         
         // Se prepara el PDF
         $orientacion='portrait';
-        $pdf = \App::make('dompdf.wrapper');			
-        $pdf->loadHTML(($view))->setPaper($request->tam_hoja,$orientacion);
+        $pdf = App::make('dompdf.wrapper');			
+        $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
 
 		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
 	}

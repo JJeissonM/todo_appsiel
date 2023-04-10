@@ -36,13 +36,23 @@
 ?>
 	
 <td {{$style}}>
-	<ul>
+	<ul style="list-style: none;">
 		@foreach($logros as $un_logro)
-			<li> {{ $un_logro->descripcion }} </li>
+			<?php
+				$arr_logros = explode('•',$un_logro->descripcion);
+				$lista = '';
+				foreach ($arr_logros as $texto_logro) {
+					if ($texto_logro == '') {
+						continue;
+					}
+					$lista .= '• ' . $texto_logro . '<br>';
+				}
+			?>
+			<li> {!! $lista !!} </li>
 		@endforeach
 
 		@foreach($logros_adicionales as $un_logro)
-			<li> {{ $un_logro->descripcion }} </li>
+			<li> {{ '• ' . $un_logro->descripcion }} </li>
 		@endforeach
 	</ul>
 </td>

@@ -34,6 +34,30 @@
 				<br>
 				<h4> Parámetros generales  </h4>
 				<hr>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$codigo_dane = 2;
+								if( isset($parametros['codigo_dane'] ) )
+								{
+									$codigo_dane = $parametros['codigo_dane'];
+								}
+							?>
+							{{ Form::bsText('codigo_dane', $codigo_dane, 'Código DANE', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -319,7 +343,7 @@
 									$url_escudo_colegio = $parametros['url_escudo_colegio'];
 								}
 							?>
-							{{ Form::bsText('url_escudo_colegio', $url_escudo_colegio, 'URL de la imágen para el banner de reportes', ['class'=>'form-control']) }}
+							{{ Form::bsText('url_escudo_colegio', $url_escudo_colegio, 'URL de la imágen escudo', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -332,7 +356,30 @@
 									$formato_default_fichas_incripcion_y_matricula = $parametros['formato_default_fichas_incripcion_y_matricula'];
 								}
 							?>
-							{{ Form::bsSelect('formato_default_fichas_incripcion_y_matricula', $formato_default_fichas_incripcion_y_matricula, 'Mostrar contraseña del estudiante en la Ficha de matrícula', ['estandar'=>'Estandar','con_escudo'=>'Con Escudo'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('formato_default_fichas_incripcion_y_matricula', $formato_default_fichas_incripcion_y_matricula, 'Formato Fichas incripción y matricula', ['estandar'=>'Estandar','con_escudo'=>'Con Escudo'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">							
+							<?php 
+								$url_imagen_marca_agua = '';
+								if( isset($parametros['url_imagen_marca_agua'] ) )
+								{
+									$url_imagen_marca_agua = $parametros['url_imagen_marca_agua'];
+								}
+							?>
+							{{ Form::bsText('url_imagen_marca_agua', $url_imagen_marca_agua, 'URL de la imágen para marcaas de agua', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 

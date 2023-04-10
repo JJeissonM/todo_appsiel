@@ -32,7 +32,7 @@
 				{{ Form::hidden('titulo', $parametros['titulo']) }}
 
 				
-				<h4> Boletines y calificaciones  </h4>
+				<h4> Informes y calificaciones  </h4>
 				<hr>
 				<div class="row">
 

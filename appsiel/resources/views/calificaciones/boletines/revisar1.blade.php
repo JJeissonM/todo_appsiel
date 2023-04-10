@@ -8,7 +8,7 @@
 
 	<div class="row">
 	<div class="col-md-8 col-md-offset-2" style="background-color: white;border: 1px solid #d9d7d7;box-shadow: 5px 5px gray;">
-	    <h4 style="color: gray;">Revisión de boletines</h4>
+	    <h4 style="color: gray;">Revisión de informes</h4>
 	    <hr>
 
 	    {{Form::open(array('route'=>array('revision'),'method'=>'POST','class'=>'form-horizontal','id'=>'form-revisar'))}}

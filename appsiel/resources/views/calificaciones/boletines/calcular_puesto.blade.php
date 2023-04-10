@@ -8,7 +8,7 @@
 
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2 marco_formulario">
-		    <h4>Calcular puesto para boletines de estudiantes {{ Form::btnInfo( 'Solo aparecen los cursos para los que el profesor es Director de grupo.' ) }}</h4>
+		    <h4>Calcular puesto para informes de estudiantes {{ Form::btnInfo( 'Solo aparecen los cursos para los que el profesor es Director de grupo.' ) }}</h4>
 		    <hr>
 
 		    {{ Form::open( [ 'url' => 'calificaciones/boletines/calcular_puesto', 'method' => 'POST' , 'id' => 'mi_formulario'] ) }}

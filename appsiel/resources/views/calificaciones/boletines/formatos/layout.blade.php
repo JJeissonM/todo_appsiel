@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> Boletines curso {{ $curso->descripcion }} </title>
+    <title> Informes curso {{ $curso->descripcion }} </title>
     <style type="text/css">
 
 		*{
@@ -75,7 +75,25 @@
 			text-align:right;
 		}
 
+		.watermark-letter {
+			position: fixed;
+			top: 12%;
+			left: 15%;
+			text-align: center;
+			opacity: .2;
+			z-index: -1000;
+			width: 70%;
+		}
 
+		.watermark-folio {
+			position: fixed;
+			top: 20%;
+			left: 15%;
+			text-align: center;
+			opacity: .2;
+			z-index: -1000;
+			width: 70%;
+		}
     </style>
 </head>
 <body>

@@ -18,7 +18,7 @@
 	  <li class="list-group-item">Reconocimientos del estudiante</li>
 	  <li class="list-group-item">Calificaciones</li>
 	  <li class="list-group-item">Preinformes académicos</li>
-	  <li class="list-group-item">Observaciones de boletines</li>
+	  <li class="list-group-item">Observaciones de informes</li>
 	  <li class="list-group-item">Notas de nivelaciones</li>
 	</ul>
 	

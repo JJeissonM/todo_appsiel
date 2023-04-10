@@ -198,7 +198,7 @@ class ProcesosController extends ModeloController
                             "5":{
                                     "tabla":"sga_observaciones_boletines",
                                     "llave_foranea":"id_estudiante",
-                                    "mensaje":"Tiene registros de observaciones en boletines."
+                                    "mensaje":"Tiene registros de observaciones en informes."
                                 },
                             "6":{
                                     "tabla":"sga_preinformes_academicos",

@@ -40,19 +40,6 @@
 	
 </style>
 
-<!-- JQuery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js" integrity="sha384-I6F5OKECLVtK/BL+8iSLDEHowSAfUo76ZL9+kGAgTRdiByINKJaqTPH/QVNS1VDb" crossorigin="anonymous"></script>
-
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
-
-
 <div class="contenido1 container-fluid">
 
 	<h3 align="center">Revisión de boletines</h3>
@@ -66,7 +53,7 @@
 		foreach($estudiantes as $estudiante) {
 			
 				?>
-				<table  class="encabezado">
+				<table class="table table-striped">
 					<tr>
 						<td><span class="etiqueta">Estudiante</span> {{ $estudiante->nombre_completo }} </td>
 						<td><span class="etiqueta">Periodo/Año</span> {{ $periodo->descripcion }} &#47;  {{ $anio }}</td>
@@ -99,7 +86,7 @@
 					@endif
 				</table>
 				
-				<table class="contenido">
+				<table class="contenido table table-striped">
 					<thead>
 						<tr>
 							<th>Asignaturas</th>
@@ -148,7 +135,7 @@
 									{
 										$escala = (object) array('id' => 0, 'nombre_escala' => '');
 									}
-									$tbody.='<td>'.$calificacion.'<sup>' . $lbl_nivelacion . '</sup>( '.$escala->nombre_escala.')</td>';
+									$tbody.='<td>'.$calificacion.'<sup>' . $lbl_nivelacion . '</sup> ('.$escala->nombre_escala.')</td>';
 								}
 								
 								$tbody .=  \View::make('calificaciones.boletines.revisar2_incluir_celda_logros',[

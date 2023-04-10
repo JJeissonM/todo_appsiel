@@ -1,60 +1,41 @@
-<?php 
+<ul class="lista_logros">
+	@if ( !is_null($linea->logros) )
+		@foreach( $linea->logros as $un_logro )
+			<?php
+				$arr_logros = explode('•',$un_logro->descripcion);
+				$lista = '';
+				foreach ($arr_logros as $texto_logro) {
+					
+					if ($texto_logro == '') {
+						continue;
+					}
 
-	$hay_logros = false;
-	$lista = '<ul class="lista_logros">';
-
-	$tbody = '';
-	if ( !is_null($linea->logros) ) {
-		foreach( $linea->logros as $un_logro )
-		{
-			switch ($convetir_logros_mayusculas) {
-				case 'Si':
-					$tbody .= '<li style="text-align: justify;">'.strtoupper($un_logro->descripcion).'</li>';
-					break;
-				case 'No':
-					$tbody .= '<li style="text-align: justify;">'.$un_logro->descripcion.'</li>';
-					break;
-				
-				default:
-					# code...
-					break;
-			}
-			$hay_logros = true;
-		}
-	}
-		
-
-	/*
-		Para logros Adicionales
-	*/
-	if ( !is_null($linea->logros_adicionales) ) {
-		foreach( $linea->logros_adicionales as $un_logro )
-		{
-			switch ($convetir_logros_mayusculas) {
-				case 'Si':
-					$tbody .= '<li style="text-align: justify;">'.strtoupper($un_logro->descripcion).'</li>';
-					break;
-				case 'No':
-					$tbody .= '<li style="text-align: justify;">'.$un_logro->descripcion.'</li>';
-					break;
-				
-				default:
-					# code...
-					break;
-			}
-			$hay_logros = true;
-		}
-	}
+					if ($convetir_logros_mayusculas == 'Si') {
+						$lista .= ' • ' . strtoupper($texto_logro) . '<br>';
+					}else{
+						$lista .= ' • ' . $texto_logro . '<br>';
+					}
+					
+				}
+			?>
+			<li> {!! $lista !!} </li>
+		@endforeach
+	@endif
 
 
-	$lista .= $tbody;
-
-	$lista .= '</ul>';
-
-	if ( $hay_logros ) 
-	{
-		echo $lista;
-	}else{
-		echo "&nbsp;";
-	}
-?>
+	@if ( !is_null($linea->logros_adicionales) )
+		<?php
+			$lista = '';
+		?>
+		@foreach( $linea->logros_adicionales as $un_logro )
+			<?php
+				if ($convetir_logros_mayusculas == 'Si') {
+					$lista .= ' • ' . strtoupper($un_logro->descripcion) . '<br>';
+				}else{
+					$lista .= ' • ' . $un_logro->descripcion . '<br>';
+				}
+			?>
+		@endforeach
+		<li> {!! $lista !!} </li>
+	@endif
+</ul>

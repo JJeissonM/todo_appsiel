@@ -387,12 +387,12 @@ class Curso extends Model
                             "13":{
                                     "tabla":"sga_observaciones_boletines",
                                     "llave_foranea":"curso_id",
-                                    "mensaje":"Tiene boletines relacionados."
+                                    "mensaje":"Tiene informes relacionados."
                                 },
                             "14":{
                                     "tabla":"sga_observaciones_ingresadas",
                                     "llave_foranea":"curso_id",
-                                    "mensaje":"Tiene boletines relacionados."
+                                    "mensaje":"Tiene informes relacionados."
                                 },
                             "15":{
                                     "tabla":"sga_preinformes_academicos",
