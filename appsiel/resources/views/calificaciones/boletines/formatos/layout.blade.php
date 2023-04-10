@@ -76,7 +76,7 @@
 		}
 
 		.watermark-letter {
-			position: fixed;
+			position: absolute;
 			top: 12%;
 			left: 15%;
 			text-align: center;
@@ -86,7 +86,7 @@
 		}
 
 		.watermark-folio {
-			position: fixed;
+			position: absolute;
 			top: 20%;
 			left: 15%;
 			text-align: center;

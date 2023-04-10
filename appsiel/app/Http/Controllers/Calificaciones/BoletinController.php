@@ -223,7 +223,8 @@ class BoletinController extends Controller
         $pdf = App::make('dompdf.wrapper');			
         $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
 
-		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');		
+		//return $view;
+		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');
 	}
 
     public function preparar_datos_boletin( $periodo, $curso, $matriculas )

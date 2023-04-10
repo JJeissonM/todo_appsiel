@@ -13,7 +13,7 @@
 	?>
 
 	@foreach($datos as $registro)
-        <div style="border-width: 10px; border-color: red; border-style: double; height: 95%; width: 95%; opacity: 0.1; position:absolute;">
+        <div style="border-width: 10px; border-color: red; border-style: double; height: 96%; width: 100%; opacity: 0.1; position:absolute;">
 		</div>
 
             <div class="watermark-{{$tam_hoja}} escudo">
@@ -69,7 +69,7 @@
             
             <br>
                     
-            <table class="contenido table-bordered" style="width: 92% !important; padding-left: 3% !important;">
+            <table class="contenido table-bordered" style="width: 94% !important; padding-left: 3% !important;">
                 <thead>
                     <tr>
                         <th style="width:180px; padding: 5px;">{{ $lbl_asigatura }}</th>
