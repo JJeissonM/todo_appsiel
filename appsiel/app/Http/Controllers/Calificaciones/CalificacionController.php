@@ -4,12 +4,9 @@ namespace App\Http\Controllers\Calificaciones;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
-//use Illuminate\Database\Eloquent\Model;
 
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Curso;
-use App\Matriculas\Estudiante;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Periodo;
@@ -20,18 +17,14 @@ use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\EscalaValoracion;
 
 use App\Matriculas\Matricula;
-use App\Calificaciones\Area;
 use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\Logro;
 
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
-use Input;
-use DB;
-use PDF;
-use View;
-use Auth;
 use Lava;
 
 class CalificacionController extends Controller
@@ -395,6 +388,7 @@ class CalificacionController extends Controller
         $resultados = [];
         $numero_fila = 1;
         $cantidad_registros = count( $lineas_registros_calificaciones );
+
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
             $id_calificacion = (int)$lineas_registros_calificaciones[$i]->id_calificacion;
@@ -424,7 +418,7 @@ class CalificacionController extends Controller
             if ( is_null($calificacion) )
             {
                 // Crear nuevos registros
-                if ( $calificacion_texto != 0 )
+                if ( $calificacion_texto != 0 || $linea_datos['logros'] != '')
                 {
                     $calificacion_creada = Calificacion::create( $linea_datos );
 
@@ -439,8 +433,8 @@ class CalificacionController extends Controller
                 // Actualizar registros existentes
                 $calificacion_aux = CalificacionAuxiliar::find( $id_calificacion_aux );
 
-                // Si la calificación ENVIADA es cero se borran de la BD los registros almacenados
-                if ( $calificacion_texto == 0 )
+                // Si la calificación ENVIADA es cero y no tiene logros se borran de la BD los registros almacenados
+                if ( $calificacion_texto == 0 &&  $linea_datos['logros'] == '')
                 {
                     $calificacion->delete();
                     $calificacion_aux->delete();
@@ -459,7 +453,13 @@ class CalificacionController extends Controller
                 }
             }
             
-            $resultados[] = (object)[ 'numero_fila' => $numero_fila, 'id_calificacion' => $id_calificacion, 'calificacion_texto' => $calificacion_texto,'id_calificacion_aux' => $id_calificacion_aux ];
+            $resultados[] = (object)[ 
+                'numero_fila' => $numero_fila,
+                'id_calificacion' => $id_calificacion,
+                'calificacion_texto' => $calificacion_texto,
+                'id_calificacion_aux' => $id_calificacion_aux 
+            ];
+
             $numero_fila++;
         }
         return $resultados;

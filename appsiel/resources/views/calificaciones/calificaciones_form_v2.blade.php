@@ -248,6 +248,8 @@
 
 		window.guardar_calificaciones = function() {
 
+			$('#lineas_registros_calificaciones').val(0);
+
 			$('#bs_boton_guardar').prop('disabled', true);
 			$('#bs_boton_volver').prop('disabled', true);
 

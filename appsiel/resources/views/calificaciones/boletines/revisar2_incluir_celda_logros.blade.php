@@ -19,7 +19,9 @@
 	if ( !is_null($obj_calificacion) ) 
 	{
 		$vec_logros = explode( ",", $obj_calificacion->logros);									
-	}	
+	}
+
+	dd($vec_logros,$obj_calificacion);
 
     $logros_adicionales = App\Calificaciones\Logro::whereIn( 'codigo', $vec_logros )
 							                    ->where( 'asignatura_id', $asignatura_id )
@@ -32,7 +34,6 @@
 	{
 		$style = 'style="background-color:#F08282; color:white;"';
 	}
-
 ?>
 	
 <td {{$style}}>
@@ -51,8 +52,8 @@
 			<li> {!! $lista !!} </li>
 		@endforeach
 
-		@foreach($logros_adicionales as $un_logro)
-			<li> {{ '• ' . $un_logro->descripcion }} </li>
+		@foreach($logros_adicionales as $un_logro_adicional)
+			<li> {{ '• ' . $un_logro_adicional->descripcion . ' aja' }} </li>
 		@endforeach
 	</ul>
 </td>
