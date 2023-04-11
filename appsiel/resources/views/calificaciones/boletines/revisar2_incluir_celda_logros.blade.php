@@ -21,8 +21,6 @@
 		$vec_logros = explode( ",", $obj_calificacion->logros);									
 	}
 
-	dd($vec_logros,$obj_calificacion);
-
     $logros_adicionales = App\Calificaciones\Logro::whereIn( 'codigo', $vec_logros )
 							                    ->where( 'asignatura_id', $asignatura_id )
 							                    ->get();
