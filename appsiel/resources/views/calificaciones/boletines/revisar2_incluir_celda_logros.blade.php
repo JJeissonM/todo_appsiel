@@ -67,8 +67,17 @@
 				{
 					continue;
 				}
+
+				$arr_logros = explode('•',$un_logro_adicional->descripcion);
+				$lista2 = '';
+				foreach ($arr_logros as $texto_logro) {
+					if ($texto_logro == '') {
+						continue;
+					}
+					$lista2 .= '• ' . $texto_logro . '<br>';
+				}
 			?>
-			<li> {{ '• ' . $un_logro_adicional->descripcion }} </li>
+			<li> {!! $lista2 !!} </li>
 		@endforeach
 	</ul>
 </td>
