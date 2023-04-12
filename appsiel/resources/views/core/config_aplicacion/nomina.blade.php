@@ -360,7 +360,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$nom_elect_tipo_doc_app_id = '';
+								if( isset($parametros['nom_elect_tipo_doc_app_id'] ) )
+								{
+									$nom_elect_tipo_doc_app_id = $parametros['nom_elect_tipo_doc_app_id'];
+								}
+							?>
+							{{ Form::bsSelect('nom_elect_tipo_doc_app_id', $nom_elect_tipo_doc_app_id, 'Tipo Doc. Default', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 

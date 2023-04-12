@@ -1,9 +1,6 @@
 <?php
 
-namespace App\NominaElectronica\DATAICO;
-
-use App\Core\TipoDocApp;
-use Illuminate\Database\Eloquent\Model;
+namespace App\NominaElectronica\DATAICO\Services;
 
 use App\Sistema\Services\AppDocType;
 
@@ -12,48 +9,13 @@ use App\Sistema\TipoTransaccion;
 use App\Nomina\NomContrato;
 use App\Nomina\ValueObjects\LapsoNomina;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 // declaramos factura
-class DocumentoSoporte extends Model
+class DocumentoSoporteService
 {
    const CORE_TIPO_TRANSACCION_ID = 59; // Documentos soporte Nómina Electrónica
 
    public $array_head_data, $array_accruals, $array_deductions, $array_employee;
-
-   protected $table = 'nom_elect_doc_soporte';
-
-   protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'nom_contrato_id', 'descripcion', 'head_data_json', 'accruals_json', 'deductions_json', 'employee_json', 'estado', 'creado_por', 'modificado_por' ];
-
-   public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Empleado', 'Estado'];
-
-   public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
-
-   public function tipo_documento_app()
-   {
-       return $this->belongsTo( TipoDocApp::class, 'core_tipo_doc_app_id' );
-   }
-
-   public function empleado()
-   {
-       return $this->belongsTo( NomContrato::class, 'nom_contrato_id' );
-   }
-
-   public static function consultar_registros($nro_registros, $search)
-   {
-      return DocumentoSoporte::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_elect_doc_soporte.core_tipo_doc_app_id')
-            ->leftJoin('nom_contratos', 'nom_contratos.id', '=', 'nom_elect_doc_soporte.nom_contrato_id')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'nom_contratos.core_tercero_id')
-            ->select(
-                'nom_elect_doc_soporte.fecha AS campo1',
-                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_elect_doc_soporte.consecutivo) AS campo2'),
-                'core_terceros.descripcion AS campo3',
-                'nom_elect_doc_soporte.estado AS campo4',
-                'nom_elect_doc_soporte.id AS campo5'
-            )
-            ->orderBy('nom_elect_doc_soporte.created_at', 'DESC')
-            ->paginate($nro_registros);
-   }
 
    public function get_data_for_json( NomContrato $empleado, $lapso, $almacenar_registros )
    {

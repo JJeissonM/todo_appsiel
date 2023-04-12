@@ -11,15 +11,19 @@
 			
 			<div class="container">
 			  <ul class="nav nav-tabs">
-			    <li class="active"><a href="#doc_soporte">Docs. Soporte</a></li>
+			    <li class="active"><a href="#generar">Generar</a></li>
+			    <li><a href="#doc_soporte">Docs. Soporte</a></li>
 			    <li><a href="#doc_ajuste_e">Docs. Ajuste E.</a></li>
 			    <li><a href="#doc_ajuste_r">Docs. Ajuste R.</a></li>
-			    <li><a href="#generar">Generar</a></li>
 			  </ul>
 
 			  <div class="tab-content">
 			    
-			    <div id="doc_soporte" class="tab-pane fade in active">
+			    <div id="generar" class="tab-pane fade in active">
+			      @include('nomina.nomina_electronica.panel_generar')
+			    </div>
+			    
+			    <div id="doc_soporte" class="tab-pane fade">
 			      <h4>{{ $model->modelo->descripcion }}</h4>
 			      <div id="div_datos_doc_soporte">
 			      	{!! $model->get_records_table() !!}
@@ -35,15 +39,9 @@
 			      <h3>Menu 2</h3>
 			      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
 			    </div>
-			    
-			    <div id="generar" class="tab-pane fade">
-			      @include('nomina.nomina_electronica.panel_generar')
-			    </div>
 
 			  </div>
-			    <hr>
-			    <p class="act"><b>Active Tab</b>: <span></span></p>
-			    <p class="prev"><b>Previous Tab</b>: <span></span></p>
+			  
 			</div>
 
 		</div>

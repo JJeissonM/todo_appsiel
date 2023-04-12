@@ -24,7 +24,6 @@
             <tbody>
 
                 <?php
-                    // ->orderBy('valor_devengo','DESC')
                     $registros = $documento->registros_liquidacion->where('core_tercero_id',$empleado->core_tercero_id)->sortByDesc('valor_devengo')->all();
                     $total_devengos = 0;
                     $total_deducciones = 0;

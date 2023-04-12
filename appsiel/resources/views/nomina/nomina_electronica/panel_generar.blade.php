@@ -1,4 +1,4 @@
-<h4> Genarción y envío de Documentos de soporte de Nómina Electrónica</h4>
+<h4> Generación y envío de Documentos de soporte de Nómina Electrónica</h4>
 <p>
 	Por esta opción, el sistema genera los documentos de soporte de nómina electrónica.
 	<br>
@@ -18,7 +18,7 @@
 		<div class="row" style="padding:5px;">
 			<label class="control-label col-sm-4" > <b> *Opciones de generación: </b> </label>
 			<div class="col-sm-8">
-				{{ Form::select( 'almacenar_registros', ['Previsualizar','Enviar documentos'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
+				{{ Form::select( 'almacenar_registros', ['Previsualizar','Almacenar registros'],null, [ 'class' => 'form-control', 'id' => 'almacenar_registros' ]) }}
 			</div>
 		</div>
 
@@ -40,10 +40,10 @@
 		<div class="row" style="padding:5px; text-align: center;">
 			<div class="col-md-6">
 
-				<button class="btn btn-success" id="btn_previsualizar"> <i class="fa fa-eye"></i> Previsualizar </button>
+				<button class="btn btn-primary" id="btn_previsualizar"> <i class="fa fa-check"></i> Consultar </button>
 			</div>
 			<div class="col-md-6">
-				<button class="btn btn-danger" id="btn_enviar"> <i class="fa fa-trash"></i> Enviar </button>
+				<a href="{{url('/')}}" class="btn btn-info" id="btn_enviar" style="display:none;"> <i class="fa fa-send"></i> Enviar </a>
 			</div>
 		</div>
 	@endif	
@@ -61,6 +61,18 @@
 
 		$(document).ready(function(){
 
+			
+			$("#almacenar_registros").on('change',function(event){
+				
+				if ( $(this).val() == 1 ) {
+		 			$("#btn_previsualizar").attr('class','btn btn-success');
+					$("#btn_previsualizar").html('<i class="fa fa-check"></i> Almacenar');
+				}else{
+		 			$("#btn_previsualizar").attr('class','btn btn-primary');
+					$("#btn_previsualizar").html('<i class="fa fa-check"></i> Consultar');
+				}
+			});
+
 			$("#btn_previsualizar").on('click',function(event){
 		    	event.preventDefault();
 
@@ -69,7 +81,8 @@
 		    		return false;
 		    	}
 
-		 		$(this).children('.fa-eye').attr('class','fa fa-spinner fa-spin');
+
+				$(this).children('.fa-check').attr('class','fa fa-spinner fa-spin');
 		        //$(this).attr( 'disabled', 'disabled' );
 
 		 		$("#div_cargando").show();
@@ -90,13 +103,19 @@
 				})
 			    .done(function( respuesta ){
 
-			    	$("#btn_previsualizar").children('.fa-spinner').attr('class','fa fa-eye');
-			        $("#btn_previsualizar").removeAttr( 'disabled' );
+			    	$("#btn_previsualizar").children('.fa-spinner').attr('class','fa fa-check');
 
 			        $('#div_cargando').hide();
 
         			$("#div_resultado_panel_generar").html( respuesta );
         			$("#div_resultado_panel_generar").fadeIn( 1000 );
+
+					if (document.getElementById('status').value == 'success' && $('#almacenar_registros').val() == 1) {
+						$("#btn_enviar").fadeIn( 1000 );
+						$("#btn_enviar").attr( 'href', $("#btn_enviar").attr('href') + '/nom_electronica_enviar_documentos/' + document.getElementById('arr_ids_docs_generados').value);						
+					}
+
+					console.log( document.getElementById('status').value, document.getElementById('arr_ids_docs_generados').value, $('#almacenar_registros').val() );
 			    });
 		    });
 

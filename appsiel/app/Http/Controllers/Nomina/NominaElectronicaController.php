@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Nomina;
 
+use App\Core\Services\CompanyService;
 use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
 use Illuminate\Http\Request;
 
@@ -13,12 +14,17 @@ use App\Sistema\TipoTransaccion;
 use App\Nomina\ValueObjects\LapsoNomina;
 
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
+use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
+use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class NominaElectronicaController extends Controller
 {
     const CORE_TIPO_TRANSACCION_ID = 59; // Documentos soporte Nómina Electrónica
     public $lapso;
     public $datos_vista = [];
+    public $arr_ids_docs_generados = [];
 
     public function index()
     {
@@ -48,7 +54,26 @@ class NominaElectronicaController extends Controller
 
     public function generar_doc_soporte( Request $request )
     {
+        $doc_soporte_empleado = new DocumentoSoporteService();
+        $company_serv = (new CompanyService());
+        
         $lapso = new LapsoNomina( $request->fecha_final_periodo );
+        $this->lapso = $lapso;
+
+        $data = [
+            'core_empresa_id' => $company_serv->company->id,
+            'core_tipo_transaccion_id' => self::CORE_TIPO_TRANSACCION_ID,
+            'core_tipo_doc_app_id' => config('nomina.nom_elect_tipo_doc_app_id'),
+            'fecha' => $lapso->fecha_final,
+        ];
+
+        $one_doc_generado = DocumentoSoporte::where( $data )->get()->first();
+
+        if($one_doc_generado != null)
+        {
+            return '<h4>Ya existen documentos de nómina electrónica generados para el periodo seleccionado.</h4>';
+        }
+
         $empleados_con_movimiento = $lapso->get_empleados_con_movimiento();
         $almacenar_registros = $request->almacenar_registros;
 
@@ -57,21 +82,28 @@ class NominaElectronicaController extends Controller
         {
             $empleado = $registro_empleado->contrato;
 
-            $doc_soporte_empleado = new DocumentoSoporte();
-
             $datos_doc_soporte = $doc_soporte_empleado->get_data_for_json( $empleado, $lapso, $almacenar_registros );
-
-            dd($datos_doc_soporte);
-
+            
             $this->actualizar_datos_vista( $datos_doc_soporte );
 
             if( $almacenar_registros )
             {
-                $doc_soporte_empleado->almacenar_registro( $datos_doc_soporte );
+                $data2 = [
+                    'consecutivo' => $datos_doc_soporte['number'],
+                    'nom_contrato_id' => $datos_doc_soporte['empleado']->id,
+                    'descripcion' => '',
+                    'head_data_json' => '',
+                    'accruals_json' => json_encode($datos_doc_soporte['accruals']),
+                    'deductions_json' => json_encode($datos_doc_soporte['deductions']),
+                    'employee_json' => json_encode($datos_doc_soporte['employee']),
+                    'estado' => 'Sin enviar',
+                    'creado_por' => Auth::user()->id
+                ];
 
-                $doc_soporte_empleado->enviar_al_proveedor_tecnologico();
-            }
-                
+                $dos_generado = DocumentoSoporte::create( $data + $data2 );
+
+                $this->arr_ids_docs_generados[] = $dos_generado->id;
+            }                
         }
 
         return $this->dibujar_vista();
@@ -84,82 +116,58 @@ class NominaElectronicaController extends Controller
 
     public function dibujar_vista()
     {
-        dd( $this->datos_vista );
+        return View::make('nomina.nomina_electronica.tabla_visualizacion_envio', [
+            'datos_vista' => $this->datos_vista,
+            'lapso' => $this->lapso,
+            'arr_ids_docs_generados' => json_encode($this->arr_ids_docs_generados)
+            ] )
+            ->render();
     }
 
-    public function enviar_al_proveedor_tecnologico()
+    public function enviar_documentos( $arr_ids )
     {
-        switch ( config('facturacion_electronica.proveedor_tecnologico_default') )
-        {
-            case 'DATAICO':
-                $factura_dataico = new DocumentoSoporte( $this, 'factura' );
-                $mensaje = $factura_dataico->procesar_envio();
-                break;
+        $arr_ids = json_decode($arr_ids);
+        
+        foreach ($arr_ids as $key => $document_id) {
+            $document_header = DocumentoSoporte::find($document_id);
             
-            case 'TFHKA':
-                //
-                break;
-            
-            default:
-                // code...
-                break;
-        }
+            if ($document_header->estado != 'Sin enviar') {
+                continue;
+            }
+
+            $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
+
+            //dd(($json_doc_electronico_enviado));
+
+            try {
+                $client = new Client(['base_uri' => config('nomina.url_servicio_emision')]);
                 
-        return $mensaje;
-    }
+                $response = $client->post( config('nomina.url_servicio_emision'), [
+                    // un array con la data de los headers como tipo de peticion, etc.
+                    'headers' => [
+                                  'content-type' => 'application/json',
+                                  'auth-token' => config('facturacion_electronica.tokenPassword')
+                               ],
+                    // array de datos del formulario
+                    'json' => json_decode( $json_doc_electronico_enviado )
+                ]);
 
-    public function procesar_envio( $factura_doc_encabezado = null )
-   {
 
-      switch ( $this->tipo_transaccion )
-      {
-         case 'documento_soporte':
-            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura();
-            break;
-         
-         case 'nota_credito':
-            $json_doc_electronico_enviado = $this->preparar_cadena_json_nota_credito( $factura_doc_encabezado );
-            break;
-         
-         case 'nota_debito':
-            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura();
-            break;
-         
-         default:
-            // code...
-            break;
-      }
+             } catch (\GuzzleHttp\Exception\RequestException $e) {
+                dd($e);
+                 $response = $e->getResponse();
+             }
 
-      /*
-dd($json_doc_electronico_enviado);
-   
-*/
-      //dd(json_decode( $json_doc_electronico_enviado )->invoice);
-      try {
-         $client = new Client(['base_uri' => $this->url_emision]);
+            $array_respuesta = json_decode( (string) $response->getBody(), true );
+            $array_respuesta['codigo'] = $response->getStatusCode();
 
-         $response = $client->post( $this->url_emision, [
-             // un array con la data de los headers como tipo de peticion, etc.
-             'headers' => [
-                           'content-type' => 'application/json',
-                           'auth-token' => config('facturacion_electronica.tokenPassword')
-                        ],
-             // array de datos del formulario
-             'json' => json_decode( $json_doc_electronico_enviado )
-         ]);
-      } catch (\GuzzleHttp\Exception\RequestException $e) {
-          $response = $e->getResponse();
-      }
+            dd($array_respuesta);
+        }
 
-      $array_respuesta = json_decode( (string) $response->getBody(), true );
-      $array_respuesta['codigo'] = $response->getStatusCode();
+      
+        //dd('se fueron');
 
-      //dd( $array_respuesta );
-
-      $obj_resultado = new ResultadoEnvio;
-      $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );
-
-      return $mensaje;
+      return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
    }
 
     public function show( $id )
