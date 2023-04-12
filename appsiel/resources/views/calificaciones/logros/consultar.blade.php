@@ -25,11 +25,16 @@
 
 <?php
 	$nom_asignatura = App\Calificaciones\Asignatura::where('id','=',$id_asignatura)->value('descripcion');
+	$curso = App\Matriculas\Curso::find($curso_id);
 ?>
 @if (count($logros) > 0)
 	<div class="panel panel-default">
 		<div class="panel-heading" align="center">
-			<h3>Logros adicionales para la asignatura <b> {{$nom_asignatura}} </b> </h3>
+			<h3>
+				Logros adicionales para la asignatura <b> {{$nom_asignatura}} </b>
+				<br>
+				Curso <b> {{$curso->descripcion}} </b>
+			</h3>
 			<h4 style="color:red;">Haga clic en el código del logro para asignarlo al estudiante correspondiente.</h4>
 			<h5 style="color:purple;">Nota: Estos son logros particulares usados para estudiantes específicos.</h5>
 		</div>

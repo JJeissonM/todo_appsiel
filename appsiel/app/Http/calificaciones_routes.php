@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 //              A P P   C A L I F I C A C I O N E S
 
 //Logros
-Route::get('calificaciones_logros/consultar/{asignatura}', 'Calificaciones\LogroController@consultar');
+Route::get('calificaciones_logros/consultar/{asignatura_id}/{curso_id}', 'Calificaciones\LogroController@consultar');
 
 Route::get('calificaciones_eliminar_logro/{logro_id}', 'Calificaciones\LogroController@eliminar_logros');
 Route::get('calificaciones_eliminar_escala_valoracion/{id}', 'Calificaciones\LogroController@eliminar_escala_valoracion');

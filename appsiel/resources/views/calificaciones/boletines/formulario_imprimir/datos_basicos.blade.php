@@ -18,5 +18,13 @@
 		<div class="row campo" style="padding:5px;">
 			{{ Form::bsSelect('formato','','Formato', $formatos ,['required' => 'required']) }}
 		</div>
+
+		<div class="row campo" style="padding:5px;">
+			&nbsp;
+		</div>
+
+		<div class="row campo" style="padding:5px;">
+			{{ Form::bsSelect('estudiante_id','','Estudiante',[],[]) }}
+		</div>
 	</div>
 </div>

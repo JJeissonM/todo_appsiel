@@ -59,7 +59,7 @@
                 }
             ?>
 
-            <h4 style="text-align: center; padding: 15px;">INFORME {{$lbl_numero_periodo}} PERIODO AÑO LECTIVO {{ explode( "-", $periodo->fecha_desde )[0] }}</h4>
+            <h4 style="text-align: center; padding: 10px;">INFORME {{$lbl_numero_periodo}} PERIODO AÑO LECTIVO {{ explode( "-", $periodo->fecha_desde )[0] }}</h4>
             
             <p style="padding-left: 20px;">
                 <b>FULL NAME:</b>  	{{ $registro->estudiante->tercero->descripcion }}
@@ -69,7 +69,7 @@
             
             <br>
                     
-            <table class="contenido table-bordered" style="width: 94% !important; padding-left: 3% !important;">
+            <table class="contenido table-bordered" style="margin-left: auto; margin-right: auto; width: 94%;">
                 <thead>
                     <tr>
                         <th style="width:180px; padding: 5px;">{{ $lbl_asigatura }}</th>
@@ -97,7 +97,7 @@
                                 {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                             </td>
 
-                            <td style="padding: 5; text-align: justify;">
+                            <td style="text-align: justify; padding: 15px;">
                                 @include('calificaciones.boletines.proposito')
                                 
                                 @include('calificaciones.boletines.lista_logros')

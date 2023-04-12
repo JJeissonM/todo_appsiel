@@ -140,10 +140,10 @@
 
 
 <script language="javascript">
-	function ventana(id, id_textbox) {
+	function ventana(id, id_textbox,curso_id) {
 		document.getElementById("caja_logro").value = id_textbox;
 
-		window.open("{{ url('calificaciones_logros/consultar' )}}" + "/" + id, "Consulta de logros", "width=800,height=600,menubar=no")
+		window.open("{{ url('calificaciones_logros/consultar' )}}" + "/" + id + "/" + curso_id, "Consulta de logros", "width=800,height=600,menubar=no")
 	}
 
 	function getChildVar(a_value) {

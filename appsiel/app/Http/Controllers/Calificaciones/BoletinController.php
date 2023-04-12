@@ -173,7 +173,7 @@ class BoletinController extends Controller
             return redirect( 'calificaciones/boletines/imprimir?id=' . Input::get('id') . '&id_modelo=0' )->with( 'mensaje_error', "No hay regitros de estudiantes matriculados en el curso " . $curso->descripcion );
         }
 
-        if( !is_null( $request->estudiante_id ) )
+        if( $request->estudiante_id != null && $request->estudiante_id != '' )
         {
             $matriculas = $matriculas->where( 'id_estudiante', (int)$request->estudiante_id )->all();
         }

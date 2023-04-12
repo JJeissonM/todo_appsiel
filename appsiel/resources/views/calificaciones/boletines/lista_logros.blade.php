@@ -3,39 +3,41 @@
 		@foreach( $linea->logros as $un_logro )
 			<?php
 				$arr_logros = explode('•',$un_logro->descripcion);
-				$lista = '';
-				foreach ($arr_logros as $texto_logro) {
-					
+			?>
+			@foreach ($arr_logros as $texto_logro)
+				
+				<?php 
 					if ($texto_logro == '') {
 						continue;
 					}
-
-					if ($convetir_logros_mayusculas == 'Si') {
-						$lista .= ' • ' . strtoupper($texto_logro) . '<br>';
-					}else{
-						$lista .= ' • ' . $texto_logro . '<br>';
-					}
-					
-				}
-			?>
-			<li> {!! $lista !!} </li>
+				?>
+				
+				@if ($convetir_logros_mayusculas == 'Si')
+					<li> {!! strtoupper($texto_logro) !!} </li>
+				@else
+					<li> {!! $texto_logro !!} </li>
+				@endif
+				
+			@endforeach
+			
 		@endforeach
 	@endif
 
 
 	@if ( !is_null($linea->logros_adicionales) )
-		<?php
-			$lista = '';
-		?>
 		@foreach( $linea->logros_adicionales as $un_logro )
-			<?php
-				if ($convetir_logros_mayusculas == 'Si') {
-					$lista .= ' • ' . strtoupper($un_logro->descripcion) . '<br>';
-				}else{
-					$lista .= ' • ' . $un_logro->descripcion . '<br>';
-				}
-			?>
+				<?php		
+						
+					if ($un_logro->descripcion == '') {
+						continue;
+					}
+				?>
+				@if ($convetir_logros_mayusculas == 'Si')
+					<li> {!! strtoupper($un_logro->descripcion) !!} </li>
+				@else
+					<li> {!! $un_logro->descripcion !!} </li>
+				@endif
 		@endforeach
-		<li> {!! $lista !!} </li>
+		
 	@endif
 </ul>

@@ -45,7 +45,7 @@
 		}
 
 		li{
-			list-style-type: none;
+			list-style-type: circle;
 		}
 
 		table.banner{

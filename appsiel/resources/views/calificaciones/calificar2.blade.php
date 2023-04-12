@@ -70,7 +70,7 @@
 							<input type="hidden" id="caja_logro">
 						</td>
 						<td> 
-							<a href="#" onclick="ventana({{$datos_asignatura->id}},{{ $linea }});"> <i class="fa fa-btn fa-search"></i> </a>
+							<a href="#" onclick="ventana({{$datos_asignatura->id}},{{ $linea }},{{$curso->id}});"> <i class="fa fa-btn fa-search"></i> </a>
 						</td>
 					</tr>
 					<?php $linea++; ?>

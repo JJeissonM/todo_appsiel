@@ -174,14 +174,15 @@ class LogroController extends Controller
         //echo "cant. logros: ".$cantidad;
     }
 	
-    public function consultar($asignatura)
+    public function consultar($asignatura,$curso_id)
     {
         $logros = Logro::where('asignatura_id', $asignatura)
+                        ->where('curso_id',$curso_id)
                         ->where('estado','Activo')
                         ->where('escala_valoracion_id',0)
                         ->get();
 
-		return view('calificaciones.logros.consultar',['logros'=>$logros,'id_asignatura'=>$asignatura]);
+		return view('calificaciones.logros.consultar',['logros'=>$logros,'id_asignatura'=>$asignatura,'curso_id'=>$curso_id]);
     }
 	
 
