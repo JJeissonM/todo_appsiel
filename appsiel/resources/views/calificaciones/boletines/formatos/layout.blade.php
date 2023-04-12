@@ -45,7 +45,7 @@
 		}
 
 		li{
-			list-style-type: circle;
+			list-style-image: url({{ url('/') . '/nube/check-mark-icon-small.png' }});
 		}
 
 		table.banner{

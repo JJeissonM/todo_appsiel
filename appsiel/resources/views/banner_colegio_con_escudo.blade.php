@@ -12,12 +12,12 @@
 
     if ( !isset($tam_letra) )
     {
-        $tam_letra = 3;
+        $tam_letra = 2.5;
     }
 ?>
 <table style="width: 100%;">
     <tr>
-        <td width="20%">
+        <td width="10%">
             <div class="imagen" style="text-align: center;">
                 <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen }}" style="max-width: 190px; max-height: 80px;" />
             </div>
@@ -33,7 +33,7 @@
             {{ $colegio->direccion }},Teléfono: {{ $colegio->telefonos }}
         </td>
 
-        <td width="20%">
+        <td width="10%">
             <div class="imagen" style="text-align: center;">
                 <img src="{{ config('matriculas.url_escudo_colegio') }}" style="max-height: 80px;" />
             </div>

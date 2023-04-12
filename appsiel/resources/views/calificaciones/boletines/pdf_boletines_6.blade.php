@@ -97,7 +97,7 @@
                                 {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                             </td>
 
-                            <td style="text-align: justify; padding: 15px;">
+                            <td style="text-align: justify; padding: 20px;">
                                 @include('calificaciones.boletines.proposito')
                                 
                                 @include('calificaciones.boletines.lista_logros')
