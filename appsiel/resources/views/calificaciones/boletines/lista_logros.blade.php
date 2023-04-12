@@ -26,17 +26,24 @@
 
 	@if ( !is_null($linea->logros_adicionales) )
 		@foreach( $linea->logros_adicionales as $un_logro )
-				<?php		
-						
-					if ($un_logro->descripcion == '') {
+			<?php
+				$arr_logros = explode('•',$un_logro->descripcion);
+			?>
+			@foreach ($arr_logros as $texto_logro)
+				
+				<?php 
+					if ($texto_logro == '') {
 						continue;
 					}
 				?>
+				
 				@if ($convetir_logros_mayusculas == 'Si')
-					<li> {!! strtoupper($un_logro->descripcion) !!} </li>
+					<li> {!! strtoupper($texto_logro) !!} </li>
 				@else
-					<li> {!! $un_logro->descripcion !!} </li>
+					<li> {!! $texto_logro !!} </li>
 				@endif
+				
+			@endforeach
 		@endforeach
 		
 	@endif
