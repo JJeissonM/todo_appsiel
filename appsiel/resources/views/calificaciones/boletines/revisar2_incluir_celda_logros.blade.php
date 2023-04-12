@@ -40,7 +40,7 @@
 
 ?>
 	
-<td style="background-color:{{$color_back}} color:{{$color_font}};">
+<td style="background-color:{{$color_back}} color:{{$color_font}}; text-align: justify;">
 	<ul style="list-style: none;">
 		@foreach($logros as $un_logro)
 			<?php

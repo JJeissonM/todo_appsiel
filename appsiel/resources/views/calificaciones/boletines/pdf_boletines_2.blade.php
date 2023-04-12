@@ -56,7 +56,7 @@
 											@endif
 										@endif
 									</td>
-									<td style="border: 0px;" width="75%">
+									<td style="border: 0px; text-align: justify;" width="75%">
 										@include('calificaciones.boletines.proposito')
 
 										@include('calificaciones.boletines.lista_logros')

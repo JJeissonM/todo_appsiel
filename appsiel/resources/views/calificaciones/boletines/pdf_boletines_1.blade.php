@@ -79,7 +79,7 @@
 							</td>
 						@endif
 
-						<td>
+						<td style="padding: 5; text-align: justify;">
 							@include('calificaciones.boletines.proposito')
 							
 							@include('calificaciones.boletines.lista_logros')

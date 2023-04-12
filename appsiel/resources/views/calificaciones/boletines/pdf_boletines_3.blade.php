@@ -56,7 +56,7 @@
 					</tr>
 
 					<tr style="font-size: {{$tam_letra}}mm;">
-						<td colspan="{{$cant_columnas}}">
+						<td colspan="{{$cant_columnas}}" style=" text-align: justify;">
 
 							@include('calificaciones.boletines.proposito')
                             
