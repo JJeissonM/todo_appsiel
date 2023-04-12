@@ -17,11 +17,13 @@
 		@include('calificaciones.boletines.encabezado_2')
 	<table class="table-bordered">
 			<tbody> 	
-		@foreach( $lineas_cuerpo_boletin as $linea )		
-		
+		@foreach( $lineas_cuerpo_boletin as $linea )
 				
 					<?php
-						$cant_columnas = 2;	
+						$cant_columnas = 2;
+						if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+							continue;
+						}
 					?>
 
 					@include('calificaciones.boletines.fila_area')

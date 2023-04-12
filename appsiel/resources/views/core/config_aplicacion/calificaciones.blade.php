@@ -162,6 +162,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$asignatura_id_para_asistencias = '';
+								if( isset($parametros['asignatura_id_para_asistencias'] ) )
+								{
+									$asignatura_id_para_asistencias = $parametros['asignatura_id_para_asistencias'];
+								}
+							?>
+							{{ Form::bsSelect('asignatura_id_para_asistencias', $asignatura_id_para_asistencias, 'ID Asignatura para registro de asistencias', App\Calificaciones\Asignatura::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Académico Estudiantes  </h4>
 				<hr>
 

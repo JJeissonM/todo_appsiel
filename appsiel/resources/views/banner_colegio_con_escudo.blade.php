@@ -17,7 +17,7 @@
 ?>
 <table style="width: 100%;">
     <tr>
-        <td width="25%">
+        <td width="20%">
             <div class="imagen" style="text-align: center;">
                 <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen }}" style="max-width: 190px; max-height: 80px;" />
             </div>
@@ -33,7 +33,7 @@
             {{ $colegio->direccion }},Teléfono: {{ $colegio->telefonos }}
         </td>
 
-        <td width="25%">
+        <td width="20%">
             <div class="imagen" style="text-align: center;">
                 <img src="{{ config('matriculas.url_escudo_colegio') }}" style="max-height: 80px;" />
             </div>

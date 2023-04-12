@@ -45,6 +45,12 @@
 			<tbody>
 				@foreach( $lineas_cuerpo_boletin as $linea )
 
+					<?php 
+						if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+							continue;
+						}
+					?>
+
 					@include('calificaciones.boletines.fila_area')
 
 					<tr>

@@ -5,10 +5,10 @@
 	<?php
 	    if ( $mostrar_areas == 'Si')
 		{
-			$lbl_asigatura = 'Área / Asignaturas';
+			$lbl_asigatura = 'ÁREA / ASIGNATURA';
 		}else{
 
-			$lbl_asigatura = 'Asignaturas';
+			$lbl_asigatura = 'ASIGNATURA';
 		}
 	?>
 
@@ -73,15 +73,21 @@
                 <thead>
                     <tr>
                         <th style="width:180px; padding: 5px;">{{ $lbl_asigatura }}</th>
-                        <th style="padding: 5px;">Logros</th>
+                        <th style="padding: 5px;">LOGROS</th>
                         @if($curso->maneja_calificacion==1)
-                            <th style="width:80px; padding: 5px;">Valoración</th>
+                            <th style="width:80px; padding: 5px;">VALORACIÓN</th>
                             <?php $cant_columnas++;  ?>
                         @endif
                     </tr>
                 </thead>
                 <tbody>
                     @foreach( $lineas_cuerpo_boletin as $linea )
+
+                        <?php 
+                            if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+                                continue;
+                            }
+                        ?>
 
                         @include('calificaciones.boletines.fila_area')
 
@@ -91,7 +97,7 @@
                                 {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                             </td>
 
-                            <td style="padding: 5;">
+                            <td style="padding: 5; text-align: justify;">
                                 @include('calificaciones.boletines.proposito')
                                 
                                 @include('calificaciones.boletines.lista_logros')
@@ -100,7 +106,7 @@
                             </td>
                             
                             @if( $curso->maneja_calificacion == 1)
-                                <td align="center" style="padding: 5;"> 
+                                <td style="padding: 5; text-align: center;"> 
                                     @if( !is_null( $linea->calificacion ) )
                                         @if( $linea->calificacion->calificacion > 0)
                                             @include('calificaciones.boletines.lbl_descripcion_calificacion')
@@ -114,7 +120,7 @@
                             $area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
                         ?>
 
-                    @endforeach {{--  Asignaturas --}}
+                    @endforeach {{--  End For Each Asignatura --}}
 
                     @include('calificaciones.boletines.formatos.fila_observaciones')
 
