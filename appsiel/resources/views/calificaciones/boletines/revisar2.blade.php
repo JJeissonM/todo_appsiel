@@ -100,6 +100,9 @@
 							$tbody = '';
 							foreach($asignaturas as $asignatura) 
 							{
+								if ($asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+									continue;
+								}
 								
 								// Se llama a la calificacion de cada asignatura (en la colección de calificaciones) 
 								$obj_calificacion = $calificaciones->where('id_estudiante',$estudiante->id_estudiante)->where('id_asignatura',$asignatura->id)->first();
@@ -140,7 +143,7 @@
 								
 								$tbody .=  \View::make('calificaciones.boletines.revisar2_incluir_celda_logros',[
 												'escala'=>$escala,'periodo_id'=>$periodo->id,'curso_id'=>$estudiante->curso_id,'asignatura_id'=>$asignatura->id, 'obj_calificacion' => $obj_calificacion, 'id_estudiante' => $estudiante->id])->render();
-												
+
 								$tbody.='</tr>';
 
 							} //fin recorrido de asignaturas del estudiante
