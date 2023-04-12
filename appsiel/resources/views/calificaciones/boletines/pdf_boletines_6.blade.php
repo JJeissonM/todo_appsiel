@@ -62,9 +62,9 @@
             <h4 style="text-align: center; padding: 10px;">INFORME {{$lbl_numero_periodo}} PERIODO AÑO LECTIVO {{ explode( "-", $periodo->fecha_desde )[0] }}</h4>
             
             <p style="padding-left: 20px;">
-                <b>FULL NAME:</b>  	{{ $registro->estudiante->tercero->descripcion }}
+                <b>FULL NAME:</b>  	{{ $registro->estudiante->tercero->descripcion }}.
                 <br>
-                <b>GRADE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>	{{ $curso->descripcion }}
+                <b>GRADE &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: </b>	{{ $curso->descripcion }}.
             </p>
             
             <br>

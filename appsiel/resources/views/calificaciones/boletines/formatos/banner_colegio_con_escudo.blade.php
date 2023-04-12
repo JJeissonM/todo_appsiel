@@ -17,7 +17,7 @@
 ?>
 <table style="width: 100%; color: red;font-size: {{$tam_letra-1}}mm; opacity: 0.1;">
     <tr>
-        <td width="25%">
+        <td width="20%">
             <div class="imagen" style="text-align: center;">
                 <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen }}" style="max-width: 190px; max-height: 80px;" />
             </div>
@@ -36,7 +36,7 @@
             NIT: {{ $colegio->empresa->numero_identificacion . '-' .$colegio->empresa->digito_verificacion }}
         </td>
 
-        <td width="25%">
+        <td width="20%">
             <div class="imagen" style="text-align: center;">
                 <img src="{{ config('matriculas.url_escudo_colegio') }}" style="max-height: 80px;" />
             </div>
