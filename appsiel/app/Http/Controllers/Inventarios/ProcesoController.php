@@ -18,6 +18,7 @@ use App\Inventarios\InvCostoPromProducto;
 
 use App\Compras\ComprasMovimiento;
 use App\Contabilidad\ContabMovimiento;
+use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AccountingServices;
 use App\Inventarios\Services\RecosteoService;
 use Illuminate\Support\Facades\Input;
@@ -181,6 +182,34 @@ class ProcesoController extends Controller
             
     }
 
+    public function actualizar_costo_promedio_platilllo($item_platillo_id, $costo_promedio)
+    {
+        $registro_costo_prom = InvCostoPromProducto::where([
+            ['inv_producto_id','=',$item_platillo_id]
+        ])
+            ->get()
+            ->first();
+        
+        if ($registro_costo_prom == null) {
+            InvCostoPromProducto::create( [
+                'inv_producto_id' => $item_platillo_id,
+                'costo_promedio' => $costo_promedio
+                ]
+            );
+        }else{
+            $registro_costo_prom->costo_promedio = $costo_promedio;
+            $registro_costo_prom->save();
+        }
+        
+        $registro_receta = RecetaCocina::where([
+            ['item_platillo_id','=',$item_platillo_id]
+        ])
+            ->get()
+            ->first();
+
+        return redirect('web/' . $registro_receta->id . '?id=8&id_modelo=321&id_transaccion=')->with('flash_message','Costo promedio del platillo actualizado correctamente.');
+    }
+    
     // Pendiente
     public function anulacion_masiva($lista_ids)
     {

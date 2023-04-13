@@ -97,10 +97,12 @@
 							</thead>
 							<tbody>
                                 <?php
+									$sum_cantidad_porcion = 0;
                                     $sum_costo_total = 0;
                                 ?>
 								@foreach( $ingredientes as $linea)
                                     <?php
+										$sum_cantidad_porcion += $linea['cantidad_porcion'];
                                         $sum_costo_total += $linea['cantidad_porcion'] * $linea['ingrediente']->get_costo_promedio(0); 
 
                                         $string_search_platillo = $registro->item_platillo->descripcion;
@@ -121,20 +123,20 @@
                                 <tr>
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
-                                    <td> &nbsp; </td>
+                                    <td align="center"> {{ number_format( $sum_cantidad_porcion, 2, ',', '.') }}</td>
                                     <td> &nbsp; </td>
                                     <td align="right"> ${{ number_format( $sum_costo_total, 2, ',', '.') }}</td>
                                     <td> &nbsp; </td>
                                 </tr>
-                                <!-- <tr>
+                                <!-- 
+							--><tr>
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
-                                    <td align="right"> <a class="btn btn-primary btn-xs"><i class="fa fa-save"></i> Actualizar Costo Prom. Platillo</a></td>
+                                    <td align="right"> <a class="btn btn-primary btn-xs" href="{{ url('inv_actualizar_costo_promedio_platilllo/' . $registro->item_platillo->id . '/' . $sum_costo_total) }}"><i class="fa fa-save"></i> Actualizar Costo Prom. Platillo</a></td>
                                     <td> &nbsp; </td>
                                 </tr>
-							-->
 							</tbody>
 						</table>
 					</div>
