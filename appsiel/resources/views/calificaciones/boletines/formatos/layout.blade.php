@@ -80,7 +80,7 @@
 			top: 12%;
 			left: 15%;
 			text-align: center;
-			opacity: .1;
+			opacity: .2;
 			z-index: -1000;
 			width: 70%;
 		}
@@ -90,7 +90,7 @@
 			top: 20%;
 			left: 15%;
 			text-align: center;
-			opacity: .1;
+			opacity: .2;
 			z-index: -1000;
 			width: 70%;
 		}
