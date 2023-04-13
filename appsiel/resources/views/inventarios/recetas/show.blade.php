@@ -76,8 +76,19 @@
 			    	<div class="col-md-4" style="padding:5px;"> 
 			    		<b>Categoría: </b> {{ $registro->item_platillo->grupo_inventario->descripcion }}
 			    	</div>
-			    	<div class="col-md-4" style="padding:5px;"> 
-			    		{!! $btn_nuevo !!}
+			    	<div class="col-md-4" style="padding:5px; border: 1px solid #ddd;"> 
+			    		<?php 
+							$fichas = $registro->item_platillo->fichas;
+							$title = '';
+							if (!empty($fichas->first())) {
+								$title = '<p style="width: 100%;text-align:center;"><u>Ficha técnica</u></p>';
+							}
+						?>
+						{!! $title !!}
+						@foreach ($fichas as $ficha)
+							<b>{{$ficha->key}}: </b> {!! strip_tags($ficha->descripcion) !!}
+							<br>
+						@endforeach
 			    	</div>			    	
 			    </div>
 			    <hr>
