@@ -42,7 +42,7 @@
 
 <div class="contenido1 container-fluid">
 
-	<h3 align="center">Revisión de boletines</h3>
+	<h3 align="center">Revisión de informes</h3>
 
 	<h4 align="center">Se hallaron <?php echo count($estudiantes);?> estudiantes matriculados</h4>
 	<?php 
