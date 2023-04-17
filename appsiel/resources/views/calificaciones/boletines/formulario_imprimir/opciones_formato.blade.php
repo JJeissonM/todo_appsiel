@@ -54,4 +54,14 @@
 			</div>
 		</div>
 	</div>
+
+	<div class="col-md-6">
+		<div class="row campo" style="padding:5px;">
+			{{ Form::bsText('cantidad_caracteres_para_proxima_pagina',5000,'Cant. caracteres para pasar a la siguiente página',[],[]) }}
+		</div>
+
+		<div class="row campo" style="padding:5px;">
+			&nbsp;
+		</div>
+	</div>
 </div>

@@ -1,5 +1,5 @@
-<tr style="font-size: {{$tam_letra}}mm;">
-	<td colspan="{{$cant_columnas}}">
+<tr>
+	<td colspan="{{$cant_columnas}}" style="font-size: {{$tam_letra}}mm; padding: 10px;">
 		<b> Observaciones: </b>
 		&nbsp;&nbsp;&nbsp;
 		@if( !is_null( $registro->observacion ) )

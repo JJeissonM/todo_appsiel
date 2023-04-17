@@ -1,5 +1,5 @@
 <ul class="lista_logros">
-	@if ( !is_null($linea->logros) )
+	@if ( $linea->logros != null )
 		@foreach( $linea->logros as $un_logro )
 			<?php
 				$arr_logros = explode('•',$un_logro->descripcion);
@@ -24,7 +24,7 @@
 	@endif
 
 
-	@if ( !is_null($linea->logros_adicionales) )
+	@if ( $linea->logros_adicionales != null )
 		@foreach( $linea->logros_adicionales as $un_logro )
 			<?php
 				$arr_logros = explode('•',$un_logro->descripcion);

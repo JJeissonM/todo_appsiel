@@ -192,6 +192,7 @@ class BoletinController extends Controller
         $mostrar_nota_nivelacion = $request->mostrar_nota_nivelacion;
         $tam_hoja = $request->tam_hoja;
         $tam_letra = $request->tam_letra;
+        $cantidad_caracteres_para_proxima_pagina = $request->cantidad_caracteres_para_proxima_pagina;
         
         $margenes = (object)[ 
                                 'superior' => $request->margen_superior - 5,
@@ -216,16 +217,117 @@ class BoletinController extends Controller
 
         $url_imagen_marca_agua = config('matriculas.url_imagen_marca_agua');
 
-		$view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua') )->render();
+        if ($request->formato == 'pdf_boletines_6') {
+            $view =  $this->get_view_for_pdf_boletines_6($request->formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina);
+        }else{
+            $view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua') )->render();
+        }
         
+        //dd($view);
+
         // Se prepara el PDF
         $orientacion='portrait';
         $pdf = App::make('dompdf.wrapper');			
-        $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
+        $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
 
 		//return $view;
 		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');
 	}
+
+    public function get_view_for_pdf_boletines_6($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina)
+    {
+        $lbl_numero_periodo = $this->get_label_periodo($periodo);
+
+        $all_boletines = '';
+
+        foreach($datos as $registro)
+        {            
+            $obj_lineas_cuerpo_boletin = $this->dividir_lineas_cuerpo_boletin($registro->cuerpo_boletin->lineas,$cantidad_caracteres_para_proxima_pagina);
+
+            $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->first_group;
+
+            if (empty($obj_lineas_cuerpo_boletin->second_group)) {
+                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_onepage', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin') )->render();
+                $back_side = '';
+            }else{
+                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_frontside', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin') )->render();
+                
+                $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->second_group;
+
+                $back_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_backside', compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin') )->render();
+            }                
+
+            $all_boletines .= $front_side . $back_side;
+        }
+
+        return View::make( 'calificaciones.boletines.pdf_boletines_6', compact( 'all_boletines','curso', 'tam_hoja', 'tam_letra','margenes', 'mostrar_areas'))->render();
+    }
+
+    public function dividir_lineas_cuerpo_boletin($lineas,$cantidad_caracteres_para_proxima_pagina)
+    {
+        $cant_caracteres = 0;
+        $obj_lineas = (object)[
+            'first_group' => [],
+            'second_group' => []
+        ];
+
+        foreach ($lineas as $key => $linea) {
+            if ( $linea->logros != null )    
+            {
+                foreach( $linea->logros as $un_logro )
+                {
+                    $cant_caracteres += strlen($un_logro->descripcion);
+                }
+            }
+            if ( $linea->logros_adicionales != null )    
+            {
+                foreach( $linea->logros_adicionales as $un_logro )
+                {
+                    $cant_caracteres += strlen($un_logro->descripcion);
+                }
+            }
+
+            if ( $cant_caracteres < $cantidad_caracteres_para_proxima_pagina) {
+                $obj_lineas->first_group[] = $linea;
+            }else{
+                $obj_lineas->second_group[] = $linea;
+            }
+        }
+
+        return $obj_lineas;
+    }
+
+    public function get_label_periodo($periodo)
+    {
+        $lbl_numero_periodo = '';
+        switch ($periodo->numero) {
+            case '1':
+                $lbl_numero_periodo = 'PRIMER';
+                break;
+                
+            case '2':
+                $lbl_numero_periodo = 'SEGUNDO';
+                break;
+                
+            case '3':
+                $lbl_numero_periodo = 'TERCER';
+                break;
+                
+            case '4':
+                $lbl_numero_periodo = 'CUARTO';
+                break;
+            
+            case '5':
+                $lbl_numero_periodo = 'ÚLTIMO';
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return $lbl_numero_periodo;
+    }
 
     public function preparar_datos_boletin( $periodo, $curso, $matriculas )
     {
