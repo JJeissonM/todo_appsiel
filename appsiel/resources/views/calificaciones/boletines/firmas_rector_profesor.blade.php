@@ -6,7 +6,7 @@
 	}	
 ?>
 @if( $url_firma != '')
-	<img src="{{ $url_firma }}" width="250px" height="70px" style="margin-bottom: -20px;"/>
+	<img src="{{ $url_firma }}" style="margin-bottom: -20px; max-height:70px; width:auto;"/>
 @else
 	_____________________________
 @endif

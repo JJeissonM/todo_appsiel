@@ -10,6 +10,9 @@
 
 			$lbl_asigatura = 'ASIGNATURA';
 		}
+
+        $ancho_primera_columna = 130;
+        $ancho_columna_calificacion = 70;
 	?>
 
 	@foreach($datos as $registro)
@@ -72,10 +75,10 @@
             <table class="contenido table-bordered" style="margin-left: auto; margin-right: auto; width: 94%;">
                 <thead>
                     <tr>
-                        <th style="width:180px; padding: 5px;">{{ $lbl_asigatura }}</th>
+                        <th style="width:{{$ancho_primera_columna}}px; padding: 5px;">{{ $lbl_asigatura }}</th>
                         <th style="padding: 5px;">LOGROS</th>
                         @if($curso->maneja_calificacion==1)
-                            <th style="width:80px; padding: 5px;">VALORACIÓN</th>
+                            <th style="width:{{$ancho_columna_calificacion}}px; padding: 5px;">VALORACIÓN</th>
                             <?php $cant_columnas++;  ?>
                         @endif
                     </tr>
@@ -93,11 +96,11 @@
 
                         <tr>
 
-                            <td style="width:150px; padding: 5;">
+                            <td style="width:{{$ancho_primera_columna}}px; padding: 5;">
                                 {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                             </td>
 
-                            <td style="text-align: justify; padding: 20px;">
+                            <td style="text-align: justify; padding: 5px 5px 5px 25px;">
                                 @include('calificaciones.boletines.proposito')
                                 
                                 @include('calificaciones.boletines.lista_logros')
@@ -106,7 +109,7 @@
                             </td>
                             
                             @if( $curso->maneja_calificacion == 1)
-                                <td style="padding: 5; text-align: center;"> 
+                                <td style="width:{{$ancho_columna_calificacion}}px; padding: 5; text-align: center;"> 
                                     @if( !is_null( $linea->calificacion ) )
                                         @if( $linea->calificacion->calificacion > 0)
                                             @include('calificaciones.boletines.lbl_descripcion_calificacion')
@@ -133,6 +136,8 @@
             @include('calificaciones.boletines.mostrar_usuarios_estudiantes')
             
             @include('calificaciones.boletines.seccion_firmas')
+            
+            @include('calificaciones.boletines.pie_pagina')
             
             <div class="page-break"></div>
 	@endforeach

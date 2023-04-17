@@ -137,8 +137,6 @@ class NominaElectronicaController extends Controller
 
             $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
 
-            //dd(($json_doc_electronico_enviado));
-
             try {
                 $client = new Client(['base_uri' => config('nomina.url_servicio_emision')]);
                 
@@ -154,7 +152,6 @@ class NominaElectronicaController extends Controller
 
 
              } catch (\GuzzleHttp\Exception\RequestException $e) {
-                dd($e);
                  $response = $e->getResponse();
              }
 
@@ -165,7 +162,7 @@ class NominaElectronicaController extends Controller
         }
 
       
-        //dd('se fueron');
+        dd('se fueron');
 
       return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
    }

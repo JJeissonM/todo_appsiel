@@ -214,7 +214,7 @@ class ReporteController extends Controller
             $sql_datos_encabezado_doc = InvDocEncabezado::get_registro2($fila->core_tipo_transaccion_id,$fila->core_tipo_doc_app_id,$fila->consecutivo);
 
             if (!isset($sql_datos_encabezado_doc[0])) {
-                dd('Error en la línea del movimiento.',$fila->core_tipo_transaccion_id,$fila->core_tipo_doc_app_id,$fila->consecutivo,$sql_datos_encabezado_doc);
+                dd('Error en la línea del movimiento. No se pudo obtener los datos del encabezado: ','tipo_transaccion_id: ' . $fila->core_tipo_transaccion_id, 'tipo_doc_app_id: ' . $fila->core_tipo_doc_app_id, 'consecutivo: ' . $fila->consecutivo,$sql_datos_encabezado_doc);
             }
 
             $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
