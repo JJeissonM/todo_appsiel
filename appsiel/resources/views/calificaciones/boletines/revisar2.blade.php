@@ -47,6 +47,8 @@
 	<h4 align="center">Se hallaron <?php echo count($estudiantes);?> estudiantes matriculados</h4>
 	<?php 
 
+		$decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
+
 		$estilo_advertencia = 'style="background-color:#F08282; color:white;"';
 	
 		// Se recorre cada estudiante matriculado
@@ -138,7 +140,7 @@
 									{
 										$escala = (object) array('id' => 0, 'nombre_escala' => '');
 									}
-									$tbody.='<td>'.$calificacion.'<sup>' . $lbl_nivelacion . '</sup> ('.$escala->nombre_escala.')</td>';
+									$tbody.='<td>' . number_format( (float)$calificacion, $decimales, ',', '.' ).'<sup>' . $lbl_nivelacion . '</sup> ('.$escala->nombre_escala.')</td>';
 								}
 								
 								$tbody .=  \View::make('calificaciones.boletines.revisar2_incluir_celda_logros',[
