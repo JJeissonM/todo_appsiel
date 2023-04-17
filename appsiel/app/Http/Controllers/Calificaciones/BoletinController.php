@@ -222,8 +222,6 @@ class BoletinController extends Controller
         }else{
             $view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua') )->render();
         }
-        
-        //dd($view);
 
         // Se prepara el PDF
         $orientacion='portrait';
