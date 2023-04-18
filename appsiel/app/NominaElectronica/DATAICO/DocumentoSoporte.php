@@ -196,24 +196,33 @@ class DocumentoSoporte extends Model
 
    public function get_json_to_send()
    {
-      $data = $this->toArray();
       
       $lapso = new LapsoNomina( $this->fecha );
 
-      $data += [ 
+      
+      $document_header = $this->toArray();
+
+      $data = [ 
          'env' => config('nomina.nom_elec_ambiente'),
          'prefix' => $this->tipo_documento_app->prefijo,
          'number' => $this->consecutivo,
          'salary' =>  $this->empleado->sueldo,
          'periodicity' => 'MENSUAL',
-         'initial-settlement-date' => $lapso->fecha_inicial,
-         'final-settlement-date' => $lapso->fecha_final,
-         'issue-date' => $lapso->fecha_final,
-         'payment-date' => $lapso->fecha_final,
-         'notes' => [ 
-               'text' => ''
+         'initial-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_inicial),
+         'final-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
+         'issue-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
+         'payment-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
+         'accruals' => $document_header['accruals_json'],
+         'deductions' => $document_header['deductions_json'],
+         'employee' => $document_header['employee_json'],
+         'software' => [
+            'pin' => config('nomina.pin_software'),
+            'test-set-id' => config('nomina.tokenEmpresa'),
+            'dian-id' => config('nomina.tokenDian'),
          ]
       ];
+
+      //dd('{"env":"PRODUCCION","prefix":"N","number":1,"salary":1854290.00,"periodicity":"MENSUAL","initial-settlement-date":"01/01/2023","final-settlement-date":"31/01/2023","issue-date":"04/04/2023","payment-date":"31/01/2023","accruals":[{"amount":51393.00,"code":"AUXILIO_DE_TRANSPORTE"},{"days":11,"amount":679906.0,"code":"BASICO"},{"days":19,"amount":1174384.0,"code":"VACACION"}],"deductions":[{"amount":74172.0,"percentage":4.0,"code":"SALUD"},{"amount":74172.0,"percentage":4.0,"code":"FONDO_PENSION"}],"employee":{"other-names":"PEDRO","second-last-name":"PICAPIEDRA","first-name":"","integral-salary":false,"fire-date":"31/12/2023","email":"pedro@hotmail.com","last-name":"BEDOYA","worker-type":"DEPENDIENTE","address":{"line":"CR 53 50 31","city":"101","department":"05"},"identification":"111111111","payment-means":"EFECTIVO","sub-code":"NO_APLICA","start-date":"18/01/2012","identification-type":"NIT","contract-type":"TERMINO_FIJO"},"software":{"pin":"4123412","test-set-id":"201b3830-cf33-4966-9e63-4e8dcc450457","dian-id":"d0e88268-a4ab-447d-918c-19c1c248b5c3"}}',json_encode($data));
 
       return $data;
    

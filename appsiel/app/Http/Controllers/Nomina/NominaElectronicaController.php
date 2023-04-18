@@ -157,12 +157,7 @@ class NominaElectronicaController extends Controller
 
             $array_respuesta = json_decode( (string) $response->getBody(), true );
             $array_respuesta['codigo'] = $response->getStatusCode();
-
-            dd($array_respuesta);
         }
-
-      
-        dd('se fueron');
 
       return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
    }
