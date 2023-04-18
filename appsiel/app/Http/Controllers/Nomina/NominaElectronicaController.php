@@ -54,7 +54,7 @@ class NominaElectronicaController extends Controller
 
     public function generar_doc_soporte( Request $request )
     {
-        $doc_soporte_empleado = new DocumentoSoporteService();
+        $doc_soporte_service = new DocumentoSoporteService();
         $company_serv = (new CompanyService());
         
         $lapso = new LapsoNomina( $request->fecha_final_periodo );
@@ -82,7 +82,7 @@ class NominaElectronicaController extends Controller
         {
             $empleado = $registro_empleado->contrato;
 
-            $datos_doc_soporte = $doc_soporte_empleado->get_data_for_json( $empleado, $lapso, $almacenar_registros );
+            $datos_doc_soporte = $doc_soporte_service->get_data_for_json( $empleado, $lapso, $almacenar_registros );
             
             $this->actualizar_datos_vista( $datos_doc_soporte );
 

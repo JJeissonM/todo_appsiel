@@ -7,7 +7,6 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
-use App\Nomina\ValueObjects\LapsoNomina;
 use Illuminate\Support\Facades\Auth;
 
 // declaramos factura
@@ -123,14 +122,14 @@ class DocumentoSoporteService
       $fecha_ingreso = explode('-',$empleado->fecha_ingreso);
       $data['code'] = $empleado->tercero->numero_identificacion;
       $data['payment-means'] = 'EFECTIVO';
-      $data['worker-type'] = $empleado->tipo_cotizante;//'FUNCIONARIOS_PUBLICOS_SIN_TOPE_MAXIMO_DE_IBC';
+      $data['worker-type'] = $this->get_worker_type_for_technology_supplier($empleado->tipo_cotizante);//'FUNCIONARIOS_PUBLICOS_SIN_TOPE_MAXIMO_DE_IBC';
       $data['sub-code'] = 'NO_APLICA';
       $data['start-date'] = $fecha_ingreso[2].'/'.$fecha_ingreso[1].'/'.$fecha_ingreso[0];
       $data['fire-date'] = '';
       $data['high-risk'] = false;
       $data['integral-salary'] = ($empleado->salario_integral)?true:false;
       $data['contract-type'] = 'TERMINO_FIJO';
-      $data['identification-type'] = $empleado->tercero->tipo_doc_identidad->abreviatura;//'NUIP';
+      $data['identification-type'] = $this->get_identification_type_for_technology_supplier($empleado->tercero->tipo_doc_identidad->abreviatura);
       $data['identification'] = $empleado->tercero->numero_identificacion;
       $data['first-name'] = $empleado->tercero->nombre1;
       $data['other-names'] = $empleado->tercero->otros_nombres;
@@ -139,7 +138,6 @@ class DocumentoSoporteService
       $data['bank'] = '';
       $data['account-type-kw'] = '';
       $data['account-number'] = '';
-
       
       // 16925001 = 169 pais, 25 departamento, 001 ciudad
       $department_id = substr($empleado->tercero->ciudad->id,3,2);
@@ -156,28 +154,89 @@ class DocumentoSoporteService
       ];
    }
 
-   public function get_json_to_send()
+   public function get_identification_type_for_technology_supplier($identification_code)
    {
-      $data = $this->toArray();
+      switch ($identification_code) {
+         case 'CC':
+            return 'CEDULA_DE_CIUDADANIA';
+            break;
+         
+         case 'CE':
+            return 'CEDULA_DE_EXTRANJERIA';
+            break;
+
+         case 'DNI':
+            return 'DOCUMENTO_DE_IDENTIFICATION_EXTRANJERO';
+            break;
+         
+         case 'NIT':
+            return 'NIT';
+            break;
+         
+         case 'NITOP':
+            return 'NIT_DE_OTRO_PAIS';
+            break;
+         
+         case 'NUIP':
+            return 'NUIP';
+            break;
+         
+         case 'PAS':
+            return 'PASAPORTE';
+            break;
       
-      $lapso = new LapsoNomina( $this->fecha );
+         case 'PEP':
+            return 'PEP';
+            break;
+      
+         case 'RC':
+            return 'REGISTRO_CIVIL';
+            break;
 
-      $data += [ 
-         'env' => config('nomina.nom_elec_ambiente'),
-         'prefix' => $this->tipo_documento_app->prefijo,
-         'number' => $this->consecutivo,
-         'salary' =>  $this->empleado->sueldo,
-         'periodicity' => 'MENSUAL',
-         'initial-settlement-date' => $lapso->fecha_inicial,
-         'final-settlement-date' => $lapso->fecha_final,
-         'issue-date' => $lapso->fecha_final,
-         'payment-date' => $lapso->fecha_final,
-         'notes' => [ 
-               'text' => ''
-         ]
-      ];
+         case 'TE':
+            return 'TARJETA_DE_EXTRANJERIA';
+            break;
 
-      return $data;
-   
+         case 'TI':
+            return 'TARJETA_DE_IDENTIDAD';
+            break;
+            
+         default:
+            return 'CEDULA_DE_CIUDADANIA';
+            break;
+      }
+   }
+
+   public function get_worker_type_for_technology_supplier($tipo_cotizante)
+   {
+      /**
+      * Faltan todos estos 
+      * ['' '' 'COOPERADOS_O_PRE_COOPERATIVAS_DE_TRABAJO_ASOCIADO' '' 'DEPENDIENTE_ENTIDADES_O_UNIVERSIDADES_PUBLICAS_CON_REGIMEN_ESPECIAL_EN_SALUD' 'ESTUDIANTES_APORTES_SOLO_RIESGOS_LABORALES' 'ESTUDIANTES_DE_POSTGRADO_EN_SALUD' 'ESTUDIANTES_DE_PRACTICAS_LABORALES_EN_EL_SECTOR_PUBLICO' 'FUNCIONARIOS_PUBLICOS_SIN_TOPE_MAXIMO_DE_IBC' 'MADRE_COMUNITARIA' 'PRE_PENSIONADO_CON_APORTE_VOLUNTARIO_A_SALUD' 'PRE_PENSIONADO_DE_ENTIDAD_EN_LIQUIDACION.' '' 'SERVICIO_DOMESTICO' 'TRABAJADOR_DEPENDIENTE_DE_ENTIDAD_BENEFICIARIA_DEL_SISTEMA_GENERAL_DE_PARTICIPACIONES_APORTES_PATRONALES' '']
+       */
+      switch ($tipo_cotizante) {
+         case '01':
+            return 'DEPENDIENTE';
+            break;
+         
+         case '12':
+            return 'APRENDICES_DEL_SENA_EN_ETAPA_LECTIVA';
+            break;
+
+         case '19':
+            return 'APRENDICES_DEL_SENA_EN_ETAPA_PRODUCTIVA';
+            break;
+         
+         case '22':
+            return 'PROFESOR_DE_ESTABLECIMIENTO_PARTICULAR';
+            break;
+         
+         case '51':
+            return 'TRABAJADOR_DE_TIEMPO_PARCIAL';
+            break;
+            
+         default:
+            return 'DEPENDIENTE';
+            break;
+      }
    }
 }

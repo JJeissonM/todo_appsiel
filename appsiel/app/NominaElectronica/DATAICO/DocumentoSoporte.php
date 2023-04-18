@@ -156,49 +156,9 @@ class DocumentoSoporte extends Model
       return $one_line;
    }
 
-   public function get_arr_employee_data($empleado, $lapso)
-   {
-      $fecha_ingreso = explode('-',$empleado->fecha_ingreso);
-      $data['code'] = $empleado->tercero->numero_identificacion;
-      $data['payment-means'] = 'EFECTIVO';
-      $data['worker-type'] = $empleado->tipo_cotizante;//'FUNCIONARIOS_PUBLICOS_SIN_TOPE_MAXIMO_DE_IBC';
-      $data['sub-code'] = 'NO_APLICA';
-      $data['start-date'] = $fecha_ingreso[2].'/'.$fecha_ingreso[1].'/'.$fecha_ingreso[0];
-      $data['fire-date'] = '';
-      $data['high-risk'] = false;
-      $data['integral-salary'] = ($empleado->salario_integral)?true:false;
-      $data['contract-type'] = 'TERMINO_FIJO';
-      $data['identification-type'] = $empleado->tercero->tipo_doc_identidad->abreviatura;//'NUIP';
-      $data['identification'] = $empleado->tercero->numero_identificacion;
-      $data['first-name'] = $empleado->tercero->nombre1;
-      $data['other-names'] = $empleado->tercero->otros_nombres;
-      $data['last-name'] = $empleado->tercero->apellido1;
-      $data['second-last-name'] = $empleado->tercero->apellido2;
-      $data['bank'] = '';
-      $data['account-type-kw'] = '';
-      $data['account-number'] = '';
-
-      
-      // 16925001 = 169 pais, 25 departamento, 001 ciudad
-      $department_id = substr($empleado->tercero->ciudad->id,3,2);
-      $city_id = substr($empleado->tercero->ciudad->id, 5, strlen($empleado->tercero->ciudad->id)-1);
-
-      $data['address'] = [
-         'city' => $city_id,
-         'line' => $empleado->tercero->direccion1,
-         'department' => $department_id
-      ];
-
-      return [
-         'employee' => $data
-      ];
-   }
-
    public function get_json_to_send()
    {
-      
       $lapso = new LapsoNomina( $this->fecha );
-
       
       $document_header = $this->toArray();
 
@@ -212,9 +172,9 @@ class DocumentoSoporte extends Model
          'final-settlement-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'issue-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
          'payment-date' => formatear_fecha_factura_electronica($lapso->fecha_final),
-         'accruals' => $document_header['accruals_json'],
-         'deductions' => $document_header['deductions_json'],
-         'employee' => $document_header['employee_json'],
+         'accruals' => json_decode($document_header['accruals_json'],true),
+         'deductions' => json_decode($document_header['deductions_json'],true),
+         'employee' => json_decode($document_header['employee_json'],true),
          'software' => [
             'pin' => config('nomina.pin_software'),
             'test-set-id' => config('nomina.tokenEmpresa'),
