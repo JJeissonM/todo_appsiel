@@ -8,7 +8,7 @@
         $lbl_asigatura = 'ASIGNATURA';
     }
 
-    $ancho_primera_columna = 130;
+    $ancho_primera_columna = 110;
     $ancho_columna_calificacion = 70;
     $area_anterior = '';
     $cant_columnas = 2;

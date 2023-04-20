@@ -136,14 +136,28 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $agrupar_por = $request->agrupar_por;
+        
+        $array_wheres = [
+            ['vtas_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
 
-        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+        if ($request->vendedor_id != null) {
+            $array_wheres = array_merge($array_wheres,[['vtas_movimientos.vendedor_id','=', $request->vendedor_id]]);
+        }
+
+        $movimiento = VtasMovimiento::get_movimiento_ventas_filtrado($fecha_desde, $fecha_hasta, $agrupar_por, $array_wheres);
         
         $movimiento_inventarios = InvMovimiento::get_movimiento_transacciones_ventas( $fecha_desde, $fecha_hasta );
 
-        $mensaje = 'IVA <b>NO</b> incluido en precio';
+        $iva_incluido  = (int)$request->iva_incluido;
+        // En el movimiento se trae el precio_total con IVA incluido
+        $mensaje = 'IVA Incluido en precio';
+        if ( !$iva_incluido )
+        {
+            $mensaje = 'IVA <b>NO</b> incluido en precio';
+        }
 
-        $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje') )->render();
+        $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

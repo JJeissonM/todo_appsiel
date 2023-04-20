@@ -47,16 +47,18 @@
 
                 foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
                 {
+                    $arr_remisiones = $coleccion_movimiento->pluck('remision_doc_encabezado_id')->toArray();
                     $cantidad = $coleccion_movimiento->sum('cantidad');
-                    $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
 
                     if ( $agrupar_por == 'core_tercero_id' )
                     {
-                        $costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
+                        $costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
+                        //$costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
                     }else{
-                        $costo_total = $movimiento_inventarios->where( 'inv_producto_id', $coleccion_movimiento->first()->inv_producto_id )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
+                        $costo_total = $movimiento_inventarios->where( 'inv_producto_id', $coleccion_movimiento->first()->inv_producto_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
                     }
-                        
+                    
+                    /**/
 
                     $array_lista[$i]['descripcion'] = $campo_agrupado;
                     
@@ -70,9 +72,13 @@
                     }
 
                     $array_lista[$i]['cantidad'] = $cantidad;
-                    //$array_lista[$i]['cantidad_inventario'] = $cantidad_inventario;
 
-                    $precio = $base_impuesto_total; // Sin IVA
+                    if ( $iva_incluido )
+                    {
+                        $precio = $coleccion_movimiento->sum('precio_total');
+                    }else{
+                        $precio = $coleccion_movimiento->sum('base_impuesto_total');
+                    }
 
                     $precio_promedio = 0;
                     $costo_promedio = 0;                    
