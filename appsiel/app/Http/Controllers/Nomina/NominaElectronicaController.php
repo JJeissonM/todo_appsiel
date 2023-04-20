@@ -47,9 +47,19 @@ class NominaElectronicaController extends Controller
             {
                 $msj_advertencia = 'No hay un tipo de documento asociado a la transacción de documento de Soporte Nómina Electrónica.';
             }
-        }            
+        }
 
-    	return view('nomina.nomina_electronica.index', compact('miga_pan', 'model', 'msj_advertencia') );
+        $encabezado_tabla = $model->get_encabezado_tabla();
+        
+        $array_wheres = [
+            ['estado', '=', 'Sin enviar']
+        ];
+
+        $registros = $model->get_records_filtered($array_wheres);
+
+        $tabla_documentos_sin_enviar = View::make('nomina.nomina_electronica.tabla_documentos_sin_enviar', compact('model','encabezado_tabla','registros'))->render();
+
+    	return view('nomina.nomina_electronica.index', compact('miga_pan', 'tabla_documentos_sin_enviar', 'msj_advertencia') );
     }
 
     public function generar_doc_soporte( Request $request )
@@ -157,9 +167,11 @@ class NominaElectronicaController extends Controller
 
             $array_respuesta = json_decode( (string) $response->getBody(), true );
             $array_respuesta['codigo'] = $response->getStatusCode();
-        }
 
-      return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
+            //dd($array_respuesta);
+        }
+        
+        return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
    }
 
     public function show( $id )

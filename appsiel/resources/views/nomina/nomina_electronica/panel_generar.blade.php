@@ -62,8 +62,7 @@
 		$(document).ready(function(){
 
 			
-			$("#almacenar_registros").on('change',function(event){
-				
+			$("#almacenar_registros").on('change',function(event){				
 				if ( $(this).val() == 1 ) {
 		 			$("#btn_previsualizar").attr('class','btn btn-success');
 					$("#btn_previsualizar").html('<i class="fa fa-check"></i> Almacenar');

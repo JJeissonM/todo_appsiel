@@ -4,77 +4,46 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Auth;
+use App\Inventarios\Indumentaria\PaletaColores;
+use App\Inventarios\Indumentaria\PrefijoReferencia;
+use App\Inventarios\Indumentaria\TipoMaterial;
+use App\Inventarios\Indumentaria\TipoPrenda;
+use Illuminate\Support\Facades\Auth;
 
-use App\Inventarios\InvGrupo;
-use App\Inventarios\MandatarioTieneItem;
-
-use App\Inventarios\Services\CodigoBarras;
-
-use App\Contabilidad\Impuesto;
-
-
+//  PRENDAS
 class ItemMandatario extends Model
 {
-    protected $table = 'inv_items_mandatarios'; 
+    protected $table = 'inv_items_mandatarios';
 
-    protected $fillable = [ 'core_empresa_id', 'descripcion', 'tipo', 'unidad_medida1', 'unidad_medida2', 'inv_grupo_id', 'impuesto_id', 'precio_compra', 'precio_venta', 'estado', 'imagen', 'creado_por', 'modificado_por' ];
+    protected $fillable = [ 'core_empresa_id', 'descripcion', 'referencia', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Grupo inventario', 'Descripción', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila"}';
 
-    public function grupo_inventario()
+    public function paleta_color()
     {
-        return $this->belongsTo(InvGrupo::class, 'inv_grupo_id');
+        return $this->belongsTo(PaletaColores::class, 'paleta_color_id');
+    }
+
+    public function prefijo_referencia()
+    {
+        return $this->belongsTo(PrefijoReferencia::class, 'paleta_color_id');
+    }
+
+    public function tipo_material()
+    {
+        return $this->belongsTo(TipoMaterial::class, 'tipo_material_id');
+    }
+
+    public function tipo_prenda()
+    {
+        return $this->belongsTo(TipoPrenda::class, 'tipo_prenda_id');
     }
 
     public function items_relacionados()
     {
         return $this->belongsToMany( InvProducto::class, 'inv_mandatario_tiene_items', 'mandatario_id', 'item_id');
-    }
-
-    public function get_costo_promedio( $bodega_id )
-    {
-        $costo_prom = InvCostoPromProducto::where([
-                                                    ['inv_bodega_id','=',$bodega_id],
-                                                    ['inv_producto_id','=', $this->id]
-                                                ])
-                                        ->value('costo_promedio');
-
-        if ( is_null( $costo_prom ) || $costo_prom <= 0 )
-        {
-            $costo_prom = $this->precio_compra;
-        }
-
-        if ( $costo_prom <= 0 )
-        {
-            $costo_prom = 1;
-        }
-
-        return $costo_prom;
-    }
-
-    public function set_costo_promedio( $bodega_id, $costo_prom )
-    {
-        $registro_costo_prom = InvCostoPromProducto::where([
-                                                    ['inv_bodega_id','=',$bodega_id],
-                                                    ['inv_producto_id','=', $this->id]
-                                                ])
-                                        ->get()
-                                        ->first();
-
-        if ( is_null( $registro_costo_prom ) )
-        {
-            $registro_costo_prom = new InvCostoPromProducto();
-            $registro_costo_prom->inv_bodega_id = $bodega_id;
-            $registro_costo_prom->inv_producto_id = $this->id;
-            $registro_costo_prom->costo_promedio = $costo_prom;
-            $registro_costo_prom->save();
-        }else{
-            $registro_costo_prom->costo_promedio = $costo_prom;
-            $registro_costo_prom->save();
-        }
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -83,7 +52,7 @@ class ItemMandatario extends Model
                             ['inv_items_mandatarios.core_empresa_id', Auth::user()->empresa_id]
                         ];
 
-        return ItemMandatario::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.inv_grupo_id')
+        return ItemMandatario::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.talla_id')
             ->where($array_wheres)
             ->select(
                 'inv_items_mandatarios.id AS campo1',
@@ -106,7 +75,7 @@ class ItemMandatario extends Model
             ['inv_items_mandatarios.core_empresa_id', Auth::user()->empresa_id]
         ];
 
-        $string = ItemMandatario::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.inv_grupo_id')
+        $string = ItemMandatario::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.talla_id')
             ->where($array_wheres)
             ->select(
                 'inv_items_mandatarios.id AS CÓDIGO',
@@ -126,9 +95,8 @@ class ItemMandatario extends Model
     //Titulo para la exportación en PDF y EXCEL
     public static function tituloExport()
     {
-        return "LISTADO DE PRODUCTOS";
-    }
-    
+        return "LISTADO DE PRENDAS";
+    }    
 
     public static function opciones_campo_select()
     {
@@ -137,7 +105,7 @@ class ItemMandatario extends Model
                             ->get();
         $vec['']='';
         foreach ($opciones as $opcion){
-            $vec[$opcion->id]=$opcion->id.' '.$opcion->descripcion;
+            $vec[$opcion->id] = $opcion->referencia . ' ' . $opcion->descripcion;
         }
 
         return $vec;
@@ -145,29 +113,24 @@ class ItemMandatario extends Model
 
     public function store_adicional( $datos, $registro )
     {
+        $referencia = $registro->prefijo_referencia->codigo . $registro->tipo_prenda->codigo . $registro->paleta_color->codigo . $registro->tipo_material->codigo;
+
         $user = Auth::user();
+        $registro->referencia = $referencia;
         $registro->estado = 'Activo';
-        $registro->tipo = 'producto';
-        $registro->impuesto_id = (int)config('inventarios.item_impuesto_id');
         $registro->core_empresa_id = $user->empresa_id;
-        $registro->unidad_medida1 = 'UND';
         $registro->save();
     }
 
     public function update_adicional($datos, $id)
     {
-        $mandatario = ItemMandatario::find( $id );
-        $registros_relacionados = $mandatario->items_relacionados;
+        $prenda = ItemMandatario::find( $id );
+        $registros_relacionados = $prenda->items_relacionados;
 
         foreach ($registros_relacionados as $registro )
         {
-            $registro->item_relacionado->descripcion = $mandatario->descripcion;
-            $registro->item_relacionado->inv_grupo_id = $mandatario->inv_grupo_id;
-            $registro->item_relacionado->precio_compra = $mandatario->precio_compra;
-            $registro->item_relacionado->precio_venta = $mandatario->precio_venta;
+            $registro->item_relacionado->descripcion = $prenda->descripcion;
             $registro->item_relacionado->save();
-
-            $registro->item_relacionado->set_costo_promedio( (int)config('inventarios.item_bodega_principal_id'), $mandatario->precio_compra );
         }
     }
 }

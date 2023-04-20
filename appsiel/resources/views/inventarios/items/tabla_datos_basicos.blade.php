@@ -5,13 +5,11 @@
 			<td rowspan="3" width="120px">
 
 				<?php
-					if ( $registro->imagen == '') {
-	                    $campo_imagen = 'avatar.png';
-	                }else{
-	                    $campo_imagen = $registro->imagen;
+					$url_imagen = url('/') . '/assets/img/box.png';
+					if ( $registro->imagen != '') {
+	                    $url_imagen = config('configuracion.url_instancia_cliente')."/storage/app/inventarios/".$registro->imagen;
 	                }
-	                $url = config('configuracion.url_instancia_cliente')."/storage/app/inventarios/".$campo_imagen.'?'.rand(1,1000);
-	                $imagen = '<img alt="imagen.jpg" src="'.asset($url).'" style="width: 100px; height: 100px;" />';
+	                $imagen = '<img alt="imagen.jpg" src="'.asset($url_imagen).'" style="width: 100px; height: 100px;" />';
 	            ?>
 
 				{!! $imagen !!}

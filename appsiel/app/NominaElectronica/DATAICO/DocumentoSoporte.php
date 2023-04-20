@@ -39,6 +39,11 @@ class DocumentoSoporte extends Model
        return $this->belongsTo( NomContrato::class, 'nom_contrato_id' );
    }
 
+   public function get_value_to_show()
+   {
+       return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+   }
+
    public static function consultar_registros($nro_registros, $search)
    {
       return DocumentoSoporte::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'nom_elect_doc_soporte.core_tipo_doc_app_id')

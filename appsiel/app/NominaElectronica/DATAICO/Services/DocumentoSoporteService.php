@@ -120,7 +120,7 @@ class DocumentoSoporteService
    public function get_arr_employee_data($empleado, $lapso)
    {
       $fecha_ingreso = explode('-',$empleado->fecha_ingreso);
-      $data['code'] = '"' . $empleado->tercero->numero_identificacion . '"';
+      $data['code'] = "" . $empleado->tercero->numero_identificacion . "";
       $data['payment-means'] = 'EFECTIVO';
       $data['worker-type'] = $this->get_worker_type_for_technology_supplier($empleado->tipo_cotizante);
       $data['sub-code'] = 'NO_APLICA';
@@ -130,7 +130,7 @@ class DocumentoSoporteService
       $data['integral-salary'] = ($empleado->salario_integral)?true:false;
       $data['contract-type'] = 'TERMINO_FIJO';
       $data['identification-type'] = $this->get_identification_type_for_technology_supplier($empleado->tercero->tipo_doc_identidad->abreviatura);
-      $data['identification'] = '"' . $empleado->tercero->numero_identificacion . '"';
+      $data['identification'] = "" . $empleado->tercero->numero_identificacion . "";
       $data['first-name'] = $empleado->tercero->nombre1;
       $data['other-names'] = $empleado->tercero->otros_nombres;
       $data['last-name'] = $empleado->tercero->apellido1;

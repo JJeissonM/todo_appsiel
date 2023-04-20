@@ -24,10 +24,7 @@
 			    </div>
 			    
 			    <div id="doc_soporte" class="tab-pane fade">
-			      <h4>{{ $model->modelo->descripcion }}</h4>
-			      <div id="div_datos_doc_soporte">
-			      	{!! $model->get_records_table() !!}
-			      </div>
+			      	{!! $tabla_documentos_sin_enviar !!}
 			    </div>
 			    
 			    <div id="doc_ajuste_e" class="tab-pane fade">
