@@ -539,26 +539,18 @@ class BoletinController extends Controller
 			/**
 			 * Crear un vector con los puestos unicos que existen
 			 */
-			$puestos = Calificacion::where( 'id_colegio', $colegio->id)
-                                    ->where( 'id_periodo', $request->id_periodo)
-                                    ->where( 'curso_id', $request->curso_id )
-                                    ->select(
-                                                DB::raw('AVG(calificacion) AS promedioCalificaciones'),
-                                                'id_estudiante')
-                                    ->groupBy('id_estudiante')
-                                    ->orderBy('promedioCalificaciones','DESC')
-                                    ->distinct('promedioCalificaciones')
-                                    ->get();
-
-            /*$query_2 = "SELECT DISTINCT promedioCalificaciones FROM (".$query_1.") Puestos";
-			$puestos = DB::select($query_2);
-            */
 
 			$i=1;
-			foreach($puestos as $puesto)
+			$promedio_anterior = 0;
+			foreach($promedios as $promedio)
             {
-				$vec_puestos [$i] = $puesto->promedioCalificaciones;
-				$i++;
+                if( $promedio->promedioCalificaciones != $promedio_anterior)
+                {
+				    $vec_puestos [$i] = $promedio->promedioCalificaciones;
+				    $i++;
+				    $promedio_anterior = $promedio->promedioCalificaciones;
+                }
+				
 			}
 			
 			// Buscar el puesto al que pertenece cada estudiante según su promedio de calificaciones
