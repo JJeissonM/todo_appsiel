@@ -513,4 +513,19 @@ class InvProducto extends Model
         return Impuesto::where( 'id', $impuesto_id )->value( 'tasa_impuesto' );
     }
 
+    public function get_precio_venta()
+    {
+        $detalle_lista_precios = ListaPrecioDetalle::where([
+            ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+            ['inv_producto_id','=',$this->id]
+        ])->orderBy('fecha_activacion')->get()
+        ->last();
+
+        if ($detalle_lista_precios == null) {
+            return $this->precio_venta;
+        }
+
+        return $detalle_lista_precios->precio;
+    }
+
 }

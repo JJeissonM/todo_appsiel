@@ -45,7 +45,7 @@
 
                         @if($mostrar_precio_ventas)
                             <p style="font-size:120%;font-family:cursive">
-                                <b>$ {{ number_format($fila->precio_venta, 0, ',', '.') }}</b>
+                                <b>$ {{ number_format($fila->get_precio_venta(), 0, ',', '.') }}</b>
                             </p>
                         @endif
                         
