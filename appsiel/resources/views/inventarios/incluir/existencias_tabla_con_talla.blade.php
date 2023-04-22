@@ -4,6 +4,7 @@
             <tr style="background: #ccc; font-weight: bold; text-align: center;">
                 <td> Bodega </td>
                 <td> Cód. </td>
+                <td> Ref. </td>
                 <td> Producto </td>
                 <td> Talla </td>
                 <td> Cant. </td>
@@ -53,6 +54,7 @@
                     <tr>
                         <td> {{ $linea_movimiento->bodega->descripcion }} </td>
                         <td>{{ $linea_movimiento->producto->id }}</td>
+                        <td>{{ $linea_movimiento->producto->referencia }}</td>
                         <td>{{ $linea_movimiento->producto->descripcion }} </td>
                         <td>{{ $linea_movimiento->producto->unidad_medida2 }} </td> <!-- Talla -->
                         <td>{{ number_format($linea_movimiento->suma_cantidad, 2, ',', '.') }} </td>
@@ -66,7 +68,7 @@
             } 
             ?>
             <tr>
-                <td colspan="4"> &nbsp; </td>            
+                <td colspan="5"> &nbsp; </td>            
                 <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
                 <td> {{ number_format($total_costo_total, 2, ',', '.') }} </td>

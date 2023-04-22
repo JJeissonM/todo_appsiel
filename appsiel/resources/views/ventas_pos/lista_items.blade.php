@@ -4,6 +4,7 @@
 			<thead>
 				<tr>
 					<th>Cód.</th>
+					<th>Ref.</th>
 					<th>Producto (U.M.)</th>
 					<th>Costo Prom.</th>
 				</tr>
@@ -22,6 +23,7 @@
 								</button>
 							@endif
 						</td>
+						<td class="table-text"><div>{{ $item->referencia }}</div></td>
 						<td class="table-text"><div>{{ $item->descripcion }}</div></td>
 						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio, 0, ',', '.' ) }}</div></td>
 					</tr>
