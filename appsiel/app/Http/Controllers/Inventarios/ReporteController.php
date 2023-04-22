@@ -329,13 +329,15 @@ class ReporteController extends Controller
         $estado = 'Activo';
         $etiqueta = $request->etiqueta;
         $items_a_mostrar = $request->items_a_mostrar;
+
+        $mostrar_precio_ventas = $request->mostrar_precio_ventas;
                 
         $items = InvProducto::where( [
             ['inv_grupo_id','=',$grupo_inventario_id],
             ]
             )->get();
 
-        $vista = View::make( 'inventarios.reportes.etiquetas_referencias', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar') )->render();
+        $vista = View::make( 'inventarios.reportes.etiquetas_referencias', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar', 'mostrar_precio_ventas') )->render();
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    

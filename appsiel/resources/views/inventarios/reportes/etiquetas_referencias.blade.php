@@ -42,6 +42,12 @@
                                 <b>{{ $fila->descripcion }}</b>
                             </p>
                         @endif
+
+                        @if($mostrar_precio_ventas)
+                            <p style="font-size:150%;font-family:Copperplate,fantasy">
+                                <b>$ {{ $fila->precio_venta }}</b>
+                            </p>
+                        @endif
                         
                         {{ $fila->referencia }}
                     </div>
