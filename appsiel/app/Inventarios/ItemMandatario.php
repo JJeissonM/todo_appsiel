@@ -15,11 +15,16 @@ class ItemMandatario extends Model
 {
     protected $table = 'inv_items_mandatarios';
 
-    protected $fillable = [ 'core_empresa_id', 'descripcion', 'referencia', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
+    protected $fillable = [ 'core_empresa_id', 'descripcion', 'referencia', 'inv_grupo_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Grupo inventario', 'Descripción', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Tipo', 'Material', 'Color', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila"}';
+
+    public function grupo_inventario()
+    {
+        return $this->belongsTo(InvGrupo::class, 'inv_grupo_id');
+    }
 
     public function paleta_color()
     {
@@ -28,7 +33,7 @@ class ItemMandatario extends Model
 
     public function prefijo_referencia()
     {
-        return $this->belongsTo(PrefijoReferencia::class, 'paleta_color_id');
+        return $this->belongsTo(PrefijoReferencia::class, 'prefijo_referencia_id');
     }
 
     public function tipo_material()
@@ -52,17 +57,18 @@ class ItemMandatario extends Model
                             ['inv_items_mandatarios.core_empresa_id', Auth::user()->empresa_id]
                         ];
 
-        return ItemMandatario::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.talla_id')
-            ->where($array_wheres)
+        return ItemMandatario::where($array_wheres)
             ->select(
-                'inv_items_mandatarios.id AS campo1',
-                'inv_grupos.descripcion AS campo2',
-                'inv_items_mandatarios.descripcion AS campo3',
-                'inv_items_mandatarios.estado AS campo4',
-                'inv_items_mandatarios.id AS campo5'
+                'inv_items_mandatarios.referencia AS campo1',
+                'inv_items_mandatarios.descripcion AS campo2',
+                'inv_items_mandatarios.tipo_prenda_id AS campo3',
+                'inv_items_mandatarios.tipo_material_id AS campo4',
+                'inv_items_mandatarios.paleta_color_id AS campo5',
+                'inv_items_mandatarios.estado AS campo6',
+                'inv_items_mandatarios.id AS campo7'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
-            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_items_mandatarios.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.estado", "LIKE", "%$search%")
             ->orderBy('inv_items_mandatarios.created_at', 'DESC')
@@ -75,16 +81,13 @@ class ItemMandatario extends Model
             ['inv_items_mandatarios.core_empresa_id', Auth::user()->empresa_id]
         ];
 
-        $string = ItemMandatario::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.talla_id')
-            ->where($array_wheres)
+        $string = ItemMandatario::where($array_wheres)
             ->select(
                 'inv_items_mandatarios.id AS CÓDIGO',
-                'inv_grupos.descripcion AS GRUPO_INVENTARIO',
                 'inv_items_mandatarios.descripcion AS DESCRIPCIÓN',
                 'inv_items_mandatarios.estado AS ESTADO'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
-            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.estado", "LIKE", "%$search%")
             ->orderBy('inv_items_mandatarios.created_at', 'DESC')
@@ -125,12 +128,19 @@ class ItemMandatario extends Model
     public function update_adicional($datos, $id)
     {
         $prenda = ItemMandatario::find( $id );
-        $registros_relacionados = $prenda->items_relacionados;
+        
+        $referencia = $prenda->prefijo_referencia->codigo . $prenda->tipo_prenda->codigo . $prenda->paleta_color->codigo . $prenda->tipo_material->codigo;
 
-        foreach ($registros_relacionados as $registro )
+        $prenda->referencia = $referencia;
+        $prenda->save();
+
+        $registros_relacionados = $prenda->items_relacionados;
+        
+        foreach ($registros_relacionados as $item_relacionado )
         {
-            $registro->item_relacionado->descripcion = $prenda->descripcion;
-            $registro->item_relacionado->save();
+            $item_relacionado->descripcion = $prenda->descripcion;
+            $item_relacionado->unidad_medida2 = $referencia . '-' . $item_relacionado->unidad_medida2;
+            $item_relacionado->save();
         }
     }
 }

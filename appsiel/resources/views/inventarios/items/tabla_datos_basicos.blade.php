@@ -17,21 +17,27 @@
 		</tr>
 		<tr>
 			<td>
-				<b>Descripción:</b> {{ $registro->descripcion }}
+				<b>Referencia:</b> {{ $registro->referencia }}
 			</td>
 			<td>
-				<b>Unidad medida:</b> {{ $registro->unidad_medida1 }}
+				<b>Descripción:</b> {{ $registro->descripcion }}
 			</td>
 			<td>
 				<b>Categoría:</b> {{ $registro->grupo_inventario->descripcion }}
 			</td>
+			<td>
+				<b>Tipo Prenda:</b> {{ $registro->tipo_prenda->descripcion }}
+			</td>
 		</tr>
 		<tr>
 			<td>
-				<b>Precio compra:</b> ${{ number_format( $registro->precio_compra, 0, ',', '.' ) }}
+				<b>Material:</b> {{ $registro->tipo_material->descripcion }}
 			</td>
 			<td>
-				<b>Precio venta:</b> ${{ number_format( $registro->precio_venta, 0, ',', '.' ) }}
+				<b>Color:</b> {{ $registro->paleta_color->descripcion }}
+			</td>
+			<td>
+				&nbsp;
 			</td>
 			<td>
 				&nbsp;

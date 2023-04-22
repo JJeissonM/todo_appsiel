@@ -56,6 +56,7 @@ Route::post('ajax_movimiento', 'Inventarios\ReporteController@ajax_movimiento');
 Route::get('inv_existencias', 'Inventarios\ReporteController@inv_existencias');
 Route::post('inv_balance_inventarios', 'Inventarios\ReporteController@balance_inventarios');
 Route::post('inv_etiquetas_codigos_barra', 'Inventarios\ReporteController@inv_etiquetas_codigos_barra');
+Route::post('inv_etiquetas_referencias', 'Inventarios\ReporteController@inv_etiquetas_referencias');
 Route::post('inv_existencias_corte', 'Inventarios\ReporteController@inv_existencias_corte');
 
 Route::post('inv_movements_by_purpose', 'Inventarios\ReporteController@movements_by_purpose');

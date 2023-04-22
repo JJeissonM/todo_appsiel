@@ -34,7 +34,6 @@
 
 		{{ Form::hidden( 'reporte_instancia', $reporte ) }}
 		{{ Form::hidden( 'url_id',Input::get('id') ) }}
-		{{ Form::hidden( 'url_id_modelo',Input::get('id_modelo') ) }}
 
 		<br>
 

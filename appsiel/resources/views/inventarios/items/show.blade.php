@@ -47,9 +47,7 @@
 		@include('inventarios.items.tabla_datos_basicos')
 
 		@include('inventarios.items.tabla_items_relacionados')
-<!--
-		@ include('inventarios.items.tabla_datos_ventas')
-	-->
+		
 	</div>
 
 @endsection

@@ -63,7 +63,7 @@ class ItemMandatarioController extends ModeloController
 
         // Crear Item relacionado
         $mandatario = ItemMandatario::find( $request->mandatario_id );
-        $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $request->referencia, $request->unidad_medida2 );
+        $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $mandatario->referencia, $request->unidad_medida2 );
 
         // Crear Relacion: Mandatario tiene Item
         $record_created = app( $modelo->name_space )->create( [ 'mandatario_id' => $request->mandatario_id, 'item_id' => $item_relacionado_id ] );
@@ -103,22 +103,22 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado = new InvProducto();
         $item_relacionado->core_empresa_id = $item_mandatario->core_empresa_id;
         $item_relacionado->descripcion = $item_mandatario->descripcion;
-        $item_relacionado->tipo = $item_mandatario->tipo;
-        $item_relacionado->unidad_medida1 = $item_mandatario->unidad_medida1;
+        $item_relacionado->tipo = 'producto';
+        $item_relacionado->unidad_medida1 = 'UND';
         $item_relacionado->inv_grupo_id = $item_mandatario->inv_grupo_id;
-        $item_relacionado->impuesto_id = $item_mandatario->impuesto_id;
-        $item_relacionado->precio_compra = $item_mandatario->precio_compra;
-        $item_relacionado->precio_venta = $item_mandatario->precio_venta;
-        $item_relacionado->estado = $item_mandatario->estado;
+        $item_relacionado->impuesto_id = (int)config('inventarios.item_impuesto_id');
+        $item_relacionado->precio_compra = 1;
+        $item_relacionado->precio_venta = 1;
+        $item_relacionado->estado = 'Activo';
         $item_relacionado->creado_por = $item_mandatario->creado_por;
 
-        $item_relacionado->referencia = $referencia;
+        $item_relacionado->referencia = $referencia . '-' . $talla_id;
 
         $talla = new TallaItem( $talla_id );
         $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
         $item_relacionado->save();
 
-        $item_relacionado->codigo_barras = $this->get_barcode( $item_relacionado->id, '000', $talla_id, $referencia );
+        $item_relacionado->codigo_barras = 99;//$this->get_barcode( $item_relacionado->id, '000', $talla_id, $referencia );
 
         $item_relacionado->save();
 
@@ -169,20 +169,27 @@ class ItemMandatarioController extends ModeloController
     {
         $item = InvProducto::find( $item_id );
         
-        $referencia =  $item->referencia;
+        $referencia =  explode('-',$item->referencia);
         $talla_id =  $item->unidad_medida2;
 
         switch ( $campo )
         {
             case 'referencia':
                 $referencia = $nuevo_valor;
-                $item->referencia = $nuevo_valor;
+                //$item->referencia = $nuevo_valor;
                 break;
 
             case 'talla':
+                /*
                 $talla_id = $nuevo_valor;
                 $talla = new TallaItem( $talla_id );
                 $item->unidad_medida2 = $talla->convertir_mayusculas();
+                */
+                
+                $item->unidad_medida2 = $nuevo_valor;
+
+                $referencia = $referencia[0] . '-' . $nuevo_valor;
+                $item->referencia = $referencia;
                 break;
             
             default:
@@ -190,7 +197,7 @@ class ItemMandatarioController extends ModeloController
                 break;
         }
 
-        $item->codigo_barras = $this->get_barcode( $item_id, '000', $talla_id, $referencia );
+        $item->codigo_barras = 99;//$this->get_barcode( $item_id, '000', $talla_id, $referencia );
         $item->save();
     }
 

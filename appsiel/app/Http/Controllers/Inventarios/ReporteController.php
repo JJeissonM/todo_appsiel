@@ -321,6 +321,25 @@ class ReporteController extends Controller
 
     }
 
+    public function inv_etiquetas_referencias(Request $request)
+    {
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $mostrar_descripcion = $request->mostrar_descripcion;
+        $numero_columnas = $request->numero_columnas;
+        $estado = 'Activo';
+        $etiqueta = $request->etiqueta;
+        $items_a_mostrar = $request->items_a_mostrar;
+                
+        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar);
+
+        $vista = View::make( 'inventarios.reportes.etiquetas_referencias', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar') )->render();
+
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
+   
+        return $vista;
+
+    }
+
     public function balance_inventarios(Request $request)
     {
         $grupo_inventario_id = $request->grupo_inventario_id;

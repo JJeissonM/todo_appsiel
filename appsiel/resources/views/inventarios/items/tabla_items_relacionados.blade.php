@@ -26,7 +26,7 @@
 				<th>Cód. barras</th>
 				<th>Referencia</th>
 				<th>Talla</th>
-				<th>Cantidad</th>
+				<!-- <th>Cantidad</th> -->
 				<th>Acción</th>
 			</tr>
 		</thead>
@@ -37,21 +37,20 @@
 				?>
 				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
 					<td> {{ $item->codigo_barras }} </td>
-					<td class="referencia_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
+					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
-					<td align="center"> {{ $existencia_actual }} </td>
+					<!-- <td align="center"> {{ $existencia_actual }} </td> -->
 					<td>
-						<a class="btn btn-success" href="{{ url('inventarios/create?id=8&id_modelo=248&id_transaccion=1') }}" title="Registrar entrada" target="_blank"> <i class="fa fa-arrow-up"></i></a>
+						<!-- 
+						<a class="btn btn-success" href="{ { url('inventarios/create?id=8&id_modelo=248&id_transaccion=1') }}" title="Registrar entrada" target="_blank"> <i class="fa fa-arrow-up"></i></a>
 						&nbsp;&nbsp;
-						<a class="btn btn-danger" href="{{ url('inventarios/create?id=8&id_modelo=249&id_transaccion=3') }}" title="Registrar salida" target="_blank"> <i class="fa fa-arrow-down"></i></a>
+						<a class="btn btn-danger" href="{ { url('inventarios/create?id=8&id_modelo=249&id_transaccion=3') }}" title="Registrar salida" target="_blank"> <i class="fa fa-arrow-down"></i></a>
 						&nbsp;&nbsp;
 						<input style="display:inline !important; width: 50px;border-radius: 4px;padding: 4px;" class="cantidad_etiquetas" type="number" min="1" value="{{$existencia_actual}}" title="Cantidad a imprimir">
-						<!-- <button class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" data-mandatario_id="0" data-item_id="{ {$item->id}}"> <i class="fa fa-barcode"></i></button>
-						-->
-						
-						<a class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" href="{{ url('inv_item_mandatario_etiquetas_codigos_barra' . '/0/' . $item->id . '/' . $existencia_actual ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
+						<button class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" data-mandatario_id="0" data-item_id="{ {$item->id}}"> <i class="fa fa-barcode"></i></button>
 
-						
+						<a class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" href="{ { url('inv_item_mandatario_etiquetas_codigos_barra' . '/0/' . $item->id . '/' . $existencia_actual ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
+						-->				
 
 					</td>
 				</tr>
@@ -120,7 +119,6 @@
 		        }
 		        
 		        $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
-		        //$(this).attr( 'disabled', 'disabled' );
 
 		        var mandatario_id = $(this).children('span').attr('data-mandatario_id');
 		        formulario = $('#modal_item_relacionado').find('form');
@@ -154,7 +152,7 @@
 		    function validar_datos()
 		    {
 		    	validado = true;
-		    	if ( $('#referencia').val() == '' )
+		    	/*if ( $('#referencia').val() == '' )
 				{
 					$('#referencia').focus();
 					alert('Debe ingresar una Referencia.');
@@ -175,7 +173,7 @@
 					validado = false;
 				}
 
-
+				*/
 		    	if ( $('#unidad_medida2').val() == '' )
 				{
 					$('#unidad_medida2').focus();
