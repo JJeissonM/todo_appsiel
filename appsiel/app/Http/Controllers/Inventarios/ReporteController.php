@@ -331,11 +331,15 @@ class ReporteController extends Controller
         $items_a_mostrar = $request->items_a_mostrar;
 
         $mostrar_precio_ventas = $request->mostrar_precio_ventas;
-                
-        $items = InvProducto::where( [
-            ['inv_grupo_id','=',$grupo_inventario_id],
-            ]
-            )->get();
+
+        $array_wheres = [ ['id' ,'>', 0] ];
+
+        if ( $grupo_inventario_id != '' &&  $grupo_inventario_id != null)
+        {
+            $array_wheres = array_merge( $array_wheres, [['inv_grupo_id','=', $grupo_inventario_id]] );
+        }
+
+        $items = InvProducto::where( $array_wheres )->get();
 
         $vista = View::make( 'inventarios.reportes.etiquetas_referencias', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar', 'mostrar_precio_ventas') )->render();
 
