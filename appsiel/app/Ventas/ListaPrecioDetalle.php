@@ -92,6 +92,7 @@ class ListaPrecioDetalle extends Model
 				'vtas_listas_precios_detalles.fecha_activacion',
 				'inv_productos.descripcion as producto_descripcion',
 				'inv_productos.id as producto_codigo',
+				'inv_productos.referencia',
 				'inv_productos.tipo',
 				'inv_productos.unidad_medida1',
 				'contab_impuestos.tasa_impuesto'

@@ -48,7 +48,7 @@
 
                     <td colspan="{{ $minimo_comun_multiplo_columnas / $numero_columnas }}" style="width: 25%; height:{{$alto_celda}}px;">
                         
-                        <div style="margin: 0px 15px 0px 15px; text-align: center; height: 90%; border: 1px #ddd solid;">
+                        <div style="margin: -2px 15px 0px 25px; text-align: center; height: 90%; border: 1px #ddd solid; border-radius: 4px;">
                             <p style="font-size:110%; font-family:cursive; line-height: 30px; padding-top: 20px;">
                                 <b>$ {{ number_format($fila->get_precio_venta(), 0, ',', '.') }}</b>
                             </p>                            
