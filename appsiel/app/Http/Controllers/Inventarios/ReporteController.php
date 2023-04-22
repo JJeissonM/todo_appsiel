@@ -330,7 +330,10 @@ class ReporteController extends Controller
         $etiqueta = $request->etiqueta;
         $items_a_mostrar = $request->items_a_mostrar;
                 
-        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar);
+        $items = InvProducto::where( [
+            ['inv_grupo_id','=',$grupo_inventario_id],
+            ]
+            )->get();
 
         $vista = View::make( 'inventarios.reportes.etiquetas_referencias', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar') )->render();
 
