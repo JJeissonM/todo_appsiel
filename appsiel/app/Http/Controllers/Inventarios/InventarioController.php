@@ -1025,7 +1025,7 @@ class InventarioController extends TransaccionController
 
         if( $texto_busqueda_codigo == 0 )
         {
-            $campo_busqueda = 'descripcion';
+            $campo_busqueda = 'haystack';
             $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
         }else{
             $campo_busqueda = 'id';
@@ -1036,15 +1036,18 @@ class InventarioController extends TransaccionController
 
         $datos = InvProducto::where('estado', 'Activo')
                             ->where('core_empresa_id', Auth::user()->empresa_id)
-                            ->where( $campo_busqueda, 'LIKE', $texto_busqueda)
+                            //->where( $campo_busqueda, 'LIKE', $texto_busqueda)
+                            ->having( $campo_busqueda, 'LIKE', $texto_busqueda)
                             ->select(
                                         'id',
                                         'descripcion',
+                                        DB::raw('CONCAT(referencia," ",descripcion) AS haystack'),
                                         'referencia',
                                         'unidad_medida1',
                                         'unidad_medida2')
                             ->get()
-                            ->take(7);
+                            ->take(12);
+                
 
         $html = '<div class="list-group">';
         $es_el_primero = true;
