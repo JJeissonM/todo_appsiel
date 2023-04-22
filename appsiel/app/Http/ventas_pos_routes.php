@@ -51,3 +51,4 @@ Route::get('pos_get_saldos_caja_pdv/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'Vent
 Route::get('pos_consultar_documentos_pendientes/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@consultar_documentos_pendientes');
 
 Route::post('pos_movimientos_ventas', 'VentasPos\ReporteController@movimientos_ventas');
+Route::post('pos_resumen_existencias', 'VentasPos\ReporteController@resumen_existencias');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\VentasPos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests;
+use App\Inventarios\InvMovimiento;
 use Auth;
 use DB;
 
@@ -243,5 +244,42 @@ class ReporteController extends Controller
         }
 
         return $array_lista;
+    }
+
+    public function resumen_existencias(Request $request)
+    {
+        $fecha_corte = $request->fecha;
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $talla = $request->unidad_medida2;
+        $inv_bodega_id = $request->inv_bodega_id;
+
+        if ( $inv_bodega_id == '' )
+        {
+            $title = 'Advertencia';
+            $message = 'Debe selecciona una Bodega.';
+            $vista = View::make( 'common.error_message', compact('title','message') )->render();    
+            return $vista;
+        }
+
+        $array_wheres = [ ['inv_movimientos.fecha' ,'<=', $fecha_corte] ];
+
+        if ( $grupo_inventario_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, [['inv_grupos.id','=', $grupo_inventario_id]] );
+        }
+
+        if ( $talla != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, [['inv_productos.unidad_medida2','=', $talla]] );
+        }
+            $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
+
+        $movimientos = InvMovimiento::get_existencia_corte( $array_wheres );
+      
+        $vista = View::make( 'ventas_pos.reportes.resumen_existencias', compact('movimientos') )->render();
+        
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
+   
+        return $vista;
     }
 }
