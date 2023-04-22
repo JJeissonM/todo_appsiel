@@ -59,7 +59,7 @@ Route::post('inv_etiquetas_codigos_barra', 'Inventarios\ReporteController@inv_et
 Route::post('inv_etiquetas_referencias', 'Inventarios\ReporteController@inv_etiquetas_referencias');
 Route::post('inv_existencias_corte', 'Inventarios\ReporteController@inv_existencias_corte');
 
-Route::get('inv_tabla_etiquetas_referencias/{prefijo_referencia}/{tipo_prenda}/{tipo_material}', 'Inventarios\ReporteController@tabla_etiquetas_referencias');
+Route::get('inv_tabla_etiquetas_referencias/{prefijo_referencia}/{tipo_prenda}/{tipo_material}/{cantidad_items}', 'Inventarios\ReporteController@tabla_etiquetas_referencias');
 
 Route::post('inv_movements_by_purpose', 'Inventarios\ReporteController@movements_by_purpose');
 Route::post('inv_listado_recetas_e_ingredientes', 'Inventarios\ReporteController@listado_recetas_e_ingredientes');

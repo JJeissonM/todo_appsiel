@@ -13,37 +13,12 @@
         body{
             font-family: Arial, Helvetica, sans-serif;
             font-size: 12mm;
-            /*margin: { {$margenes->superior}}px { {$margenes->derecho}}px { {$margenes->inferior}}px { {$margenes->izquierdo}}px;*/
         }
 
-        @page{ margin: 60px 40px 20px 40px !important; }
-        
         .page-break {
             page-break-after: always;
         }
 
-        table{
-            width: 100%;
-            border-collapse: collapse;	
-			margin: -1px 0;		
-        }
-
-        table.table-bordered, .table-bordered>tbody>tr>td{
-            border: 1px solid gray;
-        }
-
-		.imagen {
-			  /**/display: block;
-			  margin-left: auto;
-			  margin-right: auto;
-			  width: 50%;
-		}
-
-		th {
-			background-color: #E0E0E0;
-			border: 1px solid;
-		}
-		
     </style>
 </head>
 <body>
@@ -53,23 +28,28 @@
             $i = $numero_columnas;
             $minimo_comun_multiplo_columnas = 12;
 
-            $alto_celda = 100; // px
+            $alto_celda = 95; // px
+            
+            $primera_fila = true;
         ?>
 
         <table class="table" style="width: 100%; font-size: 12px;">
             <tbody>            
-            
+                <tr>
+                    <td colspan="{{$numero_columnas}}">
+                        <br><br><br><br>
+                    </td>
+                </tr>
                 @foreach($items as $fila)
                 
                     @if($i % $numero_columnas == 0)
-                        <tr style="height:{{$alto_celda}}px;">
+                        <tr>
                     @endif
 
-                    <td colspan="{{ $minimo_comun_multiplo_columnas / $numero_columnas }}">
+                    <td colspan="{{ $minimo_comun_multiplo_columnas / $numero_columnas }}" style="width: 25%; height:{{$alto_celda}}px;">
                         
-                        <div style="padding: 5px; text-align: center; height:{{$alto_celda-30}}px; vertical-align: middle;">
-                            <br><br>
-                            <p style="font-size:120%;font-family:cursive">
+                        <div style="margin: 0px 15px 0px 15px; text-align: center; height: 90%; border: 1px #ddd solid;">
+                            <p style="font-size:110%; font-family:cursive; line-height: 30px; padding-top: 20px;">
                                 <b>$ {{ number_format($fila->get_precio_venta(), 0, ',', '.') }}</b>
                             </p>                            
                             {{ $fila->referencia }}
