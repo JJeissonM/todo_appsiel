@@ -57,19 +57,25 @@ class ItemMandatario extends Model
                             ['inv_items_mandatarios.core_empresa_id', Auth::user()->empresa_id]
                         ];
 
-        return ItemMandatario::where($array_wheres)
+        return ItemMandatario::leftJoin('inv_indum_tipos_prendas','inv_indum_tipos_prendas.id','=','inv_items_mandatarios.tipo_prenda_id')
+        ->leftJoin('inv_indum_tipos_materiales','inv_indum_tipos_materiales.id','=','inv_items_mandatarios.tipo_material_id')
+        ->leftJoin('inv_indum_paletas_colores','inv_indum_paletas_colores.id','=','inv_items_mandatarios.paleta_color_id')
+        ->where($array_wheres)
             ->select(
                 'inv_items_mandatarios.referencia AS campo1',
                 'inv_items_mandatarios.descripcion AS campo2',
-                'inv_items_mandatarios.tipo_prenda_id AS campo3',
-                'inv_items_mandatarios.tipo_material_id AS campo4',
-                'inv_items_mandatarios.paleta_color_id AS campo5',
+                'inv_indum_tipos_prendas.descripcion AS campo3',
+                'inv_indum_tipos_materiales.descripcion AS campo4',
+                'inv_indum_paletas_colores.descripcion AS campo5',
                 'inv_items_mandatarios.estado AS campo6',
                 'inv_items_mandatarios.id AS campo7'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
+            ->orWhere("inv_items_mandatarios.referencia", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.descripcion", "LIKE", "%$search%")
-            ->orWhere("inv_items_mandatarios.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_indum_tipos_prendas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_indum_tipos_materiales.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_indum_paletas_colores.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.estado", "LIKE", "%$search%")
             ->orderBy('inv_items_mandatarios.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -81,14 +87,25 @@ class ItemMandatario extends Model
             ['inv_items_mandatarios.core_empresa_id', Auth::user()->empresa_id]
         ];
 
-        $string = ItemMandatario::where($array_wheres)
+        $string = ItemMandatario::leftJoin('inv_indum_tipos_prendas','inv_indum_tipos_prendas.id','=','inv_items_mandatarios.tipo_prenda_id')
+        ->leftJoin('inv_indum_tipos_materiales','inv_indum_tipos_materiales.id','=','inv_items_mandatarios.tipo_material_id')
+        ->leftJoin('inv_indum_paletas_colores','inv_indum_paletas_colores.id','=','inv_items_mandatarios.paleta_color_id')
+        ->where($array_wheres)
             ->select(
                 'inv_items_mandatarios.id AS CÓDIGO',
+                'inv_items_mandatarios.referencia AS REFERENCIA',
                 'inv_items_mandatarios.descripcion AS DESCRIPCIÓN',
+                'inv_indum_tipos_prendas.descripcion AS TIPO_PRENDA',
+                'inv_indum_tipos_materiales.descripcion AS TIPO_MATERIAL',
+                'inv_indum_paletas_colores.descripcion AS COLOR',
                 'inv_items_mandatarios.estado AS ESTADO'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
+            ->orWhere("inv_items_mandatarios.referencia", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_indum_tipos_prendas.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_indum_tipos_materiales.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_indum_paletas_colores.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.estado", "LIKE", "%$search%")
             ->orderBy('inv_items_mandatarios.created_at', 'DESC')
             ->toSql();
@@ -139,7 +156,7 @@ class ItemMandatario extends Model
         foreach ($registros_relacionados as $item_relacionado )
         {
             $item_relacionado->descripcion = $prenda->descripcion;
-            $item_relacionado->unidad_medida2 = $referencia . '-' . $item_relacionado->unidad_medida2;
+            $item_relacionado->referencia = $referencia . '-' . $item_relacionado->unidad_medida2;
             $item_relacionado->save();
         }
     }

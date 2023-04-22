@@ -4,22 +4,28 @@
 ?>
 <br>
 <div id="tabla_items_relacionados">
-	<h5 style="width: 100%; text-align: center;">Registros de tallas</h5>
+	<h5 style="width: 100%; text-align: center;">
+		Registros de tallas
+		<br>
+		<small>Haga Doble clic en el recuadro de la Talla para cambiarla.</small>
+	</h5>
+	<!--
 	<div class="row" style="padding:5px;">
 		<div class="col-md-6">
-			<?php 
+			< ?php 
 				$item_bodega_principal_id = (int)config( 'inventarios.item_bodega_principal_id' );
 				if( !is_null( Input::get('bodega_id') ) )
 				{
 					$item_bodega_principal_id = Input::get('bodega_id');
 				}
 			?>
-			{{ Form::bsSelect( 'item_bodega_principal_id', $item_bodega_principal_id, 'Bodega', App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
+			{ { Form::bsSelect( 'item_bodega_principal_id', $item_bodega_principal_id, 'Bodega', App\Inventarios\InvBodega::opciones_campo_select(), ['class'=>'form-control']) }}
 		</div>
 		<div class="col-md-6">
-			<a class="btn btn-info" title="Imprimir etiquetas de códigos de barras" href="{{ url('inv_item_mandatario_etiquetas_codigos_barra' . '/' . $registro->id . '/0/0' ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
+			<a class="btn btn-info" title="Imprimir etiquetas de códigos de barras" href="{ { url('inv_item_mandatario_etiquetas_codigos_barra' . '/' . $registro->id . '/0/0' ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
 		</div>
 	</div>
+-->
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
@@ -33,20 +39,20 @@
 		<tbody>
 			@foreach( $items_relacionados AS $item )
 				<?php 
-					$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
+					//$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 				?>
 				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
 					<td> {{ $item->codigo_barras }} </td>
 					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
-					<!-- <td align="center"> {{ $existencia_actual }} </td> -->
+					<!-- <td align="center"> { { $existencia_actual }} </td> -->
 					<td>
 						<!-- 
 						<a class="btn btn-success" href="{ { url('inventarios/create?id=8&id_modelo=248&id_transaccion=1') }}" title="Registrar entrada" target="_blank"> <i class="fa fa-arrow-up"></i></a>
 						&nbsp;&nbsp;
 						<a class="btn btn-danger" href="{ { url('inventarios/create?id=8&id_modelo=249&id_transaccion=3') }}" title="Registrar salida" target="_blank"> <i class="fa fa-arrow-down"></i></a>
 						&nbsp;&nbsp;
-						<input style="display:inline !important; width: 50px;border-radius: 4px;padding: 4px;" class="cantidad_etiquetas" type="number" min="1" value="{{$existencia_actual}}" title="Cantidad a imprimir">
+						<input style="display:inline !important; width: 50px;border-radius: 4px;padding: 4px;" class="cantidad_etiquetas" type="number" min="1" value="{ {$existencia_actual}}" title="Cantidad a imprimir">
 						<button class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" data-mandatario_id="0" data-item_id="{ {$item->id}}"> <i class="fa fa-barcode"></i></button>
 
 						<a class="btn btn-info btn_imprimir_etiquetas" title="Imprimir etiquetas de códigos de barras" href="{ { url('inv_item_mandatario_etiquetas_codigos_barra' . '/0/' . $item->id . '/' . $existencia_actual ) }}" target="_blank"> <i class="fa fa-barcode"></i></a>
