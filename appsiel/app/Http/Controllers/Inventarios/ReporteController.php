@@ -349,6 +349,21 @@ class ReporteController extends Controller
 
     }
 
+    public function tabla_etiquetas_referencias($prefijo_referencia,$tipo_prenda,$tipo_material)
+    {
+        $referencia = $prefijo_referencia . $tipo_prenda . '%' . $tipo_material . '%';
+
+        $array_wheres = [ ['id' ,'>', 0] ];
+
+        $array_wheres = array_merge( $array_wheres, [['referencia','LIKE', $referencia]] );
+
+        $items = InvProducto::where( $array_wheres )->get();
+
+        $vista = View::make( 'inventarios.reportes.tabla_etiquetas_referencias', compact('items') )->render();
+   
+        return $vista;
+    }
+
     public function balance_inventarios(Request $request)
     {
         $grupo_inventario_id = $request->grupo_inventario_id;

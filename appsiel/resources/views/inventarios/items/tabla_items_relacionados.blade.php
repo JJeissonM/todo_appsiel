@@ -127,7 +127,7 @@
 		        var data = formulario.serialize();
 
 		        $.post(url, data, function (respuesta) {
-		        	//location.reload(true);
+		        	location.reload(true);
 		        });/**/
 		    });
 

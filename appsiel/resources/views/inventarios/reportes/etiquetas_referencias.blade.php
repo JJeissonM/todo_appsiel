@@ -13,15 +13,7 @@
     ?>
 
     <table class="table" style="width: 100%; font-size: 12px;">
-        <thead>
-            <tr>
-                @for($f=0;$f<$minimo_comun_multiplo_columnas;$f++)
-                    <th>&nbsp;</th>
-                @endfor
-            </tr>
-        </thead>
-        <tbody>
-            
+        <tbody>            
         
             @foreach($items as $fila)
               
