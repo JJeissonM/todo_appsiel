@@ -44,8 +44,8 @@
                         @endif
 
                         @if($mostrar_precio_ventas)
-                            <p style="font-size:150%;font-family:Copperplate,fantasy">
-                                <b>$ {{ $fila->precio_venta }}</b>
+                            <p style="font-size:120%;font-family:Copperplate,fantasy">
+                                <b>$ {{ number_format($fila->precio_venta, 0, ',', '.') }}</b>
                             </p>
                         @endif
                         
