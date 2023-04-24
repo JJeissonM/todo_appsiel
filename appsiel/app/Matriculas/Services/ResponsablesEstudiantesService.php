@@ -7,6 +7,7 @@ use App\Matriculas\Responsableestudiante;
 
 use App\Ventas\Cliente;
 use App\Ventas\VtasMovimiento;
+use Illuminate\Support\Facades\Schema;
 
 class ResponsablesEstudiantesService
 {
@@ -147,10 +148,15 @@ class ResponsablesEstudiantesService
 
                 if ($cliente_asociado != null) {
                     
-                    $movimiento_cliente = VtasMovimiento::where([
-                        ['cliente_id','=',$cliente_asociado->id]
-                    ])->get()
-                    ->first();
+                    $movimiento_cliente = null;
+
+                    if (Schema::hasTable('vtas_movimientos'))
+                    {
+                        $movimiento_cliente = VtasMovimiento::where([
+                            ['cliente_id','=',$cliente_asociado->id]
+                        ])->get()
+                        ->first();
+                    }                    
                     
                     // Clietne NO tiene movimientos
                     if ($movimiento_cliente == null) {
