@@ -141,7 +141,7 @@ class ResponsablesEstudiantesService
             if ( $otra_relacion_del_responsable == null) {
 
                 $cliente_asociado = Cliente::where([
-                    ['core_tercero_id','=',$otra_relacion_del_responsable->tercero_id]
+                    ['core_tercero_id','=',$responsable->tercero_id]
                 ])->get()
                 ->first();
 
