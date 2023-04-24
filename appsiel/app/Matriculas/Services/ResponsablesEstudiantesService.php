@@ -6,6 +6,7 @@ use App\Core\Tercero;
 use App\Matriculas\Responsableestudiante;
 
 use App\Ventas\Cliente;
+use App\Ventas\VtasMovimiento;
 
 class ResponsablesEstudiantesService
 {
@@ -119,5 +120,46 @@ class ResponsablesEstudiantesService
             $cliente->save();
         }
 
+    }
+
+    public function delete_datos_padres_y_acudiente($estudiante_id)
+    {
+        $responsables = Responsableestudiante::where( [
+            ['estudiante_id', '=', $estudiante_id]
+        ] )
+            ->get();
+        
+        foreach ($responsables as $responsable) {
+            $otra_relacion_del_responsable = $responsables = Responsableestudiante::where( [
+                ['estudiante_id', '<>', $estudiante_id],
+                ['tercero_id', '=', $responsable->tercero_id]
+            ] )
+                ->get()
+                ->first();
+
+            // El responsable NO es responsable de otros estudiantes
+            if ( $otra_relacion_del_responsable == null) {
+
+                $cliente_asociado = Cliente::where([
+                    ['core_tercero_id','=',$otra_relacion_del_responsable->tercero_id]
+                ])->get()
+                ->first();
+
+                if ($cliente_asociado != null) {
+                    
+                    $movimiento_cliente = VtasMovimiento::where([
+                        ['cliente_id','=',$cliente_asociado->id]
+                    ])->get()
+                    ->first();
+                    
+                    // Clietne NO tiene movimientos
+                    if ($movimiento_cliente == null) {
+                        $cliente_asociado->delete();
+                    }
+                }
+
+                $responsable->delete();
+            }
+        }
     }
 }

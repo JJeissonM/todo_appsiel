@@ -52,6 +52,8 @@ Route::get('actualizar_campos_modelos_relacionados', 'Sistema\ModeloController@a
 Route::get('duplicar/{id}', 'Sistema\ModeloController@duplicar');
 Route::get('web_eliminar/{id}', 'Sistema\CrudController@eliminar_registro');
 
+Route::get('web_delete_record/{app_id}/{model_id}/{record_id}/{arr_url_redirect}', 'Sistema\CrudController@delete_record');
+
 
 // Sistema de rutas #1
 Route::resource('web', 'Sistema\ModeloController');

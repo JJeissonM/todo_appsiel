@@ -4,43 +4,16 @@ namespace App\Http\Controllers\Sistema;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Input;
-use DB;
-use PDF;
-use Auth;
-use Storage;
-use View;
-use Yajra\Datatables\Facades\Datatables;
-
-
-use App\User;
-
-use App\Sistema\Html\Boton;
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
 
-use App\Core\TipoDocApp;
 use App\Core\Empresa;
-use App\Core\Tercero;
-use App\Core\ModeloEavValor;
-use App\Matriculas\Matricula;
-use App\Calificaciones\Asignatura;
-use App\Core\ConsecutivoDocumento;
-
-use App\Inventarios\InvMovimiento;
-use App\Inventarios\InvBodega;
-
-use App\Tesoreria\TesoMedioRecaudo;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
-
-use App\Contabilidad\ContabCuenta;
-use App\PropiedadHorizontal\Propiedad;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
 
 class CrudController extends Controller
 {
@@ -76,7 +49,7 @@ class CrudController extends Controller
         // Si HAY tareas adicionales u otros modelos que afectar (almacenar en otras tablas)
         if ($modelo->controller_complementario!='') 
         {
-            return \App::call( $modelo->controller_complementario.'@store',['request'=>$request,'registro'=>$registro] );
+            return App::call( $modelo->controller_complementario.'@store',['request'=>$request,'registro'=>$registro] );
         }else{ // Si no, se envía a la vista SHOW del ModeloController
             return redirect( 'web/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
         }
@@ -203,7 +176,7 @@ class CrudController extends Controller
         $this->almacenar_imagenes( $request, $modelo->ruta_storage_imagen, $registro2, 'edit' );
         
         if ($modelo->controller_complementario!='') {
-            return \App::call($modelo->controller_complementario.'@update',['request'=>$request,'id'=>$id]);
+            return App::call($modelo->controller_complementario.'@update',['request'=>$request,'id'=>$id]);
         }else{
             return redirect('web/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');
         }/**/
@@ -284,6 +257,32 @@ class CrudController extends Controller
         }
 
         return redirect($ruta . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('flash_message','Registro ELIMINADO correctamente.');
+    }
+
+    public function delete_record($app_id, $model_id, $record_id, $arr_url_redirect)
+    {
+        $url_redirect = json_decode($arr_url_redirect,true);
+
+        dd($arr_url_redirect,$url_redirect);
+
+        $modelo = Modelo::find( $model_id );
+
+        if( method_exists( app($modelo->name_space), 'validar_eliminacion') )
+        {
+            $mensaje = app($modelo->name_space)->validar_eliminacion($record_id);
+            if( $mensaje != 'ok' )
+            {
+                return redirect('web?id='.$app_id.'&id_modelo='.$model_id)->with('mensaje_error','Registro No puede ser ELIMINADO. '.$mensaje );
+            }
+        }else{
+            return redirect( $url_redirect[0] . '?id='.$app_id.'&id_modelo='.$model_id.'&id_transaccion=' )->with('flash_message','El modelo ' . $modelo->descripcion . ' (ID=' . $model_id . ') No tiene creado el método validar_eliminacion().');
+        }
+
+        $registro = app($modelo->name_space)->find($record_id);
+
+        $registro->delete();
+
+        return redirect( $url_redirect[0] . '?id='.$app_id.'&id_modelo='.$model_id.'&id_transaccion=' )->with('flash_message','Registro ELIMINADO correctamente.');
     }
 
 

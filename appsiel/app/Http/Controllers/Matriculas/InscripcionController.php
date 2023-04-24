@@ -22,6 +22,7 @@ use App\Matriculas\Inscripcion;
 use App\Matriculas\Estudiante;
 
 use App\Core\Colegio;
+use App\Matriculas\Matricula;
 use App\Matriculas\Services\ResponsablesEstudiantesService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -247,9 +248,21 @@ class InscripcionController extends ModeloController
         $estudiante = Estudiante::get_estudiante_x_tercero_id( $registro->core_tercero_id );
 
         // Si el tercero es un Estudiante, entonces ya tiene matrícula y su inscripción no se puede eliminar.
-        if ( !is_null($estudiante) )
+        if ( $estudiante != null)
         {
-            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','La incripción ya tiene matrícula registrada. No puede ser eliminada.');
+            $matricula = Matricula::where([
+                ['id_estudiante', '=', $estudiante->id]
+            ])
+                ->get()
+                ->first();
+
+            if ( $matricula != null)
+            {
+                return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','La incripción ya tiene matrícula registrada. No puede ser eliminada.');
+            }
+
+            // Estudiante No tiene matriculas, continuo
+            (new ResponsablesEstudiantesService())->delete_datos_padres_y_acudiente($estudiante->id);
         }
 
         //Borrar Inscripción
