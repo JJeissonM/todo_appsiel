@@ -174,7 +174,7 @@ class NominaElectronicaController extends TransaccionController
             $array_respuesta = json_decode( (string) $response->getBody(), true );
             $array_respuesta['codigo'] = $response->getStatusCode();
             
-            $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta );
+            $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado );
             
             if (isset($array_respuesta['dian_status'])) {
                 if ($array_respuesta['dian_status'] == 'DIAN_RECHAZADO') {

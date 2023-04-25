@@ -242,7 +242,7 @@ class DocumentoSoporteService
       }
    }
 
-   public function store_resultado_envio_documento( $document_header, $array_respuesta )
+   public function store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado )
    {
       $array_respuesta['dian_messages'] = json_encode( $array_respuesta['dian_messages'] );
       
@@ -251,6 +251,9 @@ class DocumentoSoporteService
       $array_respuesta['core_tipo_doc_app_id'] = $document_header->core_tipo_doc_app_id;
       $array_respuesta['consecutivo'] = $document_header->consecutivo;
       $array_respuesta['fecha'] = $document_header->fecha;
+      
+      $array_respuesta['objeto_json_enviado'] = $json_doc_electronico_enviado;
+
       ResultadoEnvioDocumento::create($array_respuesta);
    }
 
