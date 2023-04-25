@@ -179,6 +179,9 @@ class NominaElectronicaController extends TransaccionController
             if (isset($array_respuesta['dian_status'])) {
                 if ($array_respuesta['dian_status'] == 'DIAN_RECHAZADO') {
                     $some_error = true;
+                }else{
+                    $document_header->estado = 'Enviado';
+                    $document_header->save();
                 }
             }
         }
