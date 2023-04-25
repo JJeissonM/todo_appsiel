@@ -19,6 +19,7 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\View;
 
 class NominaElectronicaController extends TransaccionController
@@ -227,19 +228,12 @@ class NominaElectronicaController extends TransaccionController
                 $documento_electronico = (new DocumentoSoporteService())->consultar_documento_emitido($encabezado_doc);
 
                 break;
-
-            case 'support_doc':
-                $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
-                $documento_electronico = new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
-                break;
             
             default:
                 // code...
                 break;
-        }            
-
-        $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
+        }
     	
-        return Redirect::away( $pdf_url );
+        return Redirect::away( $documento_electronico );
     }
 }

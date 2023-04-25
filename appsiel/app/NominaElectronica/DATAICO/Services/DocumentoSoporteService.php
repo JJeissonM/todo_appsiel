@@ -277,7 +277,7 @@ class DocumentoSoporteService
       }
 
       $json = json_decode( (string) $response->getBody() );
-      dd($json);
-      return $json->invoice;
+      
+      return $json->pdf;
    }
 }

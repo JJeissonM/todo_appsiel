@@ -29,8 +29,6 @@
 		?>
         <a class="btn-gmail" href="{{ url('/nom_electronica_enviar_documentos') . '/[' . $doc_encabezado->id . ']' }}" class="btn btn-info btn-sm"title="Enviar"> <i class="fa fa-send"></i> </a>
         <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
-
-        <a class="btn-gmail" href="{{ url( 'nom_electronica_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url ) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
 	@endif
 
 @endsection
