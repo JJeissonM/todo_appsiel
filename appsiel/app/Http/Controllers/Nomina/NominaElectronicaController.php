@@ -7,7 +7,7 @@ use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-
+use App\Http\Controllers\Core\TransaccionController;
 use App\Sistema\Services\AppModel;
 use App\Sistema\TipoTransaccion;
 
@@ -15,11 +15,13 @@ use App\Nomina\ValueObjects\LapsoNomina;
 
 use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
+use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
-class NominaElectronicaController extends Controller
+class NominaElectronicaController extends TransaccionController
 {
     const CORE_TIPO_TRANSACCION_ID = 59; // Documentos soporte Nómina Electrónica
     public $lapso;
@@ -135,9 +137,12 @@ class NominaElectronicaController extends Controller
     }
 
     public function enviar_documentos( $arr_ids )
-    {
+    {        
+        $doc_soporte_service = new DocumentoSoporteService();
+
         $arr_ids = json_decode($arr_ids);
         
+        $some_error = false;
         foreach ($arr_ids as $key => $document_id) {
             $document_header = DocumentoSoporte::find($document_id);
             
@@ -168,23 +173,73 @@ class NominaElectronicaController extends Controller
             $array_respuesta = json_decode( (string) $response->getBody(), true );
             $array_respuesta['codigo'] = $response->getStatusCode();
             
-            //if ($response->getStatusCode() != 200) {
-                dd($array_respuesta);
-            //}else{
-
-            //}
+            $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta );
+            
+            if (isset($array_respuesta['dian_status'])) {
+                if ($array_respuesta['dian_status'] == 'DIAN_RECHAZADO') {
+                    $some_error = true;
+                }
+            }
         }
         
+        if ($some_error) {
+            return redirect('nom_electronica?id=17&id_modelo=0')->with('mensaje_error','Algunos documentos fueron rechazados por la DIAN. Por favor revise la pestaña Docs. Soporte No enviados y los registros de envíos de documentos.');
+        }
+
         return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
    }
 
-    public function show( $id )
+    public function show_doc_soporte( $id )
     {
-        //
+        $this->set_variables_globales();
+
+        $botones_anterior_siguiente = new BotonesAnteriorSiguiente( $this->transaccion, $id );
+        
+        $doc_encabezado = DocumentoSoporte::find($id);
+        $doc_encabezado->tercero = $doc_encabezado->empleado->tercero;
+        $doc_encabezado->documento_transaccion_descripcion = $doc_encabezado->tipo_transaccion->descripcion;
+        $doc_encabezado->documento_transaccion_prefijo_consecutivo = $doc_encabezado->get_value_to_show();
+
+        $empresa = $this->empresa;
+        $id_transaccion = $this->transaccion->id;
+
+        $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo );
+
+        //$url_crear = $this->modelo->url_crear.$this->variables_url;
+        $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $this->transaccion->id;
+
+        $acciones = $this->acciones_basicas_modelo( $this->modelo, $variables_url );
+
+        $url_crear = $acciones->create;
+
+        $documento_vista  = '';
+
+        return view( 'nomina.nomina_electronica.show_documento_soporte', compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'doc_encabezado', 'empresa', 'url_crear','id_transaccion', 'documento_vista') );
     }
 
-    public function store( Request $request )
+    // SOLO DATAICO
+    public function consultar_documentos_emitidos( $doc_encabezado_id, $tipo_operacion )
     {
-        //
+        switch ( $tipo_operacion )
+        {
+            case 'documento_soporte_nomina':
+                $encabezado_doc = DocumentoSoporte::find( $doc_encabezado_id );
+                $documento_electronico = (new DocumentoSoporteService())->consultar_documento_emitido($encabezado_doc);
+
+                break;
+
+            case 'support_doc':
+                $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
+                $documento_electronico = new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
+                break;
+            
+            default:
+                // code...
+                break;
+        }            
+
+        $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
+    	
+        return Redirect::away( $pdf_url );
     }
 }

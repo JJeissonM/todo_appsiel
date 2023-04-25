@@ -12,9 +12,9 @@
 			<div class="container">
 			  <ul class="nav nav-tabs">
 			    <li class="active"><a href="#generar">Generar</a></li>
-			    <li><a href="#doc_soporte">Docs. Soporte</a></li>
-			    <li><a href="#doc_ajuste_e">Docs. Ajuste E.</a></li>
-			    <li><a href="#doc_ajuste_r">Docs. Ajuste R.</a></li>
+			    <li><a href="#doc_soporte">Docs. Soporte No enviados</a></li>
+			    <!-- <li><a href="#doc_ajuste_e">Docs. Ajuste E.</a></li>
+			    <li><a href="#doc_ajuste_r">Docs. Ajuste R.</a></li> -->
 			  </ul>
 
 			  <div class="tab-content">
@@ -26,7 +26,7 @@
 			    <div id="doc_soporte" class="tab-pane fade">
 			      	{!! $tabla_documentos_sin_enviar !!}
 			    </div>
-			    
+			    <!-- 
 			    <div id="doc_ajuste_e" class="tab-pane fade">
 			      <h3>Menu 1</h3>
 			      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
@@ -36,7 +36,7 @@
 			      <h3>Menu 2</h3>
 			      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
 			    </div>
-
+				-->
 			  </div>
 			  
 			</div>

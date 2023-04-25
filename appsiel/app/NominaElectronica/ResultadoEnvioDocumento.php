@@ -13,7 +13,7 @@ class ResultadoEnvioDocumento extends Model
 	*/
 	protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'number', 'cune', 'request_xml', 'response_xml', 'qrcode', 'dian_status', 'email_status', 'dian_messages', 'codigo', 'objeto_json_enviado'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'CUNE', 'Mensaje', 'Resultado', 'Tipo Documento'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento', 'Fecha', 'Cod. Respuesta', 'Dian Status', 'Email Status', 'CUNE'];
 
 	public $vistas = '{"index":"layouts.index3"}';
 
@@ -22,41 +22,39 @@ class ResultadoEnvioDocumento extends Model
 	public static function consultar_registros2($nro_registros, $search)
 	{
 		return ResultadoEnvioDocumento::select(
-			'fe_resultados_envios_documentos.number AS campo1',
-			'fe_resultados_envios_documentos.codigo AS campo2',
-			'fe_resultados_envios_documentos.cune AS campo3',
-			'fe_resultados_envios_documentos.email_status AS campo4',
-			'fe_resultados_envios_documentos.resultado AS campo5',
-			'fe_resultados_envios_documentos.tipoDocumento AS campo6',
-			'fe_resultados_envios_documentos.id AS campo7'
+			'nom_elect_resultados_envios_documentos.number AS campo1',
+			'nom_elect_resultados_envios_documentos.fecha AS campo2',
+			'nom_elect_resultados_envios_documentos.codigo AS campo3',
+			'nom_elect_resultados_envios_documentos.dian_status AS campo4',
+			'nom_elect_resultados_envios_documentos.email_status AS campo5',
+			'nom_elect_resultados_envios_documentos.cune AS campo6',
+			'nom_elect_resultados_envios_documentos.id AS campo7'
 		)
-			->where("fe_resultados_envios_documentos.number", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.codigo", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.cune", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.email_status", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.resultado", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.tipoDocumento", "LIKE", "%$search%")
-			->orderBy('fe_resultados_envios_documentos.created_at', 'DESC')
+			->where("nom_elect_resultados_envios_documentos.number", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.fecha", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.codigo", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.email_status", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.dian_status", "LIKE", "%$search%")
+			->orderBy('nom_elect_resultados_envios_documentos.created_at', 'DESC')
 			->paginate($nro_registros);
 	}
 
 	public static function sqlString($search)
 	{
 		$string = ResultadoEnvioDocumento::select(
-			'fe_resultados_envios_documentos.number AS DOCUMENTO',
-			'fe_resultados_envios_documentos.codigo AS CODIGO',
-			'fe_resultados_envios_documentos.cune AS cune',
-			'fe_resultados_envios_documentos.email_status AS MENSAJE',
-			'fe_resultados_envios_documentos.resultado AS RESULTADO',
-			'fe_resultados_envios_documentos.tipoDocumento AS TIPO_DOCUMENTO'
-		)
-			->where("fe_resultados_envios_documentos.number", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.codigo", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.cune", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.email_status", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.resultado", "LIKE", "%$search%")
-			->orWhere("fe_resultados_envios_documentos.tipoDocumento", "LIKE", "%$search%")
-			->orderBy('fe_resultados_envios_documentos.created_at', 'DESC')
+			'nom_elect_resultados_envios_documentos.number AS DOCUMENTO',
+			'nom_elect_resultados_envios_documentos.fecha AS FECHA',
+			'nom_elect_resultados_envios_documentos.codigo AS CODIGO',
+			'nom_elect_resultados_envios_documentos.cune AS CUNE',
+			'nom_elect_resultados_envios_documentos.email_status AS EMAIL_STATUS',
+			'nom_elect_resultados_envios_documentos.dian_status AS DIAN_STATUS'
+		)->where("nom_elect_resultados_envios_documentos.number", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.codigo", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.cune", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.email_status", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.dian_status", "LIKE", "%$search%")
+			->orWhere("nom_elect_resultados_envios_documentos.fecha", "LIKE", "%$search%")
+			->orderBy('nom_elect_resultados_envios_documentos.created_at', 'DESC')
 			->toSql();
 		return str_replace('?', '"%' . $search . '%"', $string);
 	}

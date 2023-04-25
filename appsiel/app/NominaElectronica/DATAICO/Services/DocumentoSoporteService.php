@@ -7,6 +7,8 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\NominaElectronica\ResultadoEnvioDocumento;
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
 
 // declaramos factura
@@ -238,5 +240,44 @@ class DocumentoSoporteService
             return 'DEPENDIENTE';
             break;
       }
+   }
+
+   public function store_resultado_envio_documento( $document_header, $array_respuesta )
+   {
+      $array_respuesta['dian_messages'] = json_encode( $array_respuesta['dian_messages'] );
+      
+      $array_respuesta['core_empresa_id'] = $document_header->core_empresa_id;
+      $array_respuesta['core_tipo_transaccion_id'] = $document_header->core_tipo_transaccion_id;
+      $array_respuesta['core_tipo_doc_app_id'] = $document_header->core_tipo_doc_app_id;
+      $array_respuesta['consecutivo'] = $document_header->consecutivo;
+      $array_respuesta['fecha'] = $document_header->fecha;
+      ResultadoEnvioDocumento::create($array_respuesta);
+   }
+
+   public function consultar_documento_emitido($doc_encabezado)
+   {
+      //$env = config('nomina.nom_elec_ambiente'); //'PRUEBAS' || 'PRODUCCION'
+
+      $url_emision = config('nomina.url_servicio_emision');
+
+      //$url_emision2 = 'https://api.dataico.com/direct/payroll-api/payroll-entries/NE/51?include-pdf=true';
+         
+      try {
+         $client = new Client(['base_uri' => $url_emision]);
+
+         $response = $client->get( $url_emision . '/' . $doc_encabezado->tipo_documento_app->prefijo . '/' .$doc_encabezado->consecutivo . '?include-pdf=true', [
+             // un array con la data de los headers como tipo de peticion, etc.
+             'headers' => [
+                           'content-type' => 'application/json',
+                           'auth-token' => config('facturacion_electronica.tokenPassword')
+                        ]
+         ]);
+      } catch (\GuzzleHttp\Exception\RequestException $e) {
+          $response = $e->getResponse();
+      }
+
+      $json = json_decode( (string) $response->getBody() );
+      dd($json);
+      return $json->invoice;
    }
 }

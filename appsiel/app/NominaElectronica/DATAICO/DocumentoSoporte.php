@@ -25,9 +25,14 @@ class DocumentoSoporte extends Model
 
    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'nom_contrato_id', 'descripcion', 'head_data_json', 'accruals_json', 'deductions_json', 'employee_json', 'estado', 'creado_por', 'modificado_por' ];
 
-   public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Empleado', 'Estado'];
+   public $encabezado_tabla = ['Acción', 'Fecha', 'Documento', 'Empleado', 'Estado'];
 
-   public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
+   public $urls_acciones = '{"show":"nom_electronica_show_doc_soporte/id_fila"}';
+
+   public function tipo_transaccion()
+   {
+       return $this->belongsTo( TipoTransaccion::class, 'core_tipo_transaccion_id' );
+   }
 
    public function tipo_documento_app()
    {
@@ -59,6 +64,27 @@ class DocumentoSoporte extends Model
             ->orderBy('nom_elect_doc_soporte.created_at', 'DESC')
             ->paginate($nro_registros);
    }
+
+	public static function sqlString($search)
+	{
+		$string = DocumentoSoporte::select(
+			DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_elect_doc_soporte.consecutivo) AS DOCUMENTO'),
+			'nom_elect_doc_soporte.fecha AS FECHA',
+			'core_terceros.descripcion AS EMPLEADO',
+			'nom_elect_doc_soporte.estado AS ESTADO'
+		)->where("nom_elect_doc_soporte.fecha", "LIKE", "%$search%")
+      ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+      ->orWhere("core_terceros.estado", "LIKE", "%$search%")
+			->orderBy('nom_elect_doc_soporte.created_at', 'DESC')
+			->toSql();
+		return str_replace('?', '"%' . $search . '%"', $string);
+	}
+
+	//Titulo para la exportación en PDF y EXCEL
+	public static function tituloExport()
+	{
+		return "LISTADO DE RESULTADO ENVIO DE DOCUMENTOS";
+	}
 
    public function get_data_for_json( NomContrato $empleado, $lapso, $almacenar_registros )
    {

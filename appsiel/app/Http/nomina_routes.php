@@ -13,6 +13,9 @@ Route::resource('nom_registros_documentos', 'Nomina\RegistrosDocumentosControlle
 Route::resource('nom_electronica', 'Nomina\NominaElectronicaController');
 Route::post('nom_electronica_generar_doc_soporte', 'Nomina\NominaElectronicaController@generar_doc_soporte');
 Route::get('nom_electronica_enviar_documentos/{arr_ids}', 'Nomina\NominaElectronicaController@enviar_documentos');
+Route::get('nom_electronica_show_doc_soporte/{doc_soporte_id}', 'Nomina\NominaElectronicaController@show_doc_soporte');
+
+Route::get('nom_electronica_consultar_documentos_emitidos/{doc_encabezado_id}/{tipo_operacion}', 'Nomina\NominaElectronicaController@consultar_documentos_emitidos');
 
 
 Route::get('nom_eliminar_asignacion/registro_modelo_hijo_id/{registro_modelo_hijo_id}/registro_modelo_padre_id/{registro_modelo_padre_id}/id_app/{id_app}/id_modelo_padre/{id_modelo_padre}', 'Nomina\NominaController@eliminar_asignacion');

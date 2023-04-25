@@ -10,9 +10,9 @@ use App\Ventas\ContactoCliente;
 use App\Ventas\DireccionEntrega;
 use App\Core\Tercero;
 
-use DB;
-use Schema;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Cliente extends Model
 {

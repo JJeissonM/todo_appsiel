@@ -221,8 +221,6 @@ class FacturaGeneral
       return $string_items;
    }
 
-
-
    public function consultar_documento()
    {
       if ( $this->env == 'PRODUCCION' )

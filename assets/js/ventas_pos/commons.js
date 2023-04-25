@@ -370,7 +370,8 @@ $(document).ready(function () {
         $('#vendedor_id').attr('data-vendedor_descripcion',item_sugerencia.attr('data-vendedor_descripcion'));
         $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
         $("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
-
+        $(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
+        
         $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
 
         $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
