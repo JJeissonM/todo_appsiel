@@ -237,10 +237,11 @@ class NominaElectronicaController extends TransaccionController
                 // code...
                 break;
         }
-        
-        $file_name = 'nomina' . $encabezado_doc->tipo_documento_app->descripcion . $encabezado_doc->consecutivo;
 
-        $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','file_name') )->render();
+        $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','encabezado_doc') )->render();
+
+        
+        $file_name = 'Doc_Soporte_Nomina_Electronia_' . $encabezado_doc->tipo_documento_app->prefijo . $encabezado_doc->consecutivo;
 
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view_pdf));
