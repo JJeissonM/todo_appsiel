@@ -920,11 +920,12 @@ class InventarioController extends TransaccionController
                                             'id',
                                             'categoria_id',
                                             'referencia',
+                                            'descripcion',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
                                     ->take(7);
-                                    //dd($campo_busqueda,$operador,$texto_busqueda,$producto);
+                                    
                 break;
             case 'descripcion':
                 $operador = 'LIKE';
@@ -936,6 +937,7 @@ class InventarioController extends TransaccionController
                                             'id',
                                             'categoria_id',
                                             'referencia',
+                                            'descripcion',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                 ->get()
@@ -951,6 +953,7 @@ class InventarioController extends TransaccionController
                                             'id',
                                             'categoria_id',
                                             'referencia',
+                                            'descripcion',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
@@ -987,6 +990,7 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item;// . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
 
+            /*
             $descripcion_item = $linea->nueva_cadena . ' (' . $linea->unidad_medida1 . ')';
 
             $talla = '';
@@ -1002,8 +1006,11 @@ class InventarioController extends TransaccionController
             }
 
             $descripcion_item .= $talla . $referencia;
+            */
 
-            $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
+            $descripcion_item = $linea->get_value_to_show();
+
+            $html .=            '" > ' . $descripcion_item . ' </a>';
 
             $num_item++;
         }
@@ -1075,7 +1082,7 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
 
-
+            /*
             $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ')';
 
             $talla = '';
@@ -1091,8 +1098,9 @@ class InventarioController extends TransaccionController
             }
 
             $descripcion_item .= $talla . $referencia;
+            */
 
-            $html .=            '" > '.$linea->id.' '.$descripcion_item.' </a>';
+            $html .=            '" > ' . $linea->get_value_to_show() . ' </a>';
 
             $num_item++;
         }
@@ -1147,12 +1155,16 @@ class InventarioController extends TransaccionController
     {
         $producto = InvProducto::find($request->inv_producto_id);
 
+        $producto->descripcion = $producto->get_value_to_show();
+
+        /*
         $producto->descripcion = $producto->descripcion . ' (' . $producto->unidad_medida1 . ')';
 
         if( $producto->unidad_medida2 != '' )
         {
             $producto->descripcion .= ' - Talla: ' . $producto->unidad_medida2;
         }
+        */
 
         $costo_prom = InvCostoPromProducto::get_costo_promedio( $request->id_bodega, $request->inv_producto_id);
 

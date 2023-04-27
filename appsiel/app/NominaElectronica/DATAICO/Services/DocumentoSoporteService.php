@@ -244,7 +244,9 @@ class DocumentoSoporteService
 
    public function store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado )
    {
-      $array_respuesta['dian_messages'] = json_encode( $array_respuesta['dian_messages'] );
+      if (isset($array_respuesta['dian_messages'])) {
+         $array_respuesta['dian_messages'] = json_encode( $array_respuesta['dian_messages'] );
+      }
       
       $array_respuesta['core_empresa_id'] = $document_header->core_empresa_id;
       $array_respuesta['core_tipo_transaccion_id'] = $document_header->core_tipo_transaccion_id;

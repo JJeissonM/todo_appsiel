@@ -94,7 +94,6 @@ class InvFisicoController extends TransaccionController
      */
     public function store(Request $request)
     {
-        
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
         
         $doc_encabezado_id = InvFisicoController::crear_documento( $request, $lineas_registros, $request->url_id_modelo );
@@ -193,10 +192,10 @@ class InvFisicoController extends TransaccionController
 
         foreach ($doc_registros as $fila)
         {
-            $existencia = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha );
+            $existencia = InvMovimiento::get_existencia_actual($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha );
 
-            $fila->cantidad_sistema = $existencia->Cantidad;
-            $fila->costo_total_sistema = $existencia->Costo;
+            $fila->cantidad_sistema = $existencia;
+            $fila->costo_total_sistema = $existencia * $fila->item->get_costo_promedio(0);
         }
 
         $empresa = $this->empresa;

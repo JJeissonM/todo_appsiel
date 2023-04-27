@@ -70,7 +70,44 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$codigo_principal_manejo_productos = 0;
+								if( isset($parametros['codigo_principal_manejo_productos'] ) )
+								{
+									$codigo_principal_manejo_productos = $parametros['codigo_principal_manejo_productos'];
+								}
+							?>
+							{{ Form::bsSelect('codigo_principal_manejo_productos', $codigo_principal_manejo_productos, 'Código principal manejo productos', ['item_id' => 'ID', 'referencia' => 'Referencia'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_talla_en_descripcion_items = 0;
+								if( isset($parametros['mostrar_talla_en_descripcion_items'] ) )
+								{
+									$mostrar_talla_en_descripcion_items = $parametros['mostrar_talla_en_descripcion_items'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_talla_en_descripcion_items', $mostrar_talla_en_descripcion_items, 'Mostrar talla (unidad_medida2) en descripción ítems', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_referencia_en_descripcion_items = 0;
+								if( isset($parametros['mostrar_referencia_en_descripcion_items'] ) )
+								{
+									$mostrar_referencia_en_descripcion_items = $parametros['mostrar_referencia_en_descripcion_items'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_referencia_en_descripcion_items', $mostrar_referencia_en_descripcion_items, 'Mostrar referencia en descripción ítems', [ 'No', 'Si' ], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

@@ -17,6 +17,7 @@ use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
@@ -236,7 +237,11 @@ class NominaElectronicaController extends TransaccionController
                 // code...
                 break;
         }
-    	
-        return Redirect::away( $documento_electronico );
+        
+        $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico') )->render();
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(($view_pdf));
+        return $pdf->stream( 'nomina' . $encabezado_doc->tipo_documento_app->descripcion . $encabezado_doc->consecutivo . '.pdf');
     }
 }

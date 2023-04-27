@@ -50,6 +50,32 @@ class InvProducto extends Model
         return $this->hasMany(InvFichaProducto::class, 'producto_id', 'id');
     }
 
+    public function get_value_to_show()
+    {
+        $descripcion_item = $this->descripcion . ' (' . $this->unidad_medida1 . ')';
+
+        $talla = '';
+        if( (int)config('inventarios.mostrar_talla_en_descripcion_items') && $this->unidad_medida2 != '' )
+        {
+            $talla = ' - Talla: ' . $this->unidad_medida2;
+        }
+        
+        $referencia = '';
+        if( (int)config('inventarios.mostrar_referencia_en_descripcion_items') && $this->referencia != '')
+        {
+            $referencia = ' - ' . $this->referencia;
+        }
+
+        $descripcion_item .= $talla . $referencia;
+
+        $prefijo = $this->id;
+        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia') {
+            $prefijo = $this->referencia;
+        }
+
+        return $prefijo . ' ' . $descripcion_item;
+    }
+
     public function tasa_impuesto()
     {
         $impuesto = $this->impuesto;
@@ -124,6 +150,12 @@ class InvProducto extends Model
             if($opcion->referencia != '')
             {
                 $referencia = ' - ' . $opcion->referencia;
+            }
+
+            // Sobreescribir
+            if(config('inventarios.codigo_principal_manejo_productos') == 'item_id')
+            {
+                $referencia = '';
             }
 
             $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion . $referencia;
