@@ -238,10 +238,12 @@ class NominaElectronicaController extends TransaccionController
                 break;
         }
         
-        $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico') )->render();
+        $file_name = 'nomina' . $encabezado_doc->tipo_documento_app->descripcion . $encabezado_doc->consecutivo;
+
+        $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','file_name') )->render();
 
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view_pdf));
-        return $pdf->stream( 'nomina' . $encabezado_doc->tipo_documento_app->descripcion . $encabezado_doc->consecutivo . '.pdf');
+        return $pdf->stream( $file_name . '.pdf' );
     }
 }
