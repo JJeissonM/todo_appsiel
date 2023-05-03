@@ -39,7 +39,7 @@
                         </h2>
                         <div class="price-box text-center mx-2">
                             <span class="regular-price" id="product-price-1">
-                            <!--<span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span></span>-->
+                            <!--<span class="price">${ { number_format( $item->precio_venta,0,',','.' ) }} x { { $item->unidad_medida1 }}</span></span>-->
                             
                             @if( $item->descuento == 0)
                                 <span class="regular-price" id="product-price-1">
@@ -65,8 +65,3 @@
         @endforeach
     </ul>
 @endif
-<!-- 
-<div class="col-md-12">
-    { { $items->render() }}
-</div>
--->

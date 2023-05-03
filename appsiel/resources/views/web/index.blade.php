@@ -70,26 +70,29 @@
     @endforeach
 
     <style type="text/css">
-        <?php if($fonts !=null) {
-            foreach($fonts as $f) {
-                ?>@font-face {
-                    font-family: '{{$f->font}}';
-                    src:url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff") format('woff'),
-                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff2") format('woff2'),
-                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot"),
-                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot?#iefix") format('embedded-opentype'),
-                    url("{{url('')}}/{{$f->path}}/{{$f->font}}.otf") format('truetype');
-
-                    font-weight: normal;
-                    font-style: normal;
-                    font-display: swap;
+        <?php 
+            if($fonts !=null) 
+            {
+                foreach($fonts as $f) 
+                {
+        ?>
+                    @font-face {
+                        font-family: '{{$f->font}}';
+                        src:url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff") format('woff'),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.woff2") format('woff2'),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot"),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.eot?#iefix") format('embedded-opentype'),
+                        url("{{url('')}}/{{$f->path}}/{{$f->font}}.otf") format('truetype');
+                        font-weight: normal;
+                        font-style: normal;
+                        font-display: swap;
+                    }
+        <?php
                 }
-
-                <?php
             }
-        }
-
-        ?>.article-ls {
+        ?>
+        
+        .article-ls {
             border: 1px solid;
             border-color: #3d6983;
             width: 100%;
@@ -242,17 +245,15 @@
             padding-top: 102px;
         }
 
-        @foreach($estilos as $key=> $value) {
-             ! ! $value ! !
-        }
-
-        @endforeach
+            @foreach($estilos as $key=> $value)
+                {!! $value !!}
+            @endforeach
     </style>
 </head>
 
 <body>
     @foreach($view as $item)
-    {!! $item !!}
+        {!! $item !!}
     @endforeach
 
     <!-- End main content -->
@@ -357,7 +358,7 @@
 
 
     @foreach($scripts as $key => $value)
-    {!! $value !!}
+        {!! $value !!}
     @endforeach
 
     @yield('script')

@@ -39,7 +39,7 @@
                         <div class="">
                             <div class="col-main col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                 <div class="page-title category-title">
-                                    <h1 class="font-tienda text-center">Nuestros Productos</h1>
+                                    <h1 class="font-tienda text-center" id="title_our_products">Nuestros Productos</h1>
                                     <div id="categoria_filtrada" style="margin-bottom: 2rem; color: #64686d"></div>
                                 </div>
                                 <div class="category-products">
@@ -119,6 +119,9 @@
 
 <script type="text/javascript">
 
+        // Esto es temporal porque al cambiar de página, que da en el top de la página y no se ve el cambio de productos. Con esto se manda el scroll al listado de produtos directamente
+        $('html,body').animate({scrollTop: $('#lista_productos').offset().top},'slow');
+        
         function imgError(image) {
             image.onerror = "";
             image.src = "{{asset('assets/img/noimage.jpg')}}";
@@ -130,8 +133,6 @@
             $('#lista_productos').fadeOut( 1000 );
             
             var url = "{{ url('ecommerce/public/filtro/categoria/') }}" + "/" + categoria_id;
-
-            //console.log( enlace );
 
             $.get( url )
                 .done(function( data ) {

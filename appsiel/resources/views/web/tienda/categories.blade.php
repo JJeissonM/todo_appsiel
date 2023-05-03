@@ -74,7 +74,7 @@
                                             
                                             <img class="my-4" src="{{ $url_imagen_producto }}" alt="{{ $url_imagen_producto }}" onerror="imgError(this)" style="height: 80px; object-fit: contain">
                                             
-                                            <span style="text-transform: uppercase; font-size: 16px; font-weight: bold">{{$key}} ({{$value->count()}})</span>
+                                            <span style="text-transform: uppercase; font-size: 16px; font-weight: bold">{{$key}} ({{$value->where('estado','Activo')->count()}})</span>
                                         </a>
                                     
                                 </div>

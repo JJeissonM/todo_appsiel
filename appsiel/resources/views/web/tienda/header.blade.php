@@ -8,103 +8,57 @@
         <div class="container" style="padding: 0 ">
             <div class="top-link-inner">
                 <div class="header-tienda">
-                        <div class="toplink-static d-flex justify-content-center" style="/*width: auto;*/ height: 60px;">
-                            <div style="position: absolute; z-index: 10;" >
-                                <a href="{{ config('pagina_web.main_page_tienda_online') }}">
-                                    <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: 60px; min-width:60px"> 
-                                </a>                                  
-                            </div>                                                     
-                        </div>
+                    <div class="toplink-static d-flex justify-content-center" style="/*width: auto;*/ height: 60px;">
+                        <div style="position: absolute; z-index: 10;" >
+                            <a href="{{ config('pagina_web.main_page_tienda_online') }}">
+                                <img src="{{asset( config('configuracion.url_instancia_cliente').'storage/app/logos_empresas/'.$empresa->imagen)}}" style="z-index: 11000; height: 60px; width: 60px; min-width:60px"> 
+                            </a>                                  
+                        </div>                                                     
+                    </div>
                         
 
-                        <ul class="links">
-                            
-                            <li>
-                                <span class="welcome-msg" style="color: white; white-space: nowrap">
-                                    {{ $empresa->direccion1 }}
-                                </span>
-                            </li>
+                    <ul class="links">
+                        
+                        <li>
+                            <span class="welcome-msg" style="color: white; white-space: nowrap">
+                                {{ $empresa->direccion1 }}
+                            </span>
+                        </li>
 
-                            <li> &nbsp; </li>
-                            <li> &nbsp; </li>
-                            <li> &nbsp; </li>
-                            
-                            <li>
-                                <i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;
-                                <a href="{{route("tienda.comprar")}}" title="My Cart" class="top-link-cart">Ver pedido</a>
+                        <li> &nbsp; </li>
+                        <li> &nbsp; </li>
+                        <li> &nbsp; </li>
+                        
+                        <li>
+                            <i class="fa fa-shopping-cart" aria-hidden="true"></i>&nbsp;
+                            <a href="{{route("tienda.comprar")}}" title="My Cart" class="top-link-cart">Ver pedido</a>
+                        </li>
+                        
+                        @if(Auth::guest())
+                            <li class=" last">
+                                <i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; 
+                                <a href="{{route('tienda.login')}}" title="Iniciar sesión">Iniciar Sesión</a>
                             </li>
-                            <!--
-                            @ if(Auth::guest())
-                                <li class=" last">
-                                    <i class="fa fa-sign-in" aria-hidden="true"></i>&nbsp; 
-                                    <a href="{ {route('tienda.login')}}" title="Iniciar sesión">Iniciar Sesión</a>
-                                </li>
-                                <li class=" last">
-                                    <i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;
-                                    <a
-                                            href="{ {route('tienda.nuevacuenta')}}"
-                                            title="Registrarse"
-                                            onclick="registrarse( event )">Registrarse</a>
-                                </li>
-                                <li class=" last">
-                                    <button onclick="document.getElementById('id01').style.display='block'" title="Registrarse" class="_no_abrir_modal" data-elemento_id="218" style="background: transparent; border: 0px;">Registrarse 2</button>
-
-                                </li>
-                            @ else
-                                <li class="first" style="order: 1">
-                                    <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
-                                    <a href="{ {route('tienda.micuenta')}}" title="Mi Cuenta">Mi Cuenta</a>
-                                </li>
-                                <li class=" last">
-                                    <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
-                                    <a href="{ {url('/logout')}}" title="Cerra sesión">Cerrar Sesión</a>
-                                </li>
-                            @ endif-->
-                        </ul>
+                            <li class=" last">
+                                <i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;
+                                <a
+                                        href="{{route('tienda.nuevacuenta')}}"
+                                        title="Registrarse"
+                                        onclick="registrarse( event )">Registrarse</a>
+                            </li>
+                        @else
+                            <li class="first" style="order: 1">
+                                <i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp;
+                                <a href="{{route('tienda.micuenta')}}" title="Mi Cuenta">Mi Cuenta</a>
+                            </li>
+                            <li class=" last">
+                                <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
+                                <a href="{{url('/logout')}}" title="Cerra sesión">Cerrar Sesión</a>
+                            </li>
+                        @endif
+                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </header>
-
-<div id="id01" class="modal">
-  <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
-  <form class="modal-content" action="/action_page.php">
-    <div class="container">
-      <h1>Sign Up</h1>
-      <p>Please fill in this form to create an account.</p>
-      <hr>
-      <label for="email"><b>Email</b></label>
-      <input type="text" placeholder="Enter Email" name="email" required>
-
-      <label for="psw"><b>Password</b></label>
-      <input type="password" placeholder="Enter Password" name="psw" required>
-
-      <label for="psw-repeat"><b>Repeat Password</b></label>
-      <input type="password" placeholder="Repeat Password" name="psw-repeat" required>
-      
-      <label>
-        <input type="checkbox" checked="checked" name="remember" style="margin-bottom:15px"> Remember me
-      </label>
-
-      <p>By creating an account you agree to our <a href="#" style="color:dodgerblue">Terms & Privacy</a>.</p>
-
-      <div class="clearfix">
-        <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
-        <button type="submit" class="signupbtn">Sign Up</button>
-      </div>
-    </div>
-  </form>
-</div>
-
-<script>
-// Get the modal
-var modal = document.getElementById('id01');
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
-</script>

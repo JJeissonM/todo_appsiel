@@ -10,9 +10,7 @@ use App\Ventas\ClienteWeb;
 use App\web\Footer;
 use App\web\RedesSociales;
 use App\web\Tienda;
-use Form;
-use Input;
-use View;
+
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -23,6 +21,8 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\View;
 
 class TiendaController extends Controller
 {
@@ -230,12 +230,14 @@ class TiendaController extends Controller
 
         if ($cliente == null) {            
             return redirect()->route('tienda.login');
-        }        
+        }
+        
+        $pedido_pendiente_id = 0;     
 
         $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->where('core_tipo_transaccion_id',42)->orderBy('fecha','desc')->get();
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados','vista'));
+        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados','vista', 'pedido_pendiente_id'));
 
     }
 
@@ -246,10 +248,20 @@ class TiendaController extends Controller
         $user = Auth::user();
         $cliente = \App\Ventas\ClienteWeb::get_datos_basicos($user->id, 'users.id');
 
-        $doc_encabezados = DB::table('vtas_doc_encabezados')->where('cliente_id',$cliente->id)->where('core_tipo_transaccion_id',42)->orderBy('fecha','desc')->get();
+        $doc_encabezados = VtasDocEncabezado::where('core_tipo_transaccion_id',42)
+                                ->orderBy('fecha','desc')
+                                ->get();
+        
+        $pedido_pendiente = $doc_encabezados->where('estado','Pendiensste')->all();
+
+        $pedido_pendiente_id = 0;
+        if ( !empty($pedido_pendiente) ) {
+            $pedido_pendiente_id = $pedido_pendiente[0]->id;
+        }
+        
         $footer = Footer::all()->first();
         $redes = RedesSociales::all();
-        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes','doc_encabezados'));
+        return view('web.tienda.mi_cuenta.index', compact('paises', 'cliente','footer','redes', 'doc_encabezados', 'pedido_pendiente_id'));
     }
 
     public function login()
@@ -548,7 +560,7 @@ class TiendaController extends Controller
         $orientacion = 'portrait';
         $tam_hoja = array(0, 0, 50, 800); //'A4';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
@@ -562,7 +574,7 @@ class TiendaController extends Controller
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
         // Se prepara el PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
@@ -570,8 +582,8 @@ class TiendaController extends Controller
         
     }
 
-    public function generar_documento_vista_factura($id){
-
+    public function generar_documento_vista_factura($id)
+    {
         //set_variables_globales
         $empresa = Empresa::all()->first();
         $app = \App\Sistema\Aplicacion::find( '13' );
@@ -595,7 +607,8 @@ class TiendaController extends Controller
         return View::make( 'ventas.formatos_impresion.estandar', compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados' ) )->render();
     }
 
-    public function generar_documento_vista_pedido($id){
+    public function generar_documento_vista_pedido($id)
+    {
 
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
 
@@ -682,7 +695,6 @@ class TiendaController extends Controller
 
     public function busqueda(Request $request)
     {
-
         if ( $request->categoria == 0 )
         {
             $grupo_inventario_id = '';
@@ -700,6 +712,11 @@ class TiendaController extends Controller
     }
 
     function comprar(){
+
+        if(!Auth::check()){
+            return redirect(url('ecommerce/public/signIn'))->with('flash_message', 'Vas por buen camino. Ahora regálanos tus datos para continuar.');
+        }
+
         return view('web.tienda.comprar');
     }
 

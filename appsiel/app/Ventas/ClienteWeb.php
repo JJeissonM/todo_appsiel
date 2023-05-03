@@ -2,11 +2,10 @@
 
 namespace App\Ventas;
 
+use App\Core\Tercero;
 use Illuminate\Database\Eloquent\Model;
-
-use App\Ventas\ClaseCliente;
-
-use DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class ClienteWeb extends Model
 {
@@ -88,60 +87,37 @@ class ClienteWeb extends Model
                             ->first();
     }
 
-
-
     // Solo se creó un registro vacío en la tabla clientes
     public function store_adicional($datos, $registro)
     {
         // Separa los nombres
-        $nombre = explode(" ", $datos['nombre'] );
-        $otros_nombres = '';
-        foreach ($nombre as $key => $value)
-        {
-            if ( $key == 0)
-            {
-                $nombre1 = $value;
-            }else{
-                $otros_nombres .= ' ' . $value;
-            }
-        }
+        $nombre1 = $datos['nombre1'];
 
         // Separa los apellidos
-        $apellidos = explode(" ", $datos['apellido'] );
-        $apellido2 = '';
-        foreach ($apellidos as $key => $value)
-        {
-            if ( $key == 0)
-            {
-                $apellido1 = $value;
-            }else{
-                $apellido2 .= ' ' . $value;
-            }
-        }
+        $apellido1 = $datos['apellido1'];
 
         $array_tercero = [ 
                             'core_empresa_id' => 1,
                             'tipo' => 'Persona natural',
                             'nombre1' => $nombre1,
-                            'otros_nombres' => $otros_nombres,
+                            'otros_nombres' => '',
                             'apellido1' => $apellido1,
-                            'apellido2' => $apellido2,
-                            'descripcion' => $nombre1 . $otros_nombres . " " . $apellido1 . $apellido2,
-                            'id_tipo_documento_id' => $datos['tipo_doc_id'],
+                            'apellido2' => '',
+                            'descripcion' => $nombre1 .  " " . $apellido1,
+                            'id_tipo_documento_id' => config('configuracion.tipo_doc_identidad_default'),
                             'numero_identificacion' => $datos['numero_identificacion'],
                             'digito_verificacion' => 0,
-                            'direccion1' => $datos['direccion'],
+                            'direccion1' => $datos['direccion1'],
                             'codigo_ciudad' => 16920001,
-                            'telefono1' => $datos['telefono'],
+                            'telefono1' => $datos['telefono1'],
                             'email' => $datos['email'],
                             'estado' => 'Activo' ];
 
-        $tercero = \App\Core\Tercero::create( $array_tercero );
+        $tercero = Tercero::create( $array_tercero );
 
         // Actualizar Cliente
         $registro->core_tercero_id = $tercero->id;
 
-        $config_pagina_web = config('pagina_web');
         $registro->clase_cliente_id = config('pagina_web.clase_cliente_id');
         $registro->lista_precios_id = config('pagina_web.lista_precios_id');
         $registro->lista_descuentos_id = config('pagina_web.lista_descuentos_id');
@@ -154,13 +130,25 @@ class ClienteWeb extends Model
 
         $registro->save();
 
+        DireccionEntrega::create([
+            'cliente_id' => $registro->id,
+            'nombre_contacto' => $tercero->descripcion,
+            'codigo_ciudad' => 16920001,
+            'direccion1' => $datos['direccion1'],
+            'barrio' => '',
+            'codigo_postal' => '',
+            'telefono1' => $datos['telefono1'],
+            'datos_adicionales' => '',
+            'por_defecto' => 1
+        ]);
+
         // Crear usuario y asignar Perfil
-        $name = $nombre1 . " " . $otros_nombres . " " . $apellido1 . " " . $apellido2;
+        $name = $nombre1 . " " . $apellido1;
         $user = \App\User::create([
             'empresa_id' => 1,
             'name' => $name,
             'email' => $datos['email'],
-            'password' => \Hash::make( $datos['password'] )
+            'password' => Hash::make( $datos['password'] )
         ]);
 
         $role_id = 16; // Cliente

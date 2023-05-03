@@ -116,6 +116,9 @@
                 </div>
             </div>
         </div>
+
+        <input name="pedido_pendiente_id" id="pedido_pendiente_id" type="hidden" value="{{$pedido_pendiente_id}}">
+
     </main>
     {!! Form::footer($footer,$redes,null,'small')  !!}
 @endsection
@@ -124,21 +127,11 @@
 
 <script src="{{asset('assets/js/toastr.min.js')}}"></script>
     <script type="text/javascript">
-    let pedidop = false;
-    <?php
-        echo "$('#".$vista."').tab('show');";
-        //dd($doc_encabezados);
-        if($doc_encabezados[0]->estado == 'Pendiente'){
-            echo 'pedidop = true;';
+
+        if($('#pedido_pendiente_id').val() != 0){
+            toastr.info(`Pulsa aqui para continuar tu ultima compra`,"",{closeButton: true,timeOut: 0,extendedTimeOut: 0, onclick: function (){window.location.href = "{{url('/ecommerce/public/detallepedido') . '/' . $pedido_pendiente_id }}"} });
         }
-    
-    ?>
-
-    if(pedidop){
-        toastr.info(`Pulsa aqui para continuar tu ultima compra`,"",{closeButton: true,timeOut: 0,extendedTimeOut: 0, onclick: function (){window.location.href = "{{url('/ecommerce/public/detallepedido').'/'.$doc_encabezados[0]->id}}"} });
-    }
-    
-
+        
         function getCiudades() {
             var pais = $("#pais").val();
             if (pais == null) {

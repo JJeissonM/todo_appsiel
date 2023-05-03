@@ -20,6 +20,9 @@
                         <div class="main-inner">
                             <div class="row">
                                 <div class="col-main">
+                                    <br><br>
+                                    @include('layouts.mensajes')
+
                                     <div class="account-login">
                                         <div class="page-title">
                                             <h1>Inicia sesión o Crea una cuenta con nosotros</h1>

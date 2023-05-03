@@ -39,7 +39,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$tipo_doc_identidad_default = 13;
+								if( isset($parametros['tipo_doc_identidad_default'] ) )
+								{
+									$tipo_doc_identidad_default = $parametros['tipo_doc_identidad_default'];
+								}
+							?>
+							{{ Form::bsSelect('tipo_doc_identidad_default', $tipo_doc_identidad_default, 'Tipo doc. identidad por defecto', App\Core\TipoDocumentoId::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 

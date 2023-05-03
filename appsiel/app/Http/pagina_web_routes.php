@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 // Página Web - FRONT END
 Route::resource('paginas', 'web\PaginaController');
 Route::get('pagina/secciones/{id}', 'web\PaginaController@secciones');

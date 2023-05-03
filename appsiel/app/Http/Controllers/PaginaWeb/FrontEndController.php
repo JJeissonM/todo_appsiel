@@ -4,12 +4,8 @@ namespace App\Http\Controllers\PaginaWeb;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Http\Controllers\web\PaginaController;
-use Input;
-use View;
-use DB;
 
 use App\Sistema\Aplicacion;
 use App\Core\Empresa;
@@ -21,6 +17,7 @@ use App\PaginaWeb\Carousel;
 use App\PaginaWeb\Categoria;
 
 use App\PropiedadHorizontal\PhAnuncio;
+use Illuminate\Support\Facades\Input;
 
 class FrontEndController extends Controller
 {
@@ -40,10 +37,10 @@ class FrontEndController extends Controller
 
         // Obtener la página que está marcada como pagina_inicio (se debe validar que en la creación de páginas solo haya una)
         $pagina = Pagina::where('pagina_inicio',1)->get()->first();
-        // Si se envía el ID de una página, por url
-        if ( !is_null( Input::get('pagina_id') ) )
-        {
 
+        // Si se envía el ID de una página, por url
+        if ( Input::get('pagina_id') != null )
+        {
             $pagina = Pagina::find(Input::get('pagina_id'));
         }
 

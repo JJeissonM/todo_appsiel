@@ -34,7 +34,7 @@ comprar.addEventListener('click',function (event) {
                   if(data.status == 'error' ){
                     loading.style.display = 'block';
                     comprar.style.display  = 'none';
-                      toastr.warning(data.mensaje);
+                    toastr.warning(data.mensaje);
                   }else if (data.status == 'ok'){
                       //toastr.success(data.mensaje);
                       // Añadimos el arreglo actual a storage 
