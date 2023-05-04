@@ -16,7 +16,7 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\NotaCredito;
 
 use App\CxC\CxcAbono;
-
+use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\Tesoreria\TesoMovimiento;
 
 use App\FacturacionElectronica\Factura;
@@ -182,34 +182,52 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. <br> El cliente presenta inconsistencia en sus datos básicos: ' . $result->message);
         }
 
+        $documento_electronico = new FacturaGeneral( $encabezado_factura, 'factura' );
+        $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
+        if ($pdf_url != null) {
+            // La factura ya está en DATAICO, pero no se reflejó en Appsiel
+            $this->contabilizar_factura($encabezado_factura);
+            $mensaje = (object)[
+                'tipo'=>'flash_message',
+    			'contenido' => '<h3>Documento ya fue enviado correctamente hacia el proveedor tecnológico</h3>'
+            ];
+
+            return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+        }
+
         $mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();                
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {
-            if ( $encabezado_factura->estado != 'Contabilizado - Sin enviar')
-            {
-                $encabezado_factura->crear_movimiento_ventas();
-
-                // Contabilizar
-                $encabezado_factura->contabilizar_movimiento_debito();
-                $encabezado_factura->contabilizar_movimiento_credito();
-
-                $encabezado_factura->crear_registro_pago();
-            }
-            
-            FacturaPos::where([
-                ['core_tipo_transaccion_id','=',$encabezado_factura->core_tipo_transaccion_id],
-                ['core_tipo_doc_app_id','=',$encabezado_factura->core_tipo_doc_app_id],
-                ['consecutivo','=',$encabezado_factura->consecutivo],
-            ])->update([
-                'estado'=>'Enviada'
-            ]);
-            
-            $encabezado_factura->estado = 'Enviada';
-            $encabezado_factura->save();
+            $this->contabilizar_factura($encabezado_factura);
         }
 
         return redirect( 'fe_factura/'.$encabezado_factura->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+    }
+
+    public function contabilizar_factura($encabezado_factura)
+    {
+        if ( $encabezado_factura->estado != 'Contabilizado - Sin enviar')
+        {
+            $encabezado_factura->crear_movimiento_ventas();
+
+            // Contabilizar
+            $encabezado_factura->contabilizar_movimiento_debito();
+            $encabezado_factura->contabilizar_movimiento_credito();
+
+            $encabezado_factura->crear_registro_pago();
+        }
+        
+        FacturaPos::where([
+            ['core_tipo_transaccion_id','=',$encabezado_factura->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=',$encabezado_factura->core_tipo_doc_app_id],
+            ['consecutivo','=',$encabezado_factura->consecutivo],
+        ])->update([
+            'estado'=>'Enviada'
+        ]);
+        
+        $encabezado_factura->estado = 'Enviada';
+        $encabezado_factura->save();
     }
 
     public function validar_datos_tercero($tercero)

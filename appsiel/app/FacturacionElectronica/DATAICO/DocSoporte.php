@@ -181,6 +181,11 @@ class DocSoporte
       }
 
       $json = json_decode( (string) $response->getBody() );
+      
+      if(!isset($json->support_doc))
+      {
+         return null;
+      }
 
       return $json->support_doc;
    }
