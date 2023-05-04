@@ -183,7 +183,7 @@ class FacturaController extends TransaccionController
         }
 
         $documento_electronico = new FacturaGeneral( $encabezado_factura, 'factura' );
-        $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
+        $pdf_url = $documento_electronico->consultar_documento();
         if ($pdf_url != null) {
             // La factura ya está en DATAICO, pero no se reflejó en Appsiel
             $this->contabilizar_factura($encabezado_factura);

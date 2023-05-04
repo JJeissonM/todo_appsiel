@@ -3,8 +3,15 @@
 
             <tr style="background: #ccc; font-weight: bold; text-align: center;">
                 <td> Bodega </td>
-                <td> Cód. </td>
-                <td> Ref. </td>
+
+                @if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+                    <td> Cód. </td> <!-- si es null, tambien lo muestra -->
+                @endif
+                
+                @if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+                    <td> Ref. </td>
+                @endif
+                
                 <td> Producto </td>
                 <td> Talla </td>
                 <td> Cant. </td>
@@ -52,8 +59,15 @@
                 <!-- @ if($linea_movimiento->suma_cantidad!=0) -->
                     <tr>
                         <td> {{ $linea_movimiento->bodega->descripcion }} </td>
-                        <td>{{ $linea_movimiento->producto->id }}</td>
-                        <td>{{ $linea_movimiento->producto->referencia }}</td>
+                        
+                        @if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+                            <td>{{ $linea_movimiento->producto->id }}</td> <!-- si es null, tambien lo muestra -->
+                        @endif
+                
+                        @if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+                            <td>{{ $linea_movimiento->producto->referencia }}</td>
+                        @endif                        
+                        
                         <td>{{ $linea_movimiento->producto->descripcion }} </td>
                         <td>{{ $linea_movimiento->producto->unidad_medida2 }} </td> <!-- Talla -->
                         <td>{{ number_format($linea_movimiento->suma_cantidad, 2, ',', '.') }} </td>
@@ -66,7 +80,13 @@
             } 
             ?>
             <tr>
-                <td colspan="5"> &nbsp; </td>            
+                
+                @if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+                    <td colspan="4"> &nbsp; </td>
+                @else
+                    <td colspan="5"> &nbsp; </td>
+                @endif  
+                            
                 <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
             </tr>

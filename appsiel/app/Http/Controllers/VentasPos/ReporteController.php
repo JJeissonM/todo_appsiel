@@ -272,7 +272,8 @@ class ReporteController extends Controller
         {
             $array_wheres = array_merge( $array_wheres, [['inv_productos.unidad_medida2','=', $talla]] );
         }
-            $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
+        
+        $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
 
         $movimientos = InvMovimiento::get_existencia_corte( $array_wheres );
       
