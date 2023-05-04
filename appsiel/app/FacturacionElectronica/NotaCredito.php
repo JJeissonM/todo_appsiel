@@ -15,7 +15,7 @@ class NotaCredito extends VtasDocEncabezado
 
     public $urls_acciones = '{"store":"fe_nota_credito","show":"fe_nota_credito/id_fila"}';
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Detalle', 'Valor total', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Base IVA', 'Valor total', 'Forma de pago', 'Estado'];
 
 
     public static function consultar_registros2($nro_registros, $search)
@@ -61,7 +61,7 @@ class NotaCredito extends VtasDocEncabezado
             $doc_venta = VtasDocEncabezado::find( $register_collect->campo8 );
             $register_collect->campo4 = '$' . number_format( $doc_venta->get_valor_base_iva_total_documento(), 0, ',', '.' );
 
-            $register_collect->campo5 = '$' . number_format( $register_collect->campo5, 0, ',', '.' );
+            $register_collect->campo5 = '$' . number_format( abs($register_collect->campo5), 0, ',', '.' );
         }
 
         $request = request(); //obtenemos el Request para obtener la url y la query builder

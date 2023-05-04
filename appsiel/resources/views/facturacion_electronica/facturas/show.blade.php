@@ -20,7 +20,7 @@
 	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 	@endif
 
-	@if( !$docs_relacionados[1] && $doc_encabezado->estado != 'Sin enviar' && $doc_encabezado->estado != 'Contabilizado - Sin enviar' )
+	@if( !$docs_relacionados[1] && $doc_encabezado->estado == 'Enviada' )
     	<a class="btn-gmail" href="{{ url( 'fe_nota_credito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=245&id_transaccion=53') }}" title="Nota crédito"><i class="fa fa-file"></i></a>
 
     	<a class="btn-gmail" href="{{ url( 'fe_nota_debito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=246&id_transaccion=54') }}" title="Nota Débito"><i class="fa fa-file-o"></i></a>
@@ -68,7 +68,13 @@
             <b>Email: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->email }}
         </td>
         <td style="border: solid 1px #ddd;">
-            <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
+			<?php 
+				$lbl_vendedor = '';
+				if ($doc_encabezado->vendedor != null) {
+					$lbl_vendedor = $doc_encabezado->vendedor->tercero->descripcion;
+				}
+			?>
+            <b>Vendedor: &nbsp;&nbsp;</b> {{ $lbl_vendedor }}
             <br/>
             <b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
             <br/>

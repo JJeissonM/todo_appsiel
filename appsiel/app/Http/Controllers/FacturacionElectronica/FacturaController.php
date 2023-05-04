@@ -22,6 +22,8 @@ use App\Tesoreria\TesoMovimiento;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
+use App\Http\Controllers\Ventas\VentaController;
+use App\Tesoreria\RegistrosMediosPago;
 use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -109,38 +111,37 @@ class FacturaController extends TransaccionController
     }
 
     public function store( Request $request )
-    {
-    	$datos = $request->all();
-
-    	// Paso 1
-    	$remision = new RemisionVentas;
-    	$documento_remision = $remision->crear_nueva( $datos );
-
-    	// Paso 2
-    	$datos['creado_por'] = Auth::user()->email;
-    	$datos['remision_doc_encabezado_id'] = $documento_remision->id;
-        $datos['estado'] = 'Sin enviar';
-        $datos = $this->set_fields_default($datos);
-        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
-        $encabezado_factura = $encabezado_documento->crear_nuevo( $datos );
-
+    {        
         $lineas_registros = json_decode( $request->lineas_registros );
-        $encabezado_factura->almacenar_lineas_registros( $lineas_registros );
-        
-        $encabezado_factura->actualizar_valor_total();
-        
-        // NOTA: No se crea el movimiento de ventas, ni de tesoreria, ni de contabilidad
+
+        $registros_medio_pago = new RegistrosMediosPago;
+
+        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],VentaController::get_total_documento_desde_lineas_registros( $lineas_registros ) );
+
+        // 1ra. Crear documento de salida de inventarios (REMISIÓN)
+        $remision = new RemisionVentas;
+        $documento_remision = $remision->crear_nueva( $request->all() );
+
+        // 2da. Crear documento de Ventas
+        $request['remision_doc_encabezado_id'] = $documento_remision->id;
+        $request['estado'] = 'Contabilizado - Sin enviar';
+        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+
+        // 3ra. Crear Registro del documento de ventas
+        $request['creado_por'] = Auth::user()->email;
+        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+        VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento creado correctamente.' ];
 
         // Paso 3: Validar Resolución (secuenciales) del documento
-        if ( empty( $encabezado_factura->tipo_documento_app->resolucion_facturacion->toArray() ) )
+        if ( empty( $doc_encabezado->tipo_documento_app->resolucion_facturacion->toArray() ) )
         {
             $mensaje->tipo = 'mensaje_error';
             $mensaje->contenido .= ' NOTA: El documento de factura no tiene resolución asociada.';
         }
 
-    	return redirect( 'fe_factura/'.$encabezado_factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido );
+    	return redirect( 'fe_factura/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido );
 
     }
 

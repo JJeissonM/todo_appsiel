@@ -324,9 +324,7 @@ class ReportesController extends Controller
 
     public static function facturas_electronicas_pendientes_por_enviar()
     {
-        return VtasDocEncabezado::where([
-                                        ['core_tipo_transaccion_id',52]
-                                    ])
+        return VtasDocEncabezado::whereIn('core_tipo_transaccion_id',[52,53])
                                 ->whereIn('estado',['Sin enviar','Contabilizado - Sin enviar'])
                                 ->get();
     }

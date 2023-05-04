@@ -12,12 +12,13 @@
 @endsection
 
 @section('botones_acciones')
-	@if($doc_encabezado->estado != 'Anulado')
-        <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
-    @endif
 
     @if( $doc_encabezado->estado == 'Sin enviar' )
+		<?php 
+			$color = 'red';
+		?>
 		<a class="btn-gmail" href="{{ url( 'fe_nota_credito_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar" id="btn_email"><i class="fa fa-send"></i></a>
+        <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>		
 	@endif
 @endsection
 

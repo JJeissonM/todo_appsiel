@@ -57,6 +57,28 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$motivo_devolucion_ventas_id = 0;
+								if( isset($parametros['motivo_devolucion_ventas_id'] ) )
+								{
+									$motivo_devolucion_ventas_id = $parametros['motivo_devolucion_ventas_id'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_devolucion_ventas_id', $motivo_devolucion_ventas_id, 'Motivo para devoluciones en ventas', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$buscar_por_estudiante_en_inputs = 0;
 								if( isset($parametros['buscar_por_estudiante_en_inputs'] ) )
 								{

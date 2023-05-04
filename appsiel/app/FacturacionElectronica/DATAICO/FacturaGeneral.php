@@ -148,7 +148,11 @@ class FacturaGeneral
    public function get_encabezado_nota_credito( $factura_doc_encabezado )
    {
       $factura_dataico = new FacturaGeneral( $factura_doc_encabezado, 'factura' );
-      $invoice_id = $factura_dataico->consultar_documento()->uuid;
+
+      $invoice_id = 0;
+      if ($factura_dataico->consultar_documento() != null) {
+         $invoice_id = $factura_dataico->consultar_documento()->uuid;
+      }      
 
       $payment_means_type = 'CREDITO';
 
@@ -245,6 +249,11 @@ class FacturaGeneral
       }  /**/      
 
       $json = json_decode( (string) $response->getBody() );
+      
+      if(!isset($json->invoice))
+      {
+         return null;
+      }
 
       return $json->invoice;
    }

@@ -4,11 +4,10 @@ namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoDocRegistro;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TesoMovimiento extends Model
 {
@@ -353,31 +352,8 @@ class TesoMovimiento extends Model
                             ->get();
     }
 
-    public static function get_movimiento2( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, $tipo_movimiento, $teso_motivo_id )
+    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres )
     {
-
-        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
-        
-        if ( !is_null($tipo_movimiento) ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_motivos.movimiento' => $tipo_movimiento ]);
-        }
-        
-        if ( $teso_caja_id != 0 ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
-        }
-        
-        if ( $teso_cuenta_bancaria_id != 0 ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
-        }
-        
-        if ( $teso_motivo_id != 0 ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_motivo_id' => (int) $teso_motivo_id ]);
-        }
-
         return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                             ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
@@ -429,7 +405,7 @@ class TesoMovimiento extends Model
             $datos['teso_medio_recaudo_id'] = $registros_medio_pago['teso_medio_recaudo_id'];
             $datos['valor_movimiento'] = $registros_medio_pago['valor_recaudo'] * $signo_unidad;
         }
-
+        
         TesoMovimiento::create( $datos );
     }
 }

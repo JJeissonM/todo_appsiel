@@ -967,31 +967,19 @@ class ReporteController extends TesoreriaController
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $teso_caja_id = $request->teso_caja_id;
-        $teso_cuenta_bancaria_id = $request->teso_cuenta_bancaria_id;
-        $teso_motivo_id = $request->teso_motivo_id;
-
-        if ( $request->teso_caja_id == '')
-        {
-            $teso_caja_id = 0;
-        }
-
-        if ( $request->teso_cuenta_bancaria_id == '')
-        {
-            $teso_cuenta_bancaria_id = 0;
-        }
-
-        if ( $request->teso_motivo_id == '')
-        {
-            $teso_motivo_id = 0;
-        }
-
+        $teso_caja_id = (int)$request->teso_caja_id;
+        $teso_cuenta_bancaria_id = (int)$request->teso_cuenta_bancaria_id;
+        $teso_motivo_id = (int)$request->teso_motivo_id;
+        $core_tercero_id = (int)$request->core_tercero_id;
+        
+        $array_wheres = $this->preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id,$teso_motivo_id, $core_tercero_id, null );
+        
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
 
         $saldo_inicial = TesoMovimiento::get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde );
 
-        $movimiento = TesoMovimiento::get_movimiento2( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta,null, $teso_motivo_id );
+        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres );
         
         $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria') )->render();
 
@@ -1000,6 +988,37 @@ class ReporteController extends TesoreriaController
         return $vista;
     }
 
+    public function preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id,$teso_motivo_id, $core_tercero_id, $tipo_movimiento )
+    {
+        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
+        
+        if ( $tipo_movimiento != null ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_motivos.movimiento' => $tipo_movimiento ]);
+        }
+        
+        if ( $teso_caja_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
+        }
+        
+        if ( $teso_cuenta_bancaria_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+        }
+        
+        if ( $teso_motivo_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_motivo_id' => (int) $teso_motivo_id ]);
+        }
+        
+        if ( $core_tercero_id != 0 ) 
+        {
+            $array_wheres = array_merge($array_wheres, ['teso_movimientos.core_tercero_id' => (int) $core_tercero_id ]);
+        }
+
+        return $array_wheres;
+    }
 
     public function teso_resumen_movimiento_caja_bancos(Request $request)
     {

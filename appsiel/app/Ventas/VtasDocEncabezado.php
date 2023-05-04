@@ -175,6 +175,11 @@ class VtasDocEncabezado extends Model
             case '52':
                 $url = 'fe_factura/';
                 break;
+        
+        
+            case '53':
+                $url = 'fe_nota_credito/';
+                break;
             
             default:
                 $url = 'ventas/';
