@@ -52,8 +52,9 @@
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
 					<td align="center"> {{ $existencia_actual }} </td>
 					<td>
-						<a class="btn btn-danger btn-sm" href="{{ url('web_delete_record/8/22/' . $item->id . '/' . $url_redirect) }}" title="Eliminar talla"> <i class="fa fa-trash"></i></a>
 						<!-- 
+						<a class="btn btn-danger btn-sm" href="{ { url('web_delete_record/8/22/' . $item->id . '/' . $url_redirect) }}" title="Eliminar talla"> <i class="fa fa-trash"></i></a>
+						
 						<a class="btn btn-success" href="{ { url('inventarios/create?id=8&id_modelo=248&id_transaccion=1') }}" title="Registrar entrada" target="_blank"> <i class="fa fa-arrow-up"></i></a>
 						&nbsp;&nbsp;
 						<a class="btn btn-danger" href="{ { url('inventarios/create?id=8&id_modelo=249&id_transaccion=3') }}" title="Registrar salida" target="_blank"> <i class="fa fa-arrow-down"></i></a>
