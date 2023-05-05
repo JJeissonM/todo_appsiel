@@ -181,4 +181,6 @@
 		@include('matriculas.estudiantes.observador.analisis_foda_show')
 	@endif
 	
+    @include('calificaciones.boletines.pie_pagina')
+
 </div>
