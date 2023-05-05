@@ -164,6 +164,9 @@
 
 	@include('matriculas.estudiantes.observador.valorar_aspectos_show')
 	
+    
+    @include('calificaciones.boletines.pie_pagina')
+    
 	<div class="page-break"></div>
 	
 	<br><br>
