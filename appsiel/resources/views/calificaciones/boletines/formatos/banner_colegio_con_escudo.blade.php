@@ -14,8 +14,13 @@
     {
         $tam_letra = 3;
     }
+
+    $opacity_default = 0.1;
+    if (isset($opacity)) {
+        $opacity_default = $opacity;
+    }
 ?>
-<table style="width: 100%; color: red;font-size: {{$tam_letra-1}}mm; opacity: 0.1;">
+<table style="width: 100%; color: red;font-size: {{$tam_letra-1}}mm; opacity: {{$opacity_default}};">
     <tr>
         <td width="20%">
             <div class="imagen" style="text-align: center;">

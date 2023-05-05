@@ -3,28 +3,23 @@
 namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Http\Controllers\Core\TransaccionController;
-
-use Auth;
-use DB;
-use Input;
-use View;
 
 // Modelos
 use App\Matriculas\CatalogoAspecto;
 use App\Matriculas\TiposAspecto;
 use App\Matriculas\AspectosObservador;
 use App\Matriculas\NovedadesObservador;
-use App\Matriculas\FodaEstudiante;
 use App\Matriculas\Estudiante;
-use App\Matriculas\Matricula;
-use App\Matriculas\ControlDisciplinario;
 
 use App\Calificaciones\Periodo;
 use App\Core\Colegio;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ObservadorEstudianteController extends TransaccionController
 {
@@ -49,12 +44,12 @@ class ObservadorEstudianteController extends TransaccionController
 
     public function imprimir_observador($id_estudiante)
     {
-        $view = $this->vista_preliminar($id_estudiante);
+        $view = $this->vista_preliminar($id_estudiante, 'print');
         $tam_hoja = 'Letter';
         $orientacion='portrait';
 
         //crear PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
         return $pdf->stream('observador.pdf');
     }
@@ -74,11 +69,17 @@ class ObservadorEstudianteController extends TransaccionController
                 $vista_formato = 'matriculas.estudiantes.observador.tipo_historial';
                 break;
 
+            case '3':
+                $vista_formato = 'matriculas.estudiantes.observador.marca_agua';
+                break;
+
             default:
                 break;
         }
+
+        $tam_hoja = 'letter';
         
-        return View::make( $vista_formato, compact( 'colegio', 'estudiante' ) )->render();
+        return View::make( $vista_formato, compact( 'colegio', 'estudiante', 'vista','tam_hoja' ) )->render();
 
     }
 

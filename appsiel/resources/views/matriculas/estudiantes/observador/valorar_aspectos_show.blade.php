@@ -3,7 +3,7 @@
 	$tipos_aspectos = App\Matriculas\TiposAspecto::all();
 ?>
 
-<h2> Evaluación por aspectos </h2>
+<h3 align="center"> Evaluación por aspectos </h3>
 <hr>
 <div class="form-group">
 	<div class="alert alert-info">
@@ -13,23 +13,25 @@
 </div>
 
 <div class="table-responsive">
-	<table class="table table-bordered table-striped" id="myTable" width="100%">
-		<thead>
-			<tr>
-				<th rowspan="2">No.</th>
-				<th rowspan="2">ASPECTOS</th>
-				<th colspan="4">Periodos</th>
-			</tr>
-			<tr>
-				<th>1°</th>
-				<th>2°</th>
-				<th>3°</th>
-				<th>4°</th>
-			</tr>
-		</thead>
-		<tbody>
-			@foreach ($tipos_aspectos as $tipo_aspecto)
-				<tr><td colspan="6"><b>{{ $tipo_aspecto->descripcion }}</b></td></tr>
+	@foreach ($tipos_aspectos as $tipo_aspecto)
+		<div class="watermark-{{$tam_hoja}} escudo">
+			<img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
+		</div>
+		<table class="table table-bordered table-striped" id="myTable" width="100%">
+			<thead>
+				<tr>
+					<th rowspan="2" style="background-color:rgba(0, 128, 0, 0.2);">ÍTEM</th>
+					<th rowspan="2" style="background-color:rgb(255, 253, 125);"><b>{{ strtoupper($tipo_aspecto->descripcion) }}</b></th>
+					<th colspan="4" style="background-color:rgba(0, 102, 255, 0.3);">PERIODOS</th>
+				</tr>
+				<tr>
+					<th style="background-color:rgba(0, 102, 255, 0.3);">1°</th>
+					<th style="background-color:rgba(0, 102, 255, 0.3);">2°</th>
+					<th style="background-color:rgba(0, 102, 255, 0.3);">3°</th>
+					<th style="background-color:rgba(0, 102, 255, 0.3);">4°</th>
+				</tr>
+			</thead>
+			<tbody>
 				@php 
 					$aspectos = App\Matriculas\CatalogoAspecto::where('id_tipo_aspecto','=',$tipo_aspecto->id)->orderBy('orden','ASC')->get();
 				@endphp
@@ -53,7 +55,7 @@
 						}
 					?>
 					<tr>
-						<td>{{ $aspecto->orden }}</td>
+						<td style="background-color:rgba(0, 128, 0, 0.2); text-align: center;">{{ $aspecto->orden }}</td>
 						<td>{{ $aspecto->descripcion }}</td>
 						<td class="cuadrito">{{ $val_per1 }}</td>
 						<td class="cuadrito">{{ $val_per2 }}</td>
@@ -61,8 +63,8 @@
 						<td class="cuadrito">{{ $val_per4 }}</td>
 					</tr>
 				@endforeach
-			@endforeach
-		</tbody>
-
-	</table>
+			</tbody>
+		</table>
+		<br>
+	@endforeach
 </div>

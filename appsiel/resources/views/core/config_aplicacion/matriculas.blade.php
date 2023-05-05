@@ -102,7 +102,7 @@
 									$formato_impresion_observador = $parametros['formato_impresion_observador'];
 								}
 							?>
-							{{ Form::bsSelect('formato_impresion_observador', $formato_impresion_observador, 'Formato impresión del Observador', [ 1 => 'Estándar', 2 => 'Tipo Historial' ], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('formato_impresion_observador', $formato_impresion_observador, 'Formato impresión del Observador', [ 1 => 'Estándar', 2 => 'Tipo Historial', 3 => 'Marca de Agua' ], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
