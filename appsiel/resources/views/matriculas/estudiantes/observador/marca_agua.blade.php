@@ -133,6 +133,12 @@
     .page-break {
         page-break-after: always;
     }
+
+    .observacion{
+        height: 250px;
+        border: solid 1px black;
+        font-size: 15px;
+    }
 </style>
 
 <div class="container" style="width: 100%; border: 1px solid #333333;">
@@ -159,6 +165,12 @@
     <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
     
 	@include('matriculas.estudiantes.datos_basicos')
+
+    <div class="observacion">
+        <b>Observación:</b>
+        <br>
+    </div>
+    
 
     @include('calificaciones.boletines.pie_pagina')
 
