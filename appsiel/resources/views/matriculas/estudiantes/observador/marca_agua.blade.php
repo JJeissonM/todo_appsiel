@@ -135,10 +135,6 @@
     }
 </style>
 
-<div class="watermark-{{$tam_hoja}} escudo">
-    <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
-</div>
-
 <div class="container" style="width: 100%; border: 1px solid #333333;">
 
     
@@ -154,20 +150,34 @@
     ?>
 	
     @include('calificaciones.boletines.formatos.banner_colegio_con_escudo', ['opacity'=>0.7, 'tam_letra'=>4])
+
+    <div class="watermark-{{$tam_hoja}} escudo">
+        <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
+    </div>
 	
 	<h4 align="center">OBSERVADOR DEL ALUMNO</h4>
     <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
     
 	@include('matriculas.estudiantes.datos_basicos')
 
+    @include('calificaciones.boletines.pie_pagina')
+
 	<div class="page-break"></div>
+
+    <div class="watermark-{{$tam_hoja}} escudo">
+        <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
+    </div>
 
 	@include('matriculas.estudiantes.observador.valorar_aspectos_show')
 	
     
     @include('calificaciones.boletines.pie_pagina')
-    
+
 	<div class="page-break"></div>
+
+    <div class="watermark-{{$tam_hoja}} escudo">
+        <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
+    </div>
 	
 	<br><br>
 	@include('matriculas.estudiantes.observador.novedades_y_anotaciones')

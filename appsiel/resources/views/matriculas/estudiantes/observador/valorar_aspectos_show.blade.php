@@ -14,9 +14,6 @@
 
 <div class="table-responsive">
 	@foreach ($tipos_aspectos as $tipo_aspecto)
-		<div class="watermark-{{$tam_hoja}} escudo">
-			<img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
-		</div>
 		<table class="table table-bordered table-striped" id="myTable" width="100%">
 			<thead>
 				<tr>
