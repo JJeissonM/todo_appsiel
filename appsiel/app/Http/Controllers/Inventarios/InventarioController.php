@@ -46,6 +46,7 @@ use App\Ventas\VtasDocRegistro;
 use App\VentasPos\DocRegistro;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Inventarios\MandatarioTieneItem;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
@@ -1063,6 +1064,7 @@ class InventarioController extends TransaccionController
         $cantidad_datos = count( $datos->toArray() ); // si datos es null?
         foreach ($datos as $linea) 
         {
+            
             $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {
@@ -1081,24 +1083,6 @@ class InventarioController extends TransaccionController
                                 '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
-
-            /*
-            $descripcion_item = $linea->descripcion . ' (' . $linea->unidad_medida1 . ')';
-
-            $talla = '';
-            if( $linea->unidad_medida2 != '' )
-            {
-                $talla = ' - Talla: ' . $linea->unidad_medida2;
-            }
-            
-            $referencia = '';
-            if($linea->referencia != '')
-            {
-                $referencia = ' - ' . $linea->referencia;
-            }
-
-            $descripcion_item .= $talla . $referencia;
-            */
 
             $html .=            '" > ' . $linea->get_value_to_show() . ' </a>';
 

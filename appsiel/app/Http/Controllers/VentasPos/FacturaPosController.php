@@ -154,7 +154,25 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento'));
+        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager'));
+    }
+
+    public function get_parametros_complemento_JSPrintManager($pdv)
+    {
+        $usar_complemento_JSPrintManager = 0;
+
+        if ($pdv->usar_complemento_JSPrintManager != null) {
+            $usar_complemento_JSPrintManager = $pdv->usar_complemento_JSPrintManager;
+        }
+
+        return (object)[
+            'usar_complemento_JSPrintManager' => $usar_complemento_JSPrintManager,
+            'enviar_impresion_directamente_a_la_impresora' => $pdv->enviar_impresion_directamente_a_la_impresora,
+            'impresora_principal_por_defecto' => $pdv->impresora_principal_por_defecto,
+            'impresora_cocina_por_defecto' => $pdv->impresora_cocina_por_defecto,
+        ];
     }
 
     public function get_productos($pdv,$productos)
@@ -691,7 +709,9 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento'));
+        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager'));
     }
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)
@@ -1324,7 +1344,9 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento') );
+        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'lineas_registros', 'numero_linea', 'pedido_id', 'cliente','vista_categorias_productos', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager') );
     }
 
     public function unificar_lineas_registros_pedidos($pedido)

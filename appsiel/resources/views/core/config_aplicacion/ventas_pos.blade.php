@@ -27,67 +27,6 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$plantilla_factura_pos_default = '';
-								if( isset($parametros['plantilla_factura_pos_default'] ) )
-								{
-									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
-								}
-							?>
-							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', [ ''=>'', 'plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho','plantilla_factura_remision_cocina' => 'Factura + RM cocina'], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$tamanio_fuente_factura = '';
-								if( isset($parametros['tamanio_fuente_factura'] ) )
-								{
-									$tamanio_fuente_factura = $parametros['tamanio_fuente_factura'];
-								}
-							?>
-							{{ Form::bsText('tamanio_fuente_factura', $tamanio_fuente_factura, 'Tamaño letra', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-				</div>
-
-				
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$ancho_formato_impresion = '3.15';
-								if( isset($parametros['ancho_formato_impresion'] ) )
-								{
-									$ancho_formato_impresion = $parametros['ancho_formato_impresion'];
-								}
-							?>
-							{{ Form::bsText('ancho_formato_impresion', $ancho_formato_impresion, 'Anchura Formato impresión (Pulgadas)', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$cerrar_modal_al_seleccionar_producto = '';
-								if( isset($parametros['cerrar_modal_al_seleccionar_producto'] ) )
-								{
-									$cerrar_modal_al_seleccionar_producto = $parametros['cerrar_modal_al_seleccionar_producto'];
-								}
-							?>
-							{{ Form::bsSelect('cerrar_modal_al_seleccionar_producto', $cerrar_modal_al_seleccionar_producto, 'Cerrar modal al seleccionar producto', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
-						</div>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
 								$redondear_centena = '';
 								if( isset($parametros['redondear_centena'] ) )
 								{
@@ -114,7 +53,6 @@
 				</div>
 
 				<div class="row">
-
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
@@ -147,7 +85,6 @@
 				</div>
 
 				<div class="row">
-
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
@@ -178,10 +115,42 @@
 
 				</div>
 
+				<h4> Parámetros de Impresión  </h4>
+				<hr>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ancho_formato_impresion = '3.15';
+								if( isset($parametros['ancho_formato_impresion'] ) )
+								{
+									$ancho_formato_impresion = $parametros['ancho_formato_impresion'];
+								}
+							?>
+							{{ Form::bsText('ancho_formato_impresion', $ancho_formato_impresion, 'Anchura Formato impresión (Pulgadas)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cerrar_modal_al_seleccionar_producto = '';
+								if( isset($parametros['cerrar_modal_al_seleccionar_producto'] ) )
+								{
+									$cerrar_modal_al_seleccionar_producto = $parametros['cerrar_modal_al_seleccionar_producto'];
+								}
+							?>
+							{{ Form::bsSelect('cerrar_modal_al_seleccionar_producto', $cerrar_modal_al_seleccionar_producto, 'Cerrar modal al seleccionar producto', [''=>'',  '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros de la acumulación  </h4>
 				<hr>
 				<div class="row">
-
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
@@ -213,7 +182,6 @@
 				<h4> Parámetros de Pedidos  </h4>
 				<hr>
 				<div class="row">
-
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
@@ -255,7 +223,7 @@
 	<div id="div_cargando">Cargando...</div>
 @endsection
 
-@section('scripts')
+@section('scripts')	
 
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -273,9 +241,13 @@
 
 				$('#form_create').submit();
 			});
-
 		});
 	</script>
+
+	@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
+		<script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
+		<script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+	@endif
 	
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>

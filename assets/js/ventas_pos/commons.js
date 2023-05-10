@@ -578,8 +578,17 @@ $(document).ready(function () {
             $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
 
             llenar_tabla_productos_facturados();
-
-            ventana_imprimir();
+            
+            if ( $('#usar_complemento_JSPrintManager').val() == 1 )
+            {
+                $('#div_formato_impresion_remision').show();
+                $('#div_plantilla_factura').show();
+                print();
+                $('#div_formato_impresion_remision').hide();
+                $('#div_plantilla_factura').hide();
+            }else{
+                ventana_imprimir();;
+            }         
 
             if ( $('#action').val() == 'create' )
             {

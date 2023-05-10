@@ -64,11 +64,11 @@
                         $cuenta_bancaria = 'Cuenta ' . $fila->cuenta_bancaria->tipo_cuenta . ' ' . $fila->cuenta_bancaria->entidad_financiera->descripcion . ' No. ' . $fila->cuenta_bancaria->descripcion;
                     }
 
-                    $detalle_operacion = '';
+                    $detalle_operacion = $fila->descripcion;
                     $registro_linea = $fila->get_registro_linea_movimiento( $fila->teso_motivo_id, $fila->valor_movimiento );
                     if ( $registro_linea != null )
                     {
-                        $detalle_operacion = $registro_linea->detalle_operacion;
+                        $detalle_operacion = $fila->descripcion . ' ' . $registro_linea->detalle_operacion;
                     }
             ?>
                 <tr>

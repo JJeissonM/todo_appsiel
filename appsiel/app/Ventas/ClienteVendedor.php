@@ -2,15 +2,13 @@
 
 namespace App\Ventas;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-
 use App\Core\Tercero;
 
 use App\Ventas\Cliente;
 use App\Ventas\ClaseCliente;
+use App\Ventas\Services\CustomerServices;
 use App\Ventas\Vendedor;
+use Illuminate\Support\Facades\Auth;
 
 // Solo para usuarios con el role Vendedor
 class ClienteVendedor extends Cliente
@@ -79,31 +77,20 @@ class ClienteVendedor extends Cliente
 
     public function store_adicional( $datos, $registro )
     {
-        $estado_cliente = $datos['estado'];
         // Se copia los datos asociados al Usuario/Vendedor que esta creando al cliente
         $user_id = Auth::user()->id;
         $vendedor = Vendedor::where('user_id',$user_id)->get()->first();
         $datos_tercero = $vendedor->tercero;
         $datos_cliente = $vendedor->cliente;
 
+        $datos = $this->get_customer_data($datos_cliente,$datos);
+
         $datos['codigo_ciudad'] = $datos_tercero->codigo_ciudad;
         $datos['core_empresa_id'] = $datos_tercero->core_empresa_id;
         $datos['tipo'] = $datos_tercero->tipo;
         $datos['id_tipo_documento_id'] = $datos_tercero->id_tipo_documento_id;
         $datos['digito_verificacion'] = $datos_tercero->digito_verificacion;
-
-        $datos['encabezado_dcto_pp_id'] = $datos_cliente->encabezado_dcto_pp_id;
-        $datos['clase_cliente_id'] = $datos_cliente->clase_cliente_id;
-        $datos['lista_precios_id'] = $datos_cliente->lista_precios_id;
-        $datos['lista_descuentos_id'] = $datos_cliente->lista_descuentos_id;
         $datos['vendedor_id'] = $vendedor->id;
-        $datos['inv_bodega_id'] = $datos_cliente->inv_bodega_id;
-        $datos['zona_id'] = $datos_cliente->zona_id;
-        $datos['liquida_impuestos'] = $datos_cliente->liquida_impuestos;
-        $datos['condicion_pago_id'] = $datos_cliente->condicion_pago_id;
-        $datos['cupo_credito'] = $datos_cliente->cupo_credito;
-        $datos['bloquea_por_cupo'] = $datos_cliente->bloquea_por_cupo;
-        $datos['bloquea_por_mora'] = $datos_cliente->bloquea_por_mora;
         
         $datos['estado'] = 'Activo';
         $datos['creado_por'] = Auth::user()->email;
@@ -139,7 +126,29 @@ class ClienteVendedor extends Cliente
             $contacto->estado = 'Activo';
             $contacto->save();
         }
-    }    
+    }
+
+    public function get_customer_data($customer,$datos)
+    {
+        
+        if ($customer == null) {
+            $datos = (new CustomerServices())->preparar_datos($datos);
+        }else{
+            $datos['encabezado_dcto_pp_id'] = $customer->encabezado_dcto_pp_id;
+            $datos['clase_cliente_id'] = $customer->clase_cliente_id;
+            $datos['lista_precios_id'] = $customer->lista_precios_id;
+            $datos['lista_descuentos_id'] = $customer->lista_descuentos_id;
+            $datos['inv_bodega_id'] = $customer->inv_bodega_id;
+            $datos['zona_id'] = $customer->zona_id;
+            $datos['liquida_impuestos'] = $customer->liquida_impuestos;
+            $datos['condicion_pago_id'] = $customer->condicion_pago_id;
+            $datos['cupo_credito'] = $customer->cupo_credito;
+            $datos['bloquea_por_cupo'] = $customer->bloquea_por_cupo;
+            $datos['bloquea_por_mora'] = $customer->bloquea_por_mora;
+        }
+
+        return $datos;
+    }
 
     public static function get_campos_adicionales_edit($lista_campos, $registro)
     {

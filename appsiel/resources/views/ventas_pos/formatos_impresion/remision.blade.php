@@ -1,11 +1,11 @@
 
     <table border="0" style="margin-top: 0px !important;" width="100%">
         <td>
-            <h5 style="text-align: center;">
+            <h4 style="text-align: center;">
                 <span>--- (Copia Cocina) ---</span>
                 <br>
                 <b>{{ $pdv->descripcion }}</b>
-            </h5>
+            </h4>
         </td>
         <tr>
             <td>

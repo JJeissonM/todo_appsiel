@@ -115,7 +115,7 @@ class Tallas extends Model
                             ->get();
         $vec['']='';
         foreach ($opciones as $opcion){
-            $vec[$opcion->id] = $opcion->codigo.' '.$opcion->descripcion;
+            $vec[$opcion->id] = $opcion->codigo;
         }
 
         return $vec;

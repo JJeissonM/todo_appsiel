@@ -19,7 +19,8 @@ use App\Sistema\Html\MigaPan;
 
 class ProductoController extends  Controller {
 
-    public function create_ficha($id){
+    public function create_ficha($id)
+    {
         $inv_producto =  InvProducto::findOrFail($id);
         $modelo = Modelo::find(Input::get('id_modelo'));
         $aplicacion = Aplicacion::find(Input::get('id'));
@@ -27,8 +28,8 @@ class ProductoController extends  Controller {
         return view('inventarios.ficha',compact('inv_producto','miga_pan'));
     }
 
-    public function  store_ficha(Request $request){
-
+    public function  store_ficha(Request $request)
+    {
         $ficha = new InvFichaProducto($request->all());
         $ficha_copia =  InvFichaProducto::where([
             ['producto_id','=',$request->producto_id],
@@ -51,7 +52,8 @@ class ProductoController extends  Controller {
 
     }
 
-    public function delete_ficha($id){
+    public function delete_ficha($id)
+    {
 
         $ficha  = InvFichaProducto::findOrFail($id);
         $result = $ficha->delete();

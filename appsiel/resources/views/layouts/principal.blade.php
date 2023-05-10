@@ -314,6 +314,9 @@
 	<!-- Select2 -->
 	<script src="{{ asset('assets/bower_components/select2/dist/js/select2.full.min.js')}}"></script>
 
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 	<!-- 
 	<script src="https://unpkg.com/jspdf@ latest/dist/jspdf.min.js"></script>
 	-->

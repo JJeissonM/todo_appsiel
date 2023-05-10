@@ -1,5 +1,19 @@
+<?php
+	$color = 'orange';
+	if ($registro->estado == 'Activo') {
+		$color = 'green';
+	}
+	if ($registro->estado == 'Inactivo') {
+		$color = 'red';
+	}
+?>
 <div class="table-responsive">
 	<h5 style="width: 100%; text-align: center;">Datos básicos</h5>
+
+	<div>
+		<b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $registro->estado }}
+	</div>
+
 	<table class="table table-bordered">
 		<tr>
 			<td rowspan="3" width="120px">

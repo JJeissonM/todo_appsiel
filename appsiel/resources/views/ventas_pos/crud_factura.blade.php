@@ -242,7 +242,29 @@ input[type=number]::-webkit-outer-spin-button {
             <hr>
 
             <input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}">            
-
+    
+<div style="text-align:center">
+    <h1>Print HTML Card from Javascript</h1>
+    <p>This card is 300px x 400px ⇔ 3.125in x 4.17in (300/96 and 400/96 respectivelly)</p>
+    <div id="card" style="width: 300px; height:400px; border-radius: 10px; background-color:antiquewhite;">
+	    <div style="padding: 2px 16px;">
+		    <h3 style="font:bold 20px Arial">John Doe</h3>
+		    <p style="font:normal 14px Arial">Architect & Engineer</p>
+	    </div>
+    </div>
+    <hr />
+    <label class="checkbox">
+        <input type="checkbox" id="useDefaultPrinter" /> <strong>Print to Default printer</strong>
+    </label>
+    <p>or...</p>
+    <div id="installedPrinters">
+        <label for="installedPrinterName">Select an installed Printer:</label>
+        <select name="installedPrinterName" id="installedPrinterName"></select>
+    </div>
+    <br /><br />
+    <button type="button" onclick="print();">Print Now...</button>
+</div>
+                            
     <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 
             <div class="container-fluid">
@@ -359,6 +381,12 @@ input[type=number]::-webkit-outer-spin-button {
     <div id="div_plantilla_factura" style="display: none;">
         {!! $plantilla_factura !!}
     </div>
+    
+    <input type="hidden" id="usar_complemento_JSPrintManager" name="usar_complemento_JSPrintManager" value="{{ $params_JSPrintManager->usar_complemento_JSPrintManager }}">
+
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+        @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
+    @endif
 
     <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
         @include('ventas_pos.componente_vendedores')
@@ -369,6 +397,11 @@ input[type=number]::-webkit-outer-spin-button {
 @section('scripts')
 
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
+
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+        <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+    @endif
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
 
