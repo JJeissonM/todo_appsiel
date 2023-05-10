@@ -125,7 +125,6 @@ class VentaController extends TransaccionController
     public function store(Request $request)
     {
         $datos = $request->all(); // Datos originales
-        dd( $datos);
         
         $lineas_registros = json_decode($request->lineas_registros);
 
@@ -1007,7 +1006,6 @@ class VentaController extends TransaccionController
         $Cliente->save();
 
         $arr = explode('-', $url_redirect);
-        //dd($arr[0] . '/' . $arr[1] . '/' . $arr[2] . '?' . $arr[3] . '&' . $arr[4] . '&' . $arr[5]);
 
         return redirect( $arr[0] . '/' . $arr[1] . '/' . $arr[2] . '?' . $arr[3] . '&' . $arr[4] . '&' . $arr[5] )->with( 'flash_message','Tercero CREADO como Cliente correctamente.' );
     }
@@ -1283,7 +1281,7 @@ class VentaController extends TransaccionController
                 $cantidad = $un_registro->cantidad * -1; // se cambia signo de la cantidad
                 
                 $datos_precio_descuento = $this->get_precio_unitario_remision( Input::get('lista_precios_id'), Input::get('fecha'), $un_registro->producto_id, $remision );
-                //dd($datos_precio_descuento->precio_unitario);
+                
                 $precio_unitario = $datos_precio_descuento->precio_unitario;
 
                 $todos_los_productos[$i]['producto_descripcion'] = $un_registro->producto_id.' - '.$un_registro->producto_descripcion;
