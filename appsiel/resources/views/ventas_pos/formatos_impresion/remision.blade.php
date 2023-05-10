@@ -28,7 +28,7 @@
         <br>
     </div>
 
-    <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados2">
+    <table style="width: 100%; font-size: 15px;" id="tabla_productos_facturados2">
         {{ Form::bsTableHeader(['Producto','Cant.']) }}
         <tbody>
         </tbody>

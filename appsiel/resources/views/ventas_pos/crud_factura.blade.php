@@ -242,29 +242,7 @@ input[type=number]::-webkit-outer-spin-button {
             <hr>
 
             <input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}">            
-    
-<div style="text-align:center">
-    <h1>Print HTML Card from Javascript</h1>
-    <p>This card is 300px x 400px ⇔ 3.125in x 4.17in (300/96 and 400/96 respectivelly)</p>
-    <div id="card" style="width: 300px; height:400px; border-radius: 10px; background-color:antiquewhite;">
-	    <div style="padding: 2px 16px;">
-		    <h3 style="font:bold 20px Arial">John Doe</h3>
-		    <p style="font:normal 14px Arial">Architect & Engineer</p>
-	    </div>
-    </div>
-    <hr />
-    <label class="checkbox">
-        <input type="checkbox" id="useDefaultPrinter" /> <strong>Print to Default printer</strong>
-    </label>
-    <p>or...</p>
-    <div id="installedPrinters">
-        <label for="installedPrinterName">Select an installed Printer:</label>
-        <select name="installedPrinterName" id="installedPrinterName"></select>
-    </div>
-    <br /><br />
-    <button type="button" onclick="print();">Print Now...</button>
-</div>
-                            
+                                
     <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
 
             <div class="container-fluid">

@@ -581,14 +581,12 @@ $(document).ready(function () {
             
             if ( $('#usar_complemento_JSPrintManager').val() == 1 )
             {
-                $('#div_formato_impresion_remision').show();
-                $('#div_plantilla_factura').show();
+                $('#div_formato_impresion_cocina').show();
                 print();
-                $('#div_formato_impresion_remision').hide();
-                $('#div_plantilla_factura').hide();
-            }else{
-                ventana_imprimir();;
-            }         
+                $('#div_formato_impresion_cocina').hide();
+            }  
+            
+            ventana_imprimir();
 
             if ( $('#action').val() == 'create' )
             {

@@ -32,8 +32,10 @@
     function print(o) {
         if (jspmWSStatus()) {
 
+            var ancho_formato_impresion = $('#ancho_formato_impresion').val() * 800;
+            //, width: ancho_formato_impresion
             //generate an image of HTML content through html2canvas utility
-            html2canvas(document.getElementById('div_plantilla_factura'), { scale: 5 }).then(function (canvas) {
+            html2canvas(document.getElementById('div_formato_impresion_cocina'), { scale:1 }).then(function (canvas) {
 
             //Create a ClientPrintJob
             var cpj = new JSPM.ClientPrintJob();
@@ -46,17 +48,15 @@
             }
             */
            
-            console.log($('#impresora_cocina_por_defecto').val());
             cpj.clientPrinter = new JSPM.InstalledPrinter($('#impresora_cocina_por_defecto').val());
-
-            //cpj.clientPrinter = 'Microsoft Print to PDF';
             
             //Set content to print... 
             var b64Prefix = "data:image/png;base64,";
             var imgBase64DataUri = canvas.toDataURL("image/png");
             var imgBase64Content = imgBase64DataUri.substring(b64Prefix.length, imgBase64DataUri.length);
 
-            var myImageFile = new JSPM.PrintFile(imgBase64Content, JSPM.FileSourceType.Base64, 'myFileToPrint.png', 1);
+            var myImageFile = new JSPM.PrintFile(imgBase64Content, JSPM.FileSourceType.Base64, 'comanda.png', 1);
+            
             //add file to print job
             cpj.files.push(myImageFile);
 
