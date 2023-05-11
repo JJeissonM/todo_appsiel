@@ -112,7 +112,11 @@ class DocumentoSoporteService
       
       if ($concepto->cpto_dian->porcentaje_del_basico != 0) {
          $one_line['percentage'] = $concepto->cpto_dian->porcentaje_del_basico;
-      }         
+      }
+
+      if ($concepto->cpto_dian == 33) { // OTRO_CONCEPTO (devengo)
+         $one_line['description'] = $concepto->descripcion;
+      }
       
       $one_line['amount'] = $amount;
 
