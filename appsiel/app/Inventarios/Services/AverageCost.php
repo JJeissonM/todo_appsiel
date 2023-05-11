@@ -156,16 +156,14 @@ class AverageCost
                                 ->where( $array_wheres )
                                 ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_ids_no_afectan_costo_promedio)
                                 ->select(
-                                    DB::raw( 'sum(inv_doc_registros.costo_total) AS costo_total'),
-                                    DB::raw( 'sum(inv_doc_registros.cantidad) AS cantidad_total')
+                                    '*'
                                 )
-                                ->get()
-                                ->toArray();
+                                ->get();
 
         return (object)[
-            'array_wheres' => $array_wheres,
-            'total_costo_anterior' => $datos[0]['costo_total'],
-            'total_cantidad_anterior' => $datos[0]['cantidad_total']
+            'datos' => $datos,
+            'total_costo_anterior' => $datos->sum('costo_total'),
+            'total_cantidad_anterior' => $datos->sum('cantidad_total')
         ];
     }
 

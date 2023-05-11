@@ -178,7 +178,7 @@ class RecosteoService
             $num_reg_contab = ', pero ningun registro contable';
         }
         
-        dd('Se actualizaron las líneas de registros de inventarios'. $num_reg_contab,$arr_fechas);
+        dd('Se actualizaron las líneas de registros de inventarios'. $num_reg_contab, $arr_fechas);
 
         return (object)[
             'status'=>'flash_message',
