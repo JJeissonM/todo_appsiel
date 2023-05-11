@@ -41,18 +41,8 @@ class NominaElectronicaController extends TransaccionController
                         ]
                     ];
 
-        $msj_advertencia = '';
-        $transaccion = TipoTransaccion::find( self::CORE_TIPO_TRANSACCION_ID );
-        if ( is_null( $transaccion ) )
-        {
-            $msj_advertencia = 'No se ha creado el tipo transacción de Documento de Soporte Nómina Electrónica.';
-        }else{
-            if ( is_null( $transaccion->tipos_documentos->first() ) )
-            {
-                $msj_advertencia = 'No hay un tipo de documento asociado a la transacción de documento de Soporte Nómina Electrónica.';
-            }
-        }
-
+        $msj_advertencia = $this->get_mensaje_advertencia();
+                
         $encabezado_tabla = $model->get_encabezado_tabla();
         
         $array_wheres = [
@@ -64,6 +54,38 @@ class NominaElectronicaController extends TransaccionController
         $tabla_documentos_sin_enviar = View::make('nomina.nomina_electronica.tabla_documentos_sin_enviar', compact('model','encabezado_tabla','registros'))->render();
 
     	return view('nomina.nomina_electronica.index', compact('miga_pan', 'tabla_documentos_sin_enviar', 'msj_advertencia') );
+    }
+
+    public function get_mensaje_advertencia()
+    {
+        $msj_advertencia = '';
+        $transaccion = TipoTransaccion::find( self::CORE_TIPO_TRANSACCION_ID );
+        if ( is_null( $transaccion ) )
+        {
+            $msj_advertencia = 'No se ha creado el tipo transacción de Documento de Soporte Nómina Electrónica.';
+        }else{
+            if ( is_null( $transaccion->tipos_documentos->first() ) )
+            {
+                $msj_advertencia = 'No hay un tipo de documento asociado a la transacción de documento de Soporte Nómina Electrónica.';
+            }
+        }
+        
+        if ( config('nomina.url_servicio_emision') == '' || config('nomina.url_servicio_emision') == null )
+        {
+            $msj_advertencia = 'No se ha configurado la variable url_servicio_emision en la Configuración de nómina.';
+        }
+        
+        if ( config('nomina.tokenPassword') == '' || config('nomina.tokenPassword') == null )
+        {
+            $msj_advertencia = 'No se ha configurado la variable tokenPassword en la Configuración de nómina.';
+        }
+        
+        if ( config('nomina.tokenDian') == '' || config('nomina.tokenDian') == null )
+        {
+            $msj_advertencia = 'No se ha configurado la variable tokenDian en la Configuración de nómina.';
+        }
+
+        return $msj_advertencia;
     }
 
     public function generar_doc_soporte( Request $request )
@@ -161,7 +183,7 @@ class NominaElectronicaController extends TransaccionController
                     // un array con la data de los headers como tipo de peticion, etc.
                     'headers' => [
                                   'content-type' => 'application/json',
-                                  'auth-token' => config('facturacion_electronica.tokenPassword')
+                                  'auth-token' => config('nomina.tokenPassword')
                                ],
                     // array de datos del formulario
                     'json' => json_decode( $json_doc_electronico_enviado )
@@ -174,6 +196,11 @@ class NominaElectronicaController extends TransaccionController
 
             $array_respuesta = json_decode( (string) $response->getBody(), true );
             $array_respuesta['codigo'] = $response->getStatusCode();
+
+            if (isset($array_respuesta['errors'])) {
+                $array_respuesta['dian_messages'] = $array_respuesta['errors'];
+                $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
+            }
             
             $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado );
             
@@ -185,6 +212,8 @@ class NominaElectronicaController extends TransaccionController
                     $document_header->save();
                 }
             }
+
+
         }
         
         if ($some_error) {

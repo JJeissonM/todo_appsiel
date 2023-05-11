@@ -457,7 +457,23 @@
 
 				</div>
 
+
+				
+
 				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$tokenPassword = '';
+								if( isset($parametros['tokenPassword'] ) )
+								{
+									$tokenPassword = $parametros['tokenPassword'];
+								}
+							?>
+							{{ Form::bsText('tokenPassword', $tokenPassword, 'Token Password (Auth Token)', ['class'=>'form-control']) }}
+						</div>
+					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
@@ -472,16 +488,26 @@
 						</div>
 					</div>
 
+				</div>
+
+				<div class="row">
+
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$tokenDian = '';
+								$tokenDian = 'd0e88268-a4ab-447d-918c-19c1c248b5c3';
 								if( isset($parametros['tokenDian'] ) )
 								{
 									$tokenDian = $parametros['tokenDian'];
 								}
 							?>
 							{{ Form::bsText('tokenDian', $tokenDian, 'Token DIAN (dian-id)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 
