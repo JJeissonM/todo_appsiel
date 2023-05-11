@@ -3,7 +3,7 @@
 namespace App\Inventarios\Services;
 
 use App\Inventarios\InvDocRegistro;
-
+use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
 use Illuminate\Support\Facades\DB;
 
@@ -54,7 +54,6 @@ class AverageCost
             if ($cantidad_total_entradas_del_dia != 0) {
                 return (object)[
                     'auditoria' => [
-                        'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                         'entradas_del_dia' => $entradas_del_dia,
                         'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                         'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
@@ -84,7 +83,6 @@ class AverageCost
             if ($cantidad_total_entradas_del_dia != 0) {
                 return (object)[
                     'auditoria' => [
-                        'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                         'entradas_del_dia' => $entradas_del_dia,
                         'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                         'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
@@ -143,25 +141,17 @@ class AverageCost
         $arr_motivos_ids_no_afectan_costo_promedio = [12];//[3, 4, 12, 9, 2];
 
         $array_wheres = [
-            ['inv_doc_registros.inv_producto_id','=',$id_producto],
-            ['inv_doc_encabezados.fecha', '<', $fecha_transaccion],
-            ['inv_doc_registros.estado','<>','Anulado']
+            ['inv_movimientos.inv_producto_id','=',$id_producto],
+            ['inv_movimientos.fecha', '<', $fecha_transaccion]
         ];
 
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
-            $array_wheres = array_merge( $array_wheres, [ ['inv_doc_registros.inv_bodega_id','=',$id_bodega] ] );
+            $array_wheres = array_merge( $array_wheres, [ ['inv_movimientos.inv_bodega_id','=',$id_bodega] ] );
         }
 
-        $datos = InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
-                                ->where( $array_wheres )
-                                ->whereNotIn('inv_doc_registros.inv_motivo_id',$arr_motivos_ids_no_afectan_costo_promedio)
-                                ->select(
-                                    '*'
-                                )
-                                ->get();
+        $datos = InvMovimiento::where( $array_wheres )->get();
 
         return (object)[
-            'datos' => $datos,
             'total_costo_anterior' => $datos->sum('costo_total'),
             'total_cantidad_anterior' => $datos->sum('cantidad_total')
         ];
