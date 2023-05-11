@@ -163,6 +163,7 @@ class AverageCost
                                 ->toArray();
 
         return (object)[
+            'array_wheres' => $array_wheres,
             'total_costo_anterior' => $datos[0]['costo_total'],
             'total_cantidad_anterior' => $datos[0]['cantidad_total']
         ];
