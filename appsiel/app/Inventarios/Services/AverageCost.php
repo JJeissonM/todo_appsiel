@@ -57,6 +57,8 @@ class AverageCost
                         'entradas_del_dia' => $entradas_del_dia,
                         'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                         'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                        'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                        'datos->total_costo_anterior' => $datos->total_costo_anterior,
                         'return_devuelto' => 1,
                         'formula_calculo' => 'costo_total_entradas_del_dia / cantidad_total_entradas_del_dia'
                     ],
@@ -70,6 +72,8 @@ class AverageCost
                     'entradas_del_dia' => $entradas_del_dia,
                     'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                     'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                    'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                    'datos->total_costo_anterior' => $datos->total_costo_anterior,
                     'return_devuelto' => 2,
                     'formula_calculo' => 'linea_registro_documento[costo_unitario]'
                 ],
@@ -87,6 +91,7 @@ class AverageCost
                         'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                         'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
                         'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                        'datos->total_costo_anterior' => $datos->total_costo_anterior,
                         'cantidad_total_movim' => $cantidad_total_movim,
                         'return_devuelto' => 3,
                         'formula_calculo' => 'costo_total_entradas_del_dia / cantidad_total_entradas_del_dia'
@@ -102,6 +107,7 @@ class AverageCost
                     'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                     'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
                     'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                    'datos->total_costo_anterior' => $datos->total_costo_anterior,
                     'cantidad_total_movim' => $cantidad_total_movim,
                     'return_devuelto' => 4,
                     'formula_calculo' => 'linea_registro_documento[costo_unitario]'
