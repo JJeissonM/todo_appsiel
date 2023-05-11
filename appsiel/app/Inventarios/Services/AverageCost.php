@@ -159,7 +159,7 @@ class AverageCost
 
         return (object)[
             'total_costo_anterior' => $datos->sum('costo_total'),
-            'total_cantidad_anterior' => $datos->sum('cantidad_total')
+            'total_cantidad_anterior' => $datos->sum('cantidad')
         ];
     }
 
