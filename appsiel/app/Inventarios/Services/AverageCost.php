@@ -101,7 +101,7 @@ class AverageCost
                     'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
                     'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
                     'cantidad_total_movim' => $cantidad_total_movim,
-                    'return_devuelto' => 3,
+                    'return_devuelto' => 4,
                     'formula_calculo' => 'linea_registro_documento[costo_unitario]'
                 ],
                 'costo_prom' => $linea_registro_documento['costo_unitario']
@@ -116,7 +116,7 @@ class AverageCost
                 'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
                 'datos->total_costo_anterior' => $datos->total_costo_anterior,
                 'cantidad_total_movim' => $cantidad_total_movim,
-                'return_devuelto' => 3,
+                'return_devuelto' => 5,
                 'formula_calculo' => '(datos->total_costo_anterior + costo_total_entradas_del_dia) / cantidad_total_movim'
             ],
             'costo_prom' => ($datos->total_costo_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim
@@ -135,7 +135,7 @@ class AverageCost
          * 9> Entrada bodega destino. Transferencia (entrada)
          * 2> Transferencia. Transferencia (salida)
          */
-        $arr_motivos_ids_no_afectan_costo_promedio = [3, 4, 12, 9, 2];
+        $arr_motivos_ids_no_afectan_costo_promedio = [12];//[3, 4, 12, 9, 2];
 
         $array_wheres = [
             ['inv_doc_registros.inv_producto_id','=',$id_producto],
