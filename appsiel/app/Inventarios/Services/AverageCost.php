@@ -54,6 +54,7 @@ class AverageCost
             if ($cantidad_total_entradas_del_dia != 0) {
                 return (object)[
                     'auditoria' => [
+                        'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                         'entradas_del_dia' => $entradas_del_dia,
                         'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                         'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
@@ -66,6 +67,7 @@ class AverageCost
 
             return (object)[
                 'auditoria' => [
+                    'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                     'entradas_del_dia' => $entradas_del_dia,
                     'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                     'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
@@ -82,6 +84,7 @@ class AverageCost
             if ($cantidad_total_entradas_del_dia != 0) {
                 return (object)[
                     'auditoria' => [
+                        'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                         'entradas_del_dia' => $entradas_del_dia,
                         'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                         'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
@@ -96,6 +99,7 @@ class AverageCost
             
             return (object)[
                 'auditoria' => [
+                    'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                     'entradas_del_dia' => $entradas_del_dia,
                     'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                     'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
@@ -110,6 +114,7 @@ class AverageCost
 
         return (object)[
             'auditoria' => [
+                'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
                 'entradas_del_dia' => $entradas_del_dia,
                 'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
                 'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
