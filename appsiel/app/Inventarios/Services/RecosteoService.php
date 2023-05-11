@@ -56,10 +56,10 @@ class RecosteoService
 
         $arr_fechas = [];
         $cant_lineas = count($registros_de_entradas);
-        for ($i=0; $i < $cant_lineas; $i++) {
-            
+        for ($i=0; $i < $cant_lineas; $i++)
+        {            
             // Se calcula el costo promedio
-            $costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i], $costo_promedio_actual );
+            $obj_costo_promedio_actual = $costo_prom_serv->calcular_costo_promedio( $registros_de_entradas[$i], $costo_promedio_actual );
 
             if (isset($registros_de_entradas[$i + 1])) {
                 $fecha_siguiente = $registros_de_entradas[$i + 1]['fecha'];
@@ -70,7 +70,8 @@ class RecosteoService
             }
 
             $arr_fechas[] = [
-                'costo_promedio_actual' =>$costo_promedio_actual,
+                'auditoria' => $obj_costo_promedio_actual->auditoria,
+                'costo_promedio_actual' => $obj_costo_promedio_actual->costo_prom,
                 'actual' => '>=' . 'que ' .$registros_de_entradas[$i]['fecha'],
                 'sig' => $operador_fecha_siguiente . ' que ' . $fecha_siguiente
             ];
@@ -89,7 +90,7 @@ class RecosteoService
             ->toBase()
             ->update(
                 [
-                    'inv_doc_registros.costo_unitario' => $costo_promedio_actual,
+                    'inv_doc_registros.costo_unitario' => $obj_costo_promedio_actual->costo_prom,
                     'inv_doc_registros.updated_at' => date('Y-m-d H:i:s'),
                     'inv_doc_registros.modificado_por' => $user_email
                 ]
@@ -120,7 +121,7 @@ class RecosteoService
             ->toBase()
             ->update(
                 [
-                    'inv_movimientos.costo_unitario' => $costo_promedio_actual,
+                    'inv_movimientos.costo_unitario' => $obj_costo_promedio_actual->costo_prom,
                     'inv_movimientos.updated_at' => date('Y-m-d H:i:s'),
                     'inv_movimientos.modificado_por' => $user_email
                 ]
@@ -154,7 +155,7 @@ class RecosteoService
                             ->whereIn('core_tipo_transaccion_id', $arr_ids_transacciones_recosteables)
                             ->where('valor_credito', 0 )
                             ->update( [ 
-                                'valor_debito' => abs( $costo_promedio_actual ), 'valor_saldo' => abs( $costo_promedio_actual ),
+                                'valor_debito' => abs( $obj_costo_promedio_actual->costo_prom ), 'valor_saldo' => abs( $obj_costo_promedio_actual->costo_prom ),
                                 'modificado_por' => $user_email
                             ] );
 
@@ -162,7 +163,7 @@ class RecosteoService
                             ->whereIn('core_tipo_transaccion_id', $arr_ids_transacciones_recosteables)
                             ->where('valor_debito', 0 )
                             ->update( [ 
-                                'valor_credito' => (abs( $costo_promedio_actual ) * -1), 'valor_saldo' => (abs( $costo_promedio_actual ) * -1),
+                                'valor_credito' => (abs( $obj_costo_promedio_actual->costo_prom ) * -1), 'valor_saldo' => (abs( $obj_costo_promedio_actual->costo_prom ) * -1),
                                 'modificado_por' => $user_email
                             ] );
             }
@@ -170,7 +171,7 @@ class RecosteoService
 
         // Se actualiza el costo prom. de Item
         $item = InvProducto::find($item_id);
-        $item->set_costo_promedio( $inv_bodega_id, $costo_promedio_actual);
+        $item->set_costo_promedio( $inv_bodega_id, $obj_costo_promedio_actual->costo_prom);
 
         $num_reg_contab = ' junto con sus registros contables.';
         if ($recontabilizar_contabilizar_movimientos == 0) {

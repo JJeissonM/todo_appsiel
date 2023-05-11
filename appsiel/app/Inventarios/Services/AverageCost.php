@@ -26,10 +26,8 @@ class AverageCost
         $arr_motivos_entradas_ids = [1, 11, 16, 23];
         
         // Fecha menor
-        $datos = $this->datos_fecha_antes_de_la_entrada($linea_registro_documento['inv_bodega_id'], $linea_registro_documento['inv_producto_id'], $linea_registro_documento['fecha']);
+        $datos = $this->costo_y_cantidad_fecha_antes_de_la_entrada($linea_registro_documento['inv_bodega_id'], $linea_registro_documento['inv_producto_id'], $linea_registro_documento['fecha']);
         
-        $cantidad_total_movim_anterior = $datos->total_cantidad_anterior;
-
         // Fecha igual
         $array_wheres2 = [
             ['inv_doc_registros.inv_producto_id','=',$linea_registro_documento['inv_producto_id']],
@@ -52,29 +50,83 @@ class AverageCost
 
         $cantidad_total_entradas_del_dia = $entradas_del_dia->sum('cantidad');
         
-        if (round($cantidad_total_movim_anterior,0) <= 0) {
+        if (round($datos->total_cantidad_anterior,0) <= 0) {
             if ($cantidad_total_entradas_del_dia != 0) {
-                return $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia;
+                return (object)[
+                    'auditoria' => [
+                        'entradas_del_dia' => $entradas_del_dia,
+                        'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
+                        'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                        'return_devuelto' => 1,
+                        'formula_calculo' => 'costo_total_entradas_del_dia / cantidad_total_entradas_del_dia'
+                    ],
+                    'costo_prom' => $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia
+                ];
             }
-            return $linea_registro_documento['costo_unitario'];
+
+            return (object)[
+                'auditoria' => [
+                    'entradas_del_dia' => $entradas_del_dia,
+                    'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
+                    'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                    'return_devuelto' => 2,
+                    'formula_calculo' => 'linea_registro_documento[costo_unitario]'
+                ],
+                'costo_prom' => $linea_registro_documento['costo_unitario']
+            ];
         }
         
-        $cantidad_total_movim = $cantidad_total_movim_anterior + $cantidad_total_entradas_del_dia;
+        $cantidad_total_movim = $datos->total_cantidad_anterior + $cantidad_total_entradas_del_dia;
         
         if (round($cantidad_total_movim,0) <= 0) {
             if ($cantidad_total_entradas_del_dia != 0) {
-                return $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia;
+                return (object)[
+                    'auditoria' => [
+                        'entradas_del_dia' => $entradas_del_dia,
+                        'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
+                        'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                        'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                        'cantidad_total_movim' => $cantidad_total_movim,
+                        'return_devuelto' => 3,
+                        'formula_calculo' => 'costo_total_entradas_del_dia / cantidad_total_entradas_del_dia'
+                    ],
+                    'costo_prom' => $costo_total_entradas_del_dia / $cantidad_total_entradas_del_dia
+                ];
             }
-            return $linea_registro_documento['costo_unitario'];
+            
+            return (object)[
+                'auditoria' => [
+                    'entradas_del_dia' => $entradas_del_dia,
+                    'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
+                    'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                    'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                    'cantidad_total_movim' => $cantidad_total_movim,
+                    'return_devuelto' => 3,
+                    'formula_calculo' => 'linea_registro_documento[costo_unitario]'
+                ],
+                'costo_prom' => $linea_registro_documento['costo_unitario']
+            ];
         }
 
-        return ($datos->total_costo_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim;
+        return (object)[
+            'auditoria' => [
+                'entradas_del_dia' => $entradas_del_dia,
+                'costo_total_entradas_del_dia' => $costo_total_entradas_del_dia,
+                'cantidad_total_entradas_del_dia' => $cantidad_total_entradas_del_dia,
+                'datos->total_cantidad_anterior' => $datos->total_cantidad_anterior,
+                'datos->total_costo_anterior' => $datos->total_costo_anterior,
+                'cantidad_total_movim' => $cantidad_total_movim,
+                'return_devuelto' => 3,
+                'formula_calculo' => '(datos->total_costo_anterior + costo_total_entradas_del_dia) / cantidad_total_movim'
+            ],
+            'costo_prom' => ($datos->total_costo_anterior + $costo_total_entradas_del_dia) / $cantidad_total_movim
+        ];
     }
 
     /**
      * 
      */
-    public function datos_fecha_antes_de_la_entrada($id_bodega, $id_producto, $fecha_transaccion)
+    public function costo_y_cantidad_fecha_antes_de_la_entrada($id_bodega, $id_producto, $fecha_transaccion)
     {
         /**
          * 3> Salida (producto a consumir). Fabricacion
