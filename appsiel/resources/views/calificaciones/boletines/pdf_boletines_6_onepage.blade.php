@@ -27,15 +27,29 @@
 
     <h4 style="text-align: center; padding: 10px;">INFORME {{$lbl_numero_periodo}} PERIODO AÑO LECTIVO {{ explode( "-", $periodo->fecha_desde )[0] }}</h4>
     
-    <p style="padding-left: 20px;">
-        <table>
+    <p style="padding-left: 30px;">
+        <table style="width:100%;">
             <tr>
-                <td style="width:20px;"><b>FULL NAME:</b></td>
+                <td><b>FULL NAME:</b></td>
                 <td>{{ $registro->estudiante->tercero->descripcion }}.</td>
+                @if($colegio->maneja_puesto=="Si")
+                    @if( !is_null($registro->observacion) )
+                        @if( $registro->observacion->puesto == "" )
+                            <td> <b> ¡¡Puesto No calculado!! </b> </td>
+                        @else
+                            <td> <b>Puesto:</b> {{ $registro->observacion->puesto }} </td>
+                        @endif
+                    @endif
+                @endif
             </tr>
             <tr>
-                <td style="width:20px;"><b>GRADE: </b></td>
+                <td><b>GRADE: </b></td>
                 <td>{{ $curso->descripcion }}.</td>
+                @if($colegio->maneja_puesto=="Si")
+                    @if( !is_null($registro->observacion) )
+                        <td> &nbsp; </td>
+                    @endif
+                @endif
             </tr>
         </table>        	
     </p>
