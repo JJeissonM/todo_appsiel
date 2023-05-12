@@ -16,6 +16,10 @@
 			{{ Form::bsSelect('mostrar_etiqueta_final',1,'Mostrar etiqueta al final',['No'=>'No','aprobo_reprobo'=>'Aprobó() Reprobó() Aplazó()'],[]) }}
 		</div>
 
+		<div class="row campo" style="padding:5px;">
+			{{ Form::bsSelect('mostrar_logros',1,'Mostrar logros',['1'=>'Si','0'=>'No'],[]) }}
+		</div>
+
 		<?php 
 			echo campo_firma('Firma para Rector(a)', 'firma_rector');
 		?>
@@ -36,6 +40,10 @@
 
 		<div class="row campo" style="padding:5px;">
 			{{ Form::bsSelect('mostrar_nota_nivelacion',null,'Mostrar nota nivelación',[ '' => 'No', 'solo_nota_nivelacion_con_etiqueta'=>'Solo nota nivelación (con etiqueta)', 'solo_nota_nivelacion_sin_etiqueta'=>'Solo nota nivelación (sin etiqueta)','ambas_notas'=>'Ambas notas'],[]) }}
+		</div>
+
+		<div class="row campo" style="padding:5px;">
+			&nbsp;
 		</div>
 
 		<?php 

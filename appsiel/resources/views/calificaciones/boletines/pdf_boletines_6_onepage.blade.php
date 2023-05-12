@@ -11,7 +11,7 @@
     //$ancho_columna_asignatura = 130;ancho_columna_asignatura
     $ancho_columna_calificacion = 70;
     $area_anterior = '';
-    $cant_columnas = 2;
+    $cant_columnas = 1;
 ?>
 
     <div style="border-width: 10px; border-color: {{ config('calificaciones.color_fuente_boletin') }}; border-style: double; height: 96%; width: 100%; opacity: 0.6; position:absolute;">
@@ -58,7 +58,10 @@
         <thead>
             <tr>
                 <th style="width:{{$ancho_columna_asignatura}}px; padding: 5px;">{{ $lbl_asigatura }}</th>
-                <th style="padding: 5px;">LOGROS</th>
+                @if($mostrar_logros == 1)
+                    <th style="padding: 5px;">LOGROS</th>
+                    <?php $cant_columnas++;  ?>
+                @endif
                 @if($curso->maneja_calificacion==1)
                     <th style="width:{{$ancho_columna_calificacion}}px; padding: 5px;">VALORACIÓN</th>
                     <?php $cant_columnas++;  ?>
@@ -80,18 +83,19 @@
                 @include('calificaciones.boletines.fila_area')
 
                 <tr>
-
                     <td style="width:{{$ancho_columna_asignatura}}px; padding: 5;">
                         {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                     </td>
 
-                    <td style="text-align: justify; padding: 5px 5px 5px 25px;">
-                        @include('calificaciones.boletines.proposito')
-                        
-                        @include('calificaciones.boletines.lista_logros')
+                    @if($mostrar_logros == 1)
+                        <td style="text-align: justify; padding: 5px 5px 5px 25px;">
+                            @include('calificaciones.boletines.proposito')
+                            
+                            @include('calificaciones.boletines.lista_logros')
 
-                        @include('calificaciones.boletines.formatos.etiqueta_nombre_docente')
-                    </td>
+                            @include('calificaciones.boletines.formatos.etiqueta_nombre_docente')
+                        </td>
+                    @endif
                     
                     @if( $curso->maneja_calificacion == 1)
                         <td style="width:{{$ancho_columna_calificacion}}px; padding: 5; text-align: center;"> 
