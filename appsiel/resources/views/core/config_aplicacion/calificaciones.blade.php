@@ -179,7 +179,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$color_fuente_boletin = 'black'; 
+								if( isset($parametros['color_fuente_boletin'] ) )
+								{
+									$color_fuente_boletin = $parametros['color_fuente_boletin'];
+								}
+							?>
+							{{ Form::bsText('color_fuente_boletin', $color_fuente_boletin, 'Color fuente Informes', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

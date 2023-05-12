@@ -20,7 +20,7 @@
         $opacity_default = $opacity;
     }
 ?>
-<table style="width: 100%; color: red;font-size: {{$tam_letra-1}}mm; opacity: {{$opacity_default}};">
+<table style="width: 100%; color: {{ config('calificaciones.color_fuente_boletin') }};font-size: {{$tam_letra-1}}mm; opacity: {{$opacity_default}};">
     <tr>
         <td width="20%">
             <div class="imagen" style="text-align: center;">

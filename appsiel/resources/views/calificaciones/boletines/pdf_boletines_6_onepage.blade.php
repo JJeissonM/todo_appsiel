@@ -14,7 +14,7 @@
     $cant_columnas = 2;
 ?>
 
-    <div style="border-width: 10px; border-color: red; border-style: double; height: 96%; width: 100%; opacity: 0.6; position:absolute;">
+    <div style="border-width: 10px; border-color: {{ config('calificaciones.color_fuente_boletin') }}; border-style: double; height: 96%; width: 100%; opacity: 0.6; position:absolute;">
     </div>
 
     <div class="watermark-{{$tam_hoja}} escudo">
