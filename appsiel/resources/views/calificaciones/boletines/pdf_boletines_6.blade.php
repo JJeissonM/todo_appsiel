@@ -75,9 +75,10 @@
 			text-align:right;
 		}
 
+		/* Para una imagen cuadrada de 510px*/
 		.watermark-letter {
 			position: absolute;
-			top: 12%;
+			top: 20%;
 			left: 15%;
 			text-align: center;
 			opacity: .2;
@@ -87,7 +88,7 @@
 
 		.watermark-folio {
 			position: absolute;
-			top: 20%;
+			top: 25%;
 			left: 15%;
 			text-align: center;
 			opacity: .2;
