@@ -61,7 +61,7 @@
 		</div>
 
 		<div class="row campo" style="padding:5px;">
-			&nbsp;
+			{{ Form::bsText('ancho_columna_asignatura',130,'Ancho columna asignaturas (px)',[],[]) }}
 		</div>
 	</div>
 </div>

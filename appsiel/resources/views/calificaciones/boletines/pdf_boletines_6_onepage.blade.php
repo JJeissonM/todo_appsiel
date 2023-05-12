@@ -8,7 +8,7 @@
         $lbl_asigatura = 'ASIGNATURA';
     }
 
-    $ancho_primera_columna = 130;
+    //$ancho_columna_asignatura = 130;ancho_columna_asignatura
     $ancho_columna_calificacion = 70;
     $area_anterior = '';
     $cant_columnas = 2;
@@ -57,7 +57,7 @@
     <table class="contenido table-bordered" style="margin-left: auto; margin-right: auto; width: 94%;">
         <thead>
             <tr>
-                <th style="width:{{$ancho_primera_columna}}px; padding: 5px;">{{ $lbl_asigatura }}</th>
+                <th style="width:{{$ancho_columna_asignatura}}px; padding: 5px;">{{ $lbl_asigatura }}</th>
                 <th style="padding: 5px;">LOGROS</th>
                 @if($curso->maneja_calificacion==1)
                     <th style="width:{{$ancho_columna_calificacion}}px; padding: 5px;">VALORACIÓN</th>
@@ -81,7 +81,7 @@
 
                 <tr>
 
-                    <td style="width:{{$ancho_primera_columna}}px; padding: 5;">
+                    <td style="width:{{$ancho_columna_asignatura}}px; padding: 5;">
                         {{ $linea->asignacion_asignatura->asignatura->descripcion }}
                     </td>
 
