@@ -24,11 +24,11 @@
         margin: .5rem 0;
     }
     .encabezado {
-        background-color: #111e52;        
+        background-color: {{config('configuracion.color_principal_empresa')}};/* #111e52; */
         color: white;
         margin-left: -40px;
         margin-right: -40px;
-        padding: 10px;
+        /*padding: 10px;*/
     }
     .contenido tr > td{ 
         border: 1px solid black !important;
@@ -76,5 +76,9 @@
     a{
         text-decoration: none;
         color: black;
+    }
+
+    hr{
+        color: {{config('configuracion.color_principal_empresa')}};
     }
     </style>

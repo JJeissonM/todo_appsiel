@@ -25,11 +25,12 @@ use App\Core\Tercero;
             <?php
                 $image = getimagesize($url);
                 $ancho = $image[0];            
-                $alto = $image[1];   
-			 
-                $palto = (60*100)/$alto;
+                $alto = $image[1];
+
+                $heigth = 80;
+                $palto = ($heigth*100)/$alto;
 				$ancho = $ancho*$palto/100;
-				echo '<img src="'.$url.'" width="'.$ancho.'" height="60" />';
+				echo '<img src="'.$url.'" width="'.$ancho.'" height="'.$heigth.'" />';
            
 			?>	
             </td>
@@ -57,11 +58,7 @@ use App\Core\Tercero;
         <!--pendiente-->
         <!--Ingresos brutos y fehca inicio actividad modificables-->
         <td>Telefono: {{ $empresa->telefono1 }}</td>
-        <td>Ingresos Brutos: 3071689028 - 3</td>
-    </tr>
-    <tr>
         <td>Mail: {{ $empresa->email }}</td>
-        <td>Fecha de Inicio de Actividad: 09 / 2020</td>
     </tr>
 </table>
 
@@ -83,7 +80,7 @@ use App\Core\Tercero;
     <tr>
         <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
         <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
-        <td><b>Vendedor:</b></td>
+        <td><b>Atendido por:</b></td>
         <td>{{ $doc_encabezado->vendedor->tercero->descripcion }}</td>
     </tr>
     <tr>
@@ -97,8 +94,14 @@ use App\Core\Tercero;
     <tr>
         <td><b>Localidad:</b></td>
         <td>{{ $tercero->ciudad->descripcion }}</td>
-        <td><b>Remito No.: </b></td>
-        <td>{!! $docs_relacionados[0] !!}</td>
+        @if($docs_relacionados[0] != '')
+            <td>
+                <b>Remito No.: </b>
+            </td>
+            <td>
+                {!! $docs_relacionados[0] !!}
+            </td>
+        @endif
     </tr>
 </table>
 
@@ -106,7 +109,6 @@ use App\Core\Tercero;
 
 <hr>
 <br>
-
 
 <table class="contenido">
     {{ Form::bsTableHeader(['Item','Producto','Cant.','Vr. unit.','IVA','DTO','Total']) }}

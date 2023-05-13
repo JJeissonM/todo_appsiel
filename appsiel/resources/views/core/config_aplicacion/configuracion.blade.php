@@ -282,6 +282,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$color_principal_empresa = '#111e52';
+								if( isset($parametros['color_principal_empresa'] ) )
+								{
+									$color_principal_empresa = $parametros['color_principal_empresa'];
+								}
+							?>
+							{{ Form::bsText('color_principal_empresa', $color_principal_empresa, 'Color principal empresa', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

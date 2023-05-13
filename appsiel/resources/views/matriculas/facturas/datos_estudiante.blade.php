@@ -46,7 +46,7 @@
 	    }
 	?>
 	<br>
-	<div style="background: #c9efe2; display: inline;">
+	<div style="display: inline;">
 		<b>Estudiante:</b> {{ $doc_encabezado->datos_auxiliares_estudiante->matricula->estudiante->tercero->descripcion }} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; <b>Curso: </b> {{ $doc_encabezado->datos_auxiliares_estudiante->matricula->curso->descripcion }}
 		<br>
 		<b>Concepto:</b> {{ $doc_encabezado->datos_auxiliares_estudiante->cartera_estudiante->concepto->descripcion }} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; <b>Mes: </b> {{ nombre_mes( explode( '-', $doc_encabezado->datos_auxiliares_estudiante->cartera_estudiante->fecha_vencimiento)[1] ) }} / {{ explode( '-', $doc_encabezado->datos_auxiliares_estudiante->cartera_estudiante->fecha_vencimiento)[0] }}
