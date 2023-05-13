@@ -176,18 +176,18 @@ class ContratoTransporteController extends Controller
                 $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion;
             }
         }
-        $vehiculos = null;
-        $vehi = null;
+        $vehiculos_permitidos = null;
+        $lista_vehiculos = null;
         if ($source == 'MISCONTRATOS') {
             $u = Auth::user();
-            $vehi = Vehiculo::where('placa', $u->email)->get();
+            $lista_vehiculos = Vehiculo::where('placa', $u->email)->get();
         } else {
-            $vehi = Vehiculo::all();
+            $lista_vehiculos = Vehiculo::all();
         }
-        if (count($vehi) > 0) {
-            foreach ($vehi as $v) {
+        if (count($lista_vehiculos) > 0) {
+            foreach ($lista_vehiculos as $un_vehiculo) {
                 //verificar documentos vencidos
-                $docs = $v->documentosvehiculos;
+                $docs = $un_vehiculo->documentosvehiculos;
                 $vencido = false;
                 if (count($docs) > 0) {
                     foreach ($docs as $d) {
@@ -198,8 +198,8 @@ class ContratoTransporteController extends Controller
                         }
                     }
                     if (!$vencido) {
-                        if ($v->bloqueado_cuatro_contratos == 'NO') {
-                            $vehiculos[$v->id] = "<b>PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
+                        if ($un_vehiculo->bloqueado_cuatro_contratos == 'NO') {
+                            $vehiculos_permitidos[$un_vehiculo->id] = "<b>PLACA " . $un_vehiculo->placa . ", MOVIL INTERNO " . $un_vehiculo->int . ", CAPACIDAD " . $un_vehiculo->capacidad;
                         }
                     }
                 }
@@ -216,7 +216,7 @@ class ContratoTransporteController extends Controller
             ->with('miga_pan', $miga_pan)
             ->with('e', $emp)
             ->with('contratantes', $contratantes)
-            ->with('vehiculos', $vehiculos)
+            ->with('vehiculos', $vehiculos_permitidos)
             ->with('source', $source)
             ->with('ciudades', $ciudades)
             ->with('permitir_ingreso_contrato_en_mes_distinto_al_actual', $permitir_ingreso_contrato_en_mes_distinto_al_actual)
@@ -251,9 +251,9 @@ class ContratoTransporteController extends Controller
                 }
                 $limite = config('contratos_transporte.bloqueado_x_contratos');
                 if ($total >= $limite) {
-                    $vehi = Vehiculo::find($request->vehiculo_id);
-                    $vehi->bloqueado_cuatro_contratos = 'SI';
-                    $vehi->save();
+                    $lista_vehiculos = Vehiculo::find($request->vehiculo_id);
+                    $lista_vehiculos->bloqueado_cuatro_contratos = 'SI';
+                    $lista_vehiculos->save();
                 }
             }
             //genero planilla
