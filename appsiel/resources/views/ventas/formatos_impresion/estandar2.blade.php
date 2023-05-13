@@ -21,7 +21,7 @@ use App\Core\Tercero;
 
 <table class="encabezado" width="100%">
     <tr>
-        <td width="60%" rowspan="2">
+        <td width="40%" rowspan="2">
             <?php
                 $image = getimagesize($url);
                 $ancho = $image[0];            
@@ -33,12 +33,18 @@ use App\Core\Tercero;
 				echo '<img src="'.$url.'" width="'.$ancho.'" height="'.$heigth.'" />';
            
 			?>	
-            </td>
-        <td>Teléfono: {{ $empresa->telefono1 }}</td>
+        </td>
+        <td> 
+            <p style="text-align: right; font-size: 18px; padding-right: 30px; padding-top: 20px">
+                {{ $empresa->descripcion }}
+            </p>
+        </td>
     </tr>
-    <tr>
-        <td>Email: <a href="mailto:{{ $empresa->email }}">{{ $empresa->email }}</a></td>
+    <!-- <tr>
+        <td>Email: <a href="mailto:{ { $empresa->email }}">{ { $empresa->email }}</a></td>
+        <td>Teléfono: { { $empresa->telefono1 }}</td>
     </tr>
+-->
 </table>
 
 <table class="info">
@@ -206,14 +212,15 @@ use App\Core\Tercero;
 <hr>
 <h3>Detalles</h3>
 <div class="info text-indent">
-        <?php echo $doc_encabezado->descripcion ?>
+    {{  $doc_encabezado->descripcion }}
 </div>
+
 <br>
     
 
 <br>
 <div class="encabezado">
-    <p style="text-align: right; font-size: 18px; padding-right: 30px">{{ $empresa->descripcion }}</p>
+    &nbsp;
 </div>
 </body>
 </html>
