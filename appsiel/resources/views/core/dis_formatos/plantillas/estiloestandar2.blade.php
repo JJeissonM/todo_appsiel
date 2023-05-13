@@ -28,7 +28,7 @@
         color: white;
         margin-left: -40px;
         margin-right: -40px;
-        /*padding: 10px;*/
+        padding: 5px;/**/
     }
     .contenido tr > td{ 
         border: 1px solid black !important;

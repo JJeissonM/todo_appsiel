@@ -21,7 +21,7 @@ use App\Core\Tercero;
 
 <table class="encabezado" width="100%">
     <tr>
-        <td width="70%" rowspan="2">
+        <td width="60%" rowspan="2">
             <?php
                 $image = getimagesize($url);
                 $ancho = $image[0];            
