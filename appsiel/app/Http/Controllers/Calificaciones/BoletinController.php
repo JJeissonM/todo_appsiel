@@ -178,8 +178,6 @@ class BoletinController extends Controller
             $matriculas = $matriculas->where( 'id_estudiante', (int)$request->estudiante_id )->all();
         }
 
-        //$asignaturas = CursoTieneAsignatura::asignaturas_del_curso($request->curso_id, null, $periodo->periodo_lectivo_id, null);
-
         // Parametros enviados        
         $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
         $mostrar_areas = $request->mostrar_areas;

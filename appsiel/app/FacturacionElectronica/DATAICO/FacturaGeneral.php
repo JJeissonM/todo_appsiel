@@ -57,7 +57,7 @@ class FacturaGeneral
             break;
          
          case 'nota_debito':
-            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura();
+            $json_doc_electronico_enviado = [];
             break;
          
          default:

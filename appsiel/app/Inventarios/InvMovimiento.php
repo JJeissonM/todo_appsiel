@@ -201,16 +201,17 @@ class InvMovimiento extends Model
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','inv_doc_encabezados.inv_bodega_id')
-                                //->leftJoin('inv_costo_prom_productos','inv_costo_prom_productos.inv_producto_id','=','inv_movimientos.inv_producto_id')
                                 ->where('inv_doc_encabezados.fecha','<=',$fecha_corte)
                                 ->where('inv_movimientos.inv_bodega_id',$operador1,$mov_bodega_id)
                                 ->where('inv_grupos.id',$operador2,$grupo_inventario_id)
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('inv_productos.estado', 'Activo')
                                 ->select(
                                             'inv_productos.id',
                                             'inv_productos.descripcion',
                                             'inv_productos.unidad_medida1',
                                             'inv_productos.unidad_medida2',
+                                            'inv_productos.estado',
                                             'inv_productos.referencia',
                                             'inv_bodegas.descripcion AS bodega',
                                             DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),

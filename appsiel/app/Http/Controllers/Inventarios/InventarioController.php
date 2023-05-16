@@ -268,7 +268,7 @@ class InventarioController extends TransaccionController
         {
             $lineas_registros[$i]->inv_motivo_id = explode( "-", $lineas_registros[$i]->motivo )[0];
             $lineas_registros[$i]->costo_unitario = (float) substr($lineas_registros[$i]->costo_unitario, 1);
-            $lineas_registros[$i]->cantidad = (float) substr($lineas_registros[$i]->cantidad, 0, strpos($lineas_registros[$i]->cantidad, " "));
+            $lineas_registros[$i]->cantidad = (float) $lineas_registros[$i]->cantidad;
             $lineas_registros[$i]->costo_total = (float) substr($lineas_registros[$i]->costo_total, 1);
 
             if (!is_null($modo_ajuste))
@@ -990,24 +990,6 @@ class InventarioController extends TransaccionController
             $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item;// . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
-
-            /*
-            $descripcion_item = $linea->nueva_cadena . ' (' . $linea->unidad_medida1 . ')';
-
-            $talla = '';
-            if( $linea->unidad_medida2 != '' )
-            {
-                $talla = ' - Talla: ' . $linea->unidad_medida2;
-            }
-            
-            $referencia = '';
-            if($linea->referencia != '')
-            {
-                $referencia = ' - ' . $linea->referencia;
-            }
-
-            $descripcion_item .= $talla . $referencia;
-            */
 
             $descripcion_item = $linea->get_value_to_show();
 
