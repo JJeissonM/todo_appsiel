@@ -34,17 +34,25 @@ class Authenticate
 
         if( isset( $request->id ) && isset( $request->id_modelo ) )
         {
+            $id_modelo = (int)$request->id_modelo;
+
+            $array_wheres = [
+                ['users.id','=',$user->id],
+                ['permissions.core_app_id','=',$request->id]
+            ];
+            
+            if ( $id_modelo != 0 )
+            {
+                $array_wheres = array_merge( $array_wheres, [['permissions.modelo_id','=',$id_modelo]] );
+            }
+
             $permisos = DB::table('users')
                 ->join('user_has_roles','users.id','=','user_has_roles.user_id')
                 ->join('roles','user_has_roles.role_id','=','roles.id')
                 ->join('role_has_permissions','roles.id','=','role_has_permissions.role_id')
                 ->join('permissions','permissions.id','=','role_has_permissions.permission_id')
                 ->select('users.id','permissions.core_app_id','permissions.modelo_id')
-                ->where([
-                    ['users.id','=',$user->id],
-                    ['permissions.core_app_id','=',$request->id],
-                    ['permissions.modelo_id','=',$request->id_modelo]
-                ])
+                ->where( $array_wheres )
                 ->get();
 
             if(sizeof($permisos) == 0){
@@ -121,25 +129,28 @@ class Authenticate
 
         if(isset($request->id) && isset($request->id_modelo))
         {
+            $id_modelo = (int)$request->id_modelo;
 
-            //dd('id and id_modelo is set', $request->id, $request->id_modelo );
+            $array_wheres = [
+                ['users.id','=',$user->id],
+                ['permissions.core_app_id','=',$request->id]
+            ];
             
+            if ( $id_modelo != 0 )
+            {
+                $array_wheres = array_merge( $array_wheres, [['permissions.modelo_id','=',$id_modelo]] );
+            }
+
             $permisos = DB::table('users')
                 ->join('user_has_roles','users.id','=','user_has_roles.user_id')
                 ->join('roles','user_has_roles.role_id','=','roles.id')
                 ->join('role_has_permissions','roles.id','=','role_has_permissions.role_id')
                 ->join('permissions','permissions.id','=','role_has_permissions.permission_id')
                 ->select('users.id','permissions.core_app_id','permissions.modelo_id')
-                ->where([
-                    ['users.id','=',$user->id],
-                    ['permissions.core_app_id','=',$request->id],
-                    ['permissions.modelo_id','=',$request->id_modelo]
-                ])
+                ->where( $array_wheres )
                 ->get();
-            //dd( $user->id, $request->id,$request->id_modelo, $permisos, sizeof($permisos) );
             
             if(sizeof($permisos) == 0){
-                dd('error permiso = 0');
                 return redirect()->back()->with('flash_message','3. Método GET. Restricción App y Modelo. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 

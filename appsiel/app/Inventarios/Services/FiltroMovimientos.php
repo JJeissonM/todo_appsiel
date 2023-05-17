@@ -50,7 +50,10 @@ class FiltroMovimientos
 
 	public function aplicar_filtros( $fecha_ini, $fecha_fin, $inv_bodega_id, $inv_grupo_id, $item_id )
 	{
-        $array_wheres = [ ['inv_movimientos.fecha' ,'<=', $fecha_fin] ];
+        $array_wheres = [ 
+			['inv_movimientos.fecha', '<=', $fecha_fin],
+			['inv_productos.estado', '=', 'Activo']
+		];
 
         if ( $inv_grupo_id != '' )
         {
@@ -69,7 +72,7 @@ class FiltroMovimientos
 
 		return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
 					->where($array_wheres)
-					->select('inv_movimientos.*')
+					->select('inv_movimientos.*','inv_productos.estado')
 					->get();
 	}
 

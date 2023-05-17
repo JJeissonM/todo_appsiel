@@ -261,7 +261,10 @@ class ReporteController extends Controller
             return $vista;
         }
 
-        $array_wheres = [ ['inv_movimientos.fecha' ,'<=', $fecha_corte] ];
+        $array_wheres = [ 
+            ['inv_movimientos.fecha' ,'<=', $fecha_corte],
+            ['inv_productos.estado', '=', 'Activo']
+        ];
 
         if ( $grupo_inventario_id != '' )
         {

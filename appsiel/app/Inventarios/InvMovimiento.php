@@ -231,6 +231,7 @@ class InvMovimiento extends Model
                                 ->where( $array_wheres )
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->select(
+                                            'inv_productos.estado',
                                             'inv_movimientos.*',
                                             DB::raw('sum(inv_movimientos.cantidad) as suma_cantidad'),
                                             DB::raw('sum(inv_movimientos.costo_total) as suma_costo') )
