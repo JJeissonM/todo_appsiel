@@ -243,11 +243,6 @@
 			});
 		});
 	</script>
-
-	@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
-		<script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
-		<script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
-	@endif
 	
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>

@@ -446,6 +446,16 @@ class VtasMovimiento extends Model
             ['vtas_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
         ];
 
+        if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+        {
+            $raw_producto = 'CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
+        }
+        
+        if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+        {
+            $raw_producto = 'CONCAT( inv_productos.referencia, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
+        }
+
         $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
@@ -455,7 +465,7 @@ class VtasMovimiento extends Model
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_movimientos.inv_producto_id',
-                                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
+                                        DB::raw($raw_producto),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'vtas_movimientos.cliente_id',
                                         'vtas_movimientos.core_tercero_id',

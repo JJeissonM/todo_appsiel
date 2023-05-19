@@ -50,7 +50,8 @@ class InventoriesServices
         	}
         	
         	$obj_aux = (object)[ 
-						'item_id' => $linea->item_id,
+                        'referencia' => $linea->referencia,
+                        'item_id' => $linea->item_id,
 						'descripcion' => $item->descripcion,
 						'existencia' => $linea->existencia,
 						'cantidad_facturada' => $linea->cantidad_a_disminuir,
@@ -65,7 +66,14 @@ class InventoriesServices
         }
 
         $bodega = InvBodega::find($bodega_id);
-        $lbl_encabezados = ['Cod.', 'Item', 'Existencia', 'Cant. Facturada', 'Nuevo saldo'];
+
+		if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+			$lbl_code = 'Cód.';
+	
+		if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+			$lbl_code = 'Ref.';
+
+        $lbl_encabezados = [$lbl_code, 'Item', 'Existencia', 'Cant. Facturada', 'Nuevo saldo'];
 
         return View::make( 'inventarios.incluir.cantidad_existencias_tabla', compact( 'bodega', 'fecha_corte', 'lbl_encabezados', 'items' ) )->render();
 	}

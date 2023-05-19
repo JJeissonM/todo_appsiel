@@ -3,6 +3,7 @@
 namespace App\Inventarios\Services;
 
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvProducto;
 
 class ValidacionExistencias
 {
@@ -50,7 +51,10 @@ class ValidacionExistencias
 			
 			if ( $this->existencia_es_negativa( $nuevo_saldo ) )
 			{
+				$item = InvProducto::find($item_id);
+
 				$lista_items[] = (object)[ 
+											'referencia' => $item->referencia,
 											'item_id' => $item_id,
 											'existencia' => $existencia,
 											'cantidad_a_disminuir' => $cantidad_a_disminuir,

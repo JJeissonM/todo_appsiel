@@ -43,7 +43,7 @@
 
         <td width="20%">
             <div class="imagen" style="text-align: center;">
-                <img src="{{ config('matriculas.url_escudo_colegio') }}" style="max-height: 80px;" />
+                <img src="{{ config('matriculas.url_escudo_colegio') }}" style="max-width: 190px; max-height: 80px;" />
             </div>
         </td>
     </tr>

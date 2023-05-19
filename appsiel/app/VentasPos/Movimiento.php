@@ -140,9 +140,9 @@ class Movimiento extends Model
             case 'inv_producto_id':
                 $agrupar_por = 'producto';
                 break;
-                case 'tasa_impuesto':
-                    $agrupar_por = 'tasa_impuesto';
-                    break;
+            case 'tasa_impuesto':
+                $agrupar_por = 'tasa_impuesto';
+                break;
             case 'vendedor_id':
                 $agrupar_por = 'vendedor_id';
                 break;
@@ -172,6 +172,16 @@ class Movimiento extends Model
             $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
         }
 
+        if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+        {
+            $raw_producto = 'CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
+        }
+        
+        if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+        {
+            $raw_producto = 'CONCAT( inv_productos.referencia, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
+        }
+
         $movimiento = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
                             ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_movimientos.core_tercero_id')
@@ -181,7 +191,7 @@ class Movimiento extends Model
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
                                         'vtas_pos_movimientos.inv_producto_id',
-                                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
+                                        DB::raw($raw_producto),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
                                         'inv_productos.inv_grupo_id',
                                         'vtas_pos_movimientos.core_tipo_transaccion_id',

@@ -6,7 +6,14 @@
         <tbody>
             @foreach( $items AS $item )
 	            <tr>
-	                <td class="text-center">{{ $item->item_id }}</td>
+                    @if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+                        <td class="text-center">{{ $item->item_id }}</td>
+                    @endif
+                    
+                    @if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+                        <td class="text-center">{{ $item->referencia }}</td>
+                    @endif
+	                
 	                <td>{{ $item->descripcion }}</td>
 	                <td class="text-center">{{ number_format($item->existencia, 2, ',', '.') }}</td> 
 	                <td class="text-right"> {{ number_format($item->cantidad_facturada, 2, ',', '.') }} </td>

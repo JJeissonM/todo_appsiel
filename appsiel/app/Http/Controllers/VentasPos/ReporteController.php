@@ -54,8 +54,6 @@ class ReporteController extends Controller
 
         $view = Input::get('view');
 
-        //$this->resumen_por_medios_recaudos( $encabezados_documentos2 );
-
         $tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_encabezados_documentos', compact( 'encabezados_documentos', 'pdv','view' ) )->render();
         
         return $tabla_encabezados_documentos;
@@ -82,9 +80,6 @@ class ReporteController extends Controller
             $i = 0;
             foreach( $lineas_recaudos as $linea )
             {
-                /*$array_totales[$i]['medio_recaudo'] = explode("-", $linea->teso_medio_recaudo_id)[1];
-                $array_totales[$i]['total'] = (float)substr($linea->valor, 1);
-                $i++;*/
                 $array_totales[] = collect( ['medio_recaudo' => explode("-", $linea->teso_medio_recaudo_id)[1], 'total' => (float)substr($linea->valor, 1) ] );
             }
         }
