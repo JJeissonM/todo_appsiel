@@ -9,6 +9,7 @@ use App\Inventarios\Indumentaria\PrefijoReferencia;
 use App\Inventarios\Indumentaria\TipoMaterial;
 use App\Inventarios\Indumentaria\TipoPrenda;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 //  PRENDAS
 class ItemMandatario extends Model
@@ -64,9 +65,9 @@ class ItemMandatario extends Model
             ->select(
                 'inv_items_mandatarios.referencia AS campo1',
                 'inv_items_mandatarios.descripcion AS campo2',
-                'inv_indum_tipos_prendas.descripcion AS campo3',
-                'inv_indum_tipos_materiales.descripcion AS campo4',
-                'inv_indum_paletas_colores.descripcion AS campo5',
+                DB::raw('CONCAT(inv_indum_tipos_prendas.descripcion," (",inv_indum_tipos_prendas.codigo,") ") AS campo3'),
+                DB::raw('CONCAT(inv_indum_tipos_materiales.descripcion," (",inv_indum_tipos_materiales.codigo,") ") AS campo4'),
+                DB::raw('CONCAT(inv_indum_paletas_colores.descripcion," (",inv_indum_paletas_colores.codigo,") ") AS campo5'),
                 'inv_items_mandatarios.estado AS campo6',
                 'inv_items_mandatarios.id AS campo7'
             )
