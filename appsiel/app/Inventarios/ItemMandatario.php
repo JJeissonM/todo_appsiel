@@ -96,9 +96,9 @@ class ItemMandatario extends Model
                 'inv_items_mandatarios.id AS CÓDIGO',
                 'inv_items_mandatarios.referencia AS REFERENCIA',
                 'inv_items_mandatarios.descripcion AS DESCRIPCIÓN',
-                'inv_indum_tipos_prendas.descripcion AS TIPO_PRENDA',
-                'inv_indum_tipos_materiales.descripcion AS TIPO_MATERIAL',
-                'inv_indum_paletas_colores.descripcion AS COLOR',
+                DB::raw('CONCAT(inv_indum_tipos_prendas.descripcion," (",inv_indum_tipos_prendas.codigo,") ") AS TIPO_PRENDA'),
+                DB::raw('CONCAT(inv_indum_tipos_materiales.descripcion," (",inv_indum_tipos_materiales.codigo,") ") AS TIPO_MATERIAL'),
+                DB::raw('CONCAT(inv_indum_paletas_colores.descripcion," (",inv_indum_paletas_colores.codigo,") ") AS COLOR'),
                 'inv_items_mandatarios.estado AS ESTADO'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
