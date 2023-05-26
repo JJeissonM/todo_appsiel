@@ -42,7 +42,12 @@
 
                 <tr>
                     <td> {{ $item->grupo_inventario->descripcion }} </td>
-                    <td> {{ $item->get_value_to_show() }} </td>
+                    <td> 
+                        {{ $item->get_value_to_show() }}
+                        @if( $item->estado == 'Inactivo')
+                            (Inactivo)
+                        @endif
+                    </td>
                     <td> ${{ number_format( $ultima_compra->cantidad, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $precio_unitario, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $precio_total, 2, ',', '.') }} </td>
