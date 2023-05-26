@@ -580,7 +580,7 @@ class CompraController extends TransaccionController
             */
 
             // Precios traido del movimiento de compras. El último precio liquidado al proveedor para ese producto.
-            $precio_unitario = ComprasMovimiento::get_ultimo_precio_producto( $proveedor_id, $producto_id );
+            $precio_unitario = ComprasMovimiento::get_ultimo_precio_producto( $proveedor_id, $producto_id )->precio_unitario;
 
             // Los impuestos en compras se obtinen del precio_compra
 

@@ -4,9 +4,9 @@ namespace App\Compras;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
 use App\Inventarios\InvProducto;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ComprasMovimiento extends Model
 {
@@ -33,6 +33,11 @@ class ComprasMovimiento extends Model
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function proveedor()
+    {
+        return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
 
     public function get_label_documento()
@@ -141,8 +146,6 @@ class ComprasMovimiento extends Model
 
     public static function get_precios_compras($fecha_desde, $fecha_hasta, $producto_id, $operador1, $proveedor_id, $operador2, $grupo_inventario_id, $operador3)
     {
-
-        /**/
         return ComprasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'compras_movimientos.inv_producto_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_movimientos.core_tercero_id')
             ->where('compras_movimientos.core_empresa_id', Auth::user()->empresa_id)
@@ -162,21 +165,40 @@ class ComprasMovimiento extends Model
             ->get();
     }
 
-    public static function get_ultimo_precio_producto($proveedor_id, $producto_id)
+    public static function get_ultimo_precio_producto($proveedor_id, $producto_id, $grupo_inventario_id = null)
     {
+        $array_wheres = [
+            ['compras_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        if ($grupo_inventario_id != null) {
+            $array_wheres = array_merge( $array_wheres, [[ 'inv_productos.inv_grupo_id', '=', $grupo_inventario_id]]);
+        }
+
+        if ($producto_id != null) {
+            $array_wheres = array_merge( $array_wheres, [[ 'compras_movimientos.inv_producto_id', '=', $producto_id]]);
+        }
+
+        if ($proveedor_id != null) {
+            $array_wheres = array_merge( $array_wheres, [[ 'compras_movimientos.proveedor_id', '=', $proveedor_id]]);
+        }
+
         $registro = ComprasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'compras_movimientos.inv_producto_id')
-            ->where('compras_movimientos.core_empresa_id', Auth::user()->empresa_id)
-            ->where('compras_movimientos.inv_producto_id', '=', $producto_id)
-            ->where('compras_movimientos.proveedor_id', '=', $proveedor_id)
-            ->select('compras_movimientos.precio_unitario')
+            ->where( $array_wheres)
+            ->select(
+                'compras_movimientos.*'
+                )
             ->get()
             ->last();
 
-        if (is_null($registro)) {
-            return InvProducto::find($producto_id)->precio_compra;
-        } else {
-            return $registro->precio_unitario;
-        }
+        if ($registro == null) {
+            return (object)[
+                'precio_unitario' => InvProducto::find($producto_id)->precio_compra,
+                'core_tipo_transaccion_id' => null
+            ];
+        }        
+        
+        return $registro;
     }
 
     // 

@@ -4,15 +4,8 @@ namespace App\Http\Controllers\Compras;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Input;
-use DB;
-use Auth;
-use Form;
-use View;
-use Cache;
 use Lava;
 
 use App\Compras\ComprasMovimiento;
@@ -22,10 +15,12 @@ use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use App\CxP\DocumentosPendientes;
 
-use App\Contabilidad\Impuesto;
-
 use App\Inventarios\InvDocEncabezado;
-
+use App\Inventarios\InvProducto;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class ReportesController extends Controller
 {
@@ -110,7 +105,7 @@ class ReportesController extends Controller
     {
         $registros = ComprasMovimiento::mov_compras_totales_por_fecha( $fecha_inicial, $fecha_final );
 
-        $stocksTable1 = Lava::DataTable();
+        $stocksTable1 = LavachartsFacade::DataTable();
       
         $stocksTable1->addStringColumn('Compras')
                     ->addNumberColumn('Fecha');
@@ -129,7 +124,7 @@ class ReportesController extends Controller
         }
 
         // Se almacena la gráfica en compras_diarias, luego se llama en la vista [ como mágia :) ]
-        Lava::BarChart('compras_diarias', $stocksTable1,[
+        LavachartsFacade::BarChart('compras_diarias', $stocksTable1,[
             'is3D' => True,
             'colors' => ['#574696'],
             'orientation' => 'horizontal',
@@ -194,6 +189,50 @@ class ReportesController extends Controller
         }
 
         $vista = View::make('compras.reportes.precio_compra', compact('movimiento','detalla_proveedores', 'mensaje', 'porcentaje_proyeccion_1', 'porcentaje_proyeccion_2', 'porcentaje_proyeccion_3', 'porcentaje_proyeccion_4', 'iva_incluido' ) )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+    public function ultimos_precios_por_producto(Request $request)
+    {
+        $iva_incluido  = (int)$request->iva_incluido;        
+        $inv_producto_id = (int)$request->inv_producto_id;
+        $proveedor_id = (int)$request->proveedor_id;
+        $grupo_inventario_id = (int)$request->grupo_inventario_id;
+        
+        $array_wheres = [
+            ['core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        if ( $inv_producto_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'id', '=', $inv_producto_id]]);
+        }
+
+        if ( $grupo_inventario_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [[ 'inv_grupo_id', '=', $grupo_inventario_id]]);
+        }
+
+        $proveedor = null;
+        if ( $proveedor_id != 0 )
+        {
+            $proveedor = Proveedor::find($proveedor_id);
+        }else{
+            $proveedor_id = null;
+        }
+
+        $listado = InvProducto::where( $array_wheres )->get();
+
+        $mensaje = 'IVA <b>NO</b> incluido en precio.';
+        if ( $iva_incluido )
+        {
+            $mensaje = 'IVA Incluido en precio.';
+        }
+
+        $vista = View::make('compras.reportes.ultimo_precio_compra', compact('listado','proveedor_id', 'mensaje', 'iva_incluido' ) )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 
