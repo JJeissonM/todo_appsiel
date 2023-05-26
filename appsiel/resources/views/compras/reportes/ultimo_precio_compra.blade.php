@@ -13,10 +13,10 @@
             <tr>
                 <th> Categoría </th>
                 <th> Producto </th>
-                <th> Cantidad </th>
-                <th> Último Precio </th>
-                <th> Total </th>
                 <th> Fecha </th>
+                <th> Último Precio </th>
+                <th> Cantidad </th>
+                <th> Total </th>
                 <th> Documento </th>
                 <th> CC/NIT - Proveedor </th>
             </tr>
@@ -48,10 +48,10 @@
                             (Inactivo)
                         @endif
                     </td>
-                    <td> ${{ number_format( $ultima_compra->cantidad, 2, ',', '.') }} </td>
-                    <td> ${{ number_format( $precio_unitario, 2, ',', '.') }} </td>
-                    <td> ${{ number_format( $precio_total, 2, ',', '.') }} </td>
                     <td> {{ $ultima_compra->fecha }} </td>
+                    <td> ${{ number_format( $precio_unitario, 2, ',', '.') }} </td>
+                    <td> ${{ number_format( $ultima_compra->cantidad, 2, ',', '.') }} </td>
+                    <td> ${{ number_format( $precio_total, 2, ',', '.') }} </td>
                     <td> {{ $ultima_compra->get_label_documento() }} </td>
                     <td> {{ $ultima_compra->proveedor->tercero->numero_identificacion }} - {{ $ultima_compra->proveedor->tercero->descripcion }} </td>
                 </tr>
