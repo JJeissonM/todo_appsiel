@@ -103,8 +103,8 @@
 								<input type="text" class="form-control" id="txt2" name="nombre1" required>
 							</div>
 							<div class="form-group">
-								<label class="control-label">Segundo Nombre*</label>
-								<input type="text" class="form-control" id="txt3" name="otros_nombres" required>
+								<label class="control-label">Segundo Nombre</label>
+								<input type="text" class="form-control" id="txt3" name="otros_nombres" value=" ">
 							</div>
 						</div>
 						<div class="col-md-4">
@@ -275,8 +275,8 @@
 								<input type="text" class="form-control" id="txtpne" name="nombre1" required>
 							</div>
 							<div class="form-group">
-								<label class="control-label">Segundo Nombre*</label>
-								<input type="text" class="form-control" id="txtsne" name="otros_nombres" required>
+								<label class="control-label">Segundo Nombre</label>
+								<input type="text" class="form-control" id="txtsne" name="otros_nombres" value=" ">
 							</div>
 						</div>
 						<div class="col-md-4">
