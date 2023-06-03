@@ -192,6 +192,38 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$etiqueta_curso = 'CURSO'; 
+								if( isset($parametros['etiqueta_curso'] ) )
+								{
+									$etiqueta_curso = $parametros['etiqueta_curso'];
+								}
+							?>
+							{{ Form::bsText('etiqueta_curso', $etiqueta_curso, 'Etiqueta Curso', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="row" style="padding:5px;">
+								<?php
+									$etiqueta_estudiante = 'NOMBRE COMPLETO'; 
+									if( isset($parametros['etiqueta_estudiante'] ) )
+									{
+										$etiqueta_estudiante = $parametros['etiqueta_estudiante'];
+									}
+								?>
+								{{ Form::bsText('etiqueta_estudiante', $etiqueta_estudiante, 'Etiqueta Curso', ['class'=>'form-control']) }}
+							</div>
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Académico Estudiantes  </h4>
 				<hr>
 

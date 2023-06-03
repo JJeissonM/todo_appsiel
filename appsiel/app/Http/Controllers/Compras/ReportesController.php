@@ -31,8 +31,7 @@ class ReportesController extends Controller
     }
 
     public function ctas_por_pagar(Request $request)
-    {
-                
+    {                
         $operador = '=';
         $cadena = $request->core_tercero_id;
         $clase_proveedor_id = (int)$request->clase_proveedor_id;
@@ -232,11 +231,53 @@ class ReportesController extends Controller
             $mensaje = 'IVA Incluido en precio.';
         }
 
+        //$listado = $this->get_listado_ordenado_ultimo_precio_compra( $listado, $proveedor_id, $iva_incluido );
+
         $vista = View::make('compras.reportes.ultimo_precio_compra', compact('listado','proveedor_id', 'mensaje', 'iva_incluido' ) )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 
         return $vista;
+    }
+
+    public function get_listado_ordenado_ultimo_precio_compra( $lista_items, $proveedor_id, $iva_incluido )
+    {        
+        $listado = collect([]);
+        foreach( $lista_items as $item )
+        {
+            $ultima_compra = ComprasMovimiento::get_ultimo_precio_producto($proveedor_id, $item->id, $item->inv_grupo_id);
+
+            if ( $ultima_compra->core_tipo_transaccion_id == null ) {
+                continue;
+            }
+
+            $precio_unitario = $ultima_compra->precio_unitario;
+            $precio_total = $ultima_compra->precio_total;
+            if ( !$iva_incluido )
+            {
+                $precio_unitario = $ultima_compra->base_impuesto / $ultima_compra->cantidad;
+                $precio_total = $ultima_compra->base_impuesto;
+            }
+        
+            $linea['categoria'] = $item->grupo_inventario->descripcion;
+            $linea['item'] = $item->get_value_to_show();
+            if( $item->estado == 'Inactivo')
+            {
+                $linea['item'] = $item->get_value_to_show() . '(Inactivo)';
+            }
+
+            $linea['fecha'] = $ultima_compra->fecha;
+            $linea['precio_unitario'] = '$' . number_format( $precio_unitario, 2, ',', '.');
+            $linea['cantidad'] = '$' . number_format( $ultima_compra->cantidad, 2, ',', '.');
+            $linea['precio_total'] = '$' . number_format( $precio_total, 2, ',', '.');
+            $linea['documento'] = $ultima_compra->get_label_documento();
+            $linea['proveedor_id'] = $ultima_compra->proveedor->id;
+            $linea['proveedor'] = $ultima_compra->proveedor->tercero->numero_identificacion . '-' . $ultima_compra->proveedor->tercero->descripcion;
+
+            $listado->push( $linea );
+        }
+
+        return $listado;
     }
 
     /*

@@ -29,7 +29,7 @@
     
     <table style="margin-left: auto; margin-right: auto; width: 94%;">
         <tr>
-            <td><b>FULL NAME:</b></td>
+            <td><b>{{ config('calificaciones.etiqueta_estudiante') }}:</b></td>
             <td>{{ $registro->estudiante->tercero->descripcion }}.</td>
             @if($colegio->maneja_puesto=="Si")
                 @if( !is_null($registro->observacion) )
@@ -42,7 +42,7 @@
             @endif
         </tr>
         <tr>
-            <td><b>GRADE: </b></td>
+            <td><b>{{ config('calificaciones.etiqueta_curso') }}: </b></td>
             <td>{{ $curso->descripcion }}.</td>
             @if($colegio->maneja_puesto=="Si")
                 @if( !is_null($registro->observacion) )

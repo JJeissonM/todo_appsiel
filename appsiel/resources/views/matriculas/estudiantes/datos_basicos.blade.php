@@ -1,13 +1,13 @@
 
-<table class="table table-bordered table-striped" style="margin-top:-35px;">
+<table id="table_student_basic_info" class="table table-bordered table-striped" style="margin-top:-35px;">
 	<tr>
 		<td colspan="2"><h4 align="center"> <strong>Datos básicos del estudiante</strong> </h4></td>
 	</tr>
 	<tr>
-		<td colspan="2"><strong>Curso actual: </strong> {{ $curso_label }} </td>
+		<td colspan="2"><strong>{{ config('calificaciones.etiqueta_curso') }}: </strong> {{ $curso_label }} </td>
 	</tr>
 	<tr>
-		<td><strong>Nombre: </strong> {{ $estudiante->nombre_completo }}</td>
+		<td><strong>{{ config('calificaciones.etiqueta_estudiante') }}: </strong> {{ $estudiante->nombre_completo }}</td>
 		<td rowspan="6" align="center">
 			<?php
 				if ( $estudiante->imagen != '' )

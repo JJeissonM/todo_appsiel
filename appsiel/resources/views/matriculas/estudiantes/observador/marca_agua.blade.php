@@ -19,11 +19,6 @@
 		font-size: 1.2em;
 	}
 
-    th, td {
-        border-bottom: 1px solid black;
-        border-right: 1px solid black;
-    }
-
     th {
         background-color: #CACACA;
     }
@@ -136,13 +131,18 @@
 
     .observacion{
         height: 250px;
-        border: solid 1px black;
+        border: solid 1px gray;
         font-size: 15px;
+    }
+
+    #table_student_basic_info > tr > td
+    {
+        border-bottom: 1px solid black;
+        border-right: 1px solid black;
     }
 </style>
 
-<div class="container" style="width: 100%; border: 1px solid #333333;">
-
+<div class="container" style="width: 100%;">
     
 	<?php 
         $curso_label = 'Sin matricula registrada';
