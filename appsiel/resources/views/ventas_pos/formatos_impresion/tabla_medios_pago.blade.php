@@ -18,17 +18,14 @@
 <div id="div_resumen_medios_pago" style="display: none;">
     <br>
     <div class="table-responsive">
-        <table class="tabla_resumen_medios_pago">
-            <tr class="encabezado">
-                <td>Medio pago</td>
-                <td>Caja/Banco</td>
-                <td>Valor</td>
-            </tr>
-            <tr>
-                <td id="lbl_medio_pago"></td>
-                <td id="lbl_caja_banco"></td>
-                <td id="lbl_valor_medio_pago"></td>
-            </tr>
+        <table class="tabla_resumen_medios_pago" id="tabla_resumen_medios_pago">
+            <tbody>
+                <tr class="encabezado">
+                    <td>Medio pago</td>
+                    <td>Caja/Banco</td>
+                    <td>Valor</td>
+                </tr>
+            </tbody>
         </table>
     </div>
 </div>

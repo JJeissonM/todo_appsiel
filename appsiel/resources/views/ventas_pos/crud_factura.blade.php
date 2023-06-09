@@ -383,7 +383,7 @@ input[type=number]::-webkit-outer-spin-button {
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
 
-    <script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
+    <script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
     
     <script type="text/javascript">
         

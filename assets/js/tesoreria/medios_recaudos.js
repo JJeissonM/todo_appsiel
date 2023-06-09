@@ -152,8 +152,8 @@ $('#btn_agregar').click(function(event){
         reset_form_registro();
 
         // Por ahora, Solo se va a permitir agregar una sola línea de recaudo
-        $("#recaudoModal").modal("hide");
-        $("#btn_nuevo").hide();
+        //$("#recaudoModal").modal("hide");
+        //$("#btn_nuevo").hide();
 
         // deshabilitar_campos_form_create();
         $('#btn_guardar').show();

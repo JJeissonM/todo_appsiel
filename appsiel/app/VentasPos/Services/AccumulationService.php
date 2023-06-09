@@ -185,6 +185,8 @@ class AccumulationService
             $datos['saldo_pendiente'] = $total_documento;
             $datos['estado'] = 'Pendiente';
             DocumentosPendientes::create($datos);
+
+            return true;
         }
 
         // Agregar el movimiento a tesorería

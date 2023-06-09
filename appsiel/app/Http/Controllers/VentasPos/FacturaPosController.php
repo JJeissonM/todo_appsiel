@@ -291,6 +291,7 @@ class FacturaPosController extends TransaccionController
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
 
+        // Se Actualiza la variable $request via referencia
         $this->actualizar_campo_lineas_registros_medios_recaudos_request($request,$total_factura);
 
         // Crear documento de Ventas
@@ -356,7 +357,7 @@ class FacturaPosController extends TransaccionController
     {
         $lineas_registros_medios_recaudos = json_decode($request_2->lineas_registros_medios_recaudos, true); // true convierte en un array asociativo al JSON
 
-        $aux = array_pop($lineas_registros_medios_recaudos); // eliminar ultimo elemento del array
+        array_pop($lineas_registros_medios_recaudos); // eliminar ultimo elemento del array
 
         $medios_recaudos = json_encode($lineas_registros_medios_recaudos);
 
@@ -366,12 +367,8 @@ class FacturaPosController extends TransaccionController
             $pdv = Pdv::find($request_2->pdv_id);
 
             $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' . $pdv->caja_default_id . '-' . $pdv->caja->descripcion . '","teso_cuenta_bancaria_id":"0-","valor":"$' . $total_factura . '"}]';
-        } else {
-
-            // CUANDO HAY VARIOS MEDIOS DE RECAUDOS... ¿CÓMO CUADRAR CON EL TOTAL DE LA FACTURA?
-
-            $valor = json_decode($medios_recaudos)[0]->valor;
-            $request_2['lineas_registros_medios_recaudos'] = str_replace($valor, "$" . $total_factura, $medios_recaudos);
+        } else {           
+            $request_2['lineas_registros_medios_recaudos'] = $medios_recaudos;
         }
     }
 
@@ -743,11 +740,11 @@ class FacturaPosController extends TransaccionController
                 $caja = explode('-', $linea->teso_caja_id);
                 $cuenta_bancaria = explode('-', $linea->teso_cuenta_bancaria_id);
 
-                $cuerpo_tabla .= '<tr> <td> <span style="color:white;">' . $medio_recaudo[0] . '-</span>' . $medio_recaudo[1] . '</td>' .
-                    '<td><span style="color:white;">' . $motivo[0] . '-</span>' . $motivo[1] . '</td>' .
-                    '<td><span style="color:white;">' . $caja[0] . '-</span>' . $caja[1] . '</td>' .
-                    '<td><span style="color:white;">' . $cuenta_bancaria[0] . '-</span>' . $cuenta_bancaria[1] . '</td>' .
-                    '<td class="text-center valor_total">' . $linea->valor . '</td>' .
+                $cuerpo_tabla .= '<tr> <td> <span style="color:white;">' . $medio_recaudo[0] . '-</span><span>' . $medio_recaudo[1] . '</span></td>' .
+                    '<td><span style="color:white;">' . $motivo[0] . '-</span><span>' . $motivo[1] . '</span></td>' .
+                    '<td><span style="color:white;">' . $caja[0] . '-</span><span>' . $caja[1] . '</span></td>' .
+                    '<td><span style="color:white;">' . $cuenta_bancaria[0] . '-</span><span>' . $cuenta_bancaria[1] . '</span></td>' .
+                    '<td class="valor_total">' . $linea->valor . '</td>' .
                     '<td> <button type="button" class="btn btn-danger btn-xs btn_eliminar_linea_medio_recaudo"><i class="fa fa-btn fa-trash"></i></button> </td> </tr>';
             }
         }

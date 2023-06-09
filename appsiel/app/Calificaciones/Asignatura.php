@@ -17,7 +17,7 @@ class Asignatura extends Model
 
     protected $fillable = ['id_colegio', 'descripcion', 'abreviatura', 'estado', 'area_id'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Área', 'Descripción', 'Abreviatura', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Área', 'Descripción', 'Abreviatura', 'Cód.', 'Estado'];
 
     public function area()
     {
@@ -38,8 +38,9 @@ class Asignatura extends Model
                 'sga_areas.descripcion AS campo1',
                 'sga_asignaturas.descripcion AS campo2',
                 'sga_asignaturas.abreviatura AS campo3',
-                'sga_asignaturas.estado AS campo4',
-                'sga_asignaturas.id AS campo5'
+                'sga_asignaturas.id AS campo4',
+                'sga_asignaturas.estado AS campo5',
+                'sga_asignaturas.id AS campo6'
             )->where("sga_areas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.abreviatura", "LIKE", "%$search%")
@@ -57,7 +58,8 @@ class Asignatura extends Model
                 'sga_areas.descripcion AS ÁREA',
                 'sga_asignaturas.descripcion AS DESCRIPCIÓN',
                 'sga_asignaturas.abreviatura AS ABREVIATURA',
-                'sga_asignaturas.estado AS ESTADO'
+                'sga_asignaturas.estado AS ESTADO',
+                'sga_asignaturas.id AS ID'
             )->where("sga_areas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.abreviatura", "LIKE", "%$search%")

@@ -207,7 +207,7 @@ $(document).ready(function () {
         $('#total_efectivo_recibido').val(0);
         $('#lbl_efectivo_recibido').text('$ 0');
         $('#total_cambio').text('$ 0');
-        $('#lbl_ajuste_al_peso').text('$ ');
+        //$('#lbl_ajuste_al_peso').text('$ ');
         total_cambio = 0;
         $('#btn_guardar_factura').attr('disabled', 'disabled');
     }
@@ -730,16 +730,17 @@ $(document).ready(function () {
             $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_medio_pago.toFixed(2)) );
         }else{
 
-            // Se esta suponiendo UN solo medio de pago
-            var array_celdas =  $('#ingreso_registros_medios_recaudo tr').find('td');
-
-            var lbl_medio_pago =  array_celdas.eq(0).find('span').eq(1).text();
-            var lbl_caja_banco =  array_celdas.eq(2).find('span').eq(1).text() + '' + array_celdas.eq(3).find('span').eq(1).text();
-            var lbl_valor_medio_pago =  array_celdas.eq(4).text();
-
-            $('#div_resumen_medios_pago').find('#lbl_medio_pago').text(lbl_medio_pago);
-            $('#div_resumen_medios_pago').find('#lbl_caja_banco').text(lbl_caja_banco);
-            $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text(lbl_valor_medio_pago);
+            $('#ingreso_registros_medios_recaudo > tbody > tr').each(function( ){
+                var array_celdas =  $(this).find('td');
+                var lbl_medio_pago =  array_celdas.eq(0).find('span').eq(1).text();
+                var lbl_caja_banco =  array_celdas.eq(2).find('span').eq(1).text() + '' + array_celdas.eq(3).find('span').eq(1).text();
+                var lbl_valor_medio_pago =  array_celdas.eq(4).text();
+                
+                console.log($(this),array_celdas,lbl_medio_pago,lbl_caja_banco,lbl_valor_medio_pago);
+                
+                $('#tabla_resumen_medios_pago').find('tbody:last').append('<tr><td>' + lbl_medio_pago + '</td><td>' + lbl_caja_banco + '</td><td>' + lbl_valor_medio_pago + '</td></tr>');
+            
+            });
         }
     }
 
@@ -898,7 +899,7 @@ $(document).ready(function () {
 
         valor_ajuste_al_peso = valor_redondeado - total_factura;
 
-        $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+        $('#lbl_ajuste_al_peso').text( '$ ' + total_factura + ' / $ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
     }
 
 

@@ -475,7 +475,7 @@ function calcular_totales2() {
 
 	valor_ajuste_al_peso = valor_redondeado - total_factura;
 
-	$('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+	$('#lbl_ajuste_al_peso').text( '$ ' + total_factura + ' / $ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
 }
 
 function calcular_precio_total2() {

@@ -73,7 +73,7 @@ $.fn.calcular_totales_aux = function()
 
     valor_ajuste_al_peso = valor_redondeado - total_factura;
 
-    $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+    $('#lbl_ajuste_al_peso').text( '$ ' + total_factura + ' / $ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
 };
 
 $.fn.redondear_a_centena_aux = function(numero, aproximacion_superior = false) 

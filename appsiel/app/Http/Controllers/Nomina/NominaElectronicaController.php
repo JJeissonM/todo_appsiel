@@ -70,6 +70,16 @@ class NominaElectronicaController extends TransaccionController
             }
         }
         
+        if ( config('nomina.nom_elec_ambiente') == 'PRUEBAS' || config('nomina.nom_elec_ambiente') == null )
+        {
+            $msj_advertencia = 'Aún No está habilitado el MODO PRODUCCIÓN de Nómina Electrónica (variable nom_elec_ambiente en la Configuración)';
+        }
+        
+        if ( config('nomina.nom_elect_tipo_doc_app_id') == '' || config('nomina.nom_elect_tipo_doc_app_id') == null )
+        {
+            $msj_advertencia = 'No se ha configurado un Tipo Doc. Default para Nómina Electrónica (variable nom_elect_tipo_doc_app_id en la Configuración)';
+        }
+        
         if ( config('nomina.url_servicio_emision') == '' || config('nomina.url_servicio_emision') == null )
         {
             $msj_advertencia = 'No se ha configurado la variable url_servicio_emision en la Configuración de nómina.';
