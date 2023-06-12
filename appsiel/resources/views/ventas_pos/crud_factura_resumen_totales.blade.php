@@ -50,7 +50,7 @@
                 <div id="lbl_ajuste_al_peso" style="display: inline; font-size: 9px;"> $ 0</div>
             </td>
         </tr>
-        <tr class="warning">
+        <tr id="div_efectivo_recibido" class="warning">
             <td width="35%">
                 <strong> Efectivo Recibido </strong>
             </td>

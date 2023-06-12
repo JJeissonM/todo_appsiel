@@ -403,7 +403,6 @@ input[type=number]::-webkit-outer-spin-button {
 
         $.fn.set_catalogos( $('#pdv_id').val() );
 
-
         function mySearchInputFunction() {
             // Solo busca en la primera columna de la tabla
             // Declare variables
@@ -427,5 +426,6 @@ input[type=number]::-webkit-outer-spin-button {
             }
         }
 
+        $('#total_valor_total').actualizar_medio_recaudo();
     </script>
 @endsection

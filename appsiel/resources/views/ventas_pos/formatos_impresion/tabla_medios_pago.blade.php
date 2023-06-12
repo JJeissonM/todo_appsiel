@@ -19,12 +19,14 @@
     <br>
     <div class="table-responsive">
         <table class="tabla_resumen_medios_pago" id="tabla_resumen_medios_pago">
-            <tbody>
+            <thead>
                 <tr class="encabezado">
                     <td>Medio pago</td>
                     <td>Caja/Banco</td>
                     <td>Valor</td>
                 </tr>
+            </thead>
+            <tbody>
             </tbody>
         </table>
     </div>

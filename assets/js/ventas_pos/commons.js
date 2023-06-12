@@ -736,8 +736,6 @@ $(document).ready(function () {
                 var lbl_caja_banco =  array_celdas.eq(2).find('span').eq(1).text() + '' + array_celdas.eq(3).find('span').eq(1).text();
                 var lbl_valor_medio_pago =  array_celdas.eq(4).text();
                 
-                console.log($(this),array_celdas,lbl_medio_pago,lbl_caja_banco,lbl_valor_medio_pago);
-                
                 $('#tabla_resumen_medios_pago').find('tbody:last').append('<tr><td>' + lbl_medio_pago + '</td><td>' + lbl_caja_banco + '</td><td>' + lbl_valor_medio_pago + '</td></tr>');
             
             });
@@ -806,6 +804,8 @@ $(document).ready(function () {
     function reset_tabla_ingreso_medios_pago()
     {
         $('#ingreso_registros_medios_recaudo').find('tbody').html('');
+
+        $('#tabla_resumen_medios_pago').find('tbody').html('');
 
         // reset totales
         $('#total_valor_total').text('$0.00');
@@ -899,7 +899,7 @@ $(document).ready(function () {
 
         valor_ajuste_al_peso = valor_redondeado - total_factura;
 
-        $('#lbl_ajuste_al_peso').text( '$ ' + total_factura + ' / $ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+        $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
     }
 
 

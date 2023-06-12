@@ -2,11 +2,11 @@
 	
 	$user = \Auth::user();
 
-	if ( $user->hasRole('Cajero PDV') ) 
+	if ( $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') ) 
     {
-    	$pdvs = App\VentasPos\Pdv::where( [['cajero_default_id','=', $user->id],['estado','<>', 'Inactivo']] )->get();
-    }else{
     	$pdvs = App\VentasPos\Pdv::where([['estado','<>', 'Inactivo']])->get();
+    }else{
+    	$pdvs = App\VentasPos\Pdv::where( [['cajero_default_id','=', $user->id],['estado','<>', 'Inactivo']] )->get();
     }
 ?>
 
