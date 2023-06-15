@@ -158,13 +158,15 @@ class AverageCost
         $datos = InvMovimiento::where( $array_wheres )->get();
 
         $sum_costo_total = $datos->sum('costo_total');
-        if ($sum_costo_total < 0) {
+        $sum_cantidad = $datos->sum('cantidad');
+        if ($sum_costo_total <= 0 || $sum_cantidad <= 0) {
             $sum_costo_total = 0;
+            $sum_cantidad = 0;
         }
 
         return (object)[
             'total_costo_anterior' => $sum_costo_total,
-            'total_cantidad_anterior' => $datos->sum('cantidad')
+            'total_cantidad_anterior' => $sum_cantidad
         ];
     }
 
