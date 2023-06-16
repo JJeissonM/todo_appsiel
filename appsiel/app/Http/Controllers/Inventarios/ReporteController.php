@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Inventarios;
 
+use App\Compras\ComprasMovimiento;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -310,15 +311,66 @@ class ReporteController extends Controller
         $estado = $request->estado;
         $etiqueta = $request->etiqueta;
         $items_a_mostrar = $request->items_a_mostrar;
+        $cantidad_etiquetas_x_item = $request->cantidad_etiquetas_x_item;
+        $ancho = $request->ancho;
+        $alto = $request->alto;
                 
-        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar);
+        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item );
 
-        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar') )->render();
+        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto') )->render();
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
         return $vista;
 
+    }
+
+    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item)
+    {
+        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar);
+
+        $listado = collect([]);
+        foreach ($items as $item) {
+
+            switch ($cantidad_etiquetas_x_item) {
+                case 'una':
+                    $cantidad_etiquetas = 1;
+                    break;
+                
+                case 'segun_existencias':
+                    $movim = InvMovimiento::get_existencia_corte( [ 
+                        ['inv_movimientos.fecha' ,'<=', date('Y-m-d')],
+                        ['inv_movimientos.inv_producto_id', '=', $item->id]
+                    ] );
+                    
+                    $cantidad_etiquetas = 1;
+
+                    if ($movim->first() != null) {
+                        $cantidad_etiquetas = $movim->first()->suma_cantidad;
+                    }
+                    
+                    break;
+                
+                case 'segun_ultima_factura_compras':
+                    $ultima_compra = ComprasMovimiento::get_ultimo_precio_producto(null, $item->id, null);
+                    $cantidad_etiquetas = 1;
+                    if ( $ultima_compra->core_tipo_transaccion_id != null ) {
+                        $cantidad_etiquetas = $ultima_compra->cantidad;
+                    }
+                    
+                    break;
+                            
+                default:
+                    # code...
+                    break;
+            }
+
+            for ($i=0; $i < $cantidad_etiquetas; $i++) { 
+                $listado->push($item);
+            }
+        }
+
+        return $listado;
     }
 
     public function inv_etiquetas_referencias(Request $request)

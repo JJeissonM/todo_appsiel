@@ -245,25 +245,6 @@ class InvProducto extends Model
         }
         return $encontrado;
     }
-    /*
-        if (count($collection) > 0)
-        {
-            foreach ($collection as $c)
-            {
-                if ( $c->campo8 )
-                {
-                    $c->campo8 = 'Si';
-                }else{
-                    $c->campo8 = 'No';
-                }
-
-                $c->campo6 = $c->campo6 . '%';
-            }
-        }
-        
-        return $collection;
-    }
-    */
 
     public static function sqlString($search)
     {

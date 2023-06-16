@@ -52,19 +52,19 @@
                             <p>
                                 <b>{{ substr( $fila->descripcion, 0, 20) }}</b>
                             </p>
-
-                            
-                            <!-- 
-                                DNS1D::getBarcodePNG( texto_codigo, tipo_codigo, ancho, alto) 
-
-                                tipo_codigo: { C128B, C39 }
-
-                            -->
+                        
+                            <?php
+                                $codigo_barras = $fila->codigo_barras;
+                                if( $fila->codigo_barras == '' )
+                                {
+                                    $codigo_barras = $fila->id;
+                                }
+                            ?>
                             <p>
                                 <!-- Solo se envian los 12 primeros digitos, la function getBarcodePNG dibuja el codigo de barras con el digito de control al final -->
-                                <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( substr($fila->codigo_barras,0,12), 'EAN13' ) }}" alt="barcode" />
+                                <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( substr($codigo_barras,0,12), "EAN13") }}" alt="barcode" />
                             </p>
-                            {{ $fila->codigo_barras }}
+                            {{ $codigo_barras }}
                         </div>
                             
                     </td>
