@@ -314,10 +314,11 @@ class ReporteController extends Controller
         $cantidad_etiquetas_x_item = $request->cantidad_etiquetas_x_item;
         $ancho = $request->ancho;
         $alto = $request->alto;
+        $tamanio_letra = $request->tamanio_letra;
                 
         $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item );
 
-        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto') )->render();
+        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto', 'tamanio_letra') )->render();
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
@@ -365,7 +366,7 @@ class ReporteController extends Controller
                     break;
             }
 
-            
+
 
             for ($i=0; $i < $cantidad_etiquetas; $i++) { 
                 $listado->push($item);

@@ -10,7 +10,9 @@
     <?php
         $i=$numero_columnas;
         $minimo_comun_multiplo_columnas = 12;
-        $tamanio_letra = 12 - ( $numero_columnas / 2);
+        if ($tamanio_letra == null) {
+            $tamanio_letra = 12;
+        }
     ?>
 
     <table class="table" style="width: 100%; font-size: {{$tamanio_letra}}px;">
