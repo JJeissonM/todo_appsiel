@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+
 if ( !function_exists('repetir_caracter') )
 {
     
@@ -83,5 +85,18 @@ if (! function_exists('formatear_fecha_factura_electronica'))
     function formatear_fecha_factura_electronica(string $fecha)
     {
         return date_format( date_create( $fecha ),'d/m/Y');
+    }
+}
+
+
+
+if (! function_exists('diferencia_en_dias_entre_fechas'))
+{
+    function diferencia_en_dias_entre_fechas( string $fecha_inicial, string $fecha_final )
+    {
+        $fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
+        $fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
+
+        return $fecha_ini->diffInDays($fecha_fin, false);
     }
 }

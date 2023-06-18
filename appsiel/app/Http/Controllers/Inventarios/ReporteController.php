@@ -365,6 +365,8 @@ class ReporteController extends Controller
                     break;
             }
 
+            
+
             for ($i=0; $i < $cantidad_etiquetas; $i++) { 
                 $listado->push($item);
             }

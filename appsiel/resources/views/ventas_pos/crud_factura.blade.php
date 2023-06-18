@@ -237,6 +237,8 @@ input[type=number]::-webkit-outer-spin-button {
 
             <input type="hidden" name="permitir_venta_menor_costo" id="permitir_venta_menor_costo" value="{{ config('ventas.permitir_venta_menor_costo') }}">
 
+            <input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion" value="{{ $msj_resolucion_facturacion }}">            
+
             {{ Form::close() }}
 
             <hr>
@@ -427,5 +429,13 @@ input[type=number]::-webkit-outer-spin-button {
         }
 
         $('#total_valor_total').actualizar_medio_recaudo();
+
+        if ( $('#msj_resolucion_facturacion').val() != '') {
+            Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: $('#msj_resolucion_facturacion').val()
+				});
+        }
     </script>
 @endsection

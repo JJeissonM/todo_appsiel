@@ -18,7 +18,8 @@ class CodigoBarras
 		$item_formateado = $this->formatea_item( $item_id, $talla_formateada, $referencia );
 
 		// El codigo de barras se almacena con 13 digitos
-		$this->barcode = '7' . $item_formateado . $talla_formateada . $referencia . $this->ean13_checksum( '7' . $item_formateado . $talla_formateada . $referencia );
+		$prefijo_codigo = '7' . $item_formateado . $talla_formateada . $referencia;
+		$this->barcode = $prefijo_codigo . $this->ean13_checksum( $prefijo_codigo );
 	}
 
 	public function formatea_item( $item_id, $talla, $referencia )

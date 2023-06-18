@@ -430,6 +430,29 @@
 					</div>
 
 				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cantidad_facturas_restantes_aviso_resolucion = '100';
+								if( isset($parametros['cantidad_facturas_restantes_aviso_resolucion'] ) )
+								{
+									$cantidad_facturas_restantes_aviso_resolucion = $parametros['cantidad_facturas_restantes_aviso_resolucion'];
+								}
+							?>
+							{{ Form::bsText('cantidad_facturas_restantes_aviso_resolucion', $cantidad_facturas_restantes_aviso_resolucion, 'Cant. facturas restantes para aviso vencimiento resolución', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 
 				
 				<div class="row">

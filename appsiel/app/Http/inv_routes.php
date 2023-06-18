@@ -87,4 +87,6 @@ Route::get('inv_recosteo', 'Inventarios\ProcesoController@recosteo');
 
 Route::get('inv_corregir_cantidades', 'Inventarios\ProcesoController@corregir_cantidades');
 
-Route::get('inv_anulacion_masiva/{lista_id}', 'Inventarios\ProcesoController@anulacion_masiva');
+//Route::get('inv_anulacion_masiva/{lista_id}', 'Inventarios\ProcesoController@anulacion_masiva');
+
+Route::get('inv_asignar_codigos_barras_desde_id', 'Inventarios\ProcesoController@asignar_codigos_barras_desde_id');

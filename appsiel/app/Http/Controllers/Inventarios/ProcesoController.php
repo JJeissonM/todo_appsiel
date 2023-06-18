@@ -20,6 +20,7 @@ use App\Compras\ComprasMovimiento;
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AccountingServices;
+use App\Inventarios\Services\CodigoBarras;
 use App\Inventarios\Services\RecosteoService;
 use Illuminate\Support\Facades\Input;
 
@@ -210,12 +211,20 @@ class ProcesoController extends Controller
         return redirect('web/' . $registro_receta->id . '?id=8&id_modelo=321&id_transaccion=')->with('flash_message','Costo promedio del platillo actualizado correctamente.');
     }
     
-    // Pendiente
-    public function anulacion_masiva($lista_ids)
+    public function asignar_codigos_barras_desde_id()
     {
-        $lista = explode(',',$lista_ids);
-        foreach ($lista as $key => $remision_id) {
-            # code...
+        $items = InvProducto::get_datos_basicos( '', 'Activo', 'sin_codigo_barras');
+        $i = 0;
+        foreach ($items as $item) {
+            unset($item->costo_promedio);
+            unset($item->existencia_actual);
+            unset($item->tasa_impuesto);
+            $item->codigo_barras = (new CodigoBarras($item->id, 0, 0, 0))->barcode;
+            $item->save();
+
+            $i++;
         }
+
+        echo 'Se actualizaron ' . $i . ' ítems';
     }
 }
