@@ -429,7 +429,8 @@ input[type=number]::-webkit-outer-spin-button {
         }
 
         $('#total_valor_total').actualizar_medio_recaudo();
-
+        
+        // Nuevo
         if ( $('#msj_resolucion_facturacion').val() != '') {
             Swal.fire({
 					icon: 'error',
