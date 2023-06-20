@@ -31,10 +31,10 @@ use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
-use App\Tesoreria\TesoDocRegistro;
+
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoPlanPagosEstudiante;
+
 use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
 
@@ -45,8 +45,6 @@ use App\Tesoreria\RegistroDeTarjetaDebito;
 use App\Tesoreria\RegistroDeTarjetaCredito;
 use App\Tesoreria\RegistroDeCheque;
 
-use App\Matriculas\FacturaAuxEstudiante;
-
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Retencion;
 use App\Contabilidad\RegistroRetencion;
@@ -55,8 +53,9 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
 use App\CxP\CxpMovimiento;
+use App\Http\Controllers\Sistema\EmailController;
 use App\Tesoreria\Services\FacturaEstudiantesService;
-use App\Ventas\VtasDocEncabezado;
+
 use App\Ventas\DescuentoPpEncabezado;
 
 class RecaudoCxcController extends Controller
@@ -207,22 +206,7 @@ class RecaudoCxcController extends Controller
     {
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
 
-        // Documentos pagados
-        $doc_pagados = CxcAbono::get_documentos_abonados( $doc_encabezado );
-
-        $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
-
-        $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
-
-        $elaboro = $doc_encabezado->creado_por;
-       
-        if( Input::get('formato_impresion_id') == 'estandar'){
-            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
-        }
-        if( Input::get('formato_impresion_id') == 'estandar2'){
-            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir2', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
-        }
-        
+        $documento_vista = $this->generar_documento_vista_print($doc_encabezado, Input::get('formato_impresion_id'));
         
         // Se prepara el PDF
         $orientacion='portrait';
@@ -234,6 +218,26 @@ class RecaudoCxcController extends Controller
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
     }
 
+    public function generar_documento_vista_print($doc_encabezado, $formato_impresion_id)
+    {
+        // Documentos pagados
+        $doc_pagados = CxcAbono::get_documentos_abonados( $doc_encabezado );
+
+        $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
+
+        $registros_contabilidad = [];//TransaccionController::get_registros_contabilidad( $doc_encabezado );
+
+        $elaboro = $doc_encabezado->creado_por;
+       
+        if( $formato_impresion_id == 'estandar'){
+            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
+        if( $formato_impresion_id == 'estandar2'){
+            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir2', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
+
+        return $documento_vista;
+    }
 
     public function get_documentos_pendientes_cxc()
     {                
@@ -408,7 +412,6 @@ class RecaudoCxcController extends Controller
         }
     }
 
-
     // ESTE METODO SE LLAMA DESDE LIBRETAPAGOCONTROLLER
     public function almacenar( Request $request )
     {
@@ -546,44 +549,31 @@ class RecaudoCxcController extends Controller
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
         return $encabezado_documento->crear_nuevo( $request->all() );
     }
+    
 
-    // Por cada linea del Recaudo de CxC
-    /*public function registrar_recaudo_cartera_estudiante( $doc_encabezado_recaudo, $registro_cxc_pendiente, $abono  )
-    {
-        $factura = VtasDocEncabezado::where([
-                                                [ 'core_tipo_transaccion_id','=', $registro_cxc_pendiente->core_tipo_transaccion_id ],
-                                                [ 'core_tipo_doc_app_id','=', $registro_cxc_pendiente->core_tipo_doc_app_id ],
-                                                [ 'consecutivo','=', $registro_cxc_pendiente->consecutivo ]
-                                            ])->get()->first();
-
-        if ( is_null($factura) )
-        {
-            return false;
-        }
-
-        $aux_factura = FacturaAuxEstudiante::where('vtas_doc_encabezado_id', $factura->id )->get()->first();
-
-        if ( is_null($aux_factura) )
-        {
-            return false;
-        }
-
-        $recaudo = TesoRecaudosLibreta::create( [
-                                    'core_tipo_transaccion_id' => (int)$doc_encabezado_recaudo->core_tipo_transaccion_id,
-                                    'core_tipo_doc_app_id' => (int)$doc_encabezado_recaudo->core_tipo_doc_app_id,
-                                    'consecutivo' => $doc_encabezado_recaudo->consecutivo,
-                                    'id_libreta' => $aux_factura->cartera_estudiante->id_libreta,
-                                    'id_cartera' => $aux_factura->cartera_estudiante_id,
-                                    'concepto' => $aux_factura->cartera_estudiante->inv_producto_id,
-                                    'fecha_recaudo' => $doc_encabezado_recaudo->fecha,
-                                    'teso_medio_recaudo_id' => $doc_encabezado_recaudo->teso_medio_recaudo_id,
-                                    'cantidad_cuotas' => 1,
-                                    'valor_recaudo' => $abono,
-                                    'creado_por' => $doc_encabezado_recaudo->creado_por
-                                ] );
-
-        $recaudo->registro_cartera_estudiante->sumar_abono_registro_cartera_estudiante( $abono );
-        $recaudo->libreta->actualizar_estado();
-    }
+    /*
+        Enviar por email
     */
+    public function enviar_por_email( $id )
+    {
+        $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
+
+        $documento_vista = $this->generar_documento_vista_print($doc_encabezado, Input::get('formato_impresion_id'));
+
+        $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
+
+        $asunto = $doc_encabezado->documento_transaccion_descripcion.' No. '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
+
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+
+        $email_destino = $tercero->email;
+        if ( $doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $email_destino = $doc_encabezado->contacto_cliente->tercero->email;
+        }
+
+        $vec = EmailController::enviar_por_email_documento( $doc_encabezado->empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );
+
+        return redirect( 'tesoreria/recaudos_cxc/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( $vec['tipo_mensaje'], $vec['texto_mensaje'] );
+    }
 }

@@ -25,6 +25,7 @@
     @else
         Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','estandar2'=>'Estándar v2','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
         {{ Form::bsBtnPrint( 'tesoreria/recaudos_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
+        {{ Form::bsBtnEmail( 'teso_recaudo_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }} 
     @endif
 @endsection
 
@@ -50,6 +51,7 @@
             <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
             <br/>
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
+            @include('layouts.elementos.label_show_email',['email' => $doc_encabezado->email])
         </td>
     </tr>
     <tr>

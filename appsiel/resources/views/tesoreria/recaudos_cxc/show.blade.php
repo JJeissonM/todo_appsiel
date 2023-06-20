@@ -24,9 +24,9 @@
         		{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 				
 <!--
-				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
-				{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar2') }}v2--> 
-				{{ Form::bsBtnEmail( 'tesoreria_recaudos_cxc_enviar_por_email/'.$id.$variables_url ) }} 
+				{ { Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
+				{ { Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar2') }}v2--> 
+				{{ Form::bsBtnEmail( 'teso_recaudo_cxc_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }} 
 			</div>			
 		</div>
 

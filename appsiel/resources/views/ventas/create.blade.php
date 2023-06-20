@@ -78,6 +78,8 @@
 
 				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 				
+				<input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion" value="{{ $msj_resolucion_facturacion }}">
+				
 			{{ Form::close() }}
 
 			<br/>
@@ -150,6 +152,9 @@
 
 @section('scripts')
 
+	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
+	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
+
 	<script type="text/javascript">
 		var url_raiz = "{{ url('/') }}";
 		var dias_plazo;
@@ -164,9 +169,15 @@
 		    }
 
 		};
-
+	
+		if ( $('#msj_resolucion_facturacion').val() != '') {
+			Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: $('#msj_resolucion_facturacion').val()
+				});
+		}
 	</script>
 	
-	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
-	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
+
 @endsection

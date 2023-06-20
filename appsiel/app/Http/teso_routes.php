@@ -31,19 +31,18 @@ Route::get('tesoreria/get_cajas_cuentas_bancarias/{empresa_id}','Tesoreria\Tesor
 Route::get('tesoreria/get_cajas/{empresa_id}','Tesoreria\TesoreriaController@get_cajas');
 Route::get('tesoreria/get_cuentas_bancarias/{empresa_id}','Tesoreria\TesoreriaController@get_cuentas_bancarias');
 
-
-
 Route::get('tesoreria/get_cajas_to_select','Tesoreria\TesoreriaController@get_cajas_to_select');
 Route::get('tesoreria/get_ctas_bancarias_to_select','Tesoreria\TesoreriaController@get_ctas_bancarias_to_select');
-
-
 
 Route::get('teso_consultar_motivos', 'Tesoreria\TesoreriaController@consultar_motivos');
 Route::get('tesoreria/ajax_get_motivos/{teso_tipo_motivo}', 'Tesoreria\TesoreriaController@ajax_get_motivos');
 
+
+//				RECAUDOS GENERALES
 Route::get('tesoreria/recaudos_imprimir/{id}', 'Tesoreria\RecaudoController@imprimir');
 Route::get('tesoreria/recaudos_anular/{id}', 'Tesoreria\RecaudoController@anular_recaudo');
 Route::resource('tesoreria/recaudos', 'Tesoreria\RecaudoController');
+Route::get('teso_recaudo_enviar_por_email/{id}', 'Tesoreria\RecaudoController@enviar_por_email');
 
 
 //				PAGOS
@@ -72,6 +71,7 @@ Route::get('teso_anular_recaudo_cxc/{id}', 'Tesoreria\RecaudoCxcController@anula
 
 Route::get('tesoreria_recaudos_cxc_imprimir/{id}', 'Tesoreria\RecaudoCxcController@imprimir');
 Route::resource('tesoreria/recaudos_cxc', 'Tesoreria\RecaudoCxcController');
+Route::get('teso_recaudo_cxc_enviar_por_email/{id}', 'Tesoreria\RecaudoCxcController@enviar_por_email');
 
 // CONTROL DE CHEQUES
 Route::get('teso_get_cheques_recibidos/{tipo_operacion_id}/{teso_motivo_id}/{caja_id}', 'Tesoreria\ControlChequeController@get_cheques_recibidos');
@@ -123,9 +123,6 @@ Route::get('teso_pdf_reporte_cartera_por_curso','Tesoreria\ReporteController@tes
 
 
 // PROCESOS
-
-
-
 Route::get('teso_re_accounting_one_document/{doc_header_id}', 'Tesoreria\ProcessController@re_accounting_one_document');
 
 Route::get('teso_recontabilizar_documento_pago/{doc_encabezado_id}', 'Tesoreria\PagoController@recontabilizar_un_documento'); // Tambien Reconstruye el movimiento de Tesoreria

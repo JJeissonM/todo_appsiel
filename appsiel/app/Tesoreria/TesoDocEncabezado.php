@@ -44,6 +44,11 @@ class TesoDocEncabezado extends Model
         return $this->belongsTo( 'App\Core\TipoDocApp', 'core_tipo_doc_app_id' );
     }
 
+    public function empresa()
+    {
+        return $this->belongsTo( 'App\Core\Empresa', 'core_empresa_id' );
+    }
+
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
@@ -199,7 +204,8 @@ class TesoDocEncabezado extends Model
                                 DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo' ),
                                 'core_terceros.numero_identificacion',
                                 'core_terceros.direccion1',
-                                'core_terceros.telefono1'
+                                'core_terceros.telefono1',
+                                'core_terceros.email'
                             )
                     ->get()
                     ->first();

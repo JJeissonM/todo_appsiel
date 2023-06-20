@@ -3,14 +3,7 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
 use NumerosEnLetras;
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -27,10 +20,6 @@ use App\Sistema\Modelo;
 use App\Core\Tercero;
 use App\Core\Empresa;
 
-use App\Matriculas\Grado;
-use App\Matriculas\Estudiante;
-use App\Core\Colegio;
-
 use App\CxC\CxcDocEncabezado;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
@@ -46,6 +35,12 @@ use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Http\Controllers\Sistema\EmailController;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class RecaudoController extends TransaccionController
 {
@@ -281,16 +276,23 @@ class RecaudoController extends TransaccionController
 
     public function imprimir($id)
     {
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );        
+        
+        $documento_vista = $this->generar_documento_vista_print($doc_encabezado, Input::get('formato_impresion_id'));
 
-        $reg_anterior = TesoDocEncabezado::where('id', '<', $id)->where('core_empresa_id', Auth::user()->empresa_id)->max('id');
-        $reg_siguiente = TesoDocEncabezado::where('id', '>', $id)->where('core_empresa_id', Auth::user()->empresa_id)->min('id');
+        // Se prepara el PDF
+        $orientacion='portrait';
+        $tam_hoja='Letter';
 
-        $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML( $documento_vista )->setPaper($tam_hoja,$orientacion);
 
+        return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+    }    
+
+    public function generar_documento_vista_print($doc_encabezado, $formato_impresion_id)
+    {
         $doc_registros = TesoDocRegistro::get_registros_impresion( $doc_encabezado->id );
-
-        //dd( $doc_pagados );
 
         $empresa = Empresa::find( $doc_encabezado->core_empresa_id );
 
@@ -307,33 +309,9 @@ class RecaudoController extends TransaccionController
         if(Input::get('formato_impresion_id') == 'pos'){
             $documento_vista = View::make( 'tesoreria.recaudos.pos', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
         }
-        
-       
-        // Se prepara el PDF
-        $orientacion='portrait';
-        $tam_hoja='Letter';
 
-        $pdf = \App::make('dompdf.wrapper');
-        //$pdf->set_option('isRemoteEnabled', TRUE);
-        $pdf->loadHTML( $documento_vista )->setPaper($tam_hoja,$orientacion);
-
-        return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
-
-        /*$view_pdf = RecaudoController::vista_preliminar_recaudos($id,'imprimir');
-       
-        // Se prepara el PDF
-        $orientacion='portrait';
-        $tam_hoja='Letter';
-
-        $pdf = \App::make('dompdf.wrapper');
-        //$pdf->set_option('isRemoteEnabled', TRUE);
-        $pdf->loadHTML( $view_pdf )->setPaper($tam_hoja,$orientacion);
-
-        //echo $view_pdf;
-        return $pdf->download('recibo_de_caja.pdf');
-        */
+        return $documento_vista;
     }
-
 
     public static function vista_preliminar_recaudos($id, $vista)
     {
@@ -579,7 +557,7 @@ class RecaudoController extends TransaccionController
     }
 
     /**
-     Anular un recaudo (distinto a recaudo de cxc)
+     *      Anular un recaudo (distinto a recaudo de cxc)
      */
     public function anular_recaudo($id)
     {
@@ -626,5 +604,31 @@ class RecaudoController extends TransaccionController
         $documento->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
       return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Documento de recaudo anulado correctamente.');
+    }
+
+    /*
+        Enviar por email
+    */
+    public function enviar_por_email( $id )
+    {
+        $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
+
+        $documento_vista = $this->generar_documento_vista_print($doc_encabezado, Input::get('formato_impresion_id'));
+
+        $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
+
+        $asunto = $doc_encabezado->documento_transaccion_descripcion.' No. '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
+
+        $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
+
+        $email_destino = $tercero->email;
+        if ( $doc_encabezado->contacto_cliente_id != 0 )
+        {
+            $email_destino = $doc_encabezado->contacto_cliente->tercero->email;
+        }
+
+        $vec = EmailController::enviar_por_email_documento( $doc_encabezado->empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );
+
+        return redirect( 'tesoreria/recaudos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( $vec['tipo_mensaje'], $vec['texto_mensaje'] );
     }
 }

@@ -166,6 +166,7 @@ class TransaccionController extends Controller
 
         $id_transaccion = 8;// 8 = Recaudo cartera
 
+        $msj_resolucion_facturacion = 'hello';
         switch ( $transaccion->id )
         {
             case 25: // Factura compras
@@ -189,7 +190,7 @@ class TransaccionController extends Controller
 
         $miga_pan = $this->get_array_miga_pan( $app, $modelo, 'Crear: '.$transaccion->descripcion );
         
-        return view( $vista, compact( 'form_create','miga_pan','tabla','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias', 'item_sugerencia_cliente' ) );
+        return view( $vista, compact( 'form_create','miga_pan','tabla','id_transaccion','motivos','medios_recaudo','cajas','cuentas_bancarias', 'item_sugerencia_cliente', 'msj_resolucion_facturacion' ) );
     }
     
     /*
