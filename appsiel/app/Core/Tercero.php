@@ -15,6 +15,7 @@ use Schema;
 use App\Matriculas\Estudiante;
 use App\Sistema\Modelo;
 use App\Core\Departamento;
+use App\Matriculas\Responsableestudiante;
 use App\Nomina\NomContrato;
 use App\Ventas\Cliente;
 
@@ -243,8 +244,6 @@ class Tercero extends Model
         return $vec;
     }
 
-
-
     public function store_adicional($datos, $registro)
     {
     	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
@@ -354,7 +353,6 @@ class Tercero extends Model
 
         return $lista_campos;
     }
-
 
     public function validar_eliminacion($id)
     {

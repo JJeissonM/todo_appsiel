@@ -55,6 +55,21 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
                                     ->orderBy('teso_doc_encabezados.created_at', 'DESC')
                                     ->get();
 
+        
+        if (config('tesoreria.buscar_por_estudiante_en_inputs')) {
+            $aux_collection = collect([]);
+            foreach ($collection as $record) {
+                $doc_encabezado = TesoDocEncabezado::find($record->campo7);
+                if( !is_null($doc_encabezado->datos_auxiliares_estudiante()) )
+                {
+                    $record->campo3 .= ' (' . $doc_encabezado->datos_auxiliares_estudiante()->matricula->estudiante->tercero->descripcion . ')';
+                }
+                $aux_collection->push($record);
+            }
+
+            $collection = $aux_collection;
+        }
+
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
         if (count($collection) > 0) {
