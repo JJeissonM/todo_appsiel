@@ -24,7 +24,7 @@ use App\Core\Tercero;
         <tr>
             <td width="55%"><b style="font-size: 16px">{{ $empresa->descripcion }}</b></td>
             <td width="45%" colspan="">
-                <b style="font-size: 16px">Recibo N. {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</b>
+                <b style="font-size: 16px">{{ $doc_encabezado->tipo_documento_app->descripcion }} N. {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</b>
             </td>
         </tr>
         <tr>
