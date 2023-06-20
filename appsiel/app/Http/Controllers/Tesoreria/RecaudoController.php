@@ -309,6 +309,9 @@ class RecaudoController extends TransaccionController
         if(Input::get('formato_impresion_id') == 'pos'){
             $documento_vista = View::make( 'tesoreria.recaudos.pos', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
         }
+        if(Input::get('formato_impresion_id') == 'colegio'){
+            $documento_vista = View::make( 'tesoreria.recaudos.documento_imprimir_colegio', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
 
         return $documento_vista;
     }

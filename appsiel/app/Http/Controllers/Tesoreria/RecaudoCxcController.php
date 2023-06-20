@@ -235,6 +235,9 @@ class RecaudoCxcController extends Controller
         if( $formato_impresion_id == 'estandar2'){
             $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir2', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
         }
+        if( $formato_impresion_id == 'colegio'){
+            $documento_vista = View::make( 'tesoreria.recaudos_cxc.documento_imprimir_colegio', compact('doc_encabezado', 'doc_pagados', 'empresa', 'registros_contabilidad', 'elaboro' ) )->render();
+        }
 
         return $documento_vista;
     }

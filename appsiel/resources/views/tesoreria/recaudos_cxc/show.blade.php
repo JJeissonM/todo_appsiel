@@ -20,7 +20,7 @@
 
 		<div class="col-md-4 text-center"> 
 			<div class="btn-group">	
-				Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
+				Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','estandar2'=>'Estándar v2','colegio'=>'Colegio'],null, [ 'id' =>'formato_impresion_id' ]) }}
         		{{ Form::bsBtnPrint( 'tesoreria_recaudos_cxc_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
 				
 <!--
