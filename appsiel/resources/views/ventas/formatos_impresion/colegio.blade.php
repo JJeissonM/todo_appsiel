@@ -185,6 +185,13 @@ use App\Core\Tercero;
     
 @include('ventas.incluir.factura_firma_totales')
 <hr>
+
+@if( $etiquetas['pie_pagina'] != '')
+    <p style="text-align: center; font-style: italic; width:100%;">
+        <b> {!! $etiquetas['pie_pagina'] !!} </b>
+    </p>
+@endif
+
 <h3>Detalles</h3>
 <div class="info text-indent">
     {{  $doc_encabezado->descripcion }}
