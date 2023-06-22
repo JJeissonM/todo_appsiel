@@ -89,6 +89,8 @@ use App\Core\Tercero;
     </tr>
 </table>
 
+@include('matriculas.facturas.datos_estudiante_recaudo')
+
     <br>
 
     <table class="table table-bordered">
