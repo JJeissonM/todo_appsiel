@@ -2,7 +2,7 @@
 	
 	$user = \Auth::user();
 
-	if ( $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') ) 
+	if ( $user->hasRole('SuperAdmin') || $user->hasRole('Administrador') || $user->hasRole('Jefe de almacén') ) 
     {
     	$pdvs = App\VentasPos\Pdv::where([['estado','<>', 'Inactivo']])->get();
     }else{

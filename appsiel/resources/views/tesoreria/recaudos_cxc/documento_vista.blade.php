@@ -81,6 +81,7 @@
                     $saldo_pendiente = App\CxC\CxcMovimiento::where('core_tipo_transaccion_id',$linea->doc_cxc_transacc_id)
                                                         ->where('core_tipo_doc_app_id',$linea->doc_cxc_tipo_doc_id)
                                                         ->where('consecutivo',$linea->doc_cxc_consecutivo)
+                                                        ->where('core_tercero_id',$linea->core_tercero_id)
                                                         ->value('saldo_pendiente');
                 ?>
 
