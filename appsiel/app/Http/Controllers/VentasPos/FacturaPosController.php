@@ -373,6 +373,15 @@ class FacturaPosController extends TransaccionController
                     $lista_campos[$key]['value'] = [$doc_encabezado->vendedor_id];
                     break;
 
+                case 'core_tipo_doc_app_id':
+                    $lista_campos[$key]['editable'] = 1;
+                    $lista_campos[$key]['atributos'] = [];
+                    $lbl_value = $lista_campos[$key]['opciones'][$lista_campos[$key]['value']];
+                    $lista_campos[$key]['opciones'] = [
+                        $lista_campos[$key]['value'] => $lbl_value
+                    ];
+                    break;
+
                 case 'forma_pago':
                     $lista_campos[$key]['value'] = $doc_encabezado->condicion_pago;
                     $lista_campos[$key]['editable'] = 1;
@@ -620,12 +629,18 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado->fecha_vencimiento = $request->fecha_vencimiento;
         $doc_encabezado->vendedor_id = $request->vendedor_id;
         $doc_encabezado->lineas_registros_medios_recaudos = $request->lineas_registros_medios_recaudos;
-        $doc_encabezado->valor_total = $this->get_total_campo_lineas_registros($lineas_registros, 'precio_total');
+        $doc_encabezado->valor_total = $total_factura;
         $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();
 
         // Borrar líneas de registros anteriores
         DocRegistro::where('vtas_pos_doc_encabezado_id', $doc_encabezado->id)->delete();
+
+        // Borrar movimiento anterior
+        Movimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc_encabezado->consecutivo)
+            ->delete();
 
         // Crear nuevamente las líneas de registros
         $request['creado_por'] = Auth::user()->email;
@@ -1260,6 +1275,7 @@ class FacturaPosController extends TransaccionController
                 ->get();
     }
 
+    // $request es actualizado por referencia
     public function actualizar_campo_lineas_registros_medios_recaudos_request(&$request_2,$total_factura)
     {
         $lineas_registros_medios_recaudos = json_decode($request_2->lineas_registros_medios_recaudos, true); // true convierte en un array asociativo al JSON
@@ -1267,7 +1283,6 @@ class FacturaPosController extends TransaccionController
         array_pop($lineas_registros_medios_recaudos); // eliminar ultimo elemento del array
 
         $medios_recaudos = json_encode($lineas_registros_medios_recaudos);
-
 
         if ($medios_recaudos == "[]") // Si no se envian medios de pago, se utiliza efectivo por defecto
         {
@@ -1314,13 +1329,13 @@ class FacturaPosController extends TransaccionController
                             ['estado' => 'Pendiente'] +
                             ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
 
-            $registro_creado = DocRegistro::create($linea_datos);
+            DocRegistro::create($linea_datos);
 
             $datos['consecutivo'] = $doc_encabezado->consecutivo;
 
             Movimiento::create(
                                 $datos +
-                                    $linea_datos
+                                $linea_datos
                             );
 
             $total_documento += (float)$lineas_registros[$i]->precio_total;
