@@ -166,7 +166,7 @@ class TransaccionController extends Controller
 
         $id_transaccion = 8;// 8 = Recaudo cartera
 
-        $msj_resolucion_facturacion = 'hello';
+        $msj_resolucion_facturacion = '';
         switch ( $transaccion->id )
         {
             case 25: // Factura compras
