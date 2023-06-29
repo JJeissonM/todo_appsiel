@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Core\TransaccionController;
 
-use App\Core\EncabezadoDocumentoTransaccion;
 use App\Core\TipoDocApp;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
@@ -26,8 +25,10 @@ use App\Http\Controllers\Ventas\VentaController;
 use App\Tesoreria\RegistrosMediosPago;
 use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class FacturaController extends TransaccionController
 {
@@ -43,7 +44,9 @@ class FacturaController extends TransaccionController
 
     public function grafica_documentos_x_mes( $periodo_lectivo )
     {
-        //  PENDIENTE 
+        //  PENDIENTE POR TERMINAR
+
+
         $fecha_ini = date('Y-m-01');
         //$fecha_fin = ;
         $documentos = ResultadoEnvioDocumento::where([
@@ -55,7 +58,7 @@ class FacturaController extends TransaccionController
             ->get();
 
         // Creación de gráfico de Barras
-        $stocksTable2 = Lava::DataTable();
+        $stocksTable2 = LavachartsFacade::DataTable();
         
         $stocksTable2->addStringColumn('Genero')
                     ->addNumberColumn('Cantidad');
@@ -66,7 +69,7 @@ class FacturaController extends TransaccionController
             ]);
         }
 
-        Lava::PieChart('Documentos', $stocksTable2);
+        LavachartsFacade::PieChart('Documentos', $stocksTable2);
         
         return $documentos;
     }
