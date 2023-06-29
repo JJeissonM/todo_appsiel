@@ -6,21 +6,21 @@
 
 @section('botones_acciones')	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
-	
-	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 
-		@if( $doc_encabezado->estado != 'Enviada' )
+		@if($doc_encabezado->condicion_pago != 'contado')
+	    	<a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
+		@endif
+
+		@if( $doc_encabezado->estado != 'Enviada' && $doc_encabezado->estado != 'Contabilizado - Sin enviar' )
 	    	<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+
+			@can('Facturación Electrónica')
+				<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . $variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
+			@endcan
 		@endif
 
         @can('vtas_recontabilizar')
         	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
-        @endcan
-
-        @can('Facturación Electrónica')
-			@if( $doc_encabezado->estado != 'Enviada' )
-        		<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . '/' . $doc_encabezado->core_tipo_transaccion_id .$variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
-			@endif
         @endcan
         
 	@endif
@@ -364,15 +364,19 @@
 				$("#myModal2 .modal-title").text('Convertir documento en Factura Electrónica');
 
 				$("#myModal2 .btn_edit_modal").hide();
-				$("#myModal2 .btn_save_modal").html('Convertir');
+				$("#myModal2 .btn_save_modal").html('<i class="fa fa-file-text-o"></i> Convertir');
 				
-				$("#myModal2 .btn_save_modal").attr( 'data-href',$(this).attr( 'data-href') );
+				$("#myModal2 .btn_save_modal").attr( 'data-href', $(this).attr( 'data-href') );
 
 			});
 
 			
             $('.btn_save_modal').click(function(event){
-				location.href = $(this).attr( 'data-href');
+				// Desactivar el click del botón
+		        $(this).children('.fa-file-text-o').attr('class','fa fa-spinner fa-spin');
+		        $(this).attr( 'disabled', 'disabled' );
+				$( this ).off( event );
+				location.href = $(this).attr( 'data-href' );
 			});
 
 		});

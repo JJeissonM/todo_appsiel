@@ -12,131 +12,89 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\Movimiento;
 use Illuminate\Support\Facades\Auth;
 
 class DocumentHeaderService
 {
-    public function convert_to_electronic_invoice( $document_header_id , $parent_transaction_id)
+    // Only For POS
+    public function convert_to_electronic_invoice( $document_header_id )
     {
-        switch ($parent_transaction_id) {
-            case '23': // Factura de ventas estándar
-                $document_header = VtasDocEncabezado::find( $document_header_id );
-                break;
-            
-            case '47': // Factura POS
-                $document_header = FacturaPos::find( $document_header_id );
-                break;
-                
-            default:
-                return (object)[
-                    'status'=>'mensaje_error',
-                    'message'=>'El tipo de documento actual no puede ser convertido en Factura Electrónica.'
-                ];
-                break;
-        }
+        $original_document_header = FacturaPos::find( $document_header_id );
 
-        $document_label_old = $document_header->get_label_documento();
+        $original_document_label = $original_document_header->get_label_documento();
 
-        $array_wheres = ['core_empresa_id'=>$document_header->core_empresa_id,
-            'core_tipo_transaccion_id' => $document_header->core_tipo_transaccion_id,
-            'core_tipo_doc_app_id' => $document_header->core_tipo_doc_app_id,
-            'consecutivo' => $document_header->consecutivo];
+        $array_wheres = [
+            'core_empresa_id' => $original_document_header->core_empresa_id,
+            'core_tipo_transaccion_id' => $original_document_header->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $original_document_header->core_tipo_doc_app_id,
+            'consecutivo' => $original_document_header->consecutivo
+        ];
 
         // Verificar si la factura tiene abonos, si tiene no se puede convertir
-        $cantidad = CxcAbono::where('doc_cxc_transacc_id',$document_header->core_tipo_transaccion_id)
-                            ->where('doc_cxc_tipo_doc_id',$document_header->core_tipo_doc_app_id)
-                            ->where('doc_cxc_consecutivo',$document_header->consecutivo)
+        $cantidad = CxcAbono::where( $array_wheres )
                             ->count();
         
         if ($cantidad != 0) {
             return (object)[
                 'status'=>'mensaje_error',
-                'message'=>'Factura ' . $document_header->get_label_documento()  . ' NO puede ser convertida. Se le han hecho Recaudos de CXC (Tesorería).'
+                'message'=>'Factura ' . $original_document_label  . ' NO puede ser convertida. Se le han hecho Recaudos de CXC (Tesorería).'
             ];
         }
 
         $modificado_por = Auth::user()->email;
+        $fe_document_type_id_default = config('facturacion_electronica.document_type_id_default');
+        $fe_transaction_type_id_default = config('facturacion_electronica.transaction_type_id_default');
 
         // Calcular consecutivo para nueva factura electronica
         // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-        $consecutivo = TipoDocApp::get_consecutivo_actual($document_header->core_empresa_id, config('facturacion_electronica.document_type_id_default')) + 1;
+        $consecutivo = TipoDocApp::get_consecutivo_actual($original_document_header->core_empresa_id, $fe_document_type_id_default) + 1;
 
         // Se incementa el consecutivo para ese tipo de documento y la empresa
-        TipoDocApp::aumentar_consecutivo($document_header->core_empresa_id, config('facturacion_electronica.document_type_id_default'));
+        TipoDocApp::aumentar_consecutivo($original_document_header->core_empresa_id, $fe_document_type_id_default);
 
         // Cambiar Tipo de Transacción, tipo de documento y consecutivo Para las tablas de movimientos relacionadas
-        ContabMovimiento::where($array_wheres)->update([
-            'core_tipo_transaccion_id' => config('facturacion_electronica.transaction_type_id_default'),
-            'core_tipo_doc_app_id' => config('facturacion_electronica.document_type_id_default'),
+        $new_data = [
+            'core_tipo_transaccion_id' => $fe_transaction_type_id_default,
+            'core_tipo_doc_app_id' => $fe_document_type_id_default,
             'consecutivo' => $consecutivo,
             'modificado_por' => $modificado_por
-        ]);
+        ];
 
-        CxcMovimiento::where($array_wheres)->update([
-            'core_tipo_transaccion_id' => config('facturacion_electronica.transaction_type_id_default'),
-            'core_tipo_doc_app_id' => config('facturacion_electronica.document_type_id_default'),
-            'consecutivo' => $consecutivo,
-            'modificado_por' => $modificado_por
-        ]);
+        ContabMovimiento::where( $array_wheres )->update( $new_data );
 
-        TesoMovimiento::where($array_wheres)->update([
-            'core_tipo_transaccion_id' => config('facturacion_electronica.transaction_type_id_default'),
-            'core_tipo_doc_app_id' => config('facturacion_electronica.document_type_id_default'),
-            'consecutivo' => $consecutivo,
-            'modificado_por' => $modificado_por
-        ]);
+        CxcMovimiento::where( $array_wheres )->update( $new_data );
 
-        $document_header->update([
-            'core_tipo_transaccion_id' => config('facturacion_electronica.transaction_type_id_default'),
-            'core_tipo_doc_app_id' => config('facturacion_electronica.document_type_id_default'),
-            'consecutivo' => $consecutivo,
-            'modificado_por' => $modificado_por,
-            'estado' => 'Contabilizado - Sin enviar'
-        ]);
+        TesoMovimiento::where( $array_wheres )->update( $new_data );
 
-        switch ($parent_transaction_id) {
-            case '23': // Factura de ventas estándar
-                $vtas_document_header = $document_header;
-                break;
-            
-            case '47': // Factura POS
-                // Crear encabezado y lineas de registros en en Vtas estandar
-                $data = $document_header->toArray();
-                $data['core_tipo_transaccion_id'] = config('facturacion_electronica.transaction_type_id_default');
-                $data['core_tipo_doc_app_id'] = config('facturacion_electronica.document_type_id_default');
-                $data['consecutivo'] = $consecutivo;
-                $data['estado'] = 'Contabilizado - Sin enviar';
-                $vtas_document_header = VtasDocEncabezado::create($document_header->toArray());
+        // Tablas POS
+        $original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
+        Movimiento::where( $array_wheres )->update( $new_data );
 
-                $lineas_registros = $document_header->lineas_registros;
+        // Crear encabezado y lineas de registros en en Vtas estandar
+        $data = $original_document_header->toArray();
+        unset($data['id']);
+        $data['core_tipo_transaccion_id'] = $fe_transaction_type_id_default;
+        $data['core_tipo_doc_app_id'] = $fe_document_type_id_default;
+        $data['consecutivo'] = $consecutivo;
+        $data['estado'] = 'Contabilizado - Sin enviar';
+        $vtas_document_header = VtasDocEncabezado::create( $original_document_header->toArray() );
 
-                foreach ($lineas_registros as $linea) {
-                    $line_data = $data + $linea->toArray();
-                    $line_data['vtas_doc_encabezado_id'] = $vtas_document_header->id;
-                    VtasDocRegistro::create($line_data);
-                }
+        $lineas_registros = $original_document_header->lineas_registros;
 
-                break;
-                
-            default:
-                return (object)[
-                    'status'=>'mensaje_error',
-                    'message'=>'El tipo de documento actual no puede ser convertido en Factura Electrónica.'
-                ];
-                break;
+        foreach ($lineas_registros as $linea) {
+            $line_data = $data + $linea->toArray();
+            unset($line_data['id']);
+            $line_data['vtas_doc_encabezado_id'] = $vtas_document_header->id;
+            VtasDocRegistro::create($line_data);
         }
 
         // Mover movimiento de ventas
-        VtasMovimiento::where($array_wheres)->update([
-            'core_tipo_transaccion_id' => config('facturacion_electronica.transaction_type_id_default'),
-            'core_tipo_doc_app_id' => config('facturacion_electronica.document_type_id_default'),
-            'consecutivo' => $consecutivo,
-            'modificado_por' => $modificado_por
-        ]);
+        VtasMovimiento::where( $array_wheres )->update( $new_data );
 
         return (object)[
             'status'=>'flash_message',
-            'message'=>'El documento ' . $document_label_old  . ' fue convertido en Factura electrónica exitosamente.',
+            'message'=>'El documento ' . $original_document_label  . ' fue convertido en Factura electrónica exitosamente.',
             'new_document_header_id'=> $vtas_document_header->id
         ];
     }

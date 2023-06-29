@@ -21,7 +21,7 @@
 
                         
                         @can('vtas_pos_visualizar_documento_en_consultar_facturas_pdv')
-                            <a class="btn btn-primary btn-xs btn-detail" href="{{ url('ventas/'.$fila['campo9'].'?id=20&id_modelo=230&id_transaccion=47') }}" title="Consultar" id="btn_print" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
+                            <a class="btn btn-primary btn-xs btn-detail" href="{{ url('pos_factura/'.$fila['campo9'].'?id=20&id_modelo=230&id_transaccion=47') }}" title="Consultar" id="btn_print" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
                         @endcan
                         
                         

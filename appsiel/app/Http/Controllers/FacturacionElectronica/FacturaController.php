@@ -274,7 +274,7 @@ class FacturaController extends TransaccionController
         ];
     }
 
-    public function convertir_en_factura_electronica( $vtas_doc_encabezado_id, $parent_transaction_id )
+    public function convertir_en_factura_electronica( $vtas_doc_encabezado_id )
     {
         $tipo_doc_fe = TipoDocApp::find(config('facturacion_electronica.document_type_id_default'));
         if ( empty( $tipo_doc_fe->resolucion_facturacion->toArray() ) )
@@ -283,7 +283,7 @@ class FacturaController extends TransaccionController
         }
 
         $doc_header_serv = new DocumentHeaderService();
-        $result = $doc_header_serv->convert_to_electronic_invoice($vtas_doc_encabezado_id, $parent_transaction_id);
+        $result = $doc_header_serv->convert_to_electronic_invoice( $vtas_doc_encabezado_id );
 
         if ( $result->status == 'mensaje_error' )
         {
