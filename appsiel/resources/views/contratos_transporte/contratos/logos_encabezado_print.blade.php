@@ -1,7 +1,7 @@
 <table class="table table-bordered table-striped">
     <tbody>
         <tr>
-            <td class="border" style="width: 30%;"><img style="width: 250px; height: 70px;" src="{{ asset('img/logos/min_transporte.png') }}"></td>
+            <td class="border" style="width: 30%;"><img style="width: 250px; height: 70px;" src="https://appsiel.online/el_software/assets/images/logo_min_transporte.jpg" ></td>
             <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
 
             <?php 
