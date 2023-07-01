@@ -16,7 +16,7 @@
 @endsection
 
 @section('botones_acciones')
-	@if( $doc_encabezado->estado != 'Anulado'  )
+	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->condicion_pago != 'contado'  )
 	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
 	@endif
 
@@ -31,11 +31,16 @@
 		<!-- MOSTRAR SOLO SI YA ESTA ENVIADO -->
 
 	@if( $doc_encabezado->estado == 'Sin enviar' || $doc_encabezado->estado == 'Contabilizado - Sin enviar' )
+
+		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+	
 		<?php 
 			$color = 'red';
 		?>
 		<a class="btn-gmail" href="{{ url( 'fe_factura_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar"><i class="fa fa-btn fa-send"></i></a>
         <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
+
+
 	@endif
 
 @endsection

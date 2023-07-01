@@ -23,7 +23,7 @@ class DocumentHeaderService
             - inv_movimientos de la REMISIÓN y su contabilidad. Además se actualiza el estado a Anulado en inv_doc_registros e inv_doc_encabezados
             - vtas_movimientos y su contabilidad. Además se actualiza el estado a Anulado en vtas_doc_registros y vtas_doc_encabezados
     */
-    public function cancel_document_by_id( $document_header_id, $cancel_deliveries_notes )
+    public function cancel_document_by_id( int $document_header_id, bool $cancel_deliveries_notes )
     {
         $document_header = VtasDocEncabezado::find( $document_header_id );
 
@@ -37,6 +37,7 @@ class DocumentHeaderService
                             ->where('doc_cxc_tipo_doc_id',$document_header->core_tipo_doc_app_id)
                             ->where('doc_cxc_consecutivo',$document_header->consecutivo)
                             ->get();
+
         if (!empty($abonos->toArray())) {
             $lista_abonos = '';
             foreach ($abonos as $abono) {
