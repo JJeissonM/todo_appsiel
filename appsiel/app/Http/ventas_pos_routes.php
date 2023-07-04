@@ -16,6 +16,7 @@ Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosContro
 Route::get('pos_factura_validar_existencias/{pdv_id}', 'VentasPos\FacturaPosController@validar_existencias');
 
 Route::get('pos_acumular_una_factura/{factura_id}', 'VentasPos\FacturaPosController@acumular_una_factura');
+Route::get('pos_acumular_una_factura_individual/{factura_id}', 'VentasPos\FacturaPosController@acumular_una_factura_individual');
 
 Route::get('pos_factura_contabilizar/{pdv_id}', 'VentasPos\FacturaPosController@contabilizar');
 Route::get('pos_contabilizar_una_factura/{factura_id}', 'VentasPos\FacturaPosController@contabilizar_una_factura');

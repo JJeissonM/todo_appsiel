@@ -22,7 +22,8 @@
         @can('vtas_recontabilizar')
         	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endcan
-        
+    @else
+	<a class="btn-gmail" href="{{ url( 'pos_acumular_una_factura_individual/'.$id.$variables_url ) }}" title="Acumular"><i class="fa fa-cogs"></i></a>
 	@endif
 	
 @endsection
