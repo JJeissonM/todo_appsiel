@@ -117,6 +117,29 @@
 
 				<h4> Parámetros de Impresión  </h4>
 				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tamanio_fuente_factura = '17';
+								if( isset($parametros['tamanio_fuente_factura'] ) )
+								{
+									$tamanio_fuente_factura = $parametros['tamanio_fuente_factura'];
+								}
+							?>
+							{{ Form::bsText('tamanio_fuente_factura', $tamanio_fuente_factura, 'Tamaño letra', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 				
 				<div class="row">
 

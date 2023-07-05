@@ -439,7 +439,6 @@ function mandar_codigo4(item_id) {
 	$('#tasa_descuento').val(get_descuento(producto.id));
 
 	var quantity = $('#quantity').val();
-	console.log(quantity);
 	
 	if ($.isNumeric(quantity) ) {
 		cantidad = quantity;
@@ -447,7 +446,6 @@ function mandar_codigo4(item_id) {
 		cantidad = 1;
 	}
 
-	console.log(cantidad);
 	$('#cantidad').val(cantidad);
 	calcular_valor_descuento2();
 	calcular_impuestos2();
