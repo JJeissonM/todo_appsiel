@@ -261,6 +261,7 @@ class InvProducto extends Model
                 'contab_impuestos.tasa_impuesto AS IVA',
                 'inv_productos.tipo AS TIPO',
                 'inv_productos.codigo_barras AS CODIGO_BARRAS',
+                'inv_productos.referencia AS REFERENCIA',
                 'inv_productos.estado AS ESTADO'
             )
             ->where("inv_productos.id", "LIKE", "%$search%")
@@ -273,6 +274,7 @@ class InvProducto extends Model
             ->orWhere("inv_productos.tipo", "LIKE", "%$search%")
             ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
             ->orderBy('inv_productos.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
