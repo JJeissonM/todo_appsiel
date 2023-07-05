@@ -376,6 +376,7 @@ function mandar_codigo(item_id) {
 	*/
 }
 
+// Agrega la linea completa del item (Usanda en Tactil)
 function mandar_codigo2(item_id) {
 
 	var producto = productos.find(item => item.id === parseInt(item_id));
@@ -422,6 +423,43 @@ function mandar_codigo3(item_id) {
 	$('#cantidad').select();
 }
 /**/
+
+// Agrega la linea completa del item (Usanda en Filtros de items)
+function mandar_codigo4(item_id) {
+
+	var producto = productos.find(item => item.id === parseInt(item_id));
+
+	tasa_impuesto = producto.tasa_impuesto;
+	inv_producto_id = producto.id;
+	unidad_medida = producto.unidad_medida1;
+	costo_unitario = producto.costo_promedio;
+
+	$('#inv_producto_id').val(producto.descripcion);
+	$('#precio_unitario').val(get_precio(producto.id));
+	$('#tasa_descuento').val(get_descuento(producto.id));
+
+	var quantity = $('#quantity').val();
+	console.log(quantity);
+	
+	if ($.isNumeric(quantity) ) {
+		cantidad = quantity;
+	}else{
+		cantidad = 1;
+	}
+
+	console.log(cantidad);
+	$('#cantidad').val(cantidad);
+	calcular_valor_descuento2();
+	calcular_impuestos2();
+	if (!calcular_precio_total2()) {
+		$('#popup_alerta').show();
+		$('#popup_alerta').css('background-color', 'red');
+		$('#popup_alerta').text('Error en precio total. Por favor verifique');
+		return false;
+	}
+	numero_linea = 1;
+	agregar_la_linea2();
+}
 
 function agregar_la_linea2()
 {
@@ -562,7 +600,7 @@ function calcular_totales2() {
 }
 
 function calcular_precio_total2() {
-	precio_total = (precio_unitario - valor_unitario_descuento) * 1;
+	precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 	$('#precio_total').val(0);
 
 	if ($.isNumeric(precio_total) && precio_total > 0) {

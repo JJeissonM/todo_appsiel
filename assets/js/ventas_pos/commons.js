@@ -41,9 +41,17 @@ $(document).ready(function () {
         var codigo_tecla_presionada = event.which || event.keyCode;
 
         switch (codigo_tecla_presionada) {
+            case 113: // 113 = F2
+
+                $('#textinput_filter_item').select();
+                $("html, body").animate({scrollTop: "500px"});
+
+                break;
+
             case 27: // 27 = ESC
 
                 $('#efectivo_recibido').select();
+                $("html, body").animate({scrollTop: "870px"});
 
                 break;
 
@@ -156,6 +164,13 @@ $(document).ready(function () {
         if (codigo_tecla_presionada == 27) 
         {
             $('#inv_producto_id').focus();
+            return false;
+        }
+
+        if (codigo_tecla_presionada == 113) // F2 
+        {
+            $('#textinput_filter_item').select();
+            $("html, body").animate({scrollTop: "500px"});
             return false;
         }
 
