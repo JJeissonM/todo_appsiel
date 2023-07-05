@@ -427,7 +427,6 @@ class FacturaPosController extends TransaccionController
             $tabla = '';
         }
 
-
         $id_transaccion = 8; // 8 = Recaudo cartera
         $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
         $medios_recaudo = RecaudoController::get_medios_recaudo();
@@ -437,7 +436,7 @@ class FacturaPosController extends TransaccionController
         $numero_linea = count($registro->lineas_registros) + 1;
 
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($registro->lineas_registros);
-
+        
         $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
 
         $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();

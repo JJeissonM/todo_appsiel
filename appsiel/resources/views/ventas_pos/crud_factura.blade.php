@@ -207,21 +207,18 @@
                     <!-- Cinta Filtro Items -->
                     F2: Buscar Ítems
                     @include('ventas_pos.crud_factura_cinta_filtro_items')
+                    
+                        <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
+                    <div class="col-md-8 well"><div class="container-fluid">
 
-                    <div class="col-md-8 well">
-                        <div class="container-fluid">
+    <div class="marco_formulario">
+                        {!! str_replace("<tbody>
+                
+            </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
 
-                            <div class="marco_formulario">
-                                                <!-- NO QUITAR LOS ESPACIOS ENTRE <TBODY> DE STR_REPLACE -->
-                                                {!! str_replace("<tbody>
-                                        
-                                    </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
-
-                                                Productos ingresados: <span id="numero_lineas"> 0 </span>
-                                                <br/><br/>
-                            </div>
-                        </div>
-
+                        Productos ingresados: <span id="numero_lineas"> 0 </span>
+                        <br/><br/>
+</div></div> <!-- INMODIFICABLE -->
                         @if( Input::get('action') == 'edit' )
                             {!! $vista_medios_recaudo !!}
                         @else
