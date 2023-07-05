@@ -57,7 +57,6 @@ $(document).ready(function () {
 
             case 13: // Al presionar Enter
 
-
                 if ($(this).val() == '') {
                     return false;
                 }
@@ -89,7 +88,12 @@ $(document).ready(function () {
                 // Una segunda busqueda por Código de barras
                 if (producto === undefined && $('#forma_lectura_codigo_barras').val() == 'codigo_cantidad') {
                     var producto = productos.find(item => item.codigo_barras === $(this).val());
-                } 
+                }
+
+                if (producto === undefined) {
+                    var producto = productos.find(item => item.referencia === $(this).val());
+                    campo_busqueda = 'referencia';
+                }
 
                 if (producto !== undefined) {
 
@@ -123,7 +127,7 @@ $(document).ready(function () {
         $('#precio_unitario').val(get_precio(producto.id));
         $('#tasa_descuento').val(get_descuento(producto.id));
 
-        if (campo_busqueda == 'id') {
+        if (campo_busqueda == 'id' || campo_busqueda == 'referencia') {
             $('#cantidad').select();
         } else {
             // Por código de barras, se agrega la línea con un unidad de producto
