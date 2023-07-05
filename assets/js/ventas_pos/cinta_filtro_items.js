@@ -17,9 +17,9 @@ function filterItems(query) {
     // Por Cada button hijo de la Div filtros
     $('.filtros button').each(function()
     {
-        if ($(this).attr('data-label_item').indexOf(query) === -1) { // No existe
+        if ($(this).attr('data-label_item').indexOf(textoFiltro) === -1) { // No existe
             $(this).fadeOut('normal').addClass('hidden');
-        } else if ($(this).attr('data-label_item').indexOf(query) > -1) {
+        } else if ($(this).attr('data-label_item').indexOf(textoFiltro) > -1) {
             $(this).fadeIn('slow').removeClass('hidden');
         }
     });
