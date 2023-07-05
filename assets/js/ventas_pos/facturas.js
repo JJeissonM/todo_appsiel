@@ -459,6 +459,7 @@ function mandar_codigo4(item_id) {
 	}
 	numero_linea = 1;
 	agregar_la_linea2();
+	$('#quantity').val('');
 }
 
 function agregar_la_linea2()
