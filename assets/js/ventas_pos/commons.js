@@ -1301,6 +1301,8 @@ $.fn.set_catalogos = function ( pdv_id ) {
         		$("#contenido_modal2").removeAttr('style');
         		$("#myModal2 .close").show();
 				$("#myModal2").modal("hide");
+                
+                draw_items(productos);
             });	
 
 };
