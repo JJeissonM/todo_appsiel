@@ -1,4 +1,4 @@
-<div>
+<div style="padding-left: 20px;">
     <table>
         <tr>
             <td style="width:120px;"><b>{{ config('calificaciones.etiqueta_estudiante') }}:</b></td>
