@@ -27,18 +27,7 @@
 
     <h4 style="text-align: center; padding: 10px;">INFORME {{$lbl_numero_periodo}} PERIODO AÑO LECTIVO {{ explode( "-", $periodo->fecha_desde )[0] }}</h4>
     
-    <p style="padding-left: 20px;">
-        <table>
-            <tr>
-                <td style="width:20px;"><b>FULL NAME:</b></td>
-                <td>{{ $registro->estudiante->tercero->descripcion }}.</td>
-            </tr>
-            <tr>
-                <td style="width:20px;"><b>GRADE: </b></td>
-                <td>{{ $curso->descripcion }}.</td>
-            </tr>
-        </table>        	
-    </p>
+    @include('calificaciones.boletines.formatos.tabla_datos_estudiante_grado')
     
     <br>
             
