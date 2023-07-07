@@ -1,7 +1,7 @@
 <div>
     <table>
         <tr>
-            <td style="width:120px; text-align:right;"><b>{{ config('calificaciones.etiqueta_estudiante') }}:</b></td>
+            <td style="width:120px;"><b>{{ config('calificaciones.etiqueta_estudiante') }}:</b></td>
             <td>&nbsp;&nbsp;{{ $registro->estudiante->tercero->descripcion }}.</td>
             @if($colegio->maneja_puesto=="Si")
                 @if( !is_null($registro->observacion) )
@@ -14,7 +14,7 @@
             @endif
         </tr>
         <tr>
-            <td style="width:120px; text-align:right;"><b>{{ config('calificaciones.etiqueta_curso') }}: </b></td>
+            <td style="width:120px;"><b>{{ config('calificaciones.etiqueta_curso') }}: </b></td>
             <td>&nbsp;&nbsp;{{ $curso->descripcion }}.</td>
             @if($colegio->maneja_puesto=="Si")
                 @if( !is_null($registro->observacion) )
