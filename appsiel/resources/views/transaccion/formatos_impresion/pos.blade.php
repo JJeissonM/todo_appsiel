@@ -5,6 +5,11 @@
     <link rel="stylesheet" href="{{ asset("css/stylepdf.css?aux=" . uniqid() ) }}">
     <style type="text/css">
         
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: {{ config('ventas_pos.tamanio_fuente_factura') . 'px'  }};
+        }
+        
         @page {
           size: 3.15in 38.5in;
           margin: 15px;
