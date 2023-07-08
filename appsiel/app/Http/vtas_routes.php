@@ -47,6 +47,7 @@ Route::post('nota_devolucion_pendiente', 'Ventas\NotaCreditoDirectaController@no
 
 // IMPRIMIR - ENVIAR X EMAIL
 Route::get('vtas_imprimir/{id}', 'Ventas\VentaController@imprimir');
+Route::get('vtas_show_ventana_imprimir/{id}', 'Ventas\VentaController@show_ventana_imprimir');
 Route::get('vtas_enviar_por_email/{id}', 'Ventas\VentaController@enviar_por_email');
 
 Route::get('vtas_catalogos', 'Ventas\VentaController@catalogos');

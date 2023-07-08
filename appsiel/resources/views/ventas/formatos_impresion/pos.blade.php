@@ -180,17 +180,21 @@ Cliente:
 @endsection
 
 @section('lbl_firma')
-Firma del aceptante:
+    @if($doc_encabezado->core_tipo_transaccion_id == 52)
+        @include('ventas.formatos_impresion.datos_print_factura_electronica')
+    @else
+        Firma del aceptante:
+    @endif
 @endsection
 
 @section('firma_fila_adicional')
-@if( $etiquetas['pie_pagina'] != '')
-<tr>
-    <td style="border: solid 1px #ddd; text-align: center; font-style: italic;">
-        <b> {!! $etiquetas['pie_pagina'] !!} </b>
-    </td>
-</tr>
-@endif
+    @if( $etiquetas['pie_pagina'] != '')
+    <tr>
+        <td style="border: solid 1px #ddd; text-align: center; font-style: italic;">
+            <b> {!! $etiquetas['pie_pagina'] !!} </b>
+        </td>
+    </tr>
+    @endif
 @endsection
 
 </body>

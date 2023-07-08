@@ -286,13 +286,15 @@ class FacturaPosController extends TransaccionController
     */
     public function imprimir($id)
     {
-        $documento_vista = $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
-        
-        // Se prepara el PDF
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+        return $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
 
-        return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
+        //$documento_vista = $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
+
+        // Se prepara el PDF
+        //$pdf = App::make('dompdf.wrapper');
+        //$pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+
+        //return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
     }
 
     /**

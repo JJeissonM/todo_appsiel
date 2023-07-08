@@ -225,6 +225,7 @@ class FacturaGeneral
       return $string_items;
    }
 
+   // Representacion Grafica (PDF)
    public function consultar_documento()
    {
       if ( $this->env == 'PRODUCCION' )
@@ -233,23 +234,35 @@ class FacturaGeneral
       }else{
          $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
       }      
-         
+        
+      /*
+                  DATOS APPSIEL SAS - Para Pruebas      
+         Dataico Account Id: a2532b03-a8bf-4514-a4e8-5fd7ec0499e9
+         Dataico Auth Token: 088c164ef2ff8964cca84f76e8059f18
+         $tokenPassword = '088c164ef2ff8964cca84f76e8059f18';
+         $prefijo_resolucion = 'APSI';
+         $consecutivo_doc_encabezado = 185;
+      */
+
+      $tokenPassword = config('facturacion_electronica.tokenPassword');
+      $prefijo_resolucion = $resolucion->prefijo;
+      $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
+
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
 
-         $response = $client->get( $this->url_emision . '?number=' .$resolucion->prefijo . $this->doc_encabezado->consecutivo, [
+         $response = $client->get( $this->url_emision . '?number=' . $prefijo_resolucion . $consecutivo_doc_encabezado, [
              // un array con la data de los headers como tipo de peticion, etc.
              'headers' => [
                            'content-type' => 'application/json',
-                           'auth-token' => config('facturacion_electronica.tokenPassword')
+                           'auth-token' => $tokenPassword
                         ]
          ]);
       } catch (\GuzzleHttp\Exception\RequestException $e) {
           $response = $e->getResponse();
-      }  /**/      
+      }
 
       $json = json_decode( (string) $response->getBody() );
-      
       if(!isset($json->invoice))
       {
          return null;

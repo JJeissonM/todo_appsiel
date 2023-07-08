@@ -46,7 +46,8 @@
 @endsection
 
 @section('botones_imprimir_email')
-	&nbsp;
+	Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
 @endsection
 
 @section('botones_anterior_siguiente')

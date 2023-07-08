@@ -110,7 +110,7 @@
     <br><br><br>
 
     <script type="text/javascript">
-     window.onload = function() { window.print(); }
+        window.onload = function() { window.print(); }
     </script>
 
 </body>

@@ -497,13 +497,21 @@ class VentaController extends TransaccionController
     {
         $documento_vista = $this->generar_documento_vista( $id, 'ventas.formatos_impresion.'.Input::get('formato_impresion_id') );
 
+        if ( Input::get('formato_impresion_id') == 'pos') {
+            return $documento_vista;
+        }
+
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
         return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion.' - '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
-        
+    }
+
+    public function show_ventana_imprimir( $id )
+    {
+        return $this->generar_documento_vista( $id, 'ventas.formatos_impresion.'.Input::get('formato_impresion_id') );
     }
 
     /*
