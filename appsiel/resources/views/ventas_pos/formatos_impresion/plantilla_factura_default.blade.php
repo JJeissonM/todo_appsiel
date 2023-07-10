@@ -177,11 +177,12 @@
         </tbody>
     </table>
 
-                @if($datos_factura->core_tipo_transaccion_id == 52)
-                    @include('ventas.formatos_impresion.datos_print_factura_electronica')
-                @else
-                    <b> Firma del aceptante: </b> <br><br><br><br>
-                @endif    
+    <div class="box" style="inline-size: 100%; overflow-wrap: break-word;">
+        @if($datos_factura->core_tipo_transaccion_id == 52)
+            @include('ventas.formatos_impresion.datos_print_factura_electronica')
+        @else
+            <b> Firma del aceptante: </b> <br><br><br><br>
+        @endif    
                 
         @if( $etiquetas['pie_pagina'] != '')
             <br>
@@ -189,7 +190,8 @@
                    
         @endif
         <br>
-            <div id="lbl_creado_por_fecha_y_hora"></div>{{$datos_factura->lbl_creado_por_fecha_y_hora}}
+        <div id="lbl_creado_por_fecha_y_hora"></div>{{$datos_factura->lbl_creado_por_fecha_y_hora}}
+    </div>
         
     
     <br><br>
