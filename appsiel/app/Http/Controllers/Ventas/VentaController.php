@@ -584,6 +584,7 @@ class VentaController extends TransaccionController
             $ruta_vista = 'ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default;
             
             $datos_factura = (object)[
+                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
                 'lbl_fecha' => $doc_encabezado->fecha,
                 'lbl_hora' => '',

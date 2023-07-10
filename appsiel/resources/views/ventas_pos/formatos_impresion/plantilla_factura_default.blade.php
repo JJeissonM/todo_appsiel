@@ -30,7 +30,11 @@
         @yield('estilos_adicionales')
     </style>
 </head>
-<body>
+@if($datos_factura->core_tipo_transaccion_id == '')
+    <body>
+@else
+    <body onload="window.print()">
+@endif
     <?php
         $tamanino_fuente_2 = '0.9em';
     ?>

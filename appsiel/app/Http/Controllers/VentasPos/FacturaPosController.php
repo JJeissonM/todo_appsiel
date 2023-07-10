@@ -1262,6 +1262,7 @@ class FacturaPosController extends TransaccionController
         }
 
         $datos_factura = (object)[
+            'core_tipo_transaccion_id' => '',
             'lbl_consecutivo_doc_encabezado' => '',
             'lbl_fecha' => '',
             'lbl_hora' => '',
