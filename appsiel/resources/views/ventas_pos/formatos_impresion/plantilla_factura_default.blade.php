@@ -179,7 +179,13 @@
 
     <table style="width: 100%; font-size: 11px;">
         <tr>
-            <td style="border: solid 1px black;"> <b> Firma del aceptante: </b> <br><br><br><br> </td>
+            <td style="border: solid 1px black;"> 
+                @if($datos_factura->core_tipo_transaccion_id == 52)
+                    @include('ventas.formatos_impresion.datos_print_factura_electronica')
+                @else
+                    <b> Firma del aceptante: </b> <br><br><br><br>
+                @endif                 
+            </td>
         </tr>
         @if( $etiquetas['pie_pagina'] != '')
             <tr>
