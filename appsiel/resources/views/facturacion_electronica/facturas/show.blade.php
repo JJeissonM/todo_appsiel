@@ -37,7 +37,7 @@
 		<?php 
 			$color = 'red';
 		?>
-		<a class="btn-gmail" href="{{ url( 'fe_factura_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar"><i class="fa fa-btn fa-send"></i></a>
+		<a class="btn-gmail" href="{{ url( 'fe_factura_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar" id="btn_enviar_fe"><i class="fa fa-btn fa-send"></i></a>
         <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
 
 
@@ -281,18 +281,24 @@
             	}
             });
 
-            $('#enlace_anular').click(function(){
-            	
-            	if ( !$("#opcion1").is(":checked") && !$("#opcion2").is(":checked") )
-            	{
-            		alert('Debe escoger una opción.');
-            		$("#opcion1").focus();
-            		return false;
-            	}
+			$('#enlace_anular').click(function(){
+				
+				if ( !$("#opcion1").is(":checked") && !$("#opcion2").is(":checked") )
+				{
+					alert('Debe escoger una opción.');
+					$("#opcion1").focus();
+					return false;
+				}
 
-            	$('#form_anular').submit();
+				$('#form_anular').submit();
 
-            });
+			});
+
+			$('#btn_enviar_fe').click(function(){
+				
+				$(this).children('.fa-send').attr('class','fa fa-spinner fa-spin');
+
+			});
 
             $("#myModal").on('hide.bs.modal', function(){
                 $('#popup_alerta_danger').hide();
