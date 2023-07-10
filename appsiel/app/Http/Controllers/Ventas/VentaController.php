@@ -552,6 +552,7 @@ class VentaController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
         $empresa = $this->empresa;
+        $plantilla_factura_pos_default = config('ventas_pos.plantilla_factura_pos_default');
         if ( !is_null($doc_encabezado->pdv) )
         {
             if ( $doc_encabezado->pdv->direccion != '' )
@@ -559,6 +560,9 @@ class VentaController extends TransaccionController
                 $empresa->direccion1 = $doc_encabezado->pdv->direccion;
                 $empresa->telefono1 = $doc_encabezado->pdv->telefono;
                 $empresa->email = $doc_encabezado->pdv->email;
+            }
+            if ($doc_encabezado->pdv->plantilla_factura_pos_default != null && $doc_encabezado->pdv->plantilla_factura_pos_default != '') {
+                $plantilla_factura_pos_default = $doc_encabezado->pdv->plantilla_factura_pos_default;
             }
         }
 
@@ -572,7 +576,34 @@ class VentaController extends TransaccionController
 
         $otroscampos = TransaccionOtrosCampos::where('core_tipo_transaccion_id',$this->doc_encabezado->core_tipo_transaccion_id)->get()->first();
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos' ) )->render();
+        $datos_factura = '';
+        $cliente = '';
+        $tipo_doc_app = '';
+        $pdv_descripcion = '';
+        if ( $ruta_vista == 'ventas.formatos_impresion.pos') {
+            $ruta_vista = 'ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default;
+            
+            $datos_factura = (object)[
+                'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
+                'lbl_fecha' => $doc_encabezado->fecha,
+                'lbl_hora' => '',
+                'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
+                'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
+                'lbl_descripcion_doc_encabezado' => $doc_encabezado->get_label_documento(),
+                'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
+                'lbl_ajuste_al_peso' => '',
+                'lbl_total_recibido' => '',
+                'lbl_total_cambio' => '',
+                'lbl_creado_por_fecha_y_hora' => $doc_encabezado->created_at,
+                'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
+                'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render()
+            ];
+    
+            $cliente = $doc_encabezado->cliente;
+            $tipo_doc_app = $doc_encabezado->tipo_documento_app;
+        }
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion' ) )->render();
     }
 
     /**

@@ -1261,7 +1261,27 @@ class FacturaPosController extends TransaccionController
             $plantilla_factura_pos_default = $pdv->plantilla_factura_pos_default;
         }
 
-        return View::make('ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default, compact('empresa', 'resolucion', 'etiquetas', 'pdv'))->render();
+        $datos_factura = (object)[
+            'lbl_consecutivo_doc_encabezado' => '',
+            'lbl_fecha' => '',
+            'lbl_hora' => '',
+            'lbl_condicion_pago' => '',
+            'lbl_fecha_vencimiento' => '',
+            'lbl_descripcion_doc_encabezado' => '',
+            'lbl_total_factura' => '',
+            'lbl_ajuste_al_peso' => '',
+            'lbl_total_recibido' => '',
+            'lbl_total_cambio' => '',
+            'lbl_creado_por_fecha_y_hora' => '',
+            'lineas_registros' => '',
+            'lineas_impuesto' => ''
+        ];
+
+        $cliente = $pdv->cliente;
+        $tipo_doc_app = $pdv->tipo_doc_app;
+        $pdv_descripcion = $pdv->descripcion;
+
+        return View::make('ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default, compact('empresa', 'resolucion', 'etiquetas', 'pdv_descripcion', 'cliente', 'tipo_doc_app', 'plantilla_factura_pos_default','datos_factura'))->render();
     }
 
     public function get_total_factura_from_arr_lineas_registros($lineas_registros)

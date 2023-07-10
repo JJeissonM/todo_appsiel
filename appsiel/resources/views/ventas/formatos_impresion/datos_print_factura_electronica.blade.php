@@ -14,7 +14,7 @@
         <tr>
             <td>
                 <p style="width: 100%; text-align: center;">
-                    <img style="height: 150px; display: inline;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($documento_electronico->qrcode, 'QRCODE')}}" alt="barcode" />
+                    <img style="height: 200px; display: inline;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($documento_electronico->qrcode, 'QRCODE')}}" alt="barcode" />
                 </p>
             </td>
         </tr>

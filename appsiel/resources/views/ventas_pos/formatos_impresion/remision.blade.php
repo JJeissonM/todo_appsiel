@@ -4,16 +4,16 @@
             <h4 style="text-align: center;">
                 <span>--- (Copia Cocina) ---</span>
                 <br>
-                <b>{{ $pdv->descripcion }}</b>
+                <b>{{ $pdv_descripcion }}</b>
             </h4>
         </td>
         <tr>
             <td>
-                <b>{{ $pdv->tipo_doc_app->descripcion }} No.</b> 
+                <b>{{ $tipo_doc_app->descripcion }} No.</b> 
                 @if( !is_null( $resolucion ) )
                     {{ $resolucion->prefijo }}
                 @else
-                    {{ $pdv->tipo_doc_app->prefijo }}
+                    {{ $tipo_doc_app->prefijo }}
                 @endif
                 <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div>
             </td>
@@ -21,10 +21,10 @@
     </table>
 
     <div class="subheadp" >
-        <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
+        <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $cliente->tercero->descripcion }} </div> 
         <br>
         <b>Atendido por: &nbsp;&nbsp;</b> 
-        <div class="lbl_atendido_por" style="display: inline;"> {{ $pdv->cliente->vendedor->tercero->descripcion }} </div>
+        <div class="lbl_atendido_por" style="display: inline;"> {{ $cliente->vendedor->tercero->descripcion }} </div>
         <br>
     </div>
 

@@ -734,19 +734,19 @@ $(document).ready(function () {
 
         $('#div_resumen_medios_pago').show();
 
-        if( $('#total_valor_total').html() == '$ 0' )
+        if( $('#total_valor_total').html() == '$ 0' || $('#total_valor_total').html() == '$0.00' )
         {
-            $('#div_resumen_medios_pago').find('#lbl_medio_pago').text('Efectivo');
+            var lbl_medio_pago = 'Efectivo';
 
             $('#teso_caja_id').val( $('#caja_pdv_default_id').val() );
             
-            var lbl_caja_default_pdv = $('#teso_caja_id option:selected').text();
-            $('#div_resumen_medios_pago').find('#lbl_caja_banco').text(lbl_caja_default_pdv);
+            var lbl_caja_banco = $('#teso_caja_id option:selected').text();
             
-            var valor_medio_pago = $('#total_efectivo_recibido').val() - $
-            ('#valor_total_cambio').val(); 
+            var lbl_valor_medio_pago = $('#total_efectivo_recibido').val() - $
+            ('#valor_total_cambio').val();
 
-            $('#div_resumen_medios_pago').find('#lbl_valor_medio_pago').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_medio_pago.toFixed(2)) );
+            $('#tabla_resumen_medios_pago').find('tbody:last').append('<tr><td>' + lbl_medio_pago + '</td><td>' + lbl_caja_banco + '</td><td>' + lbl_valor_medio_pago + '</td></tr>');
+            
         }else{
 
             $('#ingreso_registros_medios_recaudo > tbody > tr').each(function( ){
@@ -759,6 +759,8 @@ $(document).ready(function () {
             
             });
         }
+
+        console.log(lbl_medio_pago,lbl_caja_banco,lbl_valor_medio_pago);
     }
 
     function get_hora(i)

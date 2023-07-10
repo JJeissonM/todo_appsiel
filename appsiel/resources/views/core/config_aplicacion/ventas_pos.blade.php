@@ -123,6 +123,19 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$plantilla_factura_pos_default = 'plantilla_factura';
+								if( isset($parametros['plantilla_factura_pos_default'] ) )
+								{
+									$plantilla_factura_pos_default = $parametros['plantilla_factura_pos_default'];
+								}
+							?>
+							{{ Form::bsSelect('plantilla_factura_pos_default', $plantilla_factura_pos_default, 'Formato factura default', [ ''=>'', 'plantilla_factura' => 'Básico','plantilla_factura_2' => 'Visual','plantilla_factura_3' => 'Logo ancho','plantilla_factura_remision_cocina' => 'Factura + RM cocina'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$tamanio_fuente_factura = '17';
 								if( isset($parametros['tamanio_fuente_factura'] ) )
 								{
@@ -130,12 +143,6 @@
 								}
 							?>
 							{{ Form::bsText('tamanio_fuente_factura', $tamanio_fuente_factura, 'Tamaño letra', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
 						</div>
 					</div>
 
