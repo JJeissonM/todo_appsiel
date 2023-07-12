@@ -201,7 +201,6 @@ class RecaudoCxcController extends Controller
         return view( 'tesoreria.recaudos_cxc.show', compact( 'id', 'reg_anterior', 'reg_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado') );
     }
 
-
     public function imprimir($id)
     {
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );

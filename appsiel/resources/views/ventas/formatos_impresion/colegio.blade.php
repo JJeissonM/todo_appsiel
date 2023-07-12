@@ -59,10 +59,10 @@ use App\Core\Tercero;
         </td>
     </tr>
     <tr>
-        <td><b>{{ config("configuracion.tipo_identificador") }}:</b></td>
-        <td>@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</td>
-        <td><b>Atendido por:</b></td>
-        <td>{{ $doc_encabezado->vendedor->tercero->descripcion }}</td>
+        <td><b>CC:</b></td>
+        <td>{{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
     </tr>
     <tr>
         <td><b>Domicilio:</b> </td>
@@ -73,7 +73,7 @@ use App\Core\Tercero;
         <td style="text-transform: capitalize">{{ $doc_encabezado->condicion_pago }}</td>
     </tr>
     <tr>
-        <td><b>Localidad:</b></td>
+        <td><b>Ciudad:</b></td>
         <td>{{ $tercero->ciudad->descripcion }}</td>
         @if($docs_relacionados[0] != '')
             <td>
@@ -185,7 +185,7 @@ use App\Core\Tercero;
     
 @include('ventas.incluir.factura_firma_totales')
 <hr>
-
+<br>
 @if( $etiquetas['pie_pagina'] != '')
     <p style="text-align: center; font-style: italic; width:100%;">
         <b> {!! $etiquetas['pie_pagina'] !!} </b>

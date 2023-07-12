@@ -3,17 +3,6 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use NumerosEnLetras;
-use Form;
-
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -21,15 +10,10 @@ use App\Http\Controllers\Core\TransaccionController;
 // Objetos
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
-
 // Modelos
 use App\Sistema\Modelo;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
-
-use App\Matriculas\Grado;
-use App\Matriculas\Estudiante;
-use App\Core\Colegio;
 use App\Core\Empresa;
 
 use App\CxP\CxpMovimiento;
@@ -40,13 +24,18 @@ use App\CxC\CxcMovimiento;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
-use App\Tesoreria\TesoMedioRecaudo;
+
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Contabilidad\ContabCuenta;
+use Collective\Html\FormFacade;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class PagoController extends TransaccionController
 {
@@ -384,8 +373,6 @@ class PagoController extends TransaccionController
         return $permitir_editar;
     }
 
-
-
     public function update(Request $request, $id)
     {
        $modelo = Modelo::find( $request->url_id_modelo );
@@ -423,7 +410,6 @@ class PagoController extends TransaccionController
         return redirect( 'tesoreria/pagos/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
 
-
     public function imprimir($id)
     {      
        $documento_vista = $this->generar_documento_vista( $id, 'tesoreria.formatos_impresion.pagos.'.Input::get('formato_impresion_id') );
@@ -432,7 +418,7 @@ class PagoController extends TransaccionController
         $orientacion='portrait';
         $tam_hoja='Letter';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         //$pdf->set_option('isRemoteEnabled', TRUE);
         $pdf->loadHTML( $documento_vista )->setPaper($tam_hoja,$orientacion);
 
@@ -465,15 +451,15 @@ class PagoController extends TransaccionController
 
         $tr = '<tr id="linea_ingreso_default" class="linea_ingreso_default">
                     <td>
-                        '.Form::text( 'motivo_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'motivo_input', 'data-url_busqueda' => url( 'teso_consultar_motivos' ).'?movimiento=salida', 'autocomplete'  => 'off' ] ).'
-                        '.Form::hidden( 'campo_motivos', null, [ 'id' => 'combobox_motivos' ] ).'
+                        '.FormFacade::text( 'motivo_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'motivo_input', 'data-url_busqueda' => url( 'teso_consultar_motivos' ).'?movimiento=salida', 'autocomplete'  => 'off' ] ).'
+                        '.FormFacade::hidden( 'campo_motivos', null, [ 'id' => 'combobox_motivos' ] ).'
                     </td>
                     <td>
-                        '.Form::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
-                        '.Form::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
+                        '.FormFacade::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
+                        '.FormFacade::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
                     </td>
-                    <td> '.Form::text( 'detalle_operacion', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
-                    <td> '.Form::text( 'valor', null, [ 'id' => 'col_valor', 'class' => 'form-control' ] ).' </td>
+                    <td> '.FormFacade::text( 'detalle_operacion', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
+                    <td> '.FormFacade::text( 'valor', null, [ 'id' => 'col_valor', 'class' => 'form-control' ] ).' </td>
                     <td> <div class="btn-group">'.$btn_confirmar.$btn_borrar.'</div> </td>
                 </tr>';
 
