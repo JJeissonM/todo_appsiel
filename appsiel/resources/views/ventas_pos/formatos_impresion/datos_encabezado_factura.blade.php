@@ -3,12 +3,14 @@
         <b>{{ $empresa->razon_social }} </b>
         <br>
     @endif
-    <b>{{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b>
-    <br>
-    <b>{{ config("configuracion.tipo_identificador") }}:
-        @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
-    {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
-    Teléfono(s): {{ $empresa->telefono1 }}
+    <span style="text-align: center; font-size: 0.8em;">
+        <b>{{ $empresa->nombre1 }} {{ $empresa->otros_nombres }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}</b>
+        <br>
+        <b>{{ config("configuracion.tipo_identificador") }}:
+            @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format(     $empresa->numero_identificacion, 0, ',', '.') }}	@else {{ $empresa->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}</b><br/>
+    </span>
+        {{ $empresa->direccion1 }}, {{ $ciudad->descripcion }} <br/>
+        Teléfono(s): {{ $empresa->telefono1 }}
     @if( $empresa->pagina_web != '' )
         <br/>
         <b style="color: blue; font-weight: bold;">{{ $empresa->pagina_web }}</b>
