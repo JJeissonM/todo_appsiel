@@ -5,9 +5,8 @@ namespace App\Matriculas;
 use Illuminate\Database\Eloquent\Model;
 use App\Matriculas\Estudiante;
 
-use Auth;
-use DB;
 use App\Matriculas\Curso;
+use Illuminate\Support\Facades\DB;
 
 class Matricula extends Model
 {
@@ -138,8 +137,10 @@ class Matricula extends Model
         }
         
         $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        $order_by = 'core_terceros.apellido1';
         if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
             $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+            $order_by = 'core_terceros.nombre1';
         }
 
         return Matricula::where($array_wheres)
@@ -177,7 +178,7 @@ class Matricula extends Model
                 'core_terceros.telefono1',
                 'core_terceros.email'
             )
-            ->OrderBy('core_terceros.apellido1', 'ASC')
+            ->OrderBy($order_by, 'ASC')
             ->get();
     }
 
