@@ -65,7 +65,7 @@
             <b>Cliente:</b> {{ $doc_encabezado->tercero_nombre_completo }}
             <br/>
             <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
-			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $empresa->digito_verificacion }}
+			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif - {{ $doc_encabezado->tercero->digito_verificacion }}
             <br/>
             <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->tercero->direccion1 }}, {{ $doc_encabezado->tercero->ciudad->descripcion }} - {{ $doc_encabezado->tercero->ciudad->departamento->descripcion }}
             <br/>
