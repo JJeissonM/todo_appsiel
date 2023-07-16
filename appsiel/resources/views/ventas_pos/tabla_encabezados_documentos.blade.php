@@ -73,7 +73,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="5"> Total Venta </td>
+                <td colspan="6"> Total Venta </td>
                 <td class="text-tight">
                     @can('vtas_pos_ver_valor_documento_en_consultar_facturas_pdv')
                         ${{ number_format( $total_ventas, 0, ',','.') }}
@@ -81,7 +81,7 @@
                         $--
                     @endcan
                 </td>
-                <td colspan="3"> </td>
+                <td colspan="2"> </td>
             </tr>
         </tfoot>
     </table>

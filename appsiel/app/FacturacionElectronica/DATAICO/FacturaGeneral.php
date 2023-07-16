@@ -139,7 +139,7 @@ class FacturaGeneral
 
       $notes = '---';
       if ($this->doc_encabezado->descripcion != null || $this->doc_encabezado->descripcion != '') {
-         $notes = $this->doc_encabezado->descripcion;
+	 $notes = str_replace('"', '\"', $this->doc_encabezado->descripcion);
       }
 
       return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '},"notes":["' . $notes . '"], "customer": ' . $this->get_datos_cliente();
@@ -209,7 +209,7 @@ class FacturaGeneral
             $string_items .= ',';
          }
 
-         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . $linea->item->descripcion . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
+         $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . str_replace('"', '\"', $linea->item->descripcion) . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format($linea->base_impuesto, $this->cantidadDecimales, '.', '') );
 
          if ( $linea->tasa_descuento != 0 )
          {
