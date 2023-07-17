@@ -189,6 +189,7 @@ class Movimiento extends Model
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_movimientos.core_tipo_transaccion_id')
                             ->where($array_wheres)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->whereNotIn('vtas_pos_movimientos.estado',['Enviada','Contabilizado - Sin enviar'])
                             ->select(
                                         'vtas_pos_movimientos.inv_producto_id',
                                         DB::raw($raw_producto),
