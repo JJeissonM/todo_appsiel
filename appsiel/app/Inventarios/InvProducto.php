@@ -465,8 +465,7 @@ class InvProducto extends Model
         }
 
         return $vec;
-    }
-    
+    }    
 
     public static function store_adicional($datos, $registro)
     {
@@ -475,6 +474,13 @@ class InvProducto extends Model
             $registro->codigo_barras = (new CodigoBarras($registro->id, 0, 0, 0))->barcode;
             $registro->save();
         }
+
+        ListaPrecioDetalle::create([
+            'lista_precios_id' => (int)config('ventas.lista_precios_id'),
+            'inv_producto_id' => $registro->id,
+            'fecha_activacion' => date('Y-m-d'),
+            'precio' => $registro->precio_venta
+        ]);
     }
 
     public static function get_cuenta_inventarios( $producto_id )

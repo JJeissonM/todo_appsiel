@@ -1,8 +1,6 @@
 <?php
     $encabezado_doc = \App\FacturacionElectronica\Factura::find( $doc_encabezado->id );
     $documento_electronico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $encabezado_doc, 'factura' ))->consultar_documento();
-    
-    //dd($documento_electronico);
 ?>
 @if(gettype($documento_electronico) == 'object')
     <b>CUFE: &nbsp;&nbsp;</b> {{ $documento_electronico->cufe }}
