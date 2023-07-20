@@ -66,6 +66,11 @@ class AccumulationService
     public function accumulate_one_invoice($invoice_id)
     {
         $invoice = FacturaPos::find($invoice_id);
+
+        if ($invoice->estado != 'Pendiente') {
+            return 1;
+        }
+
         if ( $invoice->core_tercero_id == 0 )
         {
             $invoice->core_tercero_id = $invoice->pdv->cliente->tercero->core_tercero_id;
@@ -98,7 +103,8 @@ class AccumulationService
         $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
         $datos['equipo_ventas_id'] = $invoice->vendedor->equipo_ventas_id;
         $datos['estado'] = 'Activo';
-        if ($this->is_pending_accounting($array_wheres)) {
+
+        //if ($this->is_pending_accounting($array_wheres)) {
             $lineas_registros = $invoice->lineas_registros;
             foreach ($lineas_registros as $linea)
             {
@@ -112,7 +118,7 @@ class AccumulationService
                 $linea->estado = 'Acumulado';
                 $linea->save();
             }
-        }       
+        //}       
 
         // Actualiza Movimiento POS
         Movimiento::where($array_wheres)
@@ -121,16 +127,16 @@ class AccumulationService
         $datos['estado'] = 'Activo';
 
         // Movimiento de Tesoreria ó CxC
-        if ($this->is_pending_registro_pago($invoice->forma_pago,$array_wheres)) {
+        //if ($this->is_pending_registro_pago($invoice->forma_pago,$array_wheres)) {
             $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total, $invoice->descripcion);
-        }
+        //}
 
         $invoice->estado = 'Acumulado';
         $invoice->save();
 
-        if ($this->is_pending_accounting($array_wheres)) {
+        //if ($this->is_pending_accounting($array_wheres)) {
             $this->accounting_one_invoice($invoice_id);
-        }
+        //}
 
         return 1;
     }
