@@ -61,15 +61,28 @@ class DocumentHeaderService
             'modificado_por' => $modificado_por
         ];
 
-        ContabMovimiento::where( $array_wheres )->update( $new_data );
-
-        CxcMovimiento::where( $array_wheres )->update( $new_data );
-
-        TesoMovimiento::where( $array_wheres )->update( $new_data );
+        $contab_movim = ContabMovimiento::where( $array_wheres )->get()->first();
+        if ($contab_movim != null) {
+            $contab_movim->update( $new_data );
+        }
+        
+        $cxc_movim = CxcMovimiento::where( $array_wheres )->get()->first();
+        if ($contab_movim != null) {
+            $cxc_movim->update( $new_data );
+        }
+        
+        $teso_movim = TesoMovimiento::where( $array_wheres )->get()->first();
+        if ($contab_movim != null) {
+            $teso_movim->update( $new_data );
+        }
 
         // Tablas POS
         $original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
-        Movimiento::where( $array_wheres )->update( $new_data );
+        
+        $pos_movim = Movimiento::where( $array_wheres )->get()->first();
+        if ($contab_movim != null) {
+            $pos_movim->update( $new_data );
+        }
 
         // Crear encabezado y lineas de registros en en Vtas estandar
         $data = $original_document_header->toArray();
@@ -90,7 +103,10 @@ class DocumentHeaderService
         }
 
         // Mover movimiento de ventas
-        VtasMovimiento::where( $array_wheres )->update( $new_data );
+        $vtas_movim = VtasMovimiento::where( $array_wheres )->get()->first();
+        if ($contab_movim != null) {
+            $vtas_movim->update( $new_data );
+        }
 
         return (object)[
             'status'=>'flash_message',
