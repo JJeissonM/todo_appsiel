@@ -121,8 +121,11 @@ class AccumulationService
         //}       
 
         // Actualiza Movimiento POS
-        Movimiento::where($array_wheres)
-                    ->update(['estado' => 'Acumulado']);
+        $movim_pos = Movimiento::where($array_wheres)->get()->first();
+        if ($movim_pos != null) {
+            $movim_pos->estado = 'Acumulado';
+            $movim_pos->save();
+        }                    
 
         $datos['estado'] = 'Activo';
 
