@@ -46,6 +46,7 @@ class EstudianteController extends ModeloController
 
         $lista_campos = ModeloController::get_campos_modelo($modelo, $registro, 'edit');
 
+
         //eliminamos los campos de acudiente por defecto en el modelo
         if (count($lista_campos) > 0) {
             foreach ($lista_campos as $key => $lc) {
@@ -170,8 +171,14 @@ class EstudianteController extends ModeloController
                 $botones[$i] = new Boton($fila);
             }
         }
+        
+        $curso_label = 'Inactivo';
+        if ($estudiante->matricula_activa() != null) {
+            $curso_label = $estudiante->matricula_activa()->curso->descripcion;
+        }
+        
 
-        return view('matriculas.estudiantes.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'estudiante'));
+        return view('matriculas.estudiantes.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'estudiante','curso_label'));
     }
 
     /**

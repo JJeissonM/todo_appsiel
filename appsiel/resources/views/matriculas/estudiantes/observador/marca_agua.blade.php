@@ -130,7 +130,7 @@
     }
 
     .observacion{
-        height: 250px;
+        height: 200px;
         border: solid 1px gray;
         font-size: 15px;
     }
@@ -164,13 +164,15 @@
 	<h4 align="center">OBSERVADOR DEL ALUMNO</h4>
     <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
     
-	@include('matriculas.estudiantes.datos_basicos')
+	@include('matriculas.estudiantes.observador.datos_basicos_estudiante')
+	@include('matriculas.estudiantes.observador.datos_adicionales_estudiante')
+	@include('matriculas.estudiantes.observador.datos_basicos_padres')
 
     <div class="observacion">
         <b>Observación:</b>
         <br>
     </div>
-    
+
 
     @include('calificaciones.boletines.pie_pagina')
 

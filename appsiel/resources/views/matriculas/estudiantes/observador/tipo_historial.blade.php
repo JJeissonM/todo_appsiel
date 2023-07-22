@@ -201,7 +201,8 @@ table {
 	
 	<h2 align="center">OBSERVADOR Y CONVIVENCIA DEL ALUMNO</h2>
 
-	@include('matriculas.estudiantes.datos_basicos')
+	@include('matriculas.estudiantes.observador.datos_basicos_estudiante')
+	@include('matriculas.estudiantes.observador.datos_basicos_padres')
 
 	<div class="page-break"></div>
 

@@ -282,8 +282,6 @@ class ModeloController extends Controller
         return $acciones;
     }
 
-
-
     // FORMULARIO PARA CREAR UN NUEVO REGISTRO
     public function create()
     {
@@ -910,7 +908,6 @@ class ModeloController extends Controller
                     $lista_campos[$i]['value'] = $registro->$nombre_campo;
                 }
 
-
                 // Si el campo NO es editable, se muestra deshabilitado
                 if (!$lista_campos[$i]['editable']) {
                     /*
@@ -987,6 +984,7 @@ class ModeloController extends Controller
                 }
             }
         }
+
         return $lista_campos;
     }
 

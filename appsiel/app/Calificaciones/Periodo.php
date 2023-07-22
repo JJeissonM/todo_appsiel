@@ -145,6 +145,33 @@ class Periodo extends Model
         return $vec;
     }
 
+    public static function get_todos_periodo_lectivo_actual()
+    {
+        $periodo_lectivo_id = PeriodoLectivo::get_actual()->id;
+        
+        $array_wheres = [ [ 'sga_periodos.id_colegio', '>', 0] ];
+        
+        if ( !is_null( $periodo_lectivo_id ) ) 
+        {
+            $array_wheres = array_merge($array_wheres, [ [ 'sga_periodos.periodo_lectivo_id', $periodo_lectivo_id ] ]);          
+        }
+
+        return Periodo::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_periodos.periodo_lectivo_id')
+                            ->where($array_wheres)
+                            ->select(
+                                        'sga_periodos.id',
+                                        'sga_periodos.periodo_lectivo_id',
+                                        'sga_periodos.descripcion',
+                                        'sga_periodos.numero',
+                                        'sga_periodos.periodo_de_promedios',
+                                        'sga_periodos.fecha_desde',
+                                        'sga_periodos_lectivos.descripcion AS periodo_lectivo_descripcion',
+                                        'sga_periodos.fecha_hasta')
+                            ->orderBy('sga_periodos_lectivos.id')
+                            ->orderBy('sga_periodos.numero')
+                            ->get();
+    }
+
     public static function get_activos_periodo_lectivo( $periodo_lectivo_id = null )
     {
         $array_wheres = [ [ 'sga_periodos.id_colegio', '>', 0] ];
