@@ -237,7 +237,6 @@ class AccumulationService
 
         $detalle_operacion = 'Acumulación PDV: ' . $invoice->pdv->descripcion;
         
-        $obj_sales_serv = new SalesServices();
 
         if( $invoice->estado == 'Pendiente')
         {
@@ -245,6 +244,7 @@ class AccumulationService
         }
 
         $invoice_lines = $invoice->lineas_registros;
+        $obj_sales_serv = new SalesServices();
 
         foreach ( $invoice_lines as $invoice_line )
         {
@@ -264,10 +264,15 @@ class AccumulationService
         }
 
         // Actualiza Movimiento POS
-        Movimiento::where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
-            ->where('core_tipo_doc_app_id', $invoice->core_tipo_doc_app_id)
-            ->where('consecutivo', $invoice->consecutivo)
-            ->update(['estado' => 'Contabilizado']);
+        $movim_pos = Movimiento::where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
+                        ->where('core_tipo_doc_app_id', $invoice->core_tipo_doc_app_id)
+                        ->where('consecutivo', $invoice->consecutivo)
+                        ->get()
+                        ->first();
+        if ($movim_pos != null) {
+            $movim_pos->estado = 'Contabilizado';
+            $movim_pos->save();
+        } 
 
         // Contabilizar Caja y Bancos ó Cartera de clientes
         $datos = $invoice->toArray();
