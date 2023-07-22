@@ -67,12 +67,12 @@ class DocumentHeaderService
         }
         
         $cxc_movim = CxcMovimiento::where( $array_wheres )->get()->first();
-        if ($contab_movim != null) {
+        if ($cxc_movim != null) {
             $cxc_movim->update( $new_data );
         }
         
         $teso_movim = TesoMovimiento::where( $array_wheres )->get()->first();
-        if ($contab_movim != null) {
+        if ($teso_movim != null) {
             $teso_movim->update( $new_data );
         }
 
@@ -80,7 +80,7 @@ class DocumentHeaderService
         $original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
         
         $pos_movim = Movimiento::where( $array_wheres )->get()->first();
-        if ($contab_movim != null) {
+        if ($pos_movim != null) {
             $pos_movim->update( $new_data );
         }
 
@@ -104,7 +104,7 @@ class DocumentHeaderService
 
         // Mover movimiento de ventas
         $vtas_movim = VtasMovimiento::where( $array_wheres )->get()->first();
-        if ($contab_movim != null) {
+        if ($vtas_movim != null) {
             $vtas_movim->update( $new_data );
         }
 
