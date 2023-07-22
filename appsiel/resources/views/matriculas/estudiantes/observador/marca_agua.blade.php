@@ -171,6 +171,7 @@
     <div class="observacion">
         <b>Observación:</b>
         <br>
+        {{ $estudiante->observacion_general }}
     </div>
 
 

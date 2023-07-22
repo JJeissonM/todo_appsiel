@@ -13,7 +13,7 @@ class Estudiante extends Model
 {
     protected $table = 'sga_estudiantes';
 
-    protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'vive_con', 'numero_hermandos', 'diagnostico', 'user_id'];
+    protected $fillable = ['imagen', 'id_colegio', 'core_tercero_id', 'genero', 'fecha_nacimiento', 'ciudad_nacimiento', 'grupo_sanguineo', 'alergias', 'medicamentos', 'eps', 'vive_con', 'numero_hermanos', 'diagnostico', 'observacion_general', 'user_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Documento', 'Género', 'Fecha nacimiento', 'Teléfono', 'Dirección', 'Email'];
 
@@ -273,6 +273,10 @@ class Estudiante extends Model
                 'sga_estudiantes.alergias',
                 'sga_estudiantes.medicamentos',
                 'sga_estudiantes.eps',
+                'sga_estudiantes.vive_con',
+                'sga_estudiantes.numero_hermanos',
+                'sga_estudiantes.diagnostico',
+                'sga_estudiantes.observacion_general',
                 'sga_estudiantes.user_id',
                 'sga_estudiantes.imagen',
                 'core_terceros.nombre1',

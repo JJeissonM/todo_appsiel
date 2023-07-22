@@ -21,6 +21,8 @@
 					</div>
 				</div>
 
+				{{ Form::bsTextArea('observacion_general', $observacion_general, 'Observación general', []) }}
+
 				<div class="table-responsive">
 					<table class="table table-bordered table-striped">
 						<thead>

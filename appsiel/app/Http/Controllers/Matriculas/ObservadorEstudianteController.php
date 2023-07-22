@@ -92,15 +92,18 @@ class ObservadorEstudianteController extends TransaccionController
         $estudiante = Estudiante::find($id_estudiante);
         $tipos_aspectos = TiposAspecto::all();
 
+        $observacion_general = $estudiante->observacion_general;
+
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Valoración de aspectos: '.Estudiante::get_nombre_completo( $estudiante->id ) );
 
-        return view('matriculas.estudiantes.observador.valorar_aspectos',compact('tipos_aspectos','estudiante','miga_pan'));
+        return view('matriculas.estudiantes.observador.valorar_aspectos',compact('tipos_aspectos','estudiante','miga_pan','observacion_general'));
     }
 
     // PROCEDIMIENTO ALMACENAR ASPECTOS
     public function guardar_valoracion_aspectos(Request $request)
     {
         $estudiante = Estudiante::find($request->id_estudiante);
+
         $tipos_aspectos = TiposAspecto::all();
         
         $aspectos = CatalogoAspecto::all();
@@ -121,6 +124,9 @@ class ObservadorEstudianteController extends TransaccionController
                                     'valoracion_periodo3'=>$request->input('valoracion_periodo3.'.$i),'valoracion_periodo4'=>$request->input('valoracion_periodo4.'.$i)]);
             }
         }
+
+        $estudiante->observacion_general = $request->observacion_general;
+        $estudiante->save();
 
         return redirect('matriculas/estudiantes/observador/valorar_aspectos/'.$estudiante->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registros actualizados correctamente.');
     }

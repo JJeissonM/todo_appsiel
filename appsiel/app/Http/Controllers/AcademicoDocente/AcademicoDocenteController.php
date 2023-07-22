@@ -4,20 +4,10 @@ namespace App\Http\Controllers\AcademicoDocente;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Http\Controllers\Matriculas\ObservadorEstudianteController;
-
-
-use Auth;
-use DB;
-use Hash;
-use Mail;
-use View;
-use Input;
-use App\User;
 
 use App\AcademicoDocente\AsignacionProfesor;
 
@@ -34,8 +24,6 @@ use App\Calificaciones\NotaNivelacion;
 
 use App\Calificaciones\EscalaValoracion;
 
-use App\AcademicoDocente\Asignacion;
-
 use App\Matriculas\CatalogoAspecto;
 use App\Matriculas\TiposAspecto;
 use App\Matriculas\AspectosObservador;
@@ -45,14 +33,11 @@ use App\Matriculas\FodaEstudiante;
 
 use App\Core\Colegio;
 use App\Sistema\Modelo;
-use App\Sistema\SecuenciaCodigo;
-
-//Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-//Enables us to output flash messaging
-use Session;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class AcademicoDocenteController extends Controller
 {
@@ -367,7 +352,7 @@ class AcademicoDocenteController extends Controller
         $orientacion = 'landscape';
 
         //crear PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($vista))->setPaper('Letter', $orientacion);
         return $pdf->stream('listado_estudiantes.pdf');
     }
@@ -386,7 +371,9 @@ class AcademicoDocenteController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Observador: Valoración de aspectos > ' . $estudiante->nombre_completo]
         ];
 
-        return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan'));
+        $observacion_general = $estudiante->observacion_general;
+
+        return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan', 'observacion_general'));
     }
 
     // PROCEDIMIENTO ALMACENAR ASPECTOS
@@ -411,6 +398,9 @@ class AcademicoDocenteController extends Controller
                 ]);
             }
         }
+
+        $estudiante->observacion_general = $request->observacion_general;
+        $estudiante->save();
 
         return redirect('academico_docente/valorar_aspectos_observador/' . $estudiante->id . '?id=' . $request->url_id . '&curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
     }

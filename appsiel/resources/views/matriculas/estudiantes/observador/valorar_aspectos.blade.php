@@ -22,6 +22,8 @@
 
 				{{ Form::bsButtonsForm( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
 
+				{{ Form::bsTextArea('observacion_general', $observacion_general, 'Observación general', []) }}
+
 				<div class="table-responsive">
 					<table class="table table-bordered table-striped">
 						<thead>
