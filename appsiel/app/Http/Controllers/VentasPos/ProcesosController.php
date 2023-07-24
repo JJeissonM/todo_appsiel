@@ -43,6 +43,9 @@ class ProcesosController extends Controller
         
         $datos = $documento->toArray();
         $total_documento = 0;
+        $datos['zona_id'] = $documento->cliente->zona_id;
+        $datos['clase_cliente_id'] = $documento->cliente->clase_cliente_id;
+        $datos['equipo_ventas_id'] = $documento->cliente->vendedor->equipo_ventas_id; 
         foreach ($registros_documento as $linea)
         {
             VtasMovimiento::create( 
