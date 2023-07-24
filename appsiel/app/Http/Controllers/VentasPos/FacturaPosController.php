@@ -1223,8 +1223,11 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
 
-        if ( !is_null($doc_encabezado->pdv) )
+        $pdv_descripcion = '';
+        $tipo_doc_app = '';
+        if ( $doc_encabezado->pdv != null )
         {
+            $tipo_doc_app = $doc_encabezado->pdv->tipo_doc_app;
             if ( $doc_encabezado->pdv->direccion != '' )
             {
                 $empresa->direccion1 = $doc_encabezado->pdv->direccion;
@@ -1236,8 +1239,28 @@ class FacturaPosController extends TransaccionController
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)->where('estado', 'Activo')->get()->last();
 
         $etiquetas = $this->get_etiquetas();
+            
+        $datos_factura = (object)[
+            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+            'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
+            'lbl_fecha' => $doc_encabezado->fecha,
+            'lbl_hora' => '',
+            'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
+            'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
+            'lbl_descripcion_doc_encabezado' => $doc_encabezado->get_label_documento(),
+            'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
+            'lbl_ajuste_al_peso' => '',
+            'lbl_total_recibido' => '',
+            'lbl_total_cambio' => '',
+            'lbl_creado_por_fecha_y_hora' => $doc_encabezado->created_at,
+            'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
+            'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render()
+        ];
+    
+        $cliente = $doc_encabezado->cliente;
 
-        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas'))->render();
+
+        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'tipo_doc_app', 'cliente', 'pdv_descripcion', 'datos_factura'))->render();
     }
 
     public function generar_plantilla_factura($pdv)
