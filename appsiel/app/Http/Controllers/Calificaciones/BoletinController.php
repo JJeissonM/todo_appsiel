@@ -571,13 +571,19 @@ class BoletinController extends Controller
 				if($cant_observa>0){
 					// Si ya hay observaciones para ese estudiante, 
 					// Se deben actualizar los registros en la tabla de observaciones_boletines
-					ObservacionesBoletin::where(
+					$reg_observacion = ObservacionesBoletin::where(
                                                                 [ 'id_colegio' => $colegio->id,
                                                                     'id_periodo' => $request->id_periodo,
                                                                     'curso_id' => $request->curso_id,
                                                                     'id_estudiante' => $fila->id_estudiante
                                                                 ])
-						                  ->update(['puesto' => $el_puesto]);
+                                                                ->get()
+                                                                ->first();
+					if ($reg_observacion != null) {
+                        $reg_observacion->puesto = $el_puesto;
+                        $reg_observacion->save();
+                    }
+                                                                
 				}else{
 					// INSERTAR registros en la tabla de observaciones_boletines
 					ObservacionesBoletin::insert(

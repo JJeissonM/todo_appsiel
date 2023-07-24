@@ -76,6 +76,7 @@
                     if ( $iva_incluido )
                     {
                         $precio = $coleccion_movimiento->sum('precio_total');
+                        $costo_total *= (1 + (int)$coleccion_movimiento->first()->tasa_impuesto / 100 );
                     }else{
                         $precio = $coleccion_movimiento->sum('base_impuesto_total');
                     }

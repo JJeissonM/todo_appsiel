@@ -252,7 +252,11 @@ class CompraController extends TransaccionController
             } // Fin por cada registro de la entrada
 
             // Marcar la entrada como facturada
-            InvDocEncabezado::find( $doc_entrada_id )->update( [ 'estado' => 'Facturada' ] );
+            $record = InvDocEncabezado::find( $doc_entrada_id );
+            if ($record != null) {
+                $record->estado = 'Facturada';
+                $record->save();
+            }
 
             // Se va creando un listado de entradas separadas por coma 
             if ($primera)

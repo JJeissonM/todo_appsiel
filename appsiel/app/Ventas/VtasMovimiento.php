@@ -23,6 +23,11 @@ class VtasMovimiento extends Model
 
     public $vistas = '{"index":"layouts.index3"}';
 
+    public function item()
+    {
+        return $this->belongsTo(InvProducto::class,'inv_producto_id');
+    }
+
     public function producto()
     {
         return $this->belongsTo(InvProducto::class,'inv_producto_id');

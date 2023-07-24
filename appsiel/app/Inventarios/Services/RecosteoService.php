@@ -95,7 +95,7 @@ class RecosteoService
                     'inv_doc_registros.modificado_por' => $user_email
                 ]
             );
-            // 2do. El costo total
+            // 2do. El costo total -  ya cambio el costo_unitario
             InvDocRegistro::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_doc_registros.inv_doc_encabezado_id')
                     ->where( $array_wheres )
                     ->whereNotIn('inv_doc_registros.inv_motivo_id',$this->arr_motivos_ids_no_recosteables)
@@ -126,7 +126,7 @@ class RecosteoService
                     'inv_movimientos.modificado_por' => $user_email
                 ]
             );
-            // 2do. El costo total
+            // 2do. El costo total -  ya cambio el costo_unitario
             InvMovimiento::join('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                     ->where( $array_wheres )
                     ->whereNotIn('inv_movimientos.inv_motivo_id',$this->arr_motivos_ids_no_recosteables)
