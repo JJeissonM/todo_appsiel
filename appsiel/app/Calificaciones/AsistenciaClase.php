@@ -35,12 +35,12 @@ class AsistenciaClase extends Model
     {
         $array_wheres = [['sga_asistencia_clases.id', '>', '0']]; // todos los registros
 
-        if (!is_null(Input::get('curso_id'))) {
-            $array_wheres = array_merge($array_wheres, ['sga_asistencia_clases.curso_id' => Input::get('curso_id')]);
+        if ( Input::get('curso_id') != null) {
+            $array_wheres = array_merge($array_wheres, [['sga_asistencia_clases.curso_id', '=', Input::get('curso_id')]]);
         }
 
-        if (!is_null(Input::get('asignatura_id'))) {
-            $array_wheres = array_merge($array_wheres, ['sga_asistencia_clases.asignatura_id' => Input::get('asignatura_id')]);
+        if ( Input::get('asignatura_id') != null) {
+            $array_wheres = array_merge($array_wheres, [['sga_asistencia_clases.asignatura_id', '=', Input::get('asignatura_id')]]);
         }
 
         $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo2';
@@ -48,11 +48,11 @@ class AsistenciaClase extends Model
             $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo2';
         }
 
-        return AsistenciaClase::where($array_wheres)
-                                ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
+        return AsistenciaClase::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
                                 ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_asistencia_clases.curso_id')
                                 ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
+                                ->where($array_wheres)
                                 ->select(
                                     'sga_asistencia_clases.fecha AS campo1',
                                     DB::raw($raw_nombre_completo),
@@ -61,7 +61,13 @@ class AsistenciaClase extends Model
                                     'sga_asistencia_clases.asistio AS campo5',
                                     'sga_asistencia_clases.anotacion AS campo6',
                                     'sga_asistencia_clases.id AS campo7'
-                                )->orderBy('sga_asistencia_clases.created_at', 'DESC')
+                                )->where("sga_asistencia_clases.fecha", "LIKE", "%$search%")
+                                ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
+                                ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
+                                ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
+                                ->orWhere("sga_asistencia_clases.asistio", "LIKE", "%$search%")
+                                ->orWhere("sga_asistencia_clases.anotacion", "LIKE", "%$search%")
+                                ->orderBy('sga_asistencia_clases.created_at', 'DESC')
                                 ->paginate($nro_registros);
     }
 
@@ -69,39 +75,41 @@ class AsistenciaClase extends Model
     {
         $array_wheres = [['sga_asistencia_clases.id', '>', '0']]; // todos los registros
 
-        if (!is_null(Input::get('curso_id'))) {
-            $array_wheres = array_merge($array_wheres, ['sga_asistencia_clases.curso_id' => Input::get('curso_id')]);
+        if ( Input::get('curso_id') != null) {
+            $array_wheres = array_merge($array_wheres, [['sga_asistencia_clases.curso_id', '=', Input::get('curso_id')]]);
         }
 
-        if (!is_null(Input::get('asignatura_id'))) {
-            $array_wheres = array_merge($array_wheres, ['sga_asistencia_clases.asignatura_id' => Input::get('asignatura_id')]);
+        if ( Input::get('asignatura_id') != null) {
+            $array_wheres = array_merge($array_wheres, [['sga_asistencia_clases.asignatura_id', '=', Input::get('asignatura_id')]]);
         }
 
         $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS ESTUDIANTE';
         if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
             $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
         }
-
-        $string = AsistenciaClase::where($array_wheres)
-            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+        
+        $string = AsistenciaClase::leftJoin('sga_estuzzdiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_idzz')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_asistencia_clases.curso_id')
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
+            ->where($array_wheres)
             ->select(
+                'sga_asistencia_clases.id',
                 'sga_asistencia_clases.fecha AS FECHA',
                 DB::raw($raw_nombre_completo),
-                'sga_cursos.descripcion AS CURSO',
+                'sga_cursos.descrssipcion AS CURSO',
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_asistencia_clases.asistio AS ASISTIÓ',
                 'sga_asistencia_clases.anotacion AS ANOTACIÓN'
             )->where("sga_asistencia_clases.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw($raw_nombre_completo), "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asistencia_clases.asistio", "LIKE", "%$search%")
             ->orWhere("sga_asistencia_clases.anotacion", "LIKE", "%$search%")
             ->orderBy('sga_asistencia_clases.created_at', 'DESC')
             ->toSql();
+            
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

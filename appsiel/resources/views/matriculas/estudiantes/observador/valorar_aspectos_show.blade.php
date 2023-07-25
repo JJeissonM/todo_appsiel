@@ -3,8 +3,7 @@
 	$tipos_aspectos = App\Matriculas\TiposAspecto::all();
 ?>
 
-<h3 align="center"> Evaluación por aspectos </h3>
-<hr>
+<h3 align="center"> VALORACIÓN POR ASPECTOS </h3>
 <div class="form-group">
 	<div class="alert alert-info">
 	  <strong>Convenciones</strong> <br/> 
@@ -14,7 +13,7 @@
 
 <div class="table-responsive">
 	@foreach ($tipos_aspectos as $tipo_aspecto)
-		<table class="table table-bordered table-striped" id="myTable" width="100%">
+		<table class="table table-bordered table-striped" width="100%">
 			<thead>
 				<tr>
 					<th rowspan="2" style="background-color:rgba(0, 128, 0, 0.2);">ÍTEM</th>

@@ -1,7 +1,9 @@
 
-<table id="table_student_basic_info" class="table table-bordered table-striped" style="margin-top:-35px;">
+<table id="table_student_basic_info" class="table table-bordered table-striped">
 	<tr>
-		<td colspan="2"><h4 align="center"> <strong>Datos básicos del estudiante</strong> </h4></td>
+		<td colspan="2" style="text-align: center; background-color: #ddd;">
+			<strong>DATOS BÁSICOS DEL ESTUDIANTE</strong>
+		</td>
 	</tr>
 	<tr>
 		<td colspan="2"><strong>{{ config('calificaciones.etiqueta_curso') }}: </strong> {{ $curso_label }} </td>

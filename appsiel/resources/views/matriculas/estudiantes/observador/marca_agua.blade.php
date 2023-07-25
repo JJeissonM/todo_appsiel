@@ -1,5 +1,10 @@
 <style>
 
+    body{
+        font-family: Verdana, Arial, Helvetica, sans-serif;
+        font-size: 0.9em;
+    }
+
 	img {
 		padding-left:30px;
 	}
@@ -18,6 +23,16 @@
 	table.banner{
 		font-size: 1.2em;
 	}
+
+    table{
+        width: 100%;
+        border-collapse: collapse;	
+        margin: -1px 0;		
+    }
+
+    table.table-bordered, .table-bordered>tbody>tr>td{
+        border: 1px solid gray;
+    }
 
     th {
         background-color: #CACACA;
@@ -133,6 +148,7 @@
         height: 200px;
         border: solid 1px gray;
         font-size: 15px;
+        margin: 1px;
     }
 
     #table_student_basic_info > tr > td

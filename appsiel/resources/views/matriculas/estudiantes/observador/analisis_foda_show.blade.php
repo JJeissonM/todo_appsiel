@@ -1,8 +1,8 @@
 <?php 
 	$registros_analisis = App\Matriculas\FodaEstudiante::where('id_estudiante',$estudiante->id)->get();
 ?>
-<h2>Análisis DOFA</h2>
-<hr>
+
+<h3 align="center"> ANÁLISIS DOFA </h3>
 
 @include('terceros.analisis_dofa.matriz')
 
