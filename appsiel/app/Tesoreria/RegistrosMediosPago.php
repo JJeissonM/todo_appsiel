@@ -41,11 +41,14 @@ class RegistrosMediosPago
         $datos = [];
         foreach( $campo_lineas_recaudos as $linea )
         {
-            $datos['teso_medio_recaudo_id'] = (int)explode("-", $linea->teso_medio_recaudo_id)[0];
-            $datos['teso_motivo_id'] = (int)explode("-", $linea->teso_motivo_id)[0];
-            $datos['teso_caja_id'] = (int)explode("-", $linea->teso_caja_id)[0];
-            $datos['teso_cuenta_bancaria_id'] = (int)explode("-", $linea->teso_cuenta_bancaria_id)[0];
-            $datos['valor_recaudo'] = (float)substr($linea->valor, 1);
+            $aux = [];
+            $aux['teso_medio_recaudo_id'] = (int)explode("-", $linea->teso_medio_recaudo_id)[0];
+            $aux['teso_motivo_id'] = (int)explode("-", $linea->teso_motivo_id)[0];
+            $aux['teso_caja_id'] = (int)explode("-", $linea->teso_caja_id)[0];
+            $aux['teso_cuenta_bancaria_id'] = (int)explode("-", $linea->teso_cuenta_bancaria_id)[0];
+            $aux['valor_recaudo'] = (float)substr($linea->valor, 1);
+
+            $datos[] = $aux;
         }
 
         return $datos;

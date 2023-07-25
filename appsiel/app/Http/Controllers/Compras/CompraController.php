@@ -347,20 +347,24 @@ class CompraController extends TransaccionController
                 // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
                 $contab_cuenta_id = $caja->contab_cuenta_id;
 
-                $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
-                if ($teso_caja_id != 0)
-                {
-                    $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
-                }
+                $registros_medio_pago = $datos['registros_medio_pago'];
+                foreach ($registros_medio_pago as $linea_registro_medio_pago) {
+                    
+                    $teso_caja_id = $linea_registro_medio_pago['teso_caja_id'];
 
-                $teso_cuenta_bancaria_id = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
-                if ($teso_cuenta_bancaria_id != 0)
-                {
-                    $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
-                }
+                    if ($teso_caja_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                    }
 
-                ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, $datos['registros_medio_pago']['valor_recaudo'], $teso_caja_id, $teso_cuenta_bancaria_id );
-                
+                    $teso_cuenta_bancaria_id = $linea_registro_medio_pago['teso_cuenta_bancaria_id'];
+                    if ($teso_cuenta_bancaria_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                    }
+
+                    ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, $linea_registro_medio_pago['valor_recaudo'], $teso_caja_id, $teso_cuenta_bancaria_id );
+                }                
             }
 
         }

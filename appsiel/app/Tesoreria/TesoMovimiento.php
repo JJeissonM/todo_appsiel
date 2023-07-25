@@ -397,15 +397,19 @@ class TesoMovimiento extends Model
             $datos['teso_cuenta_bancaria_id'] = 0;
             $datos['teso_medio_recaudo_id'] = 1;
             $datos['valor_movimiento'] = $valor_movimiento * $signo_unidad;// Motivo de salida, movimiento negativo
+
+            TesoMovimiento::create( $datos );
         }else{
-            // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
-            $datos['teso_motivo_id'] = $registros_medio_pago['teso_motivo_id'];
-            $datos['teso_caja_id'] = $registros_medio_pago['teso_caja_id'];
-            $datos['teso_cuenta_bancaria_id'] = $registros_medio_pago['teso_cuenta_bancaria_id'];
-            $datos['teso_medio_recaudo_id'] = $registros_medio_pago['teso_medio_recaudo_id'];
-            $datos['valor_movimiento'] = $registros_medio_pago['valor_recaudo'] * $signo_unidad;
+            foreach ($registros_medio_pago as $linea_registro_medio_pago) {
+                $datos['teso_motivo_id'] = $linea_registro_medio_pago['teso_motivo_id'];
+                $datos['teso_caja_id'] = $linea_registro_medio_pago['teso_caja_id'];
+                $datos['teso_cuenta_bancaria_id'] = $linea_registro_medio_pago['teso_cuenta_bancaria_id'];
+                $datos['teso_medio_recaudo_id'] = $linea_registro_medio_pago['teso_medio_recaudo_id'];
+                $datos['valor_movimiento'] = $linea_registro_medio_pago['valor_recaudo'] * $signo_unidad;
+
+                TesoMovimiento::create( $datos );
+            }
         }
         
-        TesoMovimiento::create( $datos );
     }
 }

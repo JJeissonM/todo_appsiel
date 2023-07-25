@@ -333,7 +333,7 @@ class VentaController extends TransaccionController
         // Agregar el movimiento a tesorería
         if ( $forma_pago == 'contado')
         {
-            if( is_null( $caja_banco_id ) )
+            if( $caja_banco_id == null ) // $caja_banco_id se manda desde Ventas POS
             {
                 if ( empty( $datos['registros_medio_pago'] ) )
                 {   
@@ -342,35 +342,43 @@ class VentaController extends TransaccionController
                     $teso_caja_id = $caja->id;
                     $teso_cuenta_bancaria_id = 0;
                     $contab_cuenta_id = $caja->contab_cuenta_id;
+            
+                    ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $total_documento, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
                 }else{
 
                     // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
                     $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
 
-                    $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
-                    if ($teso_caja_id != 0)
-                    {
-                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
-                    }
+                    $registros_medio_pago = $datos['registros_medio_pago'];
+                    foreach ($registros_medio_pago as $linea_registro_medio_pago) {
 
-                    $teso_cuenta_bancaria_id = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
-                    if ($teso_cuenta_bancaria_id != 0)
-                    {
-                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
-                    }
+                        $teso_caja_id = $linea_registro_medio_pago['teso_caja_id'];
+                        if ($teso_caja_id != 0)
+                        {
+                            $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                        }
 
-                    $total_documento = $datos['registros_medio_pago']['valor_recaudo'];
+                        $teso_cuenta_bancaria_id = $linea_registro_medio_pago['teso_cuenta_bancaria_id'];
+                        if ($teso_cuenta_bancaria_id != 0)
+                        {
+                            $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                        }
+
+                        $total_documento = $linea_registro_medio_pago['valor_recaudo'];
+
+                        ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $total_documento, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
+                    }
                     
                 }
             }else{
-                // $caja_banco_id se manda desde Ventas POS
+                
                 $caja = TesoCaja::find( $caja_banco_id );
                 $teso_caja_id = $caja->id;
                 $teso_cuenta_bancaria_id = 0;
                 $contab_cuenta_id = $caja->contab_cuenta_id;
-            }
             
-            ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $total_documento, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
+                ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, $total_documento, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
+            }
         }
     }
 
