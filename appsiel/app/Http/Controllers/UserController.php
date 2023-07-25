@@ -4,18 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use Hash;
-use Input;
-
 // Modelos
 use App\User;
-use App\Sistema\Modelo;
 use App\Sistema\Aplicacion;
-use App\Sistema\Campo;
 use App\Core\Empresa;
 use App\Core\PasswordReset;
 
@@ -25,12 +16,11 @@ use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Contratotransporte\Vehiculo;
 use App\Ventas\Vendedor;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Input;
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-//Enables us to output flash messaging
-use Session;
 
 class UserController extends ModeloController
 {
@@ -149,9 +139,9 @@ class UserController extends ModeloController
     }
 
     // Formulario para cambiar contraseña Modelo Vendedor
-    public function form_cambiarpasswd_vendedor( $user_id )
+    public function form_cambiarpasswd_vendedor( $vendedor_id )
     {
-        $vendedor = Vendedor::find($user_id);
+        $vendedor = Vendedor::find($vendedor_id);
         $registro = User::find( $vendedor->user_id );
 
         if ( is_null($registro) )
@@ -170,7 +160,7 @@ class UserController extends ModeloController
         return view('core.usuario.cambiarpasswd',compact('registro','miga_pan'));
     }
 
-    // Formulario para cambiar contraseña Modelo Vendedor
+    // Formulario para cambiar contraseña Modelo Vehiculo
     public function form_cambiar_passwd_vehiculo( $vehiculo_id )
     {
         /**
@@ -179,17 +169,15 @@ class UserController extends ModeloController
          */
         $vehiculo = Vehiculo::find($vehiculo_id);
         
-        $email = User::where([
+        $registro = User::where([
             ['email','=',$vehiculo->placa]
             ])
             ->get()
             ->first();
             
-            ( $vendedor->user_id );
-
-        if ( is_null($registro) )
+        if ( $registro == null )
         {
-            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado. Debe editar el registro y el usuario se creará automáticamente.');
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado. Debe comunicarse con el administrador del sistema.');
         }
 
         if (!isset($miga_pan)) {

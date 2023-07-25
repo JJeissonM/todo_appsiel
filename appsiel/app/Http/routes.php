@@ -108,6 +108,7 @@ Route::get('core/usuario/cambiarpasswd/{user_id}', 'UserController@form_cambiarp
 Route::post('core/usuario/cambiarpasswd', 'UserController@cambiarpasswd');
 
 Route::get('core/usuario/cambiarpasswd_vendedor/{user_id}', 'UserController@form_cambiarpasswd_vendedor');
+Route::get('core/usuario/cambiarpasswd_vehiculo/{vehiculo_id}', 'UserController@form_cambiar_passwd_vehiculo');
 
 Route::get('core/validate_password/{user_id}/{password}', 'UserController@validate_password');
 
