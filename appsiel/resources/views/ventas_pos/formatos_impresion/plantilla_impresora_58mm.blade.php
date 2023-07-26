@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title> {{ $pdv->tipo_doc_app->descripcion }} No. </title>
+    <title> {{ $tipo_doc_app->descripcion }} No. </title>
 
     <style type="text/css">
         body{
@@ -58,11 +58,11 @@
     <table border="0" style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
             <tr>
                 <td>
-                    <b>{{ $pdv->tipo_doc_app->descripcion }} No.</b> 
+                    <b>{{ $tipo_doc_app->descripcion }} No.</b> 
                     @if( !is_null( $resolucion ) )
                         {{ $resolucion->prefijo }}
                     @else
-                        {{ $pdv->tipo_doc_app->prefijo }}
+                        {{ $tipo_doc_app->prefijo }}
                     @endif
                     <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div>
                     <br>
@@ -89,24 +89,24 @@
         <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
             <tr>
                 <td>
-                    <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $pdv->cliente->tercero->descripcion }} </div> 
+                    <b>Cliente:</b> <div class="lbl_cliente_descripcion" style="display: inline;"> {{ $cliente->tercero->descripcion }} </div> 
                     <br>
                     <b>{{ config("configuracion.tipo_identificador") }}/CC:</b> <div class="lbl_cliente_nit" style="display: inline;">
 					@if( config("configuracion.tipo_identificador") == 'NIT') 
-                    {{ number_format( $pdv->cliente->tercero->numero_identificacion, 0, ',', '.') }}	
-                    @else {{ $pdv->cliente->tercero->numero_identificacion}} @endif </div> 
+                    {{ number_format( $cliente->tercero->numero_identificacion, 0, ',', '.') }}	
+                    @else {{ $cliente->tercero->numero_identificacion}} @endif </div> 
                 </td>
             </tr>
             <tr>
                 <td>
-                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"> {{ $pdv->cliente->tercero->direccion1 }} </div>
+                    <b>Dirección:</b> <div class="lbl_cliente_direccion" style="display: inline;"> {{ $cliente->tercero->direccion1 }} </div>
                     <br>
-                    <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $pdv->cliente->tercero->telefono1 }} </div>
+                    <b>Teléfono:</b> <div class="lbl_cliente_telefono" style="display: inline;"> {{ $cliente->tercero->telefono1 }} </div>
                 </td>
             </tr>
             <tr>
                 <td colspan="2">
-                    <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $pdv->cliente->vendedor->tercero->descripcion }} </div>
+                    <b>Atendido por: &nbsp;&nbsp;</b> <div class="lbl_atendido_por" style="display: inline;"> {{ $cliente->vendedor->tercero->descripcion }} </div>
                 </td>
             </tr>
             <tr>
