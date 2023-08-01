@@ -1,6 +1,11 @@
 <?php
 
-    $tiempo_a_liquidar = ['120'=>'Una Quincena (120 horas)','240'=>'Un mes (240 horas)','9999'=>'Órdenes de trabajo'];
+    $tiempo_a_liquidar = [
+        '117'=>'Una Quincena (117.5 horas)',
+        '120'=>'Una Quincena (120 horas)',
+        '240'=>'Un mes (240 horas)',
+        '9999'=>'Órdenes de trabajo'
+    ];
     $color = 'red';
 
     if ( $encabezado_doc->estado == 'Activo' )
@@ -26,7 +31,7 @@
                 <b>Fecha: </b> &nbsp; {{ $fecha[2] }} de {{ Form::NombreMes([$fecha[1]]) }} de {{ $fecha[0] }}
 
                 <br/>
-                <b>Liquidación:</b> {{ $tiempo_a_liquidar[ $encabezado_doc->tiempo_a_liquidar ] }}
+                <b>Liquidación:</b> {{ $tiempo_a_liquidar[ intval($encabezado_doc->tiempo_a_liquidar) ] }}
 
                 <div>
                     <b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $encabezado_doc->estado }}

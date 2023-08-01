@@ -30,6 +30,7 @@ $.fn.actualizar_medio_recaudo = function () {
 	$.fn.activar_boton_guardar_factura();
 
 	if (texto_total_recaudos == 0) {
+		$('#efectivo_recibido').val('');
 		$('#efectivo_recibido').removeAttr('readonly');
 	}else{
 		$('#efectivo_recibido').attr('readonly','readonly');
@@ -770,7 +771,7 @@ $(document).ready(function () {
 
 		$(this).attr('class','btn btn-default btn_vendedor vendedor_activo');
 
-		$('#efectivo_recibido').focus();
+		$('#efectivo_recibido').select();
 
 		$('#vendedor_id').val( $(this).attr('data-vendedor_id') );
 		$('#vendedor_id').attr( 'data-vendedor_descripcion', $(this).attr('data-vendedor_descripcion') );

@@ -16,7 +16,6 @@ $(document).ready(function () {
     {
         reset_efectivo_recibido();
         $('#btn_nuevo').show();
-        //$('#efectivo_recibido').attr( 'readonly', 'readonly');
     }
 
     if ( $('#action').val() != 'edit' )
@@ -50,6 +49,7 @@ $(document).ready(function () {
 
             case 27: // 27 = ESC
 
+                $('#efectivo_recibido').val('');
                 $('#efectivo_recibido').select();
                 $("html, body").animate({scrollTop: "870px"});
 
