@@ -149,7 +149,7 @@ class ReportesController extends Controller
 
     public function generacion_carnets(Request $request)
     {
-        $imagen_mostrar = $request->imagen_mostrar;
+        $imagen_mostrar = $request->imagen_a_mostrar;
 
         $estudiantes = Matricula::todos_estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id );
         
