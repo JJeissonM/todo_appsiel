@@ -4,31 +4,20 @@ namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Sistema\ModeloController;
+
 use App\Http\Controllers\Core\ConfiguracionController;
-use App\Http\Requests;
-
-use DB;
-use PDF;
-use View;
-use Lava;
-use Input;
-use Hash;
-use Cache;
-
-use App\User;
-
-use Auth;
 
 // Modelos
 use App\Core\FirmaAutorizada;
-use App\Sistema\SecuenciaCodigo;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Curso;
 use App\Matriculas\Matricula;
 
 use App\Tesoreria\TesoLibretasPago;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class ReportesController extends Controller
 {
@@ -46,7 +35,7 @@ class ReportesController extends Controller
         $alumnos_por_curso = Estudiante::get_cantidad_estudiantes_x_curso( $periodo_lectivo );
 
         // Creación de gráfico de Torta
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
         
         $stocksTable->addStringColumn('cursos')
                     ->addNumberColumn('Cantidad');
@@ -57,7 +46,7 @@ class ReportesController extends Controller
             ]);
         }
 
-        Lava::BarChart('MyStocks', $stocksTable);
+        LavachartsFacade::BarChart('MyStocks', $stocksTable);
         
         return $alumnos_por_curso;
     }
@@ -66,7 +55,7 @@ class ReportesController extends Controller
     {
         $alumnos_por_antiguedad = Estudiante::get_estudiantes_x_antiguedad( $periodo_lectivo );
         // Creación de gráfico de Torta
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
         
         $stocksTable->addStringColumn('ESTUDIANTES')
                     ->addNumberColumn('CANTIDAD');
@@ -77,7 +66,7 @@ class ReportesController extends Controller
             ]);
         }
 
-        Lava::BarChart('antiguedad', $stocksTable);
+        LavachartsFacade::BarChart('antiguedad', $stocksTable);
         
         return $alumnos_por_antiguedad;
     }
@@ -87,7 +76,7 @@ class ReportesController extends Controller
         $generos = Estudiante::get_cantidad_estudiantes_x_genero( $periodo_lectivo );
 
         // Creación de gráfico de Barras
-        $stocksTable2 = Lava::DataTable();
+        $stocksTable2 = LavachartsFacade::DataTable();
         
         $stocksTable2->addStringColumn('Genero')
                     ->addNumberColumn('Cantidad');
@@ -98,7 +87,7 @@ class ReportesController extends Controller
             ]);
         }
 
-        Lava::PieChart('Generos', $stocksTable2);
+        LavachartsFacade::PieChart('Generos', $stocksTable2);
         
         return $generos;
     }
@@ -116,7 +105,6 @@ class ReportesController extends Controller
         }            
         return $opciones;
     }
-
 
     public function matri_constancia_estudios( Request $request )
     {
@@ -155,6 +143,29 @@ class ReportesController extends Controller
         $vista = View::make( 'core.dis_formatos.plantillas.constancia_estudios_estudiante', compact( 'estudiante', 'curso', 'periodo_lectivo', 'array_fecha', 'firma_autorizada_1','firma_autorizada_datos_1', 'tam_hoja', 'libreta_pago', 'detalla_valores_matricula_pension', 'matriculado' )  )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        return $vista;
+    }
+
+    public function generacion_carnets(Request $request)
+    {
+        $imagen_mostrar = $request->imagen_mostrar;
+
+        $estudiantes = Matricula::todos_estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id );
+        
+        if( $request->estudiante_id != '' )
+        {
+            $estudiantes = $estudiantes->where('id_estudiante', (int)$request->estudiante_id)->all();
+        }
+
+        $curso = Curso::find( $request->curso_id );
+
+        $numero_columnas = 2;
+        $tamanio_letra = $request->tamanio_letra; // En px
+        
+        $vista = View::make( 'matriculas.estudiantes.carnets.show', compact( 'estudiantes', 'curso', 'numero_columnas', 'tamanio_letra','imagen_mostrar') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
     }

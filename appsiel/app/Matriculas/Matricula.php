@@ -2,6 +2,7 @@
 
 namespace App\Matriculas;
 
+use App\Core\Colegio;
 use Illuminate\Database\Eloquent\Model;
 use App\Matriculas\Estudiante;
 
@@ -33,6 +34,11 @@ class Matricula extends Model
     public function curso()
     {
         return $this->belongsTo(Curso::class, 'curso_id');
+    }
+    
+    public function colegio()
+    {
+        return $this->belongsTo(Colegio::class, 'id_colegio');
     }
 
     public function libretas_pagos()

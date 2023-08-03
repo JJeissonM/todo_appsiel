@@ -4,9 +4,8 @@ namespace App\Core;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-
 use App\Core\Tercero;
+use Illuminate\Support\Facades\DB;
 
 class Empresa extends Model
 {

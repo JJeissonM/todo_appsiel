@@ -123,4 +123,8 @@ Route::post('matriculas/ajax_consultar_control_disciplinario2', 'Matriculas\Cont
 
 
 Route::resource('matriculas/control_disciplinario', 'Matriculas\ControlDisciplinarioController');
+
+// REPORTES
+
+Route::post('sga_matriculas_generacion_carnets','Matriculas\ReportesController@generacion_carnets');
 /**/

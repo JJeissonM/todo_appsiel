@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Calificaciones;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Http\Controllers\Core\ConfiguracionController;
 
@@ -12,7 +11,6 @@ use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Grado;
 use App\Matriculas\Curso;
-use App\Matriculas\Estudiante;
 
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Asignatura;
@@ -26,13 +24,9 @@ use App\Calificaciones\Area;
 
 use App\Core\Colegio;
 use App\Core\FirmaAutorizada;
-
-use Input;
-use DB;
-use PDF;
-use View;
-use Auth;
-use Cache;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 class ReporteController extends Controller
 {
