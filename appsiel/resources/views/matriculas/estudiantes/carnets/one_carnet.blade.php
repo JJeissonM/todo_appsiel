@@ -6,7 +6,7 @@
 				{{ $estudiante->colegio->descripcion }}
 			</p>
 			<p class="slogan_colegio">
-				{{ $estudiante->colegio->slogan }}
+				{!! $estudiante->colegio->slogan !!}
 			</p>
 		</td>
 		<td rowspan="4" style="width: 130px; text-align:center; padding:0;">
