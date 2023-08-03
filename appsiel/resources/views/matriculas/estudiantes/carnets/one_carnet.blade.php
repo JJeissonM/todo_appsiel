@@ -12,9 +12,12 @@
 		<td rowspan="4" style="width: 130px; text-align:center; padding:0;">
 			<?php
 				$src = asset( 'assets/images/avatar.png/' );
-				if ( $estudiante->imagen != '' && $imagen_mostrar == 'foto_estudiante')
+				if ($imagen_mostrar == 'foto_estudiante')
 				{
-					$src = asset( config('configuracion.url_instancia_cliente').'/storage/app/fotos_terceros/'.$estudiante->imagen );
+					if ( $estudiante->imagen != '')
+					{
+						$src = asset( config('configuracion.url_instancia_cliente').'/storage/app/fotos_terceros/'.$estudiante->imagen );
+					}
 				}else{
 					$src = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/' . $estudiante->colegio->imagen;
 				}
