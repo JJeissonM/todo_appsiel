@@ -88,7 +88,7 @@
                 
                 @if($i % $numero_columnas == 0)
                     </tr>
-                    <tr><td colspan="2">&nbsp;</td></tr>
+                    <!-- <tr><td colspan="2">&nbsp;</td></tr> -->
                 @endif
 
             @endforeach
