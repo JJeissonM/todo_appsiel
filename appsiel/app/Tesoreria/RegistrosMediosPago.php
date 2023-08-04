@@ -2,6 +2,8 @@
 
 namespace App\Tesoreria;
 
+use Illuminate\Support\Facades\Input;
+
 class RegistrosMediosPago
 {
     public function depurar_tabla_registros_medios_recaudos( string $filas_tabla_medios_recaudos, $default_value = null )
@@ -20,6 +22,7 @@ class RegistrosMediosPago
         // Eliminar ultimo elemento del array (totales de la tabla)
         array_pop( $lineas_registros_medios_recaudos );
         
+        //dd($filas_tabla_medios_recaudos,$lineas_registros_medios_recaudos,Input::get('id_transaccion'));
         if(empty($lineas_registros_medios_recaudos))
         {
             $lineas_registros_medios_recaudos = [[

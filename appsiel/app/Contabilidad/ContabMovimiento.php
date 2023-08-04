@@ -227,7 +227,7 @@ class ContabMovimiento extends Model
         return $saldo_inicial_sql['valor_saldo'];
     }
 
-    public static function get_saldo_inicial_v2($fecha_desde, $cuenta_id, $tercero_id, $grupo_cuenta_id)
+    public static function get_saldo_inicial_v2($fecha_desde, $cuenta_id, $tercero_id, $grupo_cuenta_id, $clase_cuenta_id)
     {
         $array_wheres = [
             ['fecha', '<', $fecha_desde],
@@ -236,6 +236,13 @@ class ContabMovimiento extends Model
 
         if (!is_null($tercero_id)) {
             $array_wheres = array_merge($array_wheres, [['core_tercero_id', '=', $tercero_id]]);
+        }
+
+        if (!is_null($clase_cuenta_id)) {
+            $arr_ids_cuentas_de_la_clase = ContabCuenta::where('contab_cuenta_clase_id',$clase_cuenta_id)->get()->pluck('id')->toArray();
+            return ContabMovimiento::where($array_wheres)
+                            ->whereIn('contab_cuenta_id',$arr_ids_cuentas_de_la_clase)
+                            ->sum('valor_saldo');
         }
 
         if (!is_null($grupo_cuenta_id)) {
@@ -252,7 +259,7 @@ class ContabMovimiento extends Model
         return ContabMovimiento::where($array_wheres)->sum('valor_saldo');
     }
 
-    public static function get_movimiento_contable($fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id, $grupo_cuenta_id)
+    public static function get_movimiento_contable($fecha_desde, $fecha_hasta, $cuenta_id, $tercero_id, $grupo_cuenta_id, $clase_cuenta_id)
     {
         $array_wheres = [
             ['core_empresa_id', '=', Auth::user()->empresa_id]
@@ -260,6 +267,15 @@ class ContabMovimiento extends Model
 
         if (!is_null($tercero_id)) {
             $array_wheres = array_merge($array_wheres, ['core_tercero_id' => $tercero_id]);
+        }
+
+        if (!is_null($clase_cuenta_id)) {
+            $arr_ids_cuentas_de_la_clase = ContabCuenta::where('contab_cuenta_clase_id',$clase_cuenta_id)->get()->pluck('id')->toArray();
+            return ContabMovimiento::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->where($array_wheres)
+                            ->whereIn('contab_cuenta_id',$arr_ids_cuentas_de_la_clase)
+                            ->orderBy('fecha')
+                            ->get();
         }
 
         if (!is_null($grupo_cuenta_id)) {

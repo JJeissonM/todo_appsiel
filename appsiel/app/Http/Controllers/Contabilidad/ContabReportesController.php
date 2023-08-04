@@ -219,10 +219,21 @@ class ContabReportesController extends Controller
     */
     public function contab_auxiliar_por_cuenta()
     {
+        $opciones = ClaseCuenta::get();
+
+        $clases_cuentas[''] = '';
+        foreach ($opciones as $opcion) {
+            $clases_cuentas[$opcion->id] = $opcion->descripcion;
+        }
+
         $opciones = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
 
         $grupo_cuentas[''] = '';
         foreach ($opciones as $opcion) {
+            // No mostrar los padres
+            if (in_array($opcion->grupo_padre_id, [null,'',0])) {
+                continue;
+            }
             $grupo_cuentas[$opcion->id] = $opcion->descripcion;
         }
 
@@ -261,17 +272,23 @@ class ContabReportesController extends Controller
                 ['url'=>'NO','etiqueta'=>'Auxiliar por cuenta']
             ];
 
-        return view('contabilidad.auxiliar_por_cuenta', compact('cuentas','miga_pan','terceros','grupo_cuentas') );      
+        return view('contabilidad.auxiliar_por_cuenta', compact('cuentas','miga_pan','terceros','grupo_cuentas', 'clases_cuentas') );      
     }
 
     public function contab_ajax_auxiliar_por_cuenta(Request $request)
     {
+        $clase_cuenta_id = $request->clase_cuenta_id;
         $grupo_cuenta_id = $request->grupo_cuenta_id;
         $contab_cuenta_id = $request->contab_cuenta_id;
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
 
         $core_tercero_id = $request->core_tercero_id;
+
+        if ( $clase_cuenta_id == '' )
+        {
+            $clase_cuenta_id = null;
+        }
 
         if ( $grupo_cuenta_id == '' )
         {
@@ -288,14 +305,14 @@ class ContabReportesController extends Controller
             $core_tercero_id = null;
         }
 
-        if ( is_null($contab_cuenta_id ) && is_null( $core_tercero_id ) && is_null( $grupo_cuenta_id ))
+        if ( $contab_cuenta_id == null && $core_tercero_id == null && $grupo_cuenta_id == null && $clase_cuenta_id == null)
         {
-            return '<h1>Debe ingresar al menos un Grupo de cuentas, Cuenta o Tercero</h1>';
+            return '<h1>Debe ingresar al menos una Clase, un Grupo de cuentas, Cuenta o Tercero</h1>';
         }
 
-        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2( $fecha_desde, $contab_cuenta_id, $core_tercero_id,$grupo_cuenta_id );
+        $saldo_inicial = ContabMovimiento::get_saldo_inicial_v2( $fecha_desde, $contab_cuenta_id, $core_tercero_id,$grupo_cuenta_id, $clase_cuenta_id );
 
-        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id );
+        $movimiento_contable = ContabMovimiento::get_movimiento_contable( $fecha_desde, $fecha_hasta, $contab_cuenta_id, $core_tercero_id, $grupo_cuenta_id, $clase_cuenta_id );
 
         return View::make( 'contabilidad.incluir.tabla_movimiento_contable', compact( 'movimiento_contable','fecha_desde', 'saldo_inicial' ) )->render();
     }
@@ -356,8 +373,6 @@ class ContabReportesController extends Controller
                 ->toArray()[0]['valor_saldo'] + $saldo_inicial;
     }
 
-
-
     public function get_saldo_cuentas_entre_fechas($fecha_ini,$fecha_fin,$cuenta_id)
     {
         $saldo_inicial = ContabMovimiento::where('contab_movimientos.fecha','<', $fecha_ini)
@@ -375,8 +390,6 @@ class ContabReportesController extends Controller
                 ->get()
                 ->toArray()[0]['valor_saldo'] + $saldo_inicial;
     }
-
-
 
     // Proceso especial para crear los encabezado y el movimiento de cxc con base en el movimiento contable
     public function proceso_1()
@@ -438,7 +451,6 @@ class ContabReportesController extends Controller
             }
         }
     }
-
 
     public function crear_movimiento_cartera($saldo_inicial, $movimiento_cuenta)
     {
@@ -520,8 +532,6 @@ class ContabReportesController extends Controller
         return [ $vector_encabezado, $vector_movimiento ];
     }
 
-
-
     public function reasignar_grupos_cuentas_form()
     {
         $empresa_id = Auth::user()->empresa_id;
@@ -543,7 +553,6 @@ class ContabReportesController extends Controller
 
     }
 
-
     public static function get_select_grupo_cuentas( $grupo_id, $cuenta_id )
     {
         $grupos = ContabCuentaGrupo::where('core_empresa_id', Auth::user()->empresa_id)->get();
@@ -555,8 +564,6 @@ class ContabReportesController extends Controller
 
         return Form::select('cuenta_id_'.$cuenta_id, $vec, $grupo_id, ['id' => $cuenta_id, 'class' => 'combobox2']);
     }
-
-
 
     public function reasignar_grupos_cuentas_save($cuenta_id, $grupo_id)
     {
@@ -597,7 +604,6 @@ class ContabReportesController extends Controller
 
         return $vista;
     }
-
 
     public function cuadre_contabilidad_vs_tesoreria( Request $request )
     {

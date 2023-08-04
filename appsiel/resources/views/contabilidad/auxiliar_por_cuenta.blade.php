@@ -11,35 +11,46 @@
 		<div class="col-md-12">
 			
 			{{ Form::open(['url'=>'contab_ajax_auxiliar_por_cuenta','id'=>'form_consulta']) }}
-				<div class="row">
-					<div class="col-sm-2">
-						{{ Form::label('fecha_desde','Fecha inicial') }}
-						{{ Form::date('fecha_desde',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_desde']) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label('fecha_hasta','Fecha final') }}
-						{{ Form::date('fecha_hasta',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_hasta']) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label('grupo_cuenta_id','Grupo de cuentas') }}
-						<br/>
-						{{ Form::select('grupo_cuenta_id',$grupo_cuentas,null,['class'=>'combobox','id'=>'grupo_cuenta_id']) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label('contab_cuenta_id','Cuenta') }}
-						<br/>
-						{{ Form::select('contab_cuenta_id',$cuentas,null,['class'=>'combobox','id'=>'contab_cuenta_id']) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label('core_tercero_id','Tercero') }}
-						<br/>
-						{{ Form::select('core_tercero_id',$terceros,null,['class'=>'combobox','id'=>'core_terecero_id']) }}
-					</div>
-					<div class="col-sm-2">
-						{{ Form::label(' ','.') }}
-						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
-					</div>
+			<div class="row">
+				<div class="col-sm-2">
+					{{ Form::label('fecha_desde','Fecha inicial') }}
+					{{ Form::date('fecha_desde',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_desde']) }}
 				</div>
+				<div class="col-sm-2">
+					{{ Form::label('fecha_hasta','Fecha final') }}
+					{{ Form::date('fecha_hasta',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_hasta']) }}
+				</div>
+				<div class="col-sm-2">
+					{{ Form::label('clase_cuenta_id','Clase cuentas') }}
+					<br/>
+					{{ Form::select('clase_cuenta_id',$clases_cuentas,null,['id'=>'clase_cuenta_id']) }}
+				</div>
+				<div class="col-sm-2">
+					{{ Form::label('grupo_cuenta_id','Grupo de cuentas') }}
+					<br/>
+					{{ Form::select('grupo_cuenta_id',$grupo_cuentas,null,['class'=>'combobox','id'=>'grupo_cuenta_id']) }}
+				</div>
+				<div class="col-sm-2">
+					{{ Form::label('contab_cuenta_id','Cuenta') }}
+					<br/>
+					{{ Form::select('contab_cuenta_id',$cuentas,null,['class'=>'combobox','id'=>'contab_cuenta_id']) }}
+				</div>
+				<div class="col-sm-2">
+					{{ Form::label('core_tercero_id','Tercero') }}
+					<br/>
+					{{ Form::select('core_tercero_id',$terceros,null,['class'=>'combobox','id'=>'core_terecero_id']) }}
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-sm-6">
+					&nbsp;
+				</div>
+				<div class="col-sm-2">
+					{{ Form::label(' ','.') }}
+					<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
+				</div>
+			</div>
 				
 			{{ Form::close() }}
 			
@@ -87,6 +98,17 @@
 
 			$('#btn_ir').click(function(event){
 				$('#form_consulta').submit();
+			});
+				
+			$('#clase_cuenta_id').on('change', function(){
+				if( $(this).val() == '' )
+				{
+					$('#grupo_cuenta_id').next('.custom-combobox').fadeIn(500);
+					$('#contab_cuenta_id').next('.custom-combobox').fadeIn(500);
+				}else{
+					$('#grupo_cuenta_id').next('.custom-combobox').hide();
+					$('#contab_cuenta_id').next('.custom-combobox').hide();
+				}
 			});
 
 			// Click para generar la consulta

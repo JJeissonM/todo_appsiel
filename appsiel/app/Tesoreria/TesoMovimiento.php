@@ -392,7 +392,18 @@ class TesoMovimiento extends Model
             $caja = TesoCaja::get()->first();
         
             // Agregar el movimiento a tesorería
-            $datos['teso_motivo_id'] = TesoMotivo::where( 'movimiento', $movimiento )->get()->first()->id;
+            $teso_motivo_id = (int)config('tesoreria.motivo_recibo_caja_id');
+            if ( $movimiento == 'salida' )
+            {
+                $teso_motivo_id = (int)config('tesoreria.motivo_comprobante_egresos_id');
+            }
+            $motivo = TesoMotivo::find($teso_motivo_id);
+            dd($motivo);
+            if ($motivo == null) {
+                $motivo = TesoMotivo::where( 'movimiento', $movimiento )->get()->first();
+            }
+
+            $datos['teso_motivo_id'] = $motivo->id;
             $datos['teso_caja_id'] = $caja->id;
             $datos['teso_cuenta_bancaria_id'] = 0;
             $datos['teso_medio_recaudo_id'] = 1;

@@ -7,17 +7,14 @@ use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Propietario;
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-use Storage;
-use Schema;
-
-use App\Matriculas\Estudiante;
 use App\Sistema\Modelo;
 use App\Core\Departamento;
 use App\Matriculas\Responsableestudiante;
 use App\Nomina\NomContrato;
 use App\Ventas\Cliente;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Tercero extends Model
 {
