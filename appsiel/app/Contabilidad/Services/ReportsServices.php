@@ -15,6 +15,8 @@ class ReportsServices
 { 
     public $movimiento;
 
+    public $ids_cuentas;
+
     public function get_ids_grupos_padres( array $grupos_hijos_ids )
     {
         $grupos_hijos = ContabCuentaGrupo::whereIn( 'id', $grupos_hijos_ids )
@@ -54,11 +56,19 @@ class ReportsServices
     }
 
     public function set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id )
-    {
+    {        
+
+        /**/
         $this->movimiento = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
-                                ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
-                                ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta_id )
-                                ->get();
+                                   ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
+                                   ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta_id )
+                                   ->get();
+        /*$this->ids_cuentas = ContabCuenta::where( 'contab_cuenta_clase_id', $clase_cuenta_id )
+                                   ->get()->pluck('id')->all();
+        $this->movimiento = ContabMovimiento::whereBetween( 'fecha', [ $fecha_inicial, $fecha_final ] )
+                                   ->whereIn('contab_cuenta_id', $this->ids_cuentas )
+                                   ->get();
+                                   */
     }
 
     public function get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_cuenta_id )

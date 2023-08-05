@@ -4,16 +4,7 @@ namespace App\Http\Controllers\Contabilidad;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Input;
-use DB;
-use Auth;
-use Form;
-use View;
-use Cache;
-use Lava;
 
 use App\Sistema\Aplicacion;
 use App\Core\Tercero;
@@ -34,6 +25,15 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcEstadoCartera;
 
 use App\PropiedadHorizontal\Propiedad;
+use Collective\Html\FormFacade;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class ContabReportesController extends Controller
 {
@@ -208,7 +208,7 @@ class ContabReportesController extends Controller
 
         $tam_hoja = 'Letter';
         $orientacion='portrait';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->stream('estados_financieros.pdf');
@@ -319,7 +319,6 @@ class ContabReportesController extends Controller
 
     public function contab_pdf_estados_de_cuentas()
     {
-
         $contab_cuenta_id = Input::get('contab_cuenta_id');
 
         $fecha_inicial = Input::get('fecha_inicial');
@@ -349,7 +348,7 @@ class ContabReportesController extends Controller
 
         $tam_hoja = 'Letter';
         $orientacion='portrait';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->download('estado_de_cuentas.pdf');
@@ -562,7 +561,7 @@ class ContabReportesController extends Controller
             $vec[$fila->id] = $fila->descripcion;
         }
 
-        return Form::select('cuenta_id_'.$cuenta_id, $vec, $grupo_id, ['id' => $cuenta_id, 'class' => 'combobox2']);
+        return FormFacade::select('cuenta_id_'.$cuenta_id, $vec, $grupo_id, ['id' => $cuenta_id, 'class' => 'combobox2']);
     }
 
     public function reasignar_grupos_cuentas_save($cuenta_id, $grupo_id)
@@ -666,7 +665,7 @@ class ContabReportesController extends Controller
         $saldo_activos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'activos', $fecha_desde, $fecha_hasta );
         $saldo_pasivos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'pasivos', $fecha_desde, $fecha_hasta );
 
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
         
         $stocksTable->addStringColumn('rubro')
                     ->addNumberColumn('valor');
@@ -675,7 +674,7 @@ class ContabReportesController extends Controller
         $stocksTable->addRow( [ 'Pasivos', (float)abs( $saldo_pasivos ) ] );
 
         // Creación de gráfico de Torta
-        Lava::PieChart('Riqueza', $stocksTable);
+        LavachartsFacade::PieChart('Riqueza', $stocksTable);
 
         return (object)[ 'activos'=> $saldo_activos, 'pasivos'=> $saldo_pasivos, 'patrimonio' => ( $saldo_activos + $saldo_pasivos ) ];
     }
@@ -686,7 +685,7 @@ class ContabReportesController extends Controller
         $saldo_costos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'costos', $fecha_desde, $fecha_hasta );
         $saldo_gastos = ContabReportesController::get_saldo_movimiento_por_clase_cuenta( 'gastos', $fecha_desde, $fecha_hasta );
 
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
         
         $stocksTable->addStringColumn('rubro')
                     ->addNumberColumn('valor');
@@ -695,7 +694,7 @@ class ContabReportesController extends Controller
         $stocksTable->addRow( [ 'Costos y Gastos', (float)abs( $saldo_costos ) + (float)abs( $saldo_gastos ) ] );
 
         // Creación de gráfico de Torta
-        Lava::PieChart('FlujoNeto', $stocksTable);
+        LavachartsFacade::PieChart('FlujoNeto', $stocksTable);
 
         return (object)[ 'ingresos'=> $saldo_ingresos, 'costos_y_gastos'=> ( $saldo_costos + $saldo_gastos ), 'resultado' => ( $saldo_ingresos + ( $saldo_costos + $saldo_gastos ) ) ];
     }
@@ -726,7 +725,7 @@ class ContabReportesController extends Controller
         $modalidad_reporte = $request->modalidad_reporte;
         $reporte_id = $request->reporte_id;
         $detallar_cuentas = $request->detallar_cuentas;
-
+        
         echo $this->get_vista_eeff( $anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas );
     }
 
@@ -771,7 +770,7 @@ class ContabReportesController extends Controller
                                 'datos_cuenta' => 0
                                 ];
                                 
-            // Caja cuenta debe estar, obligatoriamente, asignada a un grupo hijo
+            // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
             $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos( array_keys( $obj_repor_serv->movimiento->groupBy('contab_cuenta_id')->all() ) );
             if( !empty( $grupos_invalidos ) )
             {
@@ -1050,5 +1049,112 @@ class ContabReportesController extends Controller
         }
 
         return $arr_grouped_data;
+    }
+
+    public function get_totales_clase_cuenta($clase_cuenta_id)
+    {
+        $clase_cuenta = ClaseCuenta::find($clase_cuenta_id);
+
+        $lapso1_ini = Input::get('lapso1_ini');
+        $lapso1_fin = Input::get('lapso1_fin');
+
+        $arr_ids_cuentas = ContabCuenta::where( 'contab_cuenta_clase_id', $clase_cuenta_id )
+                                   ->get()->pluck('id')->all();
+
+        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
+                            ->whereIn('contab_cuenta_id', $arr_ids_cuentas )
+                            ->sum('valor_saldo');
+
+        $arr_ids_grupos_padres = ContabCuentaGrupo::where( [
+                                        ['grupo_padre_id', '=', 0],
+                                        ['contab_cuenta_clase_id', '=', $clase_cuenta_id]
+                                    ] )
+                                        ->get()
+                                        ->pluck('id')
+                                        ->all();
+
+        return Response::json(
+                            [
+                                'descripcion' => $clase_cuenta->descripcion,
+                                'valor_saldo' => ($valor_saldo == null) ? 0 : $valor_saldo,
+                                'lbl_cr' => ($valor_saldo < 0) ? 'CR' : '',
+                                'arr_ids_grupos_padres' => $arr_ids_grupos_padres
+                            ]
+                        );
+    }
+
+    public function get_totales_grupo_padre($grupo_padre_id)
+    {
+        $grupo_padre = ContabCuentaGrupo::find($grupo_padre_id);
+
+        $lapso1_ini = Input::get('lapso1_ini');
+        $lapso1_fin = Input::get('lapso1_fin');
+
+        $arr_ids_grupos_hijos = ContabCuentaGrupo::where( [
+                                        ['grupo_padre_id', '=', $grupo_padre_id]
+                                    ] )
+                                        ->get()
+                                        ->pluck('id')
+                                        ->all();
+
+        $arr_ids_cuentas = ContabCuenta::whereIn( 'contab_cuenta_grupo_id', $arr_ids_grupos_hijos )
+                                   ->get()->pluck('id')->all();
+
+        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
+                            ->whereIn('contab_cuenta_id', $arr_ids_cuentas )
+                            ->sum('valor_saldo');
+
+        return Response::json(
+                            [
+                                'descripcion' => $grupo_padre->descripcion,
+                                'valor_saldo' => ($valor_saldo == null) ? 0 : $valor_saldo,
+                                'lbl_cr' => ($valor_saldo < 0) ? 'CR' : '',
+                                'arr_ids_grupos_hijos' => $arr_ids_grupos_hijos
+                            ]
+                        );
+    }
+
+    public function get_totales_grupo_hijo($grupo_hijo_id)
+    {
+        $grupo_hijo = ContabCuentaGrupo::find($grupo_hijo_id);
+
+        $lapso1_ini = Input::get('lapso1_ini');
+        $lapso1_fin = Input::get('lapso1_fin');
+
+        $arr_ids_cuentas = ContabCuenta::where( 'contab_cuenta_grupo_id', $grupo_hijo_id )
+                                   ->get()->pluck('id')->all();
+
+        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
+                            ->whereIn('contab_cuenta_id', $arr_ids_cuentas )
+                            ->sum('valor_saldo');
+
+        return Response::json(
+                            [
+                                'descripcion' => $grupo_hijo->descripcion,
+                                'valor_saldo' => ($valor_saldo == null) ? 0 : $valor_saldo,
+                                'lbl_cr' => ($valor_saldo < 0) ? 'CR' : '',
+                                'arr_ids_cuentas' => $arr_ids_cuentas
+                            ]
+                        );
+    }
+
+    public function get_totales_cuenta($cuenta_id)
+    {
+        $cuenta = ContabCuenta::find($cuenta_id);
+
+        $lapso1_ini = Input::get('lapso1_ini');
+        $lapso1_fin = Input::get('lapso1_fin');
+
+        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
+                            ->where('contab_cuenta_id', $cuenta_id )
+                            ->sum('valor_saldo');
+
+        return Response::json(
+                            [
+                                'descripcion' => $cuenta->descripcion,
+                                'valor_saldo' => ($valor_saldo == null) ? 0 : $valor_saldo,
+                                'lbl_cr' => ($valor_saldo < 0) ? 'CR' : ''
+                            ]
+                        );
     }
 }

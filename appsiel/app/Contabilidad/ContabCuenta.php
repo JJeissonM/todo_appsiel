@@ -4,12 +4,10 @@ namespace App\Contabilidad;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-use Schema;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ContabCuenta extends Model
 {

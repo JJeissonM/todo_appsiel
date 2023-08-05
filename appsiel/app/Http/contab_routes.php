@@ -37,6 +37,12 @@ Route::get('contab_generacion_eeff','Contabilidad\ContabReportesController@gener
 
 Route::post('contab_taxes_general_report', 'Contabilidad\ContabReportesController@taxes_general_report');Route::post('contab_tax_reporting_by_third_parties', 'Contabilidad\ContabReportesController@tax_reporting_by_third_parties');
 
+
+Route::get('contab_get_totales_clase_cuenta/{clase_cuenta_id}', 'Contabilidad\ContabReportesController@get_totales_clase_cuenta');
+Route::get('contab_get_totales_grupo_padre/{grupo_padre_id}', 'Contabilidad\ContabReportesController@get_totales_grupo_padre');
+Route::get('contab_get_totales_grupo_hijo/{grupo_hijo_id}', 'Contabilidad\ContabReportesController@get_totales_grupo_hijo');
+Route::get('contab_get_totales_cuenta/{cuenta_id}', 'Contabilidad\ContabReportesController@get_totales_cuenta');
+
 // Reportes del Menú Automático
 Route::post('contab_cuadre_contabilidad_vs_tesoreria', 'Contabilidad\ContabReportesController@cuadre_contabilidad_vs_tesoreria');
 Route::post('contab_lista_documentos_descuadrados', 'Contabilidad\ContabReportesController@lista_documentos_descuadrados');

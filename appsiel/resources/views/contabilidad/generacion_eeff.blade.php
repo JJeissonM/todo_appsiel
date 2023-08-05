@@ -4,6 +4,41 @@
 	use App\Http\Controllers\Sistema\VistaController;
 ?>
 
+
+<style>
+    table {
+        border-collapse: separate;
+        border-spacing: 1px;
+    }
+    .tr_abuelo {
+      background-color: #90a4ae;
+      font-weight: bold;
+    }
+    .tr_padre {
+      background-color: #b0bec5;
+      font-weight: bold;
+    }
+    .tr_padre > td:first-child {
+      padding-left: 2rem;
+    }
+    .tr_hijo {
+      background-color: #cfd8dc;
+    }
+    .tr_hijo > td:first-child {
+      padding-left: 4rem;
+    }
+    .tr_cuenta {
+      background-color: #eceff1;
+    }
+    .tr_cuenta > td:first-child {
+      padding-left: 6rem;
+    }
+
+    .simbolo_moneda{
+        float: left;
+    }
+  </style>
+
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 
@@ -57,7 +92,12 @@
 					</div>
 					<div class="col-sm-3">
 						<br>
-						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
+						<!-- --><a href="#" class="btn btn-danger bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> OLD Generar</a> 
+						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar2" data-balance_general="[ 1, 2, 3]" data-estado_resultados="[ 4, 5, 6]"><i class="fa fa-play"></i> Generar</a>
+						<input type="hidden" id="ids_clases_cuentas">
+						<input type="hidden" id="ids_grupos_padres">
+						<input type="hidden" id="ids_grupos_hijos">
+						<input type="hidden" id="ids_cuentas">
 					</div>
 				</div>
 			{{ Form::close() }}
@@ -75,6 +115,23 @@
 			
 			{{ Form::bsBtnExcel('generacion_eeff') }}
 			{{ Form::bsBtnPdf('estados_financieros') }}
+
+			<table width="100%" id="tabla_resultados" style="display: none;">
+				<thead>
+					<tr>
+						<th> &nbsp; </th>
+						<th> <span id="lbl_anio"></span> </th>
+						<th> &nbsp; </th>
+					</tr>
+				</thead>
+				<tbody>
+					
+				</tbody>
+				<tfoot>
+					
+				</tfoot>				
+			</table>
+			
 			{{ Form::Spin( 42 ) }}
 			
 			<div id="resultado_consulta">
@@ -87,6 +144,9 @@
 @endsection
 
 @section('scripts')
+
+	<script src="{{ asset( 'assets/js/contabilidad/eeff.js?aux=' . uniqid() )}}"></script>
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 			
@@ -125,7 +185,8 @@
 				var form_consulta = $('#form_consulta');
 				var url = form_consulta.attr('action');
 				var datos = form_consulta.serialize();
-				// Enviar formulario de ingreso de productos vía POST
+				
+				// Enviar formulario vía POST
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
 					$('#div_spin').hide();
