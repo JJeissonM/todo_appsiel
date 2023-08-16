@@ -12,7 +12,7 @@
 					<th colspan="3" style="background-color:rgb(255, 253, 125);">Observaciones generales periodo {{ $periodo->numero }}</th>
 				</tr>
 				<tr>
-					<th style="background-color:rgb(255, 253, 125); width:15%; text-align: center;">Fecha</th>
+					<th style="background-color:rgb(255, 253, 125); width:13%; text-align: center;">Fecha</th>
 					<th style="background-color:rgb(255, 253, 125);">Novedad</th>
 					<th style="background-color:rgb(255, 253, 125);">Teacher</th>
 				</tr>
@@ -30,14 +30,14 @@
 							$usuario = App\User::where('email',$novedad->creado_por)->value('name') 
 						@endphp
 						<tr>
-							<td style="width:15%; text-align: center;">{{ $novedad->fecha_novedad }}</td>
+							<td style="width:13%; text-align: center;">{{ $novedad->fecha_novedad }}</td>
 							<td>{{ $novedad->descripcion }}</td>
 							<td>{{ $usuario }}</td>
 						</tr>
 					@endforeach
-					<tr> <td style="width:15%; text-align: center;">&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
-					<tr> <td style="width:15%; text-align: center;">&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
-					<tr> <td style="width:15%; text-align: center;">&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+					<tr> <td style="width:13%; text-align: center;">&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+					<tr> <td style="width:13%; text-align: center;">&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
+					<tr> <td style="width:13%; text-align: center;">&nbsp;</td> <td>&nbsp;</td> <td>&nbsp;</td> </tr>
 			</tbody>
 		</table>
 	@endforeach
