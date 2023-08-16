@@ -127,11 +127,10 @@
 				<tbody>
 					
 				</tbody>
-				<tfoot>
-					
+				<tfoot style="display: none;">					
 				</tfoot>				
 			</table>
-			
+
 			{{ Form::Spin( 42 ) }}
 			
 			<div id="resultado_consulta">

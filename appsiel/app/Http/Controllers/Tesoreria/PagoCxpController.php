@@ -3,17 +3,6 @@
 namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use NumerosEnLetras;
-use Form;
-
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -24,7 +13,6 @@ use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
-
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
@@ -33,7 +21,6 @@ use App\Core\Empresa;
 
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoMovimiento;
@@ -56,6 +43,10 @@ use App\Compras\DescuentoProntoPago;
 use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
 use App\CxP\CxpAbono;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class PagoCxpController extends TransaccionController
 {
@@ -279,7 +270,7 @@ class PagoCxpController extends TransaccionController
         $orientacion='portrait';
         $tam_hoja = 'Letter';//array(0,0,50,800);//'A4';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');

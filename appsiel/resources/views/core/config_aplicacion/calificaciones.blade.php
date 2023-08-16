@@ -211,13 +211,13 @@
 						<div class="row" style="padding:5px;">
 							<div class="row" style="padding:5px;">
 								<?php
-									$etiqueta_estudiante = 'NOMBRE COMPLETO'; 
+									$etiqueta_estudiante = 'ESTUDIANTE'; 
 									if( isset($parametros['etiqueta_estudiante'] ) )
 									{
 										$etiqueta_estudiante = $parametros['etiqueta_estudiante'];
 									}
 								?>
-								{{ Form::bsText('etiqueta_estudiante', $etiqueta_estudiante, 'Etiqueta Curso', ['class'=>'form-control']) }}
+								{{ Form::bsText('etiqueta_estudiante', $etiqueta_estudiante, 'Etiqueta Estudiante', ['class'=>'form-control']) }}
 							</div>
 						</div>
 					</div>

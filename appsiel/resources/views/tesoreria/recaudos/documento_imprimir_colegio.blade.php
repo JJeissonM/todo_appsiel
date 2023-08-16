@@ -150,7 +150,12 @@ use App\Core\Tercero;
 
     <br><br>
     @include('tesoreria.incluir.firmas2')
+    
+    <div style="clear: both;">
         <br>
         <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+    </div>
+    
+    @include('calificaciones.boletines.pie_pagina')
 </body>
 </html>

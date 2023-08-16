@@ -32,7 +32,7 @@
             <br/>
             <b style="font-size: {{$tam_letra+1}}mm;">{{ $colegio->descripcion }}</b>
             <br/>
-            Resoluciones: {{ $colegio->resolucion }}
+            Resoluciones: {!! $colegio->resolucion !!}
             @if(config('matriculas.codigo_dane') != '')
                 <br/>
                 Código DANE: {{ config('matriculas.codigo_dane') }}

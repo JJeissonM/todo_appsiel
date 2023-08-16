@@ -25,6 +25,7 @@ $(document).ready(function(){
         
         $('#tabla_resultados').hide();
         $('#tabla_resultados').find('tbody').html( '' );
+        $('#lbl_anio').val($('#lapso1_lbl').val());
 
         $('#div_cargando').show();
         $('#div_spin').show();
@@ -57,8 +58,6 @@ $(document).ready(function(){
     {
         arr_ids_clases_cuentas = JSON.parse($("#ids_clases_cuentas").val());
 
-        console.log('arr_ids_clases_cuentas',arr_ids_clases_cuentas);
-
         form_consulta = $('#form_consulta');
         datos = form_consulta.serialize();
 
@@ -84,18 +83,23 @@ $(document).ready(function(){
         arr_ids_clases_cuentas.shift(); 
         
         // ajax request 
-        $.get("contab_get_totales_clase_cuenta" + "/" + clase_cuenta_id + '?'+datos, function(respuesta){ 
-            if(respuesta.valor_saldo != 0){
-            
+        $.get("contab_get_totales_clase_cuenta" + "/" + clase_cuenta_id + '?'+datos, function(respuesta){         
             $('#tabla_resultados').show();
-            }
-            $('#lbl_anio').val($('#lapso1_lbl').val());
+
+            gran_total += respuesta.valor_saldo;
 
             $('#tabla_resultados').find('tbody').append( get_string_fila( 'tr_abuelo', respuesta.descripcion, respuesta.valor_saldo, respuesta.lbl_cr, true) );
 
             arr_ids_grupos_padres = respuesta.arr_ids_grupos_padres;
 
             ejecucion_recursiva_grupos_padres();
+
+            var lbl_cr = '';
+
+            if (gran_total < 0) {
+                lbl_cr = 'CR';
+            }
+            $('#tabla_resultados').find('tfoot').append( get_string_fila( 'tr_abuelo', 'TOTAL', gran_total, lbl_cr) );
         }); 
     }
     

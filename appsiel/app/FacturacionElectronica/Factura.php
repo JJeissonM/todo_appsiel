@@ -2,11 +2,6 @@
 
 namespace App\FacturacionElectronica;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
-
 use App\Ventas\VtasDocEncabezado;
 
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
@@ -16,6 +11,8 @@ use App\FacturacionElectronica\ResultadoEnvio;
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Factura extends VtasDocEncabezado
 {

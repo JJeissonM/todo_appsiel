@@ -183,7 +183,7 @@ use App\Core\Tercero;
     {!! $otroscampos->terminos_y_condiciones !!}
 @endif
     
-@include('ventas.incluir.factura_firma_totales')
+@include('ventas.incluir.factura_firma_totales2')
 <hr>
 <br>
 @if( $etiquetas['pie_pagina'] != '')
@@ -196,6 +196,8 @@ use App\Core\Tercero;
 <div class="info text-indent">
     {{  $doc_encabezado->descripcion }}
 </div>
+    
+@include('calificaciones.boletines.pie_pagina')
 
 </body>
 </html>
