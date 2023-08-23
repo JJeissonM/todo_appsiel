@@ -92,7 +92,7 @@
 					</div>
 					<div class="col-sm-3">
 						<br>
-						<!-- --><a href="#" class="btn btn-danger bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> OLD Generar</a> 
+						<!-- <a href="#" class="btn btn-danger bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> OLD Generar</a> -->
 						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar2" data-balance_general="[ 1, 2, 3]" data-estado_resultados="[ 4, 5, 6]"><i class="fa fa-play"></i> Generar</a>
 						<input type="hidden" id="ids_clases_cuentas">
 						<input type="hidden" id="ids_grupos_padres">
@@ -127,7 +127,12 @@
 				<tbody>
 					
 				</tbody>
-				<tfoot style="display: none;">					
+				<tfoot>
+					<tr class="tr_abuelo">
+						<td> &nbsp; </td>
+						<td align="right"> <span class="simbolo_moneda">$</span><span id="lbl_gran_total"></span> </td>
+						<td> <span id="lbl_gran_CR"></span> </td>
+					</tr>			
 				</tfoot>				
 			</table>
 

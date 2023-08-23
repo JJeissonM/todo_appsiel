@@ -25,7 +25,7 @@ $(document).ready(function(){
         
         $('#tabla_resultados').hide();
         $('#tabla_resultados').find('tbody').html( '' );
-        $('#lbl_anio').val($('#lapso1_lbl').val());
+        $('#lbl_anio').html($('#lapso1_lbl').val());
 
         $('#div_cargando').show();
         $('#div_spin').show();
@@ -57,6 +57,8 @@ $(document).ready(function(){
     function generar_eeff()
     {
         arr_ids_clases_cuentas = JSON.parse($("#ids_clases_cuentas").val());
+        $('#lbl_gran_total').html('');
+        $('#lbl_gran_CR').html('');
 
         form_consulta = $('#form_consulta');
         datos = form_consulta.serialize();
@@ -75,6 +77,15 @@ $(document).ready(function(){
         {
             $('#div_cargando').hide();
             $("#div_spin").hide();
+            
+            var lbl_cr = '';
+
+            if (gran_total < 0) {
+                lbl_cr = 'CR';
+            }           
+
+            $('#lbl_gran_total').html( new Intl.NumberFormat("de-DE").format(Math.abs(gran_total.toFixed(2))) );
+            $('#lbl_gran_CR').html(lbl_cr);
             return; 
         }
 
@@ -93,13 +104,6 @@ $(document).ready(function(){
             arr_ids_grupos_padres = respuesta.arr_ids_grupos_padres;
 
             ejecucion_recursiva_grupos_padres();
-
-            var lbl_cr = '';
-
-            if (gran_total < 0) {
-                lbl_cr = 'CR';
-            }
-            $('#tabla_resultados').find('tfoot').append( get_string_fila( 'tr_abuelo', 'TOTAL', gran_total, lbl_cr) );
         }); 
     }
     
@@ -140,7 +144,7 @@ $(document).ready(function(){
 
         // pop top value 
         var grupo_hijo_id = arr_ids_grupos_hijos[0]; 
-        arr_ids_grupos_hijos.shift(); 
+        arr_ids_grupos_hijos.shift();
         
         // ajax request 
         $.get("contab_get_totales_grupo_hijo" + "/" + grupo_hijo_id + '?'+datos, function(respuesta){ 
@@ -172,7 +176,7 @@ $(document).ready(function(){
         }
 
         // pop top value 
-        var cuenta_id = arr_ids_cuentas[0]; 
+        var cuenta_id = arr_ids_cuentas[0];
         arr_ids_cuentas.shift(); 
         
         // ajax request 
@@ -192,7 +196,7 @@ $(document).ready(function(){
             descripcion = descripcion.toUpperCase();
         }
 
-        return '<tr class="' + tr_clase + '"> <td >' + descripcion + '</td> <td align="right"> <span class="simbolo_moneda">$</span>' + new Intl.NumberFormat("de-DE").format(valor_saldo.toFixed(2)) + '</td> <td align="center">' + lbl_cr + '</td> </tr>';
+        return '<tr class="' + tr_clase + '" data-valor_total="' + Math.abs(valor_saldo) + '"> <td >' + descripcion + '</td> <td align="right"> <span class="simbolo_moneda">$</span>' + new Intl.NumberFormat("de-DE").format(Math.abs(valor_saldo.toFixed(2))) + '</td> <td align="center">' + lbl_cr + '</td> </tr>';
     }
 
 });

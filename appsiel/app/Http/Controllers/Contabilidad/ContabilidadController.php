@@ -6,18 +6,7 @@ use App\Http\Controllers\Core\TransaccionController;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use Input;
-use DB;
-use Auth;
-use Form;
-use View;
-
-use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
-use App\Sistema\TipoTransaccion;
 use App\Core\TipoDocApp;
 use App\Core\Tercero;
 use App\Core\Empresa;
@@ -32,6 +21,12 @@ use App\CxP\CxpAbono;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+use Collective\Html\FormFacade;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ContabilidadController extends TransaccionController
 {
@@ -48,7 +43,6 @@ class ContabilidadController extends TransaccionController
 
         return $this->crear( $this->app, $this->modelo, $this->transaccion, 'contabilidad.create' );
     }
-
 
     public function store( Request $request )
     {
@@ -71,7 +65,6 @@ class ContabilidadController extends TransaccionController
             $contab_cuenta_id = $vec_1[0];
 
             $vec_2 = explode("-", $tabla_registros_documento[$i]->Tercero);
-
 
             $core_tercero_id = (int)$vec_2[0];
             
@@ -333,7 +326,7 @@ class ContabilidadController extends TransaccionController
         $orientacion='portrait';
         $tam_hoja='Letter';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         //$pdf->set_option('isRemoteEnabled', TRUE);
         $pdf->loadHTML( $view_pdf )->setPaper($tam_hoja,$orientacion);
 
@@ -549,16 +542,16 @@ class ContabilidadController extends TransaccionController
                     <td style="display: none;"> <input type="hidden" name="documento_soporte_tercero" id="documento_soporte_tercero" value=""> </td>
                     <td> <input type="text" name="tipo_transaccion_linea" id="tipo_transaccion_linea" value="causacion" style="background: transparent; border:0; width:70px;" readonly="readonly"> </td>
                     <td>
-                        '.Form::text( 'cuenta_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'cuenta_input', 'data-url_busqueda' => url('contab_consultar_cuentas'), 'autocomplete'  => 'off' ] ).'
-                        '.Form::hidden( 'campo_cuentas', null, [ 'id' => 'combobox_cuentas' ] ).'
+                        '.FormFacade::text( 'cuenta_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'cuenta_input', 'data-url_busqueda' => url('contab_consultar_cuentas'), 'autocomplete'  => 'off' ] ).'
+                        '.FormFacade::hidden( 'campo_cuentas', null, [ 'id' => 'combobox_cuentas' ] ).'
                     </td>
                     <td>
-                        '.Form::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
-                        '.Form::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
+                        '.FormFacade::text( 'tercero_input', null, [ 'class' => 'form-control text_input_sugerencias', 'id' => 'tercero_input', 'data-url_busqueda' => url('core_consultar_terceros_v2'), 'autocomplete'  => 'off' ] ).'
+                        '.FormFacade::hidden( 'campo_terceros', null, [ 'id' => 'combobox_terceros' ] ).'
                     </td>
-                    <td> '.Form::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
-                    <td> '.Form::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'form-control' ] ).' </td>
-                    <td> '.Form::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'form-control' ] ).' </td>
+                    <td> '.FormFacade::text( 'detalle', null, [ 'id' => 'col_detalle', 'class' => 'form-control' ] ).' </td>
+                    <td> '.FormFacade::text( 'debito', null, [ 'id' => 'col_debito', 'class' => 'form-control' ] ).' </td>
+                    <td> '.FormFacade::text( 'credito', null, [ 'id' => 'col_credito', 'class' => 'form-control' ] ).' </td>
                     <td> <div class="btn-group">'.$btn_confirmar.$btn_borrar.'</div> </td>
                 </tr>';
 

@@ -22,21 +22,21 @@
 			</div>
 
 		@else
-		<?php 
-			$user = \Auth::user();
-			$vendedor = App\Ventas\Vendedor::where('user_id',$user->id)->get()->first();
+			<?php 
+				$user = \Auth::user();
+				$vendedor = App\Ventas\Vendedor::where('user_id',$user->id)->get()->first();
 
-			if ($vendedor == null) {
-				dd('Usuario no está creado como Vendedor. Consute con el administraor del sistema.');
-			}
-			
-			$cliente = $vendedor->cliente;
+				if ($vendedor == null) {
+					dd('Usuario no está creado como Vendedor. Consute con el administraor del sistema.');
+				}
+				
+				$cliente = $vendedor->cliente;
 
-			if ($cliente == null) {
-				dd('El Vendedor no tiene un Cliente relacionado. Consute con el administraor del sistema.');
-			}
+				if ($cliente == null) {
+					dd('El Vendedor no tiene un Cliente relacionado. Consute con el administraor del sistema.');
+				}
 
-		?>
+			?>
 			<div class="row">
 				
 				<div class="col-sm-4">

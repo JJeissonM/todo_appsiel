@@ -1121,12 +1121,20 @@ class ContabReportesController extends Controller
         $lapso1_ini = Input::get('lapso1_ini');
         $lapso1_fin = Input::get('lapso1_fin');
 
-        $arr_ids_cuentas = ContabCuenta::where( 'contab_cuenta_grupo_id', $grupo_hijo_id )
+        $arr_ids_cuentas_aux = ContabCuenta::where( 'contab_cuenta_grupo_id', $grupo_hijo_id )
                                    ->get()->pluck('id')->all();
 
-        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
-                            ->whereIn('contab_cuenta_id', $arr_ids_cuentas )
+        $valor_saldo = 0;
+        $arr_ids_cuentas = [];
+        foreach ($arr_ids_cuentas_aux as $cuenta_id) {
+            $aux_valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
+                            ->where('contab_cuenta_id', $cuenta_id )
                             ->sum('valor_saldo');
+            if ($aux_valor_saldo != 0) {
+                $valor_saldo += $aux_valor_saldo;
+                $arr_ids_cuentas[] = $cuenta_id;
+            }
+        }        
 
         return Response::json(
                             [

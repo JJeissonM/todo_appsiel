@@ -588,6 +588,29 @@ $(document).ready(function () {
         
     });
 
+    $(document).on('click', ".btn_revisar_pedidos_ventas", function (event) {
+        event.preventDefault();
+
+        $('#contenido_modal2').html('');
+        $('#div_spin2').fadeIn();
+
+        $("#myModal2").modal(
+            {keyboard: true}
+        );
+
+        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
+
+        $("#myModal2 .btn_edit_modal").hide();
+        $("#myModal2 .btn_save_modal").hide();
+
+        var url = url_raiz + "/" + "pos_revisar_pedidos_ventas" + "/" + $('#pdv_id').val();
+
+        $.get(url, function (respuesta) {
+            $('#div_spin2').hide();
+            $('#contenido_modal2').html(respuesta);
+        });/**/
+    });
+
     function reset_componente_meseros()
     {
         $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');

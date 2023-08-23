@@ -91,9 +91,11 @@
                 </button>
 
                 <br><br>
-                <button style="display: none;" class="btn btn-sm btn-danger" id="btn_anular_pedido" data-pedido_label=""><i
-                            class="fa fa-trash"></i> Anular pedido
-                </button>
+                @can('anular_pedido_restaurante')
+                    <button style="display: none;" class="btn btn-sm btn-danger" id="btn_anular_pedido" data-pedido_label=""><i
+                                class="fa fa-trash"></i> Anular pedido
+                    </button>
+                @endcan
             </td>
         </tr>
     </table>
