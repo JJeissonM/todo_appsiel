@@ -91,7 +91,7 @@
                                 }
                             @endphp
                                 <td style="background: #CACACA;">
-                                    <span style="color: {{ $color }}"> {{ number_format( $prom, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
+                                    <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
                                 </td>    
                             @php
 
@@ -175,7 +175,7 @@
                                 }
                             @endphp
                                 <td style="background: #CACACA;">
-                                    <span style="color: {{ $color }}"> {{ number_format( $prom, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
+                                    <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
                                 </td>    
                             @php
 
@@ -211,7 +211,7 @@
             if ( !is_null($cali) ) 
             {
                 $cali_periodos[$periodo->id]['cali'] = $cali->calificacion;
-                $cali_periodos[$periodo->id]['text'] = number_format($cali->calificacion, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+                $cali_periodos[$periodo->id]['text'] = number_format($cali->calificacion, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                 $cali_periodos[$periodo->id]['text_color'] = 'black';
                 $cali_periodos[$periodo->id]['background_color'] = 'transparent';
                 $cali_periodos[$periodo->id]['lbl_nivelacion'] = $cali->lbl_nivelacion;
@@ -241,7 +241,7 @@
             $cali_faltante = ( $tope_escala_valoracion_minima * $np - array_sum(array_column($cali_periodos, 'cali')) ) / $periodos_faltantes;
         }                    
         
-        $cali_faltante_text = number_format($cali_faltante, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+        $cali_faltante_text = number_format($cali_faltante, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
         $cali_faltante_text_color = 'black';
         if ( $cali_faltante <= $tope_escala_valoracion_minima ) {
             $cali_faltante_text_color = 'red';

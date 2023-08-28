@@ -68,7 +68,7 @@
                                 if ( !is_null($cali) ) 
                                 {
                                     $cali_periodos_listos[$periodos_listos]['cali'] = $cali->calificacion;
-                                    $cali_periodos_listos[$periodos_listos]['text'] = number_format($cali->calificacion, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+                                    $cali_periodos_listos[$periodos_listos]['text'] = number_format($cali->calificacion, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                                     $cali_periodos_listos[$periodos_listos]['text_color'] = 'black';
 
                                     if ( $cali->calificacion <= $tope_escala_valoracion_minima ) {
@@ -87,7 +87,7 @@
                                 $cali_faltante = ( $tope_escala_valoracion_minima * $np - array_sum(array_column($cali_periodos_listos, 'cali')) ) / $periodos_faltantes;
                             }                        
                             
-                            $cali_faltante_text =number_format($cali_faltante, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+                            $cali_faltante_text =number_format($cali_faltante, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                             $cali_faltante_text_color = 'black';
                             if ( $cali_faltante <= $tope_escala_valoracion_minima ) {
                                 $cali_faltante_text_color = 'red';
@@ -121,7 +121,7 @@
                         }
                     @endphp
                         <td>
-                            <span style="color: {{ $color }}"> {{ number_format( $prom, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
+                            <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
                         </td>    
                     @php
 
@@ -186,7 +186,7 @@
                                 if ( !is_null($cali) ) 
                                 {
                                     $cali_periodos_listos[$periodos_listos]['cali'] = $cali->calificacion;
-                                    $cali_periodos_listos[$periodos_listos]['text'] = number_format($cali->calificacion, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+                                    $cali_periodos_listos[$periodos_listos]['text'] = number_format($cali->calificacion, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                                     $cali_periodos_listos[$periodos_listos]['text_color'] = 'black';
 
                                     if ( $cali->calificacion <= $tope_escala_valoracion_minima ) {
@@ -205,7 +205,7 @@
                                 $cali_faltante = ( $tope_escala_valoracion_minima * $np - array_sum(array_column($cali_periodos_listos, 'cali')) ) / $periodos_faltantes;
                             }
                                 
-                            $cali_faltante_text =number_format($cali_faltante, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+                            $cali_faltante_text =number_format($cali_faltante, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                             $cali_faltante_text_color = 'black';
                             if ( $cali_faltante <= $tope_escala_valoracion_minima ) {
                                 $cali_faltante_text_color = 'red';
@@ -239,7 +239,7 @@
                             }
                             @endphp
                                 <td>
-                                    <span style="color: {{ $color }}"> {{ number_format( $prom, config('califiacciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
+                                    <span style="color: {{ $color }}"> {{ number_format( $prom, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }} </span>
                                 </td>    
                             @php
 
