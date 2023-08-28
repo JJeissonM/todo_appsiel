@@ -44,7 +44,7 @@
                                 /**/if ( !is_null($prom) ) 
                                 {
                                     $prom_final += $prom;
-                                    $text_prom = number_format($prom, (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
+                                    $text_prom = number_format($prom, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.');
                                     $n++;
 
                                     if ( $prom <= $tope_escala_valoracion_minima ) {
@@ -66,7 +66,7 @@
                                 }
                             @endphp
 
-                            <span style="color: {{$color_text}}"> {{ number_format( $prom_final/$n , (int)config('califiaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }}</span>
+                            <span style="color: {{$color_text}}"> {{ number_format( $prom_final/$n , (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.') }}</span>
                         @endif
                     </td>
                 </tr>
