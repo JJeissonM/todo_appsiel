@@ -1159,7 +1159,7 @@ class ContabReportesController extends Controller
 
         return Response::json(
                             [
-                                'descripcion' => $cuenta->descripcion,
+                                'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
                                 'valor_saldo' => ($valor_saldo == null) ? 0 : $valor_saldo,
                                 'lbl_cr' => ($valor_saldo < 0) ? 'CR' : ''
                             ]
