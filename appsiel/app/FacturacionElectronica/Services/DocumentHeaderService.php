@@ -14,6 +14,7 @@ use App\Ventas\VtasMovimiento;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
 use Illuminate\Support\Facades\Auth;
+use PhpParser\Node\Stmt\Foreach_;
 
 class DocumentHeaderService
 {
@@ -61,9 +62,9 @@ class DocumentHeaderService
             'modificado_por' => $modificado_por
         ];
 
-        $contab_movim = ContabMovimiento::where( $array_wheres )->get()->first();
-        if ($contab_movim != null) {
-            $contab_movim->update( $new_data );
+        $contab_movim = ContabMovimiento::where( $array_wheres )->get();
+        foreach ($contab_movim as $line_movin) {
+            $line_movin->update( $new_data );
         }
         
         $cxc_movim = CxcMovimiento::where( $array_wheres )->get()->first();
@@ -71,17 +72,17 @@ class DocumentHeaderService
             $cxc_movim->update( $new_data );
         }
         
-        $teso_movim = TesoMovimiento::where( $array_wheres )->get()->first();
-        if ($teso_movim != null) {
-            $teso_movim->update( $new_data );
+        $teso_movim = TesoMovimiento::where( $array_wheres )->get();
+        foreach ($teso_movim as $teso_line_movin) {
+            $teso_line_movin->update( $new_data );
         }
 
         // Tablas POS
         $original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
         
-        $pos_movim = Movimiento::where( $array_wheres )->get()->first();
-        if ($pos_movim != null) {
-            $pos_movim->update( $new_data );
+        $pos_movim = Movimiento::where( $array_wheres )->get();
+        foreach ($pos_movim as $line_pos_movim) {
+            $line_pos_movim->update( $new_data );
         }
 
         // Crear encabezado y lineas de registros en en Vtas estandar
@@ -103,9 +104,9 @@ class DocumentHeaderService
         }
 
         // Mover movimiento de ventas
-        $vtas_movim = VtasMovimiento::where( $array_wheres )->get()->first();
-        if ($vtas_movim != null) {
-            $vtas_movim->update( $new_data );
+        $vtas_movim = VtasMovimiento::where( $array_wheres )->get();
+        foreach ($vtas_movim as $line_vtas_movim) {
+            $line_vtas_movim->update( $new_data );
         }
 
         return (object)[

@@ -869,7 +869,7 @@ class ContabReportesController extends Controller
         $reports_list = [
             (object)[
                 'title' => 'Impuestos en ventas (generados)',
-                'arr_transactions_types' => [23,44,49,50,52],
+                'arr_transactions_types' => [23,44,47,49,50,52],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
                                             ->get()
                                             ->pluck('cta_ventas_id')
@@ -877,7 +877,7 @@ class ContabReportesController extends Controller
             ],
             (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
-                'arr_transactions_types' => [41,38,53,54],
+                'arr_transactions_types' => [38,41,53,54],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
                                             ->get()
                                             ->pluck('cta_ventas_devol_id')
@@ -903,6 +903,7 @@ class ContabReportesController extends Controller
 
        $vista = '<table><tr><td>';
        foreach ($reports_list as $report) {
+            // Obtener movimiento contable por cada grupo de transacciones
             $movements = ContabMovimiento::whereIn('core_tipo_transaccion_id',$report->arr_transactions_types)
                     ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                     ->whereIn('contab_cuenta_id',$report->campo_filtrar_ctas)
@@ -933,7 +934,7 @@ class ContabReportesController extends Controller
         $reports_list = [
             'sales_taxes' => (object)[
                 'title' => 'Impuestos en ventas (generados)',
-                'arr_transactions_types' => [23,44,49,50,52],
+                'arr_transactions_types' => [23,44,47,49,50,52],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
                                             ->get()
                                             ->pluck('cta_ventas_id')
@@ -941,7 +942,7 @@ class ContabReportesController extends Controller
             ],
             'sales_return_taxes' => (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
-                'arr_transactions_types' => [41,38,53,54],
+                'arr_transactions_types' => [38,41,53,54],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
                                             ->get()
                                             ->pluck('cta_ventas_devol_id')
@@ -1016,15 +1017,14 @@ class ContabReportesController extends Controller
         return $vista;
     }
 
-    public function get_totals_by_tax($lines, $column_to_group, $column_method_name)
+    public function get_totals_by_tax($contab_movements_lines, $column_to_group, $column_method_name)
     {
-        $grouped_data = $lines->groupBy($column_to_group)->map(function ($row) use ($column_method_name) {
+        $grouped_data = $contab_movements_lines->groupBy($column_to_group)->map(function ($row) use ($column_method_name) {
             return  [
                 'group' => $row->first()->$column_method_name,
                 'valor_impuesto' => $row->sum('valor_saldo')
             ];
         });
-
 
         $arr_grouped_data = [];
         foreach ($grouped_data as $line) {
