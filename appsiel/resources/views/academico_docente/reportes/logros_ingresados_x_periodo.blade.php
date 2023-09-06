@@ -19,7 +19,14 @@
     {{ Form::bsTableHeader(['Curso','Asignatura','Logros']) }}
     <tbody>
         @foreach( $lineas_asignaturas as $linea )
-            <tr>
+            <?php 
+                $class = 'none';
+                if(count($linea->lista_logros) == 0)
+                {
+                    $class = 'danger';
+                }
+            ?>
+            <tr class="{{$class}}">
                 <td>
                     {{ $linea->curso }}
                 </td>
