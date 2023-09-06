@@ -4,17 +4,6 @@ namespace App\Http\Controllers\AcademicoDocente;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use App\Sistema\Modelo;
-
-use Input;
-use View;
-use Storage;
-use Cache;
-use Auth;
-
 use App\User;
 
 use App\Matriculas\Curso;
@@ -27,7 +16,10 @@ use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
 
 use App\AcademicoDocente\AsignacionProfesor;
-
+use App\Calificaciones\Logro;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 class ReportesController extends ModeloController
 {
@@ -152,8 +144,7 @@ class ReportesController extends ModeloController
             
             $linea->lista_actividades = $lista_actividades_periodo;
 
-            $lineas_asignaturas[] = $linea;
-            
+            $lineas_asignaturas[] = $linea;            
         }
 
 
@@ -183,6 +174,68 @@ class ReportesController extends ModeloController
         $periodo = Periodo::find( $request->periodo_id );
 
         $vista = View::make('academico_docente.reportes.resumen_actividades_academicas', compact( 'lineas_asignaturas', 'curso', 'profesor', 'periodo') )->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function logros_ingresados_x_periodo( Request $request )
+    {
+        $user = Auth::user();
+
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar reportes.</h2>';
+        }
+
+        $listado_asignaciones = AsignacionProfesor::get_asignaturas_x_curso( $request->user_id, $request->periodo_lectivo_id );
+
+        $logros_del_periodo = Logro::where( [
+                                                ['periodo_id', '=', $request->periodo_id]
+                                            ] )
+                                        ->get();
+
+        
+        $curso = (object)['descripcion' => '' ];
+        $lineas_asignaturas = [];
+
+        foreach ($listado_asignaciones as $asignacion)
+        {
+
+            $curso = Curso::find($asignacion->curso_id);
+
+            if ( is_null($curso) )
+            {
+                $curso = (object)['descripcion' => '' ];
+            }
+
+            $linea = (object)[ 'curso' => $curso->descripcion, 'asignatura' => $asignacion->Asignatura, 'lista_logros' => '---'];
+
+            $a = 0;
+            $lista_logros_del_periodo = [];
+            foreach ($logros_del_periodo as $logro)
+            {
+
+                if ( $logro->asignatura_id == $asignacion->id_asignatura && $logro->curso_id == $asignacion->curso_id )
+                {
+                    $lista_logros_del_periodo[$a]['descripcion'] = $logro->escala_valoracion->nombre_escala . ': ' . substr($logro->descripcion,0,150) . '...';
+
+                    $lista_logros_del_periodo[$a]['enlace_logro'] = '<a href="' . url('web/' . $logro->id . '?id=2&id_modelo=70&id_transaccion=') . '" target="_blank"> Revisar Logro </a>';
+                    $a++;
+                }
+
+            }
+            
+            $linea->lista_logros = $lista_logros_del_periodo;
+
+            $lineas_asignaturas[] = $linea;            
+        }
+        
+        $profesor = User::find( $request->user_id );
+        $periodo = Periodo::find( $request->periodo_id );
+
+        $vista = View::make('academico_docente.reportes.logros_ingresados_x_periodo', compact( 'lineas_asignaturas', 'curso', 'profesor', 'periodo') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

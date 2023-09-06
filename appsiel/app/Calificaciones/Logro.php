@@ -6,13 +6,10 @@ use App\Calificaciones\Calificacion;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Calificaciones\CursoTieneAsignatura;
-
-use DB;
-use App\Calificaciones\Periodo;
 use App\Matriculas\PeriodoLectivo;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 
 class Logro extends Model
 {
@@ -36,13 +33,14 @@ class Logro extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","store":"calificaciones_logros","update":"calificaciones_logros/id_fila","cambiar_estado":"a_i/id_fila","eliminar":"calificaciones_eliminar_logro/id_fila"}';
 
-
-    /**
-     * Obtener cada logro que pertenece a la calificación.
-     */
     public function calificacion()
     {
         return $this->belongsTo(Calificacion::class);
+    }
+
+    public function escala_valoracion()
+    {
+        return $this->belongsTo(EscalaValoracion::class);
     }
 
 

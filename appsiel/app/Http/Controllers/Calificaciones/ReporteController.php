@@ -387,7 +387,6 @@ class ReporteController extends Controller
         return $vista;
     }
 
-
     public function certificado_notas( Request $request )
     {
         $estudiantes = Matricula::todos_estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id );

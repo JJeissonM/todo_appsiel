@@ -83,9 +83,10 @@ Route::get( 'sga_planes_clases_remover_archivo_adjunto/{encabezado_id}', 'Academ
 Route::resource('sga_planes_clases', 'AcademicoDocente\PlanClasesController');
 
 
-// REPORTES PLANES DE CLASES
+// REPORTES
 Route::post( 'sga_resumen_planes_clases', 'AcademicoDocente\ReportesController@resumen_planes_clases');
 Route::post( 'sga_resumen_actividades_academicas', 'AcademicoDocente\ReportesController@resumen_actividades_academicas');
+Route::post( 'sga_logros_ingresados_x_periodo', 'AcademicoDocente\ReportesController@logros_ingresados_x_periodo');
 
 
 
