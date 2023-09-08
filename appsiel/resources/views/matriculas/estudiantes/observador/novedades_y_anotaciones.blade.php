@@ -9,7 +9,7 @@
 		<table class="table table-bordered table-striped" id="myTable" width="100%">
 			<thead>
 				<tr>
-					<th colspan="3" style="background-color:rgb(255, 253, 125);">Observaciones generales periodo {{ $periodo->numero }}</th>
+					<th colspan="3" style="background-color:rgb(255, 253, 125);">Observaciones Generales Periodo {{ $periodo->numero }}</th>
 				</tr>
 				<tr>
 					<th style="background-color:rgb(255, 253, 125); width:13%; text-align: center;">Fecha</th>

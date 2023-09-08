@@ -59,7 +59,7 @@
                 <tr>
 
                     <td style="width:{{$ancho_primera_columna}}px; padding: 5;">
-                        {{ $linea->asignacion_asignatura->asignatura->descripcion }}
+                        <b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
                     </td>
 
                     <td style="text-align: justify; padding: 5px 5px 5px 25px;">

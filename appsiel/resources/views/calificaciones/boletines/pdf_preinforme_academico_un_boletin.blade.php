@@ -43,7 +43,7 @@
 
 					<tr>
 						<td style="border: 0px;">
-							{{ $linea->asignacion_asignatura->asignatura->descripcion }}
+							<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
 						</td>
 						<td style="border: 0px;" width="35%">
 							@if( !is_null( $linea->calificacion ) )

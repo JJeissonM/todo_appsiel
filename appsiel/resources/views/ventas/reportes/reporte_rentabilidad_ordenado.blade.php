@@ -50,12 +50,24 @@
                     $arr_remisiones = $coleccion_movimiento->pluck('remision_doc_encabezado_id')->toArray();
                     $cantidad = $coleccion_movimiento->sum('cantidad');
 
+                    if ( $iva_incluido )
+                    {
+                        $precio = $coleccion_movimiento->sum('precio_total');
+                    }else{
+                        $precio = $coleccion_movimiento->sum('base_impuesto_total');
+                    }
+
                     if ( $agrupar_por == 'core_tercero_id' )
                     {
                         $costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
                         //$costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
                     }else{
                         $costo_total = $movimiento_inventarios->where( 'inv_producto_id', $coleccion_movimiento->first()->inv_producto_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
+
+                        if ($coleccion_movimiento->first()->item->tipo == 'servicio') {
+                            $costo_total = $precio / (1 - $coleccion_movimiento->first()->item->precio_compra / 100);
+                            $iva_incluido = 0;
+                        }
                     }
                     
                     /**/
@@ -75,10 +87,7 @@
 
                     if ( $iva_incluido )
                     {
-                        $precio = $coleccion_movimiento->sum('precio_total');
                         $costo_total *= (1 + (int)$coleccion_movimiento->first()->tasa_impuesto / 100 );
-                    }else{
-                        $precio = $coleccion_movimiento->sum('base_impuesto_total');
                     }
 
                     $precio_promedio = 0;
@@ -137,7 +146,7 @@
                             $margen_rentabilidad = $array_lista[$i]['rentabilidad'] / $array_lista[$i]['costo_total'] * 100;
                         }
                     ?>
-                    <td> {{ number_format( $margen_rentabilidad, 2, ',', '.') }}% </td>
+                    <td> {{ number_format( $margen_rentabilidad, 2, ',', '.') }}% {{ $array_lista[$i]['rentabilidad'] }} ------   {{ $array_lista[$i]['costo_total'] }}</td>
                 </tr>
 
                 <?php

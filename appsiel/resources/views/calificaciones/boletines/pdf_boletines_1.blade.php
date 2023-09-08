@@ -55,7 +55,9 @@
 
 					<tr>
 
-						<td style="width:150px;"> {{ $linea->asignacion_asignatura->asignatura->descripcion }} </td>
+						<td style="width:150px;"> 
+							<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
+						</td>
 						
 						<td align="center">
 						    @if( $linea->asignacion_asignatura->intensidad_horaria != 0 )

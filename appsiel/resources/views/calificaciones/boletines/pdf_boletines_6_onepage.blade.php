@@ -61,7 +61,7 @@
 
                 <tr>
                     <td style="width:{{$ancho_columna_asignatura}}px; padding: 5;">
-                        {{ $linea->asignacion_asignatura->asignatura->descripcion }}
+                        <b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
                     </td>
 
                     @if($mostrar_logros == 1)

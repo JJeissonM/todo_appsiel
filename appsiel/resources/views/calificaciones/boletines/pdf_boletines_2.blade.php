@@ -33,7 +33,7 @@
 							<table width="100%" style="border: 0px;">
 								<tr>
 									<td style="border: 0px;">
-										{{ $linea->asignacion_asignatura->asignatura->descripcion }}
+										<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
 									</td>
 									<td style="border: 0px;" width="35%">
 										@if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
