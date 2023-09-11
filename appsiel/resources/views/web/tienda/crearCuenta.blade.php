@@ -30,6 +30,8 @@
                                     <input name="url_id_modelo" type="hidden" value="218">
                                     <input name="url_id_transaccion" type="hidden">
                                     <input name="core_tercero_id" type="hidden" value="{{config('contabilidad.contact_id_default')}}">
+                                    <input name="vendedor_id" type="hidden" value="{{config('pagina_web.vendedor_id')}}">
+                                    <input name="inv_bodega_id" type="hidden" value="{{config('pagina_web.inv_bodega_id')}}">                                    
                                     
                                     <div class="row">
                                         <div class="col-xs-12 col-md-6">

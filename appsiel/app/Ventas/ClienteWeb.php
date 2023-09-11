@@ -121,8 +121,6 @@ class ClienteWeb extends Model
         $registro->clase_cliente_id = config('pagina_web.clase_cliente_id');
         $registro->lista_precios_id = config('pagina_web.lista_precios_id');
         $registro->lista_descuentos_id = config('pagina_web.lista_descuentos_id');
-        $registro->vendedor_id = config('pagina_web.vendedor_id');
-        $registro->inv_bodega_id = config('pagina_web.inv_bodega_id');
         $registro->zona_id = config('pagina_web.zona_id');
         $registro->liquida_impuestos = 1;
         $registro->condicion_pago_id = config('pagina_web.condicion_pago_id');
