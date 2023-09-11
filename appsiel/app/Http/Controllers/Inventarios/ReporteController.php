@@ -109,7 +109,11 @@ class ReporteController extends Controller
                 $productos[$i]['bodega'] = $bodega->descripcion;
 
                 $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
-                
+                /*$productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', '=', $bodega_id)
+                                ->where('inv_producto_id', '=', $item_id)
+                                ->where('fecha', '<=', $fecha_corte)
+                                ->sum('cantidad');
+                */
                 $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];

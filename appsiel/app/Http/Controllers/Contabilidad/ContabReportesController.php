@@ -615,7 +615,7 @@ class ContabReportesController extends Controller
 
         $cuentas_tesoreria = array_merge ( $cuentas_tesoreria, \App\Tesoreria\TesoCuentaBancaria::groupBy('contab_cuenta_id')->get()->pluck('contab_cuenta_id')->toArray() );
 
-        $movimiento = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+        $contab_movim = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
                         ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
                         ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                         ->whereIn( 'contab_cuenta_id', $cuentas_tesoreria )
@@ -641,7 +641,7 @@ class ContabReportesController extends Controller
                         ->get();
 
         // Se filtran los registros del movimiento contable que no están en el movimiento de tesorería
-        $registros = $movimiento->filter(function ($value, $key)
+        $registros = $contab_movim->filter(function ($value, $key)
         {
             return \App\Tesoreria\TesoMovimiento::where(
                                                         [ 

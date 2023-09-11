@@ -29,6 +29,8 @@
                                     <input name="url_id" type="hidden" value="10">
                                     <input name="url_id_modelo" type="hidden" value="218">
                                     <input name="url_id_transaccion" type="hidden">
+                                    <input name="core_tercero_id" type="hidden" value="{{config('contabilidad.contact_id_default')}}">
+                                    
                                     <div class="row">
                                         <div class="col-xs-12 col-md-6">
                                             <div class="form-group">
