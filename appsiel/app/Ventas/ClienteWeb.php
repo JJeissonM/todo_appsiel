@@ -118,7 +118,6 @@ class ClienteWeb extends Model
         // Actualizar Cliente
         $registro->core_tercero_id = $tercero->id;
 
-        $registro->id_tipo_documento_id = config('configuracion.tipo_doc_identidad_default');
         $registro->clase_cliente_id = config('pagina_web.clase_cliente_id');
         $registro->lista_precios_id = config('pagina_web.lista_precios_id');
         $registro->lista_descuentos_id = config('pagina_web.lista_descuentos_id');
