@@ -942,6 +942,11 @@ class ReporteController extends TesoreriaController
                         $saldo = $saldo + $m->valor_movimiento;
                     }
                 }
+                
+                if (round($saldo,0) == 0 && $c->estado == 'Inactivo') {
+                    continue;
+                }
+
                 $response['data'][] = [
                     'caja' => $c->descripcion,
                     'saldo' => $saldo
