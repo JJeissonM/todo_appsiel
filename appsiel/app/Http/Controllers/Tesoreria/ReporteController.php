@@ -861,13 +861,14 @@ class ReporteController extends TesoreriaController
                     }
                 }
 
-                if (round($saldo,0) != 0 && $c->estado == 'Activo') {
-                    $response['data'][] = [
-                        'cuenta' => TesoEntidadFinanciera::find($c->entidad_financiera_id)->descripcion . " - " . $c->tipo_cuenta . " - Nro. " . $c->descripcion,
-                        'saldo' => $saldo
-                    ];
+                if (round($saldo,0) == 0 && $c->estado == 'Inactivo') {
+                    continue;
                 }
-                
+
+                $response['data'][] = [
+                    'cuenta' => TesoEntidadFinanciera::find($c->entidad_financiera_id)->descripcion . " - " . $c->tipo_cuenta . " - Nro. " . $c->descripcion,
+                    'saldo' => $saldo
+                ];
                 $total = $total + $saldo;
             }
             $response['total'] = $total;
@@ -893,14 +894,26 @@ class ReporteController extends TesoreriaController
             {
                 $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
                                     ->where('teso_cuentas_bancarias.id',$acl->recurso_id)
-                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->select(
+                                        'teso_cuentas_bancarias.id',
+                                        'teso_cuentas_bancarias.descripcion',
+                                        'teso_cuentas_bancarias.tipo_cuenta',
+                                        'teso_cuentas_bancarias.entidad_financiera_id',
+                                        'teso_cuentas_bancarias.estado'
+                                        )
                                     ->orderBy('teso_cuentas_bancarias.tipo_cuenta')
                                     ->get();
             }
             
         }else{
             $cuentas = TesoCuentaBancaria::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'teso_cuentas_bancarias.contab_cuenta_id')
-                                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion','teso_cuentas_bancarias.tipo_cuenta','teso_cuentas_bancarias.entidad_financiera_id')
+                                    ->select(
+                                        'teso_cuentas_bancarias.id',
+                                        'teso_cuentas_bancarias.descripcion',
+                                        'teso_cuentas_bancarias.tipo_cuenta',
+                                        'teso_cuentas_bancarias.entidad_financiera_id',
+                                        'teso_cuentas_bancarias.estado'
+                                        )
                                     ->orderBy('teso_cuentas_bancarias.tipo_cuenta')
                                     ->get();
         }
