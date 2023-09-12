@@ -105,8 +105,13 @@ class ReporteController extends Controller
                 $productos[$i]['descripcion'] = $item->descripcion;
                 $productos[$i]['unidad_medida1'] = $item->unidad_medida1;
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
+
                 $bodega = $bodegas->where( 'id',$bodega_id )->first();
-                $productos[$i]['bodega'] = $bodega->descripcion;
+                $descripcion_bodega = '';
+                if ($bodega != null) {
+                    $descripcion_bodega = $bodega->descripcion;
+                }
+                $productos[$i]['bodega'] = $descripcion_bodega;
 
                 $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
                 /*$productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', '=', $bodega_id)
@@ -140,7 +145,7 @@ class ReporteController extends Controller
                 $bodega = "NINGUNA";
                 break;
             case '1':
-                $bodega = $bodega->descripcion;
+                $bodega = $descripcion_bodega;
                 break;
             default:
                 $bodega = "VARIAS";

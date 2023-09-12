@@ -30,16 +30,16 @@
 	                
 	            </tr>
             @else
-                <tr style="background: #4a4a4a; color: white;">
-                    <td colspan="3"> &nbsp; </td>
+                @if($mostrar_cantidad)
+                    <tr style="background: #4a4a4a; color: white;">
+                        <td colspan="3"> &nbsp; </td>
 
-                    <td> &nbsp; </td>
+                        <td> &nbsp; </td>
 
-                    @if($mostrar_cantidad)
                         <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }}</td>
                         <td> &nbsp; </td>
-                    @endif
-                </tr>
+                    </tr>
+                @endif
             @endif
         <?php 
             $total_cantidad+= $productos[$i]['Cantidad'];
