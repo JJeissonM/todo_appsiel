@@ -861,14 +861,13 @@ class ReporteController extends TesoreriaController
                     }
                 }
 
-                if (round($saldo,0) == 0 && $c->estado == 'Inactivo') {
-                    continue;
+                if (round($saldo,0) != 0 && $c->estado == 'Activo') {
+                    $response['data'][] = [
+                        'cuenta' => TesoEntidadFinanciera::find($c->entidad_financiera_id)->descripcion . " - " . $c->tipo_cuenta . " - Nro. " . $c->descripcion,
+                        'saldo' => $saldo
+                    ];
                 }
-
-                $response['data'][] = [
-                    'cuenta' => TesoEntidadFinanciera::find($c->entidad_financiera_id)->descripcion . " - " . $c->tipo_cuenta . " - Nro. " . $c->descripcion,
-                    'saldo' => $saldo
-                ];
+                
                 $total = $total + $saldo;
             }
             $response['total'] = $total;
