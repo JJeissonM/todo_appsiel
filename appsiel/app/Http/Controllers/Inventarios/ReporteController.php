@@ -83,7 +83,7 @@ class ReporteController extends Controller
 
     public function get_vista_inv_movimiento_corte( $movin_filtrado, $mostrar_costo, $mostrar_cantidad, $fecha_corte )
     {
-        $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->sort()->toArray() );
+        $lista_items = array_keys($movin_filtrado->groupBy('inv_producto_id')->toArray() );
         $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
 
         $bodegas = InvBodega::all();
