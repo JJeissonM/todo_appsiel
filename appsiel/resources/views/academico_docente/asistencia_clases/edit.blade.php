@@ -12,10 +12,10 @@
 		    <hr>
 			{{Form::model($registro,['route'=>['academico_docente.asistencia_clases.update',$registro->id],'method'=>'PUT', 'id' => 'form_create','class'=>'form-horizontal' ]) }}
 
-					{{ Form::hidden('url_id',Input::get('id'))}}
-					{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
+					{{ Form::hidden('url_id', Input::get('id')) }}
+					{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
 
-					{{ Form::hidden('asignatura_id',$asignatura->id) }}
+					{{ Form::hidden('asignatura_ori_id', $asignatura->id) }}
 					{{ Form::hidden('curso_id',$curso->id) }}
 
 					<div class="row" style="padding:5px;">

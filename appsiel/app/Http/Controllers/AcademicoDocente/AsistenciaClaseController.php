@@ -4,12 +4,7 @@ namespace App\Http\Controllers\AcademicoDocente;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use Input;
 
 use App\Matriculas\Curso;
 use App\Matriculas\Matricula;
@@ -20,6 +15,8 @@ use App\Calificaciones\Asignatura;
 use App\Calificaciones\AsistenciaClase;
 
 use App\Core\Colegio;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class AsistenciaClaseController extends Controller
 {
@@ -103,7 +100,7 @@ class AsistenciaClaseController extends Controller
 
         $miga_pan = [
             ['url' => 'academico_docente?id=' . Input::get('id'), 'etiqueta' => 'Académico docente'],
-            ['url' => 'academico_docente/asistencia_clases?curso_id=' . Input::get('curso_id') . '&asignatura_id=' . Input::get('asignatura_id') . '&id=' . Input::get('id'), 'etiqueta' => 'Asistencia clases / Curso: ' . $curso->descripcion . ' / Asignatura: ' . $asignatura->descripcion],
+            ['url' => 'academico_docente/asistencia_clases?curso_id=' . Input::get('curso_id') . '&asignatura_id=' . Input::get('asignatura_id') . '&id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => 'Asistencia clases / Curso: ' . $curso->descripcion . ' / Asignatura: ' . $asignatura->descripcion],
             ['url' => 'NO', 'etiqueta' => 'Tomar asistencia']
         ];
 
@@ -112,6 +109,16 @@ class AsistenciaClaseController extends Controller
 
     public function continuar_creacion(Request $request)
     {
+        $cant_registros = AsistenciaClase::where([
+            ['curso_id', '=', $request->curso_id],
+            ['asignatura_id', '=', $request->asignatura_id],
+            ['fecha', '=', $request->fecha]
+        ])
+        ->count();
+
+        if ($cant_registros > 0) {
+            return redirect()->back()->with('mensaje_error', 'Ya existen registros de asistencia para ese Curso en la Asignatura y fecha seleccionada.');
+        }
 
         $registros = Matricula::estudiantes_matriculados( $request->curso_id, PeriodoLectivo::get_actual()->id, 'Activo');
 
@@ -121,7 +128,7 @@ class AsistenciaClaseController extends Controller
 
         $miga_pan = [
             ['url' => 'academico_docente?id=' . Input::get('id'), 'etiqueta' => 'Académico docente'],
-            ['url' => 'academico_docente/asistencia_clases?curso_id=' . Input::get('curso_id') . '&asignatura_id=' . Input::get('asignatura_id') . '&id=' . Input::get('id'), 'etiqueta' => 'Asistencia clases / Curso: ' . $curso->descripcion . ' / Asignatura: ' . $asignatura->descripcion],
+            ['url' => 'academico_docente/asistencia_clases?curso_id=' . Input::get('curso_id') . '&asignatura_id=' . Input::get('asignatura_id') . '&id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => 'Asistencia clases / Curso: ' . $curso->descripcion . ' / Asignatura: ' . $asignatura->descripcion],
             ['url' => 'NO', 'etiqueta' => 'Tomar asistencia']
         ];
 
@@ -136,10 +143,6 @@ class AsistenciaClaseController extends Controller
      */
     public function store(Request $request)
     {
-
-        $curso = Curso::find($request->curso_id);
-        $asignatura = Asignatura::find($request->asignatura_id);
-
         // Guardar la asistencia para cada estudiante      
         for ($i = 0; $i < $request->cantidad_estudiantes; $i++) {
             $asistencia = new AsistenciaClase;
@@ -152,7 +155,7 @@ class AsistenciaClaseController extends Controller
             $asistencia->save();
         }
 
-        return redirect('academico_docente/asistencia_clases?curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id . '&id=' . $request->id_app)->with('flash_message', 'Asistencias ingresadas correctamente');
+        return redirect('academico_docente/asistencia_clases?curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id . '&id=' . $request->id_app . '&id_modelo=' . $request->id_modelo )->with('flash_message', 'Asistencias ingresadas correctamente');
     }
 
     /**
@@ -170,7 +173,7 @@ class AsistenciaClaseController extends Controller
 
         $miga_pan = [
             ['url' => 'academico_docente?id=' . Input::get('id'), 'etiqueta' => 'Académico docente'],
-            ['url' => 'academico_docente/asistencia_clases?curso_id=' . Input::get('curso_id') . '&asignatura_id=' . $asignatura->id . '&id=' . Input::get('id'), 'etiqueta' => 'Asistencia clases / Curso: ' . $curso->descripcion . ' / Asignatura: ' . $asignatura->descripcion],
+            ['url' => 'academico_docente/asistencia_clases?curso_id=' . Input::get('curso_id') . '&asignatura_id=' . $asignatura->id . '&id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => 'Asistencia clases / Curso: ' . $curso->descripcion . ' / Asignatura: ' . $asignatura->descripcion],
             ['url' => 'NO', 'etiqueta' => 'Modificar asistencia ' . Estudiante::get_nombre_completo($registro->id_estudiante)]
         ];
 
@@ -186,13 +189,26 @@ class AsistenciaClaseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $curso = Curso::find($request->curso_id);
-        $asignatura = Asignatura::find($request->asignatura_id);
-
         $registro = AsistenciaClase::findOrFail($id);
 
-        $registro->fill($request->all())->save();
+        $cant_registros = AsistenciaClase::where([
+                                                ['curso_id', '=', $request->curso_id],
+                                                ['asignatura_id', '=', $request->asignatura_ori_id],
+                                                ['fecha', '=', $request->fecha],
+                                                ['id_estudiante', '=', $registro->id_estudiante],
+                                                ['id', '<>', $id]
+                                            ])
+                                            ->count();
 
-        return redirect('academico_docente/asistencia_clases?curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id . '&id=' . $request->id_app)->with('flash_message', 'Asistencia MODIFICADA correctamente');
+        if ($cant_registros > 0) {
+            return redirect()->back()->with('mensaje_error', 'Ya existen otro registro de asistencia para ese Estudiante en la Asignatura y fecha seleccionada.');
+        }
+
+        $datos = $request->all();
+        $datos['asignatura_id'] = $datos['asignatura_ori_id'];
+
+        $registro->fill($datos)->save();
+
+        return redirect('academico_docente/asistencia_clases?curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_ori_id . '&id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Asistencia MODIFICADA correctamente');
     }
 }

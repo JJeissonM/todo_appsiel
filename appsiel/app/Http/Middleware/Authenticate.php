@@ -31,7 +31,7 @@ class Authenticate
         }
 
         $user = Auth::user();
-
+        
         if( isset( $request->id ) && isset( $request->id_modelo ) )
         {
             $id_modelo = (int)$request->id_modelo;
@@ -97,7 +97,7 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
-                return redirect()->back()->with('flash_message','2. Restricción App y Modelo. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
+                return redirect()->back()->with('flash_message','3. Restricción App y Modelo. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 
         }else if(isset($request->url_id)){
@@ -115,7 +115,7 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
-                return redirect()->back()->with('flash_message','2. Restricción App. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
+                return redirect()->back()->with('flash_message','4. Restricción App. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 
         }
@@ -151,7 +151,7 @@ class Authenticate
                 ->get();
             
             if(sizeof($permisos) == 0){
-                return redirect()->back()->with('flash_message','3. Método GET. Restricción App y Modelo. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
+                return redirect()->back()->with('flash_message','5. Método GET. Restricción App y Modelo. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles');
             }
 
         }else if(isset($request->id)){
@@ -168,7 +168,7 @@ class Authenticate
                 ->get();
 
             if(sizeof($permisos) == 0){
-                return redirect()->back()->with('flash_message','3. Método GET. Restricción App. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles.');
+                return redirect()->back()->with('flash_message','6. Método GET. Restricción App. Necesita permiso para realizar esta acción, por favor comuníquese con el administrador para más detalles.');
             }
 
         }

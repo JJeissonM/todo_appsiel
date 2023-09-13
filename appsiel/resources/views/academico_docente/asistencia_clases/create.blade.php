@@ -65,6 +65,8 @@
 
 					{{ Form::hidden('id_app',Input::get('id')) }}
 
+					{{ Form::hidden('id_modelo',Input::get('id_modelo')) }}
+
 				    {{ Form::bsButtonsForm( url()->previous() ) }}
 
 				{{Form::close()}}

@@ -12,7 +12,7 @@
 		    <h4 style="color: gray;">Tomar asistencia</h4>
 		    <hr>
 
-		    {{Form::open(['url'=>'/academico_docente/asistencia_clases/continuar_creacion?id='.Input::get('id')],['class'=>'form-horizontal']) }}
+		    {{Form::open(['url'=>'/academico_docente/asistencia_clases/continuar_creacion?id='.Input::get('id') . '&id_modelo=181'],['class'=>'form-horizontal']) }}
 
 				<div class="row" style="padding:5px;">
 					{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha',[],[]) }}

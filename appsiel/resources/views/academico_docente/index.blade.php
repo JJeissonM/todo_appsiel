@@ -231,11 +231,11 @@
 	function asistencia() {
 		let elementos = getElementos();
 		if (elementos.length > 0) {
-			var url = "{{url('academico_docente/asistencia_clases?id='.Input::get('id'))}}";
+			var url = "{{url('academico_docente/asistencia_clases?id=' . Input::get('id')) }}";
 			if (elementos.length == 1) {
 				//procesar uno
 				var curso_asignatura = elementos[0].split(';');
-				url = url + '&curso_id=' + curso_asignatura[0] + '&asignatura_id=' + curso_asignatura[1] + "&id={{Input::get('id')}}";
+				url = url + '&id_modelo=181' + '&curso_id=' + curso_asignatura[0] + '&asignatura_id=' + curso_asignatura[1] + "&id={{Input::get('id')}}";
 				location.href = url;
 			} else {
 				mensaje('Alerta!', 'Solo puede procesar asistencia un curso a la vez', 'warning');

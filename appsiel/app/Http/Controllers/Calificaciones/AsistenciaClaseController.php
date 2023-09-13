@@ -66,6 +66,17 @@ class AsistenciaClaseController extends Controller
 
     public function continuar_creacion(Request $request)
     {
+        $cant_registros = AsistenciaClase::where([
+                                                ['curso_id', '=', $request->curso_id],
+                                                ['asignatura_id', '=', $request->id_asignatura],
+                                                ['fecha', '=', $request->fecha]
+                                            ])
+                                            ->count();
+
+        if ($cant_registros > 0) {
+            return redirect()->back()->with('mensaje_error', 'Ya existen registros de asistencia para ese Curso en la Asignatura y fecha seleccionada.');
+        }
+
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
         $colegio = $colegio[0];
         
@@ -91,7 +102,6 @@ class AsistenciaClaseController extends Controller
      */
     public function store(Request $request)
     {
-
         // Guardar la asistencia para cada estudiante      
         for($i=0;$i<$request->cantidad_estudiantes;$i++){
             $asistencia = new AsistenciaClase;
@@ -129,6 +139,19 @@ class AsistenciaClaseController extends Controller
     public function update(Request $request, $id)
     {
         $registro = AsistenciaClase::findOrFail($id);
+
+        $cant_registros = AsistenciaClase::where([
+                                                ['curso_id', '=', $request->curso_id],
+                                                ['asignatura_id', '=', $request->asignatura_ori_id],
+                                                ['fecha', '=', $request->fecha],
+                                                ['id_estudiante', '=', $registro->id_estudiante],
+                                                ['id', '<>', $id]
+                                            ])
+                                            ->count();
+
+        if ($cant_registros > 0) {
+            return redirect()->back()->with('mensaje_error', 'Ya existen otro registro de asistencia para ese Estudiante en la Asignatura y fecha seleccionada.');
+        }
 
         $registro->fill($request->all())->save();
 
