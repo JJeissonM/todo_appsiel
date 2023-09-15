@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="col-md-6">
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsSelect('periodo_lectivo_id','','Año lectivo',$periodos_lectivos,['required' => 'required']) }}
+			{{ Form::bsSelect('periodo_lectivo_id','','Año lectivo', $periodos_lectivos,['required' => 'required']) }}
 		</div>
 
 		<div class="row campo" style="padding:5px;">
@@ -9,7 +9,7 @@
 		</div>
 
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsSelect('curso_id','','Curso',$cursos,['required' => 'required']) }}
+			{{ Form::bsSelect('curso_id','','Curso', $cursos,['required' => 'required']) }}
 		</div>
 	</div>
 

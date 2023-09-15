@@ -85,7 +85,7 @@
 				</div>
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
-				
+
 			{{Form::close()}}
 		
 		</div>

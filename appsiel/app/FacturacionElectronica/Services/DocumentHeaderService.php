@@ -71,7 +71,25 @@ class DocumentHeaderService
         if ($cxc_movim != null) {
             $cxc_movim->update( $new_data );
         }
+
+        // Cambiar abonos de CxC
+        $array_wheres2 = [
+            'core_empresa_id' => $original_document_header->core_empresa_id,
+            'doc_cxc_transacc_id' => $original_document_header->core_tipo_transaccion_id,
+            'doc_cxc_tipo_doc_id' => $original_document_header->core_tipo_doc_app_id,
+            'doc_cxc_consecutivo' => $original_document_header->consecutivo
+        ];
+        $cxc_abono = CxcAbono::where( $array_wheres2 )->get();
+        foreach ($cxc_abono as $cxc_line_abono) {
+            $cxc_line_abono->update( [
+                'doc_cxc_transacc_id' => $fe_transaction_type_id_default,
+                'doc_cxc_tipo_doc_id' => $fe_document_type_id_default,
+                'doc_cxc_consecutivo' => $consecutivo,
+                'modificado_por' => $modificado_por
+            ] );
+        }
         
+        // Movimiento de Tesoreria
         $teso_movim = TesoMovimiento::where( $array_wheres )->get();
         foreach ($teso_movim as $teso_line_movin) {
             $teso_line_movin->update( $new_data );
