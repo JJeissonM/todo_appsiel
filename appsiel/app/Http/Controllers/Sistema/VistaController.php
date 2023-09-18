@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers\Sistema;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Input;
-use Form;
-use Auth;
-use View;
-use DB;
-
-use Cache;
 
 use App\Sistema\Campo;
 use App\Core\Empresa;
 use App\Core\Colegio;
 
 use App\Calificaciones\EscalaValoracion;
+use App\Matriculas\Estudiante;
+use Collective\Html\FormFacade;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class VistaController extends Controller
 {
@@ -43,7 +40,7 @@ class VistaController extends Controller
         {
             $orientacion = Input::get('orientacion');
         }
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
 
         $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
         //$pdf->setOptions(['defaultFont' => 'Arial']);
@@ -190,53 +187,53 @@ class VistaController extends Controller
                         break;
                 }
 
-                $control = Form::bsLabel($campo['name'],[$texto_lbl,$valor_campo],$campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsLabel($campo['name'],[$texto_lbl,$valor_campo],$campo['descripcion'], $campo['atributos']);
 
                 break;
             case 'bsText':
-                $control = Form::bsText($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsText($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
                 break;
             case 'bsEmail':
-                $control = Form::bsEmail($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsEmail($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
                 break;
             case 'bsNumber':
-                $control = Form::bsNumber($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsNumber($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
                 break;
             case 'bsTextArea':
-                $control = Form::bsTextArea($campo['name'], $campo['value'], $campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsTextArea($campo['name'], $campo['value'], $campo['descripcion'], $campo['atributos']);
                 break;
             case 'password':
-                $control = Form::bsPassword($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsPassword($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
                 break;
             case 'hidden':
-                $control = Form::hidden($campo['name'],$campo['value'], array_merge(['id' => $campo['name']], $campo['atributos']));
+                $control = FormFacade::hidden($campo['name'],$campo['value'], array_merge(['id' => $campo['name']], $campo['atributos']));
                 break;
             case 'botones_form':
-                $control = Form::bsButtonsForm($campo['value'], $campo['atributos']);
+                $control = FormFacade::bsButtonsForm($campo['value'], $campo['atributos']);
                 break;
             case 'select':
                 $opciones = VistaController::get_opciones_campo_tipo_select( $campo );
-                $control = Form::bsSelect($campo['name'], $campo['value'], $campo['descripcion'], $opciones, $campo['atributos']);
+                $control = FormFacade::bsSelect($campo['name'], $campo['value'], $campo['descripcion'], $opciones, $campo['atributos']);
                 break;
             case 'multiselect_autocomplete':
-                $control = Form::multiselect_autocomplete($campo['name'], $campo['opciones'], $campo['value'], array_merge( [ 'id' => $campo['name'] ], $campo['atributos'] ));
+                $control = FormFacade::multiselect_autocomplete($campo['name'], $campo['opciones'], $campo['value'], array_merge( [ 'id' => $campo['name'] ], $campo['atributos'] ));
                 break;
             case 'bsSelectCreate':
-                $control = Form::bsSelectCreate($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                $control = FormFacade::bsSelectCreate($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
             case 'fecha':
-                $control = Form::bsFecha($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                $control = FormFacade::bsFecha($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
             case 'hora':
-                $control = Form::bsHora($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                $control = FormFacade::bsHora($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
 
             case 'bsCheckBox':
-                $control = Form::bsCheckBox($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                $control = FormFacade::bsCheckBox($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
 
             case 'bsRadioBtn':
-                $control = Form::bsRadioBtn($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
+                $control = FormFacade::bsRadioBtn($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
 
             case 'spin':
@@ -270,7 +267,7 @@ class VistaController extends Controller
                         $valor = $campo['value'];
                         break;
                 }
-                $control = Form::hidden($campo['name'],$valor, array_merge(['id' => $campo['name']], $campo['atributos']));
+                $control = FormFacade::hidden($campo['name'],$valor, array_merge(['id' => $campo['name']], $campo['atributos']));
                 break;
 
             case 'imagen':
@@ -293,7 +290,7 @@ class VistaController extends Controller
                 $control = '<div class="well" style="margin-left: 17px; margin-right: 16px;">
                                 <div class="row">
                                     <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
-                                <br/>'.$imagen.'<br/>'.Form::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",") ]).
+                                <br/>'.$imagen.'<br/>'.FormFacade::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",") ]).
                                 '</div> 
                             </div>';
                 break;
@@ -315,7 +312,7 @@ class VistaController extends Controller
 
                 $control = '<div class="form-group">'.$imagen.'<br/>
                             <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
-                            '.Form::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,","), 'multiple' ]).'
+                            '.FormFacade::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,","), 'multiple' ]).'
                         </div>';
                 break;
             case 'file':
@@ -329,7 +326,7 @@ class VistaController extends Controller
                 
                 $control = '<div class="form-group" id="div_'.$campo['name'].'" style="padding:5px;">
                             <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
-                            '.Form::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",")]).'
+                            '.FormFacade::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",")]).'
                         </div>';
                 break;
 
@@ -398,13 +395,13 @@ class VistaController extends Controller
                         // Si el índice existe
                         if ( isset( $campo['value'][ $una_escala->id ] ) )
                         {
-                            $control .= Form::bsTextArea('descripcion_escala[]', $campo['value'][ $una_escala->id ], $una_escala->nombre_escala.' ('.$una_escala->calificacion_minima.'-'.$una_escala->calificacion_maxima.')', $campo['atributos']);
+                            $control .= FormFacade::bsTextArea('descripcion_escala[]', $campo['value'][ $una_escala->id ], $una_escala->nombre_escala.' ('.$una_escala->calificacion_minima.'-'.$una_escala->calificacion_maxima.')', $campo['atributos']);
                         }else{
                             // Si hay una escala de valoración que no tiene descripcion de logro
-                            $control .= Form::bsTextArea('descripcion_escala[]', null, $una_escala->nombre_escala.' ('.$una_escala->calificacion_minima.'-'.$una_escala->calificacion_maxima.')', $campo['atributos']);
+                            $control .= FormFacade::bsTextArea('descripcion_escala[]', null, $una_escala->nombre_escala.' ('.$una_escala->calificacion_minima.'-'.$una_escala->calificacion_maxima.')', $campo['atributos']);
                         }
                     }else{
-                        $control .= Form::bsTextArea('descripcion_escala[]', null, $una_escala->nombre_escala.' ('.$una_escala->calificacion_minima.'-'.$una_escala->calificacion_maxima.')', $campo['atributos']);
+                        $control .= FormFacade::bsTextArea('descripcion_escala[]', null, $una_escala->nombre_escala.' ('.$una_escala->calificacion_minima.'-'.$una_escala->calificacion_maxima.')', $campo['atributos']);
                     }
                     
                     if ($el_primero)
@@ -423,7 +420,7 @@ class VistaController extends Controller
                 break;
 
             case 'input_lista_sugerencias':
-                $control = Form::bsInputListaSugerencias( $campo['name'], $campo['value'], $campo['descripcion'], $campo['atributos']);
+                $control = FormFacade::bsInputListaSugerencias( $campo['name'], $campo['value'], $campo['descripcion'], $campo['atributos']);
                 break;
             
             default:
@@ -449,88 +446,15 @@ class VistaController extends Controller
                 break;
 
             case 'bsText':
-                $control = Form::text( $name,$valor, ['class' => 'form-control'] );
+                $control = FormFacade::text( $name,$valor, ['class' => 'form-control'] );
                 break;
             case 'bsTextArea':
-                $control = Form::textarea($name, $valor, ['class' => 'form-control']);
+                $control = FormFacade::textarea($name, $valor, ['class' => 'form-control']);
                 break;
-            case 'password':
-                $control = Form::bsPassword($campo['name'],$campo['value'],$campo['descripcion'], $campo['atributos']);
-                break;
-            case 'hidden':
-                $control = Form::hidden($campo['name'],$campo['value'], array_merge(['id' => $campo['name']], $campo['atributos']));
-                break;
-            case 'botones_form':
-                $control = Form::bsButtonsForm($campo['value'], $campo['atributos']);
-                break;
-                case 'select':
-                    $control = Form::select($campo['name'], $campo['opciones'], $campo['value'], array_merge( [ 'id' => $campo['name'],'style'=>'border: none;border-color: transparent;border-bottom: 1px solid gray;' ], $campo['atributos'] ));
-                    break;
-            case 'bsSelectCreate':
-                $control = Form::bsSelectCreate($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
-                break;
-            case 'fecha':
-                $control = Form::bsFecha($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
-                break;
-            case 'hora':
-                $control = Form::bsHora($campo['name'], $campo['value'], $campo['descripcion'], $campo['opciones'], $campo['atributos']);
                 break;
             case 'spin':
                 $control = '<div class="row" id="spin" style="display: none;">
                 <img src="'.asset('assets/img/spinning-wheel.gif').'" width="32px" height="32px"></div>';
-                break;
-            case 'personalizado':
-                $control = $campo['value'];
-                break;
-            case 'constante':
-                switch ( $campo['value'] ) {
-                    case 'id_colegio':
-                        $empresa = Empresa::find(Auth::user()->empresa_id);
-                        $colegio = Colegio::where('empresa_id',$empresa->id)->get();
-                        $valor = $colegio[0]->id;
-                        break;
-                    case 'empresa_id':
-                        $valor = Auth::user()->empresa_id;
-                        break;
-                    
-                    default:
-                        $valor = $campo['value'];
-                        break;
-                }
-                $control = Form::hidden($campo['name'],$valor, array_merge(['id' => $campo['name']], $campo['atributos']));
-                break;
-            case 'imagen':
-                // Si se manda como valor la ubicación de la imagen, se muestra
-                if ($campo['value']==null) {
-                    $imagen='';
-                }else{
-                    $url = $campo['value'];
-                    $imagen='<img alt="foto.jpg" src="'.asset($url).'" style="width: 150px; height: 150px;" />';
-                }
-
-                $vec_tipos = explode(',', $campo['opciones']);
-                $tipos = '';
-                for ($i=0; $i < count($vec_tipos); $i++) 
-                { 
-                    $tipos.='.'.$vec_tipos[$i].',';
-                }
-
-                $control = '<div class="form-group">'.$imagen.'<br/>
-                            <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
-                            '.Form::file($campo['name'],['id'=>$campo['name'], 'accept'=>trim($tipos,",") ]).'
-                        </div>';
-                break;
-            case 'file':
-                $control = '<div class="form-group" id="div_'.$campo['name'].'">
-                            <label for="'.$campo['name'].'" class="control-label"> '.$campo['descripcion'].' </label>
-                            '.Form::file($campo['name'],['id'=>$campo['name']]).'
-                        </div>';
-                break;
-
-            case 'html_ayuda':
-                $vec_ruta = explode("_", $campo['opciones']);
-                //$ruta = str_replace(".", "/", $vec_ruta[1])
-                $control = View::make($vec_ruta[1]);
                 break;
             default:
                 $control = '<div class="alert alert-danger">
@@ -589,8 +513,8 @@ class VistaController extends Controller
                 break;
             case 'edit':
 
-                // Esto hace lo mismo que hace automáticamente el facade Form::model() cuando el value del campo tiene null
-                // Como en este edit especial no se una Form::model() hay que asignarle al select  
+                // Esto hace lo mismo que hace automáticamente el facade FormFacade::model() cuando el value del campo tiene null
+                // Como en este edit especial no se una FormFacade::model() hay que asignarle al select  
                 //$vec['']='';
                 if ($texto_opciones!='' and $campo['tipo'] == 'select') 
                 {

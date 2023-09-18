@@ -26,7 +26,8 @@ use App\Calificaciones\AsistenciaClase;
 
 use App\AcademicoDocente\CursoTieneDirectorGrupo;
 use App\AcademicoDocente\AsignacionProfesor;
-
+use App\Calificaciones\CalificacionAuxiliar;
+use App\Calificaciones\EncabezadoCalificacion;
 use App\Core\PasswordReset;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
@@ -218,10 +219,17 @@ class BoletinController extends Controller
 
         $url_imagen_marca_agua = config('matriculas.url_imagen_marca_agua');
 
-        if ($request->formato == 'pdf_boletines_6') {
-            $view =  $this->get_view_for_pdf_boletines_6($request->formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
-        }else{
-            $view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros') )->render();
+        switch ($request->formato) {
+            case 'pdf_boletines_6':
+                $view =  $this->get_view_for_pdf_boletines_6($request->formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
+                break;
+            case 'pdf_boletines_7':
+                    $view =  $this->get_view_for_pdf_boletines_7($request->formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
+                    break;
+            
+            default:
+                $view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros') )->render();
+                break;
         }
 
         // Se prepara el PDF
@@ -260,6 +268,41 @@ class BoletinController extends Controller
         }
 
         return View::make( 'calificaciones.boletines.pdf_boletines_6', compact( 'all_boletines','curso', 'tam_hoja', 'tam_letra','margenes', 'mostrar_areas'))->render();
+    }
+
+    public function get_view_for_pdf_boletines_7($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
+    {
+        $labels_header = [];
+
+        $lbl_calificaciones_aux = [];
+        $calificaciones_aux_periodo = CalificacionAuxiliar::where([
+            ['id_periodo','=',$periodo->id],
+            ['curso_id', '=', $curso->id]
+        ])->get();
+        
+        $columna_calificacion = 1;
+        for ($columna_calificacion=1; $columna_calificacion < 16; $columna_calificacion++) { 
+            $suma_calificaciones_columna = $calificaciones_aux_periodo->sum('C'.$columna_calificacion);
+            if($suma_calificaciones_columna > 0)
+            {
+                $lbl_porcentaje = '';
+                $encabezado_calificacion_aux = EncabezadoCalificacion::where([
+                    ['periodo_id','=',$periodo->id],
+                    ['curso_id', '=', $curso->id],
+                    ['columna_calificacion', '=', 'C'.$columna_calificacion]
+                ])->get()->first();
+                if ($encabezado_calificacion_aux != null) {
+                    $lbl_porcentaje = $encabezado_calificacion_aux->peso . '%';
+                }
+
+                $lbl_calificaciones_aux[] = (object)[
+                    'label' => 'C'.$columna_calificacion,
+                    'porcentaje' => $lbl_porcentaje
+                ];
+            }
+        }
+
+        return  View::make('calificaciones.boletines.'.$formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros','lbl_calificaciones_aux') )->render();
     }
 
     public function dividir_lineas_cuerpo_boletin($lineas,$cantidad_caracteres_para_proxima_pagina)
@@ -505,7 +548,7 @@ class BoletinController extends Controller
     /*
         PROCESO PARA CALCULAR LOS PUESTOS DE ESTUDIANTES DE UN CURSO
 
-        NOTA: NO ESTA TENIENDO EN CUENTA LA NOTA DE NIVELACION. SERÍA INJUSTO QUE ALGUIENQUE NIVELE OCUPE LOS PRIMERO PUESTOS. AUNQUE EN EL PERIODO FINAL SI ENTRA LA NOTA DE NIVELACION.
+        NOTA: NO ESTA TENIENDO EN CUENTA LA NOTA DE NIVELACION. SERÍA INJUSTO QUE ALGUIEN QUE NIVELE OCUPE LOS PRIMERO PUESTOS. AUNQUE EN EL PERIODO FINAL SI ENTRA LA NOTA DE NIVELACION.
 	*/
     public function calcular_puesto_p(Request $request)
     {
@@ -656,33 +699,4 @@ class BoletinController extends Controller
 		
 		return $vector;
 	}
-	
-	
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-		//
-    }
-	
-	
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

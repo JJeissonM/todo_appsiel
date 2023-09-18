@@ -31,14 +31,18 @@
 				<tr>
 					<th style="width:200px;">{{ $lbl_asigatura }}</th>
 					<th style="width:40px;">I.H.</th>
-					@if($curso->maneja_calificacion==1)
-				        @foreach($periodos as $periodo_lista)
-				            <th style="width:35px;"> P{{$periodo_lista->numero}} </th>
+				        @foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
+				            <th style="width:35px;"> 
+								{{$lbl_calificacion_aux->label}}
+								@if($lbl_calificacion_aux->porcentaje != '')
+									<br> 
+									<span style="font-size: 0.6em;">{{$lbl_calificacion_aux->porcentaje}}</span>
+								@endif
+							</th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
-				        <th style="width:35px;"> Prom. </th>
+				        <th style="width:35px;"> Def. </th>
 						<?php $cant_columnas++; ?>
-					@endif
 					@if( $mostrar_fallas )
 						<th style="width:35px;">Fll.</th>
 						<?php $cant_columnas++;  ?>
@@ -69,7 +73,7 @@
 						</td>
 
 						@if( $curso->maneja_calificacion == 1)
-							@include('calificaciones.boletines.lbls_descripciones_calificaciones_periodos')
+							@include('calificaciones.boletines.lbls_descripciones_calificaciones_auxiliares')
 						@endif
 
 						@if( $mostrar_fallas )

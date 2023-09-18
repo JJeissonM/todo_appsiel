@@ -28,31 +28,25 @@
 
 					@include('calificaciones.boletines.fila_area')
 
-					<tr style="background-color: #E8E8E8;">						
-						<!--<td colspan="{{$cant_columnas}}">
-							<table width="100%" style="border: 0px;">
-								<tr>-->
-									<td style="border: 0px;">
-										<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
-									</td>
-									<td style="border: 0px;" width="45%">
-										@if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
-											<b>IH: </b>{{ $linea->asignacion_asignatura->intensidad_horaria }} &nbsp;
-										@endif
-										
-										@if( !is_null( $linea->calificacion ) )
-											@if( $linea->calificacion->calificacion > 0)
-												<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
-											@endif
-										@endif
+					<tr style="background-color: #E8E8E8;">
+						<td style="border: 0px;">
+							<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
+						</td>
+						<td style="border: 0px;" width="45%">
+							@if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
+								<b>IH: </b>{{ $linea->asignacion_asignatura->intensidad_horaria }} &nbsp;
+							@endif
 
-										@if( $mostrar_fallas )
-											<b>Fallas: </b> @include('calificaciones.boletines.lbl_fallas')
-										@endif
-									</td>
-								<!--</tr>
-							</table>					
-						</td>-->
+							@if( !is_null( $linea->calificacion ) )
+								@if( $linea->calificacion->calificacion > 0 && $linea->asignacion_asignatura->maneja_calificacion)
+									<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
+								@endif
+							@endif
+
+							@if( $mostrar_fallas )
+								<b>Fallas: </b> @include('calificaciones.boletines.lbl_fallas')
+							@endif
+						</td>
 					</tr>
 
 					<tr style="font-size: {{$tam_letra}}mm;">

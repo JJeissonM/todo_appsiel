@@ -4,14 +4,13 @@
 		*_nivelacion es la calificacion de la nivelacion (table sga_notas_nivelaciones)
 	*/
 	
-	$lbl_calificacion = '&nbsp;';
-
 	$decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
 
 	$prom = 0;
 	$n = 0;
-	foreach($periodos as $periodo_lista)
+	foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
 	{
+
 		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
 
 		$lbl_cali_periodo = '&nbsp;';
@@ -31,9 +30,8 @@
 			$prom += $cali_periodo;
 			$n++;
 		}
-
-		$lbl_calificacion = $lbl_cali_periodo;
-		//echo '<td align="center"> ' . $lbl_cali_periodo . ' </td>';
+		
+		echo '<td align="center"> ' . $lbl_cali_periodo . ' </td>';	
 	}
 
 	$lbl_cali_prom = '&nbsp;';
@@ -42,9 +40,10 @@
 		$lbl_cali_prom = number_format( $prom / $n, $decimales, ',', '.' );
 	}
 	
+	// Si el periodo es marcado como periodo_de_promedios, se reemplaza el calculo anterior de lbl_cali_prom
+    // El promedio lo trae del que ya esta almacenado en el Periodo FINAL.
 	if( $periodo->periodo_de_promedios )
 	{
-		// El promedio lo trae del que ya esta almacenado en el Periodo FINAL.
 		$cali_promedio_periodo_final = $periodo->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
 		if( !is_null( $cali_promedio_periodo_final ) )
 		{
@@ -60,15 +59,9 @@
 		{
 			$lbl_cali_prom = number_format( $cali_nivelacion_periodo_final->calificacion, $decimales, ',', '.' ) . '<sup>n</sup>';
 		}
+	}
 
-		$lbl_calificacion = $lbl_cali_prom;
-	}
-	
-	if (!$linea->asignacion_asignatura->maneja_calificacion) {
-		$lbl_calificacion = '&nbsp;';
-	}
-	
-	echo '<td align="center"> ' . $lbl_calificacion . ' </td>';
+	echo '<td align="center"> ' . $lbl_cali_prom . ' </td>';
 
 ?>
 
