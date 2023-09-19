@@ -23,7 +23,6 @@
 		$lbl_peso_asignatura = ' (' . $linea->peso_asignatura . '%)';
 	}
 
-
 	switch( config('calificaciones.etiqueta_calificacion_boletines') )
 	{
 	    case 'numero_y_letras':

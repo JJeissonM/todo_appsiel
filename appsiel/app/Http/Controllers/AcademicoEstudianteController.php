@@ -5,10 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
-use DB;
-use View;
-use Lava;
-use Input;
+
 use Carbon\Carbon;
 
 use App\Http\Controllers\Matriculas\ObservadorEstudianteController;
@@ -41,7 +38,9 @@ use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\AcademicoEstudiante\ProgramacionAulaVirtual;
-
+use App\Calificaciones\Services\CalificacionesService;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class AcademicoEstudianteController extends Controller
 {
@@ -194,11 +193,13 @@ class AcademicoEstudianteController extends Controller
         }
 
         $estudiante = Estudiante::get_datos_basicos($this->estudiante->id);
-        
+
+        $lbl_calificaciones_aux = (new CalificacionesService())->get_object_calificaciones_auxiliares($periodo_id, $curso_id);
+
         if ($periodo->periodo_de_promedios) {
             return View::make('calificaciones.incluir.notas_estudiante_periodo_final', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante', 'periodos_del_anio_lectivo'))->render();
         } else {
-            return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla', compact('registros', 'periodo_id', 'curso_id', 'observacion_boletin', 'estudiante'))->render();
+            return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux'))->render();
         }
     }
 

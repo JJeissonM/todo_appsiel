@@ -34,9 +34,9 @@
 				        @foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
 				            <th style="width:35px;"> 
 								{{$lbl_calificacion_aux->label}}
-								@if($lbl_calificacion_aux->porcentaje != '')
+								@if($lbl_calificacion_aux->peso != '')
 									<br> 
-									<span style="font-size: 0.6em;">{{$lbl_calificacion_aux->porcentaje}}</span>
+									<span style="font-size: 0.6em;">{{$lbl_calificacion_aux->peso}}</span>
 								@endif
 							</th>
 							<?php $cant_columnas++;  ?>

@@ -1,12 +1,13 @@
-<?php 
-    $periodo = App\Calificaciones\Periodo::find($periodo_id);
-
+<?php
     $reg_nota_reprobar = App\Calificaciones\EscalaValoracion::where('periodo_lectivo_id',$periodo->periodo_lectivo_id)->orderBy('calificacion_minima','ASC')->first();
     $nota_reprobar = 0;
     if ( !is_null($reg_nota_reprobar) )
     {
         $nota_reprobar = $reg_nota_reprobar->calificacion_maxima;
-    }        
+    }
+    
+    $nivelado = false;
+    $maneja_pesos = false;
 ?>
 
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
@@ -24,35 +25,23 @@
 
 <div class="table-responsive" id="table_content">
 
-    <?php
-        $limite=16;
-        if(count($registros)>0){
-            $ultimoTotal=0;
-            foreach($registros as $r){
-                $total=1;
-                for($m=1; $m<16; $m++){
-                    $label="C".$m;
-                    if($r->$label!=0){
-                        $total=$total+1;
-                    }
-                }
-                if($total>$ultimoTotal){
-                    $ultimoTotal=$total;
-                }
-            }
-            $limite=$ultimoTotal;
-        }
-
-    ?>
-
     <table id="tbDatos" class="table table-striped tabla_registros" style="margin-top: -4px;">
         <thead>
             <tr style="font-size: 16px;">
                 <th>Asignatura</th>
-                @for($k=1; $k < $limite; $k++)
-                <th>C{{$k}}</th>
-                @endfor
-                <th>Final</th>
+                @foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
+                    <th style="width:35px;"> 
+                        {{$lbl_calificacion_aux->label}}
+                        @if($lbl_calificacion_aux->peso != '')
+                            <br> 
+                            <span style="font-size: 0.6em;">{{$lbl_calificacion_aux->peso}}</span>
+                            <?php 
+                                $maneja_pesos = true;
+                            ?>
+                        @endif
+                    </th>
+                @endforeach
+                <th style="width:60px;">Final</th>
                 <th>Desempeño</th>
                 <th>Logros</th>
             </tr>
@@ -68,14 +57,14 @@
                     <?php
                         $promedio = 0;
                         $n = 0;
-                        for ($k=1; $k < $limite; $k++) { 
-                            
-                            $c = 'C'.$k;
+                        foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
+                        {                            
+                            $c = $lbl_calificacion_aux->label;
                             $texto_calificacion = '';
                             
                             if ( $registros[$i]->$c != 0) 
                             {
-                                $texto_calificacion = number_format($registros[$i]->$c,2,'.',',');
+                                $texto_calificacion = number_format($registros[$i]->$c, 2, '.', ',');
                                 $n++;
                             }
 
@@ -85,12 +74,13 @@
                                 $style="color: #f00;";
                             }
                             
+                            
                             $fecha_calificacion = '';
                             $detalle_calificacion = 'Sin detalle.';
 
-                            $encabezado_calificacion = App\Calificaciones\EncabezadoCalificacion::where( [ 'columna_calificacion' => $c, 'periodo_id' => $periodo_id, 'curso_id' => $curso_id, 'asignatura_id' => $registros[$i]->asignatura_id] )->get()->first();
+                            $encabezado_calificacion = App\Calificaciones\EncabezadoCalificacion::where( [ 'columna_calificacion' => $c, 'periodo_id' => $periodo->id, 'curso_id' => $curso->id, 'asignatura_id' => $registros[$i]->asignatura_id] )->get()->first();
 
-                            if ( !is_null($encabezado_calificacion) )
+                            if ( $encabezado_calificacion != null )
                             {
                                 $fecha_calificacion = 'Fecha: '.$encabezado_calificacion->fecha;
                                 $detalle_calificacion = ',    Detalle de la actividad: '.$encabezado_calificacion->descripcion;
@@ -100,11 +90,23 @@
                                 <button style="{{$style}}" type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" data-placement="top" title="{{$fecha_calificacion.$detalle_calificacion}}"> {{$texto_calificacion}} </button >
                             </td>
                     <?php
-                            $promedio+=(float)$registros[$i]->$c;
-                        }
-                            $prom = 0;
-                            if ( $n != 0) {
-                                $prom = $promedio/$n;
+                            if ($maneja_pesos) {
+                                $promedio += (float)$registros[$i]->$c  * (float)$lbl_calificacion_aux->peso / 100;
+                            }else{
+                                $promedio += (float)$registros[$i]->$c;
+                            }
+                            
+                        } // Fin cada calificacion aux.
+                        
+                            $prom = $promedio;
+
+                            // La calificación de nivelación reemplaza la nota promedio final.
+                            $cali_nivelacion_periodo = $periodo->get_calificacion_nivelacion( $curso->id, $estudiante->id, $registros[$i]->asignatura_id );
+                            
+                            if( $cali_nivelacion_periodo != null )
+                            {
+                                $prom = $cali_nivelacion_periodo->calificacion;
+                                $nivelado = true;
                             }
 
                             $escala = (object) array('id' => 0, 'nombre_escala' => '');
@@ -119,10 +121,10 @@
                             $logros = (object) array('descripcion' => '');
                             $n_nom_logros = 0;
 
-                            if ( !is_null($escala) ) 
+                            if ( $escala != null ) 
                             {
                                 $desempeno = $escala->nombre_escala;
-                                $logros = App\Calificaciones\Logro::where('escala_valoracion_id',$escala->id)->where('periodo_id',$periodo_id)->where('curso_id',$curso_id)->where('asignatura_id',$registros[$i]->asignatura_id)->where('estado','Activo')->get();
+                                $logros = App\Calificaciones\Logro::where('escala_valoracion_id',$escala->id)->where('periodo_id',$periodo->id)->where('curso_id',$curso->id)->where('asignatura_id', $registros[$i]->asignatura_id)->where('estado','Activo')->get();
 
                                 $n_nom_logros = count($logros);
                             }
@@ -131,7 +133,12 @@
                                 $style2="color: #f00;";
                             }
                     ?>
-                            <th style="font-size: 16px; {{$style2}}"> {{number_format($prom, 2, '.', ',')}} </th>
+                            <th style="font-size: 16px; {{$style2}}">
+                                {{number_format($prom, 2, '.', ',')}}
+                                @if($nivelado)
+                                 <sup>n</sup>
+                                @endif
+                            </th>
                             <td> {{$desempeno}} </td>
                             <td>
                                <ul>
@@ -164,6 +171,14 @@
 </div>
 
 <br>
+
+@if($nivelado)
+    <p>
+        <sup>n</sup>: nivelación
+    </p>
+
+    <br>
+@endif
 
 <?php
 

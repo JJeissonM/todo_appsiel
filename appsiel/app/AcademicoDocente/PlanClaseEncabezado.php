@@ -10,17 +10,14 @@ use App\AcademicoDocente\PlanClaseEstrucElemento;
 use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseRegistro;
 
-use Form;
-use Input;
-use Auth;
-
 use App\Matriculas\Curso;
 
 use App\Calificaciones\Asignatura;
 
 use App\Matriculas\PeriodoLectivo;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class PlanClaseEncabezado extends Model
 {
@@ -61,7 +58,8 @@ class PlanClaseEncabezado extends Model
                                     'users.name AS campo7',
                                     'sga_plan_clases_encabezados.estado AS campo8',
                                     'sga_plan_clases_encabezados.id AS campo9'
-                                )->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
+                                )->orderBy('sga_plan_clases_encabezados.fecha', 'DESC')
+                                ->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
                                 ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -160,6 +158,7 @@ class PlanClaseEncabezado extends Model
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("users.name", "LIKE", "%$search%")
             ->orWhere("sga_plan_clases_encabezados.estado", "LIKE", "%$search%")
+            ->orderBy('sga_plan_clases_encabezados.fecha', 'DESC')
             ->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);

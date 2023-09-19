@@ -2,10 +2,7 @@
 
 namespace App\Calificaciones;
 
-use App\Boletin;
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
 
 use App\Calificaciones\EscalaValoracion;
 use App\Calificaciones\Periodo;
@@ -14,7 +11,7 @@ use App\Calificaciones\NotaNivelacion;
 use App\Calificaciones\Asignatura;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 
 class Calificacion extends Model
 {

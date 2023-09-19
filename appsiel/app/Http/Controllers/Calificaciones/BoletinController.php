@@ -28,6 +28,7 @@ use App\AcademicoDocente\CursoTieneDirectorGrupo;
 use App\AcademicoDocente\AsignacionProfesor;
 use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\EncabezadoCalificacion;
+use App\Calificaciones\Services\CalificacionesService;
 use App\Core\PasswordReset;
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
@@ -272,35 +273,7 @@ class BoletinController extends Controller
 
     public function get_view_for_pdf_boletines_7($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
     {
-        $labels_header = [];
-
-        $lbl_calificaciones_aux = [];
-        $calificaciones_aux_periodo = CalificacionAuxiliar::where([
-            ['id_periodo','=',$periodo->id],
-            ['curso_id', '=', $curso->id]
-        ])->get();
-        
-        $columna_calificacion = 1;
-        for ($columna_calificacion=1; $columna_calificacion < 16; $columna_calificacion++) { 
-            $suma_calificaciones_columna = $calificaciones_aux_periodo->sum('C'.$columna_calificacion);
-            if($suma_calificaciones_columna > 0)
-            {
-                $lbl_porcentaje = '';
-                $encabezado_calificacion_aux = EncabezadoCalificacion::where([
-                    ['periodo_id','=',$periodo->id],
-                    ['curso_id', '=', $curso->id],
-                    ['columna_calificacion', '=', 'C'.$columna_calificacion]
-                ])->get()->first();
-                if ($encabezado_calificacion_aux != null) {
-                    $lbl_porcentaje = $encabezado_calificacion_aux->peso . '%';
-                }
-
-                $lbl_calificaciones_aux[] = (object)[
-                    'label' => 'C'.$columna_calificacion,
-                    'porcentaje' => $lbl_porcentaje
-                ];
-            }
-        }
+        $lbl_calificaciones_aux = (new CalificacionesService())->get_object_calificaciones_auxiliares($periodo->id, $curso->id);
 
         return  View::make('calificaciones.boletines.'.$formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros','lbl_calificaciones_aux') )->render();
     }

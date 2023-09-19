@@ -8,7 +8,9 @@ use App\Calificaciones\CursoTieneAsignatura;
 class EncabezadoCalificacion extends Model
 {
 	protected $table = 'sga_calificaciones_encabezados';
+	
 	protected $fillable = ['columna_calificacion', 'descripcion', 'peso', 'fecha', 'anio', 'periodo_id', 'curso_id', 'asignatura_id', 'creado_por', 'modificado_por'];
+
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Fecha', 'Columna calificación', 'Detalle', 'Peso (%)'];
 
 	public static function consultar_registros($nro_registros, $search)
