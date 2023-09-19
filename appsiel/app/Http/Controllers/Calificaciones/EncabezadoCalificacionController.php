@@ -4,14 +4,12 @@ namespace App\Http\Controllers\Calificaciones;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Input;
-use Form;
-use Auth;
-
 use App\Calificaciones\EncabezadoCalificacion;
+use Collective\Html\FormFacade;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class EncabezadoCalificacionController extends Controller
 {
@@ -68,7 +66,7 @@ class EncabezadoCalificacionController extends Controller
             $mensaje_descripcion = '<span style="color:#ff4d4d; font-size: 0.9em;">Para eliminar el encabezado, deje vacía la descripción de la actividad y presione guardar.</span><br>';
         }
         
-        $formulario = '<h4>Actividad para la calificación ' . Input::get('columna_calificacion') . '</h4>' . Form::open(['url' => url('calificaciones_encabezados'), 'id' => 'formulario_modal']) . '
+        $formulario = '<h4>Actividad para la calificación ' . Input::get('columna_calificacion') . '</h4>' . FormFacade::open(['url' => url('calificaciones_encabezados'), 'id' => 'formulario_modal']) . '
                           <div class="form-group">
                             <label for="fecha">Fecha actividad:</label>
                             <input name="fecha" type="date" class="form-control" id="fecha" value="' . $fecha . '" required="required">
@@ -91,7 +89,7 @@ class EncabezadoCalificacionController extends Controller
                           <input type="hidden" name="asignatura_id" value="' . Input::get('asignatura_id') . '" id="asignatura_id">
                           <input type="hidden" name="creado_por" value="' . $creado_por . '" id="creado_por">
                           <input type="hidden" name="modificado_por" value="' . $modificado_por . '" id="modificado_por">
-                        ' . Form::close();
+                        ' . FormFacade::close();
 
         return $formulario;
     }
@@ -134,6 +132,11 @@ class EncabezadoCalificacionController extends Controller
             default:
                 // Actualizar
                 $registro = EncabezadoCalificacion::find( (int)$request->id_encabezado_calificacion );
+
+                if ($registro == null ) {
+                    return "pesos";
+                }
+
                 if ( ( ($sumaPesos - $registro->peso) + (float)$request->peso ) > 100 )
                 {
                     return "pesos";
@@ -153,50 +156,5 @@ class EncabezadoCalificacionController extends Controller
         }
 
         return $cerrar_modal;
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
     }
 }
