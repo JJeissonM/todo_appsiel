@@ -192,8 +192,6 @@ class Calificacion extends Model
      */
     public static function get_calificaciones_boletines($id_colegio, $curso_id, $asignatura_id, $periodo_id)
     {
-        $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS nombre_completo_estudiante';
-
         $array_wheres = ['sga_calificaciones.id_colegio' => $id_colegio];
 
         if ($curso_id != null) {
@@ -209,6 +207,40 @@ class Calificacion extends Model
         }
 
         return Calificacion::where($array_wheres)
+                        ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
+                        ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
+                        ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_calificaciones.id_estudiante')
+                        ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_calificaciones.id_asignatura')
+                        ->select(
+                            'sga_calificaciones.anio',
+                            'sga_periodos.id AS id_periodo',
+                            'sga_cursos.id AS curso_id',
+                            'sga_estudiantes.id AS id_estudiante',
+                            'sga_asignaturas.id AS id_asignatura',
+                            'sga_calificaciones.calificacion',
+                            'sga_calificaciones.logros',
+                            'sga_calificaciones.id AS calificacion_id'
+                        )
+                        ->get();
+    }
+
+    public static function get_calificaciones_periodo_lectivo($id_colegio, $curso_id, $periodo_lectivo_id)
+    {
+        $select_raw = 'CONCAT(sga_estudiantes.apellido1," ",sga_estudiantes.apellido2," ",sga_estudiantes.nombres) AS nombre_completo_estudiante';
+
+        $array_wheres = [['sga_calificaciones.id_colegio','=', $id_colegio]];
+
+        if ($curso_id != null) {
+            $array_wheres = array_merge($array_wheres, [['sga_calificaciones.curso_id', '=', $curso_id]]);
+        }
+
+        $array_wheres = array_merge($array_wheres, [ ['sga_calificaciones.id_asignatura', '<>', config('calificaciones.asignatura_id_para_asistencias')] ]);
+
+        $arr_periodos = Periodo::where('periodo_lectivo_id',$periodo_lectivo_id)->get()->pluck('id')->toArray();
+        //dd($array_wheres);
+
+        return Calificacion::where($array_wheres)
+                        ->whereIn('id_periodo',$arr_periodos)
                         ->leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
                         ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_calificaciones.curso_id')
                         ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_calificaciones.id_estudiante')

@@ -8,12 +8,11 @@ use App\Core\Colegio;
 use App\Core\ModeloEavValor;
 use App\Sistema\Modelo;
 
-use Auth;
-use DB;
-
 use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Calificacion;
 use App\Calificaciones\NotaNivelacion;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Periodo extends Model
 {
@@ -119,7 +118,7 @@ class Periodo extends Model
 
     public static function opciones_campo_select()
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
         $opciones = Periodo::leftJoin('sga_periodos_lectivos','sga_periodos_lectivos.id','=','sga_periodos.periodo_lectivo_id')
                             ->where('sga_periodos_lectivos.cerrado',0)

@@ -221,12 +221,12 @@ class ReporteController extends Controller
                                                         ->first()
                                                         ->calificacion_maxima;
 
-        $calificaciones = Calificacion::get_calificaciones_boletines( $this->colegio->id, $request->curso_id, null, null );
+        $calificaciones = Calificacion::get_calificaciones_periodo_lectivo( $this->colegio->id, $request->curso_id, $request->periodo_lectivo_id );
 
         foreach( $calificaciones AS $calificacion )
         {
             $calificacion->lbl_nivelacion = '';
-            if ( !is_null( $calificacion->nota_nivelacion() ) )
+            if ( $calificacion->nota_nivelacion() != null )
             {
                 $calificacion->calificacion = $calificacion->nota_nivelacion()->calificacion;
                 $calificacion->lbl_nivelacion = 'n';
