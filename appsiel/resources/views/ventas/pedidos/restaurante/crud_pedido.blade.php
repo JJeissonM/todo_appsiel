@@ -351,6 +351,8 @@ input[type=number]::-webkit-outer-spin-button {
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
     
+    <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante_ventanas_modales.js?aux=' . uniqid() )}}"></script>
+    
     <script type="text/javascript">
         
         $("#mitad_focus").focus();

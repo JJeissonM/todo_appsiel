@@ -91,11 +91,13 @@
                 </button>
 
                 <br><br>
-                @can('anular_pedido_restaurante')
-                    <button style="display: none;" class="btn btn-sm btn-danger" id="btn_anular_pedido" data-pedido_label=""><i
-                                class="fa fa-trash"></i> Anular pedido
-                    </button>
-                @endcan
+                <!-- @ can('anular_pedido_restaurante') -->
+                <button style="display: none;" class="btn btn-sm btn-danger" id="btn_anular_pedido" data-pedido_label=""><i
+                            class="fa fa-trash"></i> Anular pedido
+                </button>
+                
+                @include('ventas.pedidos.modal_usuario_supervisor')
+                <!-- @ endcan -->
             </td>
         </tr>
     </table>

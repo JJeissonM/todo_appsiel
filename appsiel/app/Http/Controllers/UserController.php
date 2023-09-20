@@ -394,4 +394,25 @@ class UserController extends ModeloController
         dd(is_null($usuario), Hash::make($password), $usuario->password);
         return 'no';
     }
+
+    public function validate_usuario_supervisor( $email, $password )
+    {
+        $usuario = User::where( 'email', $email )->get()->first();
+
+        if ( $usuario == null )
+        {
+            return 'no';
+        }
+
+        if (!$usuario->hasRole('SupervisorCajas') && !$usuario->hasRole('SuperAdmin') && !$usuario->hasRole('Administrador'))
+        {
+            return 'no';
+        }
+
+        if (Hash::check($password, $usuario->password)) {
+            return 'ok';
+        }
+        
+        return 'no';
+    }
 }

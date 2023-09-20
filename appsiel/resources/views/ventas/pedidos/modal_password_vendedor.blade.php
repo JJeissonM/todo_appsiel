@@ -23,7 +23,7 @@
             <button class="btn btn-default btn_numero_teclado" value="8">8</button>
             <button class="btn btn-default btn_numero_teclado" value="9">9</button>
             <button class="btn btn-default btn_numero_teclado" value="0">0</button>
-            <button class="btn btn-danger" id="btn_clear_teclado">Borrar</button>
+            <button class="btn btn-danger" id="btn_clear_teclado">Limpiar</button>
           </p>
         </div>
         <div class="modal-footer">

@@ -548,7 +548,7 @@ $(document).ready(function () {
         $('#descripcion').val('');
     });
 
-    
+    /*
     $('#btn_anular_pedido').click(function (event){
         event.preventDefault();
 
@@ -564,6 +564,7 @@ $(document).ready(function () {
         }
         
     });
+    */
 
     
     $('#btn_imprimir_pedido').click(function (event){
@@ -1079,16 +1080,6 @@ $(document).ready(function () {
         });
     }
 
-    $(document).on('click', '.btn_numero_teclado', function () {
-        var seller_password = $('#seller_password').val();
-        $('#seller_password').val( seller_password + $(this).text() );
-    });
-
-    $(document).on('click', '#btn_clear_teclado', function () {
-        $('#seller_password').val('');
-        $('#lbl_error_password').hide();
-    });
-
     $(document).on('click', '.btn_pedido_mesero_para_una_mesa', function () {
         
         $("#div_cargando").show();
@@ -1221,6 +1212,53 @@ $(document).ready(function () {
 
         return string_celdas;
     };
+
+    
+    $("#btn_validate_password_supervisor").on('click', function(e){            
+		e.preventDefault();
+		$(this).children('.fa-check').attr('class','fa fa-spinner fa-spin');
+        validate_password_supervisor();
+    });
+
+    function validate_password_supervisor()
+    {
+        var email = 'a3p0';
+        var password = 'a3p0';
+        if ( $('#email_supervisor').val() != '') {
+            email = $('#email_supervisor').val();
+        }
+        
+        if ( $('#password_supervisor').val() != '') {
+            password = $('#password_supervisor').val();
+        }
+
+        var url = url_raiz + "/" + "core_validate_usuario_supervisor" + "/" + email + "/" + password;
+
+        $.get(url, function (respuesta) {
+			
+			document.getElementById('btn_validate_password_supervisor').children[0].className = 'fa fa-check';
+			
+            if (respuesta == 'ok') {                
+                if (confirm('Realmente quiere anular el pedido ' + $('#btn_anular_pedido').attr('data-pedido_label') ) ) {
+                    var url = url_raiz + "/" + "vtas_pedidos_restaurante_cancel" + "/" + $('#pedido_id').val();
+
+                    $.get(url, function (pedido) {
+
+                        reset_datos_pedido();
+                        
+                        $("#modal_usuario_supervisor").modal("hide");
+
+                        $('#div_pedidos_mesero_para_una_mesa').html('<div class="alert alert-danger"><strong>'+pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo+'!</strong> Pedido anulado correctamente.</div>');
+
+                        
+                    });
+                }                
+            }else{
+                $('#lbl_error_password_supervisor').show();
+                hay_error_password = true;
+            }
+        });
+    }
 
 });
 

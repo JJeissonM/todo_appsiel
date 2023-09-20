@@ -111,6 +111,7 @@ Route::get('core/usuario/cambiarpasswd_vendedor/{user_id}', 'UserController@form
 Route::get('core/usuario/cambiarpasswd_vehiculo/{vehiculo_id}', 'UserController@form_cambiar_passwd_vehiculo');
 
 Route::get('core/validate_password/{user_id}/{password}', 'UserController@validate_password');
+Route::get('core_validate_usuario_supervisor/{email}/{password}', 'UserController@validate_usuario_supervisor');
 
 // Perfil del usuario
 Route::get('core/usuario/perfil', 'UserController@perfil');

@@ -26,8 +26,6 @@
             
                 @include('ventas.pedidos.modal_password_vendedor')
                 <div id="lbl_vendedor_mesero" style="color: #574696;padding:10px;"></div>
-                <button class="btn btn-info btn-xs btn_revisar_pedidos_ventas" data-id_modelo="54"
-                    data-id_transaccion="17" data-lbl_ventana="PEDIDOS DE VENTAS"><i class="fa fa-eye"></i> Revisar pedidos </button>
             </td>
         </tr>
     </tbody>
