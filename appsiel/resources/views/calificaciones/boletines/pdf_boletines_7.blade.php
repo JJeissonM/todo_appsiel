@@ -30,19 +30,23 @@
 			<thead>
 				<tr>
 					<th style="width:200px;">{{ $lbl_asigatura }}</th>
-					<th style="width:40px;">I.H.</th>
-				        @foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
-				            <th style="width:35px;"> 
-								{{$lbl_calificacion_aux->label}}
-								@if($lbl_calificacion_aux->peso != '')
-									<br> 
-									<span style="font-size: 0.6em;">{{$lbl_calificacion_aux->peso}}</span>
-								@endif
-							</th>
-							<?php $cant_columnas++;  ?>
-				        @endforeach
-				        <th style="width:35px;"> Def. </th>
+					<th style="width:40px;">I.H.</th>					
+					@foreach($periodos as $periodo_lista)
+						<th style="width:35px; background-color: #dfca57;"> P{{$periodo_lista->numero}} </th>
 						<?php $cant_columnas++; ?>
+					@endforeach
+					@foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
+						<th style="width:35px;"> 
+							{{$lbl_calificacion_aux->label}}
+							@if($lbl_calificacion_aux->peso != '')
+								<br> 
+								<span style="font-size: 0.6em;">{{$lbl_calificacion_aux->peso}}</span>
+							@endif
+						</th>
+						<?php $cant_columnas++;  ?>
+					@endforeach
+					<th style="width:35px;"> Def. </th>
+					<?php $cant_columnas++; ?>
 					@if( $mostrar_fallas )
 						<th style="width:35px;">Fll.</th>
 						<?php $cant_columnas++;  ?>

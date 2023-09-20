@@ -6,6 +6,30 @@
 	
 	$decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
 
+	// Mostrar notas finales periodos anteriores
+	foreach($periodos as $periodo_lista)
+	{
+		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+
+		$lbl_cali_periodo = '&nbsp;';
+		if ( !is_null( $calificacion_nota_original ) )
+		{
+			$cali_periodo = (float)$calificacion_nota_original->calificacion;
+			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
+
+			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+
+			if( !is_null( $cali_nivelacion_periodo ) )
+			{
+				$cali_periodo = (float)$cali_nivelacion_periodo->calificacion;
+				$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' ) . '<sup>n</sup>';
+			}
+		}
+
+		$lbl_calificacion = $lbl_cali_periodo;
+		echo '<td align="center"> ' . $lbl_cali_periodo . ' </td>';
+	}
+
 	$prom = 0;
 	$n = 0;
 	foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)

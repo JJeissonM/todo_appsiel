@@ -33,7 +33,7 @@
 		}
 
 		$lbl_calificacion = $lbl_cali_periodo;
-		//echo '<td align="center"> ' . $lbl_cali_periodo . ' </td>';
+		echo '<td align="center"> ' . $lbl_cali_periodo . ' </td>';
 	}
 
 	$lbl_cali_prom = '&nbsp;';
