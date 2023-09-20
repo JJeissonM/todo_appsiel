@@ -80,11 +80,16 @@
 
 				<div style="padding:5px;" align="center">
 					<a class="btn btn-primary btn-sm" id="btn_imprimir" target="_blank">
-						<i class="fa fa-btn fa-print"></i> Imprimir
+						<i class="fa fa-btn fa-print"></i> Generar PDF
 					</a>
+					<a class="btn btn-primary btn-sm" id="btn_generar_pdfs" target="_blank">
+						<i class="fa fa-btn fa-print"></i> Generar PDF
+					</a>					
 				</div>
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
+
+				<input type="hidden" id="ids_estudiantes">
 
 			{{Form::close()}}
 		
@@ -95,9 +100,13 @@
 
 @section('scripts')
 	<script type="text/javascript">
+	
+		var arr_ids_estudiantes, cache_key, pdf_name;
+		
 		$(document).ready(function(){
 			
 			$('#periodo_lectivo_id').focus();
+			$('#btn_imprimir').hide();
 
 			$('.accordion').on('click',function(e)
 			{
@@ -163,6 +172,18 @@
 				$('#btn_imprimir').focus();
 			});
 
+			
+			$("#estudiante_id").on('change',function(){
+				if ( $(this).val() == '') { 
+					$('#btn_imprimir').hide();
+					$('#btn_generar_pdfs').show();
+				}else{
+					$('#btn_imprimir').show();
+					$('#btn_generar_pdfs').hide();
+				}
+				
+			});
+
 			$("#btn_imprimir").on('click',function(){
 				if ( !validar_requeridos() )
 				{
@@ -171,6 +192,84 @@
 				
 				$('#formulario').submit();
 			});
+			
+
+			$('#btn_generar_pdfs').click(function(event){
+        
+				event.preventDefault();
+				
+				if(!validar_requeridos()){
+					alert('Faltan campor por diligenciar.');
+					return false;
+				}
+
+				$('#div_cargando').show();
+
+				var arr_ids = '0';
+				$("#estudiante_id option").each(function(i){
+					if ($.isNumeric( $(this).val() )) {
+						arr_ids += ',' + $(this).val() ;
+					}					
+				});
+
+				$("#ids_estudiantes").val( '[' + arr_ids + ']' );
+				
+				cache_key = 'pdf_boletines_curso_id_' + $('#curso_id').val();
+				
+				pdf_name = 'boletines_curso_' + $("#curso_id option:selected").text();
+
+				generar_pdf_boletines();
+			});
+
+			function generar_pdf_boletines()
+			{
+				arr_ids_estudiantes = JSON.parse($("#ids_estudiantes").val());
+				arr_ids_estudiantes.shift();
+				
+				$.get("../../core_forget_cache" + "/" + cache_key, function(respuesta){ 
+					// fires off the first call 
+					ejecucion_recursiva_generar_un_boletin();
+					
+				});
+			}
+    
+			// The recursive function 
+			function ejecucion_recursiva_generar_un_boletin() { 
+				
+				// terminate if array exhausted 
+				if (arr_ids_estudiantes.length === 0) 
+				{
+					$('#div_cargando').hide();
+
+					console.log('fin');
+
+					window.open( '../../core_descargar_pdf_desde_cache/' + cache_key + '/' + pdf_name, '_blank');
+
+					return true;
+				}
+
+				// pop top value 
+				var estudiante_id = arr_ids_estudiantes[0];
+				arr_ids_estudiantes.shift(); 
+				var url = '../../calif_generar_pdf_un_boletin';
+
+				var formData = new FormData(document.getElementById('formulario'));
+				formData.append('estudiante_id', estudiante_id);
+
+				$.ajax({
+					url: url,
+					type: "post",
+					dataType: "html",
+					data: formData,
+					cache: false,
+					contentType: false,
+					processData: false
+				})
+				.done(function(res){
+					console.log( res, 'Ok.');
+					ejecucion_recursiva_generar_un_boletin();
+				});
+			}
 
 			// Accordion
 			var acc = document.getElementsByClassName("accordion");

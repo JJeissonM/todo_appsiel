@@ -34,6 +34,7 @@ use App\Core\Colegio;
 use App\Sistema\Aplicacion;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
@@ -164,47 +165,75 @@ class BoletinController extends Controller
 	
 	public function generarPDF( Request $request )
 	{
-        $colegio = Auth::user()->empresa->colegio;
+        $firmas = $this->almacenar_imagenes_de_firmas( $request );
+
+        $view = $this->get_view_for_pdf($request->all(), $firmas);
+        $tam_hoja = $request->tam_hoja;
+        
         $curso = Curso::find( $request->curso_id );
-        $periodo = Periodo::find( $request->periodo_id );
+
+        // Se prepara el PDF
+        $orientacion='portrait';
+        $pdf = App::make('dompdf.wrapper');			
+        $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
+
+		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');
+	}
+	
+	public function generar_pdf_un_boletin( Request $request )
+	{
+        $firmas = $this->almacenar_imagenes_de_firmas( $request );
+
+        $view = $this->get_view_for_pdf($request->all(), $firmas);
+        
+        $curso = Curso::find( $request->curso_id );
+
+        $view_last = Cache::get( 'pdf_boletines_curso_id_' . $curso->id );
+        
+        Cache::forever( 'pdf_boletines_curso_id_' . $curso->id, $view_last . $view );
+	}
+
+    public function get_view_for_pdf($data_request, $firmas)
+    {
+        $colegio = Auth::user()->empresa->colegio;
+        $curso = Curso::find( $data_request['curso_id'] );
+        $periodo = Periodo::find( $data_request['periodo_id'] );
         $anio = (int)explode("-",$periodo->fecha_desde)[0];
 
         $obj_matricula = new Matricula;
-        $matriculas = $obj_matricula->get_segun_periodo_lectivo_y_curso( $periodo->periodo_lectivo_id, $request->curso_id );
+        $matriculas = $obj_matricula->get_segun_periodo_lectivo_y_curso( $periodo->periodo_lectivo_id, $data_request['curso_id'] );
         if( empty( $matriculas->toArray() ) )
         {
             return redirect( 'calificaciones/boletines/imprimir?id=' . Input::get('id') . '&id_modelo=0' )->with( 'mensaje_error', "No hay regitros de estudiantes matriculados en el curso " . $curso->descripcion );
         }
 
-        if( $request->estudiante_id != null && $request->estudiante_id != '' )
+        if( $data_request['estudiante_id'] != null && $data_request['estudiante_id'] != '' )
         {
-            $matriculas = $matriculas->where( 'id_estudiante', (int)$request->estudiante_id )->all();
+            $matriculas = $matriculas->where( 'id_estudiante', (int)$data_request['estudiante_id'] )->all();
         }
 
         // Parametros enviados        
-        $convetir_logros_mayusculas = $request->convetir_logros_mayusculas;
-        $mostrar_areas = $request->mostrar_areas;
-        $mostrar_calificacion_media_areas = $request->mostrar_calificacion_media_areas;
-        $mostrar_fallas = $request->mostrar_fallas;
-        $mostrar_nombre_docentes = $request->mostrar_nombre_docentes;
-        $mostrar_escala_valoracion = $request->mostrar_escala_valoracion;
-        $mostrar_usuarios_estudiantes = $request->mostrar_usuarios_estudiantes;
-        $mostrar_etiqueta_final = $request->mostrar_etiqueta_final;
-        $mostrar_nota_nivelacion = $request->mostrar_nota_nivelacion;
-        $tam_hoja = $request->tam_hoja;
-        $tam_letra = $request->tam_letra;
-        $cantidad_caracteres_para_proxima_pagina = $request->cantidad_caracteres_para_proxima_pagina;
-        $ancho_columna_asignatura = $request->ancho_columna_asignatura;
-        $mostrar_logros = $request->mostrar_logros;
+        $convetir_logros_mayusculas = $data_request['convetir_logros_mayusculas'];
+        $mostrar_areas = $data_request['mostrar_areas'];
+        $mostrar_calificacion_media_areas = $data_request['mostrar_calificacion_media_areas'];
+        $mostrar_fallas = $data_request['mostrar_fallas'];
+        $mostrar_nombre_docentes = $data_request['mostrar_nombre_docentes'];
+        $mostrar_escala_valoracion = $data_request['mostrar_escala_valoracion'];
+        $mostrar_usuarios_estudiantes = $data_request['mostrar_usuarios_estudiantes'];
+        $mostrar_etiqueta_final = $data_request['mostrar_etiqueta_final'];
+        $mostrar_nota_nivelacion = $data_request['mostrar_nota_nivelacion'];
+        $tam_hoja = $data_request['tam_hoja'];
+        $tam_letra = $data_request['tam_letra'];
+        $cantidad_caracteres_para_proxima_pagina = $data_request['cantidad_caracteres_para_proxima_pagina'];
+        $ancho_columna_asignatura = $data_request['ancho_columna_asignatura'];
+        $mostrar_logros = $data_request['mostrar_logros'];
         
         $margenes = (object)[ 
-                                'superior' => $request->margen_superior - 5,
-                                'derecho' => $request->margen_derecho - 5,
-                                'inferior' => $request->margen_inferior - 5,
-                                'izquierdo' => $request->margen_izquierdo - 5 
+                                'superior' => $data_request['margen_superior'] - 5,
+                                'derecho' => $data_request['margen_derecho'] - 5,
+                                'inferior' => $data_request['margen_inferior'] - 5,
+                                'izquierdo' => $data_request['margen_izquierdo'] - 5 
                             ];
-
-        $firmas = $this->almacenar_imagenes_de_firmas( $request );
 
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
 
@@ -220,27 +249,22 @@ class BoletinController extends Controller
 
         $url_imagen_marca_agua = config('matriculas.url_imagen_marca_agua');
 
-        switch ($request->formato) {
+        switch ($data_request['formato']) {
             case 'pdf_boletines_6':
-                $view =  $this->get_view_for_pdf_boletines_6($request->formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
+                $view =  $this->get_view_for_pdf_boletines_6($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
                 break;
+            
             case 'pdf_boletines_7':
-                    $view =  $this->get_view_for_pdf_boletines_7($request->formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
+                    $view =  $this->get_view_for_pdf_boletines_7($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
                     break;
             
             default:
-                $view =  View::make('calificaciones.boletines.'.$request->formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros') )->render();
+                $view =  View::make('calificaciones.boletines.'.$data_request['formato'], compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros') )->render();
                 break;
         }
 
-        // Se prepara el PDF
-        $orientacion='portrait';
-        $pdf = App::make('dompdf.wrapper');			
-        $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
-
-		//return $view;
-		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');
-	}
+        return $view;
+    }
 
     public function get_view_for_pdf_boletines_6($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
     {

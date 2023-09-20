@@ -186,7 +186,10 @@ Route::resource('propiedad_horizontal', 'PropiedadHorizontal\PropiedadHorizontal
 Route::get('vista_reporte', 'Sistema\ReporteController@vista_reporte');
 
 // GENERAR PDF Con base en el nombre_listado almacenado en la Cache 
-Route::get('generar_pdf/{reporte_id}', 'Sistema\VistaController@generar_pdf'); 
+Route::get('generar_pdf/{reporte_id}', 'Sistema\VistaController@generar_pdf');
+
+Route::get('core_descargar_pdf_desde_cache/{cache_key}/{pdf_name}', 'Sistema\VistaController@descargar_pdf_desde_cache');
+Route::get('core_forget_cache/{cache_key}', 'Sistema\VistaController@forget_cache');
 
 
 // Gestión de imagenes

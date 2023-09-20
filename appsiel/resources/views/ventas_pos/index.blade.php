@@ -321,7 +321,7 @@
 			$.get( url, function( respuesta ){
 				$('#div_spin2').hide();
 				$('#contenido_modal2').html( respuesta );
-			});/**/
+			});
 		});
 
 	});

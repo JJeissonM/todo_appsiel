@@ -59,6 +59,8 @@ Route::post('calificaciones/boletines/revisar2', ['as' => 'revision', 'uses' =>'
 
 Route::get('/calificaciones/boletines/imprimir', 'Calificaciones\BoletinController@imprimir');
 Route::post('/calificaciones/boletines/generarPDF', 'Calificaciones\BoletinController@generarPDF');
+Route::post('calif_generar_pdf_un_boletin', 'Calificaciones\BoletinController@generar_pdf_un_boletin');
+
 
 // Calcular puesto
 Route::get('calificaciones/boletines/calcular_puesto', 'Calificaciones\BoletinController@calcular_puesto_g');

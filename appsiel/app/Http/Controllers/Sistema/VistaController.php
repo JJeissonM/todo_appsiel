@@ -43,9 +43,34 @@ class VistaController extends Controller
         $pdf = App::make('dompdf.wrapper');
 
         $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
-        //$pdf->setOptions(['defaultFont' => 'Arial']);
-        //return $pdf->download( 'pdf_reporte_'.$reporte_id.'.pdf' );
+        
         return $pdf->stream();
+    }
+
+    public function descargar_pdf_desde_cache( $cache_key, $pdf_name )
+    {
+        $tam_hoja = 'Letter';
+        $orientacion = 'Portrait';
+
+        if ( Input::get('tam_hoja') != null ) 
+        {
+            $tam_hoja = Input::get('tam_hoja');
+        }
+
+        if ( Input::get('orientacion') != null ) 
+        {
+            $orientacion = Input::get('orientacion');
+        }
+        $pdf = App::make('dompdf.wrapper');
+
+        $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( $cache_key ) ] )  )->setPaper($tam_hoja, $orientacion);
+        
+        return $pdf->stream( $pdf_name . '.pdf' );
+    }
+
+    public function forget_cache( $cache_key )
+    {
+        Cache::forget( $cache_key );
     }
 
     public function dibujar_vista($tipo_vista)
