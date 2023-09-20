@@ -80,12 +80,19 @@
 
 				<div style="padding:5px;" align="center">
 					<a class="btn btn-primary btn-sm" id="btn_imprimir" target="_blank">
-						<i class="fa fa-btn fa-print"></i> Generar PDF
+						<i class="fa fa-print"></i> Generar PDF
 					</a>
 					<a class="btn btn-primary btn-sm" id="btn_generar_pdfs" target="_blank">
-						<i class="fa fa-btn fa-print"></i> Generar PDF
+						<i class="fa fa-print"></i> Generar PDF
 					</a>					
 				</div>
+
+				<div style="padding:5px; display: none; text-align: center; color: red;" id="message_print">
+					El informe se generó en una nueva ventana del navegador.
+					<br>
+					Deben estar activas las ventanas emergentes.
+				</div>
+
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
 
@@ -118,6 +125,7 @@
 			{
 				$('#periodo_id').html('<option value=""></option>');
 				if ( $(this).val() == '') { return false; }
+				$('#message_print').hide();
 
 				var periodo_lectivo_id = $('#periodo_lectivo_id').val();
 
@@ -140,11 +148,13 @@
 
 			$("#periodo_id").on('change',function(){
 				if ( $(this).val() == '') { return false; }
+				$('#message_print').hide();
 				$('#curso_id').focus();
 			});
 
 			$("#curso_id").on('change',function(){
 				if ( $(this).val() == '') { return false; }
+				$('#message_print').hide();
 				
 				if( $('#estudiante_id').html() !== undefined )
 				{
@@ -203,7 +213,9 @@
 					return false;
 				}
 
+				$(this).children('.fa-print').attr('class','fa fa-spinner fa-spin');
 				$('#div_cargando').show();
+				$('#message_print').hide();
 
 				var arr_ids = '0';
 				$("#estudiante_id option").each(function(i){
@@ -228,8 +240,7 @@
 				
 				$.get("../../core_forget_cache" + "/" + cache_key, function(respuesta){ 
 					// fires off the first call 
-					ejecucion_recursiva_generar_un_boletin();
-					
+					ejecucion_recursiva_generar_un_boletin();					
 				});
 			}
     
@@ -240,8 +251,8 @@
 				if (arr_ids_estudiantes.length === 0) 
 				{
 					$('#div_cargando').hide();
-
-					console.log('fin');
+					$('#btn_generar_pdfs').children('.fa-spinner').attr('class','fa fa-print');
+					$('#message_print').show();
 
 					window.open( '../../core_descargar_pdf_desde_cache/' + cache_key + '/' + pdf_name, '_blank');
 
