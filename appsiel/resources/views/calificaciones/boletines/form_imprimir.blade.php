@@ -189,14 +189,6 @@
 			$("#estudiante_id").on('change',function(){
 				
 				$('#message_print').hide();
-
-				if ( $(this).val() == '') { 
-					$('#btn_imprimir').hide();
-					$('#btn_generar_pdfs').show();
-				}else{
-					$('#btn_imprimir').show();
-					$('#btn_generar_pdfs').hide();
-				}
 				
 			});
 
