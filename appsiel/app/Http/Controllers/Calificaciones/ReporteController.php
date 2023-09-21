@@ -322,58 +322,66 @@ class ReporteController extends Controller
         $curso = Curso::find($request->curso_id);
         
         $asignatura = Asignatura::find( $request->asignatura_id );
+        
+        $detallar_estudiantes = 1;
+        if ($request->detallar_estudiantes != null) {
+            $detallar_estudiantes = $request->detallar_estudiantes;
+        };
 
-        // Se crea un array con los valores de las calificaciones de cada estudiante
-        $vec_estudiantes = array();
-        $i=0;
-        foreach($estudiantes as $estudiante)
-        {
-            $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
-            $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo;//." ".$estudiante->apellido2." ".$estudiante->nombres;
-            $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
-            $vec_estudiantes[$i]['id_calificacion'] = "no";
-            $vec_estudiantes[$i]['calificacion'] = 0;
-            $vec_estudiantes[$i]['logros'] = '';
-            $vec_estudiantes[$i]['id_calificacion_aux'] = "no";
-            for ($c=1; $c < 16; $c++) { 
-                $key = "C".$c;
-                $vec_estudiantes[$i][$key] = 0;
-            }
-
-            // Se verifica si cada estudiante tiene calificación creada
-            $calificacion_est = Calificacion::where(['anio'=>$anio,'id_periodo'=>$request->periodo_id,
-                                'curso_id'=>$request->curso_id,'id_asignatura'=>$request->asignatura_id,
-                                'id_estudiante'=>$estudiante->id_estudiante])
-                                ->get()
-                                ->first();
-            
-            // Si el estudiante tiene calificacion se envian los datos de esta para editar
-            if( !is_null($calificacion_est) )
+        $cantidad_estudiantes = 0;
+        $vec_estudiantes = [];
+        if ($detallar_estudiantes) {
+            // Se crea un array con los valores de las calificaciones de cada estudiante
+            $i=0;
+            foreach($estudiantes as $estudiante)
             {
-                $creado_por = $calificacion_est->creado_por;
-                $modificado_por = Auth::user()->email;
-                // Obtener la calificación auxiliar del estudiante
-                $calificacion_aux = CalificacionAuxiliar::where(['anio'=>$anio,'id_periodo'=>$request->periodo_id,
-                                'curso_id'=>$request->curso_id,'id_asignatura'=>$request->asignatura_id,
-                                'id_estudiante'=>$estudiante->id_estudiante])
-                                ->get()
-                                ->first();
-                
-                $vec_estudiantes[$i]['id_calificacion'] = $calificacion_est->id;
-                $vec_estudiantes[$i]['calificacion'] = $calificacion_est->calificacion;
-                $vec_estudiantes[$i]['logros'] = $calificacion_est->logros;
-                $vec_estudiantes[$i]['id_calificacion_aux'] = $calificacion_aux->id;
-
+                $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
+                $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo;//." ".$estudiante->apellido2." ".$estudiante->nombres;
+                $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
+                $vec_estudiantes[$i]['id_calificacion'] = "no";
+                $vec_estudiantes[$i]['calificacion'] = 0;
+                $vec_estudiantes[$i]['logros'] = '';
+                $vec_estudiantes[$i]['id_calificacion_aux'] = "no";
                 for ($c=1; $c < 16; $c++) { 
                     $key = "C".$c;
-                    $vec_estudiantes[$i][$key] = $calificacion_aux->$key;
+                    $vec_estudiantes[$i][$key] = 0;
                 }
 
-            }
-            $i++;
-        }
+                // Se verifica si cada estudiante tiene calificación creada
+                $calificacion_est = Calificacion::where(['anio'=>$anio,'id_periodo'=>$request->periodo_id,
+                                    'curso_id'=>$request->curso_id,'id_asignatura'=>$request->asignatura_id,
+                                    'id_estudiante'=>$estudiante->id_estudiante])
+                                    ->get()
+                                    ->first();
+                
+                // Si el estudiante tiene calificacion se envian los datos de esta para editar
+                if( !is_null($calificacion_est) )
+                {
+                    $creado_por = $calificacion_est->creado_por;
+                    $modificado_por = Auth::user()->email;
+                    // Obtener la calificación auxiliar del estudiante
+                    $calificacion_aux = CalificacionAuxiliar::where(['anio'=>$anio,'id_periodo'=>$request->periodo_id,
+                                    'curso_id'=>$request->curso_id,'id_asignatura'=>$request->asignatura_id,
+                                    'id_estudiante'=>$estudiante->id_estudiante])
+                                    ->get()
+                                    ->first();
+                    
+                    $vec_estudiantes[$i]['id_calificacion'] = $calificacion_est->id;
+                    $vec_estudiantes[$i]['calificacion'] = $calificacion_est->calificacion;
+                    $vec_estudiantes[$i]['logros'] = $calificacion_est->logros;
+                    $vec_estudiantes[$i]['id_calificacion_aux'] = $calificacion_aux->id;
 
-        $cantidad_estudiantes = count($estudiantes);
+                    for ($c=1; $c < 16; $c++) { 
+                        $key = "C".$c;
+                        $vec_estudiantes[$i][$key] = $calificacion_aux->$key;
+                    }
+
+                }
+                $i++;
+            }
+
+            $cantidad_estudiantes = count($estudiantes);
+        }        
 
         $encabezados_calificaciones = EncabezadoCalificacion::where('periodo_id', $request->periodo_id)
                                                             ->where('curso_id', $request->curso_id)

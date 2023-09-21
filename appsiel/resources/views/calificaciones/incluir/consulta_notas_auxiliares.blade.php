@@ -72,14 +72,18 @@
 				<th>
 					Fecha
 				</th>
+				<th>
+					Peso (%)
+				</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach($encabezados_calificaciones AS $encabezado)
 				<tr>
-					<td>{{ $encabezado->columna_calificacion }}</td>
-					<td>{{ $encabezado->descripcion }}</td>
-					<td>{{ $encabezado->fecha }}</td>
+					<td align="center">{{ $encabezado->columna_calificacion }}</td>
+					<td align="center">{{ $encabezado->descripcion }}</td>
+					<td align="center">{{ $encabezado->fecha }}</td>
+					<td align="center">{{ $encabezado->peso }}</td>
 				</tr>
 			@endforeach
 		</tbody>		
