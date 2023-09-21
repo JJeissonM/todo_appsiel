@@ -147,6 +147,70 @@
 					</div>
 
 				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$usar_complemento_JSPrintManager = '0';
+								if( isset($parametros['usar_complemento_JSPrintManager'] ) )
+								{
+									$usar_complemento_JSPrintManager = $parametros['usar_complemento_JSPrintManager'];
+								}
+							?>
+							{{ Form::bsSelect('usar_complemento_JSPrintManager', $usar_complemento_JSPrintManager, 'Usar complemento JSPrintManager', ['No','Si'], ['class'=>'form-control']) }}
+							
+							@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
+								<br>
+								{{ Form::bsSelect('lista_impresoras_equipo_local', null, 'Lista impresoras equipo local (Usar estos nombres para la config. de abajo)', [], ['class'=>'form-control']) }}
+							@endif
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$enviar_impresion_directamente_a_la_impresora = '0';
+								if( isset($parametros['enviar_impresion_directamente_a_la_impresora'] ) )
+								{
+									$enviar_impresion_directamente_a_la_impresora = $parametros['enviar_impresion_directamente_a_la_impresora'];
+								}
+							?>
+							{{ Form::bsSelect('enviar_impresion_directamente_a_la_impresora', $enviar_impresion_directamente_a_la_impresora, 'Enviar impresión directamente a la(s) impresora(s)', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$impresora_principal_por_defecto = '';
+								if( isset($parametros['impresora_principal_por_defecto'] ) )
+								{
+									$impresora_principal_por_defecto = $parametros['impresora_principal_por_defecto'];
+								}
+							?>
+							{{ Form::bsText('impresora_principal_por_defecto', $impresora_principal_por_defecto, 'Nombre Impresora Principal', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$impresora_cocina_por_defecto = '';
+								if( isset($parametros['impresora_cocina_por_defecto'] ) )
+								{
+									$impresora_cocina_por_defecto = $parametros['impresora_cocina_por_defecto'];
+								}
+							?>
+							{{ Form::bsText('impresora_cocina_por_defecto', $impresora_cocina_por_defecto, 'Nombre Impresora Cocina', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 				
 				<div class="row">
 
@@ -247,9 +311,6 @@
 	</div>
 	<br/><br/>
 
-
-
-
 	<div id="div_cargando">Cargando...</div>
 @endsection
 
@@ -274,6 +335,11 @@
 		});
 	</script>
 	
+	@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
+		<script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
+		<script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+	@endif
+
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif

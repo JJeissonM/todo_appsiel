@@ -167,6 +167,29 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$modo_impresion_boletines = 'post';
+								if( isset($parametros['modo_impresion_boletines'] ) )
+								{
+									$modo_impresion_boletines = $parametros['modo_impresion_boletines'];
+								}
+							?>
+							{{ Form::bsSelect('modo_impresion_boletines', $modo_impresion_boletines, 'Modo de imprimir boletin', [ 'post'=> 'POST','ajax'=>'Ajax'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$asignatura_id_para_asistencias = '';
 								if( isset($parametros['asignatura_id_para_asistencias'] ) )
 								{

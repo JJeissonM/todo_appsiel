@@ -79,12 +79,15 @@
 		    	</div>
 
 				<div style="padding:5px;" align="center">
-					<a class="btn btn-primary btn-sm" id="btn_imprimir" target="_blank">
-						<i class="fa fa-print"></i> Generar PDF
-					</a>
-					<a class="btn btn-primary btn-sm" id="btn_generar_pdfs" target="_blank">
-						<i class="fa fa-print"></i> Generar PDF
-					</a>					
+					@if( config('calificaciones.modo_impresion_boletines') == 'ajax')
+						<a class="btn btn-primary btn-sm" id="btn_generar_pdfs" target="_blank">
+							<i class="fa fa-print"></i> Generar PDF
+						</a>
+					@else
+						<a class="btn btn-primary btn-sm" id="btn_imprimir" target="_blank">
+							<i class="fa fa-print"></i> Descargar PDF
+						</a>
+					@endif				
 				</div>
 
 				<div style="padding:5px; display: none; text-align: center; color: red;" id="message_print">
@@ -113,7 +116,7 @@
 		$(document).ready(function(){
 			
 			$('#periodo_lectivo_id').focus();
-			$('#btn_imprimir').hide();
+			//$('#btn_imprimir').hide();
 
 			$('.accordion').on('click',function(e)
 			{

@@ -168,9 +168,13 @@ class FacturaPosController extends TransaccionController
         $vendedores = Vendedor::where('estado','Activo')->get();
 
         $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
-        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion'));
+        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
+        
+        $pdv_descripcion = $pdv->descripcion;
+        $tipo_doc_app = $pdv->tipo_doc_app;
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app'));
     }
 
     /**
@@ -287,14 +291,6 @@ class FacturaPosController extends TransaccionController
     public function imprimir($id)
     {
         return $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
-
-        //$documento_vista = $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
-
-        // Se prepara el PDF
-        //$pdf = App::make('dompdf.wrapper');
-        //$pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
-
-        //return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
     }
 
     /**
