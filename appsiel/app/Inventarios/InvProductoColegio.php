@@ -6,12 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\Auth;
 
-use App\Inventarios\InvGrupo;
-
-use App\Contabilidad\Impuesto;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+
 use Illuminate\Support\Facades\DB;
 
 class InvProductoColegio extends Model
@@ -135,9 +131,7 @@ class InvProductoColegio extends Model
                 'inv_productos.unidad_medida2 AS EDITORIAL',
                 'inv_grupos.descripcion AS CATEGORIA',
                 'inv_productos.codigo_barras AS CÓDIGO_BARRAS',
-                'inv_productos.referencia AS CANTIDAD',
-                'inv_productos.estado AS ESTADO',
-                'inv_productos.id AS ID'
+                'inv_productos.referencia AS CANTIDAD'
             )
             ->where("inv_productos.id", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
@@ -147,7 +141,6 @@ class InvProductoColegio extends Model
             ->orWhere("sga_grados.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_productos.codigo_barras", "LIKE", "%$search%")
             ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
-            ->orWhere("inv_productos.estado", "LIKE", "%$search%")
             ->orderBy('sga_grados.descripcion', 'DESC')
             ->orderBy('sga_asignaturas.descripcion', 'DESC')
             ->orderBy('inv_productos.unidad_medida1', 'ASC')
