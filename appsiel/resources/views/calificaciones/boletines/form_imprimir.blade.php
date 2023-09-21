@@ -80,6 +80,9 @@
 
 				<div style="padding:5px;" align="center">
 					@if( config('calificaciones.modo_impresion_boletines') == 'ajax')
+						<a class="btn btn-primary btn-sm" id="btn_imprimir2" target="_blank">
+							<i class="fa fa-print"></i> Descargar PDF
+						</a>
 						<a class="btn btn-primary btn-sm" id="btn_generar_pdfs" target="_blank">
 							<i class="fa fa-print"></i> Generar PDF
 						</a>
@@ -116,7 +119,7 @@
 		$(document).ready(function(){
 			
 			$('#periodo_lectivo_id').focus();
-			//$('#btn_imprimir').hide();
+			$('#btn_imprimir2').hide();
 
 			$('.accordion').on('click',function(e)
 			{
@@ -189,10 +192,27 @@
 			$("#estudiante_id").on('change',function(){
 				
 				$('#message_print').hide();
+
+				if ( $(this).val() == '') { 
+					$('#btn_imprimir2').hide();
+					$('#btn_generar_pdfs').show();
+				}else{
+					$('#btn_imprimir2').show();
+					$('#btn_generar_pdfs').hide();
+				}
 				
 			});
 
 			$("#btn_imprimir").on('click',function(){
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+				
+				$('#formulario').submit();
+			});
+
+			$("#btn_imprimir2").on('click',function(){
 				if ( !validar_requeridos() )
 				{
 					return false;
