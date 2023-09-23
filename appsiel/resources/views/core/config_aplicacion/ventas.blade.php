@@ -51,6 +51,29 @@
 					</div>
 
 				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$agregar_precio_a_lista_desde_create_item = 0;
+								if( isset($parametros['agregar_precio_a_lista_desde_create_item'] ) )
+								{
+									$agregar_precio_a_lista_desde_create_item = $parametros['agregar_precio_a_lista_desde_create_item'];
+								}
+							?>
+							{{ Form::bsSelect('agregar_precio_a_lista_desde_create_item', $agregar_precio_a_lista_desde_create_item, 'Agregar precio a lista desde el Create/Edit del ítem', [ '0' => 'No', '1' => 'Si'], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 
 				<div class="row">
 

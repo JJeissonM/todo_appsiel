@@ -3,10 +3,7 @@
 namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-
-use App\Inventarios\InvProducto;
+use Illuminate\Support\Facades\DB;
 
 class ListaPrecioDetalle extends Model
 {
@@ -79,7 +76,6 @@ class ListaPrecioDetalle extends Model
 			return $registro->precio;
 		}
 	}
-
 
 	public static function get_precios_productos_de_la_lista($lista_precios_id)
 	{
