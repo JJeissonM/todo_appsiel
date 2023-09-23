@@ -598,7 +598,7 @@ class VentaController extends TransaccionController
                 'lbl_hora' => '',
                 'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
-                'lbl_descripcion_doc_encabezado' => $doc_encabezado->get_label_documento(),
+                'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
                 'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
                 'lbl_ajuste_al_peso' => '',
                 'lbl_total_recibido' => '',
