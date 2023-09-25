@@ -4,20 +4,20 @@ namespace App\Calificaciones;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Auth;
-use Input;
-use DB;
-
 use App\Matriculas\Curso;
 use App\Calificaciones\Asignatura;
 
 use App\AcademicoDocente\AsignacionProfesor;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class PreinformeAcademico extends Model
 {
     protected $table = 'sga_preinformes_academicos';
-	protected $fillable = ['codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'anotacion', 'creado_por', 'modificado_por'];
+	
+    protected $fillable = ['codigo_matricula', 'id_colegio', 'anio', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'anotacion', 'creado_por', 'modificado_por'];
+
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Cód. matrícula', 'Periodo', 'Curso', 'Estudiante', 'Asignatura', 'Anotación'];
 
     public $vistas = '{"index":"layouts.index3","create":"calificaciones.preinformes_academicos.pre-create"}';

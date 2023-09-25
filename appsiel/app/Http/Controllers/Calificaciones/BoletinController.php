@@ -387,31 +387,35 @@ class BoletinController extends Controller
         $observaciones_del_curso_en_el_periodo = ObservacionesBoletin::where( [
                                                 ['id_periodo', '=', $periodo->id],
                                                 ['curso_id', '=', $curso->id]
-                                            ])
+                                            ])->select('id', 'id_periodo','curso_id','id_estudiante','observacion','puesto')
                                             ->get();
 
         $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
                                             ['id_periodo', '=', $periodo->id],
                                             ['curso_id', '=', $curso->id]
-                                        ])
+                                        ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros')
                                         ->get();
 
         $escalas_valoracion_periodo_lectivo = EscalaValoracion::where([
                                                 ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id]
-                                            ])
+                                            ])->select('id', 'periodo_lectivo_id','calificacion_minima','calificacion_maxima','nombre_escala','imagen')
                                             ->get();
 
         $logros_del_curso_en_el_periodo = Logro::where( [
                                             ['periodo_id', '=', $periodo->id],
                                             ['curso_id', '=', $curso->id]
-                                        ])
+                                        ])->select('id', 'codigo', 'asignatura_id', 'descripcion', 'escala_valoracion_id', 'curso_id', 'periodo_id')
                                         ->get();
-
-        $metas_del_curso_en_el_periodo = Meta::where( [
-                                            ['periodo_id', '=', $periodo->id],
-                                            ['curso_id', '=', $curso->id]
-                                        ])
-                                        ->get();
+                                        
+        $metas_del_curso_en_el_periodo = collect([]);
+        if( config( 'calificaciones.colegio_maneja_metas' ) == 'Si' )
+        {
+            $metas_del_curso_en_el_periodo = Meta::where( [
+                                                ['periodo_id', '=', $periodo->id],
+                                                ['curso_id', '=', $curso->id]
+                                            ])->select('id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion')
+                                            ->get();
+        }
         
         $profesores_del_curso_en_el_periodo_lectivo = collect([]);
         if ($mostrar_nombre_docentes) {
@@ -428,7 +432,7 @@ class BoletinController extends Controller
             $anotaciones_del_curso_en_el_periodo = PreinformeAcademico::where([
                                         ['id_periodo', '=', $periodo->id],
                                         ['curso_id', '=', $curso->id]
-                                    ])
+                                    ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'anotacion')
                                     ->get();
         }
         
@@ -437,7 +441,7 @@ class BoletinController extends Controller
             $asistencias_del_curso_en_el_periodo = AsistenciaClase::whereBetween('fecha',               [$periodo->fecha_desde, $periodo->fecha_hasta])
                                         ->where( [
                                             ['curso_id', '=', $curso->id] 
-                                        ])
+                                        ])->select('id', 'id_estudiante', 'curso_id', 'asignatura_id', 'fecha', 'asistio')
                                         ->get();
         }
 

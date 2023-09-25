@@ -4,11 +4,9 @@ namespace App\Calificaciones;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use App\Core\Colegio;
 use App\Matriculas\PeriodoLectivo;
+use Illuminate\Support\Facades\Auth;
 
 /*
     Aquí se define el Pemsum académico (Asignaturas x curso con su intensidad horaria)

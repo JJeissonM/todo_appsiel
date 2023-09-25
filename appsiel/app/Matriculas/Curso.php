@@ -3,10 +3,6 @@
 namespace App\Matriculas;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-use Input;
 use App\User;
 
 use App\Calificaciones\Area;
@@ -14,6 +10,9 @@ use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Core\Foro;
 use App\AcademicoDocente\AsignacionProfesor;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class Curso extends Model
 {
