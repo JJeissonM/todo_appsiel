@@ -9,7 +9,7 @@
 	// Mostrar notas finales periodos anteriores
 	foreach($periodos as $periodo_lista)
 	{
-		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
 
 		$lbl_cali_periodo = '&nbsp;';
 		if ( !is_null( $calificacion_nota_original ) )
@@ -17,7 +17,7 @@
 			$cali_periodo = (float)$calificacion_nota_original->calificacion;
 			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
 
-			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
 
 			if( !is_null( $cali_nivelacion_periodo ) )
 			{
@@ -34,16 +34,11 @@
 	$n = 0;
 	foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
 	{
-		$calificacion_nota_original = App\Calificaciones\CalificacionAuxiliar::where([
-			['id_periodo', '=', $periodo->id],
-			['curso_id', '=', $curso->id],
-			['id_estudiante', '=', $registro->estudiante->id],
-			['id_asignatura', '=', $linea->asignacion_asignatura->asignatura->id]
-		])->get()->first();
+		$calificacion_nota_original = $linea->calificaciones_auxiliares;
 
 		$campo = $lbl_calificacion_aux->label;
 		$lbl_cali_periodo = '&nbsp;';
-		if ( !is_null( $calificacion_nota_original ) )
+		if ( $calificacion_nota_original != null )
 		{
 			$cali_periodo = (float)$calificacion_nota_original->$campo;
 			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
@@ -65,8 +60,8 @@
     // El promedio lo trae del que ya esta almacenado en el Periodo FINAL.
 	if( $periodo->periodo_de_promedios )
 	{
-		$cali_promedio_periodo_final = $periodo->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
-		if( !is_null( $cali_promedio_periodo_final ) )
+		$cali_promedio_periodo_final = $periodo->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
+		if( $cali_promedio_periodo_final != null )
 		{
 			$observacion = '';
 			if ($cali_promedio_periodo_final->calificacion == null) {
@@ -76,11 +71,9 @@
 		}
 	}
 
-	// La calificación de nivelación reemplaza la nota promedio final.
-	$cali_nivelacion_periodo_final = $periodo->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
-	if( !is_null( $cali_nivelacion_periodo_final ) )
+	if( $linea->calificacion_nivelacion != null )
 	{
-		$lbl_cali_prom = number_format( $cali_nivelacion_periodo_final->calificacion, $decimales, ',', '.' ) . '<sup>n</sup>';
+		$lbl_cali_prom = number_format( $linea->calificacion_nivelacion, $decimales, ',', '.' ) . '<sup>n</sup>';
 	}
 
 	echo '<td align="center"> ' . $lbl_cali_prom . ' </td>';

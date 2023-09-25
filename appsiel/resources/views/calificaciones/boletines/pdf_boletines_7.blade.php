@@ -57,7 +57,7 @@
 			<tbody>
 				@foreach( $lineas_cuerpo_boletin as $linea )
 					<?php
-						if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+						if ($linea->asignatura_id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
 							continue;
 						}
 					?>
@@ -67,12 +67,12 @@
 					<tr>
 
 						<td style="width:150px;">
-							<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
+							<b>{{ $linea->asignatura_descripcion }} </b>
 						</td>
 						
 						<td align="center">
-						    @if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
-								{{ $linea->asignacion_asignatura->intensidad_horaria }} &nbsp;
+						    @if( $linea->intensidad_horaria != 0 )
+								{{ $linea->intensidad_horaria }} &nbsp;
 							@endif
 						</td>
 
@@ -96,7 +96,7 @@
 					</tr>
 
 					<?php
-						$area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
+						$area_anterior = $linea->area_descripcion;
 					?>
 
 				@endforeach {{--  Asignaturas --}}

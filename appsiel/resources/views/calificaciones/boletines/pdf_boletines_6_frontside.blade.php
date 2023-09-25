@@ -49,7 +49,7 @@
             @foreach( $lineas_cuerpo_boletin as $linea )
 
                 <?php 
-                    if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+                    if ($linea->asignatura_id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
                         continue;
                     }
                 ?>
@@ -59,7 +59,7 @@
                 <tr>
 
                     <td style="width:{{$ancho_primera_columna}}px; padding: 5;">
-                        <b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
+                        <b>{{ $linea->asignatura_descripcion }} </b>
                     </td>
 
                     <td style="text-align: justify; padding: 5px 5px 5px 25px;">
@@ -82,7 +82,7 @@
                 </tr>
 
                 <?php
-                    $area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
+                    $area_anterior = $linea->area_descripcion;
                 ?>
 
             @endforeach {{--  End For Each Asignatura --}}

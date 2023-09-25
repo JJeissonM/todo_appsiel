@@ -12,7 +12,7 @@
 	$n = 0;
 	foreach($periodos as $periodo_lista)
 	{
-		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
 
 		$lbl_cali_periodo = '&nbsp;';
 		if ( !is_null( $calificacion_nota_original ) )
@@ -20,7 +20,7 @@
 			$cali_periodo = (float)$calificacion_nota_original->calificacion;
 			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
 
-			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
 
 			if( !is_null( $cali_nivelacion_periodo ) )
 			{
@@ -45,7 +45,7 @@
 	if( $periodo->periodo_de_promedios )
 	{
 		// El promedio lo trae del que ya esta almacenado en el Periodo FINAL.
-		$cali_promedio_periodo_final = $periodo->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
+		$cali_promedio_periodo_final = $periodo->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
 		if( !is_null( $cali_promedio_periodo_final ) )
 		{
 			$observacion = '';
@@ -55,16 +55,15 @@
 			$lbl_cali_prom = number_format( $cali_promedio_periodo_final->calificacion, $decimales, ',', '.' ) . $observacion;
 		}
 
-		$cali_nivelacion_periodo_final = $periodo->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignacion_asignatura->asignatura->id );
-		if( !is_null( $cali_nivelacion_periodo_final ) )
+		if( $linea->calificacion_nivelacion != null )
 		{
-			$lbl_cali_prom = number_format( $cali_nivelacion_periodo_final->calificacion, $decimales, ',', '.' ) . '<sup>n</sup>';
+			$lbl_cali_prom = number_format( $linea->calificacion_nivelacion, $decimales, ',', '.' ) . '<sup>n</sup>';
 		}
 
 		$lbl_calificacion = $lbl_cali_prom;
 	}
 	
-	if (!$linea->asignacion_asignatura->maneja_calificacion) {
+	if (!$linea->maneja_calificacion) {
 		$lbl_calificacion = '&nbsp;';
 	}
 	

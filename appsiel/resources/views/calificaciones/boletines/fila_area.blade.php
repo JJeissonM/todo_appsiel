@@ -1,12 +1,12 @@
-@if ( $area_anterior != $linea->asignacion_asignatura->asignatura->area->descripcion && $mostrar_areas == 'Si')
+@if ( $area_anterior != $linea->area_descripcion && $mostrar_areas == 'Si')
 	<?php
 		$cant_columnas_aux = $cant_columnas - 1;
 	?>
 	<tr style="background: #ddd;">
 			<!--  122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines" -->
-			@if( $linea->asignacion_asignatura->asignatura->area->get_valor_eav( 122, $linea->asignacion_asignatura->asignatura->area_id, 947) != 'No' )
+			@if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
 				<td colspan="{{ $cant_columnas_aux }}" width="60%">
-					<b> ÁREA: {{ strtoupper( $linea->asignacion_asignatura->asignatura->area->descripcion ) }}</b>
+					<b> ÁREA: {{ strtoupper( $linea->area_descripcion ) }}</b>
 				</td>
 				<td align="right">
 					&nbsp;
@@ -16,7 +16,7 @@
 							$advertencia = '';
 							foreach ( $lineas_cuerpo_boletin as $datos_linea )
 							{
-								if ( $datos_linea->area_id == $linea->asignacion_asignatura->asignatura->area->id )
+								if ( $datos_linea->area_id == $linea->area_id )
 								{
 									$calificacion_media_ponderada += ($datos_linea->valor_calificacion * $datos_linea->peso_asignatura / 100 );
 									if ( $datos_linea->peso_asignatura == 0 )

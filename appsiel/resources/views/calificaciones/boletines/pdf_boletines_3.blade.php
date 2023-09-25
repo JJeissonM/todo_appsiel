@@ -21,7 +21,7 @@
 				
 					<?php
 						$cant_columnas = 2;
-						if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+						if ($linea->asignatura_id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
 							continue;
 						}
 					?>
@@ -30,15 +30,15 @@
 
 					<tr style="background-color: #E8E8E8;">
 						<td style="border: 0px;">
-							<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
+							<b>{{ $linea->asignatura_descripcion }} </b>
 						</td>
 						<td style="border: 0px;" width="45%">
-							@if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
-								<b>IH: </b>{{ $linea->asignacion_asignatura->intensidad_horaria }} &nbsp;
+							@if( $linea->intensidad_horaria != 0 )
+								<b>IH: </b>{{ $linea->intensidad_horaria }} &nbsp;
 							@endif
 
 							@if( !is_null( $linea->calificacion ) )
-								@if( $linea->calificacion->calificacion > 0 && $linea->asignacion_asignatura->maneja_calificacion)
+								@if( $linea->calificacion->calificacion > 0 && $linea->maneja_calificacion)
 									<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
 								@endif
 							@endif
@@ -63,7 +63,7 @@
 					</tr>
 
 					<?php 
-						$area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
+						$area_anterior = $linea->area_descripcion;
 					?>
 						
 					

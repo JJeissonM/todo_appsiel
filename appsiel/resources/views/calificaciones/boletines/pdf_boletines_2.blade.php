@@ -21,7 +21,7 @@
 
 					<?php
 						$cant_columnas = 1;	
-						if ($linea->asignacion_asignatura->asignatura->id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
+						if ($linea->asignatura_id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
 							continue;
 						}
 					?>
@@ -33,11 +33,11 @@
 							<table width="100%" style="border: 0px;">
 								<tr>
 									<td style="border: 0px;">
-										<b>{{ $linea->asignacion_asignatura->asignatura->descripcion }} </b>
+										<b>{{ $linea->asignatura_descripcion }} </b>
 									</td>
 									<td style="border: 0px;" width="35%">
-										@if( $linea->asignacion_asignatura->intensidad_horaria != 0 )
-											<b>IH: </b>{{ $linea->asignacion_asignatura->intensidad_horaria }} &nbsp;
+										@if( $linea->intensidad_horaria != 0 )
+											<b>IH: </b>{{ $linea->intensidad_horaria }} &nbsp;
 										@endif
 									</td>
 								</tr>
@@ -69,7 +69,7 @@
 					</tr>
 
 					<?php 
-						$area_anterior = $linea->asignacion_asignatura->asignatura->area->descripcion;
+						$area_anterior = $linea->area_descripcion;
 					?>
 
 				@endforeach
