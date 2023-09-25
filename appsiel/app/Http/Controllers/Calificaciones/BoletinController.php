@@ -235,7 +235,7 @@ class BoletinController extends Controller
                                 'izquierdo' => $data_request['margen_izquierdo'] - 5 
                             ];
 
-        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas );
+        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes  );
 
         $periodos = Periodo::get_activos_periodo_lectivo( $periodo->periodo_lectivo_id );
         // Excluir el periodo final
@@ -377,9 +377,12 @@ class BoletinController extends Controller
         return $lbl_numero_periodo;
     }
 
-    public function preparar_datos_boletin( $periodo, $curso, $matriculas )
+    public function preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes )
     {
-        $all_passwords = PasswordReset::all();
+        $all_passwords = collect([]);
+        if ($mostrar_usuarios_estudiantes) {
+            $all_passwords = PasswordReset::all();
+        }
 
         $observaciones_del_curso_en_el_periodo = ObservacionesBoletin::where( [
                                                 ['id_periodo', '=', $periodo->id],
@@ -409,24 +412,34 @@ class BoletinController extends Controller
                                             ['curso_id', '=', $curso->id]
                                         ])
                                         ->get();
-
-        $profesores_del_curso_en_el_periodo_lectivo = AsignacionProfesor::where( [
-                                            ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id],
-                                            ['curso_id', '=', $curso->id]
-                                        ])
-                                        ->get();
-
-        $anotaciones_del_curso_en_el_periodo = PreinformeAcademico::where([
-                                            ['id_periodo', '=', $periodo->id],
-                                            ['curso_id', '=', $curso->id]
-                                        ])
-                                        ->get();
         
-        $asistencias_del_curso_en_el_periodo = AsistenciaClase::whereBetween('fecha', [$periodo->fecha_desde, $periodo->fecha_hasta])
+        $profesores_del_curso_en_el_periodo_lectivo = collect([]);
+        if ($mostrar_nombre_docentes) {
+            $profesores_del_curso_en_el_periodo_lectivo = AsignacionProfesor::where( [
+                                    ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id],
+                                    ['curso_id', '=', $curso->id]
+                                ])
+                                ->get();
+        }        
+        
+        $anotaciones_del_curso_en_el_periodo = collect([]);
+        if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
+        {
+            $anotaciones_del_curso_en_el_periodo = PreinformeAcademico::where([
+                                        ['id_periodo', '=', $periodo->id],
+                                        ['curso_id', '=', $curso->id]
+                                    ])
+                                    ->get();
+        }
+        
+        $asistencias_del_curso_en_el_periodo = collect([]);
+        if ($mostrar_fallas) {
+            $asistencias_del_curso_en_el_periodo = AsistenciaClase::whereBetween('fecha',               [$periodo->fecha_desde, $periodo->fecha_hasta])
                                         ->where( [
                                             ['curso_id', '=', $curso->id] 
                                         ])
                                         ->get();
+        }
 
         $asignaturas_asignadas = $curso->asignaturas_asignadas->where('periodo_lectivo_id', $periodo->periodo_lectivo_id);
 
