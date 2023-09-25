@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers\Calificaciones;
 
-
-
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Calificaciones\Logro;
 use App\Calificaciones\Asignatura;
-use App\Calificaciones\ConsecutivoLogro;
 use App\Calificaciones\EscalaValoracion;
 
 use App\Calificaciones\Periodo;
@@ -20,14 +16,12 @@ use App\Matriculas\PeriodoLectivo;
 
 use App\Core\Colegio;
 
-use App\Sistema\Modelo;
 use App\Sistema\SecuenciaCodigo;
-
-use PDF;
-use Auth;
-use Input;
-use DB;
-use View;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class LogroController extends Controller
 {
@@ -135,7 +129,7 @@ class LogroController extends Controller
 					
 				//$oficio=array(216,326);
 				//Renderizar PDF
-				$pdf = \App::make('dompdf.wrapper');
+				$pdf = App::make('dompdf.wrapper');
 				$pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
 				return $pdf->download('logros_'.$nom_asignatura.'.pdf');//stream();
 				break;
@@ -201,7 +195,7 @@ class LogroController extends Controller
         $niveles = $vec1;
 
         $miga_pan = [
-                        ['url'=>'calificaciones_logros?id='.Input::get('id'),'etiqueta'=>'Logros'],
+                        ['url'=>'calificaciones_logros?id=' . Input::get('id'),'etiqueta'=>'Logros'],
                         ['url'=>'NO','etiqueta'=>'Listados']
                     ];
 

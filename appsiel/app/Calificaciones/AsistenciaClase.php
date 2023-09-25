@@ -158,32 +158,4 @@ class AsistenciaClase extends Model
 
         return $registros;
     }
-
-    public static function get_inasistencias( $curso_id, $fecha_inicial, $fecha_final, $estudiante_id, $asignatura_id)
-    {
-        $array_wheres = [ ['asistio', '=', 'No'] ];
-
-        if ($curso_id != null)
-        {
-            $array_wheres = array_merge($array_wheres, [ ['curso_id', '=', $curso_id] ] );
-        }
-
-        if ($estudiante_id != null)
-        {
-            $array_wheres = array_merge($array_wheres, [ ['id_estudiante', '=', $estudiante_id] ] );
-        }
-
-        if ($asignatura_id != null)
-        {
-            $array_wheres = array_merge($array_wheres, [ ['asignatura_id', '=', $asignatura_id] ] );
-        }
-
-        return AsistenciaClase::whereBetween('fecha', [$fecha_inicial, $fecha_final])
-                            ->where( $array_wheres )
-                            ->select(
-                                        DB::raw( 'count(*) as cantidad, id_estudiante, asignatura_id, curso_id')
-                                    )
-                            ->groupBy('id_estudiante')
-                            ->get();
-    }
 }

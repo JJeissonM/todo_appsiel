@@ -379,6 +379,55 @@ class BoletinController extends Controller
 
     public function preparar_datos_boletin( $periodo, $curso, $matriculas )
     {
+        $all_passwords = PasswordReset::all();
+
+        $observaciones_del_curso_en_el_periodo = ObservacionesBoletin::where( [
+                                                ['id_periodo', '=', $periodo->id],
+                                                ['curso_id', '=', $curso->id]
+                                            ])
+                                            ->get();
+
+        $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
+                                            ['id_periodo', '=', $periodo->id],
+                                            ['curso_id', '=', $curso->id]
+                                        ])
+                                        ->get();
+
+        $escalas_valoracion_periodo_lectivo = EscalaValoracion::where([
+                                                ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id]
+                                            ])
+                                            ->get();
+
+        $logros_del_curso_en_el_periodo = Logro::where( [
+                                            ['periodo_id', '=', $periodo->id],
+                                            ['curso_id', '=', $curso->id]
+                                        ])
+                                        ->get();
+
+        $metas_del_curso_en_el_periodo = Meta::where( [
+                                            ['periodo_id', '=', $periodo->id],
+                                            ['curso_id', '=', $curso->id]
+                                        ])
+                                        ->get();
+
+        $profesores_del_curso_en_el_periodo_lectivo = AsignacionProfesor::where( [
+                                            ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id],
+                                            ['curso_id', '=', $curso->id]
+                                        ])
+                                        ->get();
+
+        $anotaciones_del_curso_en_el_periodo = PreinformeAcademico::where([
+                                            ['id_periodo', '=', $periodo->id],
+                                            ['curso_id', '=', $curso->id]
+                                        ])
+                                        ->get();
+        
+        $asistencias_del_curso_en_el_periodo = AsistenciaClase::whereBetween('fecha', [$periodo->fecha_desde, $periodo->fecha_hasta])
+                                        ->where( [
+                                            ['curso_id', '=', $curso->id] 
+                                        ])
+                                        ->get();
+
         $asignaturas_asignadas = $curso->asignaturas_asignadas->where('periodo_lectivo_id', $periodo->periodo_lectivo_id);
 
         $datos = (object)[];
@@ -392,8 +441,8 @@ class BoletinController extends Controller
 
             $datos->estudiantes[$l] = (object)[];
             $datos->estudiantes[$l]->estudiante = $matricula->estudiante;
-            $datos->estudiantes[$l]->password_estudiante = PasswordReset::where( 'email', $matricula->estudiante->tercero->email )->get()->first();
-            $datos->estudiantes[$l]->observacion = ObservacionesBoletin::get_x_estudiante( $periodo->id, $curso->id, $matricula->estudiante->id );
+            $datos->estudiantes[$l]->password_estudiante = $all_passwords->where( 'email', $matricula->estudiante->tercero->email )->first();
+            $datos->estudiantes[$l]->observacion = $observaciones_del_curso_en_el_periodo->where('id_estudiante', $matricula->estudiante->id )->first();
 
             $a = 0;
             $cuerpo_boletin = (object)[];
@@ -402,11 +451,15 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a] = (object)[];
                 $cuerpo_boletin->lineas[$a]->asignacion_asignatura = $asignacion;
 
-                $calificacion = Calificacion::get_para_boletin( $periodo->id, $curso->id, $matricula->estudiante->id, $asignacion->asignatura_id );
+                $calificacion = $calificaciones_del_curso_en_el_periodo->where('id_asignatura',$asignacion->asignatura_id)->where('id_estudiante', $matricula->estudiante->id )->first();
                 
                 $cuerpo_boletin->lineas[$a]->calificacion = $calificacion;
 
-                if(is_null($asignacion->asignatura)){dd('NO hay registros de asignauras para esa asignacion.', $asignacion);} // La asignatura no existe
+                if( $asignacion->asignatura == null)
+                {
+                    // La asignatura no existe
+                    dd('NO hay registros de asignauras para esa asignacion.', $asignacion);
+                }
 
                 $cuerpo_boletin->lineas[$a]->area_id = $asignacion->asignatura->area_id;
                 $cuerpo_boletin->lineas[$a]->peso_asignatura = $asignacion->peso;
@@ -415,51 +468,45 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->escala_valoracion = null;
                 $cuerpo_boletin->lineas[$a]->logros = null;
                 $cuerpo_boletin->lineas[$a]->logros_adicionales = null;
-                if ( !is_null($calificacion) )
+                if ( $calificacion != null )
                 {
                     $valor_calificacion = $calificacion->calificacion;
                     $calificacion_nivelada = $periodo->get_calificacion_nivelacion( $curso->id, $matricula->estudiante->id, $asignacion->asignatura->id );
-                    if( !is_null($calificacion_nivelada) )
+                    if( $calificacion_nivelada != null )
                     {
                         $valor_calificacion = $calificacion_nivelada->calificacion;
                     }
 
-                    $escala_valoracion = EscalaValoracion::get_escala_segun_calificacion( $valor_calificacion, $periodo->periodo_lectivo_id );
-                    $cuerpo_boletin->lineas[$a]->escala_valoracion = $escala_valoracion;
-
-                    if( is_null( $escala_valoracion ) )
+                    $escala_valoracion = $this->get_escala_valoracion($escalas_valoracion_periodo_lectivo, $valor_calificacion);
+                    
+                    if( $escala_valoracion == null )
                     {
                         dd( 'Por favor corrija la calificacion. No hay configurada una Escala de valoracion para la calificacion ' . $valor_calificacion . '. Curso: ' . $curso->descripcion . '. Asignatura: ' . $asignacion->asignatura->descripcion . '. Estudiante: ' . $matricula->estudiante->tercero->descripcion );
                     }
 
-                    $cuerpo_boletin->lineas[$a]->logros = Logro::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id, $escala_valoracion->id );
+                    $cuerpo_boletin->lineas[$a]->escala_valoracion = $escala_valoracion;
 
-                    $cuerpo_boletin->lineas[$a]->logros_adicionales = $this->get_logros_adicionales( $calificacion, $asignacion->asignatura_id );
+                    $cuerpo_boletin->lineas[$a]->logros = $logros_del_curso_en_el_periodo->where('asignatura_id',$asignacion->asignatura_id)->where('escala_valoracion_id', $escala_valoracion->id )->all();
+
+                    $cuerpo_boletin->lineas[$a]->logros_adicionales = $this->get_logros_adicionales( $logros_del_curso_en_el_periodo, $calificacion, $asignacion->asignatura_id );
 
                     $cuerpo_boletin->lineas[$a]->valor_calificacion = $valor_calificacion;
                 }
 
-                $cuerpo_boletin->lineas[$a]->propositos = Meta::get_para_boletin( $periodo->id, $curso->id, $asignacion->asignatura_id );
+                $cuerpo_boletin->lineas[$a]->propositos = $metas_del_curso_en_el_periodo->where('asignatura_id', $asignacion->asignatura_id )->all();
                 
-                $cuerpo_boletin->lineas[$a]->profesor_asignatura = AsignacionProfesor::get_profesor_de_la_asignatura( $curso->id, $asignacion->asignatura_id, $periodo->periodo_lectivo_id );
+                $cuerpo_boletin->lineas[$a]->profesor_asignatura = $this->get_profesor_de_la_asignatura( $profesores_del_curso_en_el_periodo_lectivo, $asignacion->asignatura_id);
 
-                $anotacion = PreinformeAcademico::where([
-                                                            ['id_periodo', '=', $periodo->id],
-                                                            ['curso_id', '=', $curso->id],
-                                                            ['id_asignatura', '=', $asignacion->asignatura_id],
-                                                            ['id_estudiante', '=', $matricula->estudiante->id]
-                                                        ])
-                                                ->get()
-                                                ->first();
-                if ( !is_null($anotacion) ) 
+                $anotacion = $anotaciones_del_curso_en_el_periodo->where('id_asignatura',  $asignacion->asignatura_id)->where('id_estudiante', $matricula->estudiante->id)->first();
+                
+                $cuerpo_boletin->lineas[$a]->anotacion = '';
+                if ( $anotacion != null ) 
                 {
                     $cuerpo_boletin->lineas[$a]->anotacion = $anotacion->anotacion;
-                }else{
-                    $cuerpo_boletin->lineas[$a]->anotacion = '';
                 }
 
                 // Registro de inasistencias
-                $cuerpo_boletin->lineas[$a]->fallas = AsistenciaClase::get_inasistencias( $curso->id, $periodo->fecha_desde, $periodo->fecha_hasta, $matricula->estudiante->id, $asignacion->asignatura_id);
+                $cuerpo_boletin->lineas[$a]->fallas = $this->get_inasistencias_estudiante_asignatura( $asistencias_del_curso_en_el_periodo, $matricula->estudiante->id, $asignacion->asignatura_id);
                 
                 $a++;
             } // Fin - Por cada asignatura
@@ -470,15 +517,52 @@ class BoletinController extends Controller
         }
         
         return $datos->estudiantes;
+    }    
+
+    public function get_inasistencias_estudiante_asignatura( $asistencias_del_curso_en_el_periodo, $estudiante_id, $asignatura_id)
+    {
+        $cant_fallas = 0;
+
+        foreach ($asistencias_del_curso_en_el_periodo as $asistencia) {
+            if ( $asistencia->asistio == 'No' && $asistencia->id_estudiante == $estudiante_id && $asistencia->asignatura_id == $asignatura_id ) {
+                $cant_fallas++;
+            }
+        }
+        
+        return $cant_fallas;
     }
 
-    public function get_logros_adicionales( $calificacion, $asignatura_id )
+    public function get_profesor_de_la_asignatura( $profesores_del_curso_en_el_periodo_lectivo, $asignatura_id )
+    {
+        return $profesores_del_curso_en_el_periodo_lectivo->where('id_asignatura',$asignatura_id)
+                                    ->first();
+    }
+
+    public function get_escala_valoracion($escalas_valoracion_periodo_lectivo, $valor_calificacion)
+    {
+        foreach ($escalas_valoracion_periodo_lectivo as $escala) {
+            if( $escala->calificacion_minima <= $valor_calificacion && $escala-> calificacion_maxima >= $valor_calificacion)
+            {
+                return $escala;
+            }
+        }
+
+        return null;
+    }
+
+    public function get_logros_adicionales( $logros_del_curso_en_el_periodo, $calificacion, $asignatura_id )
     {
         $vec_logros = explode( ",", $calificacion->logros);
 
-        return Logro::whereIn( 'codigo', $vec_logros )
-                    ->where( 'asignatura_id', $asignatura_id )
-                    ->get();
+        $all_logros = collect([]);
+        foreach ($logros_del_curso_en_el_periodo as $logro) {
+            if( $logro->asignatura_id == $asignatura_id && in_array($logro->codigo, $vec_logros) )
+            {
+                $all_logros->push($logro);
+            }
+        }
+
+        return $all_logros;
     }
 
     public function almacenar_imagenes_de_firmas( $request )

@@ -44,7 +44,7 @@
 							@endif
 
 							@if( $mostrar_fallas )
-								<b>Fallas: </b> @include('calificaciones.boletines.lbl_fallas')
+								<b>Fll: </b> @include('calificaciones.boletines.lbl_fallas')
 							@endif
 						</td>
 					</tr>
