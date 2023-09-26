@@ -240,8 +240,13 @@ class BoletinController extends Controller
         if ( $data_request['formato'] == 'pdf_boletines_7') {
             $mostrar_notas_auxiliares = true;
         }
+
+        $mostrar_notas_periodos_anteriores = false;
+        if ( in_array( $data_request['formato'], ['pdf_boletines_4', 'pdf_boletines_7'] ) ) {
+            $mostrar_notas_periodos_anteriores = true;
+        }
         
-        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares  );
+        $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares, $mostrar_notas_periodos_anteriores );
 
         $periodos = Periodo::get_activos_periodo_lectivo( $periodo->periodo_lectivo_id );
         // Excluir el periodo final
@@ -383,7 +388,7 @@ class BoletinController extends Controller
         return $lbl_numero_periodo;
     }
 
-    public function preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares )
+    public function preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares, $mostrar_notas_periodos_anteriores )
     {
         $all_passwords = collect([]);
         if ($mostrar_usuarios_estudiantes) {
@@ -395,19 +400,35 @@ class BoletinController extends Controller
                                                 ['curso_id', '=', $curso->id]
                                             ])->select('id', 'id_periodo','curso_id','id_estudiante','observacion','puesto')
                                             ->get();
+        
+        if ($mostrar_notas_periodos_anteriores) {
+            $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
+                                        ['curso_id', '=', $curso->id]
+                                    ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros')
+                                    ->get();
 
-        $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
+            $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::where([
+                                            ['curso_id', '=', $curso->id]
+                                        ]
+                                    )
+                                    ->get();
+        }else{
+            $calificaciones_del_curso_en_el_periodo = Calificacion::where( [
                                             ['id_periodo', '=', $periodo->id],
                                             ['curso_id', '=', $curso->id]
                                         ])->select('id', 'id_periodo', 'curso_id', 'id_estudiante', 'id_asignatura', 'calificacion', 'logros')
                                         ->get();
-        
-        $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::where([
+
+            $notas_nivelacion_del_curso_en_el_periodo = NotaNivelacion::where([
                                             ['periodo_id', '=', $periodo->id],
                                             ['curso_id', '=', $curso->id]
                                         ]
                                     )
                                     ->get();
+        }
+        
+        
+        
         
         $calificaciones_auxiliares_del_curso_en_el_periodo = collect([]);
         if ($mostrar_notas_auxiliares) {
@@ -499,8 +520,18 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->area_descripcion = $asignacion->asignatura->area->descripcion;
                 $cuerpo_boletin->lineas[$a]->area_id = $asignacion->asignatura->area->id;
 
-                $calificacion = $calificaciones_del_curso_en_el_periodo->where('id_asignatura',$asignacion->asignatura_id)->where('id_estudiante', $matricula->estudiante->id )->first();
-                
+                $cuerpo_boletin->lineas[$a]->calificaciones_todos_los_periodos_asignatura_estudiante = [];
+                if ($mostrar_notas_periodos_anteriores) {
+                    $calificacion = $calificaciones_del_curso_en_el_periodo->where('id_periodo', $periodo->id)->where('id_asignatura',$asignacion->asignatura_id)->where('id_estudiante', $matricula->estudiante->id )->first();
+
+                    $cuerpo_boletin->lineas[$a]->calificaciones_todos_los_periodos_asignatura_estudiante = $calificaciones_del_curso_en_el_periodo->where('id_asignatura',$asignacion->asignatura_id)->where('id_estudiante', $matricula->estudiante->id );
+
+                    $cuerpo_boletin->lineas[$a]->calificaciones_niveladas_todos_los_periodos_asignatura_estudiante = $notas_nivelacion_del_curso_en_el_periodo->where('asignatura_id',$asignacion->asignatura_id)->where('estudiante_id', $matricula->estudiante->id );
+
+                }else{
+                    $calificacion = $calificaciones_del_curso_en_el_periodo->where('id_asignatura',$asignacion->asignatura_id)->where('id_estudiante', $matricula->estudiante->id )->first();
+                }
+
                 $cuerpo_boletin->lineas[$a]->calificacion = $calificacion;
 
                 if( $asignacion->asignatura == null)
@@ -529,6 +560,7 @@ class BoletinController extends Controller
                     if( $calificacion_nivelada != null )
                     {
                         $valor_calificacion = $calificacion_nivelada->calificacion;
+                        
                         $cuerpo_boletin->lineas[$a]->calificacion_nivelacion = $calificacion_nivelada->calificacion;
                     }
 

@@ -9,17 +9,17 @@
 	// Mostrar notas finales periodos anteriores
 	foreach($periodos as $periodo_lista)
 	{
-		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
+		$calificacion_nota_original = $linea->calificaciones_todos_los_periodos_asignatura_estudiante->where('id_periodo', $periodo_lista->id)->first();
 
 		$lbl_cali_periodo = '&nbsp;';
-		if ( !is_null( $calificacion_nota_original ) )
+		if ( $calificacion_nota_original != null )
 		{
 			$cali_periodo = (float)$calificacion_nota_original->calificacion;
 			$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' );
 
-			$cali_nivelacion_periodo = $periodo_lista->get_calificacion_nivelacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
+			$cali_nivelacion_periodo = $linea->calificaciones_niveladas_todos_los_periodos_asignatura_estudiante->where('id_periodo', $periodo_lista->id)->first();
 
-			if( !is_null( $cali_nivelacion_periodo ) )
+			if( $cali_nivelacion_periodo != null )
 			{
 				$cali_periodo = (float)$cali_nivelacion_periodo->calificacion;
 				$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' ) . '<sup>n</sup>';
