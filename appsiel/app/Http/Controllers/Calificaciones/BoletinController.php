@@ -541,9 +541,11 @@ class BoletinController extends Controller
         }
 
         $asignaturas_asignadas = CursoTieneAsignatura::with('asignatura')->where([
-            ['curso_id', '=', $curso->id],
-            ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id]
-        ])->get();
+                                            ['curso_id', '=', $curso->id],
+                                            ['periodo_lectivo_id', '=', $periodo->periodo_lectivo_id]
+                                        ])
+                                        ->orderBy('orden_boletin')
+                                        ->get();
 
         $datos = (object)[];
         $l = 0;
