@@ -37,9 +37,11 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
+use ZipArchive;
 
 class BoletinController extends Controller
 {
@@ -188,11 +190,65 @@ class BoletinController extends Controller
         $view = $this->get_view_for_pdf($request->all(), $firmas);
         
         $curso = Curso::find( $request->curso_id );
-
-        $view_last = Cache::get( 'pdf_boletines_curso_id_' . $curso->id );
         
-        Cache::forever( 'pdf_boletines_curso_id_' . $curso->id, $view_last . $view );
+        // Se prepara el PDF
+        $orientacion='portrait';
+        $tam_hoja = $request->tam_hoja;
+        $pdf = App::make('dompdf.wrapper');	
+        $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
+
+        $estudiante = Estudiante::find((int)$request->estudiante_id);
+        $nombrearchivo = str_replace(' ', '_', strtolower($estudiante->tercero->descripcion)) . '_' . uniqid() . '.pdf';
+
+        Storage::put( 'pdf_boletines_curso_id_' . $curso->id . '/' . $nombrearchivo, $pdf->output());
 	}
+    
+    public function descargar_pdfs_curso($curso_id)
+    {
+        $zip = new ZipArchive;
+   
+        $folderName = '/app/pdf_boletines_curso_id_' . $curso_id;
+        $fileName = 'pdf_boletines_curso_id_' . $curso_id . '.zip';
+
+        $path_complete = storage_path() . '/app/' . $fileName;
+        
+        Storage::delete( $path_complete );
+   
+        if ($zip->open($path_complete, ZipArchive::CREATE) === TRUE)
+        {
+        	// Folder files to zip and download
+        	// files folder must be existing to your public folder
+            $files = File::files(storage_path() . $folderName );
+            
+   			// loop the files result
+            foreach ($files as $key => $value) {
+                $relativeNameInZipFile = basename($value);
+                $zip->addFile($value, $relativeNameInZipFile);
+            }
+             
+            $zip->close();
+        }
+    	
+    	// Download the generated zip
+        return response()->download($path_complete);
+    }
+
+    public function eliminar_pdfs_curso($curso_id)
+    {   
+        $folderName = '/app/pdf_boletines_curso_id_' . $curso_id;
+        $fileName = 'pdf_boletines_curso_id_' . $curso_id . '.zip';
+
+        $path_complete = '/app/' . $fileName;
+        
+        // Delete Zip
+        Storage::delete( $fileName );
+
+        // Delete Folder
+        File::deleteDirectory(storage_path() . $folderName);
+
+        return 'PDFs y Zip borrados.';
+
+    }
 
     public function get_view_for_pdf($data_request, $firmas)
     {
@@ -425,10 +481,7 @@ class BoletinController extends Controller
                                         ]
                                     )
                                     ->get();
-        }
-        
-        
-        
+        }       
         
         $calificaciones_auxiliares_del_curso_en_el_periodo = collect([]);
         if ($mostrar_notas_auxiliares) {
@@ -628,7 +681,7 @@ class BoletinController extends Controller
     public function get_escala_valoracion($escalas_valoracion_periodo_lectivo, $valor_calificacion)
     {
         foreach ($escalas_valoracion_periodo_lectivo as $escala) {
-            if( $escala->calificacion_minima <= $valor_calificacion && $escala-> calificacion_maxima >= $valor_calificacion)
+            if( $escala->calificacion_minima <= $valor_calificacion && $escala->calificacion_maxima >= $valor_calificacion)
             {
                 return $escala;
             }

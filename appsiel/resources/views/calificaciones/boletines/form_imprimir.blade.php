@@ -271,9 +271,20 @@
 					$('#div_cargando').hide();
 					$('#btn_generar_pdfs').children('.fa-spinner').attr('class','fa fa-print');
 					$('#message_print').show();
+					
+					window.open( '../../calif_descargar_pdfs_curso/' + $('#curso_id').val(), '_blank');
 
-					window.open( '../../core_descargar_pdf_desde_cache/' + cache_key + '/' + pdf_name, '_blank');
+					/*
+					var url = '../../calif_eliminar_pdfs_curso/' + $('#curso_id').val();
 
+					$.ajax({
+			        	url: url,
+			        	type: 'get',
+			        	success: function(respuesta){
+			        		console.log(respuesta);
+				        }
+				    });
+					*/
 					return true;
 				}
 

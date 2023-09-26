@@ -60,6 +60,8 @@ Route::post('calificaciones/boletines/revisar2', ['as' => 'revision', 'uses' =>'
 Route::get('/calificaciones/boletines/imprimir', 'Calificaciones\BoletinController@imprimir');
 Route::post('/calificaciones/boletines/generarPDF', 'Calificaciones\BoletinController@generarPDF');
 Route::post('calif_generar_pdf_un_boletin', 'Calificaciones\BoletinController@generar_pdf_un_boletin');
+Route::get('calif_descargar_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@descargar_pdfs_curso');
+Route::get('calif_eliminar_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@eliminar_pdfs_curso');
 
 
 // Calcular puesto
