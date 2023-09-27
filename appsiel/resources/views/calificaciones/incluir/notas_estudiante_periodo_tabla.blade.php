@@ -96,7 +96,6 @@
                                 $promedio += (float)$registros[$i]->$c;
                             }
                             
-                            $n++;
                         } // Fin cada calificacion aux.
 
                             $prom = $promedio;
@@ -139,7 +138,7 @@
                             }
                     ?>
                             <th style="font-size: 16px; {{$style2}}">
-                                {{number_format($prom, 2, '.', ',')}}
+                                {{number_format($prom, 2, '.', ',')}} promedio={{$promedio}} n={{$n}}
                                 @if($nivelado)
                                  <sup>n</sup>
                                 @endif
