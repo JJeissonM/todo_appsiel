@@ -138,7 +138,7 @@
                             }
                     ?>
                             <th style="font-size: 16px; {{$style2}}">
-                                {{number_format($prom, 2, '.', ',')}} promedio={{$promedio}} n={{$n}}
+                                {{number_format($prom, 2, '.', ',')}}
                                 @if($nivelado)
                                  <sup>n</sup>
                                 @endif
