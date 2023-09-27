@@ -7,7 +7,7 @@
     }
     
     $nivelado = false;
-    $maneja_pesos = false;
+    $total_pesos = 0;
 ?>
 
 <input type="hidden" name="fecha_termina_periodo" id="fecha_termina_periodo" value="{{ $periodo->fecha_hasta }}">
@@ -35,8 +35,8 @@
                         @if($lbl_calificacion_aux->peso != '')
                             <br> 
                             <span style="font-size: 0.6em;">{{$lbl_calificacion_aux->peso}}</span>
-                            <?php 
-                                $maneja_pesos = true;
+                            <?php
+                                $total_pesos += (float)$lbl_calificacion_aux->peso;
                             ?>
                         @endif
                     </th>
@@ -90,7 +90,7 @@
                                 <button style="{{$style}}" type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" data-placement="top" title="{{$fecha_calificacion.$detalle_calificacion}}"> {{$texto_calificacion}} </button >
                             </td>
                     <?php
-                            if ($maneja_pesos) {
+                            if ($total_pesos > 0) {
                                 $promedio += (float)$registros[$i]->$c  * (float)$lbl_calificacion_aux->peso / 100;
                             }else{
                                 $promedio += (float)$registros[$i]->$c;
