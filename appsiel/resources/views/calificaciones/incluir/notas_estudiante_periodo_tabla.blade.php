@@ -96,9 +96,14 @@
                                 $promedio += (float)$registros[$i]->$c;
                             }
                             
+                            $n++;
                         } // Fin cada calificacion aux.
-                        
+
                             $prom = $promedio;
+
+                            if ($total_pesos <= 0 && $n != 0) {
+                                $prom = $promedio / $n;
+                            }
 
                             // La calificación de nivelación reemplaza la nota promedio final.
                             $cali_nivelacion_periodo = $periodo->get_calificacion_nivelacion( $curso->id, $estudiante->id, $registros[$i]->asignatura_id );
