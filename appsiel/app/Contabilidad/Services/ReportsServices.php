@@ -133,7 +133,12 @@ class ReportsServices
 
         $arr_ids_grupos_hijos = [];
         foreach ($cuentas_movimiento as $cuenta_id) {
+
             $cuenta = $this->cuentas->where('id',$cuenta_id)->first();
+
+            if ($cuenta == null) {
+                dd('Cuenta con ID=' . $cuenta_id . ' errada.');
+            }
 
             if (!in_array($cuenta->contab_cuenta_grupo_id, $arr_ids_grupos_hijos) && $cuenta->contab_cuenta_clase_id == $clase_cuenta_id) {
                 $arr_ids_grupos_hijos[] = $cuenta->contab_cuenta_grupo_id;
