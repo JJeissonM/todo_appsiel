@@ -25,12 +25,6 @@ function filterItems(query) {
     });
 
     return false;
-
-    /*
-    return productos.filter(function(item) {
-        return item.descripcion.toLowerCase().indexOf(query.toLowerCase()) > -1;
-    })
-    */
 }
 
 $(document).ready(function () {
