@@ -739,7 +739,7 @@ class ContabReportesController extends Controller
         switch ( $reporte_id )
         {
             case 'balance_general':
-                $ids_clases_cuentas = [ 1, 2, 3];
+                $ids_clases_cuentas = [ 1, 2, 3 ];
                 break;
             
             default:
@@ -748,112 +748,17 @@ class ContabReportesController extends Controller
         }
 
         $obj_repor_serv = new ReportsServices();
-        $totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
-        $filas = [];
-        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
-        {
-            $obj_repor_serv->set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id );
 
-            $valor_clase = $obj_repor_serv->datos_clase_cuenta( $clase_cuenta_id );
-            
-            if ( $valor_clase->valor == 0 )
-            {
-                continue;
-            }
-
-            $totales_clases[$clase_cuenta_id] = $valor_clase->valor;
-
-            $filas[] = (object)[
-                                'datos_clase_cuenta' => $valor_clase,
-                                'datos_grupo_padre' => 0,
-                                'datos_grupo_hijo' => 0,
-                                'datos_cuenta' => 0
-                                ];
-                                
-            // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
-            $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos( array_keys( $obj_repor_serv->movimiento->groupBy('contab_cuenta_id')->all() ) );
-            if( !empty( $grupos_invalidos ) )
-            {
-                dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
-            }
-
-            $grupos_hijos = $obj_repor_serv->movimiento->groupBy('contab_cuenta_grupo_id')->all();
-            
-            $grupos_padres = $obj_repor_serv->get_ids_grupos_padres( array_keys( $grupos_hijos ) );
-            //$grupos_padres_clases_cuentas = $obj_repor_serv->get_grupos_padre_de_clase_cuenta( 1 );
-            foreach ( $grupos_padres as $key => $grupo_padre_id )
-            {
-                $valor_padre = $obj_repor_serv->datos_fila_grupo_padre( $grupo_padre_id );
-
-                if ( $valor_padre->valor == 0 )
-                {
-                    continue;
-                }
-
-                $filas[] = (object)[
-                                    'datos_clase_cuenta' => 0,
-                                    'datos_grupo_padre' => $valor_padre,
-                                    'datos_grupo_hijo' => 0,
-                                    'datos_cuenta' => 0
-                                    ];
-                
-                $grupos_hijos = $obj_repor_serv->get_grupos_hijos( $grupo_padre_id );
-                foreach ($grupos_hijos as $grupo_hijo )
-                {
-                    $valor_hijo = $obj_repor_serv->get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_hijo->id )->sum('valor_saldo');
-
-                    if ( $valor_hijo == 0 )
-                    {
-                        continue;
-                    }
-
-                    $filas[] = (object)[
-                        'datos_clase_cuenta' => 0,
-                        'datos_grupo_padre' => 0,
-                        'datos_grupo_hijo' => (object)[ 
-                                                        'descripcion' => $grupo_hijo->descripcion,
-                                                        'valor' => $valor_hijo
-                                                    ],
-                        'datos_cuenta' => 0
-                        ];
-                    
-                    $cuentas_del_grupo = $obj_repor_serv->get_cuentas_del_grupo( $grupo_hijo->id );
-
-                    foreach ($cuentas_del_grupo as $cuenta)
-                    {
-                        if( !$detallar_cuentas )
-                        {
-                            continue;
-                        }
-                        
-                        $valor_cuenta = $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->sum('valor_saldo');
-                        if ( $valor_cuenta == 0 )
-                        {
-                            continue;
-                        }
-
-                        $filas[] = (object)[
-                                                'datos_clase_cuenta' => 0,
-                                                'datos_grupo_padre' => 0,
-                                                'datos_grupo_hijo' => 0,
-                                                'datos_cuenta' => (object)[ 
-                                                                            'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
-                                                                            'valor' => $valor_cuenta
-                                                                        ]
-                                                ];
-                    }
-                }
-            }
-        }
+        $filas = $obj_repor_serv->get_filas_eeff( $fecha_inicial, $fecha_final, $detallar_cuentas, $ids_clases_cuentas );        
 
         switch ( $reporte_id )
         {
             case 'balance_general':
-                $gran_total = abs( $totales_clases[ 1 ] ) - abs( $totales_clases[ 2 ] ) - abs( $totales_clases[ 3 ] );
+                $gran_total = abs( $obj_repor_serv->totales_clases[ 1 ] ) - abs( $obj_repor_serv->totales_clases[ 2 ] ) - abs( $obj_repor_serv->totales_clases[ 3 ] );
                 break;
             
             default:
-            $gran_total = abs( $totales_clases[ 4 ] ) - abs( $totales_clases[ 5 ] ) - abs( $totales_clases[ 6 ] );
+                $gran_total = abs( $obj_repor_serv->totales_clases[ 4 ] ) - abs( $obj_repor_serv->totales_clases[ 5 ] ) - abs( $obj_repor_serv->totales_clases[ 6 ] );
                 break;
         }        
 
