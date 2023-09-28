@@ -137,7 +137,7 @@ class ReportsServices
             $cuenta = $this->cuentas->where('id',$cuenta_id)->first();
 
             if ($cuenta == null) {
-                dd('Cuenta con ID=' . $cuenta_id . ' errada.');
+                dd('La Cuenta con ID=' . $cuenta_id . ' en el movimiento no existe en el Plan de Cuentas.');
             }
 
             if (!in_array($cuenta->contab_cuenta_grupo_id, $arr_ids_grupos_hijos) && $cuenta->contab_cuenta_clase_id == $clase_cuenta_id) {

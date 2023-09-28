@@ -5,7 +5,7 @@ function draw_items(lista_items)
     $.each(lista_items,function(key,item)
     {
         var label = item.referencia + ' ' + item.descripcion;
-        $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item hidden" data-label_item="' + label.toLowerCase() + '">' + label  + ' $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</button>');
+        $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item hidden" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');
         num_items++;
     });
 }

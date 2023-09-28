@@ -27,13 +27,13 @@
 				$vendedor = App\Ventas\Vendedor::where('user_id',$user->id)->get()->first();
 
 				if ($vendedor == null) {
-					dd('Usuario no está creado como Vendedor. Consute con el administraor del sistema.');
+					dd('Usuario no está creado como Vendedor. Consulte con el administraor del sistema.');
 				}
 				
 				$cliente = $vendedor->cliente;
 
 				if ($cliente == null) {
-					dd('El Vendedor no tiene un Cliente relacionado. Consute con el administraor del sistema.');
+					dd('El Vendedor no tiene un Cliente relacionado. Consulte con el administraor del sistema.');
 				}
 
 			?>
