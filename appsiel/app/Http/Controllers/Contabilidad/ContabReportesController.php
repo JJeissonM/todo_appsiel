@@ -615,7 +615,7 @@ class ContabReportesController extends Controller
 
         $cuentas_tesoreria = array_merge ( $cuentas_tesoreria, \App\Tesoreria\TesoCuentaBancaria::groupBy('contab_cuenta_id')->get()->pluck('contab_cuenta_id')->toArray() );
 
-        $contab_movim = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+        $movimiento = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
                         ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
                         ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                         ->whereIn( 'contab_cuenta_id', $cuentas_tesoreria )
@@ -641,7 +641,7 @@ class ContabReportesController extends Controller
                         ->get();
 
         // Se filtran los registros del movimiento contable que no están en el movimiento de tesorería
-        $registros = $contab_movim->filter(function ($value, $key)
+        $registros = $movimiento->filter(function ($value, $key)
         {
             return \App\Tesoreria\TesoMovimiento::where(
                                                         [ 
@@ -739,7 +739,7 @@ class ContabReportesController extends Controller
         switch ( $reporte_id )
         {
             case 'balance_general':
-                $ids_clases_cuentas = [ 1, 2, 3 ];
+                $ids_clases_cuentas = [ 1, 2, 3];
                 break;
             
             default:
@@ -748,17 +748,123 @@ class ContabReportesController extends Controller
         }
 
         $obj_repor_serv = new ReportsServices();
+        
+        $obj_repor_serv->clases_cuentas = ClaseCuenta::all();
 
-        $filas = $obj_repor_serv->get_filas_eeff( $fecha_inicial, $fecha_final, $detallar_cuentas, $ids_clases_cuentas );        
+        $obj_repor_serv->grupos_cuentas = ContabCuentaGrupo::all();
+
+        $obj_repor_serv->cuentas = ContabCuenta::all();        
+
+        $totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
+        $filas = [];
+        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
+        {
+            $obj_repor_serv->set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id );
+            
+            // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
+            $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos();
+            if( !empty( $grupos_invalidos ) )
+            {
+                dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
+            }
+
+            //$valor_clase = $obj_repor_serv->datos_clase_cuenta( $clase_cuenta_id );
+            $valor_clase = (object)[ 
+                'descripcion' => strtoupper( $obj_repor_serv->clases_cuentas->where('id',$clase_cuenta_id)->first()->descripcion ),
+                'valor' => $obj_repor_serv->movimiento->where( 'contab_cuenta_clase_id', $clase_cuenta_id )->sum('valor_saldo')
+            ];
+            
+            if ( $valor_clase->valor == 0 )
+            {
+                continue;
+            }
+
+            $totales_clases[$clase_cuenta_id] = $valor_clase->valor;
+
+            $filas[] = (object)[
+                                'datos_clase_cuenta' => $valor_clase,
+                                'datos_grupo_padre' => 0,
+                                'datos_grupo_hijo' => 0,
+                                'datos_cuenta' => 0
+                                ];
+            
+            $grupos_padres = $obj_repor_serv->get_ids_grupos_padres( $clase_cuenta_id );
+            
+            foreach ( $grupos_padres as $key => $grupo_padre_id )
+            {
+                $valor_padre = $obj_repor_serv->datos_fila_grupo_padre( $grupo_padre_id );
+
+                if ( $valor_padre->valor == 0 )
+                {
+                    continue;
+                }
+
+                $filas[] = (object)[
+                                    'datos_clase_cuenta' => 0,
+                                    'datos_grupo_padre' => $valor_padre,
+                                    'datos_grupo_hijo' => 0,
+                                    'datos_cuenta' => 0
+                                    ];
+                
+                $grupos_hijos = $obj_repor_serv->grupos_cuentas->where( 'grupo_padre_id', $grupo_padre_id )->all();
+                
+                foreach ($grupos_hijos as $grupo_hijo )
+                {
+                    $valor_hijo = $obj_repor_serv->movimiento->where( 'contab_cuenta_grupo_id', $grupo_hijo->id )->sum('valor_saldo');
+
+                    if ( $valor_hijo == 0 )
+                    {
+                        continue;
+                    }
+
+                    $filas[] = (object)[
+                        'datos_clase_cuenta' => 0,
+                        'datos_grupo_padre' => 0,
+                        'datos_grupo_hijo' => (object)[ 
+                                                        'descripcion' => $grupo_hijo->descripcion,
+                                                        'valor' => $valor_hijo
+                                                    ],
+                        'datos_cuenta' => 0
+                        ];
+                    
+                    $cuentas_del_grupo = $obj_repor_serv->cuentas->where( 'contab_cuenta_grupo_id', $grupo_hijo->id );
+
+                    foreach ($cuentas_del_grupo as $cuenta)
+                    {
+                        if( !$detallar_cuentas )
+                        {
+                            continue;
+                        }
+                        
+                        $valor_cuenta = $obj_repor_serv->movimiento->where( 'contab_cuenta_id', $cuenta->id )->sum('valor_saldo');
+                        
+                        if ( $valor_cuenta == 0 )
+                        {
+                            continue;
+                        }
+
+                        $filas[] = (object)[
+                                                'datos_clase_cuenta' => 0,
+                                                'datos_grupo_padre' => 0,
+                                                'datos_grupo_hijo' => 0,
+                                                'datos_cuenta' => (object)[ 
+                                                                            'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
+                                                                            'valor' => $valor_cuenta
+                                                                        ]
+                                                ];
+                    }
+                }
+            }
+        }
 
         switch ( $reporte_id )
         {
             case 'balance_general':
-                $gran_total = abs( $obj_repor_serv->totales_clases[ 1 ] ) - abs( $obj_repor_serv->totales_clases[ 2 ] ) - abs( $obj_repor_serv->totales_clases[ 3 ] );
+                $gran_total = abs( $totales_clases[ 1 ] ) - abs( $totales_clases[ 2 ] ) - abs( $totales_clases[ 3 ] );
                 break;
             
             default:
-                $gran_total = abs( $obj_repor_serv->totales_clases[ 4 ] ) - abs( $obj_repor_serv->totales_clases[ 5 ] ) - abs( $obj_repor_serv->totales_clases[ 6 ] );
+            $gran_total = abs( $totales_clases[ 4 ] ) - abs( $totales_clases[ 5 ] ) - abs( $totales_clases[ 6 ] );
                 break;
         }        
 
@@ -774,7 +880,7 @@ class ContabReportesController extends Controller
         $reports_list = [
             (object)[
                 'title' => 'Impuestos en ventas (generados)',
-                'arr_transactions_types' => [23,44,47,49,50,52],
+                'arr_transactions_types' => [23,44,49,50,52],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
                                             ->get()
                                             ->pluck('cta_ventas_id')
@@ -782,7 +888,7 @@ class ContabReportesController extends Controller
             ],
             (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
-                'arr_transactions_types' => [38,41,53,54],
+                'arr_transactions_types' => [41,38,53,54],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
                                             ->get()
                                             ->pluck('cta_ventas_devol_id')
@@ -808,7 +914,6 @@ class ContabReportesController extends Controller
 
        $vista = '<table><tr><td>';
        foreach ($reports_list as $report) {
-            // Obtener movimiento contable por cada grupo de transacciones
             $movements = ContabMovimiento::whereIn('core_tipo_transaccion_id',$report->arr_transactions_types)
                     ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                     ->whereIn('contab_cuenta_id',$report->campo_filtrar_ctas)
@@ -839,7 +944,7 @@ class ContabReportesController extends Controller
         $reports_list = [
             'sales_taxes' => (object)[
                 'title' => 'Impuestos en ventas (generados)',
-                'arr_transactions_types' => [23,44,47,49,50,52],
+                'arr_transactions_types' => [23,44,49,50,52],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
                                             ->get()
                                             ->pluck('cta_ventas_id')
@@ -847,7 +952,7 @@ class ContabReportesController extends Controller
             ],
             'sales_return_taxes' => (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
-                'arr_transactions_types' => [38,41,53,54],
+                'arr_transactions_types' => [41,38,53,54],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
                                             ->get()
                                             ->pluck('cta_ventas_devol_id')
@@ -922,14 +1027,15 @@ class ContabReportesController extends Controller
         return $vista;
     }
 
-    public function get_totals_by_tax($contab_movements_lines, $column_to_group, $column_method_name)
+    public function get_totals_by_tax($lines, $column_to_group, $column_method_name)
     {
-        $grouped_data = $contab_movements_lines->groupBy($column_to_group)->map(function ($row) use ($column_method_name) {
+        $grouped_data = $lines->groupBy($column_to_group)->map(function ($row) use ($column_method_name) {
             return  [
                 'group' => $row->first()->$column_method_name,
                 'valor_impuesto' => $row->sum('valor_saldo')
             ];
         });
+
 
         $arr_grouped_data = [];
         foreach ($grouped_data as $line) {

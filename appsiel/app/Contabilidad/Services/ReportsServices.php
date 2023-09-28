@@ -17,131 +17,6 @@ class ReportsServices
 
     public $ids_cuentas, $clases_cuentas, $grupos_cuentas, $cuentas;
 
-    public $totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
-
-    public function get_filas_eeff( $fecha_inicial, $fecha_final, $detallar_cuentas, $ids_clases_cuentas )
-    {        
-        $filas = [];
-
-        $this->movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-                            ->leftJoin('contab_cuenta_clases','contab_cuenta_clases.id','=','contab_cuentas.contab_cuenta_clase_id')
-                            ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
-                            ->select(
-                                    'contab_cuentas.contab_cuenta_clase_id',
-                                    'contab_cuentas.contab_cuenta_grupo_id',
-                                    'contab_movimientos.contab_cuenta_id',
-                                    'contab_movimientos.valor_saldo',
-                                    'contab_movimientos.fecha'
-                                )
-                            ->get();
-        
-        $this->clases_cuentas = ClaseCuenta::all();
-
-        $this->grupos_cuentas = ContabCuentaGrupo::all();
-
-        $this->cuentas = ContabCuenta::all();
-
-        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
-        {                    
-            // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
-            $grupos_invalidos = $this->validar_grupos_hijos();
-
-            if( !empty( $grupos_invalidos ) )
-            {
-                dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
-            }
-
-            $valor_clase = (object)[ 
-                'descripcion' => strtoupper( $this->clases_cuentas->where('id',$clase_cuenta_id)->first()->descripcion ),
-                'valor' => $this->movimiento->where( 'contab_cuenta_clase_id', $clase_cuenta_id )->sum('valor_saldo')
-            ];
-            
-            if ( $valor_clase->valor == 0 )
-            {
-                continue;
-            }
-
-            $this->totales_clases[$clase_cuenta_id] = $valor_clase->valor;
-
-            $filas[] = (object)[
-                                'datos_clase_cuenta' => $valor_clase,
-                                'datos_grupo_padre' => 0,
-                                'datos_grupo_hijo' => 0,
-                                'datos_cuenta' => 0
-                                ];
-            
-            $grupos_padres = $this->get_ids_grupos_padres( $clase_cuenta_id );
-            
-            foreach ( $grupos_padres as $key => $grupo_padre_id )
-            {
-                $valor_padre = $this->datos_fila_grupo_padre( $grupo_padre_id );
-
-                if ( $valor_padre->valor == 0 )
-                {
-                    continue;
-                }
-
-                $filas[] = (object)[
-                                    'datos_clase_cuenta' => 0,
-                                    'datos_grupo_padre' => $valor_padre,
-                                    'datos_grupo_hijo' => 0,
-                                    'datos_cuenta' => 0
-                                    ];
-                
-                $grupos_hijos = $this->grupos_cuentas->where( 'grupo_padre_id', $grupo_padre_id )->all();
-
-                foreach ($grupos_hijos as $grupo_hijo )
-                {
-                    $valor_hijo = $this->movimiento->where( 'contab_cuenta_grupo_id', $grupo_hijo->id )->sum('valor_saldo');
-
-                    if ( $valor_hijo == 0 )
-                    {
-                        continue;
-                    }
-
-                    $filas[] = (object)[
-                        'datos_clase_cuenta' => 0,
-                        'datos_grupo_padre' => 0,
-                        'datos_grupo_hijo' => (object)[ 
-                                                        'descripcion' => $grupo_hijo->descripcion,
-                                                        'valor' => $valor_hijo
-                                                    ],
-                        'datos_cuenta' => 0
-                        ];
-                    
-                    $cuentas_del_grupo = $this->cuentas->where( 'contab_cuenta_grupo_id', $grupo_hijo->id );
-
-                    foreach ($cuentas_del_grupo as $cuenta)
-                    {
-                        if( !$detallar_cuentas )
-                        {
-                            continue;
-                        }
-                        
-                        $valor_cuenta = $this->movimiento->where( 'contab_cuenta_id', $cuenta->id )->sum('valor_saldo');
-
-                        if ( $valor_cuenta == 0 )
-                        {
-                            continue;
-                        }
-
-                        $filas[] = (object)[
-                                                'datos_clase_cuenta' => 0,
-                                                'datos_grupo_padre' => 0,
-                                                'datos_grupo_hijo' => 0,
-                                                'datos_cuenta' => (object)[ 
-                                                                            'descripcion' => $cuenta->codigo . ' ' . $cuenta->descripcion,
-                                                                            'valor' => $valor_cuenta
-                                                                        ]
-                                                ];
-                    }
-                }
-            }
-        }
-
-        return $filas;
-    }
-
     public function get_ids_grupos_padres( $clase_cuenta_id )
     {
         $arr_ids_grupos_asociados_a_las_cuentas = array_values( $this->movimiento->where('contab_cuenta_clase_id', $clase_cuenta_id)->pluck('contab_cuenta_grupo_id')->unique()->toArray() );
@@ -172,6 +47,35 @@ class ReportsServices
         }
 
         return $lista;
+    }
+
+    public function get_grupos_hijos( $grupo_padre_id )
+    {
+        return ContabCuentaGrupo::where( 'grupo_padre_id', $grupo_padre_id )
+                                ->get();
+    }
+
+    public function get_cuentas_del_grupo( $grupo_cuenta_id )
+    {
+        return ContabCuenta::where( 'contab_cuenta_grupo_id', $grupo_cuenta_id )
+                                ->get();
+    }
+
+    public function set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id )
+    {
+        $this->movimiento = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                                   ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
+                                   ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta_id )
+                                   ->get();
+    }
+
+    public function get_mov_grupo_cuenta( $fecha_inicial, $fecha_final, $grupo_cuenta_id )
+    {
+        return ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                            ->leftJoin('contab_cuenta_grupos', 'contab_cuenta_grupos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
+                            ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
+                            ->where('contab_cuenta_grupos.id', $grupo_cuenta_id )
+                            ->get();
     }
 
     public function datos_fila_grupo_padre( $grupo_padre_id )
