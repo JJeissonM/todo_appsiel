@@ -1118,6 +1118,7 @@ class FacturaPosController extends TransaccionController
 
     public function set_catalogos( $pdv_id )
     {
+        // El costo promedio del item se llama desde inv_productos
         $pdv = Pdv::find( $pdv_id );
         $datos = [
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
