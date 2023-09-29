@@ -1121,7 +1121,7 @@ class FacturaPosController extends TransaccionController
         $pdv = Pdv::find( $pdv_id );
         $datos = [
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
-                    'productos' => InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id),
+                    'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
                     'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
                     'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),
                     'clientes' => Cliente::where( 'estado', 'Activo' )->get(),

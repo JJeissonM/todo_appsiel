@@ -308,8 +308,7 @@ class InvProducto extends Model
             }
         }
 
-        $registros = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
-                                ->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+        $registros = InvProducto::with('impuesto')->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
                                 ->where( $array_wheres )
                                 ->select(
                                             'inv_productos.id',
@@ -318,8 +317,8 @@ class InvProducto extends Model
                                             'inv_grupos.descripcion AS grupo_descripcion',
                                             'inv_productos.precio_compra',
                                             'inv_productos.precio_venta',
-                                            'contab_impuestos.tasa_impuesto',
                                             'inv_productos.tipo',
+                                            'inv_productos.impuesto_id',
                                             'inv_productos.estado',
                                             'inv_productos.imagen',
                                             'inv_productos.mostrar_en_pagina_web',
@@ -331,11 +330,15 @@ class InvProducto extends Model
 
         foreach ($registros as $item)
         {
-            $item->tasa_impuesto = Impuesto::get_tasa( $item->id, 0, 0 );
+            $tasa_impuesto = 0;
+            if ($item->impuesto != null) {
+                $tasa_impuesto = $item->impuesto->tasa_impuesto;
+            }
+            $item->tasa_impuesto = $tasa_impuesto;
 
             $costo_prom = $item->precio_compra;
             $existencia_actual = 0;
-            if ( !is_null( $bodega_id ) )
+            if ( $bodega_id != null )
             {
                 $costo_prom = $item->get_costo_promedio( $bodega_id );
                 //$existencia_actual = $item->get_existencia_actual( $bodega_id, date('Y-m-d') );

@@ -1222,15 +1222,6 @@ $(document).ready(function () {
         fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
     }
 
-    function setCookie(cname, cvalue, exdays)
-    {
-        var d = new Date();
-        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-        var expires = "expires=" + d.toUTCString();
-        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-    }
-
-
     $("#btn_cargar_plano").on('click',function(event){
         event.preventDefault();
 
@@ -1290,12 +1281,28 @@ $.fn.set_catalogos = function ( pdv_id ) {
         $("#myModal2 .btn_save_modal").hide();
         $("#myModal2 .close").hide();
 
-        /**/
     	$.get( url_raiz + "/ventas_pos_set_catalogos" + "/" + pdv_id )
             .done(function (datos) {
 				
 				redondear_centena =  datos.redondear_centena;
-				productos =  datos.productos;
+                
+                /*
+                var productos_pos = JSON.parse( localStorage.getItem('productos_pos') );
+                  
+                if ( productos_pos == null ) {
+                    localStorage.setItem('productos_pos', JSON.stringify(datos.productos));
+                    productos =  datos.productos;
+                    console.log('carga productos');
+                }else{
+                    productos =  productos_pos;
+                    if (datos.productos.length != productos_pos.length) {
+                        localStorage.setItem('productos_pos', JSON.stringify(datos.productos));
+                        productos =  datos.productos;
+                    }
+                }
+				*/
+
+                productos = datos.productos;
 				precios =  datos.precios;
 				descuentos =  datos.descuentos;
 				clientes =  datos.clientes;
@@ -1308,7 +1315,45 @@ $.fn.set_catalogos = function ( pdv_id ) {
         		$("#myModal2 .close").show();
 				$("#myModal2").modal("hide");
                 
-                draw_items(productos);
+                //draw_items(productos);
             });	
 
 };
+
+function setCookie(cname, cvalue, exdays)
+{
+    console.log('entra a setCookie');
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    var expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    console.log('entra a getCookie');
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+function checkCookie() {
+  var modo_ingreso_codigo_de_barra = getCookie("modo_ingreso_codigo_de_barra");
+
+  if (modo_ingreso_codigo_de_barra == "true" || modo_ingreso_codigo_de_barra == "")
+  {
+    $('#modo_ingreso').attr('checked','checked');
+    $('#modo_ingreso').val( "true" );
+  }else{
+      $('#modo_ingreso').removeAttr('checked');
+    $('#modo_ingreso').val( "false" );
+  }
+}

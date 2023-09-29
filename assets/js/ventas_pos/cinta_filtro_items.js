@@ -1,12 +1,12 @@
 function draw_items(lista_items)
 {
+    console.log(lista_items);
+
     $('.filtros').html('');
-    var num_items = 0;
     $.each(lista_items,function(key,item)
     {
         var label = item.referencia + ' ' + item.descripcion;
-        $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item hidden" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');
-        num_items++;
+        $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');
     });
 }
 
@@ -14,15 +14,21 @@ function filterItems(query) {
 
     var textoFiltro = query.toLowerCase().replace(/\s/g,"-");
 
-    // Por Cada button hijo de la Div filtros
-    $('.filtros button').each(function()
-    {
-        if ($(this).attr('data-label_item').indexOf(textoFiltro) === -1) { // No existe
-            $(this).fadeOut('normal').addClass('hidden');
-        } else if ($(this).attr('data-label_item').indexOf(textoFiltro) > -1) {
-            $(this).fadeIn('slow').removeClass('hidden');
+    $('.filtros').html('');
+    
+    var items_to_draw = [];
+    $.each(productos,function(key,item)
+    {        
+        var label = item.referencia + ' ' + item.descripcion;
+
+        if (label.toLowerCase().indexOf(textoFiltro) === -1) { // No existe
+            //$(this).fadeOut('normal').addClass('hidden');
+        } else if ( label.toLowerCase().indexOf(textoFiltro) > -1) {
+            items_to_draw.push(item);
         }
     });
+
+    draw_items(items_to_draw);
 
     return false;
 }
@@ -54,7 +60,7 @@ $(document).ready(function () {
                 break;
             default :
                 
-                if ($(this).val().length < 2) {
+                if ($(this).val().length < 3) {
                     $('.filtros button').fadeOut('normal').addClass('hidden');
                     return false;
                 }
