@@ -107,6 +107,7 @@ class ReporteController extends Controller
     public function revisar_pedidos_ventas( $pdv_id )
     {
         $pedidos = VtasPedido::where( 'estado', 'Pendiente' )
+            ->whereIn( 'core_tipo_transaccion_id', [42, 60])
             ->orderBy('fecha','DESC')
             ->orderBy('consecutivo','DESC')->get();
 
