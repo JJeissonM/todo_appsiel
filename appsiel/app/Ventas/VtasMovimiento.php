@@ -271,7 +271,7 @@ class VtasMovimiento extends Model
             ->get();
     }
 
-    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $core_tipo_transaccion_id = null )
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $core_tipo_transaccion_id, $cliente_id )
     {
         switch ( $agrupar_por )
         {
@@ -310,6 +310,10 @@ class VtasMovimiento extends Model
 
         if ($core_tipo_transaccion_id != null ) {
             $array_wheres = array_merge($array_wheres,[['vtas_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
+        }
+
+        if ($cliente_id != null ) {
+            $array_wheres = array_merge($array_wheres,[['vtas_movimientos.cliente_id','=', $cliente_id]]);
         }
 
         $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')

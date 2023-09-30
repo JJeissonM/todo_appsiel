@@ -112,7 +112,6 @@ class ReporteController extends Controller
             ->orderBy('consecutivo','DESC')->get();
 
         return View::make( 'ventas_pos.lista_pedidos_pendientes_tabla', compact( 'pedidos', 'pdv_id' ) )->render();
-
     }
 
     public function movimientos_ventas(Request $request)

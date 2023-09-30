@@ -112,9 +112,7 @@ class ReportesController extends Controller
         $detalla_clientes  = (int)$request->detalla_clientes;
         $iva_incluido  = (int)$request->iva_incluido;
 
-        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
-
-        //dd( $movimiento->toArray() );
+        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, null, $request->cliente_id);
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
@@ -371,7 +369,7 @@ class ReportesController extends Controller
         $detalla_productos  = (int)$request->detalla_productos;
         $iva_incluido  = (int)$request->iva_incluido;
 
-        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por);
+        $movimiento = VtasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, null, null);
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';

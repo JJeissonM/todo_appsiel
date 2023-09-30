@@ -749,7 +749,7 @@ class ContabReportesController extends Controller
 
         $obj_repor_serv = new ReportsServices();
 
-        /**/
+        /*
         $obj_repor_serv->movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
                             ->leftJoin('contab_cuenta_clases','contab_cuenta_clases.id','=','contab_cuentas.contab_cuenta_clase_id')
                             ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
@@ -760,7 +760,7 @@ class ContabReportesController extends Controller
                                     'contab_movimientos.valor_saldo',
                                     'contab_movimientos.fecha'
                                 )
-                            ->get();
+                            ->get();*/
         
         $obj_repor_serv->clases_cuentas = ClaseCuenta::all();
 
@@ -772,7 +772,7 @@ class ContabReportesController extends Controller
         $filas = [];
         foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
         {
-            //$obj_repor_serv->set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id );
+            $obj_repor_serv->set_mov_clase_cuenta( $fecha_inicial, $fecha_final, $clase_cuenta_id );
             
             // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
             $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos();
