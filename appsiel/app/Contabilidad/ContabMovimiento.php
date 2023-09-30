@@ -4,16 +4,14 @@ namespace App\Contabilidad;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use App\Sistema\TipoTransaccion;
 use App\Contabilidad\ContabCuenta;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ContabMovimiento extends Model
 {

@@ -92,8 +92,7 @@
 					</div>
 					<div class="col-sm-3">
 						<br>
-						<a href="#" class="btn btn-danger bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> OLD Generar</a>
-						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar2" data-balance_general="[ 1, 2, 3]" data-estado_resultados="[ 4, 5, 6]"><i class="fa fa-play"></i> Generar</a>
+						<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
 						<input type="hidden" id="ids_clases_cuentas">
 						<input type="hidden" id="ids_grupos_padres">
 						<input type="hidden" id="ids_grupos_hijos">

@@ -4,11 +4,10 @@ namespace App\Contabilidad;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-
 use App\Inventarios\InvProducto;
 use App\Compras\Proveedor;
 use App\Ventas\Cliente;
+use Illuminate\Support\Facades\DB;
 
 class Impuesto extends Model
 {
