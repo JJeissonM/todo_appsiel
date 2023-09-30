@@ -332,7 +332,7 @@ class InvProducto extends Model
         {
             $tasa_impuesto = 0;
             if ($item->impuesto != null) {
-                $tasa_impuesto = $item->impuesto->tasa_impuesto;
+                $tasa_impuesto = $item->impuesto->get_tasa2($item->id, 0, 0);
             }
             $item->tasa_impuesto = $tasa_impuesto;
 
