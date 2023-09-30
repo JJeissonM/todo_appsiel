@@ -712,11 +712,6 @@ class ContabReportesController extends Controller
 
     }
     
-
-    /*
-    ** Cada EEFF es un reporte que tiene asociados grupos de cuentas. Se deben asignar GRUPOS PADRES
-    ** Los grupos de cuentas estan estructurados en forma de arbol en una tabla de la base de datos. De manera que al asignar un grupo padre al reporte, se traigan todo sus grupos descendientes hasta llegar a las cuentas
-    */
     public function contab_ajax_generacion_eeff(Request $request)
     {
         $anio = $request->lapso1_lbl;
@@ -736,6 +731,61 @@ class ContabReportesController extends Controller
             $fecha_inicial = '1900-01-01';
         }
 
+        $obj_repor_serv = new ReportsServices();
+
+        /**/
+        $obj_repor_serv->movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
+                            ->leftJoin('contab_cuenta_clases','contab_cuenta_clases.id','=','contab_cuentas.contab_cuenta_clase_id')
+                            ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
+                            ->select(
+                                    'contab_cuentas.contab_cuenta_clase_id',
+                                    'contab_cuentas.contab_cuenta_grupo_id',
+                                    'contab_movimientos.contab_cuenta_id',
+                                    'contab_movimientos.valor_saldo',
+                                    'contab_movimientos.fecha'
+                                )
+                            ->get();
+
+                            $valores_cuentas = $obj_repor_serv->movimiento->groupby( 'contab_cuenta_id' );
+
+
+                            $groupwithcount = $valores_cuentas->map(function ($arr_cuenta) {
+                                $linea_movim = $arr_cuenta->first();
+                                return [
+                                    'contab_cuenta_id' => $linea_movim['contab_cuenta_id'],
+                                    'contab_cuenta_descripcion' => $linea_movim->cuenta->descripcion,
+                                    'valor_saldo' => $arr_cuenta->sum('valor_saldo'),
+                                    'contab_cuenta_clase_id' => $linea_movim->contab_cuenta_clase_id,
+                                    'contab_cuenta_clase_descripcion' => $linea_movim->cuenta->clase_cuenta->descripcion,
+                                    'contab_cuenta_grupo_hijo_id' => $linea_movim->contab_cuenta_grupo_id,
+                                    'contab_cuenta_grupo_hijo_descripcion' => $linea_movim->cuenta->grupo_cuenta->descripcion,
+                                    'contab_cuenta_grupo_padre_id' => $linea_movim->cuenta->grupo_cuenta->grupo_padre->id,
+                                    'contab_cuenta_grupo_padre_descripcion' => $linea_movim->cuenta->grupo_cuenta->grupo_padre->descripcion
+                                ];
+                            });
+
+        dd($groupwithcount);
+        
+        $filas = $this->get_filas_eeff( $reporte_id, $detallar_cuentas, $fecha_inicial, $fecha_final, $obj_repor_serv);
+
+        dd($filas);
+
+        switch ( $reporte_id )
+        {
+            case 'balance_general':
+                $gran_total = abs( $obj_repor_serv->totales_clases[ 1 ] ) - abs( $obj_repor_serv->totales_clases[ 2 ] ) - abs( $obj_repor_serv->totales_clases[ 3 ] );
+                break;
+            
+            default:
+            $gran_total = abs( $obj_repor_serv->totales_clases[ 4 ] ) - abs( $obj_repor_serv->totales_clases[ 5 ] ) - abs( $obj_repor_serv->totales_clases[ 6 ] );
+                break;
+        }        
+
+        return View::make('contabilidad.reportes.tabla_eeff', compact('filas', 'anio', 'gran_total') )->render();
+    }
+
+    public function get_filas_eeff( $reporte_id, $detallar_cuentas, $fecha_inicial, $fecha_final, $obj_repor_serv)
+    {
         switch ( $reporte_id )
         {
             case 'balance_general':
@@ -747,28 +797,17 @@ class ContabReportesController extends Controller
                 break;
         }
 
-        $obj_repor_serv = new ReportsServices();
 
-        /*
-        $obj_repor_serv->movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-                            ->leftJoin('contab_cuenta_clases','contab_cuenta_clases.id','=','contab_cuentas.contab_cuenta_clase_id')
-                            ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
-                            ->select(
-                                    'contab_cuentas.contab_cuenta_clase_id',
-                                    'contab_cuentas.contab_cuenta_grupo_id',
-                                    'contab_movimientos.contab_cuenta_id',
-                                    'contab_movimientos.valor_saldo',
-                                    'contab_movimientos.fecha'
-                                )
-                            ->get();*/
         
+
+
         $obj_repor_serv->clases_cuentas = ClaseCuenta::all();
 
         $obj_repor_serv->grupos_cuentas = ContabCuentaGrupo::all();
 
         $obj_repor_serv->cuentas = ContabCuenta::all();        
 
-        $totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
+        $obj_repor_serv->totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
         $filas = [];
         foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
         {
@@ -792,7 +831,7 @@ class ContabReportesController extends Controller
                 continue;
             }
 
-            $totales_clases[$clase_cuenta_id] = $valor_clase->valor;
+            $obj_repor_serv->totales_clases[$clase_cuenta_id] = $valor_clase->valor;
 
             $filas[] = (object)[
                                 'datos_clase_cuenta' => $valor_clase,
@@ -870,18 +909,7 @@ class ContabReportesController extends Controller
             }
         }
 
-        switch ( $reporte_id )
-        {
-            case 'balance_general':
-                $gran_total = abs( $totales_clases[ 1 ] ) - abs( $totales_clases[ 2 ] ) - abs( $totales_clases[ 3 ] );
-                break;
-            
-            default:
-            $gran_total = abs( $totales_clases[ 4 ] ) - abs( $totales_clases[ 5 ] ) - abs( $totales_clases[ 6 ] );
-                break;
-        }        
-
-        return View::make('contabilidad.reportes.tabla_eeff', compact('filas', 'anio', 'gran_total') )->render();
+        return $filas;
     }
 
     

@@ -15,7 +15,7 @@ class ReportsServices
 { 
     public $movimiento;
 
-    public $ids_cuentas, $clases_cuentas, $grupos_cuentas, $cuentas;
+    public $ids_cuentas, $clases_cuentas, $grupos_cuentas, $cuentas, $totales_clases;
 
     public function get_ids_grupos_padres( $clase_cuenta_id )
     {

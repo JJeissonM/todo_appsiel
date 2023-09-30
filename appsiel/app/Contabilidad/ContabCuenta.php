@@ -15,6 +15,16 @@ class ContabCuenta extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Clase', 'Grupo', 'Código', 'Descripción', 'Aplicación asociada'];
 
+    public function clase_cuenta()
+    {
+        return $this->belongsTo(ClaseCuenta::class, 'contab_cuenta_clase_id');
+    }
+
+    public function grupo_cuenta()
+    {
+        return $this->belongsTo(ContabCuentaGrupo::class, 'contab_cuenta_grupo_id');
+    }
+
     public function consultar_registros($nro_registros, $search)
     {
         $collection = ContabCuenta::leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuentas.contab_cuenta_clase_id')
@@ -161,7 +171,6 @@ class ContabCuenta extends Model
 
         return $vec;
     }
-
 
     public function validar_eliminacion($id)
     {

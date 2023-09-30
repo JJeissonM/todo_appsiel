@@ -1,7 +1,5 @@
 function draw_items(lista_items)
 {
-    console.log(lista_items);
-
     $('.filtros').html('');
     $.each(lista_items,function(key,item)
     {
@@ -22,7 +20,7 @@ function filterItems(query) {
         var label = item.referencia + ' ' + item.descripcion;
 
         if (label.toLowerCase().indexOf(textoFiltro) === -1) { // No existe
-            //$(this).fadeOut('normal').addClass('hidden');
+            
         } else if ( label.toLowerCase().indexOf(textoFiltro) > -1) {
             items_to_draw.push(item);
         }
@@ -44,9 +42,10 @@ $(document).ready(function () {
 
         switch (codigo_tecla_presionada) {
             case 27: // 27 = ESC
-
+                
+                $('.filtros button').fadeOut('normal').addClass('hidden');
+                $('#efectivo_recibido').focus();
                 $('#efectivo_recibido').select();
-                $("html, body").animate({scrollTop: "870px"});
                 break;
             
             case 13: // Al presionar Enter
@@ -56,6 +55,14 @@ $(document).ready(function () {
                 }
 
                 $('#quantity').select();
+
+                break;
+        
+            case 113: // Al presionar F2
+
+                $('.filtros button').fadeOut('normal').addClass('hidden');
+
+                $('#inv_producto_id').focus();
 
                 break;
             default :

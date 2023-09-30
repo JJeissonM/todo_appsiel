@@ -17,6 +17,11 @@ class ContabCuentaGrupo extends Model
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/contabilidad/funciones.js';
 
+    public function grupo_padre()
+    {
+        return $this->belongsTo(ContabCuentaGrupo::class, 'grupo_padre_id');
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $collection = ContabCuentaGrupo::leftJoin('contab_cuenta_grupos AS grupos_padres', 'grupos_padres.id', '=', 'contab_cuenta_grupos.grupo_padre_id')
