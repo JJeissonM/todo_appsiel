@@ -3,28 +3,12 @@
 namespace App\Http\Controllers\ventas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-
-
-use Spatie\Permission\Models\Permission;
 
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Contabilidad\ContabilidadController;
-
-// Objetos 
-use App\Sistema\Html\TablaIngresoLineaRegistros;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -40,13 +24,17 @@ use App\Ventas\VtasMovimiento;
 use App\Ventas\Cliente;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Contabilidad\Impuesto;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class NotaCreditoController extends TransaccionController
 {
+    public $movimiento_cxc;
+
     /**
      * Show the form for creating a new resource.
      * Este método create() es llamado desde un botón-select en el index de ventas
@@ -195,7 +183,6 @@ class NotaCreditoController extends TransaccionController
         return true;
     }
 
-
     // Se crean los registros con base en los registros de la devolución
     public static function crear_lineas_registros_ventas( $datos, $nota_credito, $lineas_registros, $factura )
     {
@@ -226,8 +213,6 @@ class NotaCreditoController extends TransaccionController
                 $precio_unitario_con_descuento = $linea_factura->precio_unitario * ( 1 - $linea_factura->tasa_descuento / 100 );
 
                 $base_impuesto = $linea_factura->base_impuesto;
-
-                $precio_total = $precio_unitario * $cantidad;
 
                 $precio_total_con_descuento = $precio_unitario_con_descuento * $cantidad;
 

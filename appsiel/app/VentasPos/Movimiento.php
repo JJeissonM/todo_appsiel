@@ -228,6 +228,65 @@ class Movimiento extends Model
         return $movimiento->groupBy( $agrupar_por );
     }
 
+    public static function get_movimiento_ventas_no_anulado( $fecha_desde, $fecha_hasta )
+    {
+        $array_wheres = [
+            ['vtas_pos_movimientos.estado','<>', 'Anulado']
+        ];
+        
+        $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.core_tipo_transaccion_id','<>', 52]]); // NO las electronicas
+
+        if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')
+        {
+            $raw_producto = 'CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
+        }
+        
+        if(config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+        {
+            $raw_producto = 'CONCAT( inv_productos.referencia, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto';
+        }
+
+        $movimiento = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+                            ->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_movimientos.core_tercero_id')
+                            ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_pos_movimientos.clase_cliente_id')
+                            ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_pos_movimientos.core_tipo_transaccion_id')
+                            ->where($array_wheres)
+                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->select(
+                                        'vtas_pos_movimientos.inv_producto_id',
+                                        DB::raw($raw_producto),
+                                        DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
+                                        'inv_productos.inv_grupo_id',
+                                        'vtas_pos_movimientos.core_tipo_transaccion_id',
+                                        'vtas_pos_movimientos.core_tipo_doc_app_id',
+                                        'vtas_pos_movimientos.consecutivo',
+                                        'vtas_pos_movimientos.cliente_id',
+                                        'vtas_pos_movimientos.core_tercero_id',
+                                        'vtas_clases_clientes.descripcion AS clase_cliente',
+                                        'vtas_pos_movimientos.tasa_impuesto AS tasa_impuesto',
+                                        'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
+                                        'vtas_pos_movimientos.pdv_id',
+                                        'vtas_pos_movimientos.forma_pago',
+                                        'vtas_pos_movimientos.vendedor_id',
+                                        'vtas_pos_movimientos.cantidad',
+                                        'vtas_pos_movimientos.precio_total',
+                                        'vtas_pos_movimientos.base_impuesto_total',// AS base_imp_tot
+                                        'vtas_pos_movimientos.tasa_descuento',
+                                        'vtas_pos_movimientos.valor_total_descuento')
+                            ->get();
+
+
+        foreach ($movimiento as $fila)
+        {
+            $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
+
+            $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
+        }
+
+        return $movimiento;
+    }
+
     public static function get_documentos_ventas_por_transaccion_arr_estados( $fecha_desde, $fecha_hasta, array $arr_tipo_transaccion_id, array $arr_estado )
     {
         return FacturaPos::whereIn('core_tipo_transaccion_id',$arr_tipo_transaccion_id)

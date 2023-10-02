@@ -21,14 +21,13 @@ class ReportsServices
             ];
         }
 
-        $movimientos_pdv = Movimiento::get_movimiento_ventas($fecha, $fecha, null,'Contabilizado');
+        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado($fecha, $fecha);
 
         $total_credito = 0;
         $arr_consecutivos = [];
         $core_tipo_transaccion_id = 0;
         $core_tipo_doc_app_id = 0;
         foreach ($movimientos_pdv as $movimiento) {
-
             if ($movimiento->pdv_id != $pdv->id) {
                 continue;
             }

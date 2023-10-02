@@ -2,12 +2,9 @@
 
 namespace App\Inventarios;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
-
 use App\Inventarios\InvDocRegistro;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DevolucionVentas extends InvDocEncabezado
 {
@@ -79,7 +76,7 @@ class DevolucionVentas extends InvDocEncabezado
 
     public function crear_nueva( $datos, $encabezado_remision_id, $parametros = null )
     {
-
+        dd($datos);
         // Paso 1: Crear encabezado
         if ( is_null( $parametros ) )
         {

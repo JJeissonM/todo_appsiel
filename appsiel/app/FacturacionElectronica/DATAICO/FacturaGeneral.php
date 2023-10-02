@@ -15,6 +15,8 @@ class FacturaGeneral
    protected $cantidadDecimales;
    protected $tipo_transaccion;
 
+   public $env;
+
    function __construct( $doc_encabezado, $tipo_transaccion )
    {
       $this->doc_encabezado = $doc_encabezado;
