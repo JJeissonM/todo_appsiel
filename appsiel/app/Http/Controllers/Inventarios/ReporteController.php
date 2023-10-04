@@ -113,13 +113,18 @@ class ReporteController extends Controller
                 }
                 $productos[$i]['bodega'] = $descripcion_bodega;
 
-                $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
-                /*$productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', '=', $bodega_id)
-                                ->where('inv_producto_id', '=', $item_id)
-                                ->where('fecha', '<=', $fecha_corte)
-                                ->sum('cantidad');
-                */
-                $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
+                //$productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
+                
+                //$productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
+                //$productos[$i]['Costo'] = $this->get_total_cost_amount_item($movin_filtrado, $bodega_id, $item_id);
+
+                $productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('cantidad');
+
+                if ($productos[$i]['Cantidad'] == 0) {
+                    continue;
+                }
+                
+                $productos[$i]['Costo'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('costo_total');
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];
                 $total_costo_item += $productos[$i]['Costo'];
@@ -163,6 +168,25 @@ class ReporteController extends Controller
         return $view_1.$view_2;
     }
 
+    public function get_total_cost_amount_item($movin_filtrado, $inv_bodega_id, $inv_producto_id)
+    {
+        
+        $filtered1 = $movin_filtrado->where('inv_bodega_id', $inv_bodega_id)->where('inv_producto_id', $inv_producto_id);
+
+        /*
+        $filtered2 = $filtered1->filter(function ($item) use ($deadline_date) { 
+            return $item->fecha <= $deadline_date;
+        });
+        */
+        
+        $costo_total = $filtered1->sum('costo_total');
+
+        if ($costo_total == null) {
+            return 0;
+        }
+
+        return $costo_total;
+    }
 
     // FORMULARIO PARA GENERAR MOVIMIENTOS
     public function inv_movimiento()

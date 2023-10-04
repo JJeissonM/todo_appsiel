@@ -67,7 +67,7 @@ $(document).ready(function () {
                 break;
             default :
                 
-                if ($(this).val().length < 3) {
+                if ($(this).val().length < 2) {
                     $('.filtros button').fadeOut('normal').addClass('hidden');
                     return false;
                 }
