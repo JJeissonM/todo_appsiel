@@ -90,6 +90,7 @@ class ReporteController extends Controller
         $items = InvProducto::all();
         
         $stock_serv = new StockAmountService();
+        
         $productos = [];
         $i = 0;
         foreach ( $lista_items as $key => $item_id )
@@ -113,18 +114,16 @@ class ReporteController extends Controller
                 }
                 $productos[$i]['bodega'] = $descripcion_bodega;
 
-                //$productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
+                //$productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('cantidad');
+                $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
                 
-                //$productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
-                //$productos[$i]['Costo'] = $this->get_total_cost_amount_item($movin_filtrado, $bodega_id, $item_id);
-
-                $productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('cantidad');
-
                 if ($productos[$i]['Cantidad'] == 0) {
                     continue;
                 }
-                
-                $productos[$i]['Costo'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('costo_total');
+
+                $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
+
+                //$productos[$i]['Costo'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('costo_total');
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];
                 $total_costo_item += $productos[$i]['Costo'];
