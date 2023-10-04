@@ -50,6 +50,7 @@ use App\Inventarios\MandatarioTieneItem;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
+use App\Ventas\ListaPrecioDetalle;
 use App\VentasPos\FacturaPos;
 
 class InventarioController extends TransaccionController
@@ -1256,6 +1257,17 @@ class InventarioController extends TransaccionController
 
         if ($cantidad != 0 || $cantidad2 != 0) {
             return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Item NO puede ser eliminado. Tiene movimientos.');
+        }
+
+        $reg_precios_actuales = ListaPrecioDetalle::where([
+            ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+            ['inv_producto_id', '=', $inv_producto_id]
+        ])
+        ->get();
+
+        foreach ($reg_precios_actuales as $reg_detalle_precio)
+        {
+            $reg_detalle_precio->delete();
         }
 
         //Borrar Registro
