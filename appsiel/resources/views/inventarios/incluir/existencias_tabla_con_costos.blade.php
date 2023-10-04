@@ -25,14 +25,6 @@
                     }else{
                         $productos[$i]['Costo'] = 0;
                     }
-
-                    $diferencia_costo_prom = 0;//$productos[$i]['costo_promedio_ponderado'] -  $costo_promedio;
-
-                    $alerta = '';
-                    if ( 10 <= $diferencia_costo_prom || $diferencia_costo_prom <= -10 )
-                    {
-                        $alerta = '<i class="fa fa-warning" title="Direfencia de $'.number_format( $diferencia_costo_prom, 2, ',', '.').'"></i>';
-                    }
                 ?>
                 @if( $productos[$i]['id'] != 0 )
     	            <tr>
@@ -44,12 +36,14 @@
                         <td>${{ number_format( $productos[$i]['Costo'], 2, ',', '.') }}</td>
     	            </tr>
                 @else
-                    <tr style="background: #4a4a4a; color: white;">
-                        <td colspan="3"> &nbsp; </td>
-                        <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
-                        <td>${{ number_format( $costo_promedio, 2, ',', '.') }}</td>
-                        <td>${{ number_format( $productos[$i]['Costo'], 2, ',', '.') }}</td>
-                    </tr>
+                    @if($productos[$i]['Cantidad'] != 0 && $bodega == 'VARIAS')
+                        <tr style="background: #4a4a4a; color: white;">
+                            <td colspan="3"> &nbsp; </td>
+                            <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
+                            <td>${{ number_format( $costo_promedio, 2, ',', '.') }}</td>
+                            <td>${{ number_format( $productos[$i]['Costo'], 2, ',', '.') }}</td>
+                        </tr>
+                    @endif                    
                 @endif
             <?php 
                 if( $productos[$i]['id'] != 0 )
