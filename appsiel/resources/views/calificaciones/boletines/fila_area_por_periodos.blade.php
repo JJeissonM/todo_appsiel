@@ -90,7 +90,7 @@
                     $prom = $calificacion_media_ponderada / $n;
                 }
             ?>
-            <td align="center"> {{ $prom }} </td>
+            <td align="center"> {{ number_format( $prom, $decimales, ',', '.' ) }} </td>
         </tr>
     @endif
 @endif
