@@ -16,10 +16,11 @@
     @if( $mostrar_calificacion_media_areas )
         <tr style="background: #ddd;">
             <td>&nbsp;</td>
-            <?php 
+            <?php
+                $n = 0;
+                $calificacion_media_ponderada = 0;
                 foreach($periodos as $periodo_lista)	{
 
-                    $calificacion_media_ponderada = 0;
                     $cali_periodo = 0;
                     $advertencia = '';
                     foreach ( $lineas_cuerpo_boletin as $datos_linea )
@@ -79,12 +80,17 @@
                             $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' ) . ' (' . $lbl_escala_valoracion_area . ')';
                             break;
                     }
-
-                    //$lbl_calificacion = $lbl_cali_periodo;
+                    
                     echo '<td align="center"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
+
+                    $n++;
+                }
+                $prom = 0;
+                if ($n != 0) {
+                    $prom = $calificacion_media_ponderada / $n;
                 }
             ?>
-            <td>&nbsp;</td>
+            <td align="center"> {{ $prom }} </td>
         </tr>
     @endif
 @endif
