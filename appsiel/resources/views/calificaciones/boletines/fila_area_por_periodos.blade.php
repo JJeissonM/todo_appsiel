@@ -18,6 +18,7 @@
             <td>&nbsp;</td>
             <?php
                 $n = 0;
+                $total_poderadas = 0;
                 foreach($periodos as $periodo_lista)	{
 
                     $cali_periodo = 0;
@@ -81,11 +82,13 @@
                     
                     echo '<td align="center"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
 
+                    $total_poderadas += $calificacion_media_ponderada;
                     $n++;
                 }
+
                 $prom_area = 0;
                 if ($n != 0) {
-                    $prom_area = $calificacion_media_ponderada / $n;
+                    $prom_area = $total_poderadas / $n;
                 }
             ?>
             <td align="center"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} </td>
