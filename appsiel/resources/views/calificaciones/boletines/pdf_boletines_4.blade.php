@@ -38,7 +38,7 @@
 
 					@if($curso->maneja_calificacion==1)
 				        @foreach($periodos as $periodo_lista)
-				            <th style="width:35px;"> P{{$periodo_lista->numero}} </th>
+				            <th style="width:33px;"> P{{$periodo_lista->numero}} </th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
 				        <th style="width:35px;"> Prom. </th>
