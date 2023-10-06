@@ -87,14 +87,23 @@
 		<table class="contenido">
 			<thead>
 				<tr>
-					<?php $cant_columnas = 3;  ?>
+					<?php $cant_columnas = 1;  ?>
 					<th>{{ $lbl_asigatura }}</th>
-					<th>I.H.</th>
+                    
+					@if($mostrar_intensidad_horaria)
+						<th>I.H.</th>
+						<?php $cant_columnas++;  ?>
+					@endif
+					
 					@if($curso->maneja_calificacion==1)
 						<th>Calificación</th>
 						<?php $cant_columnas++;  ?>
 					@endif
-					<th>Logros</th>
+					
+                    @if($mostrar_logros)
+						<th>Logros</th>
+						<?php $cant_columnas++;  ?>
+					@endif
 				</tr>
 			</thead>
 			<tbody>
@@ -120,22 +129,28 @@
 						<td> 
 							{{ $asignatura->descripcion }}
 						</td>
-						<td align="center">
-						    @if($asignatura->intensidad_horaria!=0) 
-						        {{ $asignatura->intensidad_horaria }}
-						    @endif
-						</td>
-							@if( $calificacion->valor != 0 )
-								<td align="center"> {{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }}) </td>
-							@else
-								<td align="center"> &nbsp; </td>
-							@endif
-						<td>
-							
-							@include('calificaciones.boletines.proposito')
-							
-							@include('calificaciones.boletines.lista_logros')
-						</td>
+						
+						@if($mostrar_intensidad_horaria)
+							<td align="center">
+								@if($asignatura->intensidad_horaria!=0) 
+									{{ $asignatura->intensidad_horaria }}
+								@endif
+							</td>
+						@endif
+
+						@if( $calificacion->valor != 0 )
+							<td align="center"> {{ $calificacion->valor }} ({{ $calificacion->escala_descripcion }}) </td>
+						@else
+							<td align="center"> &nbsp; </td>
+						@endif
+						
+						@if($mostrar_logros)
+							<td>								
+								@include('calificaciones.boletines.proposito')
+								
+								@include('calificaciones.boletines.lista_logros')
+							</td>
+						@endif
 					</tr>
 
 					<?php 

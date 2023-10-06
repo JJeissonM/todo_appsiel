@@ -21,7 +21,7 @@
 			$lineas_cuerpo_boletin = $registro->cuerpo_boletin->lineas;
 
 			$area_anterior = '';
-			$cant_columnas = 3;
+			$cant_columnas = 1;
 		?>
 		
 		@include('calificaciones.boletines.encabezado_2')
@@ -30,7 +30,12 @@
 			<thead>
 				<tr>
 					<th style="width:200px;">{{ $lbl_asigatura }}</th>
-					<th style="width:40px;">I.H.</th>
+                    
+					@if($mostrar_intensidad_horaria)
+						<th>I.H.</th>
+						<?php $cant_columnas++;  ?>
+					@endif
+
 					@if($curso->maneja_calificacion==1)
 				        @foreach($periodos as $periodo_lista)
 				            <th style="width:35px;"> P{{$periodo_lista->numero}} </th>
@@ -43,7 +48,11 @@
 						<th style="width:35px;">Fll.</th>
 						<?php $cant_columnas++;  ?>
 					@endif
-					<th>Logros</th>
+					
+                    @if($mostrar_logros)
+						<th>Logros</th>
+						<?php $cant_columnas++;  ?>
+					@endif
 				</tr>
 			</thead>
 			<tbody>
@@ -54,7 +63,7 @@
 						}
 					?>
 
-					@include('calificaciones.boletines.fila_area')
+					@include('calificaciones.boletines.fila_area_por_periodos')
 
 					<tr>
 
@@ -62,11 +71,13 @@
 							<b>{{ $linea->asignatura_descripcion }} </b>
 						</td>
 						
-						<td align="center">
-						    @if( $linea->intensidad_horaria != 0 )
-								{{ $linea->intensidad_horaria }} &nbsp;
-							@endif
-						</td>
+						@if($mostrar_intensidad_horaria)
+							<td align="center">
+								@if($asignatura->intensidad_horaria!=0) 
+									{{ $asignatura->intensidad_horaria }}
+								@endif
+							</td>
+						@endif
 
 						@if( $curso->maneja_calificacion == 1)
 							@include('calificaciones.boletines.lbls_descripciones_calificaciones_periodos')
@@ -77,14 +88,16 @@
 								@include('calificaciones.boletines.lbl_fallas')
 							</td>
 						@endif
+						
+						@if($mostrar_logros)
+							<td style="text-align: justify;">								
+								@include('calificaciones.boletines.proposito')
+								
+								@include('calificaciones.boletines.lista_logros')
 
-						<td style="text-align: justify;">
-							@include('calificaciones.boletines.proposito')
-							
-							@include('calificaciones.boletines.lista_logros')
-
-							@include('calificaciones.boletines.formatos.etiqueta_nombre_docente')
-						</td>
+								@include('calificaciones.boletines.formatos.etiqueta_nombre_docente')
+							</td>
+						@endif
 					</tr>
 
 					<?php

@@ -279,6 +279,7 @@ class BoletinController extends Controller
         $mostrar_usuarios_estudiantes = $data_request['mostrar_usuarios_estudiantes'];
         $mostrar_etiqueta_final = $data_request['mostrar_etiqueta_final'];
         $mostrar_nota_nivelacion = $data_request['mostrar_nota_nivelacion'];
+        $mostrar_intensidad_horaria = (int)$data_request['mostrar_intensidad_horaria'];
         $tam_hoja = $data_request['tam_hoja'];
         $tam_letra = $data_request['tam_letra'];
         $cantidad_caracteres_para_proxima_pagina = $data_request['cantidad_caracteres_para_proxima_pagina'];
@@ -304,6 +305,33 @@ class BoletinController extends Controller
         
         $datos = $this->preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares, $mostrar_notas_periodos_anteriores );
 
+        $url_imagen_marca_agua = config('matriculas.url_imagen_marca_agua');
+
+        switch ($data_request['formato']) {
+            case 'pdf_boletines_6':
+                
+                $periodos = $this->get_periodos_para_columnas($periodo,'menor_igual');
+                $view =  $this->get_view_for_pdf_boletines_6($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
+                break;
+            
+            case 'pdf_boletines_7':
+                    $periodos = $this->get_periodos_para_columnas($periodo,'menor');
+
+                    $view =  $this->get_view_for_pdf_boletines_7($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
+                    break;
+            
+            default:
+                    $periodos = $this->get_periodos_para_columnas($periodo,'menor_igual');
+                    
+                $view =  View::make('calificaciones.boletines.'.$data_request['formato'], compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros') )->render();
+                break;
+        }
+
+        return $view;
+    }
+
+    public function get_periodos_para_columnas($periodo, $operador)
+    {
         $periodos = Periodo::get_activos_periodo_lectivo( $periodo->periodo_lectivo_id );
         // Excluir el periodo final
         foreach ($periodos as $key => $value)
@@ -314,26 +342,24 @@ class BoletinController extends Controller
             }
         }
 
-        $url_imagen_marca_agua = config('matriculas.url_imagen_marca_agua');
-
-        switch ($data_request['formato']) {
-            case 'pdf_boletines_6':
-                $view =  $this->get_view_for_pdf_boletines_6($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
-                break;
+        $new_periodos = collect([]);
+        foreach ($periodos as $periodo_lista) {
+            if ($operador = 'menor_igual') {
+                if ($periodo_lista->numero <= $periodo->numero) {
+                    $new_periodos->push($periodo_lista);
+                }
+            }else{
+                if ($periodo_lista->numero < $periodo->numero) {
+                    $new_periodos->push($periodo_lista);
+                }
+            }
             
-            case 'pdf_boletines_7':
-                    $view =  $this->get_view_for_pdf_boletines_7($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros);
-                    break;
-            
-            default:
-                $view =  View::make('calificaciones.boletines.'.$data_request['formato'], compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros') )->render();
-                break;
         }
 
-        return $view;
+        return $new_periodos;
     }
 
-    public function get_view_for_pdf_boletines_6($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
+    public function get_view_for_pdf_boletines_6($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
     {
         $lbl_numero_periodo = $this->get_label_periodo($periodo);
 
@@ -346,14 +372,14 @@ class BoletinController extends Controller
             $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->first_group;
 
             if (empty($obj_lineas_cuerpo_boletin->second_group)) {
-                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_onepage', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros') )->render();
+                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_onepage', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros') )->render();
                 $back_side = '';
             }else{
-                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_frontside', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros') )->render();
+                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_frontside', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros') )->render();
                 
                 $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->second_group;
 
-                $back_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_backside', compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros') )->render();
+                $back_side =  View::make( 'calificaciones.boletines.pdf_boletines_6_backside', compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros') )->render();
             }                
 
             $all_boletines .= $front_side . $back_side;
@@ -362,20 +388,11 @@ class BoletinController extends Controller
         return View::make( 'calificaciones.boletines.pdf_boletines_6', compact( 'all_boletines','curso', 'tam_hoja', 'tam_letra','margenes', 'mostrar_areas'))->render();
     }
 
-    public function get_view_for_pdf_boletines_7($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
+    public function get_view_for_pdf_boletines_7($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros)
     {
         $lbl_calificaciones_aux = (new CalificacionesService())->get_object_calificaciones_auxiliares($periodo->id, $curso->id);
 
-        $new_periodos = collect([]);
-        foreach ($periodos as $periodo_lista) {
-            if ($periodo_lista->numero < $periodo->numero) {
-                $new_periodos->push($periodo_lista);
-            }
-        }
-
-        $periodos = $new_periodos;
-
-        return  View::make('calificaciones.boletines.'.$formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros','lbl_calificaciones_aux') )->render();
+        return  View::make('calificaciones.boletines.'.$formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros','lbl_calificaciones_aux') )->render();
     }
 
     public function dividir_lineas_cuerpo_boletin($lineas,$cantidad_caracteres_para_proxima_pagina)

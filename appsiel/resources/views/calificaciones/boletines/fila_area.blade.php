@@ -6,7 +6,7 @@
 			<!--  122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines" -->
 			@if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
 				<td colspan="{{ $cant_columnas_aux }}" width="60%">
-					<b> ÁREA: {{ strtoupper( $linea->area_descripcion ) }}</b>
+					<b> {{ strtoupper( $linea->area_descripcion ) }}</b>
 				</td>
 				<td align="right">
 					&nbsp;

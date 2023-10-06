@@ -43,7 +43,7 @@
 		</div>
 
 		<div class="row campo" style="padding:5px;">
-			&nbsp;
+			{{ Form::bsSelect('mostrar_intensidad_horaria',1,'Mostrar intensidad horaria',['1'=>'Si','0'=>'No'],[]) }}
 		</div>
 
 		<?php 
