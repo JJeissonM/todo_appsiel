@@ -60,8 +60,6 @@
                         $lbl_escala_valoracion_area = $escala_valoracion_area->nombre_escala;
                     }
 
-                    $decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
-
                     switch( config('calificaciones.etiqueta_calificacion_boletines') )
                     {
                         case 'numero_y_letras':
@@ -85,12 +83,12 @@
 
                     $n++;
                 }
-                $prom = 0;
+                $prom_area = 0;
                 if ($n != 0) {
-                    $prom = $calificacion_media_ponderada / $n;
+                    $prom_area = $calificacion_media_ponderada / $n;
                 }
             ?>
-            <td align="center"> {{ number_format( $prom, $decimales, ',', '.' ) }} </td>
+            <td align="center"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} </td>
         </tr>
     @endif
 @endif
