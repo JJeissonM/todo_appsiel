@@ -38,12 +38,13 @@
 
 					@if($curso->maneja_calificacion==1)
 				        @foreach($periodos as $periodo_lista)
-				            <th style="width:33px;"> P{{$periodo_lista->numero}} </th>
+				            <th style="text-align=center; width: 28px;"> P{{$periodo_lista->numero}} </th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
-				        <th style="width:35px;"> Prom. </th>
+				        <th style="text-align=center; width: 28px;"> Prom. </th>
 						<?php $cant_columnas++; ?>
 					@endif
+
 					@if( $mostrar_fallas )
 						<th style="width:35px;">Fll.</th>
 						<?php $cant_columnas++;  ?>

@@ -80,7 +80,7 @@
                             break;
                     }
                     
-                    echo '<td align="center"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
+                    echo '<td style="text-align=center; width: 28px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
 
                     $total_poderadas += $calificacion_media_ponderada;
                     $n++;
@@ -97,7 +97,7 @@
                     $lbl_escala_valoracion_prom_area = $escala_valoracion_prom_area->nombre_escala;
                 }
             ?>
-            <td align="center"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} ({{ $lbl_escala_valoracion_prom_area }})</td>
+            <td style="text-align=center; width: 28px;"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} ({{ $lbl_escala_valoracion_prom_area }})</td>
         </tr>
     @endif
 @endif
