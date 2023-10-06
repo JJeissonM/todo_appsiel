@@ -18,10 +18,10 @@
             <td>&nbsp;</td>
             <?php
                 $n = 0;
-                $calificacion_media_ponderada = 0;
                 foreach($periodos as $periodo_lista)	{
 
                     $cali_periodo = 0;
+                    $calificacion_media_ponderada = 0;
                     $advertencia = '';
                     foreach ( $lineas_cuerpo_boletin as $datos_linea )
                     {
