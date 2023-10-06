@@ -41,7 +41,8 @@
 	{
 		$lbl_cali_prom = number_format( $prom / $n, $decimales, ',', '.' );
 	}
-	
+
+	$lbl_calificacion = $lbl_cali_prom;
 	if( $periodo->periodo_de_promedios )
 	{
 		// El promedio lo trae del que ya esta almacenado en el Periodo FINAL.
