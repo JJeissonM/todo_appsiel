@@ -90,8 +90,14 @@
                 if ($n != 0) {
                     $prom_area = $total_poderadas / $n;
                 }
+
+                $escala_valoracion_prom_area = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion_media_ponderada, $periodo->periodo_lectivo_id );$lbl_escala_valoracion_prom_area = '';
+                if ( $escala_valoracion_prom_area )
+                {
+                    $lbl_escala_valoracion_prom_area = $escala_valoracion_prom_area->nombre_escala;
+                }
             ?>
-            <td align="center"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} </td>
+            <td align="center"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} ({{ $lbl_escala_valoracion_prom_area }})</td>
         </tr>
     @endif
 @endif
