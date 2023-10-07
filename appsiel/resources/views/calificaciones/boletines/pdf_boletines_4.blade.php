@@ -74,8 +74,8 @@
 						
 						@if($mostrar_intensidad_horaria)
 							<td align="center">
-								@if($asignatura->intensidad_horaria!=0) 
-									{{ $asignatura->intensidad_horaria }}
+								@if($linea->intensidad_horaria != 0) 
+									{{ $linea->intensidad_horaria }}
 								@endif
 							</td>
 						@endif
