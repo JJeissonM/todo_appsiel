@@ -12,74 +12,32 @@ var arr_texto_filtro, arr_label, dibujar, num_coincidencia, largo_arr_texto_filt
 
 function filterItems(query) {
 
-    var textoFiltro = query.toLowerCase().replace(/\s/g,"-");
+    var textoFiltro = query.toLowerCase();
 
     $('.filtros').html('');
 
-    arr_texto_filtro = textoFiltro.split('-');
+    arr_texto_filtro = textoFiltro.split(' ');
     
-    var items_to_draw = [];
-    $.each(productos,function(key,item)
-    {   
-        /*
-        var label = item.referencia + ' ' + item.descripcion;
-
-        $.each(arr_texto_filtro,function(key2,item_arr_texto_filtro)
-        {
-            if (item_arr_texto_filtro == '') {
-                return false;
-            }
-
-            if (label.toLowerCase().indexOf(item_arr_texto_filtro) === -1) { // No existe
-            
-            } else if ( label.toLowerCase().indexOf(item_arr_texto_filtro) > -1) {
-                items_to_draw.push(item);
-            }
-            console.log(item.id);
-        });
-        */        
-
-        /*     
-        arr_label = item.descripcion.toLowerCase().split(' ');
-
-        arr_label.push(item.referencia.toLowerCase());
-        
-        num_coincidencia = 0;
-        $.each(arr_label,function(key2,item_arr_label)
-        {
-            if (item_arr_label == '') {
-                return false;
-            }
-
-            if (arr_texto_filtro.includes(item_arr_label)) {
-                //num_coincidencia++;
-                items_to_draw.push(item);     
-            }
-            console.log(item_arr_label,arr_texto_filtro);
-        });
-        
-        */
-        /*
-        if (arr_label.length == num_coincidencia) {
-            items_to_draw.push(item);    
-        }
-        */
-
-        /**/
+    var items_filtered = productos;
+    for (let index = 0; index < arr_texto_filtro.length; index++) {
+        const element = arr_texto_filtro[index];
+        var items_to_draw = [];
+        $.each(items_filtered,function(key,item)
+        {   
             var label = item.referencia + ' ' + item.descripcion;
-            if (label.toLowerCase().indexOf(textoFiltro) === -1) { // No existe
+            if (label.toLowerCase().indexOf(element) === -1) { // No existe
                 
-            } else if ( label.toLowerCase().indexOf(textoFiltro) > -1) {
+            } else if ( label.toLowerCase().indexOf(element) > -1) {
                 items_to_draw.push(item);
-            }
-        
-    });
+            }        
+        });
+        items_filtered = items_to_draw;
+    }
 
-    draw_items(items_to_draw);
+    draw_items(items_filtered);
 
     return false;
 }
- 
 
 $(document).ready(function () {
 
@@ -122,9 +80,7 @@ $(document).ready(function () {
                     return false;
                 }
 
-                setTimeout( filterItems( $(this).val() ), 2000);
-
-                //filterItems( $(this).val() );
+                filterItems( $(this).val() );
 
                 break;
         }
