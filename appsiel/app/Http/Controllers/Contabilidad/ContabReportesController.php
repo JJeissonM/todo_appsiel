@@ -792,6 +792,11 @@ class ContabReportesController extends Controller
         
         $groupwithcount = $valores_cuentas->map(function ($arr_cuenta) {
                                 $linea_movim = $arr_cuenta->first();
+
+                                if ($linea_movim->cuenta == null) {
+                                    dd('La cuenta con ID=' . $linea_movim['contab_cuenta_id'] . ' No existe en el catalogo de Cuentas.', $linea_movim);
+                                }
+
                                 return [
                                     'cuenta_id' => $linea_movim['contab_cuenta_id'],
                                     'cuenta_descripcion' => $linea_movim->cuenta->descripcion,
