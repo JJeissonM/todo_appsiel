@@ -5,6 +5,8 @@ namespace App\Inventarios;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Sistema\Services\FieldsList;
+use App\Ventas\ListaPrecioDetalle;
+use Illuminate\Support\Facades\Auth;
 
 class MandatarioTieneItem extends Model
 {
@@ -25,8 +27,6 @@ class MandatarioTieneItem extends Model
 
     public function store_adicional( $datos, $registro )
     {
-        dd($datos, $registro);
-
         $referencia = $registro->prefijo_referencia->codigo . $registro->tipo_prenda->codigo . $registro->paleta_color->codigo . $registro->tipo_material->codigo;
 
         $user = Auth::user();
@@ -52,6 +52,35 @@ class MandatarioTieneItem extends Model
             $item_relacionado->descripcion = $prenda->descripcion;
             $item_relacionado->unidad_medida2 = $referencia . '-' . $item_relacionado->unidad_medida2;
             $item_relacionado->save();
+        }
+        
+        if (config('ventas.agregar_precio_a_lista_desde_create_item'))
+        {
+            $nuevo_precio_venta = 0;
+            if (isset($datos['precio_venta'])) {
+                $nuevo_precio_venta = $datos['precio_venta'];
+            }
+
+            $reg_precio_actual = ListaPrecioDetalle::where([
+                ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+                ['inv_producto_id', '=', $id]
+            ])
+            ->get()
+            ->last();
+
+            if ($reg_precio_actual == null) {
+                ListaPrecioDetalle::create([
+                    'lista_precios_id' => (int)config('ventas.lista_precios_id'),
+                    'inv_producto_id' => $id,
+                    'fecha_activacion' => date('Y-m-d'),
+                    'precio' => $nuevo_precio_venta
+                ]);
+            }else{
+                if ($nuevo_precio_venta != $reg_precio_actual->precio) {
+                    $reg_precio_actual->precio = $nuevo_precio_venta;
+                    $reg_precio_actual->save();
+                }
+            }
         }
     }
 }

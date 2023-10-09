@@ -8,28 +8,78 @@ function draw_items(lista_items)
     });
 }
 
+var arr_texto_filtro, arr_label, dibujar, num_coincidencia, largo_arr_texto_filtro;
+
 function filterItems(query) {
 
     var textoFiltro = query.toLowerCase().replace(/\s/g,"-");
 
     $('.filtros').html('');
+
+    arr_texto_filtro = textoFiltro.split('-');
     
     var items_to_draw = [];
     $.each(productos,function(key,item)
-    {        
+    {   
+        /*
         var label = item.referencia + ' ' + item.descripcion;
 
-        if (label.toLowerCase().indexOf(textoFiltro) === -1) { // No existe
+        $.each(arr_texto_filtro,function(key2,item_arr_texto_filtro)
+        {
+            if (item_arr_texto_filtro == '') {
+                return false;
+            }
+
+            if (label.toLowerCase().indexOf(item_arr_texto_filtro) === -1) { // No existe
             
-        } else if ( label.toLowerCase().indexOf(textoFiltro) > -1) {
-            items_to_draw.push(item);
+            } else if ( label.toLowerCase().indexOf(item_arr_texto_filtro) > -1) {
+                items_to_draw.push(item);
+            }
+            console.log(item.id);
+        });
+        */        
+
+        /*     
+        arr_label = item.descripcion.toLowerCase().split(' ');
+
+        arr_label.push(item.referencia.toLowerCase());
+        
+        num_coincidencia = 0;
+        $.each(arr_label,function(key2,item_arr_label)
+        {
+            if (item_arr_label == '') {
+                return false;
+            }
+
+            if (arr_texto_filtro.includes(item_arr_label)) {
+                //num_coincidencia++;
+                items_to_draw.push(item);     
+            }
+            console.log(item_arr_label,arr_texto_filtro);
+        });
+        
+        */
+        /*
+        if (arr_label.length == num_coincidencia) {
+            items_to_draw.push(item);    
         }
+        */
+
+        /**/
+            var label = item.referencia + ' ' + item.descripcion;
+            if (label.toLowerCase().indexOf(textoFiltro) === -1) { // No existe
+                
+            } else if ( label.toLowerCase().indexOf(textoFiltro) > -1) {
+                items_to_draw.push(item);
+            }
+        
     });
 
     draw_items(items_to_draw);
 
     return false;
 }
+ 
 
 $(document).ready(function () {
 
@@ -72,7 +122,9 @@ $(document).ready(function () {
                     return false;
                 }
 
-                filterItems( $(this).val() );
+                setTimeout( filterItems( $(this).val() ), 2000);
+
+                //filterItems( $(this).val() );
 
                 break;
         }

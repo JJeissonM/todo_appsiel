@@ -8,6 +8,7 @@ use App\Inventarios\Indumentaria\PaletaColores;
 use App\Inventarios\Indumentaria\PrefijoReferencia;
 use App\Inventarios\Indumentaria\TipoMaterial;
 use App\Inventarios\Indumentaria\TipoPrenda;
+use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 

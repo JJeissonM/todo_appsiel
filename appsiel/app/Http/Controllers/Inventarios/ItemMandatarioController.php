@@ -5,13 +5,8 @@ namespace App\Http\Controllers\Inventarios;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 use App\Inventarios\ItemMandatario;
-
-use Input;
-use View;
-use Auth;
 
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
@@ -21,7 +16,11 @@ use App\Inventarios\Services\CodigoBarras;
 use App\Inventarios\Services\TallaItem;
 use App\Inventarios\EntradaAlmacen;
 
-use App\Sistema\Html\MigaPan;
+use App\Ventas\ListaPrecioDetalle;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ItemMandatarioController extends ModeloController
 {
@@ -63,7 +62,22 @@ class ItemMandatarioController extends ModeloController
 
         // Crear Item relacionado
         $mandatario = ItemMandatario::find( $request->mandatario_id );
-        $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $mandatario->referencia, $request->unidad_medida2 );
+        $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $mandatario->referencia, $request->unidad_medida2 ); // InvProducto        
+        
+        if (config('ventas.agregar_precio_a_lista_desde_create_item'))
+        {
+            $nuevo_precio_venta = 0;
+            if ($request->precio_venta != null) {
+                $nuevo_precio_venta = $request->precio_venta;
+            }
+
+            ListaPrecioDetalle::create([
+                'lista_precios_id' => (int)config('ventas.lista_precios_id'),
+                'inv_producto_id' => $item_relacionado_id,
+                'fecha_activacion' => date('Y-m-d'),
+                'precio' => $nuevo_precio_venta
+            ]);
+        }
 
         // Crear Relacion: Mandatario tiene Item
         $record_created = app( $modelo->name_space )->create( [ 'mandatario_id' => $request->mandatario_id, 'item_id' => $item_relacionado_id ] );
@@ -77,7 +91,7 @@ class ItemMandatarioController extends ModeloController
         }
 
         $json = json_decode('{"talla":"' . $request->unidad_medida2 . '","referencia":"' . $request->referencia . '","cantidad":"' . $request->cantidad . '"}');
-        //dd( $json );
+        
         return response()->json( $json );
     }
 
@@ -249,7 +263,7 @@ class ItemMandatarioController extends ModeloController
 
         /*echo $vista;*/
         
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
 
         $pdf->loadHTML( $vista )->setPaper( $tam_hoja, $orientacion );
         return $pdf->stream();
