@@ -1021,7 +1021,6 @@ class ContabReportesController extends Controller
 
         return $filas;
     }
-
     
     public function taxes_general_report( Request $request )
     {
@@ -1031,7 +1030,7 @@ class ContabReportesController extends Controller
         $reports_list = [
             (object)[
                 'title' => 'Impuestos en ventas (generados)',
-                'arr_transactions_types' => [23,44,49,50,52],
+                'arr_transactions_types' => [23,44,47,49,50,52],
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
                                             ->get()
                                             ->pluck('cta_ventas_id')
