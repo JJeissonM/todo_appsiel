@@ -202,8 +202,6 @@ class ReporteController extends Controller
 
     public function enviar_email_desprendible_un_empleado($documento, $empleado)
     {
-        return 'true-' . $empleado->tercero->descripcion;
-
         $enviado = 'false-';
         $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
 
