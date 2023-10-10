@@ -4,20 +4,7 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use Cache;
-use NumerosEnLetras;
-
-use App\Http\Controllers\Core\ConfiguracionController;
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 
 // Modelos
@@ -26,9 +13,6 @@ use App\Sistema\Aplicacion;
 use App\Core\Empresa;
 use App\Core\Ciudad;
 
-use App\Nomina\ModosLiquidacion\PrestacionesSociales\Vacaciones;
-use App\Nomina\ModosLiquidacion\PrestacionesSociales\PrimaServicios;
-use App\Nomina\ModosLiquidacion\PrestacionesSociales\Cesantias;
 
 use App\Nomina\ModosLiquidacion\Estrategias\Retefuente;
 
@@ -39,20 +23,11 @@ use App\Nomina\NomEntidad;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
-use App\Nomina\NomCuota;
-use App\Nomina\NomPrestamo;
-use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+
 use App\Nomina\ParametroInformacionExogena;
 use App\Nomina\ConsolidadoPrestacionesSociales;
 
 use App\Nomina\LibroVacacion;
-
-use App\Nomina\PilaNovedades;
-use App\Nomina\PilaSalud;
-use App\Nomina\PilaPension;
-use App\Nomina\PilaRiesgoLaboral;
-use App\Nomina\PilaParafiscales;
-use App\Nomina\EmpleadoPlanilla;
 
 use App\Nomina\Services\Pila\SaludService;
 use App\Nomina\Services\Pila\PensionService;
@@ -61,6 +36,12 @@ use App\Nomina\Services\Pila\ParafiscalService;
 
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
+use App\Nomina\Empleado;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ReporteController extends Controller
 {
@@ -139,7 +120,7 @@ class ReporteController extends Controller
 
         $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->download('reporte_desprendibles_de_pago.pdf');
@@ -183,7 +164,6 @@ class ReporteController extends Controller
     */
     public function enviar_por_email_desprendibles_de_pago(Request $request)
     {
-        $empresa = Empresa::find( Auth::user()->empresa_id );
         $documento = NomDocEncabezado::find( $request->nom_doc_encabezado_id2 );
 
         if ( $request->core_tercero_id2 == 'Todos' ) 
@@ -201,25 +181,48 @@ class ReporteController extends Controller
         $enviados = 0;
         foreach ($empleados as $empleado)
         {
-            $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
-
-            $tercero = $empleado->tercero;
-            if ( $tercero->email != '' )
+            $enviado = $this->enviar_email_desprendible_un_empleado($documento, $empleado);
+            if ( $enviado )
             {
-                $asunto = 'Desprendible de pago de nómina. '.$documento->descripcion;
-
-                $cuerpo_mensaje = 'Hola ' . $tercero->nombre1 . ' ' .  $tercero->otros_nombres . ', <br> Le hacemos llegar su volante de nómina. <br><br> <b>Documento:</b> '. $documento->descripcion . ' <br> <b>Fecha:</b> ' . $documento->fecha . ' <br> Cualquier duda o inquietud, favor remitirla al área de talento humano. <br><br> Atentamente, <br><br> ANALISTA DE NÓMINA <br> ' . $empresa->descripcion . ' <br> Tel. ' . $empresa->telefono1 . ' <br> Email: ' . $empresa->email;
-
-                $vec = EmailController::enviar_por_email_documento( $empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $vista );                
-
-                if ( $vec['tipo_mensaje'] == 'flash_message' )
-                {
-                    $enviados++;
-                }
+                $enviados++;
             }
         }            
 
         return 'Se envío el desprendible a cada empleado con email registrado. Total envíos: ' . $enviados;
+    }
+
+    public function enviar_por_email_un_desprendible_de_pago($doc_encabezado_id, $empleado_id)
+    {
+        $documento = NomDocEncabezado::find( $doc_encabezado_id );
+
+        $empleado = NomContrato::find( $empleado_id );
+        
+        return $this->enviar_email_desprendible_un_empleado($documento, $empleado);
+    }
+
+    public function enviar_email_desprendible_un_empleado($documento, $empleado)
+    {
+        return 'true-' . $empleado->tercero->descripcion;
+
+        $enviado = 'false-';
+        $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
+
+        $tercero = $empleado->tercero;
+        if ( $tercero->email != '' )
+        {
+            $asunto = 'Desprendible de pago de nómina. '.$documento->descripcion;
+
+            $cuerpo_mensaje = 'Hola ' . $tercero->nombre1 . ' ' .  $tercero->otros_nombres . ', <br> Le hacemos llegar su volante de nómina. <br><br> <b>Documento:</b> '. $documento->descripcion . ' <br> <b>Fecha:</b> ' . $documento->fecha . ' <br> Cualquier duda o inquietud, favor remitirla al área de talento humano. <br><br> Atentamente, <br><br> ANALISTA DE NÓMINA <br> ' . $documento->empresa->descripcion . ' <br> Tel. ' . $documento->empresa->telefono1 . ' <br> Email: ' . $documento->empresa->email;
+
+            $vec = EmailController::enviar_por_email_documento( $documento->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $vista );                
+
+            if ( $vec['tipo_mensaje'] == 'flash_message' )
+            {
+                $enviado = 'true-';
+            }
+        }
+
+        return $enviado . $empleado->tercero->descripcion;
     }
 
     public function listado_acumulados(Request $request)
@@ -268,7 +271,6 @@ class ReporteController extends Controller
         return $vista;
     }
 
-
     public function libro_fiscal_vacaciones(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -286,7 +288,6 @@ class ReporteController extends Controller
 
         return $vista;
     }
-
 
     public function resumen_x_entidad_empleado(Request $request)
     {
@@ -456,7 +457,6 @@ class ReporteController extends Controller
         return $vista;
     }
 
-
     public function resumen_liquidaciones(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -621,7 +621,6 @@ class ReporteController extends Controller
         return view('nomina.reportes.listado_vacaciones_pendientes', compact('miga_pan', 'empleados') );
     }
 
-
     public function ajax_listado_vacaciones_pendientes(Request $request)
     {
         return $this->tabla_listado_vacaciones_pendientes($request->fecha_corte,  $request->nom_contrato_id, $request->calcular_valor_con_base_en );
@@ -721,7 +720,7 @@ class ReporteController extends Controller
 
         $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='landscape';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->download('pdf_listado_vacaciones_pendientes.pdf');
@@ -763,8 +762,6 @@ class ReporteController extends Controller
 
         return $dias_totales_laborados;
     }
-
-
 
     public function consolidado_prestaciones_sociales(Request $request)
     {
@@ -962,7 +959,7 @@ class ReporteController extends Controller
 
         $tam_hoja = 'folio';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->download('pdf_certificado_ingresos_y_retenciones.pdf');
@@ -1081,7 +1078,6 @@ class ReporteController extends Controller
 
         return abs($total_devengos - $total_deducciones);
     }
-
 
     public function costos_por_proyectos(Request $request)
     {

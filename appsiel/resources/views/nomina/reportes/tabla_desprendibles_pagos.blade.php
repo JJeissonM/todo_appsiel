@@ -12,6 +12,8 @@
 
         @include('nomina.reportes.tabla_datos_basicos_empleado')
 
+        <input type="hidden" name="empleado_id" value="{{ $empleado->id }}">
+
         <table style="width:100%; font-size: 12px;" class="table table-bordered table-striped">
             <thead>
                 <tr>

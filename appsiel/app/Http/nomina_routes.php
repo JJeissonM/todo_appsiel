@@ -107,6 +107,7 @@ Route::get('nomina/reporte_desprendibles_de_pago','Nomina\ReporteController@repo
 Route::post('nomina/ajax_reporte_desprendibles_de_pago','Nomina\ReporteController@ajax_reporte_desprendibles_de_pago');
 Route::get('nomina_pdf_reporte_desprendibles_de_pago','Nomina\ReporteController@nomina_pdf_reporte_desprendibles_de_pago');
 Route::post( 'nom_enviar_por_email_desprendibles_de_pago','Nomina\ReporteController@enviar_por_email_desprendibles_de_pago');
+Route::get( 'nom_enviar_por_email_un_desprendible_de_pago/{doc_encabezado_id}/{empleado_id}','Nomina\ReporteController@enviar_por_email_un_desprendible_de_pago');
 
 Route::get('nom_certificado_ingresos_y_retenciones','Nomina\ReporteController@certificado_ingresos_y_retenciones');
 Route::post('nom_ajax_certificado_ingresos_y_retenciones','Nomina\ReporteController@ajax_certificado_ingresos_y_retenciones');
