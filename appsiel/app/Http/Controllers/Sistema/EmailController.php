@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Sistema;
 
 use App\Http\Controllers\Controller;
-
-
+use Illuminate\Contracts\Mail\Mailer;
 // Modelos
-use App\Core\Tercero;
-
-use App\CxC\CxcDocEncabezado;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class EmailController extends Controller
@@ -123,7 +120,6 @@ class EmailController extends Controller
     
     $from = $nombre_remitente." <".$email_interno."> \r\n";
     $headers = "From:" . $from." \r\n";
-    $to = $email_destino;
 
     $subject = $asunto;
 
@@ -137,6 +133,22 @@ class EmailController extends Controller
     $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
     $message .= $cuerpo_mensaje . "\r\n\r\n";
 
-    return mail($to,$subject,$message, $headers);
+    $from = (object)[
+      'email' => $email_interno,
+      'name' => $nombre_remitente
+    ];
+
+    $to = (object)[
+      'email' => $email_destino,
+      'name' => 'Pedro Perez'
+    ];
+
+    Mail::send('layouts.example_email', ['cuerpo_mensaje' => $cuerpo_mensaje], function ($m) use ($from, $to, $subject) {
+        $m->from($from->email, $from->name);
+
+        $m->to($to->email, $to->name)->subject($subject);
+    });
+
+    //return mail($to,$subject,$message, $headers);
   }
 }
