@@ -109,4 +109,34 @@ class EmailController extends Controller
 
     return mail($to,$subject,$message, $headers);
   }
+
+  public function test_email()
+  {
+    $nombre_remitente = 'AppSiel 1.0';
+    $email_destino = 'ing.adalbertoperez@gmail.com';
+    $asunto = 'Test envio email Appsiel 1.0';
+    $cuerpo_mensaje = '<h3>Hola mundo</h3>';
+
+    // Email interno. Debe estar creado en Hostinger
+    //$email_interno = 'info@'.substr( url('/'), 7);
+    $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
+    
+    $from = $nombre_remitente." <".$email_interno."> \r\n";
+    $headers = "From:" . $from." \r\n";
+    $to = $email_destino;
+
+    $subject = $asunto;
+
+    //headers for attachment
+    $headers .= "MIME-Version: 1.0\r\n";
+    $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";  
+    
+    // Armando mensaje del email
+    $message = "--=A=G=R=O=\r\n";
+    $message .= "Content-type:text/html; charset=utf-8\r\n";
+    $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
+    $message .= $cuerpo_mensaje . "\r\n\r\n";
+
+    return mail($to,$subject,$message, $headers);
+  }
 }

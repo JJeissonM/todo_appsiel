@@ -124,8 +124,6 @@ Route::post('core/usuario/perfil/cambiar_mi_passwd', 'UserController@cambiar_mi_
 
 Route::get('crear_usuarios_masivos', 'UserController@crear_usuarios_masivos');
 
-
-
 // importar datos
 Route::get('importar/formulario', 'Core\ImportarDatosController@formulario');
 Route::post('importar/formulario', 'Core\ImportarDatosController@importar_formulario');
@@ -199,15 +197,6 @@ Route::get('quitar_imagen', 'Sistema\ImagenController@quitar_imagen');
 // Revisión de errores
 Route::get('/logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
-
-// FOROS
-Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core\ForoController@index')->name('foros.index');
-Route::post('foros/inicio/crearnuevo', 'Core\ForoController@store')->name('foros.store');
-Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio/{idapp}/ver/{foro}/foro', 'Core\ForoController@show')->name('foros.show');
-Route::post('foros/inicio/participacion/guardarrespuesta', 'Core\ForoController@guardarrespuesta')->name('foros.guardarrespuesta');
-//Route::get('ver_foros/{curso_id}','AcademicoEstudianteController@ver_foros');
-
-
 Route::post('carga_imagen_ckeditor', 'Sistema\ImagenController@carga_imagen_ckeditor');
 
 
@@ -231,6 +220,8 @@ Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config
 
 Route::resource('transaction', 'Core\TransaccionController');
 
+
+Route::get('core_test_email', 'Sistema\EmailController@test_email');
 
 //          REPORTES
 Route::post('core_movimiento_con_fecha_distinta_a_su_creacion','Core\ReporteController@movimiento_con_fecha_distinta_a_su_creacion');
