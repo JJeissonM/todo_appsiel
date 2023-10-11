@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Sistema;
 
 use App\Http\Controllers\Controller;
+use App\Nomina\NomContrato;
+use App\Nomina\NomDocEncabezado;
+use Exception;
 use Illuminate\Contracts\Mail\Mailer;
 // Modelos
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 
 class EmailController extends Controller
 {
@@ -37,7 +41,6 @@ class EmailController extends Controller
   */
   public static function enviar_por_email_documento( $nombre_remitente, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista )
   {
-
     $tam_hoja = 'Letter';
     $orientacion='portrait';
     $pdf = App::make('dompdf.wrapper');
@@ -67,88 +70,63 @@ class EmailController extends Controller
 
   public static function enviar_email( $nombre_remitente, $email_destino, $asunto, $cuerpo_mensaje, $nombrearchivo = null)
   {
-
-    // Email interno. Debe estar creado en Hostinger
-    //$email_interno = 'info@'.substr( url('/'), 7);
-    $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
-    
-    $from = $nombre_remitente." <".$email_interno."> \r\n";
-    $headers = "From:" . $from." \r\n";
-    $to = $email_destino;
-
-    $subject = $asunto;
-
-    //headers for attachment
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";
-  
-    
-    // Armando mensaje del email
-    $message = "--=A=G=R=O=\r\n";
-    $message .= "Content-type:text/html; charset=utf-8\r\n";
-    $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-    $message .= $cuerpo_mensaje . "\r\n\r\n";
-
-    //attachment file path
-    if ($nombrearchivo != null) 
-    {
-      //$nombrearchivo = 'cuenta_de_cobro_'.$id_doc_cxc.'.pdf';
-      $url = Storage::getAdapter()->applyPathPrefix('pdf_email/'.$nombrearchivo);
-      $file = chunk_split(base64_encode(file_get_contents( $url )));
-      
-      $message .= "--=A=G=R=O=\r\n";
-      $message .= "Content-Type: application/octet-stream; name=\"" . $nombrearchivo . "\"\r\n";
-      $message .= "Content-Transfer-Encoding: base64\r\n";
-      $message .= "Content-Disposition: attachment; filename=\"" . $nombrearchivo . "\"\r\n\r\n";
-      $message .= $file . "\r\n\r\n";
-      $message .= "--=A=G=R=O=--";
-    }
-
-    return mail($to,$subject,$message, $headers);
-  }
-
-  public function test_email()
-  {
-    $nombre_remitente = 'AppSiel 1.0';
-    $email_destino = 'ing.adalbertoperez@gmail.com';
-    $asunto = 'Test envio email Appsiel 1.0';
-    $cuerpo_mensaje = '<h3>Hola mundo</h3>';
-
-    // Email interno. Debe estar creado en Hostinger
-    //$email_interno = 'info@'.substr( url('/'), 7);
-    $email_interno = 'info@appsiel.com.co';//.substr( url('/'), 7);
-    
-    $from = $nombre_remitente." <".$email_interno."> \r\n";
-    $headers = "From:" . $from." \r\n";
-
-    $subject = $asunto;
-
-    //headers for attachment
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: multipart/mixed; boundary=\"=A=G=R=O=\"\r\n\r\n";  
-    
-    // Armando mensaje del email
-    $message = "--=A=G=R=O=\r\n";
-    $message .= "Content-type:text/html; charset=utf-8\r\n";
-    $message .= "Content-Transfer-Encoding: 7bit\r\n\r\n";
-    $message .= $cuerpo_mensaje . "\r\n\r\n";
-
     $from = (object)[
-      'email' => $email_interno,
+      'email' => env('MAIL_USERNAME'),
       'name' => $nombre_remitente
     ];
 
     $to = (object)[
       'email' => $email_destino,
-      'name' => 'Pedro Perez'
+      'name' => null
     ];
 
-    Mail::send('layouts.example_email', ['cuerpo_mensaje' => $cuerpo_mensaje], function ($m) use ($from, $to, $subject) {
-        $m->from($from->email, $from->name);
+    try {
+      Mail::send('layouts.cuerpo_email', ['cuerpo_mensaje' => $cuerpo_mensaje], function ($m) use ($from, $to, $asunto, $nombrearchivo) {
+          $m->from($from->email, $from->name);
+          $m->to($to->email, $to->name)->subject($asunto);
 
-        $m->to($to->email, $to->name)->subject($subject);
-    });
+          if ($nombrearchivo != null) 
+          {
+            //$nombrearchivo = 'cuenta_de_cobro_'.$id_doc_cxc.'.pdf';
+            $url = Storage::getAdapter()->applyPathPrefix('pdf_email/'.$nombrearchivo);
+            $m->attach($url);
+          }          
+      });
+    
+      return true;
+    } catch (Exception $ex) {
+        // Debug via $ex->getMessage();
+      dd('Fallo de envío',$ex->getMessage());
+      return false;
+    }
+  }
 
-    //return mail($to,$subject,$message, $headers);
+  public function test_email()
+  {    
+    $doc_encabezado_id = 34;
+    $empleado_id = 2;
+    $documento = NomDocEncabezado::find( $doc_encabezado_id );
+
+    $empleado = NomContrato::find( $empleado_id );
+    
+    $enviado = 'false-';
+    $vista = View::make('nomina.reportes.tabla_desprendibles_pagos', compact('documento', 'empleado') )->render();
+
+    $tercero = $empleado->tercero;
+    if ( $tercero->email != '' )
+    {
+        $asunto = 'Desprendible de pago de nómina. '.$documento->descripcion;
+
+        $cuerpo_mensaje = 'Hola ' . $tercero->nombre1 . ' ' .  $tercero->otros_nombres . ', <br> Le hacemos llegar su volante de nómina. <br><br> <b>Documento:</b> '. $documento->descripcion . ' <br> <b>Fecha:</b> ' . $documento->fecha . ' <br> Cualquier duda o inquietud, favor remitirla al área de talento humano. <br><br> Atentamente, <br><br> ANALISTA DE NÓMINA <br> ' . $documento->empresa->descripcion . ' <br> Tel. ' . $documento->empresa->telefono1 . ' <br> Email: ' . $documento->empresa->email;
+
+        $vec = EmailController::enviar_por_email_documento( $documento->empresa->descripcion, $tercero->email, $asunto, $cuerpo_mensaje, $vista );                
+
+        if ( $vec['tipo_mensaje'] == 'flash_message' )
+        {
+            $enviado = 'true-';
+        }
+    }
+
+    return $enviado . $empleado->tercero->descripcion;
   }
 }
