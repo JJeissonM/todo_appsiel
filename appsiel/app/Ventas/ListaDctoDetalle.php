@@ -73,12 +73,21 @@ class ListaDctoDetalle extends Model
 	}
 
 	public static function get_descuentos_productos_de_la_lista($lista_descuentos_id)
-	{
+	{		
+        $array_wheres = [
+            ['vtas_listas_dctos_detalles.id','>', 0]
+        ];
+
+        if ($lista_descuentos_id != null ) {
+            $array_wheres = array_merge($array_wheres,[['vtas_listas_dctos_detalles.lista_descuentos_id','=', $lista_descuentos_id]]);
+        }
+
 		$descuentos = ListaDctoDetalle::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_dctos_detalles.inv_producto_id')
 			->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
-			->where('vtas_listas_dctos_detalles.lista_descuentos_id', $lista_descuentos_id)
+			->where($array_wheres)
 			->select(
 				'vtas_listas_dctos_detalles.id',
+				'vtas_listas_dctos_detalles.lista_descuentos_id',
 				'vtas_listas_dctos_detalles.descuento1',
 				'vtas_listas_dctos_detalles.fecha_activacion',
 				'inv_productos.descripcion as producto_descripcion',

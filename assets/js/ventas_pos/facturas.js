@@ -315,15 +315,26 @@ function get_precio(producto_id)
 	return precio;
 }
 
+var filter_descuento;
 function get_descuento(producto_id)
 {
-	var descuento = descuentos.find(item => item.producto_codigo === producto_id);
+	filter_descuento = {
+		producto_codigo: producto_id,
+		lista_descuentos_id: $('#lista_descuentos_id').val()
+	  };
 
-	if (descuento === undefined) {
-		descuento = 0;
-	} else {
-		descuento = descuento.descuento1;
-	}
+	arr_descuentos = descuentos.filter(function(item) {
+		for (var key in filter_descuento) {
+		  if (item[key] === undefined || item[key] != filter_descuento[key])
+			return false;
+		}
+		return true;
+	  });
+
+	descuento = 0;
+	arr_descuentos.forEach(element => {
+		descuento = element.descuento1;
+	});
 
 	tasa_descuento = descuento;
 
@@ -371,7 +382,6 @@ function mandar_codigo(item_id) {
 	/*
 	$('#inv_producto_id').val(producto.descripcion);
 	$('#precio_unitario').val(get_precio(producto.id));
-	$('#tasa_descuento').val(get_descuento(producto.id));
 
 	$('#cantidad').select();
 	*/

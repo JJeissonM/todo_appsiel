@@ -1124,7 +1124,7 @@ class FacturaPosController extends TransaccionController
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
                     'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
                     'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
-                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),
+                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( null ),
                     'clientes' => Cliente::where( 'estado', 'Activo' )->get(),
                     'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray(), ['vendedor_descripcion'=> $pdv->cliente->vendedor->tercero->descripcion] ) ,
                     'forma_pago_default' => $pdv->cliente->forma_pago(),

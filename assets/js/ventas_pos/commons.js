@@ -66,8 +66,6 @@ $(document).ready(function () {
                     var barcode = $(this).val();
                     var barcode_precio_unitario = $('#precio_unitario').val();
                     
-                    console.log(barcode);
-                    
                     if ($('#forma_lectura_codigo_barras').val() == 'codigo_cantidad' ) {
                         var el_item_id = get_item_id_from_barcode( barcode );
                         var producto = productos.find(item => item.id === parseInt(el_item_id));
@@ -753,8 +751,6 @@ $(document).ready(function () {
             
             });
         }
-
-        console.log(lbl_medio_pago,lbl_caja_banco,lbl_valor_medio_pago);
     }
 
     function get_hora(i)
