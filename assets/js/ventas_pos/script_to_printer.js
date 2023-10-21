@@ -45,75 +45,6 @@
 
             //Send print job to printer!
             cpj.sendToClient();
-
-
-            /*      IMPRIMIR CON CANVAS
-            var ancho_formato_impresion = $('#ancho_formato_impresion').val() * 800;
-            //, width: ancho_formato_impresion
-            //generate an image of HTML content through html2canvas utility
-            html2canvas(document.getElementById('div_formato_impresion_cocina'), { scale:1 }).then(function (canvas) {
-
-                //Create a ClientPrintJob
-                var cpj = new JSPM.ClientPrintJob();
-                //Set Printer type (Refer to the help, there many of them!)
-                
-                //if ($('#useDefaultPrinter').prop('checked')) {
-                //    cpj.clientPrinter = new JSPM.DefaultPrinter();
-                //} else {
-                //    cpj.clientPrinter = new JSPM.InstalledPrinter($('#installedPrinterName').val());
-                //}
-                
-            
-                cpj.clientPrinter = new JSPM.InstalledPrinter($('#impresora_cocina_por_defecto').val());
-                
-                //Set content to print... 
-                var b64Prefix = "data:image/png;base64,";
-                var imgBase64DataUri = canvas.toDataURL("image/png");
-                var imgBase64Content = imgBase64DataUri.substring(b64Prefix.length, imgBase64DataUri.length);
-
-                var myImageFile = new JSPM.PrintFile(imgBase64Content, JSPM.FileSourceType.Base64, 'comanda.png', 1);
-                
-                //add file to print job
-                cpj.files.push(myImageFile);
-
-                //Send print job to printer!
-                cpj.sendToClient();
-
-
-            });
-            */
-
-            /*
-            //Create a ClientPrintJob
-            var obj_trabajo_impresion_1 = new JSPM.ClientPrintJob();
-            //Set Printer type (Refer to the help, there many of them!)
-            if ($('#useDefaultPrinter').prop('checked')) {
-                obj_trabajo_impresion_1.clientPrinter = new JSPM.DefaultPrinter();
-            } else {
-                obj_trabajo_impresion_1.clientPrinter = new JSPM.InstalledPrinter($('#installedPrinterName').val());
-            }
-
-            console.log($('#installedPrinterName').val());
-
-            //Set content to print... in this sample, a pdf file
-            var myPdfFile = new JSPM.PrintFilePDF('https://neodynamic.com/temp/LoremIpsum.pdf', JSPM.FileSourceType.URL, 'myFileToPrint.pdf', 1);
-            //add file to print job
-            obj_trabajo_impresion_1.files.push(myPdfFile);
-            
-
-            var obj_trabajo_impresion_2 = new JSPM.ClientPrintJob();
-            obj_trabajo_impresion_2.clientPrinter = new JSPM.InstalledPrinter($('#installedPrinterName').val());//new JSPM.DefaultPrinter();
-            obj_trabajo_impresion_2.printerCommands = 'RAW PRINTER COMMANDS HERE';
-            obj_trabajo_impresion_2.sendToClient();
-            */
-           // var obj_trabajo_impresion_grupo = new JSPM.ClientPrintJobGroup();
-
-            //obj_trabajo_impresion_grupo.jobs.push(obj_trabajo_impresion_1);
-
-            //obj_trabajo_impresion_2.jobs.push(obj_trabajo_impresion_2);
-
-            //Send print job to printer!
-            //obj_trabajo_impresion_grupo.sendToClient();
         }
     }
 
@@ -124,11 +55,37 @@
         var newLine = '\x0A'; //LF byte in hex notation
     
         var cmds = esc + "@"; //Initializes the printer (ESC @)
-        cmds += esc + '!' + '\x38'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-        cmds += 'BEST DEAL STORES'; //text to print
+        cmds += esc + '!' + '\x18'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
+
+        cmds += $('#pdv_label').val(); //text to print
         cmds += newLine + newLine;
-        cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-        cmds += 'COOKIES                   5.00'; 
+        
+        cmds += ' Factura de ventas No. ' + $('.lbl_consecutivo_doc_encabezado').text(); //text to print
+        cmds += newLine;
+
+        cmds += esc + '!' + '\x06'; //Character font A selected (ESC ! 0)
+
+        cmds += '             ITEM                     CANT.  '; //text to print
+        cmds += newLine;
+        cmds += '_____________________________________________'; //text to print
+        cmds += newLine;
+
+        var lbl_total_factura = 0;
+        var cantidad_total_productos = 0;
+        $('.linea_registro').each(function( ){
+            //Libro Matemáticas D     1 
+            cmds += formatear_cadena($(this).find('.lbl_producto_descripcion').text(),35) + '     ' + formatear_cadena($(this).find('.cantidad').text(),5);
+            
+            cmds += newLine;
+
+            lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+            cantidad_total_productos++;
+
+        });
+
+        /*
+        cmds += 'COOKIES                   5.00'; // 30 caracteres 
         cmds += newLine;
         cmds += 'MILK 65 Fl oz             3.78';
         cmds += newLine + newLine;
@@ -141,12 +98,34 @@
         cmds += 'CASH TEND                10.00';
         cmds += newLine;
         cmds += 'CASH DUE                  0.78';
+        */
+
         cmds += newLine + newLine;
         cmds += esc + '!' + '\x18'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
-        cmds += '# ITEMS SOLD 2';
+        cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
+        cmds += newLine;
+        cmds += 'VENTA TOTAL  : ' + $('.lbl_total_factura').text();
         cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
         cmds += newLine + newLine;
-        cmds += '11/03/13  19:53:17';
+        //cmds += '11/03/13  19:53:17';
+
+        cmds += esc + '!' + '\x48'; // CUT PAPER
+
+        console.log(cmds);
 
         return cmds;
     }
+
+    function formatear_cadena(cadena, longitud_maxima)
+    {
+        var largo = cadena.length;
+        if (largo <= longitud_maxima) {
+            for (let index = 0; index <= largo; index++) {
+                cadena += ' ';
+            }
+        }else{
+            cadena = cadena.substring(0, longitud_maxima)
+        }
+
+        return cadena;
+    }   

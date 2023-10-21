@@ -8,7 +8,10 @@
 
 {{ Form::hidden('inv_bodega_id_aux',$pdv->bodega_default_id,['id'=>'inv_bodega_id_aux']) }}
 
+<input type="hidden" name="pdv_label" id="pdv_label" value="{{$pdv->descripcion}}" required="required">
+
 <input type="hidden" name="cliente_id" id="cliente_id" value="{{$cliente->id}}" required="required">
+
 <input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}" required="required">
 <input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
         value="{{$cliente->clase_cliente_id}}" required="required">

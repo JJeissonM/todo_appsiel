@@ -4,7 +4,19 @@
             <h4 style="text-align: center;">
                 <span>--- (Copia Cocina) ---</span>
                 <br>
-                <b>{{ $pdv_descripcion }}</b>
+                <b>
+                    <?php 
+                    if (!isset($pdv_descripcion)) {
+                        $pdv_descripcion = '';
+                    }
+                        if (!isset($tipo_doc_app)) {
+                            $tipo_doc_app = (object)[
+                                'descripcion' => '',
+                                'prefijo' => ''
+                            ];
+                        }
+                    ?>
+                    {{ $pdv_descripcion }}</b>
             </h4>
         </td>
         <tr>

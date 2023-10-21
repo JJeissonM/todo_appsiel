@@ -43,7 +43,6 @@ $(document).ready(function () {
             case 113: // 113 = F2
 
                 $('#textinput_filter_item').select();
-                $("html, body").animate({scrollTop: "500px"});
 
                 break;
 
@@ -51,7 +50,6 @@ $(document).ready(function () {
 
                 $('#efectivo_recibido').val('');
                 $('#efectivo_recibido').select();
-                $("html, body").animate({scrollTop: "870px"});
 
                 break;
 
@@ -171,10 +169,9 @@ $(document).ready(function () {
             return false;
         }
 
-        if (codigo_tecla_presionada == 113) // F2 
+        if (codigo_tecla_presionada == 113) // 113: F2 
         {
             $('#textinput_filter_item').select();
-            $("html, body").animate({scrollTop: "500px"});
             return false;
         }
 
@@ -489,9 +486,6 @@ $(document).ready(function () {
         $('#btn_nuevo').show();
         $('#numero_lineas').text(hay_productos);
         deshabilitar_campos_encabezado();
-
-        // Bajar el Scroll hasta el final de la página
-        //$("html, body").animate({scrollTop: $(document).height() + "px"});
 
         reset_linea_ingreso_default();
         reset_efectivo_recibido();
