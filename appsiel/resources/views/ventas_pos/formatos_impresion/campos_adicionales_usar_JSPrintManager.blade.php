@@ -5,7 +5,3 @@
 <input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ $params_JSPrintManager->impresora_cocina_por_defecto }}">
 
 <input type="hidden" id="ancho_formato_impresion" name="ancho_formato_impresion" value="{{ config('ventas_pos.ancho_formato_impresion') }}">
-
-<div id="div_formato_impresion_cocina" style="display: none;">
-    @include('ventas_pos.formatos_impresion.remision')
-</div>

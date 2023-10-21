@@ -41,7 +41,8 @@
             cpj.clientPrinter = new JSPM.InstalledPrinter($('#impresora_cocina_por_defecto').val());
 
             //Set content to print...
-            cpj.printerCommands = generate_string_commands();
+            //cpj.printerCommands = generate_string_commands();
+            cpj.binaryPrinterCommands = generate_string_commands();
 
             //Send print job to printer!
             cpj.sendToClient();
@@ -50,31 +51,46 @@
 
     function generate_string_commands()
     {
-        //Create ESP/POS commands for sample label
-        var esc = '\x1B'; //ESC byte in hex notation
-        var newLine = '\x0A'; //LF byte in hex notation
-    
-        var cmds = esc + "@"; //Initializes the printer (ESC @)
-        cmds += esc + '!' + '\x18'; //Emphasized + Double-height + Double-width mode selected (ESC ! (8 + 16 + 32)) 56 dec => 38 hex
-
-        cmds += $('#pdv_label').val(); //text to print
-        cmds += newLine + newLine;
+        var escpos = Neodynamic.JSESCPOSBuilder;
+        var doc = new escpos.Document();
         
-        cmds += ' Factura de ventas No. ' + $('.lbl_consecutivo_doc_encabezado').text(); //text to print
-        cmds += newLine;
+        var lineas_registros = get_lineas();
 
-        cmds += esc + '!' + '\x06'; //Character font A selected (ESC ! 0)
+        var escposCommands = doc
+                        //.image(logo, escpos.BitmapDensity.D24)
+                        //.setPrintWidth(720)
+                        .font(escpos.FontFamily.A)
+                        .align(escpos.TextAlignment.Center)
+                        .style([escpos.FontStyle.Bold])
+                        .size(0, 1)
+                        .text($('#pdv_label').val())
+                        .text('Fact. Vtas. #' + $('.lbl_consecutivo_doc_encabezado').text() + ' / F. ' + $('#lbl_fecha').text())
+                        .text($('.lbl_cliente_descripcion').text())
+                        .font(escpos.FontFamily.B)
+                        .size(1, 0)
+                        .text( lineas_registros )
+                        .feed(5)
+                        .cut()
+                        .generateUInt8Array();
 
-        cmds += '             ITEM                     CANT.  '; //text to print
-        cmds += newLine;
-        cmds += '_____________________________________________'; //text to print
-        cmds += newLine;
+        return escposCommands;
+    }
 
+    function get_lineas()
+    {
+        var newLine = '\n';
+
+        var cmds = newLine;
+        cmds += '        ITEM             CANT.';
+        cmds += newLine;
+        cmds += '______________________________';
+        cmds += newLine;
+        
         var lbl_total_factura = 0;
         var cantidad_total_productos = 0;
         $('.linea_registro').each(function( ){
             //Libro Matemáticas D     1 
-            cmds += formatear_cadena($(this).find('.lbl_producto_descripcion').text(),35) + '     ' + formatear_cadena($(this).find('.cantidad').text(),5);
+            cmds += formatear_cadena($(this).find('.lbl_producto_descripcion').text(),22,'.') + '......' + formatear_cadena($(this).find('.cantidad').text(),5,' ');
             
             cmds += newLine;
 
@@ -84,44 +100,27 @@
 
         });
 
-        /*
-        cmds += 'COOKIES                   5.00'; // 30 caracteres 
-        cmds += newLine;
-        cmds += 'MILK 65 Fl oz             3.78';
-        cmds += newLine + newLine;
-        cmds += 'SUBTOTAL                  8.78';
-        cmds += newLine;
-        cmds += 'TAX 5%                    0.44';
-        cmds += newLine;
-        cmds += 'TOTAL                     9.22';
-        cmds += newLine;
-        cmds += 'CASH TEND                10.00';
-        cmds += newLine;
-        cmds += 'CASH DUE                  0.78';
-        */
-
-        cmds += newLine + newLine;
-        cmds += esc + '!' + '\x18'; //Emphasized + Double-height mode selected (ESC ! (16 + 8)) 24 dec => 18 hex
         cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
         cmds += newLine;
-        cmds += 'VENTA TOTAL  : ' + $('.lbl_total_factura').text();
-        cmds += esc + '!' + '\x00'; //Character font A selected (ESC ! 0)
-        cmds += newLine + newLine;
+        
+        cmds += 'VENTA TOTAL: ' + $('.lbl_total_factura').text();
+        cmds += newLine;
+        
+        cmds += 'Detalle: ' + $('.lbl_descripcion_doc_encabezado').text();
+
+        
         //cmds += '11/03/13  19:53:17';
-
-        cmds += esc + '!' + '\x48'; // CUT PAPER
-
-        console.log(cmds);
 
         return cmds;
     }
 
-    function formatear_cadena(cadena, longitud_maxima)
+    function formatear_cadena(cadena, longitud_maxima, caracter_relleno)
     {
         var largo = cadena.length;
         if (largo <= longitud_maxima) {
-            for (let index = 0; index <= largo; index++) {
-                cadena += ' ';
+            var tope = longitud_maxima - largo;
+            for (let index = 0; index < tope; index++) {
+                cadena += caracter_relleno;
             }
         }else{
             cadena = cadena.substring(0, longitud_maxima)

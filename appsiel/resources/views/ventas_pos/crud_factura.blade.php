@@ -275,6 +275,9 @@
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
 
     @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+        <script src="{{ asset( 'assets/js/ventas_pos/cptable.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
     @endif

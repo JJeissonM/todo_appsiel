@@ -12,9 +12,3 @@
         @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
     </td>
 @endsection
-
-@section('pagina_adicional')
-    <div class="page-break"></div>
-
-    @include('ventas_pos.formatos_impresion.remision')
-@endsection
