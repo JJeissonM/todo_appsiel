@@ -103,7 +103,7 @@
         cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
         cmds += newLine;
         
-        cmds += 'VENTA TOTAL: ' + $('.lbl_total_factura').text();
+        cmds += 'VENTA TOTAL: ' + $('.lbl_total_factura').first().text();
         cmds += newLine;
         
         cmds += 'Detalle: ' + $('.lbl_descripcion_doc_encabezado').text();
