@@ -41,7 +41,7 @@ Route::post('ventas_pos_anular_factura', 'VentasPos\FacturaPosController@anular_
 Route::resource('pos_factura', 'VentasPos\FacturaPosController');
 
 Route::resource('pos_pedido', 'VentasPos\PedidosPosController');
-Route::resource('pos_consultar_mis_pedidos_pendientes/{pdv_id}', 'VentasPos\PedidosPosController@consultar_mis_pedidos_pendientes');
+Route::get('pos_consultar_mis_pedidos_pendientes/{pdv_id}', 'VentasPos\PedidosPosController@consultar_mis_pedidos_pendientes');
 
 // Archivos planos
 Route::post('ventas_pos_cargue_archivo_plano', 'VentasPos\ArchivoPlanoController@procesar_archivo');
