@@ -186,10 +186,6 @@ class FacturaPosController extends TransaccionController
     public function store(Request $request)
     {
         $lineas_registros = json_decode($request->lineas_registros);
-        $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
-
-        // Se Actualiza la variable $request via referencia
-        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request,$total_factura);
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
@@ -438,8 +434,8 @@ class FacturaPosController extends TransaccionController
         $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
 
         $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
-
-        $total_efectivo_recibido = $this->get_total_campo_lineas_registros(json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos)), 'valor');
+        
+        $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos) ), 'valor');
         //$total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = $this->get_productos($pdv,$productos);
@@ -616,8 +612,6 @@ class FacturaPosController extends TransaccionController
     {
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
-
-        $this->actualizar_campo_lineas_registros_medios_recaudos_request($request,$total_factura);
 
         $doc_encabezado = FacturaPos::find($id);
         $doc_encabezado->fecha = $request->fecha;

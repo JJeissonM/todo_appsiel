@@ -22,7 +22,7 @@
 		.tienda div.caja{
 			border: 2px solid gray;
 		    margin: -40px 10% 0px;
-		    height: 200px;
+		    height: 220px;
 		}
 
 		.datos_pdv{
@@ -76,7 +76,9 @@
 
 		        		$btn_abrir = '<a href="' . url('web/create') . '?id=20&id_modelo=228&id_transaccion=45&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-success" > Apertura </a>';
 
-		        		$btn_facturar = '<a href="' . url('pos_factura/create') . '?id=20&id_modelo=230&id_transaccion=47&pdv_id='.$pdv->id . '&action=create" class="btn btn-xs btn-primary" > Facturar </a>';
+						$btn_facturar = '<a href="' . url('pos_factura/create') . '?id=20&id_modelo=230&id_transaccion=47&pdv_id='.$pdv->id . '&action=create" class="btn btn-xs btn-primary" > Facturar </a>';
+
+						$btn_hacer_pedido = '<a href="' . url('pos_pedido/create') . '?id=20&id_modelo=175&id_transaccion=42&pdv_id='.$pdv->id . '&action=create" class="btn btn-xs btn-primary" > Hacer pedido </a>';
 
 		        		$btn_cerrar = '<a href="' . url('web/create') . '?id=20&id_modelo=229&id_transaccion=46&pdv_id='.$pdv->id.'&cajero_id='.Auth::user()->id.'" class="btn btn-xs btn-danger" > Cierre </a>';
 
@@ -158,6 +160,7 @@
 												</div>
 											
 										</div>
+
 										<div class="btn-group">
 					
 											{!! $btn_abrir !!}
@@ -178,6 +181,14 @@
 											
 										</div>
 										<br><br>
+
+										@can('vtas_pos_hacer_pedido')
+											<div class="btn-group">
+												{!! $btn_hacer_pedido !!}
+											</div>
+											<br><br>
+										@endcan
+										
 										{!! $btn_consultar_estado !!}
 									</div>
 								</div>										

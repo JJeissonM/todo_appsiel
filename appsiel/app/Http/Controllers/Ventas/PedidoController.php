@@ -2,15 +2,8 @@
 
 namespace App\Http\Controllers\Ventas;
 
-use App\Inventarios\InvProducto;
 use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Http\Request;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
@@ -31,8 +24,14 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 
 use App\Contabilidad\Impuesto;
+use App\Sistema\Modelo;
 use App\Ventas\ListaDctoDetalle;
-use App\Ventas\Vendedor;
+use App\Ventas\Services\DocumentsLinesServices;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class PedidoController extends TransaccionController
 {
@@ -163,7 +162,9 @@ class PedidoController extends TransaccionController
     public function crear_documento(Request $request, array $lineas_registros, $modelo_id)
     {
         $doc_encabezado = $this->crear_encabezado_documento($request, $modelo_id);
-        PedidoController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+        
+        (new DocumentsLinesServices())->crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+        
         return $doc_encabezado->id;
     }
 
@@ -286,7 +287,7 @@ class PedidoController extends TransaccionController
         $orientacion = 'portrait';
         $tam_hoja = array(0, 0, 50, 800); //'A4';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;

@@ -40,6 +40,9 @@ Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosContr
 Route::post('ventas_pos_anular_factura', 'VentasPos\FacturaPosController@anular_factura_acumulada');
 Route::resource('pos_factura', 'VentasPos\FacturaPosController');
 
+Route::resource('pos_pedido', 'VentasPos\PedidosPosController');
+Route::resource('pos_consultar_mis_pedidos_pendientes/{pdv_id}', 'VentasPos\PedidosPosController@consultar_mis_pedidos_pendientes');
+
 // Archivos planos
 Route::post('ventas_pos_cargue_archivo_plano', 'VentasPos\ArchivoPlanoController@procesar_archivo');
 
@@ -49,6 +52,7 @@ Route::get('vtas_pos_hacer_preparaciones_recetas/{pdv_id}', 'VentasPos\FacturaPo
 
 // REPORTES
 Route::get('pos_get_saldos_caja_pdv/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@get_saldos_caja_pdv');
+
 Route::get('pos_consultar_documentos_pendientes/{pdv_id}/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@consultar_documentos_pendientes');
 
 Route::post('pos_movimientos_ventas', 'VentasPos\ReporteController@movimientos_ventas');
