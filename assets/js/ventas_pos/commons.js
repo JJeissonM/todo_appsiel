@@ -366,6 +366,9 @@ $(document).ready(function () {
 
     function seleccionar_cliente(item_sugerencia) {
 
+
+        console.log('uey',item_sugerencia,item_sugerencia.html());
+        
         // Asignar descripción al TextInput
         $('#cliente_input').val(item_sugerencia.html());
         $('#cliente_input').css('background-color', 'transparent');

@@ -52,6 +52,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
 
 use App\Matriculas\FacturaAuxEstudiante;
+use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentHeaderService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -110,7 +111,7 @@ class VentaController extends TransaccionController
                                 ->get()
                                 ->first();
 
-            $item_sugerencia_cliente = $this->get_linea_item_sugerencia( $cliente, 'active', 1, 0 );
+            $item_sugerencia_cliente = (new CustomerServices())->get_linea_item_sugerencia( $cliente, 'active', 1, 0 );
         }
 
         return $this->crear( $this->app, $this->modelo, $this->transaccion, 'ventas.create', $tabla, $item_sugerencia_cliente );
@@ -193,9 +194,6 @@ class VentaController extends TransaccionController
 
         return $total_documento;        
     }
-
-    
-
 
     // Se crean los registros con base en los registros de la remisión o remisiones
     public static function get_total_documento_desde_lineas_registros_desde_remision( $datos, $lineas_registros )
@@ -302,7 +300,6 @@ class VentaController extends TransaccionController
         VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
         
     }
-
 
     public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $caja_banco_id = null )
     {
@@ -855,6 +852,8 @@ class VentaController extends TransaccionController
         $ultimo_item = 0;
         $num_item = 1;
         $cantidad_datos = count( $clientes->toArray() );
+
+        $customer_serv = new CustomerServices();
         foreach ($clientes as $linea) 
         {
             $primer_item = 0;
@@ -870,7 +869,7 @@ class VentaController extends TransaccionController
                 $ultimo_item = 1;
             }
 
-            $html .= $this->get_linea_item_sugerencia( $linea, $clase, $primer_item, $ultimo_item );
+            $html .= $customer_serv->get_linea_item_sugerencia( $linea, $clase, $primer_item, $ultimo_item );
 
             $num_item++;
         }
@@ -883,35 +882,6 @@ class VentaController extends TransaccionController
 
         return $html;
     }
-
-    public function get_linea_item_sugerencia( Cliente $linea, $clase, $primer_item, $ultimo_item )
-    {
-        $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
-                                '" data-primer_item="'.$primer_item.
-                                '" data-accion="na" '.
-                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
-
-        $html .=            '" data-nombre_cliente="'.$linea->descripcion.
-                            '" data-zona_id="'.$linea->zona_id.
-                            '" data-clase_cliente_id="'.$linea->clase_cliente_id.
-                            '" data-liquida_impuestos="'.$linea->liquida_impuestos.
-                            '" data-core_tercero_id="'.$linea->core_tercero_id.
-                            '" data-direccion1="'.$linea->direccion1.
-                            '" data-telefono1="'.$linea->telefono1.
-                            '" data-numero_identificacion="'.$linea->numero_identificacion.
-                            '" data-vendedor_id="'.$linea->vendedor_id.
-                            '" data-vendedor_descripcion="'.$linea->vendedor->tercero->descripcion.
-                            '" data-equipo_ventas_id="0'.
-                            '" data-inv_bodega_id="'.$linea->inv_bodega_id.
-                            '" data-email="'.$linea->email.
-                            '" data-dias_plazo="'.$linea->dias_plazo.
-                            '" data-lista_precios_id="'.$linea->lista_precios_id.
-                            '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
-                            '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
-        return $html;
-    }
-    
-
 
     // Parámetro enviados por GET
     public function consultar_existencia_producto()

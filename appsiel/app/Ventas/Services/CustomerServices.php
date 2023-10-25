@@ -3,6 +3,7 @@
 namespace App\Ventas\Services;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Ventas\Cliente;
 
 class CustomerServices
 {
@@ -95,5 +96,32 @@ class CustomerServices
         } 
         
         return $datos;
-    }       
+    }
+
+    public function get_linea_item_sugerencia( Cliente $linea, $clase, $primer_item, $ultimo_item )
+    {
+        $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
+                                '" data-primer_item="'.$primer_item.
+                                '" data-accion="na" '.
+                                '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
+
+        $html .=            '" data-nombre_cliente="'.$linea->descripcion.
+                            '" data-zona_id="'.$linea->zona_id.
+                            '" data-clase_cliente_id="'.$linea->clase_cliente_id.
+                            '" data-liquida_impuestos="'.$linea->liquida_impuestos.
+                            '" data-core_tercero_id="'.$linea->core_tercero_id.
+                            '" data-direccion1="'.$linea->direccion1.
+                            '" data-telefono1="'.$linea->telefono1.
+                            '" data-numero_identificacion="'.$linea->numero_identificacion.
+                            '" data-vendedor_id="'.$linea->vendedor_id.
+                            '" data-vendedor_descripcion="'.$linea->vendedor->tercero->descripcion.
+                            '" data-equipo_ventas_id="0'.
+                            '" data-inv_bodega_id="'.$linea->inv_bodega_id.
+                            '" data-email="'.$linea->email.
+                            '" data-dias_plazo="'.$linea->dias_plazo.
+                            '" data-lista_precios_id="'.$linea->lista_precios_id.
+                            '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
+                            '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+        return $html;
+    }
 }

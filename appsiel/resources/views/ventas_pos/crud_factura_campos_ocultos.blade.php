@@ -12,6 +12,8 @@
 
 <input type="hidden" name="cliente_id" id="cliente_id" value="{{$cliente->id}}" required="required">
 
+<input type="hidden" name="aux_cliente_input" id="aux_cliente_input">
+
 <input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}" required="required">
 <input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
         value="{{$cliente->clase_cliente_id}}" required="required">

@@ -29,6 +29,8 @@ Route::post('ventas_pos_form_registro_ingresos_gastos', 'VentasPos\FacturaPosCon
 Route::get('pos_factura_crear_desde_pedido/{pedido_id}', 'VentasPos\FacturaPosController@crear_desde_pedido');
 Route::get('pos_revisar_pedidos_ventas/{pdv_id}', 'VentasPos\ReporteController@revisar_pedidos_ventas');
 
+Route::get('pos_cargar_pedido/{pedido_id}', 'VentasPos\PedidosPosController@cargar_pedido');
+
 // Proceso especial
 Route::get('factura_pos_recontabilizar/{id}', 'VentasPos\FacturaPosController@recontabilizar_factura');
 

@@ -607,7 +607,7 @@ $(document).ready(function () {
 
 				$.get(url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda })
 					.done(function (data) {
-						// Se llena el DIV con las sugerencias que arooja la consulta
+						// Se llena el DIV con las sugerencias que arroja la consulta
 						$('#clientes_suggestions').show().html(data);
 						$('a.list-group-item.active').focus();
 					});

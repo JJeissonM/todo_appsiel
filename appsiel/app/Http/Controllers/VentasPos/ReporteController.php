@@ -54,6 +54,8 @@ class ReporteController extends Controller
 
         $view = Input::get('view');
 
+        //dd($encabezados_documentos2);
+
         $tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_encabezados_documentos', compact( 'encabezados_documentos', 'pdv','view' ) )->render();
         
         return $tabla_encabezados_documentos;
@@ -109,7 +111,7 @@ class ReporteController extends Controller
         $pedidos = VtasPedido::where( 'estado', 'Pendiente' )
             ->whereIn( 'core_tipo_transaccion_id', [42, 60])
             ->orderBy('fecha','DESC')
-            ->orderBy('consecutivo','DESC')->get();
+            ->orderBy('created_at','DESC')->get();
 
         return View::make( 'ventas_pos.lista_pedidos_pendientes_tabla', compact( 'pedidos', 'pdv_id' ) )->render();
     }

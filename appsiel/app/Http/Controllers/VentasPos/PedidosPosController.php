@@ -37,6 +37,7 @@ use App\Ventas\NotaCredito;
 use App\CxC\CxcAbono;
 use App\Inventarios\InvGrupo;
 use App\Sistema\TipoTransaccion;
+use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentsLinesServices;
 use App\Ventas\VtasDocRegistro;
 
@@ -171,70 +172,6 @@ class PedidosPosController extends TransaccionController
         (new DocumentsLinesServices())->crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         return $doc_encabezado->consecutivo;
-    }
-
-    /**
-     *
-     */
-    public function show($id)
-    {
-        $this->set_variables_globales();
-
-        $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
-
-        $doc_encabezado = app($this->transaccion->modelo_encabezados_documentos)->get_registro_impresion($id);
-        $doc_registros = app($this->transaccion->modelo_registros_documentos)->get_registros_impresion($doc_encabezado->id);
-
-        $docs_relacionados = VtasDocEncabezado::get_documentos_relacionados($doc_encabezado);
-        $empresa = $this->empresa;
-        if ( !is_null($doc_encabezado->pdv) )
-        {
-            if ( $doc_encabezado->pdv->direccion != '' )
-            {
-                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
-                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
-                $empresa->email = $doc_encabezado->pdv->email;
-            }
-        }
-
-        $id_transaccion = $this->transaccion->id;
-
-        $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
-
-        // Datos de los abonos aplicados a la factura
-        $abonos = CxcAbono::get_abonos_documento($doc_encabezado);
-
-        // Datos de Notas Crédito aplicadas a la factura
-        $notas_credito = NotaCredito::get_notas_aplicadas_factura($doc_encabezado->id);
-
-        $documento_vista = '';
-
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, $doc_encabezado->documento_transaccion_prefijo_consecutivo);
-
-        $url_crear = $this->modelo->url_crear . $this->variables_url;
-
-        $vista = 'ventas_pos.show';
-
-        if ( !is_null(Input::get('vista') ) )
-        {
-            $vista = Input::get('vista');
-        }
-
-        $pedidos_padres = VtasDocEncabezado::where([
-            ['ventas_doc_relacionado_id','=',$doc_encabezado->id]
-        ])
-        ->whereIn('core_tipo_transaccion_id',[42,60])
-        ->get();
-
-        return view($vista, compact('id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad', 'abonos', 'empresa', 'docs_relacionados', 'doc_registros', 'url_crear', 'id_transaccion', 'notas_credito','pedidos_padres'));
-    }
-
-    /*
-        Imprimir
-    */
-    public function imprimir($id)
-    {
-        return $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
     }
 
     /**
@@ -398,7 +335,6 @@ class PedidosPosController extends TransaccionController
     }
 
     /**
-     * ACTUALIZA FACTURA POS
      *
      */
     public function update(Request $request, $id)
@@ -427,7 +363,6 @@ class PedidosPosController extends TransaccionController
 
         return $doc_encabezado->consecutivo;
     }
-
 
     public static function actualizar_cantidades_pendientes( $encabezado_pedido, $operacion )
     {
@@ -466,6 +401,11 @@ class PedidosPosController extends TransaccionController
         $cuerpo_tabla_lineas_registros = '<tbody>';
         $i = 1;
         foreach ($lineas_registros_documento as $linea) {
+
+            if ($linea->item == null ) {
+                continue;
+            }
+
             $cuerpo_tabla_lineas_registros .= '<tr class="linea_registro" data-numero_linea="' . $i . '"><td style="display: none;"><div class="inv_producto_id">' . $linea->inv_producto_id . '</div></td><td style="display: none;"><div class="precio_unitario">' . $linea->precio_unitario . '</div></td><td style="display: none;"><div class="base_impuesto">' . $linea->base_impuesto . '</div></td><td style="display: none;"><div class="tasa_impuesto">' . $linea->tasa_impuesto . '</div></td><td style="display: none;"><div class="valor_impuesto">' . $linea->valor_impuesto . '</div></td><td style="display: none;"><div class="base_impuesto_total">' . $linea->base_impuesto_total . '</div></td><td style="display: none;"><div class="cantidad">' . $linea->cantidad . '</div></td><td style="display: none;"><div class="precio_total">' . $linea->precio_total . '</div></td><td style="display: none;"><div class="tasa_descuento">' . $linea->tasa_descuento . '</div></td><td style="display: none;"><div class="valor_total_descuento">' . $linea->valor_total_descuento . '</div></td><td> &nbsp; </td><td> <span style="background-color:#F7B2A3;">' . $linea->inv_producto_id . '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' . $linea->item->descripcion . ' </div> </td><td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' . $linea->cantidad . '</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' . $linea->item->unidad_medida1 . '</div>) </td><td>  <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' . $linea->precio_unitario . '</div></div></td><td>' . $linea->tasa_descuento . '% ( $<div class="lbl_valor_total_descuento" style="display: inline;">' . number_format($linea->valor_total_descuento, '0', ',', '.') . '</div> ) </td><td><div class="lbl_tasa_impuesto" style="display: inline;">' . $linea->tasa_impuesto . '%</div></td><td> <div class="lbl_precio_total" style="display: inline;">$ ' . number_format($linea->precio_total, '0', ',', '.') . ' </div> </td> <td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
             $i++;
         }
@@ -473,57 +413,6 @@ class PedidosPosController extends TransaccionController
         $cuerpo_tabla_lineas_registros .= '</tbody>';
 
         return $cuerpo_tabla_lineas_registros;
-    }
-
-    /*
-        Generar la vista para los métodos show(), imprimir() o enviar_por_email()
-    */
-    public function generar_documento_vista($id, $ruta_vista)
-    {
-        $this->set_variables_globales();
-
-        $this->doc_encabezado = app($this->transaccion->modelo_encabezados_documentos)->get_registro_impresion($id);
-
-        $doc_registros = app($this->transaccion->modelo_registros_documentos)->get_registros_impresion($this->doc_encabezado->id);
-
-        $doc_encabezado = $this->doc_encabezado;
-        $empresa = $this->empresa;
-
-        $pdv_descripcion = '';
-        $tipo_doc_app = '';
-        if ( $doc_encabezado->pdv != null )
-        {
-            //$tipo_doc_app = $doc_encabezado->pdv->tipo_doc_app;
-            $tipo_doc_app = $this->transaccion->tipos_documentos->first();
-            if ( $doc_encabezado->pdv->direccion != '' )
-            {
-                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
-                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
-                $empresa->email = $doc_encabezado->pdv->email;
-            }
-        }
-            
-        $datos_factura = (object)[
-            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
-            'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
-            'lbl_fecha' => $doc_encabezado->fecha,
-            'lbl_hora' => '',
-            'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
-            'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
-            'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
-            'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
-            'lbl_ajuste_al_peso' => '',
-            'lbl_total_recibido' => '0',
-            'lbl_total_cambio' => '',
-            'lbl_creado_por_fecha_y_hora' => $doc_encabezado->created_at,
-            'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
-            'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render()
-        ];
-    
-        $cliente = $doc_encabezado->cliente;
-
-
-        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'tipo_doc_app', 'cliente', 'pdv_descripcion', 'datos_factura'))->render();
     }
 
     public function generar_plantilla_pedido($pdv)
@@ -584,59 +473,6 @@ class PedidosPosController extends TransaccionController
                             ]
                         )
                 ->get();
-    }
-
-    /*
-        Crea los registros de un documento.
-        No Devuelve nada.
-    */
-    public static function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
-    {
-        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        $datos = $request->all();
-
-        $total_documento = 0;
-
-        $cantidad_registros = count($lineas_registros);
-
-        for ($i = 0; $i < $cantidad_registros; $i++)
-        {
-            if ( (int)$lineas_registros[$i]->inv_producto_id == 0)
-            {
-                continue; // Evitar guardar registros con productos NO validos
-            }
-            
-            $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
-                            ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
-                            ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
-                            ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
-                            ['precio_total' => (float)$lineas_registros[$i]->precio_total] +
-                            ['base_impuesto' => (float)$lineas_registros[$i]->base_impuesto] +
-                            ['tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto] +
-                            ['valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto] +
-                            ['base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total] +
-                            ['tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento] +
-                            ['valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento] +
-                            ['creado_por' => Auth::user()->email] +
-                            ['estado' => 'Pendiente'] +
-                            ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
-
-            DocRegistro::create($linea_datos);
-
-            $datos['consecutivo'] = $doc_encabezado->consecutivo;
-
-            Movimiento::create(
-                                $datos +
-                                $linea_datos
-                            );
-
-            $total_documento += (float)$lineas_registros[$i]->precio_total;
-        } // Fin por cada registro
-
-        $doc_encabezado->valor_total = $total_documento;
-        $doc_encabezado->save();
-
-        return 0;
     }
 
     public function get_productos($pdv,$productos)
@@ -741,9 +577,7 @@ class PedidosPosController extends TransaccionController
         }
 
         return 'ok';
-    }
-
-    
+    }    
 
     public function consultar_mis_pedidos_pendientes($pdv_id)
     {
@@ -760,5 +594,59 @@ class PedidosPosController extends TransaccionController
         
         return $tabla_encabezados_documentos;
 
+    }
+
+    public function cargar_pedido($pedido_id)
+    {
+        // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
+        $pedido = VtasPedido::find( $pedido_id );
+
+        $pdv = Pdv::find( Input::get('pdv_id') );
+
+
+        $numero_lineas = count($pedido->lineas_registros);
+
+        $cliente = $pedido->cliente;
+        
+        $inv_bodega_id = $cliente->inv_bodega_id;
+        if ($pdv != null) {
+            $inv_bodega_id = $pdv->bodega_default_id;
+        }
+
+        $cliente->cliente_id = $cliente->id;
+        $cliente->descripcion = $cliente->tercero->descripcion;
+        $cliente->numero_identificacion = $cliente->tercero->numero_identificacion;
+        $cliente->direccion1 = $cliente->tercero->direccion1;
+        $cliente->telefono1 = $cliente->tercero->telefono1;
+        $cliente->email = $cliente->tercero->email;
+
+        $cliente->vendedor = $pedido->vendedor;
+
+        $cliente->inv_bodega_id = $inv_bodega_id;
+
+        $cliente->dias_plazo = $cliente->condicion_pago->dias_plazo;
+
+        $vendedor = $pedido->vendedor;
+        
+        if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
+            $todas_las_lineas_registros = $this->unificar_lineas_registros_pedidos($pedido);
+
+            $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($todas_las_lineas_registros);
+        }else{
+            $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($pedido->lineas_registros);
+        }
+
+        $html = '<div class="list-group">';
+        $html .= (new CustomerServices())->get_linea_item_sugerencia( $cliente, 'active', true, 1 );
+        $html .= '</div>';
+
+        return response()->json([
+            'pedido' => $pedido,
+            'numero_lineas' => $numero_lineas,
+            'cliente' => $html,
+            'vendedor' => $vendedor,
+            'lineas_registros' => $lineas_registros,
+            'url_cancelar' => url('/').  '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' . Input::get('pdv_id') . '&action=create'
+        ]);
     }
 }

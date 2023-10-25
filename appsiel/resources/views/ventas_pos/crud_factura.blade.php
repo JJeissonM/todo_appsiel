@@ -7,6 +7,10 @@
 @section('estilos_1')
     <style>
         
+        .marco_formulario{
+            font-size: 12px !important;
+        }
+
         #div_resumen_totales{
             font-size: 0.8em;
         }
@@ -169,6 +173,10 @@
             }
             ?>
 
+            <div class="row" style="margin: 5px;">
+                <button class="btn btn-danger btn-xs" id="btn_cancelar_pedido" style="display: none;"> Cancelar </button>
+            </div>
+
             {{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
             @include('ventas_pos.crud_factura_campos_ocultos')         
@@ -283,6 +291,8 @@
     @endif
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
+
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/cargar_para_facturar.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/cinta_filtro_items.js?aux=' . uniqid())}}"></script>
 
