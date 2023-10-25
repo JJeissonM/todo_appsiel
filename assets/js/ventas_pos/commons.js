@@ -364,11 +364,7 @@ $(document).ready(function () {
         calcular_valor_descuento();
     }
 
-    function seleccionar_cliente(item_sugerencia) {
-
-
-        console.log('uey',item_sugerencia,item_sugerencia.html());
-        
+    function seleccionar_cliente(item_sugerencia) {        
         // Asignar descripción al TextInput
         $('#cliente_input').val(item_sugerencia.html());
         $('#cliente_input').css('background-color', 'transparent');
@@ -644,6 +640,9 @@ $(document).ready(function () {
         reset_linea_ingreso_default();
     	reset_tabla_ingreso_medios_pago();
     	reset_efectivo_recibido();
+        
+        $("#btn_cancelar").show();
+        $("#btn_cancelar_pedido").hide();
     }
 
     $(document).on('click', '#btn_recalcular_totales', function(event) {
