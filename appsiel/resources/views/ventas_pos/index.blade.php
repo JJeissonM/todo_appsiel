@@ -162,11 +162,27 @@
 										</div>
 
 										<div class="btn-group">
-					
-											{!! $btn_abrir !!}
-											{!! $btn_facturar !!}
-											{!! $btn_cerrar !!}
 
+											<!-- Si tiene el permiso, le quita el botón --> 
+											@can('vtas_pos_no_abrir_pdv')
+												&nbsp;
+											@else 
+												{!! $btn_abrir !!}
+											@endcan
+											
+											@can('vtas_pos_no_facturar_pdv')
+												&nbsp;
+											@else 
+												{!! $btn_facturar !!}
+											@endcan
+											
+											@can('vtas_pos_no_cerrar_pdv')
+												&nbsp;
+											@else 
+												{!! $btn_cerrar !!}
+											@endcan
+
+											<!-- Si tiene el permiso, le agrega el botón --> 
 											@can('vtas_pos_acumular_pdv')
 												{!! $btn_acumular !!}
 											@else 
