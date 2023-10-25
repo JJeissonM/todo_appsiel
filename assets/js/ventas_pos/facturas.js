@@ -239,13 +239,10 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
-	//celdas[ num_celda ] = '<td>' + cantidad + ' </td>';
 	celdas[num_celda] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' + cantidad + '</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' + unidad_medida + '</div>)' + ' </td>';
-	//celdas[num_celda] = '<td> <div class="number-input"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepDown()" class="minus"></button><input class="cantidad" min="1" name="cantidad" value="' + cantidad + '" type="number" readonly="readonly"><button onclick="this.parentNode.querySelector(\'input[type=number]\').stepUp()" class="plus"></button> </div> </td>';
 
 	num_celda++;
 
-	//celdas[num_celda] = '<td> <div class="lbl_precio_unitario" style="display: inline;">' + '$' + new Intl.NumberFormat("de-DE").format(precio_unitario) + '</div></td>';
 	celdas[num_celda] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar.">' + precio_unitario + '</div> </div> </td>';
 
 	num_celda++;

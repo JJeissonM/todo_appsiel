@@ -215,7 +215,7 @@
                     <!-- Cinta Filtro Items -->
                     F2: Buscar Ítems
                     @include('ventas_pos.crud_factura_cinta_filtro_items')
-                    
+
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
                     <div class="col-md-8 well"><div class="container-fluid">
 

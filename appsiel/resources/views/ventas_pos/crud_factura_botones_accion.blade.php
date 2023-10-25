@@ -26,12 +26,8 @@
     
     <div class="col-md-4 col-xs-12">
         <div class="btn-group pull-right">
-            @if( Input::get('action') == 'create' )
-                <button class="btn btn-info btn-xs btn_revisar_pedidos_ventas" data-id_modelo="54"
-                    data-id_transaccion="17" data-lbl_ventana="PEDIDOS DE VENTAS"><i class="fa fa-eye"></i> Revisar pedidos </button>
-            @else
-                &nbsp;
-            @endif
+            
+            @include('ventas_pos.crud_factura_btn_revisar_pedidos')
         </div>
     </div>
 </div>

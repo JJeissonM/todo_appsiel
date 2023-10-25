@@ -59,6 +59,7 @@ $(document).ready(function () {
 
         $("#btn_cancelar").show();
         $("#btn_cancelar_pedido").hide();
+
     }
 
     function reset_tabla_ingreso_items2()
@@ -88,7 +89,6 @@ $(document).ready(function () {
         $('#total_factura').text('$ 0');
         $('#valor_total_factura').val(0);
     }
-
 
     function reset_linea_ingreso_default2()
     {

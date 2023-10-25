@@ -603,7 +603,6 @@ class PedidosPosController extends TransaccionController
 
         $pdv = Pdv::find( Input::get('pdv_id') );
 
-
         $numero_lineas = count($pedido->lineas_registros);
 
         $cliente = $pedido->cliente;
@@ -621,6 +620,8 @@ class PedidosPosController extends TransaccionController
         $cliente->email = $cliente->tercero->email;
 
         $cliente->vendedor = $pedido->vendedor;
+        $cliente->vendedor_id = $pedido->vendedor->id;
+        $cliente->vendedor_descripcion = $pedido->vendedor->tercero->descripcion;
 
         $cliente->inv_bodega_id = $inv_bodega_id;
 
