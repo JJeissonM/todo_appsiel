@@ -44,9 +44,7 @@ $(document).ready(function () {
         $("#pedido_id").val(0);
 
         resetear_ventana2();
-    });
-
-    
+    });    
 
     function resetear_ventana2()
     {
