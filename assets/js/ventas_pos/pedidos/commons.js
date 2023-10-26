@@ -509,11 +509,11 @@ $(document).ready(function () {
         $('#lista_descuentos_id').val(item_sugerencia.attr('data-lista_descuentos_id'));
 
         // Asignar resto de campos
-        $('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
-        $('#vendedor_id').attr('data-vendedor_descripcion',item_sugerencia.attr('data-vendedor_descripcion'));
-        $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
-        $("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
-        $(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
+        //$('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
+        //$('#vendedor_id').attr('data-vendedor_descripcion',item_sugerencia.attr('data-vendedor_descripcion'));
+        //$('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+        //$("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
+        //$(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
         
         $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
 
