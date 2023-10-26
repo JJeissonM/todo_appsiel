@@ -79,7 +79,16 @@ class ObservadorEstudianteController extends TransaccionController
 
         $tam_hoja = 'letter';
         
-        return View::make( $vista_formato, compact( 'colegio', 'estudiante', 'vista','tam_hoja' ) )->render();
+        $curso_label = 'Sin matricula registrada';
+        $anio_lectivo_label = '';
+        if($estudiante->matriculas->last() != null)
+        {
+            $anio_lectivo_label = $estudiante->matriculas->last()->periodo_lectivo->descripcion;
+
+            $curso_label = $estudiante->matriculas->last()->curso->descripcion;
+        }
+        
+        return View::make( $vista_formato, compact( 'colegio', 'estudiante', 'vista','tam_hoja', 'curso_label', 'anio_lectivo_label' ) )->render();
 
     }
 

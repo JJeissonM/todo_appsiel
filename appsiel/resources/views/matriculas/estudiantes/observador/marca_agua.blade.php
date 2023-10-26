@@ -159,17 +159,6 @@
 </style>
 
 <div class="container" style="width: 100%;">
-    
-	<?php 
-        $curso_label = 'Sin matricula registrada';
-        $anio_lectivo_label = '';
-        if($estudiante->matriculas->last() != null)
-        {
-            $anio_lectivo_label = $estudiante->matriculas->last()->periodo_lectivo->descripcion;
-
-            $curso_label = $estudiante->matriculas->last()->curso->descripcion;
-        }
-    ?>
 	
     @include('calificaciones.boletines.formatos.banner_colegio_con_escudo', ['opacity'=>0.7, 'tam_letra'=>4])
 

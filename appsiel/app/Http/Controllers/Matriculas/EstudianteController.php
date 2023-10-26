@@ -175,8 +175,7 @@ class EstudianteController extends ModeloController
         $curso_label = 'Inactivo';
         if ($estudiante->matricula_activa() != null) {
             $curso_label = $estudiante->matricula_activa()->curso->descripcion;
-        }
-        
+        }        
 
         return view('matriculas.estudiantes.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'estudiante','curso_label'));
     }
