@@ -1194,7 +1194,7 @@ class FacturaPosController extends TransaccionController
                 $caja = explode('-', $linea->teso_caja_id);
                 $cuenta_bancaria = explode('-', $linea->teso_cuenta_bancaria_id);
 
-                if (!isset($medio_recaudo[0])) {
+                if (!isset($medio_recaudo[0]) || !isset($motivo[0]) || !isset($caja[0]) || !isset($cuenta_bancaria[0])) {
                     continue;
                 }
 
