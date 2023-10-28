@@ -40,6 +40,8 @@
 
         		{{ Form::hidden('hay_productos_aux', $cantidad_filas,['id'=>'hay_productos_aux']) }}
 
+        		<input id="permitir_inventarios_negativos" name="permitir_inventarios_negativos" type="hidden" value="{{ config('ventas.permitir_inventarios_negativos') }}">
+
 				@if( !is_null( Input::get('ruta_redirect') ))
 					{{ Form::bsHidden( 'ruta_redirect', Input::get('ruta_redirect') ) }}
 				@endif

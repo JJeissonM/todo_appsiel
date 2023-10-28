@@ -31,14 +31,14 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 
 		$('#tipo_producto').val(respuesta.tipo);
 
-		if ( respuesta.existencia_actual >= 0) {
+		if ( respuesta.existencia_actual >= 0 && $('#permitir_inventarios_negativos') == 0) {
 			$('#existencia_actual').attr('style','background-color:#97D897;'); // Color Verde
 		}else{
 			
 			$('#existencia_actual').attr('style','background-color:#FF8C8C;'); // Color Rojo
 			
 			// Si el tipo de producto es "producto" y el movimiento NO es de entrada, no se permite seguir con existencia 0
-			if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' )
+			if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' && $('#permitir_inventarios_negativos') == 0)
 			{
 				$('#btn_agregar').hide(500);
 				return false;
@@ -233,7 +233,7 @@ $(document).ready(function(){
 	    // PARA SALIDAS
 	    if ( mov[1] == 'salida' )
 	    {
-	        if ( parseFloat( $('#existencia_actual').val() ) < 0 && $('#tipo_producto').val() != 'servicio' ) 
+	        if ( parseFloat( $('#existencia_actual').val() ) < 0 && $('#tipo_producto').val() != 'servicio' && $('#permitir_inventarios_negativos').val() == 0 ) 
 	        {
 	        	$('#btn_agregar').hide();
 	            alert('Saldo negativo a la fecha.');

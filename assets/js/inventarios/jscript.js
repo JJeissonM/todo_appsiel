@@ -111,7 +111,7 @@ $(document).ready(function(){
 					}else{
 						$('#existencia_actual').attr('style','background-color:#FF8C8C;');
 						// Si el MOVIMIENTO del MOTIVO no es suma, no se permite seguir con existencia 0
-						if (mov[1]!='entrada'&&respuesta.tipo!='servicio') {
+						if (mov[1]!='entrada'&&respuesta.tipo!='servicio' && $('#permitir_inventarios_negativos') == 0) {
 							$('#btn_agregar').hide(500);
 							return false;
 						}
@@ -162,7 +162,7 @@ $(document).ready(function(){
 				
 				if ( mov[1] == 'salida' ) {
 					var existencia_actual = $('#existencia_actual').val();
-					if ((parseFloat($('#cantidad').val()) > parseFloat(existencia_actual))&&$('#tipo_producto').val()!='servicio') {
+					if ((parseFloat($('#cantidad').val()) > parseFloat(existencia_actual))&&$('#tipo_producto').val()!='servicio'&& $('#permitir_inventarios_negativos') == 0) {
 						alert('La Cantidad ingresada supera la existencia actual');
 						$('#cantidad').val('');
 						$('#cantidad').focus();
