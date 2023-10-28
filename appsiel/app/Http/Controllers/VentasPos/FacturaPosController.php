@@ -1197,6 +1197,10 @@ class FacturaPosController extends TransaccionController
                 if (!isset($medio_recaudo[0]) || !isset($motivo[0]) || !isset($caja[0]) || !isset($cuenta_bancaria[0])) {
                     continue;
                 }
+                
+                if (!isset($medio_recaudo[1]) || !isset($motivo[1]) || !isset($caja[1]) || !isset($cuenta_bancaria[1])) {
+                    continue;
+                }
 
                 $cuerpo_tabla .= '<tr> <td> <span style="color:white;">' . $medio_recaudo[0] . '-</span><span>' . $medio_recaudo[1] . '</span></td>' .
                     '<td><span style="color:white;">' . $motivo[0] . '-</span><span>' . $motivo[1] . '</span></td>' .
