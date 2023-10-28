@@ -1194,6 +1194,10 @@ class FacturaPosController extends TransaccionController
                 $caja = explode('-', $linea->teso_caja_id);
                 $cuenta_bancaria = explode('-', $linea->teso_cuenta_bancaria_id);
 
+                if (!isset($medio_recaudo[0])) {
+                    continue;
+                }
+
                 $cuerpo_tabla .= '<tr> <td> <span style="color:white;">' . $medio_recaudo[0] . '-</span><span>' . $medio_recaudo[1] . '</span></td>' .
                     '<td><span style="color:white;">' . $motivo[0] . '-</span><span>' . $motivo[1] . '</span></td>' .
                     '<td><span style="color:white;">' . $caja[0] . '-</span><span>' . $caja[1] . '</span></td>' .

@@ -97,6 +97,11 @@
         {
             foreach( $lineas_recaudos as $linea )
             {
+                if(!isset(explode("-", $linea->teso_medio_recaudo_id)[1]))
+                {
+                    continue;
+                }
+                
                 $lista_medios_recaudos .= '<li>';
 
                 $lista_medios_recaudos .= explode("-", $linea->teso_medio_recaudo_id)[1];
