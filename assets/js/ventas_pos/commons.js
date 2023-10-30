@@ -623,6 +623,7 @@ $(document).ready(function () {
                 resetear_ventana();
                 $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar factura' );
                 $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
+                $("#pedido_id").val(0);
             }else{
                 location.href = url_raiz + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val() + '&action=create';
             }            
@@ -645,11 +646,13 @@ $(document).ready(function () {
         $("#btn_cancelar_pedido").hide();
         
         // Vendedor default
-        $('#vendedor_id').val( cliente_default.vendedor_id );
-        $('#vendedor_id').attr( 'data-vendedor_descripcion', cliente_default.vendedor_descripcion );
-        $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
-        $("button[data-vendedor_id='" + cliente_default.vendedor_id +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
-        $(document).prop('title', cliente_default.vendedor_descripcion );
+        if ($("#pedido_id").val() != 0) {
+            $('#vendedor_id').val( cliente_default.vendedor_id );
+            $('#vendedor_id').attr( 'data-vendedor_descripcion', cliente_default.vendedor_descripcion );
+            $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+            $("button[data-vendedor_id='" + cliente_default.vendedor_id +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
+            $(document).prop('title', cliente_default.vendedor_descripcion );    
+        }        
     }
 
     $(document).on('click', '#btn_recalcular_totales', function(event) {
