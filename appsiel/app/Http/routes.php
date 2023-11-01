@@ -58,6 +58,9 @@ Route::get('web_delete_record/{app_id}/{model_id}/{record_id}/{arr_url_redirect}
 // Sistema de rutas #1
 Route::resource('web', 'Sistema\ModeloController');
 
+// API Example
+Route::get('api10/get_example', 'Sistema\PublicController@get_example');
+Route::post('api10/post_example', 'Sistema\PublicController@post_example');
 
 //  CRUD AJAX
 
