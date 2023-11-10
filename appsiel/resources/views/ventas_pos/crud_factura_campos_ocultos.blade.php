@@ -63,3 +63,5 @@
 <input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}"> 
 
 <input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion" value="{{ $msj_resolucion_facturacion }}">
+
+<input type="hidden" name="manjear_propinas" id="manjear_propinas" value="{{ $manjear_propinas }}">

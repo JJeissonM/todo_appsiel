@@ -297,6 +297,39 @@
 
 				</div>
 
+				<h4> Parámetros manejo de propinas  </h4>
+				<hr>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$manjear_propinas = '0';
+								if( isset($parametros['manjear_propinas'] ) )
+								{
+									$manjear_propinas = $parametros['manjear_propinas'];
+								}
+							?>
+							{{ Form::bsSelect('manjear_propinas', $manjear_propinas, 'Manejar propinas', [ '0'=> 'No', '1'=> 'Sí'], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="row" style="padding:5px;">
+								<?php 
+									$porcentaje_propina = '5';
+									if( isset($parametros['porcentaje_propina'] ) )
+									{
+										$porcentaje_propina = $parametros['porcentaje_propina'];
+									}
+								?>
+								{{ Form::bsText('porcentaje_propina', $porcentaje_propina, 'Porcentaje propina', ['class'=>'form-control']) }}
+							</div>
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

@@ -233,6 +233,11 @@
                             @include('tesoreria.incluir.medios_recaudos')
                         @endif
 
+                        
+                        @if( (int)config('ventas_pos.manjear_propinas') )
+                            @include('ventas_pos.propinas.section_create')
+                        @endif
+
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">
@@ -297,6 +302,10 @@
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/cinta_filtro_items.js?aux=' . uniqid())}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
+
+    @if( (int)config('ventas_pos.manjear_propinas') )
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/propinas.js?aux=' . uniqid())}}"></script>
+    @endif
     
     <script type="text/javascript">
         
