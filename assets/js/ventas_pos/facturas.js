@@ -89,7 +89,7 @@ $.fn.activar_boton_guardar_factura = function () {
 	// Cuando se ingresan lineas de medios de recaudo el valor total debe ser exacto al de la factura.
 	if (valor_total_lineas_medios_recaudos != 0)
 	{
-		var ajuste_al_peso = 0;//parseFloat($('#lbl_ajuste_al_peso').html().replace(',','.').substring(1)) * -1;
+		var ajuste_al_peso = 0;
 
 		var diferencia = parseFloat($('#valor_total_factura').val())  - ( valor_total_lineas_medios_recaudos + ajuste_al_peso );
 
@@ -104,14 +104,12 @@ $.fn.activar_boton_guardar_factura = function () {
 };
 
 $.fn.set_valor_pendiente_ingresar_medios_recaudos = function () {
-
-	//var vlr_pendiente_ingresar = parseFloat($('#lbl_vlr_pendiente_ingresar').html().substring(1));
 	
-	var valor_total_factura = parseFloat($('#valor_total_factura').val());
+	var valor_total_factura = parseFloat( $('#valor_total_factura').val() );
 
 	var valor_total_lineas_medios_recaudos = parseFloat($('#total_valor_total').html().substring(1));
 
-	$('#lbl_vlr_pendiente_ingresar').html( '$ ' + (valor_total_factura - valor_total_lineas_medios_recaudos).toFixed(2) );
+	$('#lbl_vlr_pendiente_ingresar').html( '$ ' + ( valor_total_factura - valor_total_lineas_medios_recaudos).toFixed(2) );
 };
 
 $.fn.checkCookie = function () {
@@ -271,7 +269,6 @@ $.fn.generar_string_celdas = function (fila) {
 
 function reset_campos_formulario()
 {
-	//$('#fecha').val( get_fecha_hoy() );
 	$('#descripcion').val( '' );
 
 	$('#cliente_id').val( cliente_default.id );
@@ -294,6 +291,11 @@ function reset_campos_formulario()
 	$('#telefono1').val( cliente_default.telefono1 );
 
 	$('#lineas_registros').val(0); // Input que recoge el listado de productos
+
+	if( $('#manejar_propinas').val() == 1 )
+	{
+		$.fn.reset_propina();
+	}
 }
 
 function get_precio(producto_id)
@@ -412,7 +414,7 @@ function mandar_codigo2(item_id) {
 	agregar_la_linea2();
 }
 
-// Se llama desde el listado de productos (boton de la lupa)
+// Se llama desde el listado de productos (boton de la lupa). NO agrega la lìnea de registro
 function mandar_codigo3(item_id) {
 
 	$('#myModal').modal("hide");
@@ -567,7 +569,8 @@ function deshabilitar_campos_encabezado2() {
 	$('#inv_bodega_id').attr('disabled', 'disabled');
 }
 
-function calcular_totales2() {
+function calcular_totales2() 
+{
 	var cantidad = 0.0;
 	var subtotal = 0.0;
 	var valor_total_descuento = 0.0;
@@ -604,6 +607,16 @@ function calcular_totales2() {
 	valor_ajuste_al_peso = valor_redondeado - total_factura;
 
 	$('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+	
+	if( $('#manejar_propinas').val() == 1 )
+	{
+		$.fn.calcular_valor_a_pagar_propina(total_factura);
+
+		$('#valor_sub_total_factura').val( total_factura );
+		$('#lbl_sub_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( total_factura ));
+
+		$.fn.calcular_totales_propina();
+	}	
 }
 
 function calcular_precio_total2() {
@@ -705,7 +718,7 @@ $(document).ready(function () {
 	});
 
 	// Al ingresar código, descripción o código de barras del producto
-	$('#cliente_input').on('keyup', function () {
+	$('#cliente_input').on('keyup', function (event) {
 
 		var codigo_tecla_presionada = event.which || event.keyCode;
 

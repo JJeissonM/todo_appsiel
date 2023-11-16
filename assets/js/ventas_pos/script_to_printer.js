@@ -29,7 +29,7 @@
     }
 
     //Do printing...
-    function print(o) {
+    function print_comanda(o) {
         if (jspmWSStatus()) {
 
             /*  IMPRIMIR CON COMANDOS ESC/POS */

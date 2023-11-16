@@ -195,8 +195,6 @@ $(document).ready(function () {
 
                 default :
 
-                    calcular_totales();
-
                     $('#total_efectivo_recibido').val( $(this).val() );
                     $.fn.set_label_efectivo_recibido( $(this).val() );
 
@@ -492,21 +490,6 @@ $(document).ready(function () {
         numero_linea++;
         $('#efectivo_recibido').removeAttr('readonly');
     }
-    
-
-    $(document).on('click', '.minus', function(event) {
-        event.preventDefault();
-        var fila = $(this).closest("tr");
-        calcular_precio_total_lbl(fila);
-        calcular_totales();
-    });
-
-    $(document).on('click', '.plus', function(event) {
-        event.preventDefault();
-        var fila = $(this).closest("tr");
-        calcular_precio_total_lbl(fila);
-        calcular_totales();
-    });
 
     function deshabilitar_campos_encabezado() 
     {
@@ -546,6 +529,11 @@ $(document).ready(function () {
             reset_efectivo_recibido();
         }
 
+    });
+    
+    $('#btn_probar').click(function (event){
+        event.preventDefault();
+        llenar_tabla_productos_facturados(); 
     });
 
     // GUARDAR EL FORMULARIO
@@ -589,7 +577,7 @@ $(document).ready(function () {
                         
                 }
             });
-            json_table2 += ']'
+            json_table2 += ']';
         }
 
         // Se asigna el objeto JSON a un campo oculto del formulario
@@ -603,28 +591,28 @@ $(document).ready(function () {
         var data = $("#form_create").serialize();     
         
         $.post(url, data, function (doc_encabezado_consecutivo) {
+            $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar factura' );
+            $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
             $('title').append(doc_encabezado_consecutivo);
             
             $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
 
-            llenar_tabla_productos_facturados();
-            
+            llenar_tabla_productos_facturados();         
+
             if ( $('#usar_complemento_JSPrintManager').val() == 1 )
             {
                 $('#div_formato_impresion_cocina').show();
-                print();
+                print_comanda();
                 $('#div_formato_impresion_cocina').hide();
             }  
             
+            $("#msj_ventana_impresion_abierta").show();
             ventana_imprimir();
+            resetear_ventana();
+            $("#pedido_id").val(0);   
 
-            if ( $('#action').val() == 'create' )
+            if ( $('#action').val() != 'create' )
             {
-                resetear_ventana();
-                $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar factura' );
-                $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
-                $("#pedido_id").val(0);
-            }else{
                 location.href = url_raiz + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val() + '&action=create';
             }            
         });
@@ -635,6 +623,7 @@ $(document).ready(function () {
     {
     	$('#tabla_productos_facturados').find('tbody').html('');
     	$('#tabla_productos_facturados2').find('tbody').html('');
+
     	reset_campos_formulario();
     	reset_tabla_ingreso_items();
     	reset_resumen_de_totales();
@@ -645,6 +634,8 @@ $(document).ready(function () {
         $("#btn_cancelar").show();
         $("#btn_cancelar_pedido").hide();
         
+        $("#msj_ventana_impresion_abierta").hide();
+        
         // Vendedor default
         if ($("#pedido_id").val() != 0) {
             $('#vendedor_id').val( cliente_default.vendedor_id );
@@ -652,24 +643,16 @@ $(document).ready(function () {
             $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
             $("button[data-vendedor_id='" + cliente_default.vendedor_id +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
             $(document).prop('title', cliente_default.vendedor_descripcion );    
-        }        
+        }
+
+        if( $('#manejar_propinas').val() == 1 )
+        {
+            $('#valor_sub_total_factura').val(0);
+            $('#lbl_sub_total_factura').text('$ 0');
+
+            $.fn.reset_propina();
+        }
     }
-
-    $(document).on('click', '#btn_recalcular_totales', function(event) {
-        event.preventDefault();
-        calcular_totales();
-
-        $('#btn_nuevo').show();
-        $('#numero_lineas').text(hay_productos);
-        deshabilitar_campos_encabezado();
-
-        reset_linea_ingreso_default();
-        reset_efectivo_recibido();
-
-        $('#total_valor_total').actualizar_medio_recaudo();
-        $('#lbl_efectivo_recibido').text('$ 0');
-        $('#efectivo_recibido').removeAttr('readonly');
-    });
 
     function llenar_tabla_productos_facturados()
     {
@@ -707,7 +690,6 @@ $(document).ready(function () {
             lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
 
             cantidad_total_productos++;
-
         });
 
         $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
@@ -785,6 +767,402 @@ $(document).ready(function () {
         }
     }
 
+    function calcular_precio_total()
+    {
+        precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+
+        $('#precio_total').val(0);
+
+        if ($.isNumeric(precio_total) && precio_total > 0) 
+        {
+            $('#precio_total').val(precio_total);
+            return true;
+        } else {
+            precio_total = 0;
+            return false;
+        }
+    }
+
+    function calcular_totales() 
+    {
+        var total_cantidad = 0.0;
+        var subtotal = 0.0;
+        var valor_total_descuento = 0.0;
+        var total_impuestos = 0.0;
+        total_factura = 0.0;
+
+        $('.linea_registro').each(function() {
+            var cantidad_linea = parseFloat( $(this).find('.elemento_modificar').eq(0).text() );
+            total_cantidad += cantidad_linea;
+            
+            subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * cantidad_linea;
+            valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
+            total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
+            total_factura += parseFloat( $(this).find('.precio_total').text() );
+        });
+
+        $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(total_cantidad));
+
+        // Subtotal (Sumatoria de base_impuestos por cantidad)
+        //var valor = ;
+        $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) ) );
+
+        $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+
+        // Total impuestos (Sumatoria de valor_impuesto por cantidad)
+        $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
+
+        // label Total factura  (Sumatoria de precio_total)
+        var valor_redondeado = $.fn.redondear_a_centena(total_factura);
+        $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
+
+        // input hidden
+        $('#valor_total_factura').val(total_factura);
+
+        valor_ajuste_al_peso = valor_redondeado - total_factura;
+
+        $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+        
+        if( $('#manejar_propinas').val() == 1 )
+        {
+            $.fn.calcular_valor_a_pagar_propina(total_factura);
+
+            $('#valor_sub_total_factura').val( total_factura );
+            $('#lbl_sub_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( total_factura ));
+
+            $.fn.calcular_totales_propina();
+        }
+    }
+
+    var valor_actual, elemento_modificar, elemento_padre;
+
+    // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
+    $(document).on('dblclick', '.elemento_modificar', function(){
+
+        $('#popup_alerta').hide();
+
+        elemento_modificar = $(this);
+
+        elemento_padre = elemento_modificar.parent();
+
+        valor_actual = $(this).html();
+
+        elemento_modificar.hide();
+
+        elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+        document.getElementById('valor_nuevo').value = valor_actual;
+        document.getElementById('valor_nuevo').select();
+
+    });
+
+    // Si la caja de texto pierde el foco
+    $(document).on('blur', '#valor_nuevo', function(event){
+
+        var x = event.which || event.keyCode; // Capturar la tecla presionada
+        if( x != 13 ) // 13 = Tecla Enter
+        {
+            elemento_padre.find('#valor_nuevo').remove();
+            elemento_modificar.show();
+        }
+
+    });
+
+    // Al presiona teclas en la caja de texto
+    $(document).on('keyup', '#valor_nuevo', function (event) {
+
+        var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+        // Abortar la edición
+        if (x == 27) // 27 = ESC
+        {
+            elemento_padre.find('#valor_nuevo').remove();
+            elemento_modificar.show();
+            return false;
+        }
+
+        // Guardar
+        if (x == 13) // 13 = ENTER
+        {
+            var fila = $(this).closest("tr");
+            guardar_valor_nuevo(fila);
+        }
+    });
+
+    $("#btn_listar_items").click(function (event) {
+        $("#myModal").modal({keyboard: true});
+        $(".btn_edit_modal").hide();
+        $(".btn_edit_modal").hide();
+        $('#myTable_filter').find('input').css("border", "3px double red");
+        $('#myTable_filter').find('input').select();
+    });
+
+    $(document).on('click', ".btn_registrar_ingresos_gastos", function (event) {
+        event.preventDefault();
+
+        $('#contenido_modal2').html('');
+        $('#div_spin2').fadeIn();
+
+        $("#myModal2").modal(
+            {backdrop: "static"}
+        );
+
+        $("#myModal2 .modal-title").text('Nuevo registro de ' + $(this).attr('data-lbl_ventana'));
+
+        $("#myModal2 .btn_edit_modal").hide();
+        $("#myModal2 .btn-danger").hide();
+        $("#myModal2 .btn_save_modal").show();
+
+        $("#myModal2 .btn_save_modal").removeAttr('disabled');        
+
+        var url = url_raiz + "/" + "ventas_pos_form_registro_ingresos_gastos" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
+
+        $.get(url, function (respuesta) {
+            $('#div_spin2').hide();
+            $('#contenido_modal2').html(respuesta);
+        });/**/
+    });
+
+    $(document).on('click', ".btn_consultar_estado_pdv", function (event) {
+        event.preventDefault();
+
+        $('#contenido_modal2').html('');
+        $('#div_spin2').fadeIn();
+
+        $("#myModal2").modal(
+            { backdrop: 'static', keyboard: false}
+        );
+
+        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
+
+        $("#myModal2 .btn_edit_modal").hide();
+        $("#myModal2 .btn_save_modal").hide();
+
+        var url = url_raiz + "/" + "pos_get_saldos_caja_pdv" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
+
+        $.get(url, function (respuesta) {
+            $('#div_spin2').hide();
+            $('#contenido_modal2').html(respuesta);
+        });/**/
+    });
+
+    $(document).on('click', ".btn_revisar_pedidos_ventas", function (event) {
+        event.preventDefault();
+
+        $('#contenido_modal2').html('');
+        $('#div_spin2').fadeIn();
+
+        $("#myModal2").modal(
+            {keyboard: true}
+        );
+
+        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
+
+        $("#myModal2 .btn_edit_modal").hide();
+        $("#myModal2 .btn_save_modal").hide();
+
+        var url = url_raiz + "/" + "pos_revisar_pedidos_ventas" + "/" + $('#pdv_id').val();
+
+        $.get(url, function (respuesta) {
+            $('#div_spin2').hide();
+            $('#contenido_modal2').html(respuesta);
+        });/**/
+    });
+
+    $(document).on('click', '#myModal2 .btn_save_modal', function (event) {
+        event.preventDefault();
+
+        if ($('#combobox_motivos').val() == '')
+        {
+            $('#combobox_motivos').focus();
+            alert('Debe ingresar un Motivo');
+            return false;
+        }
+
+        if ($('#cliente_proveedor_id').val() == '') {
+            $('#cliente_proveedor_id').focus();
+            alert('Debe ingresar un Cliente/Proveedor.');
+            return false;
+        }
+
+        if (!validar_input_numerico($('#col_valor')) || $('#col_valor').val() == '') {
+            alert('No ha ingresado una valor para la transacción.');
+            return false;
+        }
+        
+        // Desactivar el click del botón
+        $( this ).hide();
+        $( this ).attr( 'disabled', 'disabled' );
+
+        var url = $("#form_registrar_ingresos_gastos").attr('action');
+        var data = $("#form_registrar_ingresos_gastos").serialize();
+
+        $.post(url, data, function (respuesta) {
+            $('#contenido_modal2').html(respuesta);
+            $("#myModal2 .btn-danger").show();
+            $("#myModal2 .btn_save_modal").hide();
+        });
+
+    });
+
+    $(document).on('click', ".btn_consultar_documentos", function (event) {
+        event.preventDefault();
+
+        $('#contenido_modal2').html('');
+        $('#div_spin2').fadeIn();
+
+        $("#myModal2").modal(
+            {keyboard: true}
+        );
+
+        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
+
+        $("#myModal2 .btn_edit_modal").hide();
+        $("#myModal2 .btn_save_modal").hide();
+
+        var url = url_raiz + "/" + "pos_consultar_documentos_pendientes" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
+
+        $.get(url, function (respuesta) {
+            $('#div_spin2').hide();
+            $('#contenido_modal2').html(respuesta);
+        });/**/
+    });
+
+    var fila;
+    $(document).on('click', ".btn_anular_factura", function (event) {
+        event.preventDefault();
+
+        var opcion = confirm('¿Seguro desea anular la factura ' + $(this).attr('data-lbl_factura') + ' ?');
+
+        if (opcion) {
+            fila = $(this).closest("tr");
+
+            $('#div_spin2').fadeIn();
+            var url = url_raiz + "/" + "pos_factura_anular" + "/" + $(this).attr('data-doc_encabezado_id');
+
+            $.get(url, function (respuesta) {
+                $('#div_spin2').hide();
+
+                fila.find('td').eq(7).text('Anulado');
+                fila.find('.btn_modificar_factura').hide();
+                fila.find('.btn_anular_factura').hide();
+                alert('Documento anulado correctamente.');
+            });
+        } else {
+            return false;
+        }
+    });
+
+    function guardar_valor_nuevo(fila) 
+    {
+        var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+        // Si no cambió el valor_nuevo, no pasa nada
+        if (valor_nuevo == valor_actual)
+        {
+            return false;
+        }
+
+        elemento_modificar.html(valor_nuevo);
+        elemento_modificar.show();
+        
+        var producto = productos.find(item => item.id === parseInt( fila.find('.inv_producto_id').text() ) );
+        costo_unitario = producto.costo_promedio;
+
+        calcular_precio_total_lbl(fila);
+
+        if ( !validar_venta_menor_costo() )
+        { 
+            elemento_modificar.html(valor_actual);
+        }
+
+        $('#inv_producto_id').focus();
+
+        calcular_precio_total_lbl(fila);
+        calcular_totales();
+
+        reset_efectivo_recibido();
+        $('#total_valor_total').actualizar_medio_recaudo();
+
+        elemento_padre.find('#valor_nuevo').remove();
+    }
+
+    function calcular_precio_total_lbl(fila) 
+    {
+        tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
+        cantidad = parseFloat( fila.find('.elemento_modificar').eq(0).text() );
+        precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
+
+        var tasa_impuesto = parseFloat( fila.find('.lbl_tasa_impuesto').text() );
+
+        valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
+        valor_total_descuento = valor_unitario_descuento * cantidad;
+
+        var precio_venta = precio_unitario - valor_unitario_descuento;
+        base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
+
+        precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+
+
+        fila.find('.precio_unitario').text(precio_unitario);
+        
+        fila.find('.base_impuesto').text(base_impuesto_unitario);
+        
+        fila.find('.valor_impuesto').text(precio_venta - base_impuesto_unitario);        
+
+        fila.find('.cantidad').text(cantidad);
+
+        fila.find('.precio_total').text(precio_total);
+
+        fila.find('.base_impuesto_total').text(base_impuesto_unitario * cantidad);
+
+        fila.find('.valor_total_descuento').text(valor_total_descuento);
+
+        fila.find('.lbl_valor_total_descuento').text(new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+
+        fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
+    }
+
+    $("#btn_cargar_plano").on('click',function(event){
+        event.preventDefault();
+
+        if ( !validar_requeridos() )
+        {
+            return false;
+        }
+
+        $("#div_spin").show();
+        $("#div_cargando").show();
+        
+        var form = $('#form_archivo_plano');
+        var url = form.attr('action');
+        var datos = new FormData(document.getElementById("form_archivo_plano"));
+
+        $.ajax({
+            url: url,
+            type: "post",
+            dataType: "html",
+            data: datos,
+            cache: false,
+            contentType: false,
+            processData: false
+        })
+        .done(function( respuesta ){
+            $('#div_cargando').hide();
+            $("#div_spin").hide();
+
+            $("#ingreso_registros").find('tbody:last').prepend( respuesta );
+            calcular_totales();
+
+            $('#btn_nuevo').show();
+
+            hay_productos = $('#ingreso_registros tr').length - 2;
+            $('#numero_lineas').html( hay_productos );
+
+            $('#inv_producto_id').focus();
+        });
+    });    
+
     function get_hora(i)
     {
       if ( i > 12 )
@@ -853,8 +1231,7 @@ $(document).ready(function () {
         // reset totales
         $('#total_valor_total').text('$0.00');
     }
-
-
+    
     function reset_linea_ingreso_default()
     {
         $('#efectivo_recibido').val('');
@@ -885,403 +1262,6 @@ $(document).ready(function () {
         valor_impuesto_unitario = 0;
         valor_unitario_descuento = 0;
     }
-
-    function calcular_precio_total()
-    {
-        precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
-
-        $('#precio_total').val(0);
-
-        if ($.isNumeric(precio_total) && precio_total > 0) 
-        {
-            $('#precio_total').val(precio_total);
-            return true;
-        } else {
-            precio_total = 0;
-            return false;
-        }
-    }
-
-
-    function calcular_totales() 
-    {
-        var total_cantidad = 0.0;
-        var subtotal = 0.0;
-        var valor_total_descuento = 0.0;
-        var total_impuestos = 0.0;
-        total_factura = 0.0;
-
-        $('.linea_registro').each(function() {
-            var cantidad_linea = parseFloat( $(this).find('.elemento_modificar').eq(0).text() );
-            total_cantidad += cantidad_linea;
-            
-            subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * cantidad_linea;
-            valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
-            total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
-            total_factura += parseFloat( $(this).find('.precio_total').text() );
-
-        });
-
-        $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(total_cantidad));
-
-        // Subtotal (Sumatoria de base_impuestos por cantidad)
-        //var valor = ;
-        $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) ) );
-
-        $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
-
-        // Total impuestos (Sumatoria de valor_impuesto por cantidad)
-        $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
-
-        // label Total factura  (Sumatoria de precio_total)
-        var valor_redondeado = $.fn.redondear_a_centena(total_factura);
-        $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
-
-        // input hidden
-        $('#valor_total_factura').val(total_factura);
-
-        valor_ajuste_al_peso = valor_redondeado - total_factura;
-
-        $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
-    }
-
-
-    var valor_actual, elemento_modificar, elemento_padre;
-
-    // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
-    $(document).on('dblclick', '.elemento_modificar', function(){
-
-        $('#popup_alerta').hide();
-
-        elemento_modificar = $(this);
-
-        elemento_padre = elemento_modificar.parent();
-
-        valor_actual = $(this).html();
-
-        elemento_modificar.hide();
-
-        elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
-
-        document.getElementById('valor_nuevo').value = valor_actual;
-        document.getElementById('valor_nuevo').select();
-
-    });
-
-    // Si la caja de texto pierde el foco
-    $(document).on('blur', '#valor_nuevo', function(event){
-
-        var x = event.which || event.keyCode; // Capturar la tecla presionada
-        if( x != 13 ) // 13 = Tecla Enter
-        {
-            elemento_padre.find('#valor_nuevo').remove();
-            elemento_modificar.show();
-        }
-
-    });
-
-    // Al presiona teclas en la caja de texto
-    $(document).on('keyup', '#valor_nuevo', function (event) {
-
-        var x = event.which || event.keyCode; // Capturar la tecla presionada
-
-        // Abortar la edición
-        if (x == 27) // 27 = ESC
-        {
-            elemento_padre.find('#valor_nuevo').remove();
-            elemento_modificar.show();
-            return false;
-        }
-
-        // Guardar
-        if (x == 13) // 13 = ENTER
-        {
-            var fila = $(this).closest("tr");
-            guardar_valor_nuevo(fila);
-        }
-    });
-
-
-    $("#btn_listar_items").click(function (event) {
-
-        $("#myModal").modal({keyboard: true});
-        $(".btn_edit_modal").hide();
-        $(".btn_edit_modal").hide();
-        $('#myTable_filter').find('input').css("border", "3px double red");
-        $('#myTable_filter').find('input').select();
-
-    });
-
-
-    $(document).on('click', ".btn_registrar_ingresos_gastos", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            {backdrop: "static"}
-        );
-
-        $("#myModal2 .modal-title").text('Nuevo registro de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn-danger").hide();
-        $("#myModal2 .btn_save_modal").show();
-
-        $("#myModal2 .btn_save_modal").removeAttr('disabled');        
-
-        var url = url_raiz + "/" + "ventas_pos_form_registro_ingresos_gastos" + "/" + $('#pdv_id').val() + "/" + $(this).attr('data-id_modelo') + "/" + $(this).attr('data-id_transaccion');
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-
-    $(document).on('click', ".btn_consultar_estado_pdv", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            { backdrop: 'static', keyboard: false}
-        );
-
-        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn_save_modal").hide();
-
-        var url = url_raiz + "/" + "pos_get_saldos_caja_pdv" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-
-    $(document).on('click', ".btn_revisar_pedidos_ventas", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            {keyboard: true}
-        );
-
-        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn_save_modal").hide();
-
-        var url = url_raiz + "/" + "pos_revisar_pedidos_ventas" + "/" + $('#pdv_id').val();
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-
-    $(document).on('click', '#myModal2 .btn_save_modal', function (event) {
-        event.preventDefault();
-
-        if ($('#combobox_motivos').val() == '')
-        {
-            $('#combobox_motivos').focus();
-            alert('Debe ingresar un Motivo');
-            return false;
-        }
-
-        if ($('#cliente_proveedor_id').val() == '') {
-            $('#cliente_proveedor_id').focus();
-            alert('Debe ingresar un Cliente/Proveedor.');
-            return false;
-        }
-
-        if (!validar_input_numerico($('#col_valor')) || $('#col_valor').val() == '') {
-            alert('No ha ingresado una valor para la transacción.');
-            return false;
-        }
-        
-        // Desactivar el click del botón
-        $( this ).hide();
-        $( this ).attr( 'disabled', 'disabled' );
-
-        var url = $("#form_registrar_ingresos_gastos").attr('action');
-        var data = $("#form_registrar_ingresos_gastos").serialize();
-
-        $.post(url, data, function (respuesta) {
-            $('#contenido_modal2').html(respuesta);
-            $("#myModal2 .btn-danger").show();
-            $("#myModal2 .btn_save_modal").hide();
-        });
-
-    });
-
-
-    $(document).on('click', ".btn_consultar_documentos", function (event) {
-        event.preventDefault();
-
-        $('#contenido_modal2').html('');
-        $('#div_spin2').fadeIn();
-
-        $("#myModal2").modal(
-            {keyboard: true}
-        );
-
-        $("#myModal2 .modal-title").text('Consulta de ' + $(this).attr('data-lbl_ventana'));
-
-        $("#myModal2 .btn_edit_modal").hide();
-        $("#myModal2 .btn_save_modal").hide();
-
-        var url = url_raiz + "/" + "pos_consultar_documentos_pendientes" + "/" + $('#pdv_id').val() + "/" + $('#fecha').val() + "/" + $('#fecha').val();
-
-        $.get(url, function (respuesta) {
-            $('#div_spin2').hide();
-            $('#contenido_modal2').html(respuesta);
-        });/**/
-    });
-
-    var fila;
-    $(document).on('click', ".btn_anular_factura", function (event) {
-        event.preventDefault();
-
-        var opcion = confirm('¿Seguro desea anular la factura ' + $(this).attr('data-lbl_factura') + ' ?');
-
-        if (opcion) {
-            fila = $(this).closest("tr");
-
-            $('#div_spin2').fadeIn();
-            var url = url_raiz + "/" + "pos_factura_anular" + "/" + $(this).attr('data-doc_encabezado_id');
-
-            $.get(url, function (respuesta) {
-                $('#div_spin2').hide();
-
-                fila.find('td').eq(7).text('Anulado');
-                fila.find('.btn_modificar_factura').hide();
-                fila.find('.btn_anular_factura').hide();
-                alert('Documento anulado correctamente.');
-            });
-        } else {
-            return false;
-        }
-    });
-
-
-    function guardar_valor_nuevo(fila) 
-    {
-        var valor_nuevo = document.getElementById('valor_nuevo').value;
-
-        // Si no cambió el valor_nuevo, no pasa nada
-        if (valor_nuevo == valor_actual)
-        {
-            return false;
-        }
-
-        elemento_modificar.html(valor_nuevo);
-        elemento_modificar.show();
-        
-        var producto = productos.find(item => item.id === parseInt( fila.find('.inv_producto_id').text() ) );
-        costo_unitario = producto.costo_promedio;
-
-        calcular_precio_total_lbl(fila);
-
-        if ( !validar_venta_menor_costo() )
-        { 
-            elemento_modificar.html(valor_actual);
-        }
-
-        $('#inv_producto_id').focus();
-
-        calcular_precio_total_lbl(fila);
-        calcular_totales();
-        reset_efectivo_recibido();
-        $('#total_valor_total').actualizar_medio_recaudo();
-
-        elemento_padre.find('#valor_nuevo').remove();
-    }
-
-
-    function calcular_precio_total_lbl(fila) 
-    {
-        tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
-        cantidad = parseFloat( fila.find('.elemento_modificar').eq(0).text() );
-        precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
-
-        var tasa_impuesto = parseFloat( fila.find('.lbl_tasa_impuesto').text() );
-
-        valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
-        valor_total_descuento = valor_unitario_descuento * cantidad;
-
-        var precio_venta = precio_unitario - valor_unitario_descuento;
-        base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
-
-        precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
-
-
-        fila.find('.precio_unitario').text(precio_unitario);
-        
-        fila.find('.base_impuesto').text(base_impuesto_unitario);
-        
-        fila.find('.valor_impuesto').text(precio_venta - base_impuesto_unitario);        
-
-        fila.find('.cantidad').text(cantidad);
-
-        fila.find('.precio_total').text(precio_total);
-
-        fila.find('.base_impuesto_total').text(base_impuesto_unitario * cantidad);
-
-        fila.find('.valor_total_descuento').text(valor_total_descuento);
-
-        fila.find('.lbl_valor_total_descuento').text(new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
-
-        fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
-    }
-
-    $("#btn_cargar_plano").on('click',function(event){
-        event.preventDefault();
-
-        if ( !validar_requeridos() )
-        {
-            return false;
-        }
-
-        $("#div_spin").show();
-        $("#div_cargando").show();
-        
-        var form = $('#form_archivo_plano');
-        var url = form.attr('action');
-        var datos = new FormData(document.getElementById("form_archivo_plano"));
-
-        $.ajax({
-            url: url,
-            type: "post",
-            dataType: "html",
-            data: datos,
-            cache: false,
-            contentType: false,
-            processData: false
-        })
-        .done(function( respuesta ){
-            $('#div_cargando').hide();
-            $("#div_spin").hide();
-
-            $("#ingreso_registros").find('tbody:last').prepend( respuesta );
-            calcular_totales();
-            $('#btn_nuevo').show();
-
-            hay_productos = $('#ingreso_registros tr').length - 2;
-            $('#numero_lineas').html( hay_productos );
-
-            $('#inv_producto_id').focus();
-        });
-    });
 
 });
 

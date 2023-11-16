@@ -64,4 +64,6 @@
 
 <input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion" value="{{ $msj_resolucion_facturacion }}">
 
-<input type="hidden" name="manjear_propinas" id="manjear_propinas" value="{{ $manjear_propinas }}">
+<input type="hidden" name="creado_por" id="creado_por" value="{{ \Illuminate\Support\Facades\Auth::user()->email }}">
+
+<input type="hidden" name="manejar_propinas" id="manejar_propinas" value="{{ config('ventas_pos.manejar_propinas') }}">

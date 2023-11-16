@@ -449,20 +449,18 @@ $(document).ready(function () {
         var data = $("#form_create").serialize();     
         
         $.post(url, data, function (doc_encabezado_consecutivo) {
+            $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar pedido' );
+            $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
             $('title').append(doc_encabezado_consecutivo);
             
             $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
 
             llenar_tabla_productos_facturados();
-            
             ventana_imprimir();
+            resetear_ventana();
 
-            if ( $('#action').val() == 'create' )
+            if ( $('#action').val() != 'create' )
             {
-                resetear_ventana();
-                $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar pedido' );
-                $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
-            }else{
                 location.href = url_raiz + '/pos_pedido/create?id=20&id_modelo=175&id_transaccion=42&pdv_id=' + $('#pdv_id').val() + '&action=create';
             }            
         });
@@ -480,19 +478,7 @@ $(document).ready(function () {
 
         $("#btn_cancelar").show();
         $("#btn_cancelar_pedido").hide();
-    }
-
-    $(document).on('click', '#btn_recalcular_totales', function(event) {
-        event.preventDefault();
-        calcular_totales();
-
-        $('#btn_nuevo').show();
-        $('#numero_lineas').text(hay_productos);
-        deshabilitar_campos_encabezado();
-
-        reset_linea_ingreso_default();
-    });
-    
+    }    
 
     function seleccionar_cliente(item_sugerencia) {        
         // Asignar descripción al TextInput

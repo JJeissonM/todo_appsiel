@@ -1,54 +1,37 @@
-function draw_items2(lista_items)
-{
-    $('.filtros').html('');
-    $.each(lista_items,function(key,item)
-    {
-        var label = item.referencia + ' ' + item.descripcion;
-        $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');
-    });
+
+$.fn.calcular_totales_propina = function () {
+
+    var valor_total_factura = parseFloat($('#valor_sub_total_factura').val()) + parseFloat( $('#valor_propina').val());
+
+    $('#lbl_propina').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_propina').val() ));
+    $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_total_factura ));
+
+    // input hidden
+    $('#aux_propina').val( $('#valor_propina').val() );
+    $('#valor_total_factura').val( valor_total_factura );
 }
 
-var arr_texto_filtro, arr_label, dibujar, num_coincidencia, largo_arr_texto_filtro;
-
-function filterItems2(query) {
-
-    var textoFiltro = query.toLowerCase();
-
-    $('.filtros').html('');
-
-    arr_texto_filtro = textoFiltro.split(' ');
+$.fn.calcular_valor_a_pagar_propina = function (total_factura) {
     
-    var items_filtered = productos;
-    for (let index = 0; index < arr_texto_filtro.length; index++) {
-        const element = arr_texto_filtro[index];
-        var items_to_draw = [];
-        $.each(items_filtered,function(key,item)
-        {   
-            var label = item.referencia + ' ' + item.descripcion;
-            if (label.toLowerCase().indexOf(element) === -1) { // No existe
-                
-            } else if ( label.toLowerCase().indexOf(element) > -1) {
-                items_to_draw.push(item);
-            }        
-        });
-        items_filtered = items_to_draw;
-    }
+    var valor_a_pagar_propina = total_factura * $('#porcentaje_propina').val() / 100;
 
-    draw_items(items_filtered);
+    $('#lbl_propina').text('$ ' + valor_a_pagar_propina);
+    $('#valor_propina').val(valor_a_pagar_propina);
+    $('#aux_propina').val(valor_a_pagar_propina);
+}
 
-    return false;
+$.fn.reset_propina = function () {
+    $('#lbl_propina').text('$ 0');
+    $('#valor_propina').val(0);
+    $('#aux_propina').val(0);
 }
 
 $(document).ready(function () {
 
     $('#teso_medio_recaudo_id_propina').val('1-Efectivo');
     $('#teso_caja_id_propina').val( $('#caja_pdv_default_id').val() );
-
     
-    $('#teso_medio_recaudo_id_propina').on('change', function (event) {
-
-        console.log($(this).val());
-
+    $('#teso_medio_recaudo_id_propina').on('change', function () {
         if ( $(this).val() != '1-Efectivo' ) {
             $('#div_caja_propina').hide();
             $('#div_banco_propina').show();
@@ -57,82 +40,51 @@ $(document).ready(function () {
             $('#div_banco_propina').hide();
         }
     });
+    
+    $('#valor_propina').on('click', function (event) {
+        $(this).select();
+    });
 
-    $('#textinput_filter_item').on('keyup', function (event) {
+    $('#valor_propina').on('keyup', function (event) {
 
-        $("[data-toggle='tooltip']").tooltip('hide');
-        $('#popup_alerta').hide();
+		var codigo_tecla_presionada = event.which || event.keyCode;
 
-        var codigo_tecla_presionada = event.which || event.keyCode;
-
-        switch (codigo_tecla_presionada) {
-            case 27: // 27 = ESC
-                
-                $('.filtros button').fadeOut('normal').addClass('hidden');
-                $('#efectivo_recibido').focus();
-                $('#efectivo_recibido').select();
-                break;
-            
-            case 13: // Al presionar Enter
-
-                if ($(this).val() == '') {
-                    return false;
-                }
-
-                $('#quantity').select();
-
-                break;
-        
-            case 113: // Al presionar F2
-
-                $('.filtros button').fadeOut('normal').addClass('hidden');
-
-                $('#inv_producto_id').focus();
-
-                break;
-            default :
-                
-                if ($(this).val().length < 2) {
-                    $('.filtros button').fadeOut('normal').addClass('hidden');
-                    return false;
-                }
-
-                filterItems( $(this).val() );
-
-                break;
+        if ($(this).val() == '') {
+            $.fn.reset_propina();
+            $.fn.calcular_totales_propina();
+            $(this).select();
         }
 
-    });
-
-    $(document).on('focus', '#textinput_filter_item', function () {
-        $('#textinput_filter_item').select();
-    });
-
-    $(document).on('keyup', '#quantity', function (event) {
-        var codigo_tecla_presionada = event.which || event.keyCode;
-        if(codigo_tecla_presionada == 13){ // 13 = Enter
-            $(this).next().focus();
+        var init_value = parseFloat( $('#aux_propina').val() );
+        if (!$.isNumeric( $(this).val() ) ) {
+            $(this).val( init_value );
+            return false;
         }
-        if(codigo_tecla_presionada == 113){ // 113 = F2
-            $('#textinput_filter_item').select();
-        }
-    });
-    $(document).on('focus', '#quantity', function () {
-        $('#quantity').select();
+
+		switch (codigo_tecla_presionada) {
+			case 13:// Al presionar Enter
+				$('#efectivo_recibido').select();
+				break;
+
+			default:
+				// 
+				break;
+		}
+
+        $.fn.calcular_totales_propina();
+	});
+    
+    $('#remove_tip').on('click', function () {
+        $.fn.reset_propina();
+        $.fn.calcular_totales_propina();
+        $('#efectivo_recibido').select();
     });
 
-
-    $(document).on('keyup', '.icono_item', function (event) {
-        var codigo_tecla_presionada = event.which || event.keyCode;
-        if(codigo_tecla_presionada == 113){ // 113 = F2
-            $('#textinput_filter_item').select();
-        }
-    });
-    $(document).on('focus', '.icono_item', function () {
-        $(this).attr('style','background:#574696;color:white;');
-    });
-
-    $(document).on('blur', '.icono_item', function () {
-        $(this).attr('style','background:#ddd;color:black;');
-    });
+    if ( $('#motivo_tesoreria_propinas').val() == '' || $('#motivo_tesoreria_propinas').val() == null || $('#motivo_tesoreria_propinas').val() == 0) {
+        Swal.fire({
+                icon: 'error',
+                title: 'Alerta!',
+                text: 'No se ha definido un Motivo de Tesorería para las propinas. No podrá registrar propinas.'
+            });
+    }
 });

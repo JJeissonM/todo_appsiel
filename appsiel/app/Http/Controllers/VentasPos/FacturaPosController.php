@@ -63,6 +63,8 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
+use App\VentasPos\Services\CrudService;
+use App\VentasPos\Services\TipService;
 
 class FacturaPosController extends TransaccionController
 {
@@ -162,6 +164,10 @@ class FacturaPosController extends TransaccionController
         $valor_subtotal = 0;
         $valor_descuento = 0;
         $valor_total_impuestos = 0;
+
+        $valor_sub_total_factura = 0;
+        $valor_lbl_propina = 0;
+
         $valor_total_factura = 0;
         $total_efectivo_recibido = 0;
 
@@ -174,9 +180,7 @@ class FacturaPosController extends TransaccionController
         $pdv_descripcion = $pdv->descripcion;
         $tipo_doc_app = $pdv->tipo_doc_app;
 
-        $manjear_propinas = (int)config('ventas_pos.manjear_propinas');
-
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app','manjear_propinas'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina'));
     }
 
     /**
@@ -200,7 +204,6 @@ class FacturaPosController extends TransaccionController
         }
 
         // Crear Registros del documento de ventas
-        $request['creado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
         if ( $request->pedido_id != 0) {
@@ -301,9 +304,9 @@ class FacturaPosController extends TransaccionController
         $this->set_variables_globales();
 
         // Se obtiene el registro a modificar del modelo
-        $registro = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
+        $factura = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
 
-        $pdv = Pdv::find($registro->pdv_id);
+        $pdv = Pdv::find($factura->pdv_id);
 
         $obj_msj_resolucion_facturacion = $this->get_msj_resolucion_facturacion( $pdv );
         $msj_resolucion_facturacion = '';
@@ -317,94 +320,21 @@ class FacturaPosController extends TransaccionController
             $msj_resolucion_facturacion = $obj_msj_resolucion_facturacion->message;
         }
 
-        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $registro, 'edit');
+        $lista_campos = ModeloController::get_campos_modelo($this->modelo, $factura, 'edit');
 
         $doc_encabezado = FacturaPos::get_registro_impresion($id);
 
         $cantidad = count($lista_campos);
 
-        $eid = '';
-
-		if( config("configuracion.tipo_identificador") == 'NIT') { 
-            $eid = number_format( $doc_encabezado->numero_identificacion, 0, ',', '.');
-        }else { 
-            $eid = $doc_encabezado->numero_identificacion;
-        }
-
-        // Agregar al comienzo del documento
-        array_unshift($lista_campos, [
-            "id" => 201,
-            "descripcion" => "Empresa",
-            "tipo" => "personalizado",
-            "name" => "encabezado",
-            "opciones" => "",
-            "value" => '<div style="border: solid 1px #ddd; padding-top: -20px;">
-                                                            <b style="font-size: 1.6em; text-align: center; display: block;">
-                                                                ' . $doc_encabezado->documento_transaccion_descripcion . '
-                                                                <br/>
-                                                                <b>No.</b> ' . $doc_encabezado->documento_transaccion_prefijo_consecutivo . '
-                                                                <br/>
-                                                                <b>Fecha:</b> ' . $doc_encabezado->fecha . '
-                                                            </b>
-                                                            <br/>
-                                                            <b>Cliente:</b> ' . $doc_encabezado->tercero_nombre_completo . '
-                                                            <br/>
-                                                            <b>'.config("configuracion.tipo_identificador").' &nbsp;&nbsp;</b> ' . $eid. '
-                                                        </div>',
-            "atributos" => [],
-            "definicion" => "",
-            "requerido" => 0,
-            "editable" => 1,
-            "unico" => 0
-        ]);
-
-        //Personalización de la lista de campos
-        foreach ($lista_campos as $key => $value)
-        {
-            switch ($value['name']){
-
-                case 'cliente_input':
-                    $lista_campos[$key]['value'] = $doc_encabezado->tercero_nombre_completo;
-                    break;
-
-                case 'vendedor_id':
-                    $lista_campos[$key]['value'] = [$doc_encabezado->vendedor_id];
-                    break;
-
-                case 'core_tipo_doc_app_id':
-                    $lista_campos[$key]['editable'] = 1;
-                    $lista_campos[$key]['atributos'] = [];
-                    $lbl_value = $lista_campos[$key]['opciones'][$lista_campos[$key]['value']];
-                    $lista_campos[$key]['opciones'] = [
-                        $lista_campos[$key]['value'] => $lbl_value
-                    ];
-                    break;
-
-                case 'forma_pago':
-                    $lista_campos[$key]['value'] = $doc_encabezado->condicion_pago;
-                    $lista_campos[$key]['editable'] = 1;
-                    $lista_campos[$key]['atributos'] = [];
-                    break;
-
-                case 'fecha_vencimiento':
-                    $lista_campos[$key]['value'] = $doc_encabezado->fecha_vencimiento;
-                    break;
-
-                case 'inv_bodega_id':
-                    $lista_campos[$key]['opciones'] = [$pdv->bodega_default_id => $pdv->bodega->descripcion];
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-        }
+        $crud_serv = new CrudService();
+        $lista_campos = $crud_serv->custom_fields_for_edit($lista_campos, $doc_encabezado, $pdv);
 
         $fecha = $doc_encabezado->fecha;
         $fecha_vencimiento = $doc_encabezado->fecha_vencimiento;
 
         $acciones = $this->acciones_basicas_modelo($this->modelo, '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'));
 
-        $url_action = str_replace('id_fila', $registro->id, $acciones->update);
+        $url_action = str_replace('id_fila', $factura->id, $acciones->update);
 
         $form_create = [
             'url' => $url_action,
@@ -431,15 +361,15 @@ class FacturaPosController extends TransaccionController
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
-        $numero_linea = count($registro->lineas_registros) + 1;
+        $numero_linea = count($factura->lineas_registros) + 1;
 
-        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($registro->lineas_registros);
+        $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($factura->lineas_registros);
         
-        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($registro);
+        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($factura);
 
         $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
         
-        $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode(str_replace("$", "", $registro->lineas_registros_medios_recaudos) ), 'valor');
+        $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode(str_replace("$", "", $factura->lineas_registros_medios_recaudos) ), 'valor');
         //$total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = $this->get_productos($pdv,$productos);
@@ -455,27 +385,27 @@ class FacturaPosController extends TransaccionController
 
         $redondear_centena = config('ventas_pos.redondear_centena');
         
-        $cliente = $registro->cliente;
-        $vendedor = $registro->vendedor;
+        $cliente = $factura->cliente;
+        $vendedor = $factura->vendedor;
 
         $pedido_id = 0;
 
-        $valor_subtotal = number_format($registro->lineas_registros->sum('base_impuesto_total') + $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.');
+        $valor_subtotal = number_format($factura->lineas_registros->sum('base_impuesto_total') + $factura->lineas_registros->sum('valor_total_descuento'),'2',',','.');
 
-        $valor_descuento = number_format( $registro->lineas_registros->sum('valor_total_descuento'),'2',',','.');
+        $valor_descuento = number_format( $factura->lineas_registros->sum('valor_total_descuento'),'2',',','.');
 
-        $valor_total_impuestos = number_format( $registro->lineas_registros->sum('precio_total') - $registro->lineas_registros->sum('base_impuesto_total'),'2',',','.');
+        $valor_total_impuestos = number_format( $factura->lineas_registros->sum('precio_total') - $factura->lineas_registros->sum('base_impuesto_total'),'2',',','.');
 
-        $valor_total_factura = $registro->lineas_registros->sum('precio_total');
+        $valor_sub_total_factura = $factura->lineas_registros->sum('precio_total');
+        $valor_lbl_propina = (new TipService())->get_tip_amount($factura);
+        $valor_total_factura = $valor_sub_total_factura + $valor_lbl_propina;
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
         $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
-        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();        
+        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
 
-        $manjear_propinas = (int)config('ventas_pos.manjear_propinas');
-
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'manjear_propinas'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura' , 'valor_lbl_propina'));
     }
 
     /**

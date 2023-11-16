@@ -199,7 +199,9 @@ class TransaccionController extends Controller
     */
     public function crear_encabezado_documento(Request $request, $modelo_id)
     {
-        $request['creado_por'] = Auth::user()->email;
+        if ( !isset($request['creado_por']) ) {
+            $request['creado_por'] = Auth::user()->email;
+        }
 
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $modelo_id );
 

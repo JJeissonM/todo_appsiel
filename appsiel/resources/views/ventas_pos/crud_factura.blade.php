@@ -159,7 +159,7 @@
             <hr>
 
             @if( Input::get('action') == 'edit' )
-                {{ Form::model($registro, ['url' => [$url_action], 'method' => 'PUT','files' => true,'id' => 'form_create']) }}
+                {{ Form::model($factura, ['url' => [$url_action], 'method' => 'PUT','files' => true,'id' => 'form_create']) }}
             @else
                 {{ Form::open([ 'url' => $form_create['url'], 'id'=>'form_create']) }}
             @endif
@@ -227,15 +227,14 @@
                         Productos ingresados: <span id="numero_lineas"> 0 </span>
                         <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
+                        
+                        @if( (int)config('ventas_pos.manejar_propinas') )
+                            @include('ventas_pos.propinas.section_create')
+                        @endif
                         @if( Input::get('action') == 'edit' )
                             {!! $vista_medios_recaudo !!}
                         @else
                             @include('tesoreria.incluir.medios_recaudos')
-                        @endif
-
-                        
-                        @if( (int)config('ventas_pos.manjear_propinas') )
-                            @include('ventas_pos.propinas.section_create')
                         @endif
 
                     </div>
@@ -303,7 +302,7 @@
 
     <script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
 
-    @if( (int)config('ventas_pos.manjear_propinas') )
+    @if( (int)config('ventas_pos.manejar_propinas') )
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/propinas.js?aux=' . uniqid())}}"></script>
     @endif
     

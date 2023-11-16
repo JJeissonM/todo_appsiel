@@ -1,3 +1,10 @@
+<input type="hidden" name="motivo_tesoreria_propinas" id="motivo_tesoreria_propinas" value="{{ (int)config('ventas_pos.motivo_tesoreria_propinas') }}">
+
+<input type="hidden" name="porcentaje_propina" id="porcentaje_propina" value="{{ (float)config('ventas_pos.porcentaje_propina') }}">
+
+<?php 
+    //dd($cajas, $cuentas_bancarias);
+?>
 <div class="container-fluid">
     <div class="marco_formulario">
         <h5>Propina sugerida</h5>
@@ -6,18 +13,37 @@
             <br>
             <div class="table-responsive" id="table_propina">
                 <table class="table table-striped" id="ingreso_registro_propina">
+                    {{ Form::bsTableHeader( [ 'Medio de pago', 'Caja/Banco', 'Valor'] ) }}
                     <tbody>
                         <tr>
-                            <td>{{ Form::bsSelect('teso_medio_recaudo_id_propina', null, 'Medio recaudo', $medios_recaudo, []) }}</td>
+                            <td>
+                                <select id="teso_medio_recaudo_id_propina" class="form-control" name="teso_medio_recaudo_id_propina">
+                                    @foreach ($medios_recaudo as $id => $label)
+                                        <option value="{{$id}}">{{$label}}</option>
+                                    @endforeach
+                                </select>
+                            </td>
                             <td>
                                 <div id="div_caja_propina">
-                                    {{ Form::bsSelect('teso_caja_id_propina', null, 'Caja', array_merge(['0'=>''], $cajas ), []) }}
+                                    <select id="teso_caja_id_propina" class="form-control" name="teso_caja_id_propina">
+                                        <option value=""></option>
+                                        @foreach ($cajas as $id => $label)
+                                            <option value="{{$id}}">{{$label}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                                 <div id="div_banco_propina" style="display:none;">
-                                    {{ Form::bsSelect('teso_cuenta_bancaria_id_propina', null, 'Cuenta Bancaria', array_merge(['0'=>''], $cuentas_bancarias ), []) }}
+                                    <select id="teso_cuenta_bancaria_id_propina" class="form-control" name="teso_cuenta_bancaria_id_propina">
+                                        <option value=""></option>
+                                        @foreach ($cuentas_bancarias as $id => $label)
+                                            <option value="{{$id}}">{{$label}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
                             </td>
-                            <td>{{ Form::bsText('valor_total_propina', 0, 'Valor', []) }}</td>
+                            <td>
+                                <input class="form-control" id="valor_propina" placeholder="Valor" autocomplete="off" name="valor_propina" type="text" value="{{ $valor_lbl_propina }}">
+                            </td>
                         </tr>
                     </tbody>
                 </table>

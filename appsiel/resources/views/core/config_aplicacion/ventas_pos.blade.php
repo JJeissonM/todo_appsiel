@@ -303,13 +303,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$manjear_propinas = '0';
-								if( isset($parametros['manjear_propinas'] ) )
+								$manejar_propinas = '0';
+								if( isset($parametros['manejar_propinas'] ) )
 								{
-									$manjear_propinas = $parametros['manjear_propinas'];
+									$manejar_propinas = $parametros['manejar_propinas'];
 								}
 							?>
-							{{ Form::bsSelect('manjear_propinas', $manjear_propinas, 'Manejar propinas', [ '0'=> 'No', '1'=> 'Sí'], ['class'=>'form-control', 'required'=>'required']) }}
+							{{ Form::bsSelect('manejar_propinas', $manejar_propinas, 'Manejar propinas', [ '0'=> 'No', '1'=> 'Sí'], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 
@@ -325,6 +325,27 @@
 								?>
 								{{ Form::bsText('porcentaje_propina', $porcentaje_propina, 'Porcentaje propina', ['class'=>'form-control']) }}
 							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$motivo_tesoreria_propinas = '0';
+								if( isset($parametros['motivo_tesoreria_propinas'] ) )
+								{
+									$motivo_tesoreria_propinas = $parametros['motivo_tesoreria_propinas'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_tesoreria_propinas', $motivo_tesoreria_propinas, 'Motivo Tesorería para Propinas', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 
