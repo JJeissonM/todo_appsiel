@@ -347,12 +347,7 @@ class InvProducto extends Model
             $item->costo_promedio = $costo_prom;
             $item->existencia_actual = $existencia_actual;
 
-            /*
-            if($item->referencia != '')
-            {
-                $item->descripcion .= ' - ' . $item->referencia;
-            }
-            */
+            $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('ventas.lista_precios_id'), date('Y-m-d'), $item->id );
         }
 
         return $registros;
