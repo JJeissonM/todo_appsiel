@@ -54,6 +54,7 @@ use App\Contabilidad\Impuesto;
 use App\Matriculas\FacturaAuxEstudiante;
 use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentHeaderService;
+use App\VentasPos\Services\TipService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -588,6 +589,7 @@ class VentaController extends TransaccionController
         if ( $ruta_vista == 'ventas.formatos_impresion.pos') {
             $ruta_vista = 'ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default;
             
+            $valor_propina = ( new TipService() )->get_tip_amount($doc_encabezado);
             $datos_factura = (object)[
                 'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
@@ -597,6 +599,8 @@ class VentaController extends TransaccionController
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
                 'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
                 'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
+                'lbl_total_propina' => '$' . number_format( $valor_propina, 2, ',' , '.'),
+                'total_factura_mas_propina' => '$' . number_format( $doc_encabezado->valor_total + $valor_propina, 2, ',' , '.'),
                 'lbl_ajuste_al_peso' => '',
                 'lbl_total_recibido' => '',
                 'lbl_total_cambio' => '',

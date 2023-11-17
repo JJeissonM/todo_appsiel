@@ -57,7 +57,10 @@ $datos = [
                         <td class="text-right"> 
                             <div id="total_valor_total">$0.00</div>
                         </td>
-                        <td> &nbsp; </td>
+                        <td> 
+                            &nbsp; 
+                            <span style="display: none; color:red;" id="msj_medios_pago_diferentes_total_factura"><i class="fa fa-warning" title="El valor de los medios de pago debe ser exactamente igual al total de la factura."></i></span>
+                        </td>
                     </tr>
                     </tfoot>
                 </table>

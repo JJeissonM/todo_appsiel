@@ -123,30 +123,11 @@
         </tbody>
     </table>
 
-    <table style="width: 100%; font-size: 11px;">
-        <tbody>
-            <tr style="font-weight: bold;">
-                <td style="text-align: right;"> Total factura: </td>
-                <td style="text-align: right;">
-                    <div class="lbl_total_factura" style="display: inline; margin-right: 15px;"> </div>
-                    <br>
-                    <div class="lbl_ajuste_al_peso" style="display: inline; margin-right: 15px; font-size: 9px;"> </div>
-                </td>
-            </tr>
-            <tr style="font-weight: bold;">
-                <td style="text-align: right;"> Recibido: </td>
-                <td style="text-align: right;">
-                    <div class="lbl_total_recibido" style="display: inline; margin-right: 15px;"> </div>
-                </td>
-            </tr>
-            <tr style="font-weight: bold;">
-                <td style="text-align: right;"> Cambio: </td>
-                <td style="text-align: right;">
-                    <div class="lbl_total_cambio" style="display: inline; margin-right: 15px;"> </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    @if( (int)config('ventas_pos.manejar_propinas') )
+        @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales_con_propina')
+    @else
+        @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
+    @endif
 
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
 

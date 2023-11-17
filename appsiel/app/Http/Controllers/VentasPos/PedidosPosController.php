@@ -438,6 +438,8 @@ class PedidosPosController extends TransaccionController
             'lbl_fecha_vencimiento' => '',
             'lbl_descripcion_doc_encabezado' => '',
             'lbl_total_factura' => '',
+            'lbl_total_propina' => '',
+            'total_factura_mas_propina' => '',
             'lbl_ajuste_al_peso' => '',
             'lbl_total_recibido' => '0',
             'lbl_total_cambio' => '',

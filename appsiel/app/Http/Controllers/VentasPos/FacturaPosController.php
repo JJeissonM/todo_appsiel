@@ -196,13 +196,6 @@ class FacturaPosController extends TransaccionController
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
-        if ($doc_encabezado->core_tercero_id == 0)
-        {
-            $pdv = Pdv::find($doc_encabezado->pdv_id);
-            $doc_encabezado->core_tercero_id = $pdv->cliente->tercero->id;
-            $doc_encabezado->save();
-        }
-
         // Crear Registros del documento de ventas
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
@@ -370,6 +363,7 @@ class FacturaPosController extends TransaccionController
         $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
         
         $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode(str_replace("$", "", $factura->lineas_registros_medios_recaudos) ), 'valor');
+        
         //$total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productosTemp = $this->get_productos($pdv,$productos);
@@ -396,6 +390,7 @@ class FacturaPosController extends TransaccionController
 
         $valor_total_impuestos = number_format( $factura->lineas_registros->sum('precio_total') - $factura->lineas_registros->sum('base_impuesto_total'),'2',',','.');
 
+        // Para las propinas
         $valor_sub_total_factura = $factura->lineas_registros->sum('precio_total');
         $valor_lbl_propina = (new TipService())->get_tip_amount($factura);
         $valor_total_factura = $valor_sub_total_factura + $valor_lbl_propina;
@@ -1046,7 +1041,7 @@ class FacturaPosController extends TransaccionController
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)->where('estado', 'Activo')->get()->last();
 
         $etiquetas = $this->get_etiquetas();
-            
+        $valor_propina = ( new TipService() )->get_tip_amount($doc_encabezado);
         $datos_factura = (object)[
             'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
             'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
@@ -1056,6 +1051,8 @@ class FacturaPosController extends TransaccionController
             'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
             'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
             'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
+            'lbl_total_propina' => '$' . number_format( $valor_propina, 2, ',' , '.'),
+            'total_factura_mas_propina' => '$' . number_format( $doc_encabezado->valor_total + $valor_propina, 2, ',' , '.'),
             'lbl_ajuste_al_peso' => '',
             'lbl_total_recibido' => '0',
             'lbl_total_cambio' => '',
@@ -1100,6 +1097,8 @@ class FacturaPosController extends TransaccionController
             'lbl_fecha_vencimiento' => '',
             'lbl_descripcion_doc_encabezado' => '',
             'lbl_total_factura' => '',
+            'lbl_total_propina' => '',
+            'total_factura_mas_propina' => '',
             'lbl_ajuste_al_peso' => '',
             'lbl_total_recibido' => '0',
             'lbl_total_cambio' => '',

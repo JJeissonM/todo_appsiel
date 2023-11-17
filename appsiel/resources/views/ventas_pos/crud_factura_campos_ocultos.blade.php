@@ -22,6 +22,7 @@
         required="required">
 
 <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
+<input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="{{$pdv->caja->descripcion}}">
 
 <input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}" value="{{$vendedor->id}}">
 

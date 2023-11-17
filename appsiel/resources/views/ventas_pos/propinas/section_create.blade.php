@@ -1,7 +1,3 @@
-<input type="hidden" name="motivo_tesoreria_propinas" id="motivo_tesoreria_propinas" value="{{ (int)config('ventas_pos.motivo_tesoreria_propinas') }}">
-
-<input type="hidden" name="porcentaje_propina" id="porcentaje_propina" value="{{ (float)config('ventas_pos.porcentaje_propina') }}">
-
 <?php 
     //dd($cajas, $cuentas_bancarias);
 ?>

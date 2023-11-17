@@ -96,8 +96,10 @@ $.fn.activar_boton_guardar_factura = function () {
 		if (  Math.abs(diferencia) < 1 )
 		{
 			$('#btn_guardar_factura').removeAttr('disabled');
+			$('#msj_medios_pago_diferentes_total_factura').hide();
 		}else{
 			$('#div_total_cambio').attr('class', 'danger');
+			$('#msj_medios_pago_diferentes_total_factura').show();
 		}
 	}
 
@@ -478,6 +480,16 @@ function agregar_la_linea2()
 	}
 
 	$('#popup_alerta').hide();
+
+	if ( !$.isNumeric( parseInt( $('#core_tercero_id').val() ) ) ) {
+		Swal.fire({
+			icon: 'error',
+			title: 'Alerta!',
+			text: 'Error al seleccionar el cliente. Ingrese un cliente correcto.'
+		});
+
+		return false;
+	}
 
 	// Se escogen los campos de la fila ingresada
 	var fila = $('#linea_ingreso_default');

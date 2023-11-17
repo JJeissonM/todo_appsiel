@@ -25,6 +25,10 @@
     #tr_total_factura{
         background-color: #eaeaea;
     }
+
+    #tr_total_propina{
+        background-color: #eaeaea;
+    }
 @endsection
 
 @section('columnas_encabezado')

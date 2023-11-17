@@ -430,6 +430,14 @@ $(document).ready(function () {
                 descuentos = data[1];
             });
 
+        if ( !$.isNumeric( parseInt( $('#core_tercero_id').val() ) ) ) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Alerta!',
+                text: 'Error al seleccionar el cliente. Ingrese un cliente correcto.'
+            });
+        }
+
         // Bajar el Scroll hasta el final de la página
         //$("html, body").animate({scrollTop: $(document).height() + "px"});
     }
@@ -457,6 +465,16 @@ $(document).ready(function () {
         $('#popup_alerta').hide();
         $('#existencia_actual').html('');
         $('#existencia_actual').hide();
+
+        if ( !$.isNumeric( parseInt( $('#core_tercero_id').val() ) ) ) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Alerta!',
+                text: 'Error al seleccionar el cliente. Ingrese un cliente correcto.'
+            });
+    
+            return false;
+        }
 
         // Se escogen los campos de la fila ingresada
         var fila = $('#linea_ingreso_default');
@@ -533,7 +551,7 @@ $(document).ready(function () {
     
     $('#btn_probar').click(function (event){
         event.preventDefault();
-        llenar_tabla_productos_facturados(); 
+        llenar_tabla_productos_facturados();
     });
 
     // GUARDAR EL FORMULARIO
@@ -542,11 +560,26 @@ $(document).ready(function () {
 
         if( hay_productos == 0 )
         {
-            alert('No ha ingresado productos.');
+            Swal.fire({
+                icon: 'error',
+                title: 'Alerta!',
+                text: 'No ha ingresado productos.'
+            });
             reset_linea_ingreso_default();
             reset_efectivo_recibido();
             $('#btn_nuevo').hide();
             return false;
+        }
+
+        if( $('#manejar_propinas').val() == 1 )
+        {
+            if( $('#valor_propina').val() != 0 )
+            {
+                if ( !$.fn.permitir_guardar_factura_con_propina() ) 
+                {
+                    return false;    
+                }
+            }
         }
 
         // Desactivar el click del botón
@@ -557,27 +590,14 @@ $(document).ready(function () {
 
         $('#linea_ingreso_default').remove();
 
-        var table = $('#ingreso_registros').tableToJSON();
-        var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();
-        var json_table2 = '';
-        if(table2.length == 1)
+        var table = $('#ingreso_registros').tableToJSON();        
+
+        json_table2 = get_json_registros_medios_recaudo();
+
+        if( $('#manejar_propinas').val() == 1 )
         {
-            var json_table2 = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' + $('#caja_pdv_default_id').val() + '-","teso_cuenta_bancaria_id":"0-","valor":"$' + $('#valor_total_factura').val() + '"}]';
-        }else{
-            json_table2 = '[';
-            var el_primero = true;
-            table2.forEach(element => {
-                if (element.teso_caja_id != '') {
-                    if (el_primero) {
-                        json_table2 += JSON.stringify( element );
-                        el_primero = false;
-                    }else{
-                        json_table2 += ',' + JSON.stringify( element );
-                    }
-                        
-                }
-            });
-            json_table2 += ']';
+            // Si hay propina, siempre va a venir una sola linea de medio de pago
+            json_table2 = $.fn.separar_json_linea_medios_recaudo( json_table2 );
         }
 
         // Se asigna el objeto JSON a un campo oculto del formulario
@@ -588,7 +608,12 @@ $(document).ready(function () {
         habilitar_campos_encabezado();
 
         var url = $("#form_create").attr('action');
-        var data = $("#form_create").serialize();     
+        var data = $("#form_create").serialize();
+        
+        if( $('#manejar_propinas').val() == 1 )
+        {
+            data += '&valor_propina=' + $('#valor_propina').val();
+        }
         
         $.post(url, data, function (doc_encabezado_consecutivo) {
             $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar factura' );
@@ -618,6 +643,33 @@ $(document).ready(function () {
         });
         
     });
+
+    function get_json_registros_medios_recaudo()
+    {
+        var table2 = $('#ingreso_registros_medios_recaudo').tableToJSON();
+        var json_table2 = '';
+        if(table2.length == 1) // Solo tiene la linea de totales
+        {
+            var json_table2 = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' + $('#caja_pdv_default_id').val() + '-' + $('#caja_pdv_default_label').val() + '","teso_cuenta_bancaria_id":"0-","valor":"$' + $('#valor_total_factura').val() + '"}]';
+        }else{
+            json_table2 = '[';
+            var el_primero = true;
+            table2.forEach(element => {
+                if (element.teso_caja_id != '') {
+                    if (el_primero) {
+                        json_table2 += JSON.stringify( element );
+                        el_primero = false;
+                    }else{
+                        json_table2 += ',' + JSON.stringify( element );
+                    }
+                        
+                }
+            });
+            json_table2 += ']';
+        }
+
+        return json_table2;
+    }
 
     function resetear_ventana()
     {
@@ -693,6 +745,9 @@ $(document).ready(function () {
         });
 
         $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
+        $('.lbl_total_propina').text( '$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_propina').val() ));
+
+        $('.lbl_total_factura_mas_propina').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( $.fn.redondear_a_centena(lbl_total_factura) ) + parseFloat( $('#valor_propina').val()) ));
         
         $('.lbl_base_impuesto_total').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_base_impuesto_total)));
         
@@ -740,7 +795,9 @@ $(document).ready(function () {
 
         $('#div_resumen_medios_pago').show();
 
-        if( $('#total_valor_total').html() == '$ 0' || $('#total_valor_total').html() == '$0.00' )
+        var valor_total_lineas_medios_recaudos = parseFloat($('#total_valor_total').html().substring(1));
+
+        if( valor_total_lineas_medios_recaudos == 0 )
         {
             var lbl_medio_pago = 'Efectivo';
 

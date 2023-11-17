@@ -228,9 +228,10 @@
                         <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
                         
-                        @if( (int)config('ventas_pos.manejar_propinas') )
-                            @include('ventas_pos.propinas.section_create')
-                        @endif
+                        <!-- @ if( (int)config('ventas_pos.manejar_propinas') )
+                            @ include('ventas_pos.propinas.section_create')
+                        @ endif
+                        -->
                         @if( Input::get('action') == 'edit' )
                             {!! $vista_medios_recaudo !!}
                         @else

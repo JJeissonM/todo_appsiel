@@ -40,29 +40,9 @@
         </tr>
 
         @if( (int)config('ventas_pos.manejar_propinas') )
-            <tr class="success">
-                <td width="35%">
-                    <strong> SubTotal </strong>
-                </td>
-                <td style="text-align: right;" colspan="2">
-                    <div id="lbl_sub_total_factura" style="display: inline;"> $ {{ number_format( $valor_sub_total_factura,'2',',','.') }}</div>
-                    <input type="hidden" name="valor_sub_total_factura" id="valor_sub_total_factura"
-                        value="{{$valor_sub_total_factura}}">
-                </td>
-            </tr>
-            <tr class="default">
-                <td width="35%">
-                    <strong> Propina </strong>
-                </td>
-                <td style="text-align: right;">
-                    <div id="lbl_propina" style="display: inline;"> $ {{ number_format( $valor_lbl_propina, 0, ',', '.') }}</div>
-                    <input type="hidden" name="aux_propina" id="aux_propina" value="{{ $valor_lbl_propina }}">
-                </td>
-                <td style="width:35px;">
-                    <button type="button" class="btn btn-danger btn-xs" id="remove_tip"><i class="fa fa-close"></i></button>
 
-                </td>
-            </tr>
+            @include('ventas_pos.propinas.filas_resumen_totales')
+            
         @endif
 
         <tr class="info">
@@ -83,7 +63,7 @@
             </td>
             <td style="text-align: right;" colspan="2">
                 <input type="text" name="efectivo_recibido" id="efectivo_recibido"
-                       class="form-control" autocomplete="off" style="background-color: white !important;">
+                       class="form-control" autocomplete="off" style="background-color: white !important; border-radius: 4px;">
                 <div id="lbl_efectivo_recibido" style="display: inline;"> $ 0</div>
             </td>
         </tr>
