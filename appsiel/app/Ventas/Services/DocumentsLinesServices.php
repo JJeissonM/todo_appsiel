@@ -24,7 +24,7 @@ class DocumentsLinesServices
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
             if( !isset($lineas_registros[$i]->inv_motivo_id) )
-                $inv_motivo_id = config('pagina_web.pedidos_inv_motivo_id');
+                $inv_motivo_id = 10;//config('pagina_web.pedidos_inv_motivo_id');
             else
                 $inv_motivo_id = $lineas_registros[$i]->inv_motivo_id;
 
