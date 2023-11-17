@@ -207,6 +207,7 @@
                     <!-- Cinta Filtro Items -->
                     F2: Buscar Ítems
                     @include('ventas_pos.crud_factura_cinta_filtro_items')
+                    <h4 class="center" style="color: #574696">Registro de pedidos</h4>
                     
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
                     <div class="col-md-8 well"><div class="container-fluid">
@@ -219,7 +220,6 @@
                         Productos ingresados: <span id="numero_lineas"> 0 </span>
                         <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
-                        
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">
