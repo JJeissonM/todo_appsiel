@@ -5,9 +5,9 @@
         {{ Form::bsTableHeader( [ 'Acción', 'Fecha', 'Documento', 'Cliente', 'Cond. pago', 'Detalle', 'Valor total', 'Medio recaudo', 'Estado'] ) }}
         <tbody>
 
-                <?php  
-                    $total_ventas = 0;
-                ?>
+            <?php  
+                $total_ventas = 0;
+            ?>
 
             @foreach ($encabezados_documentos as $fila)
                 <tr>

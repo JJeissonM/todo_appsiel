@@ -373,6 +373,7 @@ function agregar_la_linea2()
 	deshabilitar_campos_encabezado2();
 
 	reset_linea_ingreso_default2();
+	$('#btn_guardar_factura').removeAttr('disabled');
 
 	numero_linea++;
 }
