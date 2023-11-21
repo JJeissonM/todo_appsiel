@@ -34,7 +34,7 @@ class ContabilizacionPilaNomina
 	public $valor_credito_total;
 	public $movimiento_contabilizar;
 
-	public $core_tipo_transaccion_id;
+	public $core_tipo_transaccion_id, $core_tipo_doc_app_id;
 	public $consecutivo;
 
 	public function __construct( $fecha_final_promedios, $core_tipo_doc_app_id )
