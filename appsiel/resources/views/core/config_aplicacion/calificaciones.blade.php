@@ -82,6 +82,26 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$manejar_peso_estandar_encabezados_calificaciones = '0';
+								if( isset($parametros['manejar_peso_estandar_encabezados_calificaciones'] ) )
+								{
+									$manejar_peso_estandar_encabezados_calificaciones = $parametros['manejar_peso_estandar_encabezados_calificaciones'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_peso_estandar_encabezados_calificaciones', $manejar_peso_estandar_encabezados_calificaciones, 'Manejar PESO estándar en los encabezados de calificaciones (Todas las asignaturas del curso deben tener el mismo PESO en los mismos enabezados)', ['0'=>'No','1'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Diseño y formato  </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$etiqueta_calificacion_boletines = '';
 								if( isset($parametros['etiqueta_calificacion_boletines'] ) )
 								{
@@ -92,8 +112,13 @@
 						</div>
 					</div>
 
-				</div>
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
 
+				</div>
 				<div class="row">
 
 					<div class="col-md-6">
