@@ -98,7 +98,7 @@
                                     $registro_calificacion = $registro_calificacion * $peso / 100;
 
                                     $texto_calificacion = number_format( $registro_calificacion, 2, '.', ',');
-                                    $lbl_peso = '<br><span style="font-size: 0.8em;">' . $registro_calificacion . ' x ' . $peso . '%</span>';
+                                    $lbl_peso = '<br><span style="font-size: 0.8em;">' . $registros[$i]->$c . ' x ' . $peso . '%</span>';
                                     $mostrar_promedio = false;
                                 }
                                 
