@@ -49,7 +49,7 @@ class DocumentHeaderService
 
         // Calcular consecutivo para nueva factura electronica
         // Seleccionamos el consecutivo actual (si no existe, se crea) y le sumamos 1
-        $consecutivo = TipoDocApp::get_consecutivo_actual($original_document_header->core_empresa_id, $fe_document_type_id_default) + 1;
+        $new_consecutivo = TipoDocApp::get_consecutivo_actual($original_document_header->core_empresa_id, $fe_document_type_id_default) + 1;
 
         // Se incementa el consecutivo para ese tipo de documento y la empresa
         TipoDocApp::aumentar_consecutivo($original_document_header->core_empresa_id, $fe_document_type_id_default);
@@ -58,7 +58,7 @@ class DocumentHeaderService
         $new_data = [
             'core_tipo_transaccion_id' => $fe_transaction_type_id_default,
             'core_tipo_doc_app_id' => $fe_document_type_id_default,
-            'consecutivo' => $consecutivo,
+            'consecutivo' => $new_consecutivo,
             'modificado_por' => $modificado_por
         ];
 
@@ -84,7 +84,7 @@ class DocumentHeaderService
             $cxc_line_abono->update( [
                 'doc_cxc_transacc_id' => $fe_transaction_type_id_default,
                 'doc_cxc_tipo_doc_id' => $fe_document_type_id_default,
-                'doc_cxc_consecutivo' => $consecutivo,
+                'doc_cxc_consecutivo' => $new_consecutivo,
                 'modificado_por' => $modificado_por
             ] );
         }
@@ -108,7 +108,7 @@ class DocumentHeaderService
         unset($data['id']);
         $data['core_tipo_transaccion_id'] = $fe_transaction_type_id_default;
         $data['core_tipo_doc_app_id'] = $fe_document_type_id_default;
-        $data['consecutivo'] = $consecutivo;
+        $data['consecutivo'] = $new_consecutivo;
         $data['estado'] = 'Contabilizado - Sin enviar';
         $vtas_document_header = VtasDocEncabezado::create( $original_document_header->toArray() );
 

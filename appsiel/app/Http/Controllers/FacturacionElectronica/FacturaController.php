@@ -277,6 +277,7 @@ class FacturaController extends TransaccionController
         ];
     }
 
+    // Only For POS
     public function convertir_en_factura_electronica( $vtas_doc_encabezado_id )
     {
         $tipo_doc_fe = TipoDocApp::find(config('facturacion_electronica.document_type_id_default'));

@@ -228,10 +228,12 @@
                         <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
                         
-                        <!-- @ if( (int)config('ventas_pos.manejar_propinas') )
-                            @ include('ventas_pos.propinas.section_create')
-                        @ endif
-                        -->
+                        <div class="container" style="display:none; color:red; font-size:1.1em;" id="msj_fecha_diferente"> 
+                            &nbsp; 
+                            <span><i class="fa fa-warning"></i> La fecha de la factura es diferente a la fecha del día.</span>
+                            <br><br>
+                        </div>
+
                         @if( Input::get('action') == 'edit' )
                             {!! $vista_medios_recaudo !!}
                         @else

@@ -10,6 +10,15 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
     $('.text_input_sugerencias').select();
 }
 
+$.fn.validar_fecha_diferente = function () {
+    console.log('validando fecha...');
+    if ( $('#fecha').val() != get_fecha_hoy() ) {
+        $('#msj_fecha_diferente').show();
+    }else{
+        $('#msj_fecha_diferente').hide();
+    }
+};
+
 $(document).ready(function () {
 
     if ( $('#action').val() != 'create' )
@@ -22,6 +31,12 @@ $(document).ready(function () {
     {
         $('#fecha').val( get_fecha_hoy() );
     }
+
+    $.fn.validar_fecha_diferente();
+
+    $('#fecha').on('change',function(){
+        $.fn.validar_fecha_diferente();
+    });
 
     //Al hacer click en alguna de las sugerencias (escoger un producto)
     $(document).on('click', '.list-group-item-cliente', function () {
@@ -224,7 +239,6 @@ $(document).ready(function () {
         $('#btn_guardar_factura').attr('disabled', 'disabled');
     }
 
-
     /*
     ** Al digitar la cantidad, se valida la existencia actual y se calcula el precio total
     */
@@ -321,7 +335,6 @@ $(document).ready(function () {
 
         valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
     }
-
 
     $('#tasa_descuento').keyup(function () {
 
@@ -583,7 +596,6 @@ $(document).ready(function () {
         }
 
         // Desactivar el click del botón
-        //$( this ).off( event );
         $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
         $( this ).attr( 'disabled', 'disabled' );
         $( this ).attr( 'id', 'btn_guardando' );
