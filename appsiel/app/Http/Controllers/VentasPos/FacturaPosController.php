@@ -659,6 +659,7 @@ class FacturaPosController extends TransaccionController
 
         return 1;
     }
+    
 
     public function acumular_una_factura_individual($factura_id)
     {
