@@ -352,22 +352,22 @@ class Calificacion extends Model
                             ])
                             ->get();      
 
-        $prom = 0;
+        $sumatoria_calificaciones = 0;
         $n = 0;
         foreach( $calificaciones AS $calificacion )
         {
             $n++;
-            if ( is_null( $calificacion->nota_nivelacion() ) )
+            if ( $calificacion->nota_nivelacion() == null )
             {
-                $prom += $calificacion->calificacion;
+                $sumatoria_calificaciones += $calificacion->calificacion;
             }else{
-                $prom += $calificacion->nota_nivelacion()->calificacion;
+                $sumatoria_calificaciones += $calificacion->nota_nivelacion()->calificacion;
             }
         }
 
         if ( $n != 0 )
         {
-            return $prom / $n;
+            return $sumatoria_calificaciones / $n;
         }
 
         return 0;

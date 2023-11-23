@@ -79,7 +79,7 @@
 
                             $encabezado_calificacion = App\Calificaciones\EncabezadoCalificacion::where( [ 'columna_calificacion' => $c, 'periodo_id' => $periodo->id, 'curso_id' => $curso->id, 'asignatura_id' => $registros[$i]->asignatura_id] )->get()->first();
                             $peso = 0;
-                                    $lbl_peso = '';
+                            $lbl_peso = '';
                             if ( $encabezado_calificacion != null )
                             {
                                 $fecha_calificacion = 'Fecha: '.$encabezado_calificacion->fecha;

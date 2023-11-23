@@ -6,16 +6,6 @@ use App\Http\Controllers\Sistema\ModeloController;
 
 use Illuminate\Http\Request;
 
-use Input;
-use DB;
-use PDF;
-use Auth;
-use Storage;
-use View;
-use File;
-
-use App\Http\Requests;
-
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Curso;
 use App\Matriculas\Matricula;
@@ -24,6 +14,9 @@ use App\Calificaciones\Periodo;
 use App\Calificaciones\Calificacion;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\Asignatura;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ProcesoController extends ModeloController
 {
@@ -32,7 +25,7 @@ class ProcesoController extends ModeloController
     {
 
         $miga_pan = [
-                        ['url' => $this->aplicacion->app.'?id='.Input::get('id'), 'etiqueta'=> $this->aplicacion->descripcion ],
+                        ['url' => $this->aplicacion->app.'?id=' . Input::get('id'), 'etiqueta'=> $this->aplicacion->descripcion ],
                         ['url' => 'NO','etiqueta'=> 'Proceso: Generar promedio de notas periodo final']
                     ];
 
@@ -115,7 +108,7 @@ class ProcesoController extends ModeloController
 
         //$periodos = Periodo::get_activos_periodo_lectivo( $periodo_lectivo_id );
 
-        if ( is_null($periodo_lectivo) )
+        if ( $periodo_lectivo == null )
         {
             return [ '', '<span style="color: red;">Error en la obtención de los datos por favor intente nuevamente.</span>' ];
         }
@@ -141,8 +134,6 @@ class ProcesoController extends ModeloController
         // PASO 2. Calcular y almacenar las nuevas calificaciones promedios
         $cursos_del_periodo_lectivo = Curso::get_registros_del_periodo_lectivo( $periodo_lectivo_id );        
         $cantidad_registros = 0;
-
-
 
         foreach ($cursos_del_periodo_lectivo as $curso)
         {

@@ -346,8 +346,6 @@ class CalificacionController extends Controller
         ]);
     }
 
-
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -379,7 +377,6 @@ class CalificacionController extends Controller
                 break;
         }
     }
-
 
     public function almacenar_calificacion(Request $request)
     {
@@ -415,7 +412,7 @@ class CalificacionController extends Controller
             // Se verifica si la calificación y las calificaciones auxiliares ya existen
             $calificacion = Calificacion::find( $id_calificacion );
 
-            if ( is_null($calificacion) )
+            if ( $calificacion == null )
             {
                 // Crear nuevos registros
                 if ( $calificacion_texto != 0 || $linea_datos['logros'] != '')
