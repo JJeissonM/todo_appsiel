@@ -4,12 +4,7 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use Auth;
-use View;
-use Input;
-
 use App\Http\Controllers\Core\TransaccionController;
-
 
 // Modelos
 use App\Sistema\Aplicacion;
@@ -22,6 +17,9 @@ use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 use App\Nomina\ConsolidadoPrestacionesSociales;
 
 use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ConsolidadoPrestacionesController extends TransaccionController
 {
@@ -47,6 +45,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
             $fecha_final_promedios = $request->fecha_final_promedios;
 
             $empleado = $registro_empleado->contrato;
+            /*
             if ( $empleado->estado == 'Retirado' )
             {
                 $fecha_liquidacion_contrato = $empleado->fecha_liquidacion_contrato();
@@ -55,6 +54,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
                     $fecha_final_promedios = $fecha_liquidacion_contrato;
                 }
             }
+            */
 
             $prestaciones = [ 'vacaciones', 'prima_legal', 'cesantias', 'intereses_cesantias'];
             foreach( $prestaciones as $key => $prestacion )

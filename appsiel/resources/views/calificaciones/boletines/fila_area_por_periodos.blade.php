@@ -6,15 +6,16 @@
 	<tr style="background: #ddd;">
 			<!--  122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines" -->
 			@if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
-				<td colspan="{{ $cant_columnas }}">
+				<td colspan="{{ $cant_columnas }}" style="text-align: center; width: 28px;">
 					<b> {{ strtoupper( $linea->area_descripcion ) }}</b>
 				</td>
             @else
-                <td colspan="{{ $cant_columnas }}">&nbsp;</td>
+                <td colspan="{{ $cant_columnas }}" style="text-align: center; width: 28px;">&nbsp;</td>
             @endif
     </tr>
     @if( $mostrar_calificacion_media_areas )
         <tr style="background: #ddd;">
+            <td>&nbsp;</td>
             <td>&nbsp;</td>
             <?php
                 $n = 0;
@@ -76,7 +77,7 @@
                             break;
 
                         default:
-                            $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' ) . ' (' . $lbl_escala_valoracion_area . ')';
+                            $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' ) . '<br> (' . $lbl_escala_valoracion_area . ')';
                             break;
                     }
                     
@@ -98,6 +99,7 @@
                 }
             ?>
             <td style="text-align: center; width: 28px;"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} ({{ $lbl_escala_valoracion_prom_area }})</td>
+            <td>&nbsp;</td>
         </tr>
     @endif
 @endif

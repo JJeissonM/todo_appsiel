@@ -33,7 +33,7 @@
 		}
 
 		$lbl_calificacion = $lbl_cali_periodo;
-		echo '<td align="center; width:100px;"> ' . $lbl_cali_periodo . ' </td>';
+		echo '<td style="text-align: center; width: 28px;"> ' . $lbl_cali_periodo . ' </td>';
 	}
 
 	$lbl_cali_prom = '&nbsp;';
@@ -68,7 +68,7 @@
 		$lbl_calificacion = '&nbsp;';
 	}
 	
-	echo '<td align="center"> ' . $lbl_calificacion . ' </td>';
+	echo '<td style="text-align: center; width: 28px;"> ' . $lbl_calificacion . ' </td>';
 
 ?>
 

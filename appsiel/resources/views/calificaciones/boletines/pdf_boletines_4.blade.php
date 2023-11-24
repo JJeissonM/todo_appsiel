@@ -73,7 +73,7 @@
 						</td>
 						
 						@if($mostrar_intensidad_horaria)
-							<td align="center">
+							<td style="text-align: center; width: 28px;">
 								@if($linea->intensidad_horaria != 0) 
 									{{ $linea->intensidad_horaria }}
 								@endif
@@ -85,7 +85,7 @@
 						@endif
 
 						@if( $mostrar_fallas )
-							<td align="center" style="width:50px;">
+							<td style="text-align: center; width: 28px;">
 								@include('calificaciones.boletines.lbl_fallas')
 							</td>
 						@endif
