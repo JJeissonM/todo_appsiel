@@ -1,22 +1,34 @@
 @if ( $area_anterior != $linea->area_descripcion && $mostrar_areas == 'Si')
 	<?php
-		$cant_columnas_aux = $cant_columnas - 1;
+		$cant_columnas_aux = $cant_columnas;
+
+        if($mostrar_logros)
+        {
+            $cant_columnas_aux;
+        }
+
 	    $decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
+
+        // 122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines"
+        $area_descripcion = '';
+        if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
+        {
+            $area_descripcion = strtoupper( $linea->area_descripcion );
+        }
 	?>
 	<tr style="background: #ddd;">
-			<!--  122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines" -->
-			@if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
-				<td colspan="{{ $cant_columnas }}" style="text-align: center; width: 28px;">
-					<b> {{ strtoupper( $linea->area_descripcion ) }}</b>
-				</td>
-            @else
-                <td colspan="{{ $cant_columnas }}" style="text-align: center; width: 28px;">&nbsp;</td>
-            @endif
+        <td colspan="{{ $cant_columnas_aux }}">
+            <b> {{ $area_descripcion }}</b>
+        </td>
     </tr>
     @if( $mostrar_calificacion_media_areas )
         <tr style="background: #ddd;">
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
+            <td style="text-align: right; font-size:0.7em;"><i>Promedio del área >></i></td>
+
+            @if($mostrar_intensidad_horaria)
+                <td>&nbsp;</td>
+            @endif
+
             <?php
                 $n = 0;
                 $total_poderadas = 0;
@@ -62,26 +74,10 @@
                         $lbl_escala_valoracion_area = $escala_valoracion_area->nombre_escala;
                     }
 
-                    switch( config('calificaciones.etiqueta_calificacion_boletines') )
-                    {
-                        case 'numero_y_letras':
-                            $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' ) . ' (' . $lbl_escala_valoracion_area . ')';
-                            break;
-
-                        case 'solo_numeros':
-                            $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' );
-                            break;
-
-                        case 'solo_letras':
-                            $lbl_nota_original = $lbl_escala_valoracion_area;
-                            break;
-
-                        default:
-                            $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' ) . '<br> (' . $lbl_escala_valoracion_area . ')';
-                            break;
-                    }
+                    $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' );
                     
-                    echo '<td style="text-align: center; width: 28px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
+                    // Calificacion del periodo
+                    echo '<td style="text-align: center; width: 50px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
 
                     $total_poderadas += $calificacion_media_ponderada;
                     $n++;
@@ -98,8 +94,12 @@
                     $lbl_escala_valoracion_prom_area = $escala_valoracion_prom_area->nombre_escala;
                 }
             ?>
-            <td style="text-align: center; width: 28px;"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} ({{ $lbl_escala_valoracion_prom_area }})</td>
-            <td>&nbsp;</td>
+            
+            <td style="text-align: center; width: 50px; padding: 1px;"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} </td>
+
+            @if($mostrar_logros)
+                <td>&nbsp;</td>
+            @endif
         </tr>
     @endif
 @endif
