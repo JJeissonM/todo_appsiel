@@ -4,10 +4,10 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
 use Carbon\Carbon;
 
 use App\Contabilidad\ContabCuenta;
+use Illuminate\Support\Facades\DB;
 
 class ParametroLiquidacionPrestacionesSociales extends Model
 {
@@ -119,7 +119,7 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         {
             $fecha_ultima_liquidacion = $this->get_fecha_ultima_liquidacion( $empleado, $this->concepto_prestacion );
 
-            if ( !is_null( $fecha_ultima_liquidacion ) )
+            if ( $fecha_ultima_liquidacion != null )
             {
                 return $this->sumar_dias_calendario_30_dias_a_fecha( $fecha_ultima_liquidacion, 1 );
             }
@@ -149,23 +149,6 @@ class ParametroLiquidacionPrestacionesSociales extends Model
             $mes_inicial++;
         }
 
-        /*
-        $mes_anterior = $mes_final;// + 1;
-        for ( $i = $this->cantidad_meses_a_promediar; $i >= 1; $i--)
-        {
-            $mes_iteracion = $mes_anterior - 1;
-            if ( $mes_iteracion <= 0 )
-            {
-                $mes_inicial = 12 + $mes_iteracion;
-                $anio_inicial = $anio_final - 1;
-            }else{
-                $mes_inicial = $mes_iteracion;
-            }
-            $mes_anterior = $mes_iteracion;
-        }
-        */
-
-        //$mes_anterior = $mes_final;// + 1;
         for ( $i = $this->cantidad_meses_a_promediar; $i > 1; $i--)
         {
             if ( $mes_inicial == 0 )

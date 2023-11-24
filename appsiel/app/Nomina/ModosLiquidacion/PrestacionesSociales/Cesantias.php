@@ -106,7 +106,6 @@ class Cesantias implements Estrategia
         }
 
         $valor_base_diaria = 0;
-        $valor_base_diaria_sueldo = 0;
 
         $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $fecha_final, $empleado );
 

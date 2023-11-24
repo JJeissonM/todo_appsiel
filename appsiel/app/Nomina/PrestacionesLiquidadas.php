@@ -3,13 +3,14 @@
 namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PrestacionesLiquidadas extends Model
 {
     protected $table = 'nom_prestaciones_liquidadas';
+	
 	protected $fillable = ['nom_doc_encabezado_id', 'nom_contrato_id', 'fecha_final_promedios', 'prestaciones_liquidadas', 'datos_liquidacion'];
+
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>','Documento', 'Empleado', 'Fecha final promedios'];
 
 	public $urls_acciones = '{"show":"nom_prestaciones_liquidadas_show/id_fila"}';

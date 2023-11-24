@@ -277,7 +277,6 @@ class NomDocEncabezado extends Model
             ->first();
     }
 
-
     public function store_adicional($datos, $registro)
     {
         $fecha_inicial_documento = $registro->lapso()->fecha_inicial;
@@ -328,6 +327,27 @@ class NomDocEncabezado extends Model
         }
 
         return $lista_campos;
+    }
+
+    public function update_adicional( $datos, $id )
+    {
+        $registro = NomDocEncabezado::find($id);
+
+        $empleados_del_documento = DB::table('nom_empleados_del_documento')->where([
+            ['nom_doc_encabezado_id', '=', $id]
+        ])->get();
+
+        if ($registro->tipo_liquidacion == 'terminacion_contrato') {
+            $estado = 'Retirado';   
+        }else{
+            $estado = 'Activo';
+        }
+
+        foreach ($empleados_del_documento as $contrato) {
+            $empleado = Empleado::find( $contrato->nom_contrato_id );
+            $empleado->estado = $estado;
+            $empleado->save();
+        }
     }
 
     /*

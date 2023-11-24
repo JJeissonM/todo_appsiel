@@ -5,14 +5,9 @@ namespace App\Nomina\ModosLiquidacion\PrestacionesSociales;
 use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 
-use Auth;
-use Carbon\Carbon;
-
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
-use App\Nomina\LibroVacacion;
-use App\Nomina\CambioSalario;
-use App\Nomina\ProgramacionVacacion;
+
 use App\Nomina\PrestacionesLiquidadas;
 
 use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
@@ -83,7 +78,7 @@ class InteresesCesantias implements Estrategia
         $total_cesantias = $dias_totales_liquidacion * $valor_base_diaria;
         $this->tabla_resumen['total_cesantias'] = $total_cesantias;
 
-        $this->tabla_resumen['valor_total_liquidacion'] = $total_cesantias * 12 / 100 * $this->tabla_resumen['dias_reales_laborados'] / self::DIAS_BASE_LEGALES;
+        $this->tabla_resumen['valor_total_liquidacion'] = $total_cesantias * 12 / 100;// * $this->tabla_resumen['dias_reales_laborados'] / self::DIAS_BASE_LEGALES;
 
         $valores = get_valores_devengo_deduccion( 'devengo', $this->tabla_resumen['valor_total_liquidacion'] );
 
@@ -106,7 +101,6 @@ class InteresesCesantias implements Estrategia
         }
 
         $valor_base_diaria = 0;
-        $valor_base_diaria_sueldo = 0;
 
         $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $fecha_final, $empleado );
         if ( $fecha_inicial < $empleado->fecha_ingreso)
