@@ -164,7 +164,9 @@ class AcademicoEstudianteController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Calificaciones']
         ];
 
-        return view('academico_estudiante.calificaciones', compact('miga_pan', 'periodos', 'estudiante', 'curso', 'codigo_matricula', 'mensaje_facturas_vencidas'));
+        $parametros = config('calificaciones');
+
+        return view('academico_estudiante.calificaciones', compact('miga_pan', 'periodos', 'estudiante', 'curso', 'codigo_matricula', 'mensaje_facturas_vencidas', 'parametros'));
     }
 
     public function ajax_calificaciones(Request $request)

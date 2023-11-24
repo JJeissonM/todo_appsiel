@@ -174,11 +174,13 @@
 								}
 
 								$formatos_boletines = [
-                        						'pdf_boletines_1' => 'Formato # 1 (estándar)',
-						                        'pdf_boletines_2' => 'Formato # 2 (moderno)',
-						                        'pdf_boletines_3' => 'Formato # 3 (visual)',
-						                        'pdf_boletines_4' => 'Formato # 4 (metas)'
-						                    ];
+												'pdf_boletines_1' => 'Formato # 1 (estándar)',
+												'pdf_boletines_2' => 'Formato # 2 (preescolar)',
+												'pdf_boletines_3' => 'Formato # 3 (moderno)',
+												'pdf_boletines_4' => 'Formato # 4 (resúmen)',
+												'pdf_boletines_6' => 'Formato # 5 (marca de agua)',
+												'pdf_boletines_7' => 'Formato # 6 (Calificaciones Aux.)'
+											];
 
 							?>
 							{{ Form::bsSelect('formato_boletin_default', $formato_boletin_default, 'Formato de boletín por defecto', $formatos_boletines, ['class'=>'form-control']) }}
@@ -272,9 +274,264 @@
 
 				</div>
 
+				<h4> Parámetros por defecto para imprimir boletines  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_areas = 'No';
+								if( isset($parametros['mostrar_areas'] ) )
+								{
+									$mostrar_areas = $parametros['mostrar_areas'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_areas', $mostrar_areas,'Mostrar áreas',['No'=>'No','Si'=>'Si'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_calificacion_media_areas = '0';
+								if( isset($parametros['mostrar_calificacion_media_areas'] ) )
+								{
+									$mostrar_calificacion_media_areas = $parametros['mostrar_calificacion_media_areas'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_calificacion_media_areas', $mostrar_calificacion_media_areas,'Mostrar calificación media del área',['No','Si'],[]) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_nombre_docentes = 'No';
+								if( isset($parametros['mostrar_nombre_docentes'] ) )
+								{
+									$mostrar_nombre_docentes = $parametros['mostrar_nombre_docentes'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_nombre_docentes', $mostrar_nombre_docentes,'Mostrar nombre de docentes',['No'=>'No','Si'=>'Si'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_etiqueta_final = '0';
+								if( isset($parametros['mostrar_etiqueta_final'] ) )
+								{
+									$mostrar_etiqueta_final = $parametros['mostrar_etiqueta_final'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_etiqueta_final', $mostrar_etiqueta_final,'Mostrar etiqueta al final',['No'=>'No','aprobo_reprobo'=>'Aprobó() Reprobó() Aplazó()'],[]) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_logros = '1';
+								if( isset($parametros['mostrar_logros'] ) )
+								{
+									$mostrar_logros = $parametros['mostrar_logros'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_logros', $mostrar_logros, 'Mostrar logros',['1'=>'Si','0'=>'No'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$convetir_logros_mayusculas = 'No';
+								if( isset($parametros['convetir_logros_mayusculas'] ) )
+								{
+									$convetir_logros_mayusculas = $parametros['convetir_logros_mayusculas'];
+								}
+							?>
+							{{ Form::bsSelect('convetir_logros_mayusculas', $convetir_logros_mayusculas, 'Convertir logros a mayúsculas',['No'=>'No','Si'=>'Si'],[]) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_escala_valoracion = 'No';
+								if( isset($parametros['mostrar_escala_valoracion'] ) )
+								{
+									$mostrar_escala_valoracion = $parametros['mostrar_escala_valoracion'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_escala_valoracion', $mostrar_escala_valoracion,'Mostrar Escala de valoración',['No'=>'No','Si'=>'Si'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_fallas = '0';
+								if( isset($parametros['mostrar_fallas'] ) )
+								{
+									$mostrar_fallas = $parametros['mostrar_fallas'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_fallas', $mostrar_fallas,'Mostrar fallas del estudiante (inasistencia)',['No','Si'],[]) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_usuarios_estudiantes = 'No';
+								if( isset($parametros['mostrar_usuarios_estudiantes'] ) )
+								{
+									$mostrar_usuarios_estudiantes = $parametros['mostrar_usuarios_estudiantes'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_usuarios_estudiantes', $mostrar_usuarios_estudiantes,'Mostrar usuario de estudiantes',['No'=>'No','Si'=>'Si'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_nota_nivelacion = '0';
+								if( isset($parametros['mostrar_nota_nivelacion'] ) )
+								{
+									$mostrar_nota_nivelacion = $parametros['mostrar_nota_nivelacion'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_nota_nivelacion', $mostrar_nota_nivelacion,'Mostrar nota nivelación',[ '0' => 'No', 'solo_nota_nivelacion_con_etiqueta'=>'Solo nota nivelación (con etiqueta)', 'solo_nota_nivelacion_sin_etiqueta'=>'Solo nota nivelación (sin etiqueta)','ambas_notas'=>'Ambas notas'],[]) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_intensidad_horaria = '1';
+								if( isset($parametros['mostrar_intensidad_horaria'] ) )
+								{
+									$mostrar_intensidad_horaria = $parametros['mostrar_intensidad_horaria'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_intensidad_horaria', $mostrar_intensidad_horaria, 'Mostrar intensidad horaria',['1'=>'Si','0'=>'No'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tam_hoja = 'letter';
+								if( isset($parametros['tam_hoja'] ) )
+								{
+									$tam_hoja = $parametros['tam_hoja'];
+								}
+							?>
+							{{ Form::bsSelect('tam_hoja', $tam_hoja, 'Tamaño hoja',['letter'=>'Carta','folio'=>'Oficio'],[]) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tam_letra = '0';
+								if( isset($parametros['tam_letra'] ) )
+								{
+									$tam_letra = $parametros['tam_letra'];
+								}
+
+								$arr_tam_letra = [ 
+												'2.5'=>'10',
+												'2.75'=>'10.5',
+												'3'=>'11',
+												'3.25'=>'11.5',
+												'3.5'=>'12',
+												'3.75'=>'12.5',
+												'4'=>'13',
+												'4.25'=>'13.5',
+												'4.5'=>'14',
+												'4.75'=>'14.5',
+												'5'=>'15',
+												'5.25'=>'15.5',
+												'5.5'=>'16'
+											];
+							?>
+							{{ Form::bsSelect( 'tam_letra',  $tam_letra, 'Tamaño Letra', $arr_tam_letra, []) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cantidad_caracteres_para_proxima_pagina = 2500;
+								if( isset($parametros['cantidad_caracteres_para_proxima_pagina'] ) )
+								{
+									$cantidad_caracteres_para_proxima_pagina = $parametros['cantidad_caracteres_para_proxima_pagina'];
+								}
+							?>
+							{{ Form::bsText('cantidad_caracteres_para_proxima_pagina', $cantidad_caracteres_para_proxima_pagina, 'Cant. caracteres para pasar a la siguiente página', [], []) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ancho_columna_asignatura = 130;
+								if( isset($parametros['ancho_columna_asignatura'] ) )
+								{
+									$ancho_columna_asignatura = $parametros['ancho_columna_asignatura'];
+								}
+							?>
+							{{ Form::bsText('ancho_columna_asignatura', $ancho_columna_asignatura, 'Ancho columna asignaturas (px)',[],[]) }}
+						</div>
+					</div>
+
+				</div>
+
+
+
+				cantidad_caracteres_para_proxima_pagina
+
+
 				<h4> Académico Estudiantes  </h4>
 				<hr>
-
 				<div class="row">
 
 					<div class="col-md-6">

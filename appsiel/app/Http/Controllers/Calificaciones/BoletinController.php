@@ -161,8 +161,9 @@ class BoletinController extends Controller
                         ['url'=>'calificaciones?id='.Input::get('id'),'etiqueta'=>'Calificaciones'],
                         ['url'=>'NO','etiqueta'=>'Imprimir informes']
                     ];
-
-        return view( 'calificaciones.boletines.form_imprimir', compact('cursos','periodos_lectivos', 'formatos', 'miga_pan' ) );
+        
+        $parametros = config('calificaciones');
+        return view( 'calificaciones.boletines.form_imprimir', compact('cursos','periodos_lectivos', 'formatos', 'miga_pan', 'parametros' ) );
     }
 	
 	public function generarPDF( Request $request )

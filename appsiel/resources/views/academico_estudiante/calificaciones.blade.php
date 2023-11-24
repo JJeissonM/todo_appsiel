@@ -52,16 +52,30 @@
 							<input type="hidden" name="estudiante_id" value="{{ $estudiante->id }}">
 							<input type="hidden" name="periodo_id" value="0" id="boletin_periodo_id">
 							<input type="hidden" name="curso_id" value="{{ $curso->id }}">
-							<input type="hidden" name="formato" value="{{ config('calificaciones.formato_boletin_default') }}">
-							<input type="hidden" name="mostrar_areas" value="Si">
-							<input type="hidden" name="mostrar_nombre_docentes" value="Si">
-							<input type="hidden" name="mostrar_etiqueta_final" value="No">
-							<input type="hidden" name="mostrar_escala_valoracion" value="Si">
-							<input type="hidden" name="mostrar_fallas" value="1">
-							<input type="hidden" name="tam_hoja" value="folio">
-							<input type="hidden" name="tam_letra" value="4">
-							<input type="hidden" name="convetir_logros_mayusculas" value="No">
-							<input type="hidden" name="mostrar_usuarios_estudiantes" value="No">
+							<input type="hidden" name="formato" value="{{ $parametros['formato_boletin_default'] }}">
+														
+							<input type="hidden" name="mostrar_areas" value="{{ $parametros['mostrar_areas'] }}">
+							<input type="hidden" name="mostrar_calificacion_media_areas" value="{{ $parametros['mostrar_calificacion_media_areas'] }}">
+							<input type="hidden" name="mostrar_nombre_docentes" value="{{ $parametros['mostrar_nombre_docentes'] }}">
+							<input type="hidden" name="mostrar_etiqueta_final" value="{{ $parametros['mostrar_etiqueta_final'] }}">
+
+							<input type="hidden" name="mostrar_logros" value="{{ $parametros['mostrar_logros'] }}">
+							<input type="hidden" name="mostrar_escala_valoracion" value="{{ $parametros['mostrar_escala_valoracion'] }}">
+							<input type="hidden" name="mostrar_fallas" value="{{ $parametros['mostrar_fallas'] }}">
+							<input type="hidden" name="mostrar_usuarios_estudiantes" value="{{ $parametros['mostrar_usuarios_estudiantes'] }}">
+							<input type="hidden" name="mostrar_nota_nivelacion" value="{{ $parametros['mostrar_nota_nivelacion'] }}">
+							<input type="hidden" name="mostrar_intensidad_horaria" value="{{ $parametros['mostrar_intensidad_horaria'] }}">
+							<input type="hidden" name="tam_hoja" value="{{ $parametros['tam_hoja'] }}">
+							<input type="hidden" name="tam_letra" value="{{ $parametros['tam_letra'] }}">
+							<input type="hidden" name="convetir_logros_mayusculas" value="{{ $parametros['convetir_logros_mayusculas'] }}">
+							
+							<input type="hidden" name="cantidad_caracteres_para_proxima_pagina" value="{{ $parametros['cantidad_caracteres_para_proxima_pagina'] }}">
+							<input type="hidden" name="ancho_columna_asignatura" value="{{ $parametros['ancho_columna_asignatura'] }}">
+
+							<input type="hidden" name="margen_izquierdo" value="5">
+							<input type="hidden" name="margen_superior" value="5">
+							<input type="hidden" name="margen_derecho" value="5">
+							<input type="hidden" name="margen_inferior" value="5">
 
 						{{Form::close()}}
 						
@@ -145,7 +159,7 @@
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
 					$('#resultado_consulta').html(respuesta);
-					$('#btn_excel').show(500);
+					//$('#btn_excel').show(500);
 
 					if ( document.getElementById('fecha_termina_periodo').value <= document.getElementById('fecha_hoy').value )
 					{

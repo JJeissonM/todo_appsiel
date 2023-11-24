@@ -16,7 +16,7 @@
 	<div class="col-md-6">
 
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsSelect('formato','','Formato', $formatos ,['required' => 'required']) }}
+			{{ Form::bsSelect('formato', $parametros['formato_boletin_default'], 'Formato', $formatos ,['required' => 'required']) }}
 		</div>
 
 		<div class="row campo" style="padding:5px;">

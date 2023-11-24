@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="col-md-6">
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsSelect('tam_hoja','','Tamaño hoja',['letter'=>'Carta','folio'=>'Oficio'],[]) }}
+			{{ Form::bsSelect('tam_hoja', $parametro['tam_hoja'], 'Tamaño hoja', ['letter'=>'Carta','folio'=>'Oficio'],[]) }}
 		</div>
 
 		<?php 
@@ -23,13 +23,13 @@
 		?>
 
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsSelect( 'tam_letra',  4, 'Tamaño Letra', $tam_letra, []) }}
+			{{ Form::bsSelect( 'tam_letra',  $parametro['tam_letra'], 'Tamaño Letra', $tam_letra, []) }}
 		</div>
 	</div>
 
 	<div class="col-md-6">
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsSelect('convetir_logros_mayusculas',1,'Convertir logros a mayúsculas',['No'=>'No','Si'=>'Si'],[]) }}
+			{{ Form::bsSelect('convetir_logros_mayusculas', $parametro['convetir_logros_mayusculas'],'Convertir logros a mayúsculas',['No'=>'No','Si'=>'Si'],[]) }}
 		</div>
 
 		<div class="row campo" style="padding:5px;">
@@ -57,11 +57,11 @@
 
 	<div class="col-md-6">
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsText('cantidad_caracteres_para_proxima_pagina',2500,'Cant. caracteres para pasar a la siguiente página',[],[]) }}
+			{{ Form::bsText('cantidad_caracteres_para_proxima_pagina', $parametro['cantidad_caracteres_para_proxima_pagina'], 'Cant. caracteres para pasar a la siguiente página',[],[]) }}
 		</div>
 
 		<div class="row campo" style="padding:5px;">
-			{{ Form::bsText('ancho_columna_asignatura',130,'Ancho columna asignaturas (px)',[],[]) }}
+			{{ Form::bsText('ancho_columna_asignatura', $parametro['ancho_columna_asignatura'], 'Ancho columna asignaturas (px)',[],[]) }}
 		</div>
 	</div>
 </div>
