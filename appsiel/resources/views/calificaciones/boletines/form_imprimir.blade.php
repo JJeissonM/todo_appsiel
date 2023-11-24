@@ -256,7 +256,7 @@
 				arr_ids_estudiantes = JSON.parse($("#ids_estudiantes").val());
 				arr_ids_estudiantes.shift();
 				
-				$.get("../../core_forget_cache" + "/" + cache_key, function(respuesta){ 
+				$.get("../../calif_delete_pdfs_curso" + "/" + $('#curso_id').val(), function(respuesta){ 
 					// fires off the first call 
 					ejecucion_recursiva_generar_un_boletin();					
 				});
@@ -272,25 +272,15 @@
 					$('#btn_generar_pdfs').children('.fa-spinner').attr('class','fa fa-print');
 					$('#message_print').show();
 					
-					window.open( '../../calif_descargar_pdfs_curso/' + $('#curso_id').val(), '_blank');
+					window.open( '../../calif_descargar_pdfs_curso_v2/' + $('#curso_id').val() + '/'  + $('#tam_hoja').val(), '_blank');
 
-					/*
-					var url = '../../calif_eliminar_pdfs_curso/' + $('#curso_id').val();
-
-					$.ajax({
-			        	url: url,
-			        	type: 'get',
-			        	success: function(respuesta){
-			        		console.log(respuesta);
-				        }
-				    });
-					*/
 					return true;
 				}
 
 				// pop top value 
 				var estudiante_id = arr_ids_estudiantes[0];
 				arr_ids_estudiantes.shift(); 
+				//var url = '../../calif_generar_pdf_un_boletin';
 				var url = '../../calif_generar_pdf_un_boletin';
 
 				var formData = new FormData(document.getElementById('formulario'));
@@ -306,7 +296,6 @@
 					processData: false
 				})
 				.done(function(res){
-					console.log( res, 'Ok.');
 					ejecucion_recursiva_generar_un_boletin();
 				});
 			}

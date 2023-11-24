@@ -35,10 +35,11 @@
     31 => 'Cmgmyr\\Messenger\\MessengerServiceProvider',
     32 => 'Way\\Generators\\GeneratorsServiceProvider',
     33 => 'Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider',
-    34 => 'App\\Providers\\AppServiceProvider',
-    35 => 'App\\Providers\\AuthServiceProvider',
-    36 => 'App\\Providers\\EventServiceProvider',
-    37 => 'App\\Providers\\RouteServiceProvider',
+    34 => 'Webklex\\PDFMerger\\Providers\\PDFMergerServiceProvider',
+    35 => 'App\\Providers\\AppServiceProvider',
+    36 => 'App\\Providers\\AuthServiceProvider',
+    37 => 'App\\Providers\\EventServiceProvider',
+    38 => 'App\\Providers\\RouteServiceProvider',
   ),
   'eager' => 
   array (
@@ -62,10 +63,11 @@
     17 => 'Cmgmyr\\Messenger\\MessengerServiceProvider',
     18 => 'Way\\Generators\\GeneratorsServiceProvider',
     19 => 'Xethron\\MigrationsGenerator\\MigrationsGeneratorServiceProvider',
-    20 => 'App\\Providers\\AppServiceProvider',
-    21 => 'App\\Providers\\AuthServiceProvider',
-    22 => 'App\\Providers\\EventServiceProvider',
-    23 => 'App\\Providers\\RouteServiceProvider',
+    20 => 'Webklex\\PDFMerger\\Providers\\PDFMergerServiceProvider',
+    21 => 'App\\Providers\\AppServiceProvider',
+    22 => 'App\\Providers\\AuthServiceProvider',
+    23 => 'App\\Providers\\EventServiceProvider',
+    24 => 'App\\Providers\\RouteServiceProvider',
   ),
   'deferred' => 
   array (

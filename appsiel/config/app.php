@@ -160,6 +160,7 @@ return [
         Cmgmyr\Messenger\MessengerServiceProvider::class,
         Way\Generators\GeneratorsServiceProvider::class,
         Xethron\MigrationsGenerator\MigrationsGeneratorServiceProvider::class,
+        Webklex\PDFMerger\Providers\PDFMergerServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -223,6 +224,7 @@ return [
         'Datatables' => Yajra\Datatables\Facades\Datatables::class,
         'DNS1D' => Milon\Barcode\Facades\DNS1DFacade::class,
         'DNS2D' => Milon\Barcode\Facades\DNS2DFacade::class,
+        'PDFMerger' => Webklex\PDFMerger\Facades\PDFMergerFacade::class,
     ],
 
 ];

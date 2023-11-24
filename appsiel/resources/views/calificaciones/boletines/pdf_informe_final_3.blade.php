@@ -186,5 +186,7 @@
 
 		@include('calificaciones.boletines.seccion_firmas')
 
-		<div class="page-break"></div>
+		@if($with_page_breaks)
+			<div class="page-break"></div>	
+		@endif
 	@endforeach {{-- Estudiante --}}

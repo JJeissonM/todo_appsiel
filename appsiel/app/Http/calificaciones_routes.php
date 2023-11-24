@@ -64,6 +64,11 @@ Route::get('calif_descargar_pdfs_curso/{curso_id}', 'Calificaciones\BoletinContr
 Route::get('calif_eliminar_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@eliminar_pdfs_curso');
 
 
+Route::get('calif_delete_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@delete_pdfs_curso');
+Route::post('calif_generar_html_un_boletin', 'Calificaciones\BoletinController@generar_html_un_boletin');
+Route::get('calif_descargar_pdfs_curso_v2/{curso_id}/{tam_hoja}', 'Calificaciones\BoletinController@descargar_pdfs_curso_v2');
+
+
 // Calcular puesto
 Route::get('calificaciones/boletines/calcular_puesto', 'Calificaciones\BoletinController@calcular_puesto_g');
 Route::post('calificaciones/boletines/calcular_puesto', 'Calificaciones\BoletinController@calcular_puesto_p');

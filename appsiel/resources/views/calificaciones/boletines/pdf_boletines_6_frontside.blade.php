@@ -93,4 +93,6 @@
         
     @include('calificaciones.boletines.pie_pagina')
 
-    <div class="page-break"></div>
+    @if($with_page_breaks)
+        <div class="page-break"></div>	
+    @endif

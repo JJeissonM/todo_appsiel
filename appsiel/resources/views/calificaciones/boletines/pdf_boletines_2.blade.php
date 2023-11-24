@@ -87,6 +87,9 @@
 		
 		{!! generado_por_appsiel() !!}
 
-		<div class="page-break"></div>
+		@if($with_page_breaks)
+			<div class="page-break"></div>	
+		@endif
+
 	@endforeach {{-- Estudiante --}}
 @endsection
