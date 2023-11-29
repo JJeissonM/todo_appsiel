@@ -476,7 +476,9 @@ class VentaController extends TransaccionController
             $vista = Input::get('vista');
         }
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'encabezado_documento', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa','docs_relacionados','doc_registros','url_crear','id_transaccion','notas_credito','medios_pago') );
+        $data_actions_buttons = (new DocumentHeaderService())->actions_buttos_to_show_view( $doc_encabezado, $docs_relacionados);
+
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'encabezado_documento', 'documento_vista', 'doc_encabezado', 'registros_contabilidad','abonos','empresa', 'docs_relacionados', 'doc_registros','url_crear','id_transaccion','notas_credito','medios_pago', 'data_actions_buttons') );
     }
 
     public function get_documento_transaccion_prefijo_consecutivo( $doc_encabezado )

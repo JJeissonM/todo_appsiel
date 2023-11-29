@@ -36,6 +36,9 @@ Route::get('factura_pos_recontabilizar/{id}', 'VentasPos\FacturaPosController@re
 
 Route::get('ventas_pos_reconstruir_mov_ventas_documento/{documento_id}', 'VentasPos\ProcesosController@reconstruir_mov_ventas_documento');
 
+Route::get('vtas_pos_form_modificar_total_factura/{documento_id}', 'VentasPos\ProcesosController@form_modificar_total_factura');
+Route::post('vtas_pos_store_nuevo_total_factura', 'VentasPos\ProcesosController@store_nuevo_total_factura');
+
 // Generar remisiones para documentos ya acumulados
 Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosController@generar_remisiones');
 

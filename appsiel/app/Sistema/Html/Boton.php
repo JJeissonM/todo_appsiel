@@ -14,23 +14,42 @@ class Boton
 
     public $estructura_html;
 
+    public $size;
+
+    public $id;
+    
+    public $target = '_self';
 
     public function __construct( $btn )
     {
-        //$btn = json_encode( $datos_btn );
         $this->url = $btn->url;
         $this->title = $btn->title;
         $this->color_bootstrap = $btn->color_bootstrap;
         $this->faicon = $btn->faicon;
         $this->size = $btn->size;
 
+        if (isset($btn->id)) {
+            $this->id = $btn->id;
+        }
+        
+        if (isset($btn->target)) {
+            if ($btn->target != null) {
+                $this->target = $btn->target;
+            }
+        }        
+
         switch ( $btn->tag_html ) {
             case 'a':
-                $this->estructura_html = '<a btn_atributos class="btn-gmail"> btn_contenido </a>';
+                $this->estructura_html = '<a btn_atributos class="btn-gmail" target="' . $this->target .'"> btn_contenido </a>';
                 break;
 
             case 'button':
-                $this->estructura_html = '<a btn_atributos class="btn-gmail"> btn_contenido </a>';
+                if ($this->id == null) {
+                    $this->estructura_html = '<button btn_atributos class="btn-gmail"> btn_contenido </button>';
+                }else{
+                    $this->estructura_html = '<button btn_atributos class="btn-gmail" id="' . $this->id . '"> btn_contenido </button>';
+                }
+                
                 break;
             
             default:

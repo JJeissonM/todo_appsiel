@@ -17,6 +17,8 @@
 			@can('Facturación Electrónica')
 				<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . $variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
 			@endcan
+
+	    	<button class="btn-gmail" id="btn_modificar_total_factura" title="Modificar total factura"><i class="fa fa-btn fa-edit"></i></button>
 		@endif
 
         @can('vtas_recontabilizar')
@@ -58,6 +60,9 @@
 			?>
 		@endforeach
 	@endif
+
+	<input type="hidden" name="documento_id" id="documento_id" value="{{ $id }}">
+
 @endsection
 
 @section('filas_adicionales_encabezado')
@@ -130,6 +135,9 @@
 @endsection
 
 @section('otros_scripts')
+
+	<script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas_show.js?aux=' . uniqid() )}}"></script>
+
 	<script type="text/javascript">
 
 		$(document).ready(function(){
@@ -215,7 +223,6 @@
 
 			});
 
-
             $(document).on('keyup','#tasa_descuento',function(event){
             	if( validar_input_numerico( $(this) ) )
 				{	
@@ -251,8 +258,6 @@
 				$('#valor_total_descuento').val( valor_total_descuento );
 			}
 
-
-
 			function calcular_precio_total()
 			{
 				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
@@ -265,7 +270,6 @@
 
 				$('#precio_total').val( precio_total );
 			}
-
 
             $('#enlace_anular').click(function(){
             	
@@ -370,7 +374,6 @@
 				$("#myModal2 .btn_save_modal").attr( 'data-href', $(this).attr( 'data-href') );
 
 			});
-
 			
             $('.btn_save_modal').click(function(event){
 				// Desactivar el click del botón
@@ -378,6 +381,29 @@
 		        $(this).attr( 'disabled', 'disabled' );
 				$( this ).off( event );
 				location.href = $(this).attr( 'data-href' );
+			});
+			
+			// MODIFICAR TOTAL FACTURA
+			$("#btn_modificar_total_factura").click(function (event) {
+				event.preventDefault();				
+
+				var url = '../vtas_pos_form_modificar_total_factura/' + $('#documento_id').val() + '?id_modelo=230';
+
+                $.get( url )
+                    .done( function( data ) {
+                        $('#contenido_modal2').html( data );
+
+						$("#myModal2").modal(
+							{keyboard: true}
+						);
+
+						$("#myModal2 .modal-title").text('Modificar Valor Total Factura');
+
+						$("#myModal2 .btn_edit_modal").hide();
+						//$("#myModal2 .btn_save_modal").html('<i class="fa fa-file-text-o"></i> Convertir');
+						
+						$("#myModal2 .btn_save_modal").hide();
+                    });
 			});
 
 		});

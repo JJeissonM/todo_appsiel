@@ -1,26 +1,13 @@
 <?php  
 	$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
-	//dd( $doc_encabezado );
 ?>
 
 @extends('transaccion.show')
 
 @section('botones_acciones')
-	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
+	@inject('actions_buttons', 'App\Sistema\Html\ActionsButtons')
 
-		@if( !$docs_relacionados[1] )
-			{{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'ventas/id_fila/edit'.$variables_url ),'Editar') }}
-        	<a class="btn-gmail" href="{{ url('ventas_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=167&id_transaccion=38') }}" title="Nota crédito"><i class="fa fa-file-text"></i></a>
-		@endif	    
-	    
-	    <a href="{{ url('tesoreria/recaudos_cxc/create?id='.Input::get('id').'&id_modelo=153&id_transaccion=32') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>
-
-	    <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
-        
-        @can('vtas_recontabilizar')
-        	<a class="btn-gmail" href="{{ url( 'ventas_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
-        @endcan
-	@endif
+	{!! $actions_buttons->render( $data_actions_buttons ) !!}
 @endsection
 
 @section('botones_imprimir_email')

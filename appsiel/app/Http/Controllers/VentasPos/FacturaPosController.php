@@ -5,7 +5,6 @@ namespace App\Http\Controllers\VentasPos;
 use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
 
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
@@ -63,6 +62,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
+use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\TipService;
 
@@ -931,34 +931,11 @@ class FacturaPosController extends TransaccionController
     // Recontabilizar un documento dada su ID
     public static function recontabilizar_factura( $documento_id )
     {
-        $documento = FacturaPos::find($documento_id);
 
-        // Eliminar registros contables actuales
-        ContabMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
-                        ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
-                        ->where('consecutivo', $documento->consecutivo)
-                        ->delete();
-
-        // Obtener líneas de registros del documento
-        $registros_documento = DocRegistro::where('vtas_pos_doc_encabezado_id', $documento->id)->get();
-
-        $total_documento = 0;
-        $n = 1;
-        $obj_sales_serv = new SalesServices();
-        foreach ($registros_documento as $linea)
-        {
-            $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
-            $obj_sales_serv->contabilizar_movimiento_credito( $documento->toArray() + $linea->toArray(), $detalle_operacion);
-            $total_documento += $linea->precio_total;
-            $n++;
+        if ((new AccountingServices())->recontabilizar_factura( $documento_id )) {
+            return redirect( 'pos_factura/' . $documento_id . '?id=20&id_modelo=230&id_transaccion=47' )->with('flash_message', 'Documento Recontabilizado.');
         }
-
-        $forma_pago = $documento->forma_pago;
-
-        $datos = $documento->toArray();
-        $obj_sales_serv->contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $documento->pdv->caja_default_id);
-
-        return redirect( 'pos_factura/' . $documento->id . '?id=20&id_modelo=230&id_transaccion=47' )->with('flash_message', 'Documento Recontabilizado.');
+        
     }
 
     public function armar_cuerpo_tabla_lineas_registros($lineas_registros_documento)

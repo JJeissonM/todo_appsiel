@@ -37,8 +37,7 @@ class SalesServices
     }    
 
     public function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $caja_banco_id = null)
-    {
-        
+    {        
         $obj_accou_serv = new AccountingServices();
 
         if ($forma_pago == 'credito') {
@@ -58,9 +57,10 @@ class SalesServices
         // Contabiliazar el movimiento de tesorería
         if ($forma_pago == 'contado')
         {
+
             $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
-            if (!is_null($lineas_recaudos)) //&& $datos['lineas_registros_medios_recaudos'] != '' )
+            if ( $lineas_recaudos != null ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
                 foreach ($lineas_recaudos as $linea)
                 {

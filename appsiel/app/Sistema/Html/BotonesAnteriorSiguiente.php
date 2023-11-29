@@ -2,8 +2,8 @@
 
 namespace App\Sistema\Html;
 
-use Auth;
-use Form;
+use Collective\Html\FormFacade as Form;
+use Illuminate\Support\Facades\Auth;
 
 class BotonesAnteriorSiguiente
 {

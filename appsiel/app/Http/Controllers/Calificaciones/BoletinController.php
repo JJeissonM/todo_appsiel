@@ -204,7 +204,7 @@ class BoletinController extends Controller
         // Se prepara el PDF
         $orientacion='portrait';
         $tam_hoja = $request->tam_hoja;
-        $pdf = App::make('dompdf.wrapper');	
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
 
         $nombrearchivo = uniqid() . '.pdf';

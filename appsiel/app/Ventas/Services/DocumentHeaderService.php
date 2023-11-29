@@ -13,6 +13,7 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class DocumentHeaderService
 {
@@ -96,5 +97,85 @@ class DocumentHeaderService
             'message'=>'Factura de ventas ' . $document_header->get_label_documento()  . ' ANULADA correctamente.'
         ];
     }
-        
+    
+    public function actions_buttos_to_show_view( $doc_encabezado, $docs_relacionados )
+    {
+        $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion');
+
+        $actions = [];
+
+        switch ($doc_encabezado-> core_tipo_transaccion_id) {
+            case '23':
+                if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
+                {
+                    if( !$docs_relacionados[1] )
+                    {
+
+                        $actions[] = (object)[
+                            'tag_html' => 'a',
+                            'target' => null,
+                            'id' => null,
+                            'url' => url( 'ventas/' . $doc_encabezado->id . '/edit' . $variables_url ),
+                            'title' => 'Modificar',
+                            'color_bootstrap' => null,
+                            'faicon' => 'edit',
+                            'size' => null,
+                        ];
+                        
+                        $actions[] = (object)[
+                            'tag_html' => 'a',
+                            'target' => null,
+                            'id' => null,
+                            'url' => url('ventas_notas_credito/create?factura_id=' . $doc_encabezado->id . '&id=' . Input::get('id') . '&id_modelo=167&id_transaccion=38'),
+                            'title' => 'Nota crédito',
+                            'color_bootstrap' => null,
+                            'faicon' => 'file-text',
+                            'size' => null,
+                        ];
+                    }
+                    
+                    $actions[] = (object)[
+                        'tag_html' => 'a',
+                        'target' => '_blank',
+                        'id' => null,
+                        'url' => url('tesoreria/recaudos_cxc/create?id=' . Input::get('id') . '&id_modelo=153&id_transaccion=32'),
+                        'title' => 'Hacer abono',
+                        'color_bootstrap' => null,
+                        'faicon' => 'money',
+                        'size' => null,
+                    ];
+                    
+                    $actions[] = (object)[
+                        'tag_html' => 'button',
+                        'target' => null,
+                        'id' => 'btn_anular',
+                        'url' => url('tesoreria/recaudos_cxc/create?id=' . Input::get('id') . '&id_modelo=153&id_transaccion=32'),
+                        'title' => 'Anular',
+                        'color_bootstrap' => null,
+                        'faicon' => 'close',
+                        'size' => null,
+                    ];
+                    
+                    if ( Auth::user()->hasPermissionTo('vtas_recontabilizar') ) {
+                        $actions[] = (object)[
+                            'tag_html' => 'a',
+                            'target' => null,
+                            'id' => null,
+                            'url' => url( 'ventas_recontabilizar/' . $doc_encabezado->id . $variables_url ),
+                            'title' => 'Recontabilizar',
+                            'color_bootstrap' => null,
+                            'faicon' => 'cog',
+                            'size' => null,
+                        ];
+                    }
+                }
+                break;
+            
+            default:
+                # code...
+                break;
+        }        
+
+        return $actions;
+    }
 }
