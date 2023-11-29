@@ -171,6 +171,80 @@ class ProcesoController extends ModeloController
         return $cantidad_registros;
     }
 
+
+    /**
+     *      PENDIENTE      POR    TERMINAR
+     */
+    public function calcular_promedio_notas_periodo_final_curso( $periodo_lectivo_id, $curso_id )
+    {
+        $usuario_email = Auth::user()->email;
+
+        $periodo_lectivo = PeriodoLectivo::find( $periodo_lectivo_id );
+        
+        $periodo_final_id = 0;
+
+        if ( $periodo_lectivo == null )
+        {
+            return [ '', '<span style="color: red;">Error en la obtención de los datos por favor intente nuevamente.</span>' ];
+        }
+        
+        $periodos = $periodo_lectivo->periodos->where('estado','Activo')->all();
+        
+        $array_ids_periodos_promediar = []; // Se excluye el de promedio (FINAL)
+        $i = 0;
+        foreach ($periodos as $fila)
+        {
+            if ( !$fila->periodo_de_promedios )
+            {
+                $array_ids_periodos_promediar[$i] = $fila->id;
+                $i++;
+            }else{
+                $periodo_final_id = $fila->id;
+            }
+        }
+
+        // PASO 1. Vaciar los datos del periodo final en ese periodo lectivo para curso enviado
+        Calificacion::where([
+            ['id_periodo', '=', $periodo_final_id],
+            ['curso_id', '=', $curso_id],
+            ])->delete();
+
+        // PASO 2. Calcular y almacenar las nuevas calificaciones promedios       
+        $cantidad_registros = 0;
+
+        $asignaturas_del_curso_y_periodo_lectivo = Asignatura::asignadas_al_curso( $periodo_lectivo_id, $curso_id );
+
+        // Listado de estudiantes con matriculas en el curso y año indicados
+        $estudiantes = Matricula::estudiantes_matriculados( $curso_id, $periodo_lectivo_id, null );
+
+        foreach ($asignaturas_del_curso_y_periodo_lectivo as $asignatura)
+        {
+            foreach ($estudiantes as $estudiante)
+            {
+                
+                $prom = Calificacion::get_calificacion_promedio_asignatura_estudiante_periodos($array_ids_periodos_promediar, $curso_id, $estudiante->id, $asignatura->id);
+
+                Calificacion::create( [
+                                        'codigo_matricula' => $estudiante->codigo,
+                                        'id_colegio' => $estudiante->id_colegio,
+                                        'anio' => explode('-', $periodo_lectivo->fecha_desde)[0] ,
+                                        'id_periodo' => $periodo_final_id,
+                                        'curso_id' =>$curso_id,
+                                        'id_estudiante' => $estudiante->id,
+                                        'id_asignatura' => $asignatura->id,
+                                        'calificacion' => (float)$prom,
+                                        'creado_por' => $usuario_email  
+                                    ] );
+                /**/
+                
+                $cantidad_registros++;
+            }
+
+        }
+        
+        return $cantidad_registros;
+    }
+
     public function consultar_areas_asignaturas_pesos( $periodo_lectivo_id, $grado_id )
     {
         $array_cursos_id = Curso::where('sga_grado_id',$grado_id)->get()->pluck('id')->toArray();

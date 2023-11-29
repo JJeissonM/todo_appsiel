@@ -79,6 +79,18 @@ class DocumentLinesService
                 CxpMovimiento::create( $datos );
             }
 
+            // Generar AnticIipo CxP.
+            if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_anticipo_cxp' )
+            {
+
+                $datos['valor_documento'] = $valor_debito * -1;
+                $datos['valor_pagado'] = 0;
+                $datos['saldo_pendiente'] = $valor_debito * -1;
+                $datos['fecha_vencimiento'] = $datos['fecha'];
+                $datos['estado'] = 'Pendiente';
+                CxpMovimiento::create( $datos );
+            }
+
             // Generar CxC.
             if ( $tabla_registros_documento[$i]->tipo_transaccion == 'crear_cxc' )
             {

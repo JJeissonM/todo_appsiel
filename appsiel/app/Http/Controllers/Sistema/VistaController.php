@@ -42,7 +42,7 @@ class VistaController extends Controller
         }
         $pdf = App::make('dompdf.wrapper');
 
-        $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja,$orientacion);
+        $pdf->loadHTML( View::make('core.pdf_documento', [ 'contenido' => Cache::get( 'pdf_reporte_'.$reporte_id ) ] )  )->setPaper($tam_hoja, $orientacion);
         
         return $pdf->stream();
     }

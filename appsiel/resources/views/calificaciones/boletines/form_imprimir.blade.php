@@ -114,7 +114,7 @@
 @section('scripts')
 	<script type="text/javascript">
 	
-		var arr_ids_estudiantes, cache_key, pdf_name;
+		var arr_ids_estudiantes;
 		
 		$(document).ready(function(){
 			
@@ -243,10 +243,6 @@
 				});
 
 				$("#ids_estudiantes").val( '[' + arr_ids + ']' );
-				
-				cache_key = 'pdf_boletines_curso_id_' + $('#curso_id').val();
-				
-				pdf_name = 'boletines_curso_' + $("#curso_id option:selected").text();
 
 				generar_pdf_boletines();
 			});

@@ -200,7 +200,7 @@ class BoletinController extends Controller
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
 
         $view = $this->get_view_for_pdf($request->all(), $firmas,false);
-                
+            
         // Se prepara el PDF
         $orientacion='portrait';
         $tam_hoja = $request->tam_hoja;
@@ -210,6 +210,8 @@ class BoletinController extends Controller
         $nombrearchivo = uniqid() . '.pdf';
 
         Storage::put( 'pdf_boletines_curso_id_' . $request->curso_id . '/' . $nombrearchivo, $pdf->output());
+
+        return 'true';
 	}
 	
 	public function generar_html_un_boletin( Request $request )

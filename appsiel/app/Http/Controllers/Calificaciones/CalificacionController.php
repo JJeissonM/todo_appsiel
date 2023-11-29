@@ -24,8 +24,7 @@ use App\Core\Colegio;
 use App\Sistema\Aplicacion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-
-use Lava;
+use Khill\Lavacharts\Laravel\LavachartsFacade as Lava;
 
 class CalificacionController extends Controller
 {

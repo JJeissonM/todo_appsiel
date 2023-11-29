@@ -84,11 +84,14 @@
             <div class="row">
             	<div class="col-md-2">
             	</div>
-            	<div class="col-md-4">
+            	<div class="col-md-3">
             		<button type="button" class="btn btn-danger" id="btn_cancelar1" style="display: none;"><i class="fa fa-btn fa-remove"></i> Cancelar</button>
             	</div>
-            	<div class="col-md-4">
+            	<div class="col-md-3">
             		<button type="button" class="btn btn-success" id="btn_guardar2" style="display: none;"><i class="fa fa-btn fa-save"></i> Guardar </button>
+            	</div>
+            	<div class="col-md-2">
+					<button type="button" class="btn btn-primary" id="btn_ajustar_diferencia" style="display: none;"><i class="fa fa-btn fa-wrench"></i> Ajustar diferencia </button>
             	</div>
             	<div class="col-md-2">
             	</div>
@@ -116,11 +119,13 @@
 						var url = '../cxp/get_cartera_tercero/' + $('#core_tercero_id').val() + '/' + $('#fecha').val();
 						$.get( url, function( datos ) {
 					        $('#div_cargando').hide();
-					        //console.log(datos);
+							
 					        var tablas = datos.split('a3p0')
 
 					        $('#btn_continuar1').hide();
 					        $('#btn_cancelar1').show();
+							
+							activar_btn_ajustar_diferencia();
 
 							$('#div_documentos_cartera').show();
 							$('#div_documentos_a_favor').show();
@@ -135,6 +140,15 @@
 				}
 			});
 
+			function activar_btn_ajustar_diferencia()
+			{
+				if( parseFloat( $('#total_valor_total').text() ) != 0 && $('#total_valor_total').text() != '' )
+				{
+					$('#btn_ajustar_diferencia').show();
+				}else{
+					$('#btn_ajustar_diferencia').hide();
+				}
+			}
 
 			$(document).on('click', '.btn_agregar_documento_cartera', function(event) 
 			{
@@ -151,8 +165,6 @@
 					fila.find("td:last").text( valor );
 					fila.find("td:last").attr('class', 'valor_total' );
 
-					//console.log( fila );
-
 					var id_encabezado_documento = fila.attr('id');
 
 					fila.prepend( "<td style='color: white;'> " + id_encabezado_documento + " </td>" );
@@ -163,10 +175,10 @@
 					$('#documentos_a_cancelar').find('tbody:last').append( fila );
 
 					$("#div_cartera input:text").first().focus();
-					calcular_totales_cruce();		
+					calcular_totales_cruce();
+					activar_btn_ajustar_diferencia();	
 				}		
 			});
-
 
 			$(document).on('click', '.btn_agregar_documento_afavor', function(event) 
 			{
@@ -184,8 +196,6 @@
 					fila.find("td:last").text( valor * -1 );
 					fila.find("td:last").attr('class', 'valor_total' );
 
-					//console.log( fila );
-
 					var id_encabezado_documento = fila.attr('id');
 
 					fila.prepend( "<td style='color: white;'> " + id_encabezado_documento + " </td>" );
@@ -198,8 +208,20 @@
 					$("#div_cartera input:text").first().focus();			
 				}
 				calcular_totales_cruce();
+				activar_btn_ajustar_diferencia();
 			});
 
+			$('#btn_ajustar_diferencia').click(function(event){
+				event.preventDefault();
+				
+				var valor_diferencia = parseFloat( $('#total_valor_total').text() ) * -1;
+
+				var fila = '<tr id="-1" class=""><td style="color: white;"> -1 </td> <td class="text-center"> Nota de contabilidad </td> <td> ' + $('#fecha').val() + ' </td> <td class="col_saldo_pendiente text-right"> ' + valor_diferencia + ' </td> <td class="valor_total">' + valor_diferencia + '</td> <td> &nbsp; </td></tr>';
+
+				$('#documentos_a_cancelar').find('tbody:last').append( fila );
+
+				calcular_totales_cruce();
+			});
 
 			$('#btn_cancelar1').click(function(event){
 
@@ -214,6 +236,8 @@
 		        $('#div_documentos_a_favor').hide();
 		        $('#div_documentos_a_cancelar').hide();
 		        $('#btn_guardar2').hide();
+		        $('#btn_ajustar_diferencia').hide();
+				$('#total_valor_total').text('');
 		        $('#btn_continuar1').show();
 
 		        habilitar_campos_form_create();
@@ -253,9 +277,6 @@
 				var saldo_pendiente = fila.find('td.col_saldo_pendiente').text();
 				saldo_pendiente = parseFloat( saldo_pendiente.replace( /\./g, "" ) );
 
-				console.log(valor);
-				console.log(saldo_pendiente);
-
 				// Tolerancia de $100
 				if( valor > 0  && ( valor >= (saldo_pendiente - 10 ) || valor <= (saldo_pendiente + 10 ) ) )
 				{
@@ -274,10 +295,8 @@
 				var sum, cadena;
 				sum = 0;
 				$('.valor_total').each(function()
-				{
-				    
+				{				    
 				    cadena = $(this).text();
-				    //console.log( cadena );
 				    sum+=parseFloat(cadena);
 				});
 

@@ -101,7 +101,6 @@ Route::resource('calificaciones', 'Calificaciones\CalificacionController', ['exc
 
 // PENSUM 
 // Formulario
-
 Route::get('calificaciones_cambiar_orden_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_posicion}', 'Calificaciones\PensumController@cambiar_orden_asignatura');
 
 Route::get('calificaciones_cambiar_intensidad_horaria_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_ih}', 'Calificaciones\PensumController@cambiar_intensidad_horaria_asignatura');
@@ -121,8 +120,6 @@ Route::get('calificaciones/periodo_lectivo_tiene_asignaciones/{periodo_lectivo_i
 Route::get('calificaciones/asignar_asignaturas/get_tabla_asignaturas_asignadas/{periodo_lectivo_id}/{curso_id}', 'Calificaciones\PensumController@get_tabla_asignaturas_asignadas');
 
 
-
-
 // AJAX
 Route::get('get_select_periodos/{periodo_id}', 'Calificaciones\CalificacionController@get_select_periodos');
 Route::get('get_select_asignaturas/{curso_id}/{periodo_lectivo_id?}', 'Calificaciones\CalificacionController@get_select_asignaturas');
@@ -135,11 +132,14 @@ Route::get('get_id_periodo_lectivo_del_periodo/{periodo_id}', 'Calificaciones\Ca
 /*
 		PROCESOS
 */
-
 Route::get('form_generar_promedio_notas_periodo_final', 'Calificaciones\ProcesoController@form_generar_promedio_notas_periodo_final');
 Route::get('consultar_periodos_periodo_lectivo/{periodo_lectivo_id}', 'Calificaciones\ProcesoController@consultar_periodos_periodo_lectivo');
 Route::get('calcular_promedio_notas_periodo_final/{periodo_lectivo_id}', 'Calificaciones\ProcesoController@calcular_promedio_notas_periodo_final');
 
 
+Route::get('calcular_promedio_notas_periodo_final_curso/{periodo_lectivo_id}/{curso_id}', 'Calificaciones\ProcesoController@calcular_promedio_notas_periodo_final_curso');
+
+
 Route::get('sga_consultar_areas_asignaturas_pesos/{periodo_lectivo_id}/{grado_id}', 'Calificaciones\ProcesoController@consultar_areas_asignaturas_pesos');
 Route::post('sga_almacenar_pesos_asignaturas_areas', 'Calificaciones\ProcesoController@almacenar_pesos_asignaturas_areas');
+

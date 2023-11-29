@@ -3,19 +3,8 @@
 namespace App\Http\Controllers\CxC;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use NumerosEnLetras;
-use Schema;
 
 
-use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
@@ -26,13 +15,6 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use App\Sistema\TipoTransaccion;
 use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
-use App\Core\Tercero;
-
-use App\Matriculas\Grado;
-use App\Matriculas\Estudiante;
-use App\Core\Colegio;
-use App\Core\Empresa;
 
 use App\Ventas\VtasDocEncabezado;
 use App\Matriculas\FacturaAuxEstudiante;
@@ -42,20 +24,16 @@ use App\CxC\CxcDocEncabezado;
 use App\CxC\CxcAbono;
 use App\CxC\Services\AccountingServices;
 
-use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoEntidadFinanciera;
-use App\Tesoreria\TesoMotivo;
-use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezadoRecaudo;
-use App\Tesoreria\TesoDocRegistroRecaudo;
-use App\Tesoreria\TesoMovimiento;
 
-use App\PropiedadHorizontal\Propiedad;
 use App\Contabilidad\ContabMovimiento;
-use App\Contabilidad\ContabCuenta;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
 
 class DocCruceController extends TransaccionController
 {
@@ -424,7 +402,7 @@ class DocCruceController extends TransaccionController
       $orientacion='portrait';
       $tam_hoja='Letter';
 
-      $pdf = \App::make('dompdf.wrapper');
+      $pdf = App::make('dompdf.wrapper');
       //$pdf->set_option('isRemoteEnabled', TRUE);
       $pdf->loadHTML( $view_pdf )->setPaper($tam_hoja,$orientacion);
 

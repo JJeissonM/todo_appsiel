@@ -200,7 +200,6 @@
 					
 			});
 
-
 			$('#teso_medio_recaudo_id').on('change',function()
 			{
 				$('#resultado_consulta').html('');
@@ -269,6 +268,81 @@
 				$('#fecha_hasta').attr( 'disabled', 'disabled' );
 				
 			});
+
+			
+			$('#btn_generar_pdfs').click(function(event){
+        
+				event.preventDefault();
+				
+				if(!validar_requeridos()){
+					alert('Faltan campor por diligenciar.');
+					return false;
+				}
+
+				$(this).children('.fa-print').attr('class','fa fa-spinner fa-spin');
+				$('#div_cargando').show();
+				$('#message_print').hide();
+
+				var arr_ids = '0';
+				$("#estudiante_id option").each(function(i){
+					if ($.isNumeric( $(this).val() )) {
+						arr_ids += ',' + $(this).val() ;
+					}					
+				});
+
+				$("#ids_estudiantes").val( '[' + arr_ids + ']' );
+
+				generar_pdf_boletines();
+			});
+
+			function generar_pdf_boletines()
+			{
+				arr_ids_estudiantes = JSON.parse($("#ids_estudiantes").val());
+				arr_ids_estudiantes.shift();
+				
+				$.get("../../calif_delete_pdfs_curso" + "/" + $('#curso_id').val(), function(respuesta){ 
+					// fires off the first call 
+					ejecucion_recursiva_generar_un_boletin();					
+				});
+			}
+
+			// The recursive function 
+			function ejecucion_recursiva_generar_un_boletin() { 
+				
+				// terminate if array exhausted 
+				if (arr_ids_estudiantes.length === 0) 
+				{
+					$('#div_cargando').hide();
+					$('#btn_generar_pdfs').children('.fa-spinner').attr('class','fa fa-print');
+					$('#message_print').show();
+					
+					window.open( '../../calif_descargar_pdfs_curso_v2/' + $('#curso_id').val() + '/'  + $('#tam_hoja').val(), '_blank');
+
+					return true;
+				}
+
+				// pop top value 
+				var estudiante_id = arr_ids_estudiantes[0];
+				arr_ids_estudiantes.shift(); 
+				//var url = '../../calif_generar_pdf_un_boletin';
+				var url = '../../calif_generar_pdf_un_boletin';
+
+				var formData = new FormData(document.getElementById('formulario'));
+				formData.append('estudiante_id', estudiante_id);
+
+				$.ajax({
+					url: url,
+					type: "post",
+					dataType: "html",
+					data: formData,
+					cache: false,
+					contentType: false,
+					processData: false
+				})
+				.done(function(res){
+					ejecucion_recursiva_generar_un_boletin();
+				});
+			}
 
 		});
 

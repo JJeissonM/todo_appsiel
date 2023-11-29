@@ -4,25 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-
 use App\Http\Controllers\Sistema\ModeloController;
-
-use Auth;
-use View;
-use Input;
-use DB;
-use Form;
 
 // Modelos
 use App\Core\Colegio;
 use App\Core\DifoFormato;
-use App\Core\Configuracion;
+
 use App\Matriculas\Matricula;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Curso;
 use App\Core\FirmaAutorizada;
 use App\Calificaciones\Periodo;
+use Collective\Html\FormFacade as Form;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class GestionDocumentalController extends ModeloController
 {
@@ -49,7 +47,7 @@ class GestionDocumentalController extends ModeloController
      */
     public function update(Request $request, $id)
     {        
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get();
+        $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get();
         $colegio = $colegio[0];
 
         $tam_hoja = $request->tam_hoja;
@@ -66,7 +64,7 @@ class GestionDocumentalController extends ModeloController
                 $id_firma_autorizada=$request->id_firma_autorizada;
 
                 $view =  View::make('gestion_documental.pdf.constancias', compact('colegio','id_formato','estudiante','curso','id_firma_autorizada','tam_letra','tam_hoja'))->render();
-                $pdf = \App::make('dompdf.wrapper');
+                $pdf = App::make('dompdf.wrapper');
                 $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
                 return $pdf->download('constancia_observador.pdf');
 
@@ -84,14 +82,14 @@ class GestionDocumentalController extends ModeloController
                 //$id_estudiante=$request->id_estudiante;
 
                 $view =  View::make('gestion_documental.pdf.certificado_quinto', compact('colegio','anio','id_formato','curso_id','id_periodo','tam_letra','tam_hoja'))->render();
-                $pdf = \App::make('dompdf.wrapper');
+                $pdf = App::make('dompdf.wrapper');
                 $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
                 return $pdf->download('certificado_quinto.pdf');
                 
                 break;
             case '4':
                 $view =  View::make('gestion_documental.pdf.hoja_membreteada', compact('colegio','tam_letra','tam_hoja'))->render();
-                $pdf = \App::make('dompdf.wrapper');
+                $pdf = App::make('dompdf.wrapper');
                 $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
                 return $pdf->download('hoja_membreteada.pdf');
 
@@ -102,7 +100,7 @@ class GestionDocumentalController extends ModeloController
 
             default:
                 $view =  View::make('gestion_documental.pdf.mi_formato', compact('colegio','request','tam_hoja'))->render();
-                $pdf = \App::make('dompdf.wrapper');
+                $pdf = App::make('dompdf.wrapper');
                 $pdf->loadHTML(($view))->setPaper($tam_hoja,$orientacion);
                 return $pdf->download('formato.pdf');
                 //return view('gestion_documental.pdf.mi_formato',compact('colegio','request'));
@@ -125,7 +123,7 @@ class GestionDocumentalController extends ModeloController
         $formatos = $vec;
 
         $miga_pan = [
-                ['url'=>'gestion_documental?id='.Input::get('id'),'etiqueta'=>'Gestión documental'],
+                ['url'=>'gestion_documental?id=' . Input::get('id'),'etiqueta'=>'Gestión documental'],
                 ['url'=>'NO','etiqueta'=>'Imprimir formatos']
             ];
 
@@ -249,9 +247,7 @@ class GestionDocumentalController extends ModeloController
 
         $view = View::make('core.dis_formatos.plantillas.'.$formato->plantilla, compact('formato','request'))->render();
         
-        /*echo $view;*/
-        
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($view)->setPaper($tam_hoja,$orientacion);
         return $pdf->download($formato->descripcion.'.pdf');
         

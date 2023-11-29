@@ -237,7 +237,7 @@
 		        $('#div_documentos_a_cancelar').hide();
 		        $('#btn_guardar2').hide();
 		        $('#btn_ajustar_diferencia').hide();
-				$('#total_valor_total').text('')
+				$('#total_valor_total').text('');
 		        $('#btn_continuar1').show();
 
 		        habilitar_campos_form_create();

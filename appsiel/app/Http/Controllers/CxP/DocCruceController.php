@@ -19,6 +19,7 @@ use App\CxP\CxpAbono;
 
 use App\Contabilidad\ContabMovimiento;
 use App\CxC\CxcMovimiento;
+use App\CxP\Services\AccountingServices;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -79,6 +80,8 @@ class DocCruceController extends TransaccionController
      */
     public function store(Request $request)
     {
+      $obj_accou_serv = new AccountingServices();
+      $cxp_move_note_id = $obj_accou_serv->create_accounting_note_doc( $request->tabla_documentos_a_cancelar, $request->fecha, $request->core_tercero_id );
         
       $doc_encabezado = $this->crear_encabezado_documento($request, $request->url_id_modelo);
 
@@ -93,6 +96,10 @@ class DocCruceController extends TransaccionController
       for ($i=0; $i < $cant; $i++) 
       {
             $movimiento_id = (int)$tabla_documentos_a_cancelar[$i]->movimiento_id;
+            if ( $movimiento_id == -1 )
+            {
+              $movimiento_id = $cxp_move_note_id;
+            }
 
             $valor_aplicar = (float)$tabla_documentos_a_cancelar[$i]->valor_aplicar;
 
@@ -485,11 +492,6 @@ class DocCruceController extends TransaccionController
                                             ->where('consecutivo',$linea_abono->consecutivo)
                                             ->where('core_tercero_id',$linea_abono->core_tercero_id)
                                             ->sum('abono') - $valor_abono;
-
-            if ( $valor_abonos_aplicados > $linea_movimiento->valor_documento)
-            {
-              $valor_abonos_aplicados = $linea_movimiento->valor_documento;
-            }
 
             $nuevo_saldo_pendiente = $linea_movimiento->valor_documento + $valor_abonos_aplicados;
             $nuevo_valor_pagado = $valor_abonos_aplicados * -1; // el valor_abonos_aplicados es como mínimo el valor de $valor_abono
