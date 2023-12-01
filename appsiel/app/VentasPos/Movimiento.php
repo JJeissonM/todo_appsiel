@@ -52,11 +52,15 @@ class Movimiento extends Model
 
     public static function consultar_registros($nro_registros, $search)
     {
-        return Movimiento::select(
-            'vtas_pos_movimientos.fecha AS campo1',
-            'vtas_pos_movimientos.core_empresa_id AS campo2',
-            'vtas_pos_movimientos.cliente_id AS campo3',
-            'vtas_pos_movimientos.inv_producto_id AS campo4',
+        return Movimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_movimientos.core_tipo_doc_app_id')
+        ->leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+        ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_movimientos.core_tercero_id')
+        ->where('vtas_pos_movimientos.core_empresa_id', Auth::user()->empresa_id)
+        ->select(
+            DB::raw('DATE_FORMAT(vtas_pos_movimientos.fecha,"%d-%m-%Y") AS campo1'),
+            DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_movimientos.consecutivo) AS campo2'),
+            'core_terceros.descripcion AS campo3',
+            'inv_productos.descripcion AS campo4',
             'vtas_pos_movimientos.precio_unitario AS campo5',
             'vtas_pos_movimientos.cantidad AS campo6',
             'vtas_pos_movimientos.precio_total AS campo7',
@@ -65,8 +69,8 @@ class Movimiento extends Model
         )
             ->where("vtas_pos_movimientos.fecha", "LIKE", "%$search%")
             ->orWhere("vtas_pos_movimientos.core_empresa_id", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_movimientos.cliente_id", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_movimientos.inv_producto_id", "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_pos_movimientos.precio_unitario", "LIKE", "%$search%")
             ->orWhere("vtas_pos_movimientos.cantidad", "LIKE", "%$search%")
             ->orWhere("vtas_pos_movimientos.precio_total", "LIKE", "%$search%")

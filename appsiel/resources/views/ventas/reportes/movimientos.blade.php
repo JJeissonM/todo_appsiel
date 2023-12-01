@@ -5,7 +5,7 @@
 
 <div class="table-responsive">
     <table id="myTable" class="table table-striped">
-        {{ Form::bsTableHeader(['Fecha', 'Doc.', 'NIT/Cliente', 'Vend.', 'Zona', 'Forma Pago', 'Bod.', 'Mot.', 'Item', 'Cant.', 'P. Unit.', 'P. Tot.', 'Base Imp. Tot.',  'Tasa Imp.', 'Imp. Tot.','Tasa. Dcto.', 'Dcto. Tot.']) }}
+        {{ Form::bsTableHeader(['Fecha', 'Doc.', 'NIT/Cliente', 'Vend.', 'Zona', 'Forma Pago', 'Bod.', 'Mot.', 'Item', 'Cant.', 'P. Unit.', 'Base Imp. Tot.',  'Tasa Imp.', 'Imp. Tot.', 'P. Tot.','Tasa. Dcto.', 'Dcto. Tot.']) }}
         <tbody>
             <?php
                 $suma_precio_total = 0;
@@ -52,11 +52,11 @@
                     <td> {{ $motivo }} </td>
                     <td> {{ $linea_movimiento->producto->id }} {{ $linea_movimiento->producto->descripcion }} </td>
                     <td> {{ number_format( $linea_movimiento->cantidad, 2, ',', '.') }} </td>
-                    <td> ${{ number_format( $linea_movimiento->precio_unitario, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $linea_movimiento->precio_total, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $linea_movimiento->base_impuesto_total, 2, ',', '.') }} </td>
                     <td> {{ $linea_movimiento->tasa_impuesto }}% </td>
                     <td> ${{ number_format( $linea_movimiento->valor_impuesto * $linea_movimiento->cantidad, 2, ',', '.') }} </td>
+                    <td> ${{ number_format( $linea_movimiento->precio_unitario, 2, ',', '.') }} </td>
                     <td> {{ $linea_movimiento->tasa_descuento }}% </td>
                     <td> ${{ number_format( $linea_movimiento->valor_total_descuento, 2, ',', '.') }} </td>
                 </tr>
@@ -80,10 +80,10 @@
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
-                <td> ${{ number_format( $suma_precio_total, 2, ',', '.') }} </td>
                 <td> ${{ number_format( $suma_base_impuesto, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
                 <td> ${{ number_format( $suma_impuesto_total, 2, ',', '.') }} </td>
+                <td> ${{ number_format( $suma_precio_total, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
                 <td> ${{ number_format( $suma_descuento_total, 2, ',', '.') }} </td>
             </tr>

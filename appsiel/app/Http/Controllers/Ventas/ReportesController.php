@@ -477,6 +477,10 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $detalla_productos = $request->detalla_productos;
+
+        if ( $request->transacciones_a_mostrar == null) {
+            dd('Error. No se envio el parametro transacciones_a_mostrar.');
+        }
         
         /**
          * 23 = Factura de ventas
