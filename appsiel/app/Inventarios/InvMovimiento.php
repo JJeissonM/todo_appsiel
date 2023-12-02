@@ -485,28 +485,32 @@ class InvMovimiento extends Model
         $lineas_documento = InvDocRegistro::where('inv_doc_encabezado_id', $inv_doc_encabezado->id)->get();
         $conta = 1;
         foreach ($lineas_documento as $linea)
-        {
+        {            
+            if ( $linea->item->tipo == 'servicio' )
+            {
+                continue;
+            }
+
+            $motivo_movimiento = $linea->motivo->movimiento;
+
             if ( $tipo_movimiento == 'segun_motivo' )
             {
-                $motivo = InvMotivo::find($linea->inv_motivo_id);
-                $tipo_movimiento = $motivo->movimiento;
-                
                 // Al anular se intercambian los tipos de movimientos
                 if ( $operacion == 'anular' )
                 {
-                    if ( $motivo->movimiento == 'entrada')
+                    if ( $motivo_movimiento == 'entrada')
                     {
-                        $tipo_movimiento = 'salida';
+                        $motivo_movimiento = 'salida';
                     }else{
-                        $tipo_movimiento = 'entrada';
+                        $motivo_movimiento = 'entrada';
                     }
                 }
 
             }
 
-            $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores( $linea->inv_bodega_id, $linea->inv_producto_id, $inv_doc_encabezado->fecha, $linea->cantidad, 'no', $tipo_movimiento);
+            $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores( $linea->inv_bodega_id, $linea->inv_producto_id, $inv_doc_encabezado->fecha, $linea->cantidad, 'no', $motivo_movimiento);
             
-            if ( !is_null($linea_saldo_negativo[0]) )
+            if ( $linea_saldo_negativo[0] != null )
             {
                 if ( $linea_saldo_negativo[0]->id == 0)
                 {

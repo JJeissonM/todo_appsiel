@@ -684,7 +684,7 @@ class CompraController extends TransaccionController
         for ($i=0; $i < $cant_registros; $i++)
         { 
             $entrada_almacen = InvDocEncabezado::find( $ids_documentos_relacionados[$i] );
-            if ( !is_null($entrada_almacen) )
+            if ( $entrada_almacen != null )
             {
                 if ( $request->anular_entrada_almacen ) //  anular_entrada_almacen es tipo boolean
                 {
