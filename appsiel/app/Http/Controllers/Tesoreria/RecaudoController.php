@@ -538,7 +538,11 @@ class RecaudoController extends TransaccionController
 
     public static function get_cajas(){
         $vec_m = [];
-        $registros = TesoCaja::where('core_empresa_id',Auth::user()->empresa_id)->get();       
+        $registros = TesoCaja::where([
+            ['core_empresa_id', '=', Auth::user()->empresa_id],
+            ['estado', '=', 'Activo']
+            ])
+            ->get();       
         foreach ($registros as $fila) {
             $vec_m[$fila->id]=$fila->descripcion; 
         }
@@ -549,8 +553,11 @@ class RecaudoController extends TransaccionController
     public static function get_cuentas_bancarias(){
         $vec_m = [];
         $registros = TesoCuentaBancaria::leftJoin('teso_entidades_financieras','teso_entidades_financieras.id','=','teso_cuentas_bancarias.entidad_financiera_id')
-                    ->where('core_empresa_id',Auth::user()->empresa_id)
-                    ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion AS cta_bancaria','teso_entidades_financieras.descripcion AS entidad_financiera')
+                    ->where([
+                            ['teso_cuentas_bancarias.core_empresa_id', '=', Auth::user()->empresa_id],
+                            ['teso_cuentas_bancarias.estado', '=', 'Activo']
+                        ])
+                        ->select('teso_cuentas_bancarias.id','teso_cuentas_bancarias.descripcion AS cta_bancaria','teso_entidades_financieras.descripcion AS entidad_financiera')
                     ->get();        
         foreach ($registros as $fila) {
             $vec_m[$fila->id] = $fila->entidad_financiera.': '.$fila->cta_bancaria; 
