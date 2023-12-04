@@ -26,27 +26,25 @@
 			{{ Form::open( array('url'=>'/calificaciones/calificar2?id='.Input::get('id'), 'id'=>'form_filtros' ) ) }}
 
 				<div class="row">
-                	<div class="col-md-6">
+                	<div class="col-md-3">
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('id_periodo','','Seleccionar periodo',$periodos,['required'=>'required']) }}
+							{{ Form::bsSelect('id_periodo','','Periodo',$periodos,['required'=>'required']) }}
 						</div>
                 	</div>
 
-                	<div class="col-md-6">
+                	<div class="col-md-3">
                 		<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('curso_id','','Seleccionar curso',$cursos,['required'=>'required']) }}
+							{{ Form::bsSelect('curso_id','','Curso',$cursos,['required'=>'required']) }}
 						</div>
                 	</div>
-                </div>
-
-				<div class="row">
-                	<div class="col-md-6">
+					
+                	<div class="col-md-3">
 						<div class="row" style="padding:5px;">
 							{{Form::bsSelect('id_asignatura', null, 'Asignatura',[], ['required'=>'required'])}}
 						</div>
                 	</div>
 
-                	<div class="col-md-6">
+                	<div class="col-md-3">
                 		<button class="btn btn-primary" id="btn_continuar">
 							<i class="fa fa-btn fa-arrow-right"></i>Continuar
 						</button>
@@ -57,13 +55,21 @@
 				{{ Form::hidden( 'ruta', 'calificaciones/create?id='.Input::get('id') ) }}
 
 			{{ Form::close() }}
+		</div>
+	</div>
 
+	
+	<div class="container-fluid">
+		<div class="marco_formulario">
 			<div id="div_form_ingreso">
+				{{ Form::Spin( 42 ) }}
 				
 			</div>
 		</div>
 	</div>
+
 	<br/><br/>	
+
 @endsection
 
 
@@ -132,11 +138,10 @@
 					return false;
 				}
 
-				$('#form_filtros').submit();
+				//$('#form_filtros').submit();				
 				
-				/*
-				$('#div_form_ingreso').html( '' );
 				$('#div_cargando').show();
+				$('#div_spin').show();
 
 				var form_consulta = $('#form_filtros');
 				var url = form_consulta.attr('action');
@@ -144,11 +149,12 @@
 				// Enviar formulario de ingreso de productos vía POST
 				$.post(url,datos,function(respuesta){
 					$('#div_cargando').hide();
+					$('#div_spin').hide();
 
 					$('#div_form_ingreso').html( respuesta );
 
 				})
-				*/
+				/**/
 			});
 
 			checkCookie();

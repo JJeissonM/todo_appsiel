@@ -1,8 +1,3 @@
-@extends('layouts.principal')
-
-@section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
 
 	<style>
 		table th {
@@ -30,8 +25,6 @@
 			border: 0px solid;
 		}
 	</style>
-
-	<hr>
 
 	@include('layouts.mensajes')
 
@@ -134,9 +127,6 @@
 
 	@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente.'])
 
-@endsection
-
-@section('scripts')
 
 
 <script language="javascript">
@@ -645,4 +635,3 @@
 
 	});
 </script>
-@endsection
