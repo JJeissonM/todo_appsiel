@@ -426,6 +426,7 @@ class CalificacionController extends Controller
                 }
 
             } else {
+
                 // Actualizar registros existentes
                 $calificacion_aux = CalificacionAuxiliar::find( $id_calificacion_aux );
 
@@ -440,12 +441,28 @@ class CalificacionController extends Controller
                     $id_calificacion_aux = 'no';
                 } else {
 
-                    // Si no, se actualizan la calificación y las auxiliares
-                    $calificacion->fill( $linea_datos );
-                    $calificacion->save();
+                    if ( $calificacion_texto != 0 || $linea_datos['logros'] != '')
+                    {
+                        // Si no, se actualizan la calificación y las auxiliares
+                        $calificacion->fill( $linea_datos );
+                        $calificacion->save();
 
-                    $calificacion_aux->fill( $linea_datos );
-                    $calificacion_aux->save();
+                        if ( $calificacion_aux == null ) {
+                                $calificacion_creada = Calificacion::create( $linea_datos );
+
+                                $calificacion_aux_creada = CalificacionAuxiliar::create( $linea_datos );
+
+                                $id_calificacion = $calificacion_creada->id;
+                                $calificacion_texto = $calificacion_creada->calificacion;
+                                $id_calificacion_aux = $calificacion_aux_creada->id;
+
+                            $calificacion_aux_creada = CalificacionAuxiliar::create( $linea_datos );
+                            $id_calificacion_aux = $calificacion_aux_creada->id;
+                        }else{
+                            $calificacion_aux->fill( $linea_datos );
+                            $calificacion_aux->save();
+                        }
+                    }
                 }
             }
             

@@ -134,6 +134,13 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $agrupar_por = $request->agrupar_por;
+
+        
+        $costo_desde = $request->costo_desde;
+
+        if ($costo_desde == 'ultimo_precio_compras') {
+            $agrupar_por = 'inv_producto_id';            
+        }
         
         $array_wheres = [
             ['vtas_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
@@ -154,8 +161,12 @@ class ReportesController extends Controller
         {
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
-
-        $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido') )->render();
+        
+        if ($costo_desde == 'ultimo_precio_compras') {
+            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado_v2', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido') )->render();
+        }else{
+            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido') )->render();
+        }
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
