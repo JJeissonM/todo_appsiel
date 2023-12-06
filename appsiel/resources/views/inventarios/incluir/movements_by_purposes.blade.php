@@ -3,7 +3,7 @@
     <table style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%" id="myTable">
         <thead>
             <tr>
-                <th colspan="9"><h3>Movimientos de inventarios por Motivo</h3></th>
+                <th colspan="10"><h3>Movimientos de inventarios por Motivo</h3></th>
             </tr>
             <tr>
                 <th>Fecha</th>
@@ -11,6 +11,7 @@
                 <th>Tercero</th>
                 <th>Motivo</th>
                 <th>Bodega</th>
+                <th>Cod.</th>
                 <th>Producto</th>
                 <th>Cant.</th>
                 <th>Costo Unit.</th>
@@ -47,6 +48,11 @@
                 </td>
                 <td> 
                     @if($movement_line->producto != null)
+                        {{ $movement_line->producto->id }} 
+                    @endif
+                </td>
+                <td> 
+                    @if($movement_line->producto != null)
                         {{ $movement_line->producto->descripcion }} ({{ $movement_line->producto->unidad_medida1 }}) 
                     @endif
                 </td>
@@ -60,7 +66,13 @@
             ?>
         @endforeach
         <tr>
-            <td colspan="6"> &nbsp; </td>            
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
+            <td> &nbsp; </td>
             <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
             <td> &nbsp; </td>
             <td> {{ number_format($total_costo_total, 2, ',', '.') }} </td>
