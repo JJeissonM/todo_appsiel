@@ -51,6 +51,7 @@ class AverageCost
         $cantidad_total_entradas_del_dia = $entradas_del_dia->sum('cantidad');
         
         if (round($datos->total_cantidad_anterior,0) <= 0) {
+            
             if ($cantidad_total_entradas_del_dia != 0) {
                 return (object)[
                     'auditoria' => [
@@ -83,7 +84,8 @@ class AverageCost
         
         $cantidad_total_movim = $datos->total_cantidad_anterior + $cantidad_total_entradas_del_dia;
         
-        if (round($cantidad_total_movim,0) <= 0) {
+       // if (round($cantidad_total_movim,0) <= 0) {
+            
             if ($cantidad_total_entradas_del_dia != 0) {
                 return (object)[
                     'auditoria' => [
@@ -114,8 +116,8 @@ class AverageCost
                 ],
                 'costo_prom' => $linea_registro_documento['costo_unitario']
             ];
-        }
-
+        //}
+        
         return (object)[
             'auditoria' => [
                 'costo_y_cantidad_fecha_antes_de_la_entrada' => $datos,
