@@ -243,7 +243,7 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
-	celdas[num_celda] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar.">' + precio_unitario + '</div> </div> </td>';
+	celdas[num_celda] = '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar." id="elemento_modificar_precio_unitario">' + precio_unitario + '</div> </div> </td>';
 
 	num_celda++;
 

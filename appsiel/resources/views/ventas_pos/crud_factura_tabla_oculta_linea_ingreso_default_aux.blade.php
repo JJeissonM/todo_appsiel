@@ -42,7 +42,11 @@
             <span id="existencia_actual" style="display: none; color:#574696; font-size:0.9em;"></span>
         </td>
         <td>
-            <input class="form-control" id="precio_unitario" name="precio_unitario" type="text">
+            @can('bloqueo_cambiar_precio_unitario')
+                <input class="form-control" id="precio_unitario" name="precio_unitario" type="text" readonly="readonly">
+            @else
+                <input class="form-control" id="precio_unitario" name="precio_unitario" type="text">
+            @endcan
         </td>
         <td>
             <input class="form-control" id="tasa_descuento" width="30px" name="tasa_descuento" type="text">

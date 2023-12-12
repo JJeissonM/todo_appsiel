@@ -11,7 +11,6 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 }
 
 $.fn.validar_fecha_diferente = function () {
-    console.log('validando fecha...');
     if ( $('#fecha').val() != get_fecha_hoy() ) {
         $('#msj_fecha_diferente').show();
     }else{
@@ -907,6 +906,13 @@ $(document).ready(function () {
 
     // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
     $(document).on('dblclick', '.elemento_modificar', function(){
+
+        if ($('#bloqueo_cambiar_precio_unitario').val() == 1 && $(this).attr('id') == 'elemento_modificar_precio_unitario') {            
+            $('#popup_alerta').show();
+            $('#popup_alerta').css('background-color', 'red');
+            $('#popup_alerta').text('No tiene permiso para modificar precios.');
+            return false;
+        }
 
         $('#popup_alerta').hide();
 
