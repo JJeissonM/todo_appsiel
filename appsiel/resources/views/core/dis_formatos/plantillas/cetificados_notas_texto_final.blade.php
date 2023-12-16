@@ -1,5 +1,11 @@
 <div style="text-align: justify;">
 	Observaciones:
+
+	@if( $resultado_academico == 'APROBÓ' )
+		<br>
+		<b>El estudiante es promovido al grado siguiente.</b>
+	@endif
+
 	<br>
 	{{ $observacion_adicional }}
 </div>

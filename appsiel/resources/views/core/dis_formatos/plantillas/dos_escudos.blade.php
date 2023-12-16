@@ -105,7 +105,8 @@
 ?>
 
 	@foreach($estudiantes as $estudiante)
-	<div class="page-break">
+		<div class="page-break">
+		
 		<div class="watermark-{{$tam_hoja}} escudo">
 			<img src="{{ $url }}" />
 		</div>
@@ -134,6 +135,13 @@
 					</td>
 				</tr>
 			@endif
+			
+			<!-- @ inject('calificacion_service', 'App\Calificaciones\Services\CalificacionesService') -->
+	
+			<?php 
+				$resultado_academico = 'APROBÓ';//$calificacion_service->get_resultado_academico($asignaturas, $periodo_lectivo->id, $periodo_id, $curso->id, $estudiante->id);
+			?>
+
 			<tr>
 				<td colspan="6">
 					@include('core.dis_formatos.plantillas.cetificados_notas_texto_introduccion')

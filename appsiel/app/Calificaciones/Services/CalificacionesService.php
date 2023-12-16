@@ -2,8 +2,11 @@
 
 namespace App\Calificaciones\Services;
 
+use App\Calificaciones\Calificacion;
 use App\Calificaciones\CalificacionAuxiliar;
 use App\Calificaciones\EncabezadoCalificacion;
+use App\Calificaciones\EscalaValoracion;
+use App\Calificaciones\NotaNivelacion;
 
 class CalificacionesService
 {
@@ -40,6 +43,37 @@ class CalificacionesService
         }
 
         return $lbl_calificaciones_aux;
+    }
+
+    /**
+     *    La norama dice por tres o más AREAS perdidas, se deben promediar las asignaturas del AREA.
+     */
+    public function get_resultado_academico($asignaturas, $periodo_lectivo_id, $periodo_id, $curso_id, $estudiante_id)
+    {
+        $tope_escala_valoracion_minima = EscalaValoracion::where( 'periodo_lectivo_id', $periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
+
+        $asignaturas_perdidas = 0;
+        foreach($asignaturas as $asignatura)
+        {
+            $calificacion = Calificacion::get_la_calificacion( $periodo_id, $curso_id, $estudiante_id, $asignatura->id);
+            $nota_nivelacion = NotaNivelacion::get_la_calificacion( $periodo_id, $curso_id, $estudiante_id, $asignatura->id);
+            
+            $valor_calificacion = $calificacion->valor;
+            if( $nota_nivelacion->valor != 0 )
+            {
+                $valor_calificacion = $nota_nivelacion->valor;
+            }
+
+            if ( $valor_calificacion <= $tope_escala_valoracion_minima ) {
+                $asignaturas_perdidas++;
+            }
+        }
+
+        if ($asignaturas_perdidas > 2) {
+            return 'REPROBÓ';
+        }
+
+        return 'APROBÓ';
     }
 }
 

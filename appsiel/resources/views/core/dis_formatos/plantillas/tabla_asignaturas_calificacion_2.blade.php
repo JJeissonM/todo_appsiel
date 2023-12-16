@@ -2,7 +2,9 @@
     <thead>
         <tr style="font-size: 15px;">
             <th style="text-align: center;">Asignatura</th>
-            <th style="text-align: center">I.H.</th>
+            @if($mostrar_intensidad_horaria)
+                <th style="text-align: center">I.H.</th>    
+            @endif            
             <th style="text-align: center">Porcentaje</th>
             <th style="text-align: center">Nota final</th>
             <th style="text-align: center">Desempeño</th>
@@ -32,9 +34,13 @@
                 <td style="width:400px;">
                     {{ $asignatura->descripcion }}
                 </td>
-                <td align="center">
-                    {{ $asignatura->intensidad_horaria }}
-                </td>
+                
+                @if($mostrar_intensidad_horaria)
+                    <td align="center">
+                        {{ $asignatura->intensidad_horaria }}
+                    </td>  
+                @endif
+                                
                 <td align="center">
                     {{ number_format( $valor_calificacion / $maxima_escala_valoracion * 100, 0, ',', '.' ) }}%
                 </td>

@@ -78,7 +78,7 @@ class InteresesCesantias implements Estrategia
         $total_cesantias = $dias_totales_liquidacion * $valor_base_diaria;
         $this->tabla_resumen['total_cesantias'] = $total_cesantias;
 
-        $this->tabla_resumen['valor_total_liquidacion'] = $total_cesantias * 12 / 100;// * $this->tabla_resumen['dias_reales_laborados'] / self::DIAS_BASE_LEGALES;
+        $this->tabla_resumen['valor_total_liquidacion'] = $total_cesantias * 12 / 100 * $this->tabla_resumen['dias_reales_laborados'] / self::DIAS_BASE_LEGALES;
 
         $valores = get_valores_devengo_deduccion( 'devengo', $this->tabla_resumen['valor_total_liquidacion'] );
 

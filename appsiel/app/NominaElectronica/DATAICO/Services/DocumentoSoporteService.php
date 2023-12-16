@@ -73,9 +73,17 @@ class DocumentoSoporteService
          $concepto = $registro_concepto->all()[0]->concepto;
 
          if ($concepto->naturaleza == 'devengo') {
-            $line_accruals[] = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'));
+
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_devengo'),$registros);
+            if (!empty($value_json)) {
+               $line_accruals[] = $value_json;
+            }
+            
          }else{
-            $line_deductions[] = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'));
+            $value_json = $this->get_linea_empleado($registro_concepto,$concepto,$registro_concepto->sum('valor_deduccion'),$registros);
+            if (!empty($value_json)) {
+               $line_deductions[] = $value_json;
+            }
          }
       }
 
@@ -85,8 +93,12 @@ class DocumentoSoporteService
       ];
    }
 
-   public function get_linea_empleado($registro_concepto,$concepto,$amount)
+   public function get_linea_empleado($registro_concepto,$concepto,$amount,$registros)
    {         
+      if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías
+         return [];
+      }
+
       $one_line = [];
 
       $one_line['status'] = 'success';
@@ -116,6 +128,16 @@ class DocumentoSoporteService
 
       if ($concepto->cpto_dian->id == 33) { // OTRO_CONCEPTO (devengo)
          $one_line['description'] = $concepto->descripcion;
+      }
+      
+      if($concepto->modo_liquidacion_id == 17) // Cesantias
+      {
+         foreach ($registros as $registro) {
+            if ($registro->concepto->modo_liquidacion_id == 16) { // Intereses de cesantías
+               $one_line['percentage'] = 12;
+               $one_line['cesantias-interest'] = $registro->valor_devengo;
+            }
+         }
       }
       
       $one_line['amount'] = $amount;
