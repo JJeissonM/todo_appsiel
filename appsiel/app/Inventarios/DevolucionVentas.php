@@ -76,7 +76,6 @@ class DevolucionVentas extends InvDocEncabezado
 
     public function crear_nueva( $datos, $encabezado_remision_id, $parametros = null )
     {
-        dd($datos);
         // Paso 1: Crear encabezado
         if ( is_null( $parametros ) )
         {

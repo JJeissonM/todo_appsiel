@@ -10,8 +10,6 @@ Route::put('cxc_guardar_doc_encabezado/{id}', 'CxC\CxCController@guardar_doc_enc
 
 Route::get('cxc/imprimir_cartera_una_edad/{min}/{max}/{empresa_id}', 'CxC\CxCController@imprimir_cartera_una_edad');
 
-
-
 Route::get('cxc/form_reimprimir', 'CxC\CxCController@form_reimprimir_cxc');
 Route::post('cxc/ajax_reimprimir_cxc', 'CxC\CxCController@ajax_reimprimir_cxc');
 

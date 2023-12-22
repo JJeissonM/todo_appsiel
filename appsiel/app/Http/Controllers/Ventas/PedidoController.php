@@ -24,7 +24,9 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 
 use App\Contabilidad\Impuesto;
+use App\Http\Controllers\Tesoreria\RecaudoController;
 use App\Sistema\Modelo;
+use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\Services\DocumentsLinesServices;
 use Illuminate\Support\Facades\App;
@@ -273,7 +275,13 @@ class PedidoController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => $this->doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
 
-        return view('ventas.pedidos.show', compact('id', 'cliente', 'doc_registros', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'doc_encabezado', 'registros_contabilidad', 'empresa'));
+        //$id_transaccion = 8; // 8 = Recaudo cartera
+        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
+        $medios_recaudo = RecaudoController::get_medios_recaudo();
+        $cajas = RecaudoController::get_cajas();
+        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
+        return view('ventas.pedidos.show', compact('id', 'cliente', 'doc_registros', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'doc_encabezado', 'registros_contabilidad', 'empresa', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias'));
     }
 
     /*

@@ -108,6 +108,11 @@
 
 		</div>
 	</div>
+
+	<hr>
+	<div class="row">
+		@yield('footer')
+	</div>
 	<br/><br/>
 
 @endsection

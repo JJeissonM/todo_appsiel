@@ -61,12 +61,13 @@ class TreasuryServices
         $registros_medio_pago = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
         
         // Estos deberian enviarse desde el request
-        $registros_medio_pago['valor'] = $registros_medio_pago['valor_recaudo'];
-        $registros_medio_pago['core_tercero_id'] = '';
-        $registros_medio_pago['detalle_operacion'] = '';
+        //$registros_medio_pago['valor'] = $registros_medio_pago['valor_recaudo'];
+        //$registros_medio_pago['core_tercero_id'] = '';
+        //$registros_medio_pago['detalle_operacion'] = '';
 
-        $records[] = $registros_medio_pago; // Se incluye en una collection, no un solo registro
+        //$records[] = $registros_medio_pago; // Se incluye en una collection, no un solo registro
+        //return json_encode($records);
 
-        return json_encode($records);
+        return json_encode($registros_medio_pago);
     }
 }

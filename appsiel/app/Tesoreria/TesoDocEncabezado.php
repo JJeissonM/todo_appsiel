@@ -4,9 +4,6 @@ namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use App\Tesoreria\Services\AccountingServices;
 
 use App\Tesoreria\TesoCaja;
@@ -19,13 +16,12 @@ use App\Tesoreria\TesoMovimiento;
 use App\Contabilidad\RegistroRetencion;
 use App\Contabilidad\ContabMovimiento;
 
-use App\Matriculas\FacturaAuxEstudiante;
-
 use App\CxC\CxcMovimiento;
 
 use App\CxP\CxpMovimiento;
 use App\Compras\DescuentoProntoPago;
 use App\Ventas\DescuentoPpEncabezado;
+use Illuminate\Support\Facades\DB;
 
 class TesoDocEncabezado extends Model
 {
@@ -201,7 +197,7 @@ class TesoDocEncabezado extends Model
                                 'teso_doc_encabezados.modificado_por',
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
-                                DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS tercero_nombre_completo' ),
+                                DB::raw( 'core_terceros.descripcion AS tercero_nombre_completo' ),
                                 'core_terceros.numero_identificacion',
                                 'core_terceros.direccion1',
                                 'core_terceros.telefono1',

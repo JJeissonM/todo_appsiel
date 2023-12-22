@@ -17,7 +17,10 @@
         @endif         
         <tr>
             <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Total: &nbsp; </td>
-            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> $ &nbsp;{{ number_format($total_factura, 2, ',', '.') }} </td>
+            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom">
+                $ &nbsp;{{ number_format($total_factura, 2, ',', '.') }} 
+                <span id="vlr_total_factura" style="display: none;">{{$total_factura}}</span>
+            </td>
         </tr>
         @if(!config('ventas.detallar_iva_cotizaciones'))
             <tr>

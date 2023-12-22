@@ -4,19 +4,14 @@ namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Inventarios\ProcesoController as InvProcesoController;
 use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Ventas\NotaCreditoController;
 use App\Http\Controllers\Inventarios\InventarioController;
 
-use Input;
 use Carbon\Carbon;
-use View;
-use DB;
 
 use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
@@ -25,23 +20,18 @@ use App\Sistema\Aplicacion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
-
-use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvMotivo;
 
-use App\Inventarios\InvCostoPromProducto;
-
-use App\Compras\ComprasMovimiento;
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\InvProducto;
-use App\Inventarios\RemisionVentas;
+
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\RegistrosMediosPago;
-use App\Ventas\Cliente;
+
 use App\Ventas\Services\DocumentHeaderService;
-use Symfony\Component\HttpFoundation\Request as HttpFoundationRequest;
+use App\Ventas\Services\TreasuryServices;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class ProcesoController extends Controller
 {
@@ -292,7 +282,6 @@ class ProcesoController extends Controller
 
         return ' Pedido almacenado con exito';
     }
-
     
     /*
         Este metodo se llama desde la vista show de pedidos via POST
@@ -308,6 +297,8 @@ class ProcesoController extends Controller
             return redirect( 'vtas_pedidos/' . $pedido->id . '?id=13&id_modelo=175&id_transaccion=42' )->with( 'mensaje_error', 'No hay cantidades suficientes para facturar.' );
         }
 
+        //dd($pedido, $request->all());
+
         // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
         $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, $request->fecha );
 
@@ -315,6 +306,20 @@ class ProcesoController extends Controller
         $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
         $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
         $nueva_factura->save();
+
+        if( isset($request->abono) && $request->forma_pago == 'credito' )
+        {
+            // Create Account Receivable Payment (Recaudo de CxC)
+            $abono = (float)$request->abono;
+            if ($abono > $nueva_factura->valor_total) {
+                $abono = $nueva_factura->valor_total;
+            }
+            if ( $abono != 0 )
+            {
+                $obj_trea_serv = new TreasuryServices();
+                $obj_trea_serv->create_account_receivable_payment_from_invoice($nueva_factura,$abono,$request['lineas_registros_medios_recaudo']);
+            }            
+        }
 
         $doc_remision->estado = 'Facturada';
         $doc_remision->save();
@@ -360,7 +365,7 @@ class ProcesoController extends Controller
         
     }
 
-    public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha )
+    public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha, $parametros = null )
     {
         $modelo_id = 139;
 

@@ -45,21 +45,33 @@ $('#teso_medio_recaudo_id').change(function(){
 
         $('#div_cuenta_bancaria').hide();
         $('#div_caja').show();
+        $('#div_caja').children().children().children().focus();
 
         if ( valor[1] == 'Tarjeta bancaria' )
         {
             $('#div_caja').hide();
             $('#div_cuenta_bancaria').show();
+            $('#div_cuenta_bancaria').children().children().children().focus();
         }
 
         habilitar_text($('#valor_total'));
-        $('#valor_total').focus();
 
     }
 
 });
 
+$('#teso_cuenta_bancaria_id').change(function(){
+    $('#valor_total').focus();
+});
+
+$('#teso_caja_id').change(function(){
+    $('#valor_total').focus();
+});
+
 $('#valor_total').keyup(function(event){
+
+    event.preventDefault();
+
     /**/
     var ok;
     if( $.isNumeric( $(this).val() ) ) {
@@ -97,8 +109,9 @@ $('#valor_total').keyup(function(event){
             $('#btn_agregar').show();
             $('#btn_agregar').focus();
         }
-
     }
+
+    return false;
 });
 
 /*

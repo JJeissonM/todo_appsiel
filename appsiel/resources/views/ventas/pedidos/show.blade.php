@@ -28,49 +28,6 @@
 	{!! $botones_anterior_siguiente->dibujar( 'vtas_pedidos/', $variables_url ) !!}
 @endsection
 
-@section('cabecera')
-	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
-		<div class="container-fluid">
-			<div class="marco_formulario">
-				{{ Form::open(['url' => 'vtas_form_crear_remision_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' . $doc_encabezado->id,'id'=>'form_create','files' => true]) }}
-					<input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
-					<input type="hidden" name="doc_encabezado_id" value="{{$doc_encabezado->id}}" />
-					<input type="hidden" name="doc_encabezado_cotizacion_id" id="doc_encabezado_cotizacion_id" value="{{$doc_encabezado->ventas_doc_relacionado_id}}" />
-					<input type="hidden" name="source" value="PEDIDO" />
-					{{ csrf_field() }}
-					
-					<label class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></label>
-
-					<div class="row">
-						<div class="col-md-6 col-lg-6 col-xl-2">
-							{{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
-						</div>
-						<div class="col-md-6 col-lg-6 col-xl-2">
-							@if( $doc_encabezado->enlaces_remisiones_hijas() == '' )
-								{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión', 'remision_y_factura_desde_pedido' => 'Remisión y Factura' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-							@else
-								{{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-							@endif
-						</div>
-					</div>
-					<div class="row">
-						<br>
-						<div class="col-md-12 col-lg-12" style="text-align: center;">
-							<button type="submit" class="btn btn-primary btn-bg">GENERAR</button>
-						</div>
-						<br>
-					</div>
-				</form>
-				<div id="div_advertencia_factura" style="display: none; color: red;" class="container-fluid">
-					Nota: La condición de pago (Crédito o Contado) de la factura será tomada de los datos del cliente.
-				</div>
-
-				<br>
-			</div>
-		</div>
-	@endif
-@endsection
-
 @section('datos_adicionales_encabezado')
 	<br />
 	<b>Fecha Entrega: </b> {{ explode(' ', $doc_encabezado->fecha_entrega )[0] }} <!-- -->
@@ -212,16 +169,67 @@
 		</table>
 	</div>
 
-
 	@include('ventas.incluir.factura_firma_totales')
+
+	@include('ventas.incluir.registros_anticipos_cliente',['cliente'=>$doc_encabezado->cliente])
+@endsection
+
+@section('footer')
+	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
+		@include('ventas.pedidos.formulario_vista_show_pedidos')
+	@endif
 @endsection
 
 @section('otros_scripts')
 	<script type="text/javascript">
 		var array_registros = [];
 		var cliente = <?php echo $cliente; ?>;
+
+		
+		$.fn.actualizar_medio_recaudo = function () {
+			var abono = 0.0;
+			//abono = 0.0;
+			$('.valor_total').each(function()
+			{
+				var cadena = $(this).text();
+				abono += parseFloat(cadena.substring(1));
+			});
+
+			$("#abono").val( abono );
+		};
 		
 		$(document).ready(function() {
+
+			calcular_saldo_pendiente_documento();
+
+			$("#btn_generar").on('click',function(event){
+				event.preventDefault();
+
+				if ( parseFloat( $('#vlr_total_factura').text() ) < $('#abono').val() )
+				{
+					console.log( $('#vlr_total_factura').text() , $('#abono').val(), $('#div_saldo_pendiente_documento').attr('data-vlr_saldo_pendiente_documento') );
+
+					Swal.fire({
+						icon: 'error',
+						title: 'Alerta!',
+						text: 'El valor de los medios de pago no puede ser mayor que valor del Documento.'
+					});
+
+					return false;
+				}
+				
+				$('#form_create').submit();
+
+				/*
+				var form = $('#form_create');
+				var url = $("#form_create").attr('action');
+				var data = $("#form_create").serialize();
+
+				$.post(url, data, function (respuesta) {
+					conso
+				});
+				*/
+			});
 
 			$(".btn_editar_registro").click(function(event){
 
@@ -362,7 +370,6 @@
 				$('#precio_total').val( precio_total );
 			}
 
-
 	        $('.btn_save_modal').click(function(event){
 
 	        	if ( !validar_cantidad_pendiente() )
@@ -415,8 +422,6 @@
 
 				return true;
 			}
-
-
             
             function validacion_saldo_movimientos_posteriores()
             {
@@ -424,6 +429,25 @@
                 $('#popup_alerta_danger').hide();
                 $('#form_edit').submit();
             }
+
+			function calcular_saldo_pendiente_documento()
+			{
+				var total_anticipos = 0;
+				$(".col_saldo_pendiente").each(function() {
+					total_anticipos += parseFloat( $(this).text().replace(".","") );
+				});
+
+				$('#div_total_anticipos').attr('data-vlr_total_anticipos',total_anticipos);
+
+				$('#div_total_anticipos').text( '$ ' + total_anticipos);
+
+				var saldo_pendiente_documento = $('#vlr_total_factura').text() - total_anticipos;
+
+				$('#div_saldo_pendiente_documento').attr('data-vlr_saldo_pendiente_documento',saldo_pendiente_documento);
+
+				$('#div_saldo_pendiente_documento').text( '$ ' + saldo_pendiente_documento);
+
+			}
 	            
 			array_registros = <?php echo json_encode($doc_registros); ?>;
 		});
@@ -498,4 +522,6 @@
 			return o;
 		}
 	</script>
+
+	<script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
 @endsection

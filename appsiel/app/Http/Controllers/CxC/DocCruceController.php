@@ -442,7 +442,8 @@ class DocCruceController extends TransaccionController
       //dd($movimiento_cxc);
       $view_1 = View::make('cxc.incluir.docs_cruce_cartera', compact('movimiento_cxc') );
 
-      $view_2 = View::make('cxc.incluir.docs_cruce_afavor', compact('movimiento_cxc') );
+      $vista = 'formulario';
+      $view_2 = View::make('cxc.incluir.docs_cruce_afavor', compact('movimiento_cxc','vista') );
 
       $resultado = $view_1.'a3p0'.$view_2;
 

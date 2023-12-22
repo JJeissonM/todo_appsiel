@@ -2,7 +2,12 @@
     //use App\CxC\CxcEstadoCartera;
 ?>
 <table class="table table-bordered" id="documentos_afavor" width="100%">
-    {{ Form::bsTableHeader(['Documento','Fecha','Saldo a favor','Vlr. aplicar']) }}
+    @if ($vista == 'formulario')
+        {{ Form::bsTableHeader(['Documento','Fecha','Saldo a favor','Vlr. aplicar']) }}
+    @else
+        {{ Form::bsTableHeader(['Documento','Fecha','Saldo a favor']) }}
+    @endif
+    
     <tbody>
         <?php
         for($i=0;$i<count($movimiento_cxc);$i++)
@@ -37,11 +42,13 @@
                     ?> 
                     {{ number_format($saldo_pendiente, 0, ',', '.') }} 
                 </td>
-                <td>
-                    {{ Form::text('text_aplicar_'.$id, $saldo_pendiente, [ 'id' => 'text_aplicar_'.$id, 'class' => 'text_aplicar' ] ) }} 
-                    <button class="btn btn-success btn-xs btn_agregar_documento_afavor" style="display: {{$ocultar}};" ><i class="fa fa-check"></i></button>
-                    {!! $advertencia !!}
-                </td>
+                @if ($vista == 'formulario')
+                    <td>
+                        {{ Form::text('text_aplicar_'.$id, $saldo_pendiente, [ 'id' => 'text_aplicar_'.$id, 'class' => 'text_aplicar' ] ) }} 
+                        <button class="btn btn-success btn-xs btn_agregar_documento_afavor" style="display: {{$ocultar}};" ><i class="fa fa-check"></i></button>
+                        {!! $advertencia !!}
+                    </td>
+                @endif                
             </tr>
         @endif
         <?php 
