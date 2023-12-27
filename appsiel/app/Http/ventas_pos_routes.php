@@ -62,3 +62,4 @@ Route::get('pos_consultar_documentos_pendientes/{pdv_id}/{fecha_desde}/{fecha_ha
 
 Route::post('pos_movimientos_ventas', 'VentasPos\ReporteController@movimientos_ventas');
 Route::post('pos_resumen_existencias', 'VentasPos\ReporteController@resumen_existencias');
+Route::post('pos_comprobante_informe_diario', 'VentasPos\ReporteController@comprobante_informe_diario');

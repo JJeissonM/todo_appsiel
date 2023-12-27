@@ -283,4 +283,45 @@ class ReporteController extends Controller
    
         return $vista;
     }
+
+    public function comprobante_informe_diario(Request $request)
+    {
+        $fecha_corte = $request->fecha;
+        $grupo_inventario_id = $request->grupo_inventario_id;
+        $talla = $request->unidad_medida2;
+        $inv_bodega_id = $request->inv_bodega_id;
+
+        if ( $inv_bodega_id == '' )
+        {
+            $title = 'Advertencia';
+            $message = 'Debe selecciona una Bodega.';
+            $vista = View::make( 'common.error_message', compact('title','message') )->render();    
+            return $vista;
+        }
+
+        $array_wheres = [ 
+            ['inv_movimientos.fecha' ,'<=', $fecha_corte],
+            ['inv_productos.estado', '=', 'Activo']
+        ];
+
+        if ( $grupo_inventario_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, [['inv_grupos.id','=', $grupo_inventario_id]] );
+        }
+
+        if ( $talla != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, [['inv_productos.unidad_medida2','=', $talla]] );
+        }
+        
+        $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
+
+        $movimientos = InvMovimiento::get_existencia_corte( $array_wheres );
+      
+        $vista = View::make( 'ventas_pos.reportes.resumen_existencias', compact('movimientos') )->render();
+        
+        Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
+   
+        return $vista;
+    }
 }

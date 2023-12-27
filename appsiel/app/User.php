@@ -197,4 +197,18 @@ class User extends Authenticatable
 
         return $user;
     }
+
+	public static function opciones_campo_select()
+    {
+        $opciones = User::where('id', '<>', 1)
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->name;
+        }
+
+        return $vec;
+    }
 }
