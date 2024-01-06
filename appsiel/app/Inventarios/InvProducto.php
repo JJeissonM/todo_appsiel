@@ -49,6 +49,22 @@ class InvProducto extends Model
     {
         return $this->hasMany(InvFichaProducto::class, 'producto_id', 'id');
     }
+    
+    public function ingredientes()
+    {
+        $lista = RecetaCocina::where('item_platillo_id', $this->id )->get();
+
+        $data = [];
+        foreach ($lista as $platillo) {
+            $data[] = [
+                    'id' => $platillo->id,
+                    'ingrediente' => $platillo->item_ingrediente,
+                    'cantidad_porcion' => $platillo->cantidad_porcion
+                ];
+        }
+        
+        return $data;
+    }
 
     public function get_value_to_show()
     {

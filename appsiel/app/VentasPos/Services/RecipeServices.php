@@ -46,8 +46,8 @@ class RecipeServices
             
             // Verificar las existencias actuales del producto terminado (platillo).
             $existencia_actual = InvMovimiento::get_cantidad_existencia_item( $receta_platillo->item_platillo_id, $bodega_default_id, $fecha );
-            $cantidad_facturada -= $existencia_actual;
-            if ($cantidad_facturada <= 0) {
+            $cantidad_a_ingresar = $cantidad_facturada - $existencia_actual;
+            if ($cantidad_a_ingresar <= 0) {
                 continue;
             }
 
@@ -55,7 +55,7 @@ class RecipeServices
             $costo_total_ingredientes = 0;
             $arr = [];
             foreach ($ingredientes as $ingrediente) {
-                $cantidad_a_sacar = $ingrediente['cantidad_porcion'] * $cantidad_facturada;
+                $cantidad_a_sacar = $ingrediente['cantidad_porcion'] * $cantidad_a_ingresar;
 
                 $costo_unitario_ingrediente = $ingrediente['ingrediente']->get_costo_promedio( $bodega_default_id );
 
@@ -63,15 +63,14 @@ class RecipeServices
 
                 // Una linea de salida por cada ingrediente
                 $lineas_desarme .= ',{"inv_producto_id":"' . $ingrediente['ingrediente']->id . '","Producto":"' . $ingrediente['ingrediente']->id . ' ' . $ingrediente['ingrediente']->descripcion . ' (' . $ingrediente['ingrediente']->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_ingrediente) . '"}';
-
             }
             //dd($arr);
-            //$costo_unitario_platillo = $costo_total_ingredientes / $cantidad_facturada;
-            //dd($costo_total_ingredientes, $cantidad_facturada);
+            //$costo_unitario_platillo = $costo_total_ingredientes / $cantidad_a_ingresar;
+            //dd($costo_total_ingredientes, $cantidad_a_ingresar);
             $lineas_desarme .= ',';
             
             // Un solo registro de entrada para el platillo
-            $lineas_desarme .= '{"inv_producto_id":"' . $receta_platillo->item_platillo->id . '","Producto":"' . $receta_platillo->item_platillo->id . ' ' . $receta_platillo->item_platillo->descripcion . ' (' . $receta_platillo->item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $cantidad_facturada . ' UND","costo_total":"$' . ($cantidad_facturada * $costo_total_ingredientes) . '"}';
+            $lineas_desarme .= '{"inv_producto_id":"' . $receta_platillo->item_platillo->id . '","Producto":"' . $receta_platillo->item_platillo->id . ' ' . $receta_platillo->item_platillo->descripcion . ' (' . $receta_platillo->item_platillo->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_total_ingredientes . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . ($cantidad_a_ingresar * $costo_total_ingredientes) . '"}';
 
             $hay_productos++;
         }

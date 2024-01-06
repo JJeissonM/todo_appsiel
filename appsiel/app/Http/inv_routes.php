@@ -14,6 +14,13 @@ Route::get('ficha_tecnica/{id}','Inventarios\ProductoController@create_ficha');
 Route::post('producto/store/ficha','Inventarios\ProductoController@store_ficha')->name('ficha.store');
 Route::get('producto/delete/ficha/{id}','Inventarios\ProductoController@delete_ficha')->name('ficha.delete');
 
+// RECETAS
+Route::post('inv_agregar_ingrediente_a_receta','Inventarios\RecetasController@agregar_ingrediente_a_receta');
+Route::get('inv_cambiar_cantidad_porcion/{item_platillo_id}/{item_ingrediente_id}/{nueva_cantidad_porcion}', 'Inventarios\RecetasController@cambiar_cantidad_porcion');
+
+
+
+
 
 Route::get('get_ajax','Inventarios\InventarioController@get_ajax');
 

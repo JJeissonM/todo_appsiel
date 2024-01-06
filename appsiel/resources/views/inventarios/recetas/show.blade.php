@@ -7,7 +7,17 @@
     <?php  
         $ingredientes = $registro->ingredientes();
 
-        $btn_nuevo = '';//'<button class="btn btn-primary btn-sm btn_agregar_precio" type="button"><i class="fa fa-plus"></i> Agregar nuevo ingrediente </button> ';
+		$ids_items_ingredientes = [];
+		foreach ($ingredientes as $una_linea) {
+			$ids_items_ingredientes[] = $una_linea['ingrediente']->id;
+		}
+		$ingredientes_posibles = \App\Inventarios\InvProducto::whereNotIn('id',$ids_items_ingredientes)
+											->get();
+    
+        $vec['']='';
+        foreach ($ingredientes_posibles as $opcion){
+            $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion;
+        }
 
         $reg_anterior = \App\Inventarios\RecetaCocina::where([
                                                         ['id', '<', $registro->id],
@@ -121,11 +131,13 @@
                                     <tr>
 										<td>{{ $linea['ingrediente']->id }}</td>
 										<td>{{ $linea['ingrediente']->descripcion }} ({{ $linea['ingrediente']->unidad_medida1 }})</td>
-										<td align="center">{{ number_format( $linea['cantidad_porcion'], 2, ',', '.') }}</td>
+										<td align="center">
+											<div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_cambiar_cantidad_porcion') . "/" . $registro->item_platillo->id . "/" . $linea['ingrediente']->id }}"> {{ number_format( $linea['cantidad_porcion'], 2, ',', '.') }}
+											</div>											
+										</td>
 										<td align="right">${{ number_format( $linea['ingrediente']->get_costo_promedio(0), 2, ',', '.') }}</td>
 										<td align="right">${{ number_format( $linea['cantidad_porcion'] * $linea['ingrediente']->get_costo_promedio(0), 2, ',', '.') }}</td>
 										<td>
-											<a class="btn btn-warning btn-xs btn-detail" href="{{ url( 'web/'.$linea['id'].'/edit?id=8&id_modelo=321&id_transaccion=' ) }}" title="Modificar"><i class="fa fa-btn fa-edit"></i>&nbsp;</a>
                                             &nbsp;
                                             <a class="btn btn-danger btn-xs btn-detail eliminarElement" data-linea_receta_id="{{$linea['id']}}" data-ruta_redirect_completa="{{urlencode('web?id=8&id_modelo=321&curso_id=&asignatura_id=&search='.$string_search_platillo)}}" title="Eliminar"><i class="fa fa-trash"></i></a>
 										</td>
@@ -152,11 +164,37 @@
 						</table>
 					</div>
 			    </div>
-				<br>
-                {!! $btn_nuevo !!}
 			</div>
 
 			<br/><br/>
+
+			{{ Form::open(array('url'=>'inv_agregar_ingrediente_a_receta')) }}
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2" style="vertical-align: center; border: 1px solid gray;">
+						<h3>Agregar ingrediente</h3>
+						<div class="row">
+							<div class="col-md-6">
+								{{ Form::bsSelect('item_ingrediente_id',null,'Ingrediente',$vec,['class'=>'combobox']) }}
+							</div>
+							<div class="col-md-6">
+								{{ Form::bsText('cantidad_porcion',null,'Cant. porción',[]) }}
+							</div>
+
+							{{ Form::hidden( 'registro_id', $registro->id ) }}
+							{{ Form::hidden( 'item_platillo_id', $registro->item_platillo_id ) }}
+
+							{{ Form::hidden('url_id',Input::get('id'))}}
+							{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
+							{{ Form::hidden('url_id_transaccion',Input::get('id_transaccion'))}}
+						</div>
+						<div align="center">
+							<br/>
+							{{ Form::submit('Guardar', array('class' => 'btn btn-primary btn-sm')) }}
+						</div>
+						<br/><br/>
+					</div>
+				</div>
+			{{ Form::close() }}
 
 		</div>
 	</div>
@@ -181,7 +219,88 @@
 				location.href = url;
 			});
 
+			
+			var valor_actual, elemento_modificar, elemento_padre;
+					
+			// Al hacer Doble Click en el elemento a modificar
+			$(document).on('dblclick','.elemento_modificar',function(){
+				
+				elemento_modificar = $(this);
 
+				elemento_padre = elemento_modificar.parent();
+
+				valor_actual = $(this).html();
+
+				elemento_modificar.hide();
+
+				elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+				document.getElementById('valor_nuevo').value = valor_actual;
+				document.getElementById('valor_nuevo').select();
+
+			});
+
+			// Si la caja de texto pierde el foco
+			$(document).on('blur','#valor_nuevo',function(){
+				guardar_valor_nuevo( $(this) );
+			});
+
+			// Al presiona teclas en la caja de texto
+			$(document).on('keyup','#valor_nuevo',function(){
+
+				var x = event.which || event.keyCode; // Capturar la tecla presionada
+
+				// Abortar la edición
+				if( x == 27 ) // 27 = ESC
+				{
+					elemento_padre.find('#valor_nuevo').remove();
+		        	elemento_modificar.show();
+		        	return false;
+				}
+
+				// Guardar
+				if( x == 13 ) // 13 = ENTER
+				{
+		        	guardar_valor_nuevo( $(this) );
+				}
+			});
+
+			function guardar_valor_nuevo( caja_texto )
+			{
+				if( !validar_input_numerico( $( document.getElementById('valor_nuevo') ) ) )
+				{
+					return false;
+				}
+
+				var valor_nuevo = document.getElementById('valor_nuevo').value;
+
+				// Si no cambió el valor_nuevo, no pasa nada
+				if ( valor_nuevo == valor_actual) { return false; }
+
+				$('#div_cargando').show();
+
+				$.ajax({
+		        	url: caja_texto.prev().attr('data-url_modificar') + "/" + valor_nuevo,
+		        	method: "GET",
+		        	success: function( data ){
+		        		$('#div_cargando').hide();
+				    	
+				    	elemento_modificar.html( valor_nuevo );
+						elemento_modificar.show();
+
+						elemento_padre.find('#valor_nuevo').remove();
+
+						location.reload();
+
+			        },
+			        error: function( data ) {
+	                    $('#div_cargando').hide();
+						elemento_padre.find('#valor_nuevo').remove();
+			        	elemento_modificar.show();
+			        	return false;
+				    }
+			    });
+			}
 		});
 	</script>
 @endsection

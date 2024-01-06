@@ -44,21 +44,22 @@ class RecetaCocina extends Model
     }
 
     public static function consultar_registros($nro_registros, $search)
-  {
-    return RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
-      ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
-      ->select(
-        DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS campo1'),
-        DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS campo2'),
-        'inv_recetas_cocina.cantidad_porcion AS campo3',
-        'inv_recetas_cocina.id AS campo4'
-      )
-      ->where("items_consumir.descripcion", "LIKE", "%$search%")
-      ->orWhere("items_producir.descripcion", "LIKE", "%$search%")
-      ->orWhere("inv_recetas_cocina.cantidad_porcion", "LIKE", "%$search%")
-      ->orderBy('inv_recetas_cocina.created_at', 'DESC')
-      ->paginate($nro_registros);
-  }
+    {
+      return RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
+        ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
+        ->select(
+          DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS campo1'),
+          DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS campo2'),
+          'inv_recetas_cocina.cantidad_porcion AS campo3',
+          'inv_recetas_cocina.id AS campo4'
+        )
+        ->where("items_consumir.descripcion", "LIKE", "%$search%")
+        ->orWhere("items_producir.descripcion", "LIKE", "%$search%")
+        ->orWhere("inv_recetas_cocina.cantidad_porcion", "LIKE", "%$search%")
+        ->orderBy('inv_recetas_cocina.created_at', 'DESC')
+        ->groupBy('inv_recetas_cocina.item_platillo_id')
+        ->paginate($nro_registros);
+    }
   
   public static function sqlString($search)
   {
