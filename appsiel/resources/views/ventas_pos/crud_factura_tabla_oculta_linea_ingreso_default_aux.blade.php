@@ -49,7 +49,11 @@
             @endcan
         </td>
         <td>
-            <input class="form-control" id="tasa_descuento" width="30px" name="tasa_descuento" type="text">
+            @can('bloqueo_cambiar_tasa_descuento')
+                <input class="form-control" id="tasa_descuento" width="30px" name="tasa_descuento" type="text" readonly="readonly">
+            @else
+                <input class="form-control" id="tasa_descuento" width="30px" name="tasa_descuento" type="text">
+            @endcan
         </td>
         <td>
             <input class="form-control" id="tasa_impuesto" width="30px" name="tasa_impuesto" type="text">

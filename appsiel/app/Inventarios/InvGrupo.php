@@ -3,9 +3,8 @@
 namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InvGrupo extends Model
 {

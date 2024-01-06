@@ -286,39 +286,35 @@ class ReporteController extends Controller
 
     public function comprobante_informe_diario(Request $request)
     {
-        $fecha_corte = $request->fecha;
-        $grupo_inventario_id = $request->grupo_inventario_id;
-        $talla = $request->unidad_medida2;
-        $inv_bodega_id = $request->inv_bodega_id;
+        $fecha_corte = $request->fecha_corte;
+        $pdv_id = $request->pdv_id;
 
-        if ( $inv_bodega_id == '' )
+        if ( $pdv_id == '' )
         {
             $title = 'Advertencia';
-            $message = 'Debe selecciona una Bodega.';
+            $message = 'Debe selecciona un PDV.';
             $vista = View::make( 'common.error_message', compact('title','message') )->render();    
             return $vista;
         }
 
         $array_wheres = [ 
-            ['inv_movimientos.fecha' ,'<=', $fecha_corte],
-            ['inv_productos.estado', '=', 'Activo']
+            ['vtas_pos_movimientos.fecha' ,'=', $fecha_corte],
+            ['vtas_pos_movimientos.pdv_id', '=', $pdv_id]
         ];
-
-        if ( $grupo_inventario_id != '' )
-        {
-            $array_wheres = array_merge( $array_wheres, [['inv_grupos.id','=', $grupo_inventario_id]] );
-        }
-
-        if ( $talla != '' )
-        {
-            $array_wheres = array_merge( $array_wheres, [['inv_productos.unidad_medida2','=', $talla]] );
-        }
         
-        $array_wheres = array_merge( $array_wheres, [['inv_movimientos.inv_bodega_id','=', $inv_bodega_id]] );
+        $movimientos = Movimiento::leftJoin('inv_productos','inv_productos.id','=','vtas_pos_movimientos.inv_producto_id')
+                            ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
+                            ->where( $array_wheres )
+                            ->select(
+                                'vtas_pos_movimientos.*',
+                                'inv_grupos.id AS item_category_id'
+                            )
+                            ->orderBy('vtas_pos_movimientos.consecutivo')
+                            ->get();
 
-        $movimientos = InvMovimiento::get_existencia_corte( $array_wheres );
+                            //dd($fecha_corte,$pdv_id,$movimientos->groupBy('item_category_id'),$movimientos->first()->item_category);
       
-        $vista = View::make( 'ventas_pos.reportes.resumen_existencias', compact('movimientos') )->render();
+        $vista = View::make( 'ventas_pos.formatos_impresion.comprobante_informe_diario', compact('movimientos') )->render();
         
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    

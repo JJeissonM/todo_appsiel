@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 class Impuesto extends Model
 {
     protected $table = 'contab_impuestos';
+    
     protected $fillable = ['descripcion', 'tasa_impuesto', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Tasa', 'Cta. ventas', 'Cta. ventas devoluciones', 'Cta. compras', 'Cta. compras devoluciones', 'Estado'];
@@ -40,6 +41,7 @@ class Impuesto extends Model
             ->paginate($nro_registros);
         return $registros;
     }
+
     public static function sqlString($search)
     {
         $string = Impuesto::leftJoin('contab_cuentas AS ctas_ventas', 'ctas_ventas.id', '=', 'contab_impuestos.cta_ventas_id')->leftJoin('contab_cuentas AS ctas_ventas_dev', 'ctas_ventas_dev.id', '=', 'contab_impuestos.cta_ventas_devol_id')->leftJoin('contab_cuentas AS ctas_compras', 'ctas_compras.id', '=', 'contab_impuestos.cta_compras_id')->leftJoin('contab_cuentas AS ctas_compras_dev', 'ctas_compras_dev.id', '=', 'contab_impuestos.cta_compras_devol_id')

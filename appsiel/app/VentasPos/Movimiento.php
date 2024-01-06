@@ -2,6 +2,7 @@
 
 namespace App\VentasPos;
 
+use App\Core\Empresa;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvProducto;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,11 @@ class Movimiento extends Model
     public function tipo_transaccion()
     {
         return $this->belongsTo( 'App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id' );
+    }
+    
+    public function empresa()
+    {
+        return $this->belongsTo( Empresa::class, 'core_empresa_id' );
     }
     
     public function tipo_documento_app()
@@ -48,6 +54,12 @@ class Movimiento extends Model
     public function get_label_documento()
     {
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    }
+
+    // Nota: el campo item_category_id debe ser agregado al resultado de las consultas
+    public function item_category()
+    {
+        return $this->belongsTo( InvGrupo::class,'item_category_id');
     }
 
     public static function consultar_registros($nro_registros, $search)

@@ -462,7 +462,7 @@ class FacturaPosController extends TransaccionController
         $factura->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
-        if( !is_null($pedido) )
+        if( $pedido != null )
         {
             if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
                 $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
@@ -559,7 +559,7 @@ class FacturaPosController extends TransaccionController
 
         // Si la factura se hizo desde un pedido
         $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
-        if( !is_null($pedido) )
+        if( $pedido != null )
         {
             if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
                 $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);

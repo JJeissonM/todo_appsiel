@@ -8,6 +8,8 @@ use App\Inventarios\InvBodega;
 use App\Tesoreria\TesoCaja;
 use App\Ventas\Cliente;
 use App\Core\TipoDocApp;
+use App\Inventarios\InvGrupo;
+use Illuminate\Support\Facades\DB;
 
 class Pdv extends Model
 {
@@ -78,7 +80,7 @@ class Pdv extends Model
                 'teso_cajas.descripcion AS campo3',
                 'users.name AS campo4',
                 'core_terceros.descripcion AS campo5',
-                'core_tipos_docs_apps.descripcion AS campo6',
+                DB::raw('CONCAT(core_tipos_docs_apps.descripcion," (",core_tipos_docs_apps.id,")") AS campo6'),
                 'vtas_pos_puntos_de_ventas.estado AS campo7',
                 'vtas_pos_puntos_de_ventas.id AS campo8'
             )
@@ -130,9 +132,7 @@ class Pdv extends Model
 
 	public static function opciones_campo_select()
     {
-        $opciones = Pdv::where('vtas_pos_puntos_de_ventas.estado','Activo')
-                    ->select('vtas_pos_puntos_de_ventas.id','vtas_pos_puntos_de_ventas.descripcion')
-                    ->get();
+        $opciones = Pdv::all();
 
         $vec['']='';
         foreach ($opciones as $opcion)

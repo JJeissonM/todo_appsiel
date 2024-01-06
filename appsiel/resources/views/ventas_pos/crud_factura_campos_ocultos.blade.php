@@ -74,3 +74,9 @@
 @else
         <input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="0">
 @endcan
+
+@can('bloqueo_cambiar_tasa_descuento')
+        <input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="1">
+@else
+        <input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="0">
+@endcan

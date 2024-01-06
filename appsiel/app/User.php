@@ -8,10 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Cmgmyr\Messenger\Traits\Messagable;
 
-use DB;
-use Auth;
-use Hash;
-
 use App\Core\PasswordReset;
 
 //Importing laravel-permission models
@@ -20,6 +16,8 @@ use Spatie\Permission\Models\Permission;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {

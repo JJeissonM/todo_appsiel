@@ -274,6 +274,12 @@ $(document).ready(function () {
 
     function validar_venta_menor_costo()
     {
+        // Descuento del 100% 
+        if (precio_unitario == valor_unitario_descuento) {
+            $('#popup_alerta').hide();
+            return true;
+        }
+
         if ($("#permitir_venta_menor_costo").val() == 0) {
             var ok = true;
             
@@ -837,6 +843,21 @@ $(document).ready(function () {
 
     function calcular_precio_total()
     {
+        if ( cantidad <= 0 || cantidad == undefined ) {
+            $('#popup_alerta').show();
+            $('#popup_alerta').css('background-color', 'red');
+            $('#popup_alerta').text('No ha ingresado Cantidad.');
+            return false;
+        }
+
+        // Descuento del 100% 
+        if (precio_unitario == valor_unitario_descuento) {
+            precio_total = 0;
+            $('#precio_total').val(precio_total);
+            $('#popup_alerta').hide();
+            return true;
+        }
+
         precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 
         $('#precio_total').val(0);
@@ -844,6 +865,7 @@ $(document).ready(function () {
         if ($.isNumeric(precio_total) && precio_total > 0) 
         {
             $('#precio_total').val(precio_total);
+            $('#popup_alerta').hide();
             return true;
         } else {
             precio_total = 0;
