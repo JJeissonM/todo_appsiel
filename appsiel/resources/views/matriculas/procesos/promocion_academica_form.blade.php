@@ -29,7 +29,7 @@
 										<label class="control-label col-sm-4" > <b> *Año lectivo: </b> </label>
 
 										<div class="col-sm-8">
-											{{ Form::select( 'periodo_lectivo_id', App\Matriculas\PeriodoLectivo::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'periodo_lectivo_id', 'required' => 'required' ]) }}
+											{{ Form::select( 'periodo_lectivo_id', App\Matriculas\PeriodoLectivoAux::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'periodo_lectivo_id', 'required' => 'required' ]) }}
 										</div>
 									</div>									
 								</div>

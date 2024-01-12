@@ -232,7 +232,7 @@
 									$generare_ensamble_automatico_en_salidas_mercancias = $parametros['generare_ensamble_automatico_en_salidas_mercancias'];
 								}
 							?>
-							{{ Form::bsSelect('generare_ensamble_automatico_en_salidas_mercancias', $generare_ensamble_automatico_en_salidas_mercancias, 'Generare Ensamble automático en salidas de mercancias', ['No','Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('generare_ensamble_automatico_en_salidas_mercancias', $generare_ensamble_automatico_en_salidas_mercancias, 'Generar Ensamble automático en salidas de mercancias', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

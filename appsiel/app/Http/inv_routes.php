@@ -19,9 +19,6 @@ Route::post('inv_agregar_ingrediente_a_receta','Inventarios\RecetasController@ag
 Route::get('inv_cambiar_cantidad_porcion/{item_platillo_id}/{item_ingrediente_id}/{nueva_cantidad_porcion}', 'Inventarios\RecetasController@cambiar_cantidad_porcion');
 
 
-
-
-
 Route::get('get_ajax','Inventarios\InventarioController@get_ajax');
 
 // AL cambiar la selección de un producto en el formulario de ingreso_productos_2.blade.php

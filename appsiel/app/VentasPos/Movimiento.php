@@ -244,9 +244,10 @@ class Movimiento extends Model
         return $movimiento->groupBy( $agrupar_por );
     }
 
-    public static function get_movimiento_ventas_no_anulado( $fecha_desde, $fecha_hasta )
+    public static function get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta )
     {
         $array_wheres = [
+            ['vtas_pos_movimientos.pdv_id','=', $pdv_id],
             ['vtas_pos_movimientos.estado','<>', 'Anulado']
         ];
         

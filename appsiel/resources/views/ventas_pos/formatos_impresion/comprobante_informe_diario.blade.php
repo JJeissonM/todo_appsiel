@@ -49,23 +49,15 @@
                 <b>Caja:</b> 000{{ $primera_linea_movimiento->pdv->id }}
             </td>
             <td>
-                <b>S/N:</b> -------------
+                <b>Fecha:</b>  {{ $primera_linea_movimiento->fecha }} 
             </td>
         </tr>
         <tr>
             <td>
-                <b>Fecha:</b>  {{ $ultima_linea_movimiento->fecha }} 
+                <b>S/N:</b> -------------
             </td>
             <td>
                 <b>Hora:</b>  {{ explode(' ', $ultima_linea_movimiento->created_at)[1] }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <b>No. Doc. inicial:</b>  {{ $primera_linea_movimiento->consecutivo }} 
-            </td>
-            <td>
-                <b>No. Doc. final:</b>  {{ $ultima_linea_movimiento->consecutivo }}
             </td>
         </tr>
     </table>
@@ -74,37 +66,161 @@
         $movin_por_grupos = $movimientos->groupBy('item_category_id');
     ?>
 
-    <div style="border: solid 1px #ddd; border-radius: 4px;">
+    <div style="border: solid 1px #ddd; border-radius: 4px; padding: 20px;">
         <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
             <thead>
-                <th>
-                    <td>GRUPO</td>
-                    <td>IVA</td>
-                    <td>CANT.</td>
-                    <td>VLR. TOTAL</td>
-                </th>
+                <tr>
+                    <th>GRUPO</th>
+                    <th>IVA</th>
+                    <th>CANT.</th>
+                    <th>VLR. TOTAL</th>
+                </tr>
             </thead>
             <tbody>
                 @foreach ( $movin_por_grupos as $movin_grupo)
                     <?php
-                        dd($movin_grupo->pluck('tasa_impuesto')->toArray());
                         $movin_por_tasas_iva = $movin_grupo->groupBy('tasa_impuesto');
                     ?>
                     @foreach ($movin_por_tasas_iva as $movin_tasa)
-                    <?php
-                        dd(movin_tasa);
-                    ?>
+                        <?php
+                            $primera_linea = $movin_tasa->first();
+                        ?>
                         <tr>
                             <td>
-                                {{ $movin_tasa->item_category->descripcion }}
+                                {{ $primera_linea->item_category->descripcion }}
+                            </td>
+                            <td align="center">
+                                {{ $primera_linea->tasa_impuesto }}
+                            </td>
+                            <td align="center">
+                                {{ $movin_tasa->sum('cantidad') }}
+                            </td>
+                            <td align="right">
+                                ${{ number_format($movin_tasa->sum('base_impuesto_total'), 0, ',','.') }}
                             </td>
                         </tr>
                     @endforeach
                 @endforeach
                 
+                <tr>
+                    <td>
+                        Impuesto bolsa plástica 
+                    </td>
+                    <td align="center">
+                        &nbsp;
+                    </td>
+                    <td align="center">
+                        0
+                    </td>
+                    <td align="right">
+                        $0
+                    </td>
+                </tr>
             </tbody>
         </table>        
     </div>
+    <br>
+    <div style="border: solid 1px #ddd; border-radius: 4px; padding: 15px;">
+        <h6>RESUMEN DE LAS VENTAS</h6>
+        <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
+            <tbody>
+                <tr>
+                    <td>
+                        <b>Total artículos:</b>
+                    </td>
+                    <td align="right">
+                        {{ number_format($movimientos->sum('cantidad'), 0, ',','.') }}
+                    </td>
+                </tr>
+                <?php 
+                    $movin_por_tasas_iva = $movimientos->groupBy('tasa_impuesto');
+                ?>
+                @foreach ($movin_por_tasas_iva as $tasa => $movin_grupo)
+                    <?php 
+                        if ($tasa == '0')
+                            continue;
+                    ?>
+                    <tr>
+                        <td>
+                            <b>Base IVA {{ $tasa }}%:</b>
+                        </td>
+                        <td align="right">
+                            ${{ number_format($movin_grupo->sum('base_impuesto_total'), 0, ',', '.') }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <b>Valor IVA {{ $tasa }}%:</b>
+                        </td>
+                        <td align="right">
+                            ${{ number_format( $movin_grupo->sum('base_impuesto_total') * (float)$tasa / 100, 0, ',', '.' ) }}
+                        </td>
+                    </tr>
+                @endforeach
+                <tr>
+                    <td>
+                        <b>Vta. Excenta o Excluida:</b>
+                    </td>
+                    <td align="right">
+                        ${{ number_format( $movimientos->where('tasa_impuesto','0')->sum('base_impuesto_total'), 0, ',', '.' ) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Venta Total:</b>
+                    </td>
+                    <td align="right">
+                        ${{ number_format( $movimientos->sum('base_impuesto_total'), 0, ',', '.' ) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Impuesto bolsa plástica:</b>
+                    </td>
+                    <td align="right">
+                        $0
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <b>TOTAL:</b>
+                    </td>
+                    <td align="right">
+                        ${{ number_format( $movimientos->sum('base_impuesto_total'), 0, ',', '.' ) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Transacción inicial:</b>
+                    </td>
+                    <td align="right">
+                        {{ $primera_linea_movimiento->consecutivo }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <b>Transacción final:</b>
+                    </td>
+                    <td align="right">
+                        {{ $ultima_linea_movimiento->consecutivo }}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        <b>Total transacciones:</b>
+                    </td>
+                    <td align="right">
+                        {{ $ultima_linea_movimiento->consecutivo - $primera_linea_movimiento->consecutivo + 1 }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>        
+    </div>
+
+    <br>
+    
+    @include('ventas_pos.formatos_impresion.resumen_ventas_por_medio_pago', [ 'fecha' => $primera_linea_movimiento->fecha, 'pdv_id' => $primera_linea_movimiento->pdv->id ] )
+
 </body>
 
 </html>

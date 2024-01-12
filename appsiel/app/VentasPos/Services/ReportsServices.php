@@ -21,33 +21,12 @@ class ReportsServices
             ];
         }
 
-        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado($fecha, $fecha);
+        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv->id, $fecha, $fecha);
 
-        $total_credito = 0;
-        $arr_consecutivos = [];
-        $core_tipo_transaccion_id = 0;
-        $core_tipo_doc_app_id = 0;
-        foreach ($movimientos_pdv as $movimiento) {
-            if ($movimiento->pdv_id != $pdv->id) {
-                continue;
-            }
-
-            if ($movimiento->forma_pago == 'credito') {
-                $total_credito += $movimiento->precio_total;
-            }
-
-            $arr_consecutivos[] = $movimiento->consecutivo;
-            $core_tipo_transaccion_id = $movimiento->core_tipo_transaccion_id;
-            $core_tipo_doc_app_id = $movimiento->core_tipo_doc_app_id;
-        }
+        $total_credito = $movimientos_pdv->where( 'forma_pago', 'credito')->sum('precio_total');
+                
+        $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($pdv->id, $fecha, $fecha);
         
-        $movimientos_tesoreria_para_pdv = TesoMovimiento::where([
-                            ['core_tipo_transaccion_id', '=', $core_tipo_transaccion_id ],
-                            ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ]
-                        ])
-                        ->whereIn('consecutivo',$arr_consecutivos)
-                        ->get();
-
         $total_contado = 0;
         $motivo_tesoreria_propinas = (int)config('ventas_pos.motivo_tesoreria_propinas');
         foreach ($movimientos_tesoreria_para_pdv as $movimiento) {
@@ -88,5 +67,30 @@ class ReportsServices
             'total_credito' => $total_credito,
             'totales_cuentas_bancarias' => $totales_cuentas_bancarias
         ];
-    }        
+    }
+
+    public function get_ventas_credito_pdv($pdv_id, $fecha_desde, $fecha_hasta)
+    {        
+        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
+
+        return $movimientos_pdv->where( 'forma_pago', 'credito')->sum('precio_total');
+    }
+
+    public function get_movimiento_tesoreria_pdv($pdv_id, $fecha_desde, $fecha_hasta)
+    {        
+        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
+
+        foreach ($movimientos_pdv as $movimiento) {
+            $arr_consecutivos[] = $movimiento->consecutivo;
+            $core_tipo_transaccion_id = $movimiento->core_tipo_transaccion_id;
+            $core_tipo_doc_app_id = $movimiento->core_tipo_doc_app_id;
+        }
+
+        return TesoMovimiento::where([
+                                    ['core_tipo_transaccion_id', '=', $core_tipo_transaccion_id ],
+                                    ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ]
+                                ])
+                                ->whereIn('consecutivo',$arr_consecutivos)
+                                ->get();
+    }
 }

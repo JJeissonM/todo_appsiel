@@ -312,7 +312,13 @@ class ReporteController extends Controller
                             ->orderBy('vtas_pos_movimientos.consecutivo')
                             ->get();
 
-                            //dd($fecha_corte,$pdv_id,$movimientos->groupBy('item_category_id'),$movimientos->first()->item_category);
+        foreach ($movimientos as $fila)
+        {
+            $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
+
+
+            $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
+        }
       
         $vista = View::make( 'ventas_pos.formatos_impresion.comprobante_informe_diario', compact('movimientos') )->render();
         
