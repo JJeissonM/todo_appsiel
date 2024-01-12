@@ -13,10 +13,7 @@ use App\Inventarios\Services\InvDocumentsLinesService;
 use App\Inventarios\InvMotivo;
 
 use App\Inventarios\RecetaCocina;
-use App\VentasPos\FacturaPos;
-use App\VentasPos\DocRegistro;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class RecipeServices

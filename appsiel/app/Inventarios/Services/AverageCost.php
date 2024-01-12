@@ -179,4 +179,40 @@ class AverageCost
         $item->set_costo_promedio( $id_bodega, $costo_prom );
     }
 
+    public function calculate_average_cost($id_bodega,$id_producto,$valor_default, $fecha_transaccion, $cantidad)
+    {        
+        $array_wheres = [
+            ['inv_producto_id','=',$id_producto],
+            ['fecha', '<=', $fecha_transaccion]
+        ];
+        
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1 ) {
+            $array_wheres = array_merge($array_wheres, [['inv_bodega_id','=',$id_bodega]]);
+        }else{
+            $bodega_id = 0;
+        }
+        
+        // Obtener todas las cantidades del movimiento
+        $cantidad_total_movim = InvMovimiento::where($array_wheres)->sum('cantidad');
+        
+        // Restar las cantidades de entrada
+        $cantidad_total_movim_anterior_a_la_entrada = $cantidad_total_movim - $cantidad;
+        
+        if (round($cantidad_total_movim_anterior_a_la_entrada,0) <= 0) {
+            return $valor_default;
+        }
+        
+        $costo_total_entrada = $cantidad * $valor_default;
+        
+        // Validar si con las entradas quedan las cantidades en cero
+        if (round($cantidad_total_movim,0) <= 0) {
+            return $valor_default;
+        }
+
+        $item = InvProducto::find($id_producto);
+        $costo_promedio_actual = $item->get_costo_promedio( $bodega_id );
+        $costo_total_movim_anterior = $cantidad_total_movim_anterior_a_la_entrada * $costo_promedio_actual;
+
+        return ($costo_total_movim_anterior + $costo_total_entrada) / $cantidad_total_movim;
+    }
 }

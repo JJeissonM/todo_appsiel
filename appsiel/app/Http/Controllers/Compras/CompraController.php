@@ -45,6 +45,7 @@ use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Contabilidad\Impuesto;
+use App\Inventarios\Services\AverageCost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -950,10 +951,12 @@ class CompraController extends TransaccionController
                             ] );
 
         // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-        $costo_prom = TransaccionController::calcular_costo_promedio($inv_doc_registro->inv_bodega_id,$linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha, $cantidad);
+
+        $average_cost_serv = new AverageCost();
+        $costo_prom = $average_cost_serv->calculate_average_cost($inv_doc_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha, $cantidad);
 
         // Actualizo/Almaceno el costo promedio
-        TransaccionController::set_costo_promedio($inv_doc_registro->inv_bodega_id,$linea_registro->inv_producto_id,$costo_prom);
+        $average_cost_serv->set_costo_promedio($inv_doc_registro->inv_bodega_id,$linea_registro->inv_producto_id,$costo_prom);
 
         // 7. Actualizar movimiento contable del registro del documento de inventario
         // Inventarios (DB)

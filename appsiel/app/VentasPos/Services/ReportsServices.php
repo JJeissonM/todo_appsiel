@@ -49,7 +49,13 @@ class ReportsServices
                         ->get();
 
         $total_contado = 0;
+        $motivo_tesoreria_propinas = (int)config('ventas_pos.motivo_tesoreria_propinas');
         foreach ($movimientos_tesoreria_para_pdv as $movimiento) {
+
+            if ($movimiento->teso_motivo_id == $motivo_tesoreria_propinas) {
+                continue;
+            }
+
             if ($movimiento->teso_caja_id == $teso_caja_id) {
                 $total_contado += $movimiento->valor_movimiento;
             }

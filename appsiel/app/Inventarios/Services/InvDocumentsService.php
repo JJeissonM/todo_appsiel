@@ -37,7 +37,8 @@ class InvDocumentsService
     public function store_document_lines( $datos, $doc_encabezado, array $lineas_registros)
     {
         $cantidad_registros = count($lineas_registros);
-
+        
+        $average_cost_serv = new AverageCost();
         for ($i = 0; $i < $cantidad_registros; $i++)
         {
             $cantidad = (float)$lineas_registros[$i]->cantidad;
@@ -77,7 +78,15 @@ class InvDocumentsService
                                         $linea_datos +
                                         ['inv_doc_encabezado_id' => $doc_encabezado->id]
                                     );
-            }    
+                                    
+                if ($motivo->movimiento == 'entrada')
+                {
+                    $costo_prom = $average_cost_serv->calculate_average_cost((int)$lineas_registros[$i]->inv_bodega_id, (int)$lineas_registros[$i]->inv_producto_id, (float)$lineas_registros[$i]->costo_unitario, $datos['fecha'], $cantidad);
+
+                    // Actualizo/Almaceno el costo promedio
+                    $average_cost_serv->set_costo_promedio( (int)$lineas_registros[$i]->inv_bodega_id, (int)$lineas_registros[$i]->inv_producto_id, $costo_prom);
+                }
+            }
         }
     }
 

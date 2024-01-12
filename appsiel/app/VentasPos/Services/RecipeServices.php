@@ -47,6 +47,7 @@ class RecipeServices
             // Verificar las existencias actuales del producto terminado (platillo).
             $existencia_actual = InvMovimiento::get_cantidad_existencia_item( $receta_platillo->item_platillo_id, $bodega_default_id, $fecha );
             $cantidad_a_ingresar = $cantidad_facturada - $existencia_actual;
+            
             if ($cantidad_a_ingresar <= 0) {
                 continue;
             }
@@ -61,10 +62,18 @@ class RecipeServices
 
                 $costo_total_ingredientes += $costo_unitario_ingrediente * $ingrediente['cantidad_porcion'];
 
+                $arr[] = [
+                    'ingrediente' => $ingrediente['ingrediente']->descripcion,
+                    'cantidad_a_sacar'=> $cantidad_a_sacar,
+                    'costo_unitario_ingrediente' => $costo_unitario_ingrediente,
+                    'cantidad_porcion' => $ingrediente['cantidad_porcion'],
+                    'costo_total' => $costo_unitario_ingrediente * $ingrediente['cantidad_porcion']
+                ];
+
                 // Una linea de salida por cada ingrediente
                 $lineas_desarme .= ',{"inv_producto_id":"' . $ingrediente['ingrediente']->id . '","Producto":"' . $ingrediente['ingrediente']->id . ' ' . $ingrediente['ingrediente']->descripcion . ' (' . $ingrediente['ingrediente']->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_ingrediente) . '"}';
             }
-            //dd($arr);
+
             //$costo_unitario_platillo = $costo_total_ingredientes / $cantidad_a_ingresar;
             //dd($costo_total_ingredientes, $cantidad_a_ingresar);
             $lineas_desarme .= ',';
@@ -113,7 +122,7 @@ class RecipeServices
     public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios )
     {
         $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha);
-
+        
         if ( gettype($movimiento) == "integer" )
         {
             return 0;

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('ventas_pos', 'VentasPos\AplicacionController');
 
+Route::get('ventas_pos_testing', 'VentasPos\AplicacionController@testing');
+
 Route::get( 'ventas_pos_set_catalogos/{pdv_id}', 'VentasPos\FacturaPosController@set_catalogos');
 
 Route::get('pos_factura_imprimir/{doc_encabezado_id}', 'VentasPos\FacturaPosController@imprimir');
