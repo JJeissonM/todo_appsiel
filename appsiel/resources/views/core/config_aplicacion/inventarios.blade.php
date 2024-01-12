@@ -136,7 +136,7 @@
 
 				</div>
 
-				<h4> Parámetros por defecto creación de desarmes automáticos  </h4>
+				<h4> Parámetros por defecto creación de Ensambles automáticos  </h4>
 				<hr>
 				<div class="row">
 
@@ -220,6 +220,28 @@
 					</div>
 
 				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$generare_ensamble_automatico_en_salidas_mercancias = '0';
+								if( isset($parametros['generare_ensamble_automatico_en_salidas_mercancias'] ) )
+								{
+									$generare_ensamble_automatico_en_salidas_mercancias = $parametros['generare_ensamble_automatico_en_salidas_mercancias'];
+								}
+							?>
+							{{ Form::bsSelect('generare_ensamble_automatico_en_salidas_mercancias', $generare_ensamble_automatico_en_salidas_mercancias, 'Generare Ensamble automático en salidas de mercancias', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+
+				</div>
+
 
 				<h4> Parámetros por defecto creación Entradas de almacén  </h4>
 				<hr>

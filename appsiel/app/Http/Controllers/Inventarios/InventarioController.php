@@ -176,8 +176,8 @@ class InventarioController extends TransaccionController
     {
         $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, $request->modo_ajuste );
 
-        if ($request->core_tipo_transaccion_id == 3) { // 3: Salida de almacén
-            self::hacer_preparaciones_recetas($request->fecha, $request->inv_bodega_id, $lineas_registros, 'Doc. Creado automáticamente desde la creación de una Salida de Almacén.');
+        if ( (int)config('inventarios.generare_ensamble_automatico_en_salidas_mercancias')  ) {
+            self::hacer_preparaciones_recetas($request->core_tipo_transaccion_id, $request->fecha, $request->inv_bodega_id, $lineas_registros);
         }
 
         $doc_encabezado_id = self::crear_documento($request, $lineas_registros, $request->url_id_modelo);
@@ -285,10 +285,17 @@ class InventarioController extends TransaccionController
         return $lineas_registros;
     }
 
-    public static function hacer_preparaciones_recetas($fecha, $inv_bodega_id, $lineas_registros, $descripcion)
+    public static function hacer_preparaciones_recetas( $core_tipo_transaccion_id, $fecha, $inv_bodega_id, $lineas_registros)
     {
         $obj_inv_doc_serv = new RecipeServices();
-        return $obj_inv_doc_serv->create_document_making( $lineas_registros, $inv_bodega_id, $fecha, $descripcion );
+
+        $descripcion = 'Doc. Creado automáticamente desde la creación de una Salida de Almacén.';
+
+        if ( $core_tipo_transaccion_id == 2 ) { // 2: Transferencia
+            $descripcion = 'Doc. Creado automáticamente desde la creación de una Transferencia.';
+        }
+
+        return $obj_inv_doc_serv->create_document_making( $lineas_registros, $inv_bodega_id, $fecha,  $descripcion);        
     }
 
     /*
@@ -1133,7 +1140,7 @@ class InventarioController extends TransaccionController
         $existencia_actual = InvMovimiento::get_existencia_actual($request->inv_producto_id, $request->id_bodega, $request->fecha_aux);
 
         $producto->existencia_actual = $existencia_actual;
-        if ($this->item_es_un_platillo($producto->id)) {
+        if ($this->item_es_un_platillo($producto->id) && (int)config('inventarios.generare_ensamble_automatico_en_salidas_mercancias')) {
             $producto->existencia_actual = 99999999;
         }
 
