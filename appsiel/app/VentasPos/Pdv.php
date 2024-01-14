@@ -2,6 +2,7 @@
 
 namespace App\VentasPos;
 
+use App\Core\Empresa;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvBodega;
@@ -14,7 +15,12 @@ use Illuminate\Support\Facades\DB;
 class Pdv extends Model
 {
     protected $table = 'vtas_pos_puntos_de_ventas';		
-	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'impresora_principal_por_defecto', 'impresora_cocina_por_defecto', 'creado_por', 'modificado_por', 'estado'];
+	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'impresora_principal_por_defecto', 'impresora_cocina_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado'];
+
+    public function empresa()
+    {
+        return $this->belongsTo( Empresa::class,'core_empresa_id');
+    }
 
     public function bodega()
     {
@@ -61,10 +67,19 @@ class Pdv extends Model
         return $ultima_apertura->efectivo_base;
     }
 
+    public function get_direccion()
+    {
+        if ($this->direccion == null || $this->direccion == '') {
+            return $this->empresa->direccion1;
+        }
+        
+        return $this->direccion;
+    }
+
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 	
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Bodega', 'Caja', 'Cajero', 'Cliente', 'Tipo Doc.', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nro.', 'Descripción', 'Bodega', 'Caja', 'Cajero', 'Cliente', 'Tipo Doc.', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -75,14 +90,15 @@ class Pdv extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_puntos_de_ventas.tipo_doc_app_default_id')
             ->select(
-                'vtas_pos_puntos_de_ventas.descripcion AS campo1',
-                'inv_bodegas.descripcion AS campo2',
-                'teso_cajas.descripcion AS campo3',
-                'users.name AS campo4',
-                'core_terceros.descripcion AS campo5',
-                DB::raw('CONCAT(core_tipos_docs_apps.descripcion," (",core_tipos_docs_apps.id,")") AS campo6'),
-                'vtas_pos_puntos_de_ventas.estado AS campo7',
-                'vtas_pos_puntos_de_ventas.id AS campo8'
+                'vtas_pos_puntos_de_ventas.id AS campo1',
+                'vtas_pos_puntos_de_ventas.descripcion AS campo2',
+                'inv_bodegas.descripcion AS campo3',
+                'teso_cajas.descripcion AS campo4',
+                'users.name AS campo5',
+                'core_terceros.descripcion AS campo6',
+                DB::raw('CONCAT(core_tipos_docs_apps.descripcion," (",core_tipos_docs_apps.id,")") AS campo7'),
+                'vtas_pos_puntos_de_ventas.estado AS campo8',
+                'vtas_pos_puntos_de_ventas.id AS campo9'
             )
             ->where("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
@@ -104,6 +120,7 @@ class Pdv extends Model
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_clientes.core_tercero_id')
             ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_puntos_de_ventas.tipo_doc_app_default_id')
             ->select(
+                'vtas_pos_puntos_de_ventas.id AS Nro.',
                 'vtas_pos_puntos_de_ventas.descripcion AS DESCRIPCIÓN',
                 'inv_bodegas.descripcion AS BODEGA',
                 'teso_cajas.descripcion AS CAJA',

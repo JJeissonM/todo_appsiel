@@ -20,6 +20,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 use App\VentasPos\Movimiento;
+use App\VentasPos\Services\ReportsServices;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -316,11 +317,21 @@ class ReporteController extends Controller
         {
             $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
 
-
             $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
         }
+
+        $service = new ReportsServices();
+
+        $ventas_base_impuesto_total = $movimientos->sum('base_impuesto_total');
+
+        $ventas_credito_pdv = $service->get_ventas_credito_pdv($pdv_id, $fecha_corte, $fecha_corte);
+        $ventas_credito_sin_iva = $ventas_credito_pdv->sum('base_impuesto_total');
+        
+        $ventas_contado_sin_iva = $ventas_base_impuesto_total - $ventas_credito_sin_iva;
+
+        $ventas_por_medios_pago_con_iva = $service->get_ventas_por_medios_pago_con_iva($pdv_id, $fecha_corte, $fecha_corte);
       
-        $vista = View::make( 'ventas_pos.formatos_impresion.comprobante_informe_diario', compact('movimientos') )->render();
+        $vista = View::make( 'ventas_pos.formatos_impresion.comprobante_informe_diario', compact('movimientos', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva') )->render();
         
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    

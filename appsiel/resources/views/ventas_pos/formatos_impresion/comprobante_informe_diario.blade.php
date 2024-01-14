@@ -6,7 +6,7 @@
     <style type="text/css">
         body{
             font-family: Arial, Helvetica, sans-serif;
-            font-size: {{ config('ventas_pos.tamanio_fuente_factura') . 'px'  }};
+            font-size: 13px;
         }
 
         @page {
@@ -31,6 +31,10 @@
 </head>
 <body>
 
+    @if( empty($movimientos->toArray()) )
+        <h3>No hay movimiento de ventas en la fecha seleccionada.</h3>
+    @else
+        
     <?php
         $tamanino_fuente_2 = '0.9em';
         $primera_linea_movimiento = $movimientos->first();
@@ -39,9 +43,7 @@
         $ciudad = $empresa->ciudad;
     ?>
 
-    <td style="text-align: center;">
-        @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
-    </td>
+    @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
     
     <table style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
         <tr>
@@ -54,10 +56,15 @@
         </tr>
         <tr>
             <td>
-                <b>S/N:</b> -------------
+                <b>S/N:</b> {{ $primera_linea_movimiento->pdv->serial_maquina }}
             </td>
             <td>
                 <b>Hora:</b>  {{ explode(' ', $ultima_linea_movimiento->created_at)[1] }}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <b>Dirección:</b> {{ $primera_linea_movimiento->pdv->get_direccion() }}
             </td>
         </tr>
     </table>
@@ -66,7 +73,7 @@
         $movin_por_grupos = $movimientos->groupBy('item_category_id');
     ?>
 
-    <div style="border: solid 1px #ddd; border-radius: 4px; padding: 20px;">
+    <div style="border: solid 1px #ddd; border-radius: 4px; padding: 10px;">
         <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
             <thead>
                 <tr>
@@ -120,8 +127,8 @@
         </table>        
     </div>
     <br>
-    <div style="border: solid 1px #ddd; border-radius: 4px; padding: 15px;">
-        <h6>RESUMEN DE LAS VENTAS</h6>
+    <div style="border: solid 1px #ddd; border-radius: 4px; padding: 10px;">
+        <h5>RESUMEN DE LAS VENTAS</h5>
         <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
             <tbody>
                 <tr>
@@ -220,7 +227,8 @@
     <br>
     
     @include('ventas_pos.formatos_impresion.resumen_ventas_por_medio_pago', [ 'fecha' => $primera_linea_movimiento->fecha, 'pdv_id' => $primera_linea_movimiento->pdv->id ] )
-
+    
+    @endif
 </body>
 
 </html>

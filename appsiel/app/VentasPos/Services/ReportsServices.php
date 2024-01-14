@@ -73,13 +73,16 @@ class ReportsServices
     {        
         $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
 
-        return $movimientos_pdv->where( 'forma_pago', 'credito')->sum('precio_total');
+        return $movimientos_pdv->where( 'forma_pago', 'credito');
     }
 
     public function get_movimiento_tesoreria_pdv($pdv_id, $fecha_desde, $fecha_hasta)
     {        
         $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
-
+        
+        $arr_consecutivos = [];
+        $core_tipo_transaccion_id = 0;
+        $core_tipo_doc_app_id = 0;
         foreach ($movimientos_pdv as $movimiento) {
             $arr_consecutivos[] = $movimiento->consecutivo;
             $core_tipo_transaccion_id = $movimiento->core_tipo_transaccion_id;
@@ -88,9 +91,38 @@ class ReportsServices
 
         return TesoMovimiento::where([
                                     ['core_tipo_transaccion_id', '=', $core_tipo_transaccion_id ],
-                                    ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ]
+                                    ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ],
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ]
                                 ])
                                 ->whereIn('consecutivo',$arr_consecutivos)
                                 ->get();
+    }
+
+    public function get_ventas_por_medios_pago_con_iva($pdv_id, $fecha_desde, $fecha_hasta)
+    {
+        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($pdv_id, $fecha_desde, $fecha_hasta);
+    
+        $movin_por_medio_recaudo = $movimiento_tesoreria_pdv->groupBy('teso_medio_recaudo_id');
+
+        $ventas_por_medios_pago_con_iva  = collect([]);
+
+        $total_venta_contado_con_iva = $movimiento_tesoreria_pdv->sum('valor_movimiento');
+        foreach ($movin_por_medio_recaudo as $movin_grupo) {
+            
+            $primera_linea_movin_grupo = $movin_grupo->first();
+
+            $porcentaje_participacion_total_ventas = 0;
+            if ($total_venta_contado_con_iva != 0) {
+                $porcentaje_participacion_total_ventas = $movin_grupo->sum('valor_movimiento') / $total_venta_contado_con_iva;
+            }
+            
+            $ventas_por_medios_pago_con_iva->push((object)[
+                    'medio_pago' => $primera_linea_movin_grupo->medio_pago->descripcion,
+                    'total_venta' => $movin_grupo->sum('valor_movimiento'),
+                    'porcentaje_participacion_total_ventas' => $porcentaje_participacion_total_ventas
+                ]);
+        }
+
+        return $ventas_por_medios_pago_con_iva;
     }
 }
