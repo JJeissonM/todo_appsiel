@@ -160,11 +160,13 @@
 
 <div class="container" style="width: 100%;">
 	
-    @include('calificaciones.boletines.formatos.banner_colegio_con_escudo', ['opacity'=>0.7, 'tam_letra'=>4])
-
-    <div class="watermark-{{$tam_hoja}} escudo">
-        <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
-    </div>
+    @if($vista != 'show')
+        @include('calificaciones.boletines.formatos.banner_colegio_con_escudo', ['opacity'=>0.7, 'tam_letra'=>4])
+        
+        <div class="watermark-{{$tam_hoja}} escudo">
+            <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
+        </div>        
+    @endif   
 	
 	<h4 align="center">OBSERVADOR DEL ALUMNO</h4>
     <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
@@ -176,29 +178,20 @@
     <div class="observacion">
         <b>Observación:</b>
         <br>
-        {{ $estudiante->observacion_general }}
+        {{ $matricula_a_mostrar->get_observacion_general() }}
     </div>
 
 
-    @include('calificaciones.boletines.pie_pagina')
-
-	<div class="page-break"></div>
-
-    <div class="watermark-{{$tam_hoja}} escudo">
-        <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
-    </div>
+    @if($vista != 'show')
+        @include('matriculas.estudiantes.observador.componentes_para_mostrar_al_imprimir')
+	@endif
 
 	@include('matriculas.estudiantes.observador.valorar_aspectos_show')
-	
     
-    @include('calificaciones.boletines.pie_pagina')
+    @if($vista != 'show')
+        @include('matriculas.estudiantes.observador.componentes_para_mostrar_al_imprimir')
+	@endif 
 
-	<div class="page-break"></div>
-
-    <div class="watermark-{{$tam_hoja}} escudo">
-        <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
-    </div>
-	
 	<br><br>
 	@include('matriculas.estudiantes.observador.novedades_y_anotaciones')
 
@@ -214,6 +207,7 @@
 		@include('matriculas.estudiantes.observador.analisis_foda_show')
 	@endif
 	
-    @include('calificaciones.boletines.pie_pagina')
-
+    @if($vista != 'show')
+        @include('calificaciones.boletines.pie_pagina')
+	@endif
 </div>

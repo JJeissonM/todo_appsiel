@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Matriculas\Matricula;
 use App\Core\Colegio;
 use App\Core\Tercero;
+use App\Matriculas\Services\EstudiantesService;
 use Illuminate\Support\Facades\DB;
 
 class Estudiante extends Model
@@ -33,6 +34,11 @@ class Estudiante extends Model
     public function matricula_activa()
     {
         return Matricula::where('id_estudiante', $this->id)->where('estado', 'Activo')->first();
+    }
+
+    public function get_observacion_general()
+    {
+        return $this->observacion_general;
     }
 
     public function registros_cartera()
@@ -146,27 +152,8 @@ class Estudiante extends Model
 
     public static function get_nombre_completo($id, $modo_ordenamiento = 1)
     {
-        switch ($modo_ordenamiento) {
-            case '1': // Apellidos_Nombre
-                $select_raw = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS campo1';
-                break;
-
-            case '2': // Nombre_Apellidos
-                $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
-                break;
-
-            default:
-                # code...
-                break;
-        }
-
-        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
-            $select_raw = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS campo1';
-        }
-
-        return Estudiante::leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')->where('sga_estudiantes.id', $id)->select(DB::raw($select_raw))->value('campo1');
+        return (new EstudiantesService())->get_nombre_completo($id, $modo_ordenamiento);
     }
-
 
     public static function get_cantidad_estudiantes_x_curso($periodo_lectivo_id, $estado_matricula = 'Activo')
     {

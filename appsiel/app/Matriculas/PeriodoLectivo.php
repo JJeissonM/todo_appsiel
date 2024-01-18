@@ -6,9 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Colegio;
 use App\Calificaciones\Periodo;
-
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PeriodoLectivo extends Model
 {
@@ -26,6 +25,11 @@ class PeriodoLectivo extends Model
     public function matriculas()
     {
         return $this->hasMany('App\Matriculas\Matricula', 'periodo_lectivo_id');
+    }
+
+    public function get_anio()
+    {
+        return explode('-', $this->fecha_desde)[0];
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -81,7 +85,27 @@ class PeriodoLectivo extends Model
 
     public static function opciones_campo_select()
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        $user = Auth::user();
+
+        $colegio = Colegio::where('empresa_id', $user->empresa_id)->get()[0];
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo'))
+        {
+            $opcion = PeriodoLectivo::where('id_colegio',$colegio->id)
+                                ->where('estado','Activo')
+                                ->where('cerrado',0)
+                                ->orderBy('fecha_desde')
+                                ->get()
+                                ->first();
+
+            if ($opcion != null) {
+                return [
+                    $opcion->id => $opcion->descripcion
+                ];
+            }
+
+            return [];
+        }
+
 
         $opciones = PeriodoLectivo::where('id_colegio',$colegio->id)
                                 ->where('estado','Activo')

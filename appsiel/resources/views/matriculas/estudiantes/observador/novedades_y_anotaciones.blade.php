@@ -1,7 +1,3 @@
-<?php 
-	$periodos = App\Calificaciones\Periodo::get_todos_periodo_lectivo_actual();
-?>
-
 <h3 align="center"> ANOTACIONES </h3>
 <div class="table-responsive">
 	@foreach ($periodos as $periodo)

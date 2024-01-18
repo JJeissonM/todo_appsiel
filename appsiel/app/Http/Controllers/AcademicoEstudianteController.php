@@ -39,6 +39,7 @@ use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\AcademicoEstudiante\ProgramacionAulaVirtual;
 use App\Calificaciones\Services\CalificacionesService;
+use App\Matriculas\Services\ObservadorEstudianteService;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -255,7 +256,7 @@ class AcademicoEstudianteController extends Controller
 
     public function observador_show($estudiante_id)
     {
-        $view_pdf = ObservadorEstudianteController::vista_preliminar($estudiante_id, 'show');
+        $view_pdf = (new ObservadorEstudianteService())->vista_preliminar($estudiante_id, 'show');
 
         $miga_pan = [
             ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],

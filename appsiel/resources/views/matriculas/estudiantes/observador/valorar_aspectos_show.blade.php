@@ -1,8 +1,3 @@
-
-<?php 
-	$tipos_aspectos = App\Matriculas\TiposAspecto::all();
-?>
-
 <h3 align="center"> VALORACIÓN POR ASPECTOS </h3>
 <div class="form-group">
 	<div class="alert alert-info">
@@ -38,8 +33,8 @@
 						$val_per3 = "";
 						$val_per4 = "";
 						$aspecto_estudiante_id="";
-
-						$aspecto_estudiante = App\Matriculas\AspectosObservador::where('id_aspecto','=',$aspecto->id)->where('id_estudiante','=', $estudiante->id )->where('fecha_valoracion','like',date('Y').'%')->get()->first();
+						
+						$aspecto_estudiante = App\Matriculas\AspectosObservador::where('id_aspecto','=',$aspecto->id)->where('id_estudiante','=', $estudiante->id )->where('fecha_valoracion','like', $anio_matricula.'%')->get()->first();
 
 						if( !is_null($aspecto_estudiante) )
 						{

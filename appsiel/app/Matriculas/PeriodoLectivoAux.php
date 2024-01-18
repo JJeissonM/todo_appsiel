@@ -5,8 +5,7 @@ namespace App\Matriculas;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Colegio;
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
 
 class PeriodoLectivoAux extends PeriodoLectivo
 {
@@ -14,7 +13,8 @@ class PeriodoLectivoAux extends PeriodoLectivo
 
     public static function opciones_campo_select()
     {
-        $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()[0];
+        $user = Auth::user();
+        $colegio = Colegio::where('empresa_id', $user->empresa_id)->get()[0];
 
         $opciones = PeriodoLectivo::where('id_colegio',$colegio->id)
                                 ->where('estado','Activo')

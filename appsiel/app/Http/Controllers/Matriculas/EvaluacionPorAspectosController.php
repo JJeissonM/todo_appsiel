@@ -4,26 +4,11 @@ namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
-use Cache;
-
-use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\Core\TransaccionController;
 
 
 // Modelos
 use App\Sistema\Aplicacion;
-use App\Sistema\Modelo;
-use App\Core\Empresa;
 use App\Core\Colegio;
 use App\Core\SemanasCalendario;
 
@@ -35,25 +20,25 @@ use App\Matriculas\CatalogoObservacionesEvaluacionAspecto;
 use App\Matriculas\TiposAspecto;
 
 use App\Matriculas\Curso;
-use App\Matriculas\Estudiante;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
-use App\Calificaciones\Periodo;
-
-use App\Calificaciones\Calificacion;
-use App\Calificaciones\CalificacionAuxiliar;
-
-use App\Calificaciones\EscalaValoracion;
 
 use App\Matriculas\Matricula;
-use App\Calificaciones\Area;
-use App\Calificaciones\Logro;
 
 use App\AcademicoDocente\AsignacionProfesor;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class EvaluacionPorAspectosController extends Controller
 {
     public $array_convenciones = ['','Alto','Medio','Bajo'];
+
+    public $aplicacion;
+
+    public $colegio;
 
     public function __construct()
     {
@@ -76,8 +61,8 @@ class EvaluacionPorAspectosController extends Controller
                                                         ['fecha_inicio', '<=', $fecha_valoracion],
                                                         ['fecha_fin', '>=', $fecha_valoracion]
                                                     ])
-                                                ->get()->first();/*all();*/
-        //dd([$fecha_valoracion,$semana_calendario]);
+                                                ->get()->first();
+                                                
         if ( is_null($semana_calendario) )
         {
             $semana_calendario = (object)['fecha_inicio'=>'0000-00-00','fecha_fin'=>'0000-00-00','descripcion'=>'NO ENCONTRADA'];
@@ -448,14 +433,14 @@ class EvaluacionPorAspectosController extends Controller
             
 
         return view('matriculas.observador.evaluacion_por_aspectos.congratulations', [
-                                                    'valores_consolidados_estudiantes' => $valores_consolidados_estudiantes,
+                                                    'valores_consolidados_estudiantes' => $vce,
                                                     'colegio' => $colegio,
                                                 ]);
     }
 
     public function grafica_valoracion_x_curso( $valores_consolidados )
     {
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
         
         $stocksTable->addStringColumn('Frecuencia')
                     ->addNumberColumn('Cantidad');
@@ -463,13 +448,13 @@ class EvaluacionPorAspectosController extends Controller
         foreach( $valores_consolidados as $frecuencia )
         {
             $stocksTable->addRow([
-              $registro->Genero, (int)$registro->Cantidad
+              $frecuencia->Genero, (int)$frecuencia->Cantidad
             ]);
         }
 
-        Lava::PieChart('Generos', $stocksTable);
+        LavachartsFacade::PieChart('Generos', $stocksTable);
         
-        return $generos;
+        return $stocksTable;
     }
 
     public function get_observacion( $estudiante_id, $id_asignatura, $semana_calendario_id )

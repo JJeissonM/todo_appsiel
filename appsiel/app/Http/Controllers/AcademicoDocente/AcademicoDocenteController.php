@@ -32,6 +32,7 @@ use App\Matriculas\FodaEstudiante;
 
 
 use App\Core\Colegio;
+use App\Matriculas\Services\ObservadorEstudianteService;
 use App\Sistema\Modelo;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -371,16 +372,21 @@ class AcademicoDocenteController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Observador: Valoración de aspectos > ' . $estudiante->nombre_completo]
         ];
 
-        $observacion_general = $estudiante->observacion_general;
+        
+        $observador_serv = new ObservadorEstudianteService();
+        $matricula_a_mostrar = $observador_serv->get_matricula_a_mostrar((int)Input::get('matricula_id'), $estudiante);
 
-        return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan', 'observacion_general'));
+        $anio_matricula = $observador_serv->get_anio_matricula((int)Input::get('matricula_id'), $estudiante);
+
+        $observacion_general = $matricula_a_mostrar->get_observacion_general();
+
+        return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan', 'observacion_general', 'matricula_a_mostrar', 'anio_matricula'));
     }
 
     // PROCEDIMIENTO ALMACENAR ASPECTOS
     public function guardar_valoracion_aspectos(Request $request)
     {
         $estudiante = Estudiante::find($request->id_estudiante);
-        $tipos_aspectos = TiposAspecto::all();
 
         $aspectos = CatalogoAspecto::all();
         for ($i = 0; $i < count($aspectos); $i++) {
@@ -399,21 +405,19 @@ class AcademicoDocenteController extends Controller
             }
         }
 
-        $estudiante->observacion_general = $request->observacion_general;
-        $estudiante->save();
+        $matricula = Matricula::find($request->matricula_id);
+        $matricula->observacion_general = $request->observacion_general;
+        $matricula->save();
 
         return redirect('academico_docente/valorar_aspectos_observador/' . $estudiante->id . '?id=' . $request->url_id . '&curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
     }
-
-
 
     /**
      ** Vista previa del observador del estudiante.
      **/
     public function show_observador($id)
     {
-
-        $view_pdf = ObservadorEstudianteController::vista_preliminar($id, 'show');
+        $view_pdf = (new ObservadorEstudianteService())->vista_preliminar($id, 'show');
 
         $miga_pan = [
             ['url' => 'academico_docente?id=' . Input::get('id'), 'etiqueta' => 'Académico docente'],
@@ -423,8 +427,6 @@ class AcademicoDocenteController extends Controller
 
         return view('academico_docente.estudiantes.observador_show', compact('miga_pan', 'view_pdf', 'id'));
     }
-
-
 
     public function ingresar_notas_nivelaciones($curso_id, $asignatura_id)
     {
@@ -552,7 +554,6 @@ class AcademicoDocenteController extends Controller
 
         return $vista2;
     }
-
 
     public function revisar_notas_nivelaciones($curso_id, $asignatura_id)
     {

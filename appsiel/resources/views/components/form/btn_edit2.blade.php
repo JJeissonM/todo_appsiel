@@ -1,1 +1,1 @@
-<a class="btn-gmail" href="{{ url($url) }}" title="{{$etiqueta}}"><i class="fa fa-btn fa-edit"></i></a>
+<a class="btn-gmail" href="{{ url($url) }}" title="{{$etiqueta}}" id="btn_edit2"><i class="fa fa-btn fa-edit"></i></a>

@@ -17,7 +17,7 @@ class Matricula extends Model
         'id_estudiante' => 'int',
     ];
 
-    protected $fillable = ['periodo_lectivo_id', 'id_colegio', 'codigo', 'fecha_matricula', 'id_estudiante', 'curso_id', 'requisitos', 'estado'];
+    protected $fillable = ['periodo_lectivo_id', 'id_colegio', 'codigo', 'fecha_matricula', 'id_estudiante', 'curso_id', 'requisitos', 'observacion_general', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Fecha matricula', 'Año lectivo', 'Nombres', 'Apellidos', 'Doc. Identidad', 'Email/Usuario', 'Curso', 'Estado'];
 
@@ -44,6 +44,11 @@ class Matricula extends Model
     public function libretas_pagos()
     {
         return $this->hasMany( 'App\Tesoreria\TesoLibretasPago', 'matricula_id' );
+    }
+
+    public function get_observacion_general()
+    {
+        return $this->observacion_general;
     }
 
     public static function consultar_registros($nro_registros, $search)
