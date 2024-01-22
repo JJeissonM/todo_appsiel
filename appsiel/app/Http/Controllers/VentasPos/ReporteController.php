@@ -4,10 +4,7 @@ namespace App\Http\Controllers\VentasPos;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 use App\Inventarios\InvMovimiento;
-use Auth;
-use DB;
 
 // Modelos
 use App\VentasPos\Pdv;
@@ -62,7 +59,6 @@ class ReporteController extends Controller
         return $tabla_encabezados_documentos;
 
     }
-
 
     public function resumen_por_medios_recaudos( $encabezados_documentos )
     {
@@ -126,8 +122,11 @@ class ReporteController extends Controller
         $detalla_productos  = (int)$request->detalla_productos;
         $detalla_clientes  = (int)$request->detalla_clientes;
         $iva_incluido  = (int)$request->iva_incluido;
+        $pdv_id  = (int)$request->pdv_id;
 
-        $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por,$request->estado_facturas);
+        $estado_facturas = 'Todos';//$request->estado_facturas;
+
+        $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id);
         
         $array_lista = [];
         $array_lista = $this->get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, 'POS');
@@ -155,7 +154,9 @@ class ReporteController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+        $pdv = Pdv::find($pdv_id);
+
+        $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista','agrupar_por','mensaje','iva_incluido','detalla_productos','pdv'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -208,21 +209,35 @@ class ReporteController extends Controller
             if($detalla_productos)
             {
                 $items = $coleccion_movimiento->groupBy('inv_producto_id');
+                
                 $array_detalle_productos = [];
                 $p = 0;
 
+                $items_movim = collect([]);
                 foreach( $items AS $item )
                 {
-                    $cantidad_item = $item->sum('cantidad');
+                    $items_movim->push([
+                        'item' => $item->first()->item,
+                        'cantidad' => $item->sum('cantidad'),
+                        'precio_total' => $item->sum('precio_total'),
+                        'base_impuesto_total' => $item->sum('base_impuesto_total')
+                    ]);
+                }
 
-                    $array_detalle_productos[$p]['descripcion'] = $item->first()->producto;
+                $ordered = $items_movim->sortByDesc('precio_total');
+
+                foreach($ordered  AS $item_movim )
+                {
+                    $cantidad_item = $item_movim['cantidad'];
+
+                    $array_detalle_productos[$p]['descripcion'] = $item_movim['item']->descripcion;
                     $array_detalle_productos[$p]['cantidad_item'] = $cantidad_item;
 
                     if ( $iva_incluido )
                     {
-                        $precio_item = $item->sum('precio_total');
+                        $precio_item = $item_movim['precio_total'];
                     }else{
-                        $precio_item = $item->sum('base_impuesto_total');
+                        $precio_item = $item_movim['base_impuesto_total'];
                     }
 
                     $precio_promedio_item = 0; 

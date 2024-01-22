@@ -137,7 +137,7 @@ class Movimiento extends Model
         return $vec;
     }
 
-    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado, $core_tipo_transaccion_id = null )
+    public static function get_movimiento_ventas( $fecha_desde, $fecha_hasta, $agrupar_por, $estado, $core_tipo_transaccion_id, $pdv_id )
     {
         switch ( $agrupar_por )
         {
@@ -188,6 +188,10 @@ class Movimiento extends Model
 
         if ($core_tipo_transaccion_id != null ) {
             $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
+        }
+
+        if ($pdv_id != null && $pdv_id != 0 ) {
+            $array_wheres = array_merge($array_wheres,[['vtas_pos_movimientos.pdv_id','=', $pdv_id]]);
         }
 
         if(config('inventarios.codigo_principal_manejo_productos') != 'referencia')

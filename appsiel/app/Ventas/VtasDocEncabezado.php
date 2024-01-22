@@ -328,7 +328,10 @@ class VtasDocEncabezado extends Model
 
     public function resolucion_facturacion()
     {
-        return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )->where('estado','Activo')->get()->last();
+        return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )
+                                //->where('estado','Activo')
+                                ->get()
+                                ->last();
     }
 
     // SOLO PARA UN MOVIMIENTO. No funciona Si se paga con varios medios de pago

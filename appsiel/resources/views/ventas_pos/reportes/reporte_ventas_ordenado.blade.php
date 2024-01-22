@@ -2,6 +2,10 @@
     REPORTE DE VENTAS 
     <span style="background: yellow; color: red;">({!! $mensaje !!})</span> 
 </h3>
+<p style="width: 100%; text-align: center;">Ordenado por la columna <b>Venta total</b> de mayor a menor</p>
+@if ($pdv != null)
+    <p style="width: 100%; text-align: center;"><b>Punto de ventas:</b> {{ $pdv->descripcion }}</p>
+@endif
 <hr>
 
 <?php 
