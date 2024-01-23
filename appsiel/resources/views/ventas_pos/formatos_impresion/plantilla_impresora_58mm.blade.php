@@ -40,51 +40,36 @@
 
         $ciudad = DB::table('core_ciudades')->where( 'id', $empresa->codigo_ciudad )->get()[0];
     ?>
-    <table border="0" style="margin-top: 12px !important; font-size: 11px;" width="100%">
-        <tr>
-            <td style="text-align: center;">
-                <img src="{{ $url_img }}" style="max-height: 110px; width: 100%;" />
-                <br>
-                @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
-            </td>
-        </tr>
-    </table>
+    
+    <img src="{{ $url_img }}" style="max-height: 110px; width: 100%;" />
+    <br>
+    @include('ventas_pos.formatos_impresion.datos_encabezado_factura')
+            
 
     @if( $etiquetas['encabezado'] != '')
-        <table style="width: 100%; font-size: 12px;">
-            <tr>
-                <td style="border: solid 1px #ddd; text-align: center;">
-                    <b> {!! $etiquetas['encabezado'] !!} </b> 
-                </td>
-            </tr>
-        </table>
+        <p style="border: solid 1px #ddd; text-align: center;">
+            <b> {!! $etiquetas['encabezado'] !!} </b> 
+        </p>
     @endif
 
-    <table border="0" style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
-            <tr>
-                <td>
-                    <b>{{ $tipo_doc_app->descripcion }} No.</b> 
-                    @if( !is_null( $resolucion ) )
-                        {{ $resolucion->prefijo }}
-                    @else
-                        {{ $tipo_doc_app->prefijo }}
-                    @endif
-                    <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div>
-                    <br>
-                    <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;"></div> / 
-                    <b>Hora:</b> <div id="lbl_hora" style="display: inline;"></div>
-                </td>
-            </tr>
-
-            <tr id="tr_fecha_vencimiento" style="display: none;">
-                <td>
-                    <b>Condición pago:</b> <div class="lbl_condicion_pago" style="display: inline;"></div>
-                    <br>
-                    <b>Fecha vencimiento:</b> <div class="lbl_fecha_vencimiento" style="display: inline;"></div>
-                </td>
-            </tr>
-
-    </table>
+    <div style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
+        <b>{{ $tipo_doc_app->descripcion }} No.</b> 
+        @if( !is_null( $resolucion ) )
+            {{ $resolucion->prefijo }}
+        @else
+            {{ $tipo_doc_app->prefijo }}
+        @endif
+        <div class="lbl_consecutivo_doc_encabezado" style="display: inline;"></div>
+        <br>
+        <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;"></div> / 
+        <b>Hora:</b> <div id="lbl_hora" style="display: inline;"></div>
+        
+        <div id="tr_fecha_vencimiento" style="display: none;">
+            <b>Condición pago:</b> <div class="lbl_condicion_pago" style="display: inline;"></div>
+            <br>
+            <b>Fecha vencimiento:</b> <div class="lbl_fecha_vencimiento" style="display: inline;"></div>
+        </div>
+    </div>
     
     <div class="lbl_doc_anulado" style="display: none;">
         Documento Anulado
@@ -122,7 +107,7 @@
         </table>        
     </div>
 
-    <table  style="width: 100%; font-size: 11px;" id="tabla_productos_facturados">
+    <table  style="width: 100%; font-size: 11px; margin-left: -7px;" id="tabla_productos_facturados">
         <thead>
             <tr class="encabezado">
                 <td>Producto</td>
@@ -140,7 +125,9 @@
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
     @endif
 
-    @include('ventas_pos.formatos_impresion.tabla_medios_pago')
+    <div style="font-size: 11px;">
+        @include('ventas_pos.formatos_impresion.tabla_medios_pago')
+    </div>
 
     @if ((int)config('configuracion.liquidacion_impuestos') == 1)
         <table style="width: 100%; font-size: 11px; border-collapse: collapse;" class="table table-bordered">
