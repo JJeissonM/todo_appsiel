@@ -80,3 +80,5 @@
 @else
         <input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="0">
 @endcan
+
+<input type="hidden" name="plantilla_factura_pos_default" id="plantilla_factura_pos_default" value="{{ $pdv->plantilla_factura_pos_default }}">

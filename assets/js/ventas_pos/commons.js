@@ -737,8 +737,8 @@ $(document).ready(function () {
             linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_tasa_impuesto').text() + '</td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
             // Para formato impresora 58mm
-            if ( $('#tabla_productos_facturados thead th').length == 3) {
-                linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+            if ( $('#plantilla_factura_pos_default').val() == 'plantilla_impresora_58mm') {
+                linea_factura = '<tr> <td style="width: 100px;"> ' + $(this).find('.lbl_producto_descripcion').text() + ' x' + $(this).find('.lbl_producto_unidad_medida').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
 
                 // WARNING!!! Esto esta manual, puede estar errado
                 lbl_base_impuesto_total += parseFloat( $(this).find('.base_impuesto_total').text() );

@@ -26,6 +26,11 @@
             text-align: center;
             font-size: 2em;
         }
+        
+        .encabezado td {
+            font-weight: bold;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -118,7 +123,13 @@
     </div>
 
     <table  style="width: 100%; font-size: 11px;" id="tabla_productos_facturados">
-        {{ Form::bsTableHeader(['Producto','Cant. (Precio)','Total']) }}
+        <thead>
+            <tr class="encabezado">
+                <td>Producto</td>
+                <td>Cant. (Precio)</td>
+                <td>Total</td>
+            </tr>
+        </thead>
         <tbody>
         </tbody>
     </table>
@@ -131,37 +142,39 @@
 
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
 
-    <table style="width: 100%; font-size: 11px; border-collapse: collapse;" class="table table-bordered">
-        <thead>
-            <tr>
-                <th style="border: 1px solid;">Tipo Impuesto</th>
-                <th style="border: 1px solid;">Vlr. Compra</th>
-                <th style="border: 1px solid;">Base IVA</th>
-                <th style="border: 1px solid;">Vlr. IVA</th>
-            </tr>            
-        </thead>
-        <tbody>
-            <tr>
-                <td style="border: 1px solid;"> {{ config('ventas.etiqueta_impuesto_principal') }}=8% </td>
-                <td style="border: 1px solid;"> <div class="lbl_total_factura" style="display: inline;"> </div> </td>
-                <td style="border: 1px solid;"> <div class="lbl_base_impuesto_total" style="display: inline;"> </div> </td>
-                <td style="border: 1px solid;"> <div class="lbl_valor_impuesto" style="display: inline;"> </div> </td>
-            </tr>
-            @if( !is_null($resolucion) ) 
+    @if ((int)config('configuracion.liquidacion_impuestos') == 1)
+        <table style="width: 100%; font-size: 11px; border-collapse: collapse;" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="border: 1px solid;">Tipo Impuesto</th>
+                    <th style="border: 1px solid;">Vlr. Compra</th>
+                    <th style="border: 1px solid;">Base IVA</th>
+                    <th style="border: 1px solid;">Vlr. IVA</th>
+                </tr>            
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid;"> {{ config('ventas.etiqueta_impuesto_principal') }}=8% </td>
+                    <td style="border: 1px solid;"> <div class="lbl_total_factura" style="display: inline;"> </div> </td>
+                    <td style="border: 1px solid;"> <div class="lbl_base_impuesto_total" style="display: inline;"> </div> </td>
+                    <td style="border: 1px solid;"> <div class="lbl_valor_impuesto" style="display: inline;"> </div> </td>
+                </tr>
+                @if( !is_null($resolucion) ) 
+                    <tr>
+                        <td colspan="4">
+                            Factura {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                        </td>
+                    </tr>
+                @endif
                 <tr>
                     <td colspan="4">
-                        Factura {{ $resolucion->tipo_solicitud }} por la DIAN. Resolución No. {{ $resolucion->numero_resolucion }} del {{ $resolucion->fecha_expedicion }}. Prefijo {{ $resolucion->prefijo }} desde {{ $resolucion->numero_fact_inicial }} hasta {{ $resolucion->numero_fact_final }}
+                        Esta factura se asimila en todos sus efectos a una Letra de Cambio según Art. 774 del Código de Comercio.
                     </td>
                 </tr>
-            @endif
-            <tr>
-                <td colspan="4">
-                    Esta factura se asimila en todos sus efectos a una Letra de Cambio según Art. 774 del Código de Comercio.
-                </td>
-            </tr>
 
-        </tbody>
-    </table>
+            </tbody>
+        </table>        
+    @endif
 
     <table style="width: 100%; font-size: 11px;">
         <tr>

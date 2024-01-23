@@ -1,5 +1,3 @@
-
-
 <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_totales">
     <tbody>
         <tr style="font-weight: bold;">
