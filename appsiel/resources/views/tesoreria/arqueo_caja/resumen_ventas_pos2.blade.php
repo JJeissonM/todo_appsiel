@@ -21,7 +21,7 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="color: black;text-align: center;">
+                    <td style="color: black;text-align: center; border-bottom: 1px #ddd solid;">
                         <b>Ventas en efectivo</b>
                     </td>
                 </tr>

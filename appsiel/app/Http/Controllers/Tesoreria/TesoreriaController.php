@@ -69,7 +69,6 @@ class TesoreriaController extends TransaccionController
         //
     }
 
-
     public function imprimir_cartera($concepto,$tipo,$fecha_vencimiento)
     {
 
@@ -101,9 +100,6 @@ class TesoreriaController extends TransaccionController
         //return $pdf->stream();
         return $pdf->download('cartera.pdf');
     }
-
-    
-
     
     // Parámetro enviados por GET
     public function consultar_motivos()
@@ -187,7 +183,6 @@ class TesoreriaController extends TransaccionController
         return $html;
     }
 
-
     //   GET CAJAS
     public function get_cajas_to_select( )
     {
@@ -201,7 +196,6 @@ class TesoreriaController extends TransaccionController
 
         return $opciones;
     }
-
 
     public function get_ctas_bancarias_to_select( )
     {
@@ -221,7 +215,6 @@ class TesoreriaController extends TransaccionController
 
         return $opciones;
     }
-
 
     //   GET MOTIVOS DE TESORERIA
     public function ajax_get_motivos($tipo_motivo){

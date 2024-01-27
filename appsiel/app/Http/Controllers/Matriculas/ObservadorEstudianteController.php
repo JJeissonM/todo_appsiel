@@ -80,7 +80,6 @@ class ObservadorEstudianteController extends TransaccionController
         $estudiante = Estudiante::find($id_estudiante);
         $tipos_aspectos = TiposAspecto::all();
 
-
         $miga_pan = $this->get_array_miga_pan( $this->app, $this->modelo, 'Valoración de aspectos: '.Estudiante::get_nombre_completo( $estudiante->id ) );
         
         $observador_serv = new ObservadorEstudianteService();

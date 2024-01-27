@@ -65,7 +65,7 @@ class ArqueoCajaController extends ModeloController
         }
         
         // Crear vista
-        $view = View::make('tesoreria.arqueo_caja.'.$formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
+        $view = View::make('tesoreria.arqueo_caja.formatos_impresion.' . $formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
 
         return $view;
     }
@@ -137,30 +137,17 @@ class ArqueoCajaController extends ModeloController
 
     public function imprimir($id)
     {
-        if(Input::get('formato_impresion_id') == 0){
-            $view = ArqueoCajaController::vista_preliminar($id,'print');
-            
-            $orientacion = 'portrait';
-            $tam_hoja = 'Letter';
+        $view = ArqueoCajaController::vista_preliminar( $id, Input::get('formato_impresion_id') );  
 
-            // Crear PDF
-            $pdf = App::make('dompdf.wrapper');
-            $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
-            return $pdf->stream('arqueocaja.pdf');//stream();    
-        }else{
-            $view = ArqueoCajaController::vista_preliminar($id,'pos');
-            //dd($view);
-            $orientacion = 'portrait';
-            $tam_hoja = 'Letter';
+        $orientacion = 'portrait';
+        $tam_hoja = 'Letter';
 
-            // Crear PDF
-            $pdf = App::make('dompdf.wrapper');
-            $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
-            return $pdf->stream('arqueocaja.pdf');//stream(); 
-        }
+        // Crear PDF
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
         
-
-
+        return $pdf->stream('arqueocaja.pdf');//stream(); 
+        
         /*echo $view;*/
     }
 
