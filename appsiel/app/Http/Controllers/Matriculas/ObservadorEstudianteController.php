@@ -95,27 +95,32 @@ class ObservadorEstudianteController extends TransaccionController
     // PROCEDIMIENTO ALMACENAR ASPECTOS
     public function guardar_valoracion_aspectos(Request $request)
     {
-        $estudiante = Estudiante::find($request->id_estudiante);
-        
-        $aspectos = CatalogoAspecto::all();
-        
-        $cantidad = count( $aspectos->toArray() );
+        $valoraciones_linea_aspecto = json_decode($request->valoraciones_linea_aspecto);
 
-        $fecha_valoracion = $request->fecha_valoracion;
-        $anio_matricula = explode('-', $fecha_valoracion)[0];
-        
-        for($i=0; $i < $cantidad; $i++)
-        {
-            $aspecto_estudiante=AspectosObservador::where('id_aspecto','=',$request->input('id_aspecto.'.$i))->where('id_estudiante','=',$request->id_estudiante)->where('fecha_valoracion','like',$anio_matricula.'%')->count();
-            
-            if($aspecto_estudiante==0){
-                DB::insert('insert into sga_aspectos_observador 
-                        (id_estudiante,id_aspecto,fecha_valoracion,valoracion_periodo1,valoracion_periodo2,valoracion_periodo3,valoracion_periodo4) values (?,?,?,?,?,?,?)',
-                        [$request->id_estudiante,$request->input('id_aspecto.'.$i), $fecha_valoracion,$request->input('valoracion_periodo1.'.$i),$request->input('valoracion_periodo2.'.$i),$request->input('valoracion_periodo3.'.$i),$request->input('valoracion_periodo4.'.$i)]);
+        foreach ($valoraciones_linea_aspecto as $key => $linea) {
+
+            if ((int)$linea->aspecto_estudiante_id == 0) {
+                $data = [
+                        'id_estudiante' => $request->id_estudiante,
+                        'id_aspecto' => $linea->id_aspecto,
+                        'fecha_valoracion' => $request->fecha_valoracion,
+                        'valoracion_periodo1' => $linea->valoracion_periodo1,
+                        'valoracion_periodo2' => $linea->valoracion_periodo2,
+                        'valoracion_periodo3' => $linea->valoracion_periodo3,
+                        'valoracion_periodo4' => $linea->valoracion_periodo4
+                    ];
+                
+                $aspecto = AspectosObservador::create($data);
 
             }else{
-                DB::table('sga_aspectos_observador')->where(['id'=>$request->input('aspecto_estudiante_id.'.$i)])->update(['valoracion_periodo1'=>$request->input('valoracion_periodo1.'.$i),'valoracion_periodo2'=>$request->input('valoracion_periodo2.'.$i),
-                                    'valoracion_periodo3'=>$request->input('valoracion_periodo3.'.$i),'valoracion_periodo4'=>$request->input('valoracion_periodo4.'.$i)]);
+                $aspecto = AspectosObservador::find((int)$linea->aspecto_estudiante_id);
+                $aspecto->fill([
+                    'valoracion_periodo1' => $linea->valoracion_periodo1,
+                    'valoracion_periodo2' => $linea->valoracion_periodo2,
+                    'valoracion_periodo3' => $linea->valoracion_periodo3,
+                    'valoracion_periodo4' => $linea->valoracion_periodo4
+                ]);
+                $aspecto->save();
             }
         }
 
@@ -123,7 +128,7 @@ class ObservadorEstudianteController extends TransaccionController
         $matricula->observacion_general = $request->observacion_general;
         $matricula->save();
 
-        return redirect( 'matriculas/estudiantes/observador/valorar_aspectos/'.$estudiante->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo . '&matricula_id=' . $request->matricula_id )->with('flash_message','Registros actualizados correctamente.');
+        return redirect('academico_docente/valorar_aspectos_observador/' . $request->id_estudiante . '?id=' . $request->url_id . '&curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
     }
 
     public function eliminar_novedad($novedad_id)

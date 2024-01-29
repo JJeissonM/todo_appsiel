@@ -384,7 +384,7 @@ class AcademicoDocenteController extends Controller
     }
 
     // PROCEDIMIENTO ALMACENAR ASPECTOS
-    public function guardar_valoracion_aspectos(Request $request)
+    public function guardar_valoracion_aspectos_old(Request $request)
     {
         $estudiante = Estudiante::find($request->id_estudiante);
 
@@ -410,6 +410,56 @@ class AcademicoDocenteController extends Controller
         $matricula->save();
 
         return redirect('academico_docente/valorar_aspectos_observador/' . $estudiante->id . '?id=' . $request->url_id . '&curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
+    }
+    
+    public function guardar_valoracion_aspectos_fake()
+    {
+        return 'true';
+    }
+    
+    //DELETE FROM `sga_aspectos_observador` WHERE `id_estudiante` = 26;
+
+    public function guardar_valoracion_aspectos(Request $request)
+    {
+        $valoraciones_linea_aspecto = json_decode($request->valoraciones_linea_aspecto);
+
+        foreach ($valoraciones_linea_aspecto as $key => $linea) {
+
+            if ((int)$linea->aspecto_estudiante_id == 0) {
+                $data = [
+                        'id_estudiante' => $request->id_estudiante,
+                        'id_aspecto' => $linea->id_aspecto,
+                        'fecha_valoracion' => $request->fecha_valoracion,
+                        'valoracion_periodo1' => $linea->valoracion_periodo1,
+                        'valoracion_periodo2' => $linea->valoracion_periodo2,
+                        'valoracion_periodo3' => $linea->valoracion_periodo3,
+                        'valoracion_periodo4' => $linea->valoracion_periodo4
+                    ];
+                
+                $aspecto = AspectosObservador::create($data);
+
+            }else{
+                $aspecto = AspectosObservador::find((int)$linea->aspecto_estudiante_id);
+                $aspecto->fill([
+                    'valoracion_periodo1' => $linea->valoracion_periodo1,
+                    'valoracion_periodo2' => $linea->valoracion_periodo2,
+                    'valoracion_periodo3' => $linea->valoracion_periodo3,
+                    'valoracion_periodo4' => $linea->valoracion_periodo4
+                ]);
+                $aspecto->save();
+            }
+        }
+
+        $matricula = Matricula::find($request->matricula_id);
+        $matricula->observacion_general = $request->observacion_general;
+        $matricula->save();
+
+        return redirect('academico_docente/valorar_aspectos_observador/' . $request->id_estudiante . '?id=' . $request->url_id . '&curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
+    }
+    
+    public function redirect_valoracion_aspectos_guardados($estudiante_id, $url_id, $curso_id, $asignatura_id)
+    {
+        return redirect('academico_docente/valorar_aspectos_observador/' . $estudiante_id . '?id=' . $url_id . '&curso_id=' . $curso_id . '&asignatura_id=' . $asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
     }
 
     /**

@@ -4,25 +4,16 @@ namespace App\Http\Controllers\AcademicoDocente;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
+
 use App\Http\Controllers\Sistema\ModeloController;
 
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-use App\User;
-
-use DB;
-use Auth;
-use Storage;
-use Input;
-
-use App\Core\Colegio;
 use App\Sistema\Modelo;
 use App\Matriculas\NovedadesObservador;
 use App\Matriculas\Curso;
 
 use App\Calificaciones\Periodo;
 use App\Calificaciones\Asignatura;
+use Illuminate\Support\Facades\Input;
 
 class NovedadObservadorController extends Controller
 {

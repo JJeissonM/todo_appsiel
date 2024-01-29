@@ -65,6 +65,13 @@ Route::get('academico_docente/listar_estudiantes/curso_id/{curso_id}/id_asignatu
 //  Observador estudiantes
 Route::get('academico_docente/valorar_aspectos_observador/{id_estudiante}','AcademicoDocente\AcademicoDocenteController@valorar_aspectos_observador');
 Route::post('academico_docente/guardar_valoracion_aspectos','AcademicoDocente\AcademicoDocenteController@guardar_valoracion_aspectos');
+
+Route::get('academico_docente/guardar_valoracion_aspectos_fake','AcademicoDocente\AcademicoDocenteController@guardar_valoracion_aspectos_fake');
+
+Route::post('academico_docente/guardar_valoracion_aspectos_ajax','AcademicoDocente\AcademicoDocenteController@guardar_valoracion_aspectos_ajax');
+
+Route::get('academico_docente/redirect_valoracion_aspectos_guardados/{estudiante_id}/{url_id}/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@redirect_valoracion_aspectos_guardados');
+
 Route::get('academico_docente/novedad_observador/show_observador/{id_estudiante}', 'AcademicoDocente\AcademicoDocenteController@show_observador');
 
 // Nodevades
