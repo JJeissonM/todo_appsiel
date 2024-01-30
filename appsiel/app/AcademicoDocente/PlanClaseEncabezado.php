@@ -13,8 +13,9 @@ use App\AcademicoDocente\PlanClaseRegistro;
 use App\Matriculas\Curso;
 
 use App\Calificaciones\Asignatura;
-
+use App\Calificaciones\Periodo;
 use App\Matriculas\PeriodoLectivo;
+use App\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -26,6 +27,37 @@ class PlanClaseEncabezado extends Model
     protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id', 'archivo_adjunto', 'descripcion', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Plan de clases', 'Fecha', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado'];
+
+    
+    public function secciones()
+    {
+        return $this->hasMany(PlanClaseRegistro::class, 'plan_clase_encabezado_id');
+    }
+
+    public function plantilla()
+    {
+        return $this->belongsTo(PlanClaseEstrucPlantilla::class, 'plantilla_plan_clases_id');
+    }
+
+    public function periodo()
+    {
+        return $this->belongsTo(Periodo::class,'periodo_id');
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo(Curso::class,'curso_id');
+    }
+
+    public function asignatura()
+    {
+        return $this->belongsTo(Asignatura::class,'asignatura_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
 
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/academico_docente/planes_clases.js';
@@ -182,11 +214,6 @@ class PlanClaseEncabezado extends Model
         }
 
         return $vec;
-    }
-
-    public function plantilla()
-    {
-        return $this->belongsTo(PlanClaseEstrucPlantilla::class, 'plantilla_plan_clases_id');
     }
 
 
@@ -358,31 +385,84 @@ class PlanClaseEncabezado extends Model
         return $lista_campos;
     }
 
-
     public static function get_campos_adicionales_edit($lista_campos, $registro)
     {
+
+        if($registro == null)
+        {
+            return $lista_campos;
+        }
+
         $user = Auth::user();
+
+        if ( (int)$registro->periodo->cerrado ) {
+            return [
+                [
+                    "id" => 999,
+                    "descripcion" => "El periodo está cerrado.",
+                    "tipo" => "personalizado",
+                    "name" => "lbl_planilla",
+                    "opciones" => "",
+                    "value" => '<div class="form-group">                    
+                                                    <label class="control-label col-sm-3" style="color: red;" > <b> No se pueden editar el plan de clases. El periodo está cerrado. </b> </label>    
+                                                </div>',
+                    "atributos" => [],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ]
+            ];
+        }
 
         /*
             Personalizar los campos
         */
-        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
-            $cantida_campos = count($lista_campos);
-            for ($i = 0; $i <  $cantida_campos; $i++) {
-                switch ($lista_campos[$i]['name']) {
-                    case 'curso_id':
-                        $curso = Curso::find($registro->curso_id);
-                        $lista_campos[$i]['opciones'] = [$curso->id => $curso->descripcion];
-                        break;
-                    case 'asignatura_id':
-                        $asignatura = Asignatura::find($registro->asignatura_id);
-                        $lista_campos[$i]['opciones'] = [$asignatura->id => $asignatura->descripcion];
-                        break;
+        $cursos = Curso::get_cursos_del_periodo_lectivo( $registro->periodo->periodo_lectivo_id );
 
-                    default:
-                        # code...
-                        break;
-                }
+
+        if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
+            $cursos = Curso::get_cursos_del_profesor($registro->periodo->periodo_lectivo_id, $user->id);
+        }
+
+        $cantida_campos = count($lista_campos);
+        for ($i = 0; $i <  $cantida_campos; $i++) {
+            switch ($lista_campos[$i]['name']) {
+                case 'curso_id':                       
+
+                    $vec[] = null;
+                    foreach ($cursos as $asignacion)
+                    {
+                        $vec[$asignacion->curso_id] = $asignacion->curso->descripcion;
+                    }
+
+                    $lista_campos[$i]['opciones'] = $vec;
+                    $lista_campos[$i]['editable'] = 1;
+                    $lista_campos[$i]['atributos'] = ['required' => 'required'];
+                    
+                    break;
+                case 'asignatura_id':
+                    
+                    $lista_campos[$i]['opciones'] = [];
+
+                    $asignatura = Asignatura::find($registro->asignatura_id);
+                    if ($asignatura != null) {
+                        $lista_campos[$i]['opciones'] = [$asignatura->id => $asignatura->descripcion];
+                    }                   
+
+                    $lista_campos[$i]['editable'] = 1;
+                    $lista_campos[$i]['atributos'] = ['required' => 'required'];
+                    break;
+
+                case 'periodo_id':
+                    
+                    $lista_campos[$i]['editable'] = 1;
+                    $lista_campos[$i]['atributos'] = ['required' => 'required'];
+                    break;
+
+                default:
+                    # code...
+                    break;
             }
         }
 
@@ -457,6 +537,37 @@ class PlanClaseEncabezado extends Model
             ]);
         }
 
+        array_push($lista_campos, [
+            "id" => 9001,
+            "descripcion" => 'Periodo lectivo oculto',
+            "tipo" => "hidden",
+            "name" => "periodo_lectivo_id",
+            "opciones" => "",
+            "value" => $registro->periodo->periodo_lectivo_id,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ]);
+        
+        array_push(
+            $lista_campos,
+            [
+                "id" => 9992,
+                "descripcion" => 'user_id',
+                "tipo" => "hidden",
+                "name" => "user_id",
+                "opciones" => "",
+                "value" => $user->id,
+                "atributos" => [],
+                "definicion" => "",
+                "requerido" => 0,
+                "editable" => 1,
+                "unico" => 0
+            ]
+        );
+
         return $lista_campos;
     }
 
@@ -503,8 +614,6 @@ class PlanClaseEncabezado extends Model
             ->first();
     }
 
-
-
     public static function consultar_guias_estudiantes($curso_id, $asignatura_id)
     {
         $array_wheres = [ ['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999], ['sga_plan_clases_encabezados.fecha', 'LIKE', date('Y').'%'] ];
@@ -536,7 +645,6 @@ class PlanClaseEncabezado extends Model
             ->get();
     }
 
-
     public static function get_plan_periodo_lectivo($periodo_lectivo_id = null)
     {
         if (is_null($periodo_lectivo_id)) {
@@ -551,5 +659,75 @@ class PlanClaseEncabezado extends Model
 
         // Se devuelven los datos del plan que tenga asociado la plantilla
         return PlanClaseEncabezado::get_registro_impresion(PlanClaseEncabezado::where('plantilla_plan_clases_id', $plantilla_plan_clases->id)->value('id'));
+    }
+
+    public function duplicar_adicional($plan_clases_anterior, $plan_clases_nuevo)
+    {
+        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+        
+        if ($periodo_lectivo_actual == null) {
+            $plan_clases_nuevo->delete();
+            return false;
+        }
+
+        $planeador_actual = PlanClaseEstrucPlantilla::where([
+            [ 'periodo_lectivo_id', '=', $periodo_lectivo_actual->id]
+        ])
+        ->get()
+        ->first();
+        
+        if ($planeador_actual == null) {
+            $plan_clases_nuevo->delete();
+            return false;
+        }
+        
+        $plan_clases_nuevo->plantilla_plan_clases_id = $planeador_actual->id;
+        $plan_clases_nuevo->save(); 
+
+        /**
+         * Si el plan_clases_anterior es de otro Periodo Lectivo, al nuevo plan_clases se le asignan algunos datos del periodo lectivo Actual
+         */
+        if ($periodo_lectivo_actual->id != $plan_clases_anterior->periodo->periodo_lectivo_id) {
+            $nuevo_periodo = Periodo::where([
+                ['periodo_lectivo_id', '=', $periodo_lectivo_actual->id],
+                ['numero', '=', $plan_clases_anterior->periodo->numero]
+            ])
+                ->get()
+                ->first();
+
+            if ($nuevo_periodo != null) {
+                $plan_clases_nuevo->periodo_id = $nuevo_periodo->id;
+                $plan_clases_nuevo->fecha = $nuevo_periodo->fecha_desde;
+                $plan_clases_nuevo->save();
+            }
+        }
+        
+        /**
+         * Se duplican los elementos que tengan un elemento con IGUAL DESCRIPCION en el Planeador actual. 
+         */        
+        $elementos_plantilla = PlanClaseEstrucElemento::where([
+                ['plantilla_plan_clases_id', '=', $planeador_actual->id]
+            ])
+        ->get();
+
+        if ($elementos_plantilla == null) {
+            return false;
+        }       
+
+        $secciones = $plan_clases_anterior->secciones;
+
+        foreach ($secciones as $seccion) {
+            
+            $elemento_coincidente = $elementos_plantilla->where('descripcion', $seccion->elemento_plantilla->descripcion)->first();
+
+            if ( $elemento_coincidente == null) {
+                continue;
+            }
+
+            $nueva_seccion = $seccion->replicate();
+            $nueva_seccion->plan_clase_encabezado_id = $plan_clases_nuevo->id;
+            $nueva_seccion->plan_clase_estruc_elemento_id = $elemento_coincidente->id;
+            $nueva_seccion->save();
+        }
     }
 }

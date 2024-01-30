@@ -190,6 +190,15 @@ class Curso extends Model
                             ->get();
     }
 
+    public static function get_cursos_del_periodo_lectivo( $periodo_lectivo_id )
+    {
+        return CursoTieneAsignatura::where( [
+                                    ['sga_curso_tiene_asignaturas.periodo_lectivo_id', '=', $periodo_lectivo_id]
+                                ] )
+                            ->get()
+                            ->unique('curso_id');
+    }
+
     /*
         FUNCIONES relativas al modelo relacionado a este modelo, en este caso Bloques_eeff
     */
@@ -312,6 +321,16 @@ class Curso extends Model
         return Curso::where( 'sga_grado_id', $grado_id)
                     ->where('estado','Activo')
                     ->get();
+    }
+
+    public static function get_cursos_del_profesor($periodo_lectivo_id, $id_user)
+    {
+        return AsignacionProfesor::where([
+            ['periodo_lectivo_id', '=',  $periodo_lectivo_id],
+            ['id_user', '=', $id_user]
+        ])
+        ->get()
+        ->unique('curso_id');
     }
 
 

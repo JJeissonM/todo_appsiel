@@ -11,6 +11,11 @@ class PlanClaseRegistro extends Model
     protected $fillable = ['plan_clase_encabezado_id', 'plan_clase_estruc_elemento_id', 'contenido', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Plan de clases', 'Elemento', 'Contenido', 'Estado'];
+    
+    public function elemento_plantilla()
+    {
+        return $this->belongsTo(PlanClaseEstrucElemento::class, 'plan_clase_estruc_elemento_id');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {

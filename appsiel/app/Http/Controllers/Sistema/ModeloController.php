@@ -7,14 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 
-use Input;
-use DB;
-use PDF;
-use Auth;
-use Storage;
-use View;
 use Yajra\Datatables\Facades\Datatables;
-
 
 use App\Sistema\Html\Boton;
 use App\Sistema\Html\MigaPan;
@@ -28,11 +21,11 @@ use App\User;
 
 use App\Calificaciones\Logro;
 
-use App\Inventarios\InvBodega;
 use App\Matriculas\Curso;
-use App\Tesoreria\TesoMedioRecaudo;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
 
 class ModeloController extends Controller
 {
@@ -491,6 +484,13 @@ class ModeloController extends Controller
     {
         // Se obtiene el registro a modificar del modelo
         $registro = app($this->modelo->name_space)->find($id);
+        
+        $acciones = $this->acciones_basicas_modelo($this->modelo, '');
+
+        if($registro == null)
+        {
+            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', 'Registro no encontrado.');
+        }
 
         $lista_campos = $this->get_campos_modelo($this->modelo, $registro, 'edit');
 
@@ -505,7 +505,6 @@ class ModeloController extends Controller
 
         if (isset($lista_campos[0])) {
             if (is_null($lista_campos[0])) {
-                $acciones = $this->acciones_basicas_modelo($this->modelo, '');
 
                 $url_index = str_replace('id_fila', $registro->id, $acciones->index);
 
@@ -1094,7 +1093,15 @@ class ModeloController extends Controller
             $nuevo_registro->imagen = '';
         }
 
+        if (isset($nuevo_registro->descripcion)) {
+            $nuevo_registro->descripcion = 'COPIA DE ' . $registro->descripcion;
+        }
+
         $nuevo_registro->save();
+
+        if (method_exists(app($this->modelo->name_space), 'duplicar_adicional')) {
+            app($this->modelo->name_space)->duplicar_adicional($registro, $nuevo_registro);
+        }
 
         return redirect('web/' . $nuevo_registro->id . '/edit?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Registro DUPLICADO correctamente.');
     }

@@ -8,8 +8,8 @@ use App\User;
 use App\Matriculas\PeriodoLectivo;
 
 use App\Calificaciones\CursoTieneAsignatura;
-use App\Calificaciones\Curso;
 use App\Calificaciones\Asignatura;
+use App\Matriculas\Curso;
 
 class AsignacionProfesor extends Model
 {
@@ -87,6 +87,16 @@ class AsignacionProfesor extends Model
                                 ->where('id_asignatura',$asignatura_id)
                                 ->get()
                                 ->first();
+    }
+
+    public static function get_asignaturas_por_usuario( $user_id, $curso_id, $periodo_lectivo_id )
+    {
+        return AsignacionProfesor::where([
+                                ['periodo_lectivo_id', '=', $periodo_lectivo_id],
+                                ['id_user', '=', $user_id],
+                                ['curso_id', '=', $curso_id]
+                            ])
+                                ->get();
     }
 
     public static function get_user_segun_curso_asignatura( $curso_id, $asignatura_id, $periodo_lectivo_id = null )

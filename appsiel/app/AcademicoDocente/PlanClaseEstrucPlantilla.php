@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Matriculas\PeriodoLectivo;
 use App\AcademicoDocente\PlanClaseEstrucElemento;
-
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class PlanClaseEstrucPlantilla extends Model
 {
@@ -15,6 +14,7 @@ class PlanClaseEstrucPlantilla extends Model
 
     // tipo_plantilla: { planeador | guia_academica }
 	protected $fillable = ['periodo_lectivo_id', 'tipo_plantilla', 'descripcion', 'detalle', 'estado'];
+    
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año Lectivo', 'Descripción', 'Detalle', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila","eliminar":"web_eliminar/id_fila"}';

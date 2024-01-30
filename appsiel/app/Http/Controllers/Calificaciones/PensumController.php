@@ -2,35 +2,21 @@
 
 namespace App\Http\Controllers\Calificaciones;
 
+use App\AcademicoDocente\AsignacionProfesor;
 use Illuminate\Http\Request;
-use App\Http\Requests;
-//use Illuminate\Database\Eloquent\Model;
 
 use App\Http\Controllers\Calificaciones\CalificacionController;
 
-use App\Core\Colegio;
-use App\Sistema\Aplicacion;
-
 use App\Matriculas\PeriodoLectivo;
 use App\Matriculas\Curso;
-use App\Matriculas\Estudiante;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
-use App\Calificaciones\Periodo;
-
-
-use App\Matriculas\Matricula;
-use App\Calificaciones\Area;
-
-use Input;
-use DB;
-use PDF;
-use View;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class PensumController extends CalificacionController
-{
-	
+{	
     // muestra el formulario
     public function asignar_asignaturas()
     {
@@ -109,7 +95,6 @@ class PensumController extends CalificacionController
         
     }
 
-
     public function cambiar_orden_asignatura( $periodo_lectivo_id, $curso_id, $asignatura_id, $nueva_posicion )
     {
         
@@ -123,7 +108,6 @@ class PensumController extends CalificacionController
         return 'true';
         
     }
-
 
     public function cambiar_intensidad_horaria_asignatura( $periodo_lectivo_id, $curso_id, $asignatura_id, $nueva_ih )
     {
@@ -232,6 +216,27 @@ class PensumController extends CalificacionController
         foreach ($registros as $opcion)
         {
             $opciones .= '<option value="'.$opcion->id.'">'.$opcion->descripcion.'</option>';
+        }
+
+        return $opciones;
+    }
+
+    public function opciones_select_asignaturas_del_curso_por_usuario( $curso_id, $periodo_lectivo_id, $estado_asignaturas )
+    {
+        $user = Auth::user();
+
+        $registros = CursoTieneAsignatura::asignaturas_del_curso( $curso_id, null, $periodo_lectivo_id, $estado_asignaturas );
+
+        $asignaturas_del_usuario = AsignacionProfesor::get_asignaturas_por_usuario( $user->id, $curso_id, $periodo_lectivo_id )->pluck('id_asignatura')->toArray();
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $asignatura)
+        {
+            if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo') && !in_array($asignatura->id, $asignaturas_del_usuario)) {
+                continue;
+            }
+
+            $opciones .= '<option value="'.$asignatura->id.'">'.$asignatura->descripcion.'</option>';
         }
 
         return $opciones;

@@ -108,7 +108,10 @@ Route::get('calificaciones_cambiar_intensidad_horaria_asignatura/{periodo_lectiv
 Route::get('calificaciones/asignar_asignaturas', 'Calificaciones\PensumController@asignar_asignaturas');
 Route::post('calificaciones/guardar_asignacion_asignatura', 'Calificaciones\PensumController@guardar_asignacion_asignatura');
 Route::get('calificaciones/eliminar_asignacion_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}', 'Calificaciones\PensumController@eliminar_asignacion_asignatura');
+
 Route::get('calificaciones_opciones_select_asignaturas_del_curso/{curso_id}/{area_id}/{periodo_lectivo_id}/{estado_asignaturas}', 'Calificaciones\PensumController@opciones_select_asignaturas_del_curso');
+
+Route::get('calificaciones_opciones_select_asignaturas_del_curso_por_usuario/{curso_id}/{periodo_lectivo_id}/{estado_asignaturas}', 'Calificaciones\PensumController@opciones_select_asignaturas_del_curso_por_usuario');
 
 // Listado de asignaciones
 Route::get('calificaciones/revisar_asignaciones', 'Calificaciones\PensumController@revisar_asignaciones');

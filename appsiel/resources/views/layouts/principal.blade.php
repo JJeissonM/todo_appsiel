@@ -328,7 +328,7 @@
 		function validar_requeridos() {
 			control_requeridos = true;
 			$("*[required]").each(function() {
-				if ($(this).val() == "") {
+				if ($(this).val() == "" || $(this).val() == null) {
 					$(this).focus();
 					var name_campo = $(this).attr('name');
 					var lbl_campo = $(this).parent().prev('label').text();
@@ -342,7 +342,6 @@
 					return false;
 				}
 			});
-
 			return control_requeridos;
 		}
 

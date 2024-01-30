@@ -5,6 +5,7 @@ namespace App\Calificaciones;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Colegio;
+use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;
 use Illuminate\Support\Facades\Auth;
 

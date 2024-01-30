@@ -4,26 +4,14 @@ namespace App\Http\Controllers\AcademicoDocente;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
 use App\Sistema\Modelo;
-
-use Input;
-use View;
-use Storage;
-use Cache;
-
-use App\User;
-
-use App\Matriculas\Curso;
-
-use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
-
-use App\AcademicoDocente\AsignacionProfesor;
-
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
 
 class PlanClasesController extends ModeloController
 {
@@ -95,7 +83,7 @@ class PlanClasesController extends ModeloController
         $tam_hoja='Letter';
 
         // Crear PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $vista )->setPaper($tam_hoja,$orientacion);
 
         return $pdf->stream( 'plan_de_clases.pdf' );
@@ -113,7 +101,6 @@ class PlanClasesController extends ModeloController
         }
 
     	return View::make( 'academico_docente.planes_clases.vista_impresion', compact( 'encabezado', 'registros' ) )->render();
-
     }
 
     /**
@@ -173,7 +160,6 @@ class PlanClasesController extends ModeloController
             }
         }
 
-
         $registro->fill( $request->all() );
 
         if ($request->hasFile('archivo_adjunto')) 
@@ -183,8 +169,6 @@ class PlanClasesController extends ModeloController
         }
 
         $registro->save();
-
-
 
         return redirect( 'sga_planes_clases/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with( 'flash_message','Registro MODIFICADO correctamente.' );
     }
@@ -197,14 +181,19 @@ class PlanClasesController extends ModeloController
      */
     public function eliminar( $encabezado_id )
     {
-    	PlanClaseEncabezado::find( $encabezado_id )->delete();
+    	$plan_clase = PlanClaseEncabezado::find( $encabezado_id );
+        
+        if ($plan_clase == null) {
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro ELIMINADO correctamente.' );
+        }
+
+        $plan_clase->delete();
 
         $registros_planes_clases = PlanClaseRegistro::where( 'plan_clase_encabezado_id', $encabezado_id )->get();
-        
-        if ( !empty( $registros_planes_clases->toArray() ) )
-        {
-            $registros_planes_clases->delete();
-        }
+
+        foreach ($registros_planes_clases as $registro_plan) {
+            $registro_plan->delete();
+        }        
 
     	return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro ELIMINADO correctamente.' );
     }

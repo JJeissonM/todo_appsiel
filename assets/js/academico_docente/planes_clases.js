@@ -1,4 +1,3 @@
-
 $(document).ready(function(){
 
 	var direccion = location.href;
@@ -78,6 +77,34 @@ $(document).ready(function(){
 
 		$(this).attr('name','elemento_descripcion[]');
 
-	});	
+	});
+
+	$('#curso_id').on('change',function()
+	{
+		// Debe haber Select Asignatura
+		$('#asignatura_id').html('<option value=""></option>');
+
+		if ( $(this).val() == '') { return false; }
+
+		$('#div_cargando').show();
+
+		var url = "../../calificaciones_opciones_select_asignaturas_del_curso_por_usuario/" + $('#curso_id').val() + "/" + $('#periodo_lectivo_id').val() + "/Activo";
+
+		console.log(url_raiz, url);
+
+		//console.log( url );
+
+		$.ajax({
+			url: url,
+			type: 'get',
+			success: function(datos){
+
+				$('#div_cargando').hide();
+				
+				$('#asignatura_id').html( datos );
+				$('#asignatura_id').focus();
+			}
+		});			
+	});
 
 });
