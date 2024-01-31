@@ -87,7 +87,10 @@ class ObservadorEstudianteController extends TransaccionController
         
         $matricula_a_mostrar = $observador_serv->get_matricula_a_mostrar((int)Input::get('matricula_id'), $estudiante);
 
-        $observacion_general = $matricula_a_mostrar->get_observacion_general();
+        $observacion_general = '';
+        if ($matricula_a_mostrar != null) {
+            $observacion_general = $matricula_a_mostrar->get_observacion_general();
+        }        
 
         return view('matriculas.estudiantes.observador.valorar_aspectos',compact('tipos_aspectos','estudiante','miga_pan', 'observacion_general', 'anio_matricula', 'matricula_a_mostrar'));
     }

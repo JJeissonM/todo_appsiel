@@ -386,7 +386,10 @@ class AcademicoDocenteController extends Controller
 
         $anio_matricula = $observador_serv->get_anio_matricula((int)Input::get('matricula_id'), $estudiante);
 
-        $observacion_general = $matricula_a_mostrar->get_observacion_general();
+        $observacion_general = '';
+        if ($matricula_a_mostrar != null) {
+            $observacion_general = $matricula_a_mostrar->get_observacion_general();
+        }
 
         return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan', 'observacion_general', 'matricula_a_mostrar', 'anio_matricula'));
     }

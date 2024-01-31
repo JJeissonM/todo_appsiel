@@ -178,7 +178,9 @@
     <div class="observacion">
         <b>Observación:</b>
         <br>
-        {{ $matricula_a_mostrar->get_observacion_general() }}
+        @if ( $matricula_a_mostrar != null )
+            {{ $matricula_a_mostrar->get_observacion_general() }}
+        @endif
     </div>
 
 

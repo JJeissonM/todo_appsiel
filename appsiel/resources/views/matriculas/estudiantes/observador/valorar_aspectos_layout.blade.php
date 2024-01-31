@@ -26,7 +26,6 @@
 					</div>
 				</div>
 
-
 				{{ Form::bsTextArea('observacion_general', $observacion_general, 'Observación general', []) }}
 				
 				{{ Form::hidden('valoraciones_linea_aspecto', null, ['id' => 'valoraciones_linea_aspecto'])}}
@@ -34,7 +33,12 @@
 				{{ Form::hidden('numero_del_periodo', null, ['id' => 'numero_del_periodo'])}}
 				
 				{{ Form::hidden('id_estudiante', $estudiante->id, ['id' => 'id_estudiante']) }}
-				{{ Form::hidden('matricula_id', $matricula_a_mostrar->id, ['id' => 'matricula_id']) }}
+				
+				@if ( $matricula_a_mostrar != null )
+					{{ Form::bsSelect('matricula_id', $matricula_a_mostrar->id, 'Matrículas', $vec_matriculas , ['id' => 'matricula_id']) }}
+				@else
+					{{ Form::bsSelect('matricula_id', null, 'Matrículas', $vec_matriculas , ['id' => 'matricula_id']) }}
+				@endif
 	
 				{{ Form::hidden('fecha_valoracion', date( $anio_matricula . '-' . 'm-d') ) }}
 

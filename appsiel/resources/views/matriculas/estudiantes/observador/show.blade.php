@@ -2,12 +2,15 @@
 
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
-
-	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'matriculas/estudiantes/observador/imprimir_observador/'.$id . '?matricula_id=' . $matricula_a_mostrar->id ) }}
+	@if ( $matricula_a_mostrar != null )
+		
+		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'matriculas/estudiantes/observador/imprimir_observador/'.$id . '?matricula_id=' . $matricula_a_mostrar->id ) }}
+		
+		&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'matriculas/estudiantes/observador/valorar_aspectos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&matricula_id=' . $matricula_a_mostrar->id ) }}
+	@endif
+	
 
 	&nbsp;&nbsp;&nbsp;<a class="btn-gmail" href="{{ url('matriculas/estudiantes/gestionresponsables/estudiante_id') . '?id=1&id_modelo=29&estudiante_id=' . $id }}" title="Gestionar responsables del estudiante"><i class="fa fa-btn fa-users"></i></a>
-	
-	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'matriculas/estudiantes/observador/valorar_aspectos/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') . '&matricula_id=' . $matricula_a_mostrar->id ) }}
 	
 	<div class="pull-right">
 		@if($reg_anterior!='')
@@ -25,7 +28,11 @@
 	<div class="container-fluid">
 		<div class="marco_formulario">
 
-			{{ Form::bsSelect('matricula_id', $matricula_a_mostrar->id, 'Matrículas', $vec_matriculas ,['required' => 'required']) }}
+			@if ( $matricula_a_mostrar != null )
+				{{ Form::bsSelect('matricula_id', $matricula_a_mostrar->id, 'Matrículas', $vec_matriculas ,['id' => 'matricula_id']) }}
+			@else
+				{{ Form::bsSelect('matricula_id', null, 'Matrículas', $vec_matriculas ,['id' => 'matricula_id']) }}
+			@endif
 			
 			<br><br>
 			<p style="text-align: center;">
