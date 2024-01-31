@@ -2,14 +2,9 @@
 
 namespace App\Matriculas;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
-
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
-use App\Core\Colegio;
+use Illuminate\Support\Facades\DB;
 
 class EstudianteSinLibreta extends Estudiante
 {
@@ -29,9 +24,13 @@ class EstudianteSinLibreta extends Estudiante
                             ->leftJoin('teso_libretas_pagos', 'teso_libretas_pagos.matricula_id', '=', 'sga_matriculas.id')
                             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
                             ->whereNull('teso_libretas_pagos.matricula_id')
-                            ->where('sga_matriculas.periodo_lectivo_id', $periodo_lectivo_id)
+                            ->where([
+                                ['sga_matriculas.periodo_lectivo_id', '=', $periodo_lectivo_id],
+                                ['sga_matriculas.estado', '=', 'Activo']
+                            ])
                             ->select(
                                         'sga_matriculas.id',
+                                        'sga_matriculas.estado',
                                         'sga_cursos.descripcion AS curso_descripcion',
                                         DB::raw( $raw_nombre_completo ),
                                         'core_terceros.numero_identificacion')
