@@ -391,7 +391,9 @@ class AcademicoDocenteController extends Controller
             $observacion_general = $matricula_a_mostrar->get_observacion_general();
         }
 
-        return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan', 'observacion_general', 'matricula_a_mostrar', 'anio_matricula'));
+        $vec_matriculas[''] = '';
+
+        return view('academico_docente.estudiantes.valorar_aspectos_observador', compact('tipos_aspectos', 'estudiante', 'novedades', 'registros_analisis', 'miga_pan', 'observacion_general', 'matricula_a_mostrar', 'anio_matricula', 'vec_matriculas'));
     }
 
     // PROCEDIMIENTO ALMACENAR ASPECTOS
@@ -462,6 +464,7 @@ class AcademicoDocenteController extends Controller
         }
 
         $matricula = Matricula::find($request->matricula_id);
+
         $matricula->observacion_general = $request->observacion_general;
         $matricula->save();
 

@@ -426,7 +426,13 @@
 			if ( $('#id_encabezado_calificacion').val() == 0 && $('#descripcion').val() == '' )
 			{
 				$('#descripcion').focus();
-				alert('Debe ingresar una descripción para la actividad.');
+
+				Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: 'Debe ingresar una descripción para la actividad.'
+				});
+
 				return false;
 			}
 
@@ -440,7 +446,13 @@
 				if (respuesta == 'pesos')
 				{
 					$('#div_spin').hide();
-					alert('El peso total sobrepasa 100%, debe indicar un peso menor.');
+					
+					Swal.fire({
+						icon: 'error',
+						title: 'Alerta!',
+						text: 'El peso total sobrepasa 100%, debe indicar un peso menor.'
+					});
+
 				} else {
 
 					$('#div_spin').hide();
@@ -467,7 +479,12 @@
 					guardar_calificaciones();
 					
 					$("#myModal").modal('hide');
-					alert('El encabezado de la calificación ha sido ' + respuesta + ' correctamente.');
+
+					Swal.fire({
+						icon: 'success',
+						title: '¡Muy bien!',
+						text: 'El encabezado de la calificación ha sido ' + respuesta + ' correctamente.'
+					});
 				}
 			});
 

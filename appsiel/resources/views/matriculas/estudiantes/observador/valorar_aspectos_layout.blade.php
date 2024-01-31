@@ -15,8 +15,7 @@
                 {{Form::open(['url' => 'academico_docente/guardar_valoracion_aspectos','method'=>'post', 'id' => 'form_create', 'class'=>'form-horizontal']) }}
             @else
                 {{Form::open( ['url' => '/matriculas/estudiantes/observador/valorar_aspectos','method'=>'post', 'class'=>'form-horizontal', 'id' => 'form_create'] ) }}
-            @endif
-			
+            @endif			
 
 				<div class="form-group">
 					<div class="alert alert-success">
@@ -35,9 +34,9 @@
 				{{ Form::hidden('id_estudiante', $estudiante->id, ['id' => 'id_estudiante']) }}
 				
 				@if ( $matricula_a_mostrar != null )
-					{{ Form::bsSelect('matricula_id', $matricula_a_mostrar->id, 'Matrículas', $vec_matriculas , ['id' => 'matricula_id']) }}
+					{{ Form::hidden('matricula_id', $matricula_a_mostrar->id, ['id' => 'matricula_id']) }}
 				@else
-					{{ Form::bsSelect('matricula_id', null, 'Matrículas', $vec_matriculas , ['id' => 'matricula_id']) }}
+					{{ Form::hidden('matricula_id', null, ['id' => 'matricula_id']) }}
 				@endif
 	
 				{{ Form::hidden('fecha_valoracion', date( $anio_matricula . '-' . 'm-d') ) }}
