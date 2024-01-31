@@ -1,135 +1,133 @@
 
-	<style>
-		table th {
-			padding: 15px;
-			text-align: center;
-			border-bottom: solid 2px;
-			background-color: #E5E4E3;
-		}
+<style>
+	table th {
+		padding: 15px;
+		text-align: center;
+		border-bottom: solid 2px;
+		background-color: #E5E4E3;
+	}
 
-		table td {
-			padding: 2px;
-		}
-		#tabla_lineas_registros_calificaciones{
-			color: white;
-		}
+	table td {
+		padding: 2px;
+	}
+	#tabla_lineas_registros_calificaciones{
+		color: white;
+	}
 
-		#tabla_lineas_registros_calificaciones td{
-			color: white;
-			background-color: white;
-		}
+	#tabla_lineas_registros_calificaciones td{
+		color: white;
+		background-color: white;
+	}
 
-		#tabla_lineas_registros_calificaciones th{
-			color: white;
-			background-color: white;
-			border: 0px solid;
-		}
-	</style>
+	#tabla_lineas_registros_calificaciones th{
+		color: white;
+		background-color: white;
+		border: 0px solid;
+	}
+</style>
 
-	@include('layouts.mensajes')
+@include('layouts.mensajes')
 
-	<div class="container-fluid">
-		<div class="marco_formulario">
-			<h4 style="text-align: center;">
-				Ingreso de {{ $titulo }}
-				<br>
-				Año lectivo: {{ $periodo_lectivo->descripcion }}
-			</h4>
-			<hr>		
+<div class="container-fluid">
+	<div class="marco_formulario">
+		<h4 style="text-align: center;">
+			Ingreso de {{ $titulo }}
+			<br>
+			Año lectivo: {{ $periodo_lectivo->descripcion }}
+		</h4>
+		<hr>		
 
-			<div class="row">
-				<div class="col-sm-12">
-					<b>Año:</b><code>{{ $anio }}</code>
-					<b>Periodo:</b> <code>{{ $periodo->descripcion }}</code>
-					<b>Curso:</b><code>{{ $curso->descripcion }}</code>
-					<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
-				</div>
+		<div class="row">
+			<div class="col-sm-12">
+				<b>Año:</b><code>{{ $anio }}</code>
+				<b>Periodo:</b> <code>{{ $periodo->descripcion }}</code>
+				<b>Curso:</b><code>{{ $curso->descripcion }}</code>
+				<b>Asignatura:</b><code>{{ $datos_asignatura->descripcion }}</code>
 			</div>
-
-			<div class="row">
-				<div class="col-sm-12">
-					<h4><i class="fa fa-info-circle"> &nbsp; </i>Use las flechas de dirección y tabular para desplazarse: &nbsp;<i class="fa fa-arrow-down"></i>&nbsp;<i class="fa fa-arrow-up"></i>&nbsp;<b>TAB </b></h4>
-				</div>
-				</br></br>
-			</div>
-
-			<p style="color: gray; text-align: right;" id="mensaje_formulario">
-
-				<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
-					Sin guardar</spam>
-
-				<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
-					Guardando...</spam>
-
-				<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
-					Calificaciones guardadas</spam>
-			</p>
-
-			<div class="row">
-				<div class="col-sm-12">
-
-					@yield('tabla')
-
-				</div>
-			</div>
-
-			<div style="text-align: center; width: 100%;">
-				<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
-				<a href="{{ url($ruta) }}" class="btn btn-danger btn-xs" id="bs_boton_volver"> Volver </a>
-			</div>
-
-			<div class="row">
-				<div class="col-sm-12">
-					{{ Form::open( [ 'url' => 'calificaciones/almacenar_calificacion', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario'] ) }}
-
-						{{ Form::hidden('escala_min', $escala_min_max[0], ['id' =>'escala_min']) }}
-						{{ Form::hidden('escala_max', $escala_min_max[1], ['id' =>'escala_max']) }}
-
-						{{ Form::hidden('id_colegio', $id_colegio, ['id' =>'id_colegio']) }}
-						{{ Form::hidden('creado_por', $creado_por, ['id' =>'creado_por']) }}
-						{{ Form::hidden('modificado_por', $modificado_por, ['id' =>'modificado_por']) }}
-						{{ Form::hidden('id_periodo', $periodo->id, ['id' =>'id_periodo']) }}
-						{{ Form::hidden('curso_id', $curso->id, ['id' =>'curso_id']) }}
-						{{ Form::hidden('anio', $anio, ['id' =>'anio']) }}
-						{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
-						{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
-
-						{{ Form::hidden('id_app',Input::get('id')) }} 
-						{{ Form::hidden('return', $ruta ) }}
-
-						{{ Form::bsHidden( 'hay_pesos', $hay_pesos ) }}
-
-						{{ Form::bsHidden( 'lineas_registros_calificaciones', 0 ) }}
-					{{Form::close()}}
-
-					<table class="table" id="tabla_lineas_registros_calificaciones" border="0">
-						<thead>
-							<tr>
-								<th>id_calificacion</th>
-								<th>id_calificacion_aux</th>
-								<th>codigo_matricula</th>
-								<th>id_estudiante</th>
-								@for($c=1; $c < 16; $c++) 
-									<th>C{{$c}}</th>
-								@endfor
-								<th>calificacion</th>
-								<th>logros</th>
-							</tr>
-						</thead>
-						<tbody></tbody>
-					</table>
-
-				</div>
-			</div>
-
 		</div>
+
+		<div class="row">
+			<div class="col-sm-12">
+				<h4><i class="fa fa-info-circle"> &nbsp; </i>Use las flechas de dirección y tabular para desplazarse: &nbsp;<i class="fa fa-arrow-down"></i>&nbsp;<i class="fa fa-arrow-up"></i>&nbsp;<b>TAB </b></h4>
+			</div>
+			</br></br>
+		</div>
+
+		<p style="color: gray; text-align: right;" id="mensaje_formulario">
+
+			<spam id="mensaje_sin_guardar" style="background-color:#eaabab; display: none;">
+				Sin guardar</spam>
+
+			<spam id="mensaje_guardando" style="background-color:#a3e7fe; display: none;">
+				Guardando...</spam>
+
+			<spam id="mensaje_guardadas" style="background-color: #b1e6b2;">
+				Calificaciones guardadas</spam>
+		</p>
+
+		<div class="row">
+			<div class="col-sm-12">
+
+				@yield('tabla')
+
+			</div>
+		</div>
+
+		<div style="text-align: center; width: 100%;">
+			<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled">Guardar</button>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12">
+				{{ Form::open( [ 'url' => 'calificaciones/almacenar_calificacion', 'method'=> 'POST', 'class' => 'form-horizontal', 'id' => 'formulario'] ) }}
+
+					{{ Form::hidden('escala_min', $escala_min_max[0], ['id' =>'escala_min']) }}
+					{{ Form::hidden('escala_max', $escala_min_max[1], ['id' =>'escala_max']) }}
+
+					{{ Form::hidden('id_colegio', $id_colegio, ['id' =>'id_colegio']) }}
+					{{ Form::hidden('creado_por', $creado_por, ['id' =>'creado_por']) }}
+					{{ Form::hidden('modificado_por', $modificado_por, ['id' =>'modificado_por']) }}
+					{{ Form::hidden('id_periodo', $periodo->id, ['id' =>'id_periodo']) }}
+					{{ Form::hidden('curso_id', $curso->id, ['id' =>'curso_id']) }}
+					{{ Form::hidden('anio', $anio, ['id' =>'anio']) }}
+					{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
+					{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
+
+					{{ Form::hidden('id_app',Input::get('id')) }} 
+					{{ Form::hidden('return', $ruta ) }}
+
+					{{ Form::bsHidden( 'hay_pesos', $hay_pesos ) }}
+
+					{{ Form::bsHidden( 'lineas_registros_calificaciones', 0 ) }}
+				{{Form::close()}}
+
+				<table class="table" id="tabla_lineas_registros_calificaciones" border="0">
+					<thead>
+						<tr>
+							<th>id_calificacion</th>
+							<th>id_calificacion_aux</th>
+							<th>codigo_matricula</th>
+							<th>id_estudiante</th>
+							@for($c=1; $c < 16; $c++) 
+								<th>C{{$c}}</th>
+							@endfor
+							<th>calificacion</th>
+							<th>logros</th>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+
+			</div>
+		</div>
+
 	</div>
+</div>
 
-	@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente.'])
-
-
+@include('components.design.ventana_modal', [ 'titulo' => 'Ingreso/Actualización encabezados de calificaciones', 'texto_mensaje' => 'Registro actualizado correctamente.'])
 
 <script language="javascript">
+
 	function ventana(id, id_textbox,curso_id) {
 		document.getElementById("caja_logro").value = id_textbox;
 
@@ -158,6 +156,15 @@
 		var teclas_especiales = [9, 16];
 
 		var guardando = false;
+
+		// Guardar calificaciones cada diez (10) segundos
+		/*setInterval( function(){ 
+			if( !guardando )
+			{
+				guardar_calificaciones();
+			}
+		}, 10000);
+		*/
 
 		// Vaciar los inputs que tienen cero (0)
 		$("input[type=text]").each(function() {
@@ -265,7 +272,7 @@
 
 				$('#tabla_lineas_registros_calificaciones').find('tbody:last').html('');
 
-		    	$('#popup_alerta_danger').hide();
+				$('#popup_alerta_danger').hide();
 				$('#div_cargando').hide();
 				$('#mensaje_guardadas').show();
 
@@ -274,16 +281,16 @@
 				guardando = false;
 
 			}).fail(function( respuesta_error ) {
-			    
-		    	$('#popup_alerta_danger').show();
+				
+				$('#popup_alerta_danger').show();
 				$('#popup_alerta_danger').css('background-color','red');
 				$('#popup_alerta_danger').text( 'Error. Algunos datos no se pudieron almacenar. Por favor actualice la información e intente nuevamente.' );
 
-			    if( respuesta_error.status == 401 )
-			    {
+				if( respuesta_error.status == 401 )
+				{
 					$('#popup_alerta_danger').text( 'Error. Su sesión ha terminado de manera inesperada. La información no se pudo almacenar.' );
 					document.location.href = "{ { url()->previous() }}";
-			    }
+				}
 			});
 			/**/
 		};
@@ -351,13 +358,22 @@
 
 			var valido = true;
 			if (obj.val() != '' && !$.isNumeric(obj.val())) {
-				alert("Debe ingresar solo números. Para decimales use punto ( . ). No la coma ( , ).");
+				Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: 'Debe ingresar solo números. Para decimales use punto (.). No la coma (,).'
+				});
+
 				obj.val('');
 				valido = false;
 			}
 
 			if (obj.val() != '' && (obj.val() < escala_min || obj.val() > escala_max)) {
-				alert("La calificación ingresada está por fuera de la escala de valoración. Ingrese un número entre " + escala_min + " y " + escala_max);
+				Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: 'La calificación ingresada está por fuera de la escala de valoración. Ingrese un número entre ' + escala_min + ' y ' + escala_max
+				});
 				obj.val('');
 				valido = false;
 			}
@@ -586,7 +602,6 @@
 			var expires = "expires=" + d.toUTCString();
 			document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
 		}
-
 
 		function getCookie(cname) {
 			var name = cname + "=";

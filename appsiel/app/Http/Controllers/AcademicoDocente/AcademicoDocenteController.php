@@ -23,7 +23,7 @@ use App\Calificaciones\Logro;
 use App\Calificaciones\NotaNivelacion;
 
 use App\Calificaciones\EscalaValoracion;
-
+use App\Calificaciones\Services\AsignaturasService;
 use App\Matriculas\CatalogoAspecto;
 use App\Matriculas\TiposAspecto;
 use App\Matriculas\AspectosObservador;
@@ -236,24 +236,36 @@ class AcademicoDocenteController extends Controller
         return redirect('academico_docente/revisar_logros/' . $curso_id . '/' . $asignatura_id . '?id=' . Input::get('id'))->with('flash_message', 'Logro Eliminado correctamente.');
     }
 
-
-
     //Selección de datos para calificar
     public function calificar1($curso_id, $asignatura_id)
     {
         $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()[0];
 
+        $cursos = Curso::opciones_campo_select();
+
         $periodos = Periodo::opciones_campo_select();
 
-        $curso = Curso::find($curso_id);
-        $asignatura = Asignatura::find($asignatura_id);
+        $periodo_lectivo_id = null;
+        
+        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+        if ($periodo_lectivo_actual != null) {
+            $periodo_lectivo_id = $periodo_lectivo_actual->id;
+        }
+
+        $registros_asignaturas = (new AsignaturasService())->get_asignaturas_del_curso_por_usuario(  $curso_id, $periodo_lectivo_id, 'Activo' );
+
+        $asignaturas[''] = '';
+        foreach ($registros_asignaturas as $opcion)
+        {
+            $asignaturas[$opcion->asignatura->id] = $opcion->asignatura->descripcion;
+        }
 
         $miga_pan = [
             ['url' => 'academico_docente?id=' . Input::get('id'), 'etiqueta' => 'Académico docente'],
             ['url' => 'NO', 'etiqueta' => 'Ingresar calificaciones']
         ];
 
-        return view('academico_docente.create_calificacion', compact('periodos', 'asignatura', 'curso', 'miga_pan'));
+        return view('academico_docente.create_calificacion', compact('periodos', 'cursos', 'miga_pan', 'periodo_lectivo_id', 'curso_id', 'asignatura_id', 'asignaturas'));
     }
 
 
@@ -300,8 +312,6 @@ class AcademicoDocenteController extends Controller
         return view('layouts.index', compact('registros', 'curso', 'asignatura', 'url_eliminar', 'url_edit', 'nro_registros', 'id_app', 'id_modelo', 'url_ver', 'url_estado', 'url_print', 'source', 'search', 'sqlString', 'tituloExport', 'encabezado_tabla', 'miga_pan'));
     }
 
-
-
     public function revisar_estudiantes($curso_id, $id_asignatura)
     {
         // Se obtienen los estudiantes con matriculas activas en el curso y año indicado
@@ -317,8 +327,6 @@ class AcademicoDocenteController extends Controller
 
         return view('academico_docente.revisar_estudiantes', compact('estudiantes', 'curso', 'asignatura', 'miga_pan'));
     }
-
-
 
     public function listar_estudiantes($curso_id, $id_asignatura)
     {

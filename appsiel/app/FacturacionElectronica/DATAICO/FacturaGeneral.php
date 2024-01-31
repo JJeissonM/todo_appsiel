@@ -270,6 +270,7 @@ class FacturaGeneral
       }
 
       $json = json_decode( (string) $response->getBody() );
+      
       if(!isset($json->invoice))
       {
          return null;

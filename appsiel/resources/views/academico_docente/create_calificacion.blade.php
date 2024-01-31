@@ -6,59 +6,57 @@
 	@include('layouts.mensajes')
 
 
-	<div class="row">
-		<div class="col-md-8 col-md-offset-2" style="background-color: white;border: 1px solid #d9d7d7;box-shadow: 5px 5px gray;">
-		    <h4 style="color: gray;">Ingreso de calificaciones</h4>
-		    <hr>
-			{{ Form::open(array('url'=>'calificaciones/calificar2?id='.Input::get('id'))) }}
-
-				<div class="row" style="padding:5px;">
-					{{ Form::bsSelect('id_periodo','','Seleccionar periodo',$periodos,['required'=>'required']) }}
-				</div>
-
-				<div class="row" style="padding:5px;">
-					{{ Form::bsText('curso_id_no',$curso->descripcion,'Curso',['disabled'=>'disabled']) }}
-
-					{{ Form::hidden('curso_id',$curso->id) }}
-				</div>
-
-				<div class="row" style="padding:5px;">
-					{{Form::bsText('id_asignatura_no', $asignatura->descripcion, 'Asignatura', ['disabled'=>'disabled'])}}
-					{{ Form::hidden('id_asignatura',$asignatura->id) }}
-				</div>
-								
-				<div class="form-group">
-					<div class="col-sm-offset-3 col-sm-6">
-						<br/>
-						<input type="submit" class="btn btn-primary" id="btn_continuar" value="Continuar" />
-							<i class="fa fa-btn fa-arrow-right"></i> 
-						
-						<br/><br/>
-					</div>
-				</div>
+	<div class="container-fluid">
+		@include('calificaciones.create_form_selections')
+	</div>
+	
+	<div class="container-fluid">
+		<div class="marco_formulario">
+			<div id="div_form_ingreso">
+				{{ Form::Spin( 42 ) }}
 				
-				<br/><br/>	
-				{{ Form::hidden('id_app',Input::get('id')) }}
-
-				{{ Form::hidden('ruta','academico_docente/calificar/'.$curso->id.'/'.$asignatura->id.'/'.rand(0,1000).'?id='.Input::get('id') ) }}
-
-			{{ Form::close() }}
-
+			</div>
 		</div>
 	</div>
+
 	<br/><br/>	
 @endsection
 
-
 @section('scripts')
+
+	<script src="{{ asset( 'assets/js/calificaciones/create.js?aux=' . uniqid() )}}"></script>
+	
 	<script>
 		$(document).ready(function(){
 
-			$("#id_periodo").focus();
+			$('#curso_id').on('change',function()
+			{
+				$('#div_form_ingreso').html( '' );
+				$("#id_asignatura").html('<option value=""></option>');
 
-			$("#id_periodo").on('change',function(){
-				$("#btn_continuar").focus();
+				if ( $(this).val() == '') { return false; }				
+
+				$('#div_cargando').show();
+
+				var url = "../../../../calificaciones_opciones_select_asignaturas_del_curso_por_usuario/" + $('#curso_id').val() + "/" + $('#periodo_lectivo_id').val() + "/Activo";
+
+				$.ajax({
+					url: url,
+					type: 'get',
+					success: function(datos){
+
+						$('#div_cargando').hide();
+						
+						$('#id_asignatura').html( datos );
+						$('#id_asignatura').focus();
+					},
+					error: function(xhr) {
+						$('#div_cargando').hide();
+						alert('Error en los datos seleccionados. '+xhr);
+					}
+				});			
 			});
+
 
 		});
 	</script>

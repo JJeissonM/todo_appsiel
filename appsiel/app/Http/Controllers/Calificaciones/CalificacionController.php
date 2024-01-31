@@ -180,16 +180,26 @@ class CalificacionController extends Controller
      */
     public function create()
     {
-
         $cursos = Curso::opciones_campo_select();
         $periodos = Periodo::opciones_campo_select();
+
+        $periodo_lectivo_id = null;
+        $curso_id = null;
+        $asignatura_id = null;
+        $asignaturas = null;
+        
+        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+        if ($periodo_lectivo_actual != null) {
+            $periodo_lectivo_id = $periodo_lectivo_actual->id;
+        }
 
         $miga_pan = [
             ['url' => $this->aplicacion->app . '?id=' . Input::get('id'), 'etiqueta' => $this->aplicacion->descripcion],
             ['url' => 'NO', 'etiqueta' => 'Ingresar']
         ];
 
-        return view('calificaciones.create', compact('cursos', 'periodos', 'miga_pan'));
+
+        return view('calificaciones.create', compact('cursos', 'periodos', 'miga_pan', 'periodo_lectivo_id', 'curso_id', 'asignatura_id', 'asignaturas'));
         // Lo datos del formulario create se envía vía post al método calificar2
     }
 
