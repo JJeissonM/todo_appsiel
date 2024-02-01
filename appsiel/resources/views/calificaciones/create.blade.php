@@ -45,20 +45,11 @@
 		$(document).ready(function(){
 
 			$("#curso_id").on('change',function(){
-				var periodo_id = $("#id_periodo").val();
-
-				if ( periodo_id == '')
-				{
-					alert('Debe seleccionar primero un periodo.');
-					$(this).val( '' );
-					$("#id_periodo").focus();
-					return false;
-				}
 
 				$('#div_form_ingreso').html( '' );
-				var curso_id = $(this).val();
 				$("#id_asignatura").html('<option value=""></option>');
 		    	
+				var curso_id = $(this).val();
 		    	if( curso_id != '' ){
 
 				    $('#div_cargando').show();
