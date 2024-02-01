@@ -20,6 +20,8 @@
 
 	$remisiones = ReportesController::remisiones_pendientes_por_facturar();
 	$facturas = ReportesController::facturas_electronicas_pendientes_por_enviar();
+
+	$user = \Illuminate\Support\Facades\Auth::user();
 ?>
 
 
@@ -72,30 +74,36 @@
 	@can('vtas_bloquear_vista_index')
 		
 	@else
-		{!! $select_crear !!}
-	@endcan
+	
+		@if( !$user->hasRole('SupervisorCajas') )
+			{!! $select_crear !!}
+		@endif
 
+	@endcan
 	<hr>
 
 	@include('layouts.mensajes')
+
+	<input type="hidden" name="user_rol" id="user_rol" value="{{ $user->roles()->first()->name }}">
 
 	@can('vtas_bloquear_vista_index')
 		@include('ventas.index_vendedor')
 	@else
 		<div class="container-fluid">
-
-		@if( !empty( $remisiones->toArray() ) )
-			<div class="marco_formulario">
-				<div class="row">
-					<div class="col-md-6">
-						@include('ventas.incluir.lista_remisiones',['titulo'=>'Remisiones pendientes por facturar'])
-					</div>
-					<div class="col-md-6">
-						@include('ventas.incluir.lista_facturas_electronicas',['titulo'=>'Fact. Electrónicas pendientes por enviar'])
+			
+			@if( !$user->hasRole('SupervisorCajas') )
+				<div class="marco_formulario">
+					<div class="row">
+						<div class="col-md-6">
+							@include('ventas.incluir.lista_remisiones',['titulo'=>'Remisiones pendientes por facturar'])
+						</div>
+						<div class="col-md-6">
+							@include('ventas.incluir.lista_facturas_electronicas',['titulo'=>'Fact. Electrónicas pendientes por enviar'])
+						</div>
 					</div>
 				</div>
-			</div>
-		@endif
+			@endif
+
 			<div class="marco_formulario">
 				<div class="row">					
 					<div class="col-md-12">						
@@ -248,49 +256,62 @@
 			</div>
 		</div>
 
-		<div class="container-fluid">
-			<div class="marco_formulario">
-				<?php
-				echo Lava::render('BarChart', 'ventas_diarias', 'grafica1');
-				$cant = count($tabla);
-				$totales = 0;
-				?>
-				<h3> Ventas de los últimos 30 días <small> <i class="fa fa-info-circle" title="IVA incluido!"></i> </small> </h3>
-				<hr>
-				<div id="grafica1"></div>
+		@if( !$user->hasRole('SupervisorCajas') )
+			<div class="container-fluid">
+				<div class="marco_formulario">
+					<?php
+					echo Lava::render('BarChart', 'ventas_diarias', 'grafica1');
+					$cant = count($tabla);
+					$totales = 0;
+					?>
+					<h3> Ventas de los últimos 30 días <small> <i class="fa fa-info-circle" title="IVA incluido!"></i> </small> </h3>
+					<hr>
+					<div id="grafica1"></div>
 
-				<br><br>
-				<div class="row">
-					<div class="col-md-3 col-md-offset-4">
-						<table class="table table-striped table-bordered">
-							<thead>
-								<tr>
-									<th>Fecha</th>
-									<th>Total</th>
-								</tr>
-							</thead>
-							<tbody>
-								@for($i=0; $i < $cant; $i++) <tr>
-									<td> {{ $tabla[$i]['fecha'] }} </td>
-									<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor'], 2, ',', '.') }} </td>
+					<br><br>
+					<div class="row">
+						<div class="col-md-3 col-md-offset-4">
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Fecha</th>
+										<th>Total</th>
 									</tr>
-									@php
-									$totales += $tabla[$i]['valor'];
-									@endphp
-									@endfor
-							</tbody>
-							<tfoot>
-								<tr>
-									<td> </td>
-									<td style="text-align: right;"> <b> ${{ number_format($totales, 2, ',', '.') }} </b> </td>
-								</tr>
-							</tfoot>
-						</table>
+								</thead>
+								<tbody>
+									@for($i=0; $i < $cant; $i++) <tr>
+										<td> {{ $tabla[$i]['fecha'] }} </td>
+										<td style="text-align: right;"> ${{ number_format($tabla[$i]['valor'], 2, ',', '.') }} </td>
+										</tr>
+										@php
+										$totales += $tabla[$i]['valor'];
+										@endphp
+										@endfor
+								</tbody>
+								<tfoot>
+									<tr>
+										<td> </td>
+										<td style="text-align: right;"> <b> ${{ number_format($totales, 2, ',', '.') }} </b> </td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		@endif
 
 		<br />
 	@endcan	
+@endsection
+
+@section('scripts')
+	<script type="text/javascript">
+			
+		if( $('#user_rol').val() == 'SupervisorCajas')
+		{
+			console.log('uey');
+			$('.nav').attr('display','none');
+		}
+	</script>
 @endsection

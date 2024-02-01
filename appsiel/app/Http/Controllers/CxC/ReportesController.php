@@ -4,15 +4,7 @@ namespace App\Http\Controllers\CxC;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Input;
-use DB;
-use Auth;
-use Form;
-use View;
-use Cache;
 
 use App\CxC\Services\DocumentosPendientesCxC;
 
@@ -20,7 +12,9 @@ use App\Ventas\Cliente;
 use App\Ventas\VtasDocEncabezado;
 
 use App\Matriculas\FacturaAuxEstudiante;
-use App\Matriculas\Responsableestudiante;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\View;
 
 class ReportesController extends Controller
 {
@@ -31,6 +25,13 @@ class ReportesController extends Controller
 
     public function documentos_pendientes(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+        
         $core_tercero_id = $request->core_tercero_id;
         $clase_cliente_id = (int)$request->clase_cliente_id;
         $fecha_corte = $request->fecha_corte;
@@ -109,6 +110,12 @@ class ReportesController extends Controller
 
     public function estado_de_cuenta(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
 
         $core_tercero_id = $request->core_tercero_id;
         $fecha_corte = $request->fecha_corte;

@@ -73,6 +73,13 @@ class ReportesController extends Controller
 
     public function precio_venta_por_producto(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -104,6 +111,13 @@ class ReportesController extends Controller
 
     public function vtas_reporte_ventas(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -130,6 +144,13 @@ class ReportesController extends Controller
 
     public function vtas_reporte_rentabilidad(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -222,7 +243,13 @@ class ReportesController extends Controller
         $fecha = $hoy['year'] . "-" . $hoy['mon'] . "-" . $hoy['mday'];
         $inicio = date("Y-m-d",strtotime($fecha."- 7 days")); 
         $pedidos_db = VtasPedido::where('core_empresa_id', Auth::user()->empresa_id)
-                                ->where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', '>', $inicio], ['estado', 'Anulado']])->take(10)->get();
+                                ->where([
+                                    ['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']],
+                                    //['fecha_entrega', '>', $inicio],
+                                    ['estado', 'Anulado']])
+                                    ->orderBy('updated_at','DESC')
+                                    ->take(10)
+                                    ->get();
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {
@@ -340,6 +367,13 @@ class ReportesController extends Controller
 
     public function remisiones_estado_facturadas_sin_factura_real(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -373,6 +407,13 @@ class ReportesController extends Controller
 
     public function ventas_por_vendedor(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -398,6 +439,13 @@ class ReportesController extends Controller
 
     public function lineas_de_movimiento_repetidas(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -470,6 +518,13 @@ class ReportesController extends Controller
 
     public function movimientos(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -484,6 +539,13 @@ class ReportesController extends Controller
 
     public function documentos_facturacion(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+        
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 

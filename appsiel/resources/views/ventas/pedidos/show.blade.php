@@ -1,5 +1,7 @@
 <?php
 	$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
+
+	$user = \Illuminate\Support\Facades\Auth::user();
 ?>
 
 @extends('transaccion.show')
@@ -9,7 +11,9 @@
 	@can('vtas_bloquear_vista_index')
 		
 	@else
-		{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+		@if( !$user->hasRole('SupervisorCajas') )
+			{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+		@endif
 	@endcan
 	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado == 'Pendiente')
@@ -25,23 +29,32 @@
 @endsection
 
 @section('botones_anterior_siguiente')
-	{!! $botones_anterior_siguiente->dibujar( 'vtas_pedidos/', $variables_url ) !!}
+
+	@if( !$user->hasRole('SupervisorCajas') )
+		{!! $botones_anterior_siguiente->dibujar( 'vtas_pedidos/', $variables_url ) !!}
+	@endif
+	
 @endsection
 
 @section('datos_adicionales_encabezado')
 	<br />
 	<b>Fecha Entrega: </b> {{ explode(' ', $doc_encabezado->fecha_entrega )[0] }} <!-- -->
-	@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+
+	@if( !$user->hasRole('SupervisorCajas') )
+		@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
+			<br>
+			<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}
+		@endif
+		@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
+			<br>
+			<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
+		@endif
+
 		<br>
-		<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}
-	@endif
-	@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
-		<br>
-		<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
+		<b>Remisiones: </b> {!! $doc_encabezado->enlaces_remisiones_hijas() !!}
 	@endif
 
-	<br>
-	<b>Remisiones: </b> {!! $doc_encabezado->enlaces_remisiones_hijas() !!}
+	
 @endsection
 
 @section('filas_adicionales_encabezado')
@@ -81,11 +94,11 @@
 @endsection
 
 @section('div_advertencia_anulacion')
-<div class="alert alert-warning" style="display: none;">
-	<a href="#" id="close" class="close">&times;</a>
-	<strong>¡ADVERTENCIA!</strong>
-	La anulación no puede revertirse. Si quieres confirmar, hacer click en: <a class="btn btn-danger btn-sm" href="{{ url( 'vtas_pedidos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
-</div>
+	<div class="alert alert-warning" style="display: none;">
+		<a href="#" id="close" class="close">&times;</a>
+		<strong>¡ADVERTENCIA!</strong>
+		La anulación no puede revertirse. Si quieres confirmar, hacer click en: <a class="btn btn-danger btn-sm" href="{{ url( 'vtas_pedidos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
+	</div>
 @endsection
 
 @section('documento_vista')
@@ -119,7 +132,7 @@
 						<td  class="text-right"> {{ '$ '.number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
 						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
 	                    <td>
-	                        @if( $doc_encabezado->estado == 'Pendiente' )
+	                        @if( $doc_encabezado->estado == 'Pendiente' && !$user->hasRole('SupervisorCajas') )
 	                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
 
 	                            @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
@@ -176,7 +189,11 @@
 
 @section('footer')
 	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
-		@include('ventas.pedidos.formulario_vista_show_pedidos')
+
+		@if( !$user->hasRole('SupervisorCajas') )
+			@include('ventas.pedidos.formulario_vista_show_pedidos')
+		@endif
+		
 	@endif
 @endsection
 

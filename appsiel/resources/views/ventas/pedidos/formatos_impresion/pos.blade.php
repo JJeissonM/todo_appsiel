@@ -60,6 +60,8 @@
         <br>
         <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
         <br>
+        <b>Estado: &nbsp;&nbsp;</b> {{ $doc_encabezado->estado }}
+        <br>
         
     </div>
     @if($doc_encabezado->estado == 'Anulado')
