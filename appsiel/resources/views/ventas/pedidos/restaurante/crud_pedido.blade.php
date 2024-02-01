@@ -146,6 +146,8 @@ input[type=number]::-webkit-outer-spin-button {
 
                 <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
 
+                <input type="hidden" name="fecha_entrega" id="fecha_entrega" value="{{ date('Y-m-d') }}">
+
                 <?php 
                     $user_vendedor_id = 0;
                     if ($vendedor != null ) {

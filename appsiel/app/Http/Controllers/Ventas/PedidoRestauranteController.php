@@ -111,7 +111,12 @@ class PedidoRestauranteController extends TransaccionController
                     break;
 
                 case 'fecha':
-                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
+                    $fecha = date('Y-m-d');
+                    if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
+                    {
+                        $fecha = $pdv->ultima_fecha_apertura();
+                    }
+                    $lista_campos[$i]['value'] = $fecha;
                     break;
 
                 case 'inv_bodega_id':
