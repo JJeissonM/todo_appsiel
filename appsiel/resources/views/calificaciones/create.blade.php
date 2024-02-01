@@ -50,6 +50,11 @@
 				$("#id_asignatura").html('<option value=""></option>');
 				var curso_id = $(this).val();
 				var periodo_id = $("#id_periodo").val();
+
+				if(periodo_id == '')
+				{
+					periodo_id = 'null';
+				}
 		    	
 		    	if( curso_id != '' ){
 
