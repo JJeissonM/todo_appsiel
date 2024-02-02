@@ -2,11 +2,6 @@
 
 namespace App\Nomina\Services;
 
-use App\Nomina\NomDocEncabezado;
-
-use Auth;
-
-use App\Core\Tercero;
 use App\Contabilidad\ContabCuenta;
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\ContabDocEncabezado;
@@ -25,6 +20,7 @@ use App\Nomina\Services\Pila\RiesgoLaboralService;
 use App\Nomina\Services\Pila\ParafiscalService;
 
 use App\Nomina\Services\LineaDocumentoService;
+use Illuminate\Support\Facades\Auth;
 
 class ContabilizacionPilaNomina
 {
@@ -211,7 +207,7 @@ class ContabilizacionPilaNomina
 			if ( !is_null( $movimiento->cuenta_contable ) )
 			{
 				$cuenta_contable = $movimiento->cuenta_contable->codigo . ' ' . $movimiento->cuenta_contable->descripcion;
-			}
+			}			
 
 			$lineas_tabla[] = (object)[
 										'error' => $observacion->error,
@@ -332,6 +328,17 @@ class ContabilizacionPilaNomina
 												[ 'fecha', '=', $fecha ],
 												[ 'proceso_contabilizado', '=', 'planilla_integrada' ]
 											])
+										->get()
+										->first();
+	}
+
+	public function get_document_header( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo  )
+	{
+		$array_wheres = [ 'core_empresa_id'=> Auth::user()->empresa_id, 
+            'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+            'consecutivo' => $consecutivo];
+		return ContabDocEncabezado::where( $array_wheres )
 										->get()
 										->first();
 	}

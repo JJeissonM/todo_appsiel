@@ -3,33 +3,15 @@
 namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
-
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 
 // Modelos
 use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\Empresa;
-
-use App\Nomina\NomConcepto;
-use App\Nomina\NomDocEncabezado;
-use App\Nomina\NomDocRegistro;
-use App\Nomina\NomContrato;
 
 use App\Nomina\Services\ContabilizacionProvisionNomina;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class ContabilizacionProvisionController extends TransaccionController
 {
@@ -39,7 +21,7 @@ class ContabilizacionProvisionController extends TransaccionController
         $servicio_contabilizacion = new ContabilizacionProvisionNomina( $request->fecha_final_promedios, $request->core_tipo_doc_app_id );
 
         $contab_proceso = $servicio_contabilizacion->get_estado( $request->fecha_final_promedios );
-        if (  !is_null($contab_proceso) )
+        if (  $contab_proceso != null )
         {
             $document_header = $servicio_contabilizacion->get_document_header( $contab_proceso->core_tipo_transaccion_id, $contab_proceso->core_tipo_doc_app_id, $contab_proceso->consecutivo  );
             return View::make( 'nomina.procesos.incluir.resultado_contabilizacion_provision_contabilizado', [ 'encabezado_doc' => $document_header, 'accion' => 'validar' ] )->render();

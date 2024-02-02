@@ -2,12 +2,8 @@
 
 namespace App\Nomina\Services;
 
-use App\Nomina\NomDocEncabezado;
-
 use Illuminate\Support\Facades\Auth;
 
-use App\Core\Tercero;
-use App\Contabilidad\ContabCuenta;
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\ContabDocEncabezado;
 
@@ -25,6 +21,7 @@ class ContabilizacionProvisionNomina
 	public $valor_debito_total;
 	public $valor_credito_total;
 	public $movimiento_contabilizar;
+	public $core_tipo_doc_app_id;
 
 	public $core_tipo_transaccion_id;
 	public $consecutivo;
