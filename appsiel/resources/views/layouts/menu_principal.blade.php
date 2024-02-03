@@ -103,7 +103,7 @@
               <h3 class="panel-title"  style="font-size: 30px">Usuario en Mora</h3>
             </div>
             <div class="panel-body">
-                Estimado/a Cliente, le recordamos que tiene un saldo vencido. Lo invitamos a poner su cuenta al día. Para más información escriba al +57 304 556 1535 <br> Su acceso ha sido bloqueado y este se normalizará al momento de pagar el total de la deuda.
+                Estimado/a Cliente, le recordamos que tiene un saldo vencido. Lo invitamos a poner su cuenta al día. Para más información escriba al {{ config('configuracion.numero_contacto_paula') }} <br> Su acceso ha sido bloqueado y este se normalizará al momento de pagar el total de la deuda.
             </div>
           </div>
     </div>	    
@@ -111,7 +111,7 @@
 
 <div class="alert alert-danger alert-dismissible mora" role="alert">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    Estimado/a Cliente, le recordamos que tiene un saldo vencido. Lo invitamos a poner su cuenta al día. Para más información escríbanos al +57 304 556 1535
+    Estimado/a Cliente, le recordamos que tiene un saldo vencido. Lo invitamos a poner su cuenta al día. Para más información escríbanos al {{ config('configuracion.numero_contacto_paula') }}
     <style>
         .navbar{
             margin-bottom: 0;

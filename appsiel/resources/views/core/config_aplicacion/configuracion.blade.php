@@ -270,23 +270,6 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$usuario_en_mora = false;
-								if( isset($parametros['usuario_en_mora'] ) )
-								{
-									$usuario_en_mora = $parametros['usuario_en_mora'];
-								}
-							?>
-							{{ Form::bsSelect('usuario_en_mora', $usuario_en_mora, 'Usuario en Mora', ['false'=>'No','true'=>'Si'], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
 								$color_principal_empresa = '#111e52';
 								if( isset($parametros['color_principal_empresa'] ) )
 								{
@@ -297,9 +280,33 @@
 						</div>
 					</div>
 
+				</div>
+
+				<div class="row">
+
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$usuario_en_mora = false;
+								if( isset($parametros['usuario_en_mora'] ) )
+								{
+									$usuario_en_mora = $parametros['usuario_en_mora'];
+								}
+							?>
+							{{ Form::bsSelect('usuario_en_mora', $usuario_en_mora, 'Usuario en Mora', ['false'=>'No','true'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$numero_contacto_paula = '+57 301 4159571';
+								if( isset($parametros['numero_contacto_paula'] ) )
+								{
+									$numero_contacto_paula = $parametros['numero_contacto_paula'];
+								}
+							?>
+							{{ Form::bsText('numero_contacto_paula', $numero_contacto_paula, 'Número de contacto Paula', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
