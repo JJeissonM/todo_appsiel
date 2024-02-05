@@ -216,7 +216,6 @@ class PlanClaseEncabezado extends Model
         return $vec;
     }
 
-
     // PADRE = CURSO, HIJO = asignaturas
     public static function get_registros_select_hijo($id_select_padre)
     {

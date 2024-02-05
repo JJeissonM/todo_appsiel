@@ -21,6 +21,11 @@ class Periodo extends Model
     protected $fillable = ['periodo_lectivo_id','id_colegio','numero', 'descripcion','fecha_desde','fecha_hasta', 'periodo_de_promedios', 'estado', 'cerrado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Número', 'Descripcion', 'Fecha desde', 'Fecha hasta', 'Cerrado', 'Periodo de promedios', 'Estado'];
+    
+    public function periodo_lectivo()
+    {
+        return $this->belongsTo(PeriodoLectivo::class, 'periodo_lectivo_id');
+    }
 
     public function observaciones_boletin( $estudiante_id )
     {

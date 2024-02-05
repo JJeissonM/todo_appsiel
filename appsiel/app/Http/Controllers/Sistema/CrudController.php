@@ -236,6 +236,7 @@ class CrudController extends Controller
         if( method_exists( app($this->modelo->name_space), 'validar_eliminacion') )
         {
             $mensaje = app($this->modelo->name_space)->validar_eliminacion($id);
+            
             if( $mensaje != 'ok' )
             {
                 return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'))->with('mensaje_error','Registro No puede ser ELIMINADO. '.$mensaje );

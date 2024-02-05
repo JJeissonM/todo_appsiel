@@ -187,6 +187,16 @@ class PlanClasesController extends ModeloController
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro ELIMINADO correctamente.' );
         }
 
+        if((int)$plan_clase->periodo->cerrado)
+        {
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro No se pudo eliminar. El Periodo está cerrado.' );
+        }
+
+        if((int)$plan_clase->periodo->periodo_lectivo->cerrado)
+        {
+            return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro No se pudo eliminar. El Año lectivo está cerrado.' );
+        }
+
         $plan_clase->delete();
 
         $registros_planes_clases = PlanClaseRegistro::where( 'plan_clase_encabezado_id', $encabezado_id )->get();
@@ -195,7 +205,7 @@ class PlanClasesController extends ModeloController
             $registro_plan->delete();
         }        
 
-    	return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'mensaje_error','Registro ELIMINADO correctamente.' );
+    	return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with( 'flash_message','Registro ELIMINADO correctamente.' );
     }
 
 

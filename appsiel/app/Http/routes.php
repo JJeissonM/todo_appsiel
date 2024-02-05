@@ -37,7 +37,6 @@ Route::get('ajax_datatable', 'Sistema\ModeloController@ajax_datatable');
 Route::get('web/eliminar_asignacion/registro_modelo_hijo_id/{registro_modelo_hijo_id}/registro_modelo_padre_id/{registro_modelo_padre_id}/id_app/{id_app}/id_modelo_padre/{id_modelo_padre}', 'Sistema\ModeloController@eliminar_asignacion');
 Route::post('web/guardar_asignacion', 'Sistema\ModeloController@guardar_asignacion');
 Route::get('a_i/{id_registro}', 'Sistema\ModeloController@activar_inactivar');
-Route::get('modelo/eliminar/{id_registro}', 'Sistema\ModeloController@eliminar_registro');
 
 
 Route::get('core_create_registro_modelo/{modelo_id}', 'Sistema\ModeloController@create_registro_modelo');
