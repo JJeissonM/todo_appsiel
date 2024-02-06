@@ -29,9 +29,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
-                            'empresa_id', 'name', 'email', 'password',
-                        ];
+    protected $fillable = [ 'empresa_id', 'name', 'email', 'password', 'estado'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -181,7 +179,8 @@ class User extends Authenticatable
                                 'empresa_id' => Auth::user()->empresa_id,
                                 'name' => $name,
                                 'email' => $email,
-                                'password' => Hash::make($password)
+                                'password' => Hash::make($password),
+                                'estado' => 'Activo'
                             ]);
 
         $role_r = Role::where('id', '=', $role_id)->firstOrFail();

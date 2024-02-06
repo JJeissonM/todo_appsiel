@@ -5,18 +5,16 @@ namespace App\AcademicoDocente;
 use Illuminate\Database\Eloquent\Model;
 
 use App\UserHasRole;
-use DB;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 class Profesor extends Model
 {
     protected $table = 'users';
 
-    protected $fillable = ['empresa_id','name', 'email', 'password'];
+    protected $fillable = ['empresa_id','name', 'email', 'password', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Email', 'Perfil'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Email', 'Perfil', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -28,7 +26,8 @@ class Profesor extends Model
                                 'users.name AS campo1',
                                 'users.email As campo2',
                                 'roles.name AS campo3',
-                                'users.id AS campo4'
+                                'users.estado AS campo4',
+                                'users.id AS campo5'
                             )
                             ->orderBy('users.name')
                             ->get();
@@ -105,7 +104,8 @@ class Profesor extends Model
             ->select(
                 'roles.name AS PERFIL',
                 'users.name AS NOMBRE',
-                'users.email As EMAIL'
+                'users.email As EMAIL',
+                'users.estado As ESTADO'
             )
             ->where("roles.name", "LIKE", "%$search%")
             ->orWhere("users.name", "LIKE", "%$search%")
@@ -142,14 +142,18 @@ class Profesor extends Model
     {
         $opciones = UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
                                 ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
-                                ->where(['roles.name'=>'Profesor'])
+                                ->where([
+                                    ['roles.name', '=', 'Profesor'],
+                                    ['users.estado', '=', 'Activo']
+                                    ])
                                 ->orWhere(['roles.name'=>'Director de grupo'])
-                                ->select('roles.name','users.name AS descripcion','users.id')
+                                ->select('roles.name AS role','users.name AS descripcion','users.id')
+                                ->orderBy('descripcion')
                                 ->get();
 
         $vec['']='';
         foreach ($opciones as $opcion){
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion . ' (' . $opcion->role . ')';
         }
         
         return $vec;

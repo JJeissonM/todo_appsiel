@@ -4,14 +4,6 @@ namespace App\Http\Controllers\AcademicoDocente;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
-
-use Auth;
-use DB;
-use Hash;
-use Mail;
-use View;
-use Input;
 
 use App\Sistema\Html\MigaPan;
 use App\Sistema\Aplicacion;
@@ -19,26 +11,17 @@ use App\Sistema\Modelo;
 
 use App\User;
 
-use App\Matriculas\Estudiante;
 use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;
 
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\CursoTieneAsignatura;
-use App\Calificaciones\Calificacion;
-use App\Calificaciones\Periodo;
 use App\AcademicoDocente\AsignacionProfesor;
-use App\AcademicoDocente\CursoTieneDirectorGrupo;
-
+use App\AcademicoDocente\Profesor;
 use App\Core\Colegio;
-
-//Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-//Enables us to output flash messaging
-use Session;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 /*
         CARGA ACADÉMICA
@@ -69,7 +52,9 @@ class AsignacionProfesorController extends Controller
      */
     public function create_asignacion( $user_id )
     {
-        $this->set_variables_globales();       
+        $this->set_variables_globales();
+        
+        $profesores = Profesor::opciones_campo_select();
 
         $profesor = User::findOrFail( $user_id );
         $periodo_lectivo = PeriodoLectivo::get_actual();
@@ -82,7 +67,7 @@ class AsignacionProfesorController extends Controller
 
         $miga_pan = MigaPan::get_array( $this->app, $this->modelo, 'Asignación carga académica' );
 
-        return view('academico_docente.profesores.create_asignacion',compact( 'periodos_lectivos','periodo_lectivo', 'profesor', 'listado_asignaciones', 'cursos', 'miga_pan'));
+        return view('academico_docente.profesores.create_asignacion',compact( 'periodos_lectivos','periodo_lectivo', 'profesor', 'listado_asignaciones', 'cursos', 'miga_pan', 'profesores'));
     }
 
     /*

@@ -6,14 +6,23 @@
 
 	@include('layouts.mensajes')
 
+	@can('CALI: Asignacion asignaturas')
+		<a class="btn btn-primary btn-sm" href="{{ url( 'calificaciones/asignar_asignaturas?id=2&id_modelo=' ) }}" title="Revisar Asignaciones de Asignaturas" target="_blank"><i class="fa fa-eye"></i> Revisar Asignaciones de Asignaturas </a>
+		<br><br>
+	@endcan	
+
 	<div class="row">
 		<div class="col-md-8 col-md-offset-2" style="background-color: white;border: 1px solid #d9d7d7;box-shadow: 5px 5px gray;">
-		    <h4 style="color: gray;">Profesor <b style="color: red;">{{ $profesor->name }} <small>{{ $profesor->email }}</small></b></h4>
+
+		    <h4 style="color: gray;">Asignación carga académica</h4>
 		    <hr>
 			
 			{{ Form::open(['url'=>'academico_docente/profesores/guardar_asignacion','id'=>'formulario']) }}
 
-
+				<div class="row" style="padding:5px;">
+					{{ Form::bsSelect('id_user', $profesor->id, 'Profesor', $profesores, ['required'=>'required']) }}
+				</div>
+				
 				<div class="row" style="padding:5px;">
 					{{ Form::bsSelect('periodo_lectivo_id', $periodo_lectivo->id,'Año lectivo', $periodos_lectivos,['required'=>'required']) }}
 				</div>
@@ -26,14 +35,14 @@
 				<div class="row" style="padding:5px;">
 					{{Form::bsSelect('id_asignatura', null, 'Asignatura',[], ['required'=>'required'])}}
 				</div>
-
-				{{ Form::hidden('id_user',$profesor->id, [ 'id' => 'id_user']) }}
 					
 			{{ Form::close() }}
-					
-			<button class="btn btn-success btn-sm" id="btn_guardar">Guardar</button>
 			
-			<br/><br/>
+			<div style="width:100%; text-align:center;">
+				<button class="btn btn-success btn-sm" id="btn_guardar">Guardar</button>
+			</div>
+		    <hr>
+			
 			<div class="alert alert-danger" id="div_error" style="display: none;">
 				<em> {!! session('mensaje_error') !!}</em>
 			</div>
@@ -71,6 +80,7 @@
 			</div>
 		</div>
 	</div>
+		<br><br><br><br>
 @endsection
 
 @section('scripts')
@@ -79,7 +89,16 @@
 
 			$('#btn_excel').show();
 
-			$("#curso_id").focus();
+			$("#curso_id").focus();			
+		    
+		    $("#id_user").on('change',function(){
+		    	resetear_controles();
+				$("#periodo_lectivo_id").val('');
+				$("#curso_id").val('');
+		    	$('#tabla_asignaciones').html('');
+				
+				$("#periodo_lectivo_id").focus();
+			});
 		    
 		    $("#periodo_lectivo_id").on('change',function(){
 		    	resetear_controles();

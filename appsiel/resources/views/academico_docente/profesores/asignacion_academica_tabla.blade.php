@@ -1,10 +1,10 @@
 <div class="table-responsive">
 
+	<h4 style="color: gray;">Profesor <b style="color: red;">{{ $profesor->name }}</b></h4>
+	
+
 	<table class="table table-striped table-bordered" id="lista_asignaciones">
 		<thead>
-			<tr>
-				<th colspan="4"><h4 style="color: gray;">Profesor <b style="color: red;">{{ $profesor->name }}</b></h4></th>
-			</tr>
 			<tr>
 				<th>Curso</th>
 				<th>Asignatura</th>

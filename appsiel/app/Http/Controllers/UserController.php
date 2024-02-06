@@ -46,7 +46,8 @@ class UserController extends ModeloController
             					'empresa_id'=>Auth::user()->empresa_id, 
             					'name'=>$request->name,
             					'email'=>$request->email, 
-            					'password'=>Hash::make($request->password)
+            					'password'=>Hash::make($request->password),
+            					'estado' => $request->estado
                             ]);
 		
 		$role_r = Role::where('id', '=', $request->role)->firstOrFail();            

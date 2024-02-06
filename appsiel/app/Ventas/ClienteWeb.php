@@ -146,7 +146,8 @@ class ClienteWeb extends Model
             'empresa_id' => 1,
             'name' => $name,
             'email' => $datos['email'],
-            'password' => Hash::make( $datos['password'] )
+            'password' => Hash::make( $datos['password'] ),
+            'estado' => 'Activo'
         ]);
 
         $role_id = 16; // Cliente

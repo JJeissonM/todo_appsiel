@@ -74,7 +74,8 @@ class InmuebleController extends Controller
                         'empresa_id'=>Auth::user()->empresa_id, 
                         'name'=>$name,
                         'email'=>$email, 
-                        'password'=>Hash::make($pass) ]);
+                        'password'=>Hash::make($pass),
+                        'estado' => 'Activo' ]);
 
 
 
@@ -165,7 +166,8 @@ class InmuebleController extends Controller
                             'empresa_id'=>Auth::user()->empresa_id, 
                             'name'=>$name,
                             'email'=>$email, 
-                            'password'=>Hash::make($pass) ]);
+                            'password'=>Hash::make($pass),
+                            'estado' => 'Activo' ]);
 
             $role_id = 8; // 8 = Residentes
             

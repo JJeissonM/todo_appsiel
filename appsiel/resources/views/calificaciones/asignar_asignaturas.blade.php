@@ -8,7 +8,7 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-		    <h4>Asignaciones</h4>
+		    <h4>Asignaciones Curso-Asignatura</h4>
 		    <hr>
 			
 			{{ Form::open(['url'=>'calificaciones/guardar_asignacion_asignatura?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'id'=>'formulario']) }}
