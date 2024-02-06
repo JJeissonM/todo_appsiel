@@ -65,8 +65,12 @@ class DocSoporte
           $response = $e->getResponse();
       }
 
-      $array_respuesta = json_decode( (string) $response->getBody(), true );
-      $array_respuesta['codigo'] = $response->getStatusCode();
+      $array_respuesta = [];
+      $array_respuesta['codigo'] = '500';
+      if ($response != null) {
+         $array_respuesta = json_decode( (string) $response->getBody(), true );
+         $array_respuesta['codigo'] = $response->getStatusCode();
+      }      
       
       $obj_resultado = new ResultadoEnvioDocSoporte;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );
