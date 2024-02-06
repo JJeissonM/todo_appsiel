@@ -67,6 +67,7 @@ class DocSoporte
 
       $array_respuesta = [];
       $array_respuesta['codigo'] = '500';
+      $array_respuesta['errors'] = 'Interno. Error de conexión con el servidor.';
       if ($response != null) {
          $array_respuesta = json_decode( (string) $response->getBody(), true );
          $array_respuesta['codigo'] = $response->getStatusCode();
