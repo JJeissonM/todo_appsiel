@@ -250,7 +250,7 @@ class InvMovimiento extends Model
                     ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                     ->select(DB::raw('sum(inv_movimientos.cantidad) as mCantidad'),DB::raw('sum(inv_movimientos.costo_total) as mCosto'))
                     ->get()
-                    ->toArray();    
+                    ->toArray();
         return $sql_saldo_inicial[0];
     }
 
