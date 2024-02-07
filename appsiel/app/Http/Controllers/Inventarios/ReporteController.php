@@ -217,7 +217,7 @@ class ReporteController extends Controller
         $cantidad_saldo = 0;
         $costo_total_saldo = 0;  
         $costo_unit_saldo = 0;          
-        if ( $saldo_inicial['mCantidad'] != 0 )
+        if ( $saldo_inicial['mCantidad'] >= -0.1 &&  $saldo_inicial['mCantidad'] <= 0.1)
         {
             $cantidad_saldo = $saldo_inicial['mCantidad'];
             $costo_total_saldo = $saldo_inicial['mCosto'];
