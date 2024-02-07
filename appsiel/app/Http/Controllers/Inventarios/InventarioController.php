@@ -102,10 +102,10 @@ class InventarioController extends TransaccionController
                     ->addNumberColumn('Cantidad');
 
                 foreach ($movimientos['registros'][$i] as $registro) {
-                    $stocksTable->addRow([$registro['Producto'], (float) $registro['Cantidad']]);
+                    $stocksTable->addRow([$registro['Producto'], round($registro['Cantidad'], 2)]);
                     // Se valida si los productos tienen cantidad mayor que cero
                     // Si al menos un producto tiene existencia, se dibuja la grafica
-                    if ((float) $registro['Cantidad'] > 0) {
+                    if (round($registro['Cantidad'], 2) > 0) {
                         $dibujar_grafica = true;
                     }
                 }
