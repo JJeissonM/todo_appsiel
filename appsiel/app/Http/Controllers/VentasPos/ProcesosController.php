@@ -13,6 +13,7 @@ use App\VentasPos\FacturaPos;
 
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\DocRegistro;
+use App\VentasPos\Movimiento;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\SalesServices;
 use Illuminate\Support\Facades\Input;
@@ -40,6 +41,13 @@ class ProcesosController extends Controller
         }
 
         // Eliminar movimientos actuales
+        Movimiento::where([
+            ['core_tipo_transaccion_id','=', $documento->core_tipo_transaccion_id],
+            ['core_tipo_doc_app_id','=', $documento->core_tipo_doc_app_id],
+            ['consecutivo','=', $documento->consecutivo]
+        ])
+        ->delete();
+
         VtasMovimiento::where([
                 ['core_tipo_transaccion_id','=', $documento->core_tipo_transaccion_id],
                 ['core_tipo_doc_app_id','=', $documento->core_tipo_doc_app_id],
@@ -60,7 +68,13 @@ class ProcesosController extends Controller
             VtasMovimiento::create( 
                 $datos +
                 $linea->toArray()
+            );            
+
+            Movimiento::create(
+                $datos +
+                $linea->toArray()
             );
+
             $total_documento += $linea->precio_total;
         }
 
