@@ -1,6 +1,6 @@
-<div class="row" style="font-size: 14px; line-height: 1.5;">
+<div class="col-md-12">
     
-    @include('contratos_transporte.contratos.logos_encabezado_print',['empresa'=>$emp])
+    @include( 'contratos_transporte.contratos.logos_encabezado_print', compact('empresa') )
     
     @include('contratos_transporte.contratos.encabezado_titulo_y_numero_contrato', ['nro' => $p->nro] )
 

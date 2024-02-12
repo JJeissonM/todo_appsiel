@@ -1,5 +1,5 @@
-<div class="row" style="font-size: 12px !important; line-height: 1.2;">
-    @include('contratos_transporte.contratos.logos_encabezado_print')
+<div class="col-md-12">
+    @include( 'contratos_transporte.contratos.logos_encabezado_print', compact('empresa') )
     
     @include('contratos_transporte.contratos.encabezado_titulo_y_numero_contrato', ['nro' => $p->nro])
 
