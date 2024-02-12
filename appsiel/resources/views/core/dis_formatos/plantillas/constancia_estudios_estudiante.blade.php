@@ -75,12 +75,18 @@
 		</footer>
 
 			<br><br>
-			
-		<div align="center" style="font-size: 1.1em;">
+
+		@if(config('matriculas.banner_reportes') == 'imagen')
+			<div style="width: 100%;">
+				<img src="{{ config('matriculas.url_imagen_banner') }}" height="150px"/>
+			</div>
+		@else
+			<div align="center" style="font-size: 1.1em;">
 				<b>{{ $colegio->descripcion }}</b><br/>
 				{{ $colegio->resolucion }}. <br> Expedida por Secretaria de Educación Municipal <br/>
 				{{ $colegio->ciudad }}<br/><hr>
-		</div>
+			</div>
+		@endif
 
 		<br><br><br>
 

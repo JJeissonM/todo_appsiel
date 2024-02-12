@@ -3,7 +3,7 @@
         <tr>
             <td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 12px;">@if($empresa!=null) {{$empresa->direccion1." - "}} @endif {{$v->direccion}}<br> @if($empresa!=null) {{$empresa->telefono1." - "}} @endif {{$v->telefono}}<br><a> @if($empresa!=null) {{$empresa->email." - "}} @endif {{$v->correo}}</a></td>
             <td class="border" style="width: 20%; text-align: center; font-weight: bold; margin-top: 10px !important;">
-                <img src="{{config('contratos_transporte.url_imagen_sello_empresa')}}" style="max-width: 120px;">
+                <img src="{{config('contratos_transporte.url_imagen_sello_empresa')}}" style="max-height: 70px;">
                 <br>Sello
             </td>
             <td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 14px;">

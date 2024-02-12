@@ -43,22 +43,18 @@
 
 		.watermark-letter {
 			position: fixed;
-			top: 12%;
-			left: 15%;
+			top: 7%;
 			text-align: center;
 			opacity: .2;
 			z-index: -1000;
-			width: 70%;
 		}
 
 		.watermark-folio {
 			position: fixed;
-			top: 20%;
-			left: 15%;
+			top: 15%;
 			text-align: center;
 			opacity: .2;
 			z-index: -1000;
-			width: 70%;
 		}
 
 		.escudo img {
