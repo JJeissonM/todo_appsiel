@@ -301,6 +301,36 @@
 					</div>
 
 				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$footer_reportes = 'renderizado';
+								if( isset($parametros['footer_reportes'] ) )
+								{
+									$footer_reportes = $parametros['footer_reportes'];
+								}
+							?>
+							{{ Form::bsSelect('footer_reportes', $footer_reportes, 'Tipo de Footer para reportes', ['renderizado'=>'Renderizado (View)','imagen' => 'Imágen fija'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$url_imagen_footer = '';
+								if( isset($parametros['url_imagen_footer'] ) )
+								{
+									$url_imagen_footer = $parametros['url_imagen_footer'];
+								}
+							?>
+							{{ Form::bsText('url_imagen_footer', $url_imagen_footer, 'URL de la imágen para el footer de reportes', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 				
 				<div class="row">
 					<div class="col-md-6">

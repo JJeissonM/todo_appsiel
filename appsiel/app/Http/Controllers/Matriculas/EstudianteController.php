@@ -260,8 +260,8 @@ class EstudianteController extends ModeloController
         $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra','colegio'))->render();
 
         $vista = View::make( 'layouts.pdf3', compact('view') )->render();
-
-        Cache::forever( 'pdf_reporte_' . $formato, $vista );
+        
+        Cache::forever( 'pdf_reporte_999', $vista );
 
         return $view;
         //crear PDF

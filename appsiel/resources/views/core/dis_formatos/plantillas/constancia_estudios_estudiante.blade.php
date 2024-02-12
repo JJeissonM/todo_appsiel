@@ -33,7 +33,6 @@
 	    top: 15%;
 	    text-align: center;
 	    opacity: .2;
-	    z-index: -1000;
 	  }
 
 	.escudo img{
@@ -43,11 +42,12 @@
 	}
 	footer { 
     	position: fixed; 
-    	bottom: -70px; 
+    	bottom: -10px; 
     	left: 0px; 
     	right: 0px; 
-    	height: 40px;
+    	/*height: 40px;*/
     	text-align: center;
+	    z-index: -1000;
     }
  </style>
 
@@ -68,16 +68,23 @@
 		<div class="watermark-{{$tam_hoja}} escudo">
 		    <img src="{{ $url }}"/>
 		</div> 
+
 		<footer style="border: none">
-			<hr>
-			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
-			<div style="text-align: center">{{ $colegio->ciudad }}</div>
+			@if(config('matriculas.footer_reportes') == 'imagen')
+				<div style="width: 100%; text-align: center;">
+					<img src="{{ config('matriculas.url_imagen_footer') }}" style="height:105px;  width: 850px;"/>
+				</div>
+			@else
+				<hr>
+				<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}</div>
+				<div style="text-align: center">{{ $colegio->ciudad }}</div>
+			@endif			
 		</footer>
 
-			<br><br>
+		<br><br>
 
 		@if(config('matriculas.banner_reportes') == 'imagen')
-			<div style="width: 100%;">
+			<div style="width: 100%; text-align: center;">
 				<img src="{{ config('matriculas.url_imagen_banner') }}" height="150px"/>
 			</div>
 		@else

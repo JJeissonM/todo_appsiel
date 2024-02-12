@@ -474,10 +474,21 @@ class ReporteController extends TesoreriaController
      */
     public function ajax_reporte_cartera_por_curso(Request $request)
     {
-        return $this->generar_reporte_cartera_por_curso($request->colegio_id, $request->curso_id, $request->tipo_reporte) . '
-                    <div style="font-size: 11px; text-align: right; width: 100%;">
-                        Generado:  ' . date('Y-m-d, h:m:s') . '
-                    </div>';
+        $periodo_lectivo_id = null;
+        if ((int)$request->periodo_lectivo_id != 0) {
+            $periodo_lectivo_id = (int)$request->periodo_lectivo_id;
+        }
+
+        
+        $vista = $this->generar_reporte_cartera_por_curso($request->colegio_id, $request->curso_id, $request->tipo_reporte, $periodo_lectivo_id) . '
+        <div style="font-size: 11px; text-align: right; width: 100%;">
+            Generado:  ' . date('Y-m-d, h:m:s') . '
+        </div>';
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+
+        return $vista;
     }
 
     /**
@@ -486,7 +497,7 @@ class ReporteController extends TesoreriaController
      */
     public function teso_pdf_reporte_cartera_por_curso()
     {
-        $tabla = $this->generar_reporte_cartera_por_curso(Input::get('colegio_id'), Input::get('curso_id'), Input::get('tipo_reporte'));
+        $tabla = $this->generar_reporte_cartera_por_curso(Input::get('colegio_id'), Input::get('curso_id'), Input::get('tipo_reporte'), Input::get('periodo_lectivo_id'));
 
         $vista = '<html>
                     <head>
@@ -530,11 +541,11 @@ class ReporteController extends TesoreriaController
      * generar_reporte_cartera_por_curso
      *
      */
-    public function generar_reporte_cartera_por_curso($colegio_id, $curso_id, $tipo_reporte)
+    public function generar_reporte_cartera_por_curso($colegio_id, $curso_id, $tipo_reporte, $periodo_lectivo_id)
     {
         $this->actualizar_estado_cartera();
 
-        $todas_las_matriculas_del_curso = Matricula::estudiantes_matriculados($curso_id, null, null);
+        $todas_las_matriculas_del_curso = Matricula::estudiantes_matriculados($curso_id, $periodo_lectivo_id, null);
 
         switch ($tipo_reporte) {
             case '0':
@@ -579,10 +590,17 @@ class ReporteController extends TesoreriaController
 
         $total_columna = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+        $config_campo_visualizar_en_reporte_cartera = config('tesoreria.campo_visualizar_en_reporte_cartera');
+
         foreach ( $todas_las_matriculas_del_curso as $una_matricula ) 
         {
             $total_linea = 0;
-            $num_columna = 0;            
+            $num_columna = 0;
+
+            $campo_visualizar_en_reporte_cartera = ' ('.$una_matricula->codigo .')';
+            if ($config_campo_visualizar_en_reporte_cartera == 'anio_lectivo') {
+                $campo_visualizar_en_reporte_cartera = ' ('.$una_matricula->periodo_lectivo->descripcion .')';
+            }
 
             // Se obtiene la libreta Activa de ese estudiante para el año de la matríula activa
             $libreta_pagos = TesoLibretasPago::where('estado','Activo')
@@ -596,7 +614,7 @@ class ReporteController extends TesoreriaController
                 // PRIMERAS DOS COLUMNAS DE LA TABLA
                 $tabla.='<tr>
                             <td>'.$fila.'</td>
-                            <td>'.$una_matricula->nombre_completo.' ('.$una_matricula->periodo_lectivo->descripcion.')'.'</td>';
+                            <td>'.$una_matricula->nombre_completo . $campo_visualizar_en_reporte_cartera .'</td>';
 
                 //Matrícula
 

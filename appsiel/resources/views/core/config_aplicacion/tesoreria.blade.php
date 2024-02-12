@@ -127,6 +127,7 @@
 					</div>
 
 				</div>
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -200,6 +201,31 @@
 							&nbsp;
 						</div>
 					</div>
+				</div>
+
+				<h4> Parámetros reporte cartera Estudiantes  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$campo_visualizar_en_reporte_cartera = 'codigo_matricula';
+								if( isset($parametros['campo_visualizar_en_reporte_cartera'] ) )
+								{
+									$campo_visualizar_en_reporte_cartera = $parametros['campo_visualizar_en_reporte_cartera'];
+								}
+							?>
+							{{ Form::bsSelect('campo_visualizar_en_reporte_cartera', $campo_visualizar_en_reporte_cartera, 'Campo a visualizar en reporte cartera', [ 'anio_lectivo' => 'Año lectivo de la matrícula', 'codigo_matricula' => 'Código de la matrícula'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
 				</div>
 
 				<br><br>

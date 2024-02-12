@@ -12,7 +12,7 @@
 				</div>
 				
 				<div class="panel-body">
-					{{ Form::open(['url'=>'matriculas_estudiantes_generar_listado','id'=>'formulario_inicial']) }}
+					{{ Form::open(['url'=>'matriculas_estudiantes_generar_listado','id'=>'form_consulta']) }}
 					
 						<div class="row" style="padding:5px;">
                             {{ Form::bsSelect('tipo_listado', null, 'Tipo de listado', ['1'=>'Listado de estudiantes', '2'=>'Ficha de datos básicos', '3'=>'Listado de datos básicos', '4'=>'Listado de usuarios', '5'=>'Datos de matrículas y pensiones'], []) }}
@@ -52,11 +52,25 @@
 		</div>
 
 		<div class="col-sm-8">
-			{{ Form::bsBtnExcelV2( 'listado_estudiantes' ) }}
-			{{ Form::bsBtnPdf( 'listado_estudiantes' ) }}
-
-			<div class="marco_formulario" id="div_resultado" style="width: 100%; overflow: auto; white-space: nowrap;">
-			</div>			
+			<div class="col-md-12 marco_formulario">
+			
+			
+				<div style="display: flex; justify-content: justify-content-center">
+					<span>				
+						{{ Form::bsBtnPdf( 'Listado de estudiantes' ) }}
+						{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
+					</span>
+				</div> 
+				{{ Form::Spin( 42 ) }}
+				<div class="table-responsive" id="table_content" >
+					<div id="resultado_consulta" style="position: relative">
+	
+					</div>
+				</div>	
+				  
+				<br/>			
+				
+			</div>	
 		</div>
 	</div>
 @endsection
@@ -64,6 +78,9 @@
 @section('scripts')
 	<script type="text/javascript">
 		$(document).ready(function(){
+
+			var URL = "{{ url('/') }}";
+			var url_pdf_ori = $('#btn_pdf').attr('href');
 
 			$('#sga_grado_id').change( function(){
 				var grado_id = $('#sga_grado_id').val();
@@ -86,57 +103,48 @@
 				}
 			});
 
-
-			var url_pdf_ori = $('#btn_pdf').attr('href');
-			$("#btn_generar").on('click',function(event){
-		    	event.preventDefault();
-
-		    	if ( !validar_requeridos() )
-		    	{
-		    		return false;
-		    	}
-
-				$('#btn_excel_v2').hide();
+			// Click para generar la consulta
+			$('#btn_generar').click(function(event){
+				event.preventDefault();
+				$('#resultado_consulta').html( "" );
+				$('#btn_excel').hide();
 				$('#btn_pdf').hide();
 
 				$('#btn_pdf').attr('href', url_pdf_ori);
 
-		 		$("#div_spin").show();
-		 		$("#div_cargando").show();
-				$("#div_resultado").html('');
+				if( !validar_requeridos() )
+				{
+					return false;
+				}
 
-				var form = $('#formulario_inicial');
-				var url = form.attr('action');
-				var datos = new FormData(document.getElementById("formulario_inicial"));
+				$('#div_cargando').show();
+				$('#div_spin').show();
 
-				$.ajax({
-				    url: url,
-				    type: "post",
-				    dataType: "html",
-				    data: datos,
-				    cache: false,
-				    contentType: false,
-				    processData: false
-				})
-			    .done(function( respuesta ){
-			        $('#div_cargando').hide();
-        			$("#div_spin").hide();
+				// Preparar datos de los controles para enviar formulario
+				var form_consulta = $('#form_consulta');
+				var url = form_consulta.attr('action');
+				var datos = form_consulta.serialize();
+				// Enviar formulario vía POST
+				$.post(url,datos,function(respuesta){
+					$('#div_cargando').hide();
+					$('#div_spin').hide();
+					$('#resultado_consulta').html(respuesta);
 
-        			$("#div_resultado").html( respuesta );
-        			$("#div_resultado").fadeIn( 1000 );
-        			
-					$('#btn_excel_v2').show(500);
+					$('.columna_oculta').show();
+					$('#btn_excel').show(500);
 					$('#btn_pdf').show(500);
 
 					var url_pdf = $('#btn_pdf').attr('href');
 					var n = url_pdf.search('a3p0');
 					if ( n > 0) {
-						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/' + 'pdf_estudiantes' + $("#tipo_listado").val() + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
+						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/999' + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
 					}
 					
 					$('#btn_pdf').attr('href', new_url);
-			    });
-		    });
+				});
+			});
+
+			//var url_pdf_ori = $('#btn_pdf').attr('href');
 		});
 	</script>
 @endsection
