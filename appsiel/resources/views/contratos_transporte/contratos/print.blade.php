@@ -151,7 +151,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 <body id="app-layout">
 	<div class="container-fluid">
 		<div class="row">
-			@include('contratos_transporte.contratos.logos_encabezado_print')
+			@include('contratos_transporte.contratos.logos_encabezado_print',['empresa'=>$emp])
 			<div class="row">
 				<div class="col-md-12" style="text-align: center; font-weight: bold; font-size: 14px;">
 					<p><b>CONTRATO DE PRESTACION DE SERVICIO DE TRANSPORTE N° {{$c->numero_contrato}}</b><br><b>TRANSPORTE GRUPO ESPECIFICO DE USUARIOS</b></p>
@@ -248,7 +248,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 		</div>
 
 		<div class="row" style="font-size: 14px; line-height: 1.5;">
-			@include('contratos_transporte.contratos.logos_encabezado_print')
+			@include('contratos_transporte.contratos.logos_encabezado_print',['empresa'=>$emp])
 			@include('contratos_transporte.contratos.planilla_fuec',['empresa'=>$emp])
 		</div>
 		
