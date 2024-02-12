@@ -402,20 +402,44 @@ class ContratoTransporteController extends Controller
         if ($c->estado == 'ANULADO') {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
-        $miga_pan = [
-            [
-                'url' => 'contratos_transporte' . '?id=' . $idapp,
-                'etiqueta' => 'Contratos transporte'
-            ],
-            [
-                'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                'etiqueta' => 'Contratos'
-            ],
-            [
-                'url' => 'NO',
-                'etiqueta' => 'Ver Contrato'
-            ]
-        ];
+
+        if ( Auth::user()->hasRole('Vehículo (FUEC)') ) {
+            $miga_pan = [
+                [
+                    'url' => 'contratos_transporte' . '?id=' . $idapp,
+                    'etiqueta' => 'Contratos transporte'
+                ],
+                [
+                    'url' => 'cte_contratos_propietarios' . '?id=' . $idapp . '&id_modelo=' . $modelo . '&id_transaccion=' . $transaccion,
+                    'etiqueta' => 'Mis Contratos'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Ver Contrato'
+                ]
+            ];
+
+            $route = 'MISCONTRATOS';
+        }else{
+        
+            $miga_pan = [
+                [
+                    'url' => 'contratos_transporte' . '?id=' . $idapp,
+                    'etiqueta' => 'Contratos transporte'
+                ],
+                [
+                    'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
+                    'etiqueta' => 'Contratos'
+                ],
+                [
+                    'url' => 'NO',
+                    'etiqueta' => 'Ver Contrato'
+                ]
+            ];
+
+            $route = 'CONTRATOS';
+        }
+
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         $contratante = $c->contratante;
         $vehiculo = $c->vehiculo;
@@ -431,6 +455,7 @@ class ContratoTransporteController extends Controller
             ->with('c', $c)
             ->with('v', $v)
             ->with('contratante', $contratante)
+            ->with('route', $route)
             ->with('vehiculo', $vehiculo)
             ->with('e', $emp);
     }
@@ -580,7 +605,6 @@ class ContratoTransporteController extends Controller
         }
     }
 
-
     //index de planillas de contratos
     public function planillaindex($id, $source)
     {
@@ -598,6 +622,10 @@ class ContratoTransporteController extends Controller
                 [
                     'url' => 'cte_contratos_propietarios' . $variables_url,
                     'etiqueta' => 'Mis Contratos'
+                ],
+                [
+                    'url' => 'cte_contratos/' . $id . '/show' . $variables_url,
+                    'etiqueta' => 'Ver Contrato'
                 ],
                 [
                     'url' => 'NO',

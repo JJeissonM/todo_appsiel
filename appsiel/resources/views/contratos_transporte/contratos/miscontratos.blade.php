@@ -61,7 +61,7 @@
 								<td>
 									@if($c['contrato']->estado=='ACTIVO')
 										@if($c['bloqueado']=='NO')
-											<a href="{{route('cte_contratos.planillaindex',[$c['contrato']->id,'MISCONTRATOS']).$variables_url}}" class="btn-gmail" title="Consultar"><i class="fa fa-eye"></i></a>
+											<a href="{{ url('/') . '/cte_contratos/' . $c['contrato']->id . '/show' . $variables_url}}" class="btn-gmail" title="Consultar"><i class="fa fa-eye"></i></a>
 
 											<a target="_blank" href="{{route('cte_contratos.imprimir',$c['contrato']->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
 										@else

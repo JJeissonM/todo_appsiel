@@ -32,7 +32,10 @@
 					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Ver Contrato</h4>
 					<div class="panel-body">
 						<div class="col-md-12" style="padding: 50px;">
-						<a href="{{route('cte_contratos.planillaindex',[$c->id,'CONTRATOS']).$variables_url}}" class="btn btn-primary"><i class="fa fa-arrow-right"></i> GENERAR E IMPRIMIR PLANILLAS FUEC PARA ESTE CONTRATO</a>
+						<a href="{{route('cte_contratos.planillaindex',[$c->id,$route]).$variables_url}}" class="btn btn-primary">
+							<i class="fa fa-arrow-right"></i> 
+							GENERAR E IMPRIMIR PLANILLAS FUEC PARA ESTE CONTRATO
+						</a>
 							<div class="col-md-12 page" style="margin-top: 30px;">
 								<h3 style="text-align: center;"><i class="fa fa-eye"></i> Vista Previa <i class="fa fa-eye"></i> </h3>
 								<table style="width: 100%;">
@@ -70,28 +73,36 @@
 											en representación de <b>{{$c->representacion_de}}</b>
 										</p>
 										<div class="table-responsive col-md-12" id="table_content">
-											<h4>LISTADO GRUPO DE USUARIOS</h4>
+											<h4>LISTADO DE PASAJEROS DE LOS SERVICIOS CONTRATADOS</h4>
 											<table class="table table-bordered table-striped">
 												<thead>
 													<tr>
+														<th>Nro.</th>
 														<th>Identificación</th>
-														<th>Persona</th>
+														<th>Nombre Completo</th>
 														<th>Eliminar del Contrato</th>
 													</tr>
 												</thead>
 												<tbody>
 													@if(count($c->contratogrupous)>0)
-													@foreach($c->contratogrupous as $p)
-													<tr>
-														<td>{{$p->identificacion}}</td>
-														<td>{{$p->persona}}</td>
-														<td><a class="btn btn-xs btn-danger" href="{{route('cte_contratos.deletegu',$p->id).$variables_url}}"><i class="fa fa-trash-o"></i></a></td>
-													</tr>
-													@endforeach
+														<?php  
+															$i = 1;
+														?>
+														@foreach($c->contratogrupous as $p)
+														<tr>
+															<td>{{$i}}</td>
+															<td>{{$p->identificacion}}</td>
+															<td>{{$p->persona}}</td>
+															<td><a class="btn btn-xs btn-danger" href="{{route('cte_contratos.deletegu',$p->id).$variables_url}}"><i class="fa fa-trash-o"></i></a></td>
+														</tr>
+														<?php  
+															$i++;
+														?>
+														@endforeach
 													@endif
 												</tbody>
 											</table>
-											<a onclick="addRow('usuarios')" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Usuario</a>
+											<a onclick="addRow('usuarios')" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar pasajero</a>
 											{{ Form::open(['route'=>'cte_contratos.storegu','method'=>'post','class'=>'form-horizontal','id'=>'form_agregar_usuario']) }}
 											<input type="hidden" name="variables_url" value="{{$variables_url}}" />
 											<input type="hidden" name="id" value="{{$c->id}}" />
@@ -99,7 +110,7 @@
 												<thead>
 													<tr>
 														<th>Identificación</th>
-														<th>Persona</th>
+														<th>Nombre Completo</th>
 														<th>Agregar</th>
 													</tr>
 												</thead>
@@ -210,7 +221,41 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('.select2').select2();
+
+
 	});
+
+		$(document).on('keyup', '#cc_persona', function (event) {
+			event.preventDefault();
+
+			var codigo_tecla_presionada = event.which || event.keyCode;
+
+			switch (codigo_tecla_presionada) {
+				case 13: // Al presionar Enter
+					$('#nombre_persona').select();
+					break;
+				default :
+					break;
+			}
+
+		});
+
+		$(document).on('keyup', '#nombre_persona', function (event) {
+			event.preventDefault();
+
+			var codigo_tecla_presionada = event.which || event.keyCode;
+
+			switch (codigo_tecla_presionada) {
+				case 13: // Al presionar Enter
+
+					$('#btn_agregar_usuario').focus();
+
+					break;
+				default :
+					break;
+			}
+
+		});
 
 	$(document).on('click', '.delete', function(event) {
 		event.preventDefault();
@@ -225,8 +270,9 @@
 	});
 
 	function addRow(tabla) {
-		var html = "<tr><td><input autocomplete='off' style='margin: 10px; border-right: 2px gray solid; border-bottom: 2px gray solid; width: 80%; background-color: #ddd;' type='text' class='form-control' name='identificacion[]' required /></td><td><input autocomplete='off' style='margin: 10px; border-right: 2px gray solid; border-bottom: 2px gray solid; width: 80%; background-color: #ddd;' type='text' class='form-control' name='persona[]' required /></td><td><a href='#' class='btn btn-success' id='btn_agregar_usuario' title='Agregar'><i class='fa fa-check'></i></a></td></tr>";
+		var html = "<tr><td><input autocomplete='off' style='margin: 10px; border-right: 2px gray solid; border-bottom: 2px gray solid; width: 80%; background-color: #ddd;' type='text' class='form-control' name='identificacion[]' id='cc_persona' required /></td><td><input autocomplete='off' style='margin: 10px; border-right: 2px gray solid; border-bottom: 2px gray solid; width: 80%; background-color: #ddd;' type='text' class='form-control' name='persona[]' id='nombre_persona' required /></td><td><a href='#' class='btn btn-success' id='btn_agregar_usuario' title='Agregar'><i class='fa fa-check'></i></a></td></tr>";
 		$('#' + tabla + ' tbody:last').after(html);
+		$('#cc_persona').select();
 	}
 </script>
 @endsection

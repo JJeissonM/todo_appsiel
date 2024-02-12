@@ -2,13 +2,9 @@
 
 use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 ?>
-<table style="width: 100%;">
-    <tbody>
-        <tr>
-            <td class="border" style="width: 100%; text-align: center; font-weight: bold;">{{$v->titulo}} <br> N° {{$p->nro}}</td>
-        </tr>
-    </tbody>
-</table>
+
+@include('contratos_transporte.contratos.encabezado_titulo_y_numero_contrato', ['nro' => $p->nro])
+
 <table style="width: 100%;">
     <tbody>
         <tr>
