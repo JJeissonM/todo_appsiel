@@ -162,8 +162,6 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 				@include('contratos_transporte.contratos.logos_encabezado_print',['emp'=>$empresa])
 				@include('contratos_transporte.contratos.planilla_fuec')
 			</div>
-
-			<div class="page-break"></div>
 			
 			@include('contratos_transporte.contratos.planilla_fuec_backside')
 		</div>
