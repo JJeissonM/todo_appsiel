@@ -509,8 +509,8 @@ class ContratoTransporteController extends Controller
         $p = Planillac::where('contrato_id', $id)->first();
         $conductores = $p->planillaconductors;
         $url = route('cte_contratos.planillaverificar', $p->id);
-        $emp = null;
-        $emp = Empresa::find(1);
+        //$empresa = null;
+        $empresa = Empresa::find(1);
         $contratante = null;
         if ($c->contratante_id != null) {
             $contratante = $c->contratante;
@@ -552,7 +552,7 @@ class ContratoTransporteController extends Controller
             }
         }
         
-        $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'emp', 'representante_legal_contratante'))->render();
+        $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'empresa', 'representante_legal_contratante'))->render();
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');

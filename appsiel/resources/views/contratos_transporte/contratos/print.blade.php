@@ -158,7 +158,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 				</div>
 				<div class="col-md-12" style="text-align: justify; font-size: 11px;">
 					<p>Entre los suscritos a saber <b>{{$c->rep_legal}}</b>
-						en representación de la empresa <b>{{$emp->descripcion}}</b> con Nit. <b>{{$emp->numero_identificacion."-".$emp->digito_verificacion}}</b>, legalmente constituida
+						en representación de la empresa <b>{{$empresa->descripcion}}</b> con Nit. <b>{{$empresa->numero_identificacion."-".$empresa->digito_verificacion}}</b>, legalmente constituida
 						y habilitada por el ministerio de transporte para la prestación del servicio transporte
 						especial, de aquí en adelante el <b>CONTRATISTA</b>, y por otro lado <b>EL CONTRATANTE</b>
 						en representación de <b>{{$c->representacion_de}}</b>
