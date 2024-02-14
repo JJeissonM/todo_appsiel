@@ -93,17 +93,12 @@ class DocumentoSoporteService
       ];
    }
 
-   public function get_linea_empleado($registro_concepto,$concepto,$amount,$registros)
-   {         
-      if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías
-         return [];
-      }
-
+   public function get_linea_empleado($registro_concepto, $concepto, $amount, $registros)
+   {
       $one_line = [];
 
       $one_line['status'] = 'success';
       $one_line['code'] = 0;
-      $one_line['amount'] = 0;
       $one_line['amount'] = 0;
       
       if ($concepto->cpto_dian == null) {
@@ -111,8 +106,27 @@ class DocumentoSoporteService
          $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN.';
          return $one_line;
       }
+
+      $codigo_cpto_dian = $concepto->cpto_dian->codigo;
+
+      $skip = false;   
+      if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías. Se agrega como subconcepto de las Cesantías
+         foreach ($registros as $registro) {
+            if ($registro->concepto->modo_liquidacion_id == 17) { // Intereses de cesantías
+               $skip = true;   
+            }
+         }
+         if ($skip) {
+            return [];
+         }
+
+         $one_line['percentage'] = 12;
+         $one_line['cesantias-interest'] = $registro->valor_devengo;
+         $amount = 0;
+         $codigo_cpto_dian = 'CESANTIAS';
+      }
       
-      $one_line['code'] = $concepto->cpto_dian->codigo;
+      $one_line['code'] = $codigo_cpto_dian;
       
       if ($concepto->cpto_dian->liquida_dias) {
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
@@ -138,6 +152,14 @@ class DocumentoSoporteService
                $one_line['cesantias-interest'] = $registro->valor_devengo;
             }
          }
+      }
+      
+      if($concepto->cpto_dian->id == 32) // INCAPACIDAD
+      {
+         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+         if ($registro_concepto->novedad_tnl != null) {
+            $one_line['medical-leave-type'] = strtoupper($registro_concepto->novedad_tnl->origen_incapacidad);
+         }         
       }
       
       $one_line['amount'] = $amount;
