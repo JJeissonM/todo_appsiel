@@ -865,9 +865,9 @@ $(document).ready(function () {
         if ($.isNumeric(precio_total) && precio_total > 0) 
         {
             $('#precio_total').val(precio_total);
-            $('#popup_alerta').hide();
             return true;
         } else {
+            $('#popup_alerta').hide();
             precio_total = 0;
             return false;
         }

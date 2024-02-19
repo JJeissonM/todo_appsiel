@@ -1139,7 +1139,7 @@ class FacturaPosController extends TransaccionController
     public static function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        $datos = $request->all();
+        $datos = $doc_encabezado->toArray();
 
         $total_documento = 0;
 
@@ -1152,7 +1152,8 @@ class FacturaPosController extends TransaccionController
                 continue; // Evitar guardar registros con productos NO validos
             }
             
-            $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
+            $linea_datos = ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id] +
+                            ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
                             ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
                             ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
                             ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
@@ -1163,13 +1164,12 @@ class FacturaPosController extends TransaccionController
                             ['base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total] +
                             ['tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento] +
                             ['valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento] +
+                            ['cantidad_devuelta' => 0] +
                             ['creado_por' => Auth::user()->email] +
-                            ['estado' => 'Pendiente'] +
-                            ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
+                            ['modificado_por' => ''] +
+                            ['estado' => 'Pendiente'];
 
             DocRegistro::create($linea_datos);
-
-            $datos['consecutivo'] = $doc_encabezado->consecutivo;
 
             Movimiento::create(
                                 $datos +
