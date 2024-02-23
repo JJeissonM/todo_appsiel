@@ -52,24 +52,20 @@
 		</div>
 
 		<div class="col-sm-8">
+			
+			<div style="display: flex; justify-content: justify-content-center">
+				<span>				
+					{{ Form::bsBtnPdf( 'Listado de estudiantes' ) }}
+					{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
+				</span>
+			</div> 
+			{{ Form::Spin( 42 ) }}
 			<div class="col-md-12 marco_formulario">
-			
-			
-				<div style="display: flex; justify-content: justify-content-center">
-					<span>				
-						{{ Form::bsBtnPdf( 'Listado de estudiantes' ) }}
-						{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
-					</span>
-				</div> 
-				{{ Form::Spin( 42 ) }}
 				<div class="table-responsive" id="table_content" >
 					<div id="resultado_consulta" style="position: relative">
 	
 					</div>
-				</div>	
-				  
-				<br/>			
-				
+				</div>
 			</div>	
 		</div>
 	</div>
