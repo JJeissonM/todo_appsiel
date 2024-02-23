@@ -60,12 +60,8 @@
 				</span>
 			</div> 
 			{{ Form::Spin( 42 ) }}
-			<div class="col-md-12 marco_formulario">
-				<div class="table-responsive" id="table_content" >
-					<div id="resultado_consulta" style="position: relative">
-	
-					</div>
-				</div>
+			<div class="col-md-12 marco_formulario" id="resultado_consulta" style="width: 100%; overflow: auto; white-space: nowrap;">
+				
 			</div>	
 		</div>
 	</div>
