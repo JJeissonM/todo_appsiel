@@ -3,12 +3,9 @@
 namespace App\Calificaciones\Services;
 
 use App\AcademicoDocente\AsignacionProfesor;
-use App\Calificaciones\Calificacion;
-use App\Calificaciones\CalificacionAuxiliar;
+
 use App\Calificaciones\CursoTieneAsignatura;
-use App\Calificaciones\EncabezadoCalificacion;
-use App\Calificaciones\EscalaValoracion;
-use App\Calificaciones\NotaNivelacion;
+
 use Illuminate\Support\Facades\Auth;
 
 class AsignaturasService
@@ -24,7 +21,7 @@ class AsignaturasService
         $opciones = collect([]);
         foreach ($registros as $asignatura)
         {
-            if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo') && !in_array($asignatura->id, $asignaturas_del_usuario)) {
+            if (($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) && !in_array($asignatura->id, $asignaturas_del_usuario)) {
                 continue;
             }
 

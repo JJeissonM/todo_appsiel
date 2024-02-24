@@ -89,7 +89,7 @@ class AsignacionProfesor extends Model
                                 ->first();
     }
 
-    public static function get_asignaturas_por_usuario( $user_id, $curso_id, $periodo_lectivo_id )
+    public static function get_asignaturas_por_usuario( int $user_id, int $curso_id, int $periodo_lectivo_id )
     {
         return AsignacionProfesor::where([
                                 ['periodo_lectivo_id', '=', $periodo_lectivo_id],
