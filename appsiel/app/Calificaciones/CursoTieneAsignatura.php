@@ -88,6 +88,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_asignaturas.id AS asignatura_id',
                                         'sga_asignaturas.abreviatura',
                                         'sga_asignaturas.descripcion',
+                                        'sga_asignaturas.id_colegio',
                                         'sga_curso_tiene_asignaturas.intensidad_horaria',
                                         'sga_curso_tiene_asignaturas.orden_boletin',
                                         'sga_curso_tiene_asignaturas.maneja_calificacion',
