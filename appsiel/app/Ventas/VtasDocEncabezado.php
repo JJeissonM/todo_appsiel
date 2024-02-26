@@ -104,14 +104,18 @@ class VtasDocEncabezado extends Model
     {
         $doc_padre = VtasDocEncabezado::find( $this->ventas_doc_relacionado_id );
         
-        if ( is_null( $doc_padre ) )
+        if ( $doc_padre == null )
         {
             $doc_padre = FacturaPos::find( $this->ventas_doc_relacionado_id );
         
-            if ( is_null( $doc_padre ) )
+            if ( $doc_padre == null )
             {
                 return null;
             }
+        }
+
+        if ($doc_padre->core_tipo_transaccion_id == $this->core_tipo_transaccion_id) {
+            return null;
         }
 
         return $doc_padre;
@@ -120,10 +124,18 @@ class VtasDocEncabezado extends Model
     // Doc. que se generó a partir de este
     public function documento_ventas_hijo()
     {
+        if ($this->core_tipo_transaccion_id == 42 && $this->estado == 'Pendiente') {
+            return null;
+        }
+
         $doc_hijo = VtasDocEncabezado::where( 'ventas_doc_relacionado_id', $this->id )->get()->first();
         
-        if ( is_null( $doc_hijo ) )
+        if ( $doc_hijo == null )
         {
+            return null;
+        }
+
+        if ($doc_hijo->core_tipo_transaccion_id == $this->core_tipo_transaccion_id) {
             return null;
         }
 

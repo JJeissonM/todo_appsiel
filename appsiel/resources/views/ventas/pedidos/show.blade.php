@@ -41,10 +41,12 @@
 	<b>Fecha Entrega: </b> {{ explode(' ', $doc_encabezado->fecha_entrega )[0] }} <!-- -->
 
 	@if( !$user->hasRole('SupervisorCajas') )
+		
 		@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
 			<br>
 			<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}
 		@endif
+
 		@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
 			<br>
 			<b>{{ $doc_encabezado->documento_ventas_hijo()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_hijo()->enlace_show_documento() !!}
