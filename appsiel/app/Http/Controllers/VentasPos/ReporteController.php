@@ -352,4 +352,36 @@ class ReporteController extends Controller
    
         return $vista;
     }
+
+    public function get_facturas_con_lineas_registros_sin_movimiento($fecha_desde, $fecha_hasta)
+    {
+        $facturas = FacturaPos::whereBetween('fecha',[$fecha_desde,$fecha_hasta])
+                                ->where([
+                                    ['estado','<>','Anulado']
+                                    ])
+                                ->get();
+
+        $data = [];
+        foreach ($facturas as $factura) {
+            $lineas_registros = $factura->lineas_registros;
+
+            $movimientos = Movimiento::where([
+                ['core_tipo_transaccion_id', '=', $factura->core_tipo_transaccion_id],
+                ['core_tipo_doc_app_id', '=', $factura->core_tipo_doc_app_id],
+                ['consecutivo', '=', $factura->consecutivo]
+            ])
+            ->get();
+
+            if ( $lineas_registros->count() == $movimientos->count() ) {
+                continue;
+            }
+
+            $data[] = [
+                'url' => url('/ventas_pos_reconstruir_mov_ventas_documento' . '/' . $factura->id),
+                'factura_id'=>$factura->id
+            ];
+        }
+
+        return $data;
+    }
 }
