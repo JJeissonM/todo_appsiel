@@ -15,13 +15,17 @@
             @endif
             <td class="border" style="width: 40%; text-align:center;">
                 <div style="width: 100%;">
-                    <div style="width: {{$porcentaje_ancho_ultima_celda}};float:left;">
-                        <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
-                    </div>
                     @if( config('contratos_transporte.color_emp_label') != '')
+                        <div style="width: {{$porcentaje_ancho_ultima_celda}};float:left;">
+                            <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
+                        </div>
                         <div style="width: 60%;float:right;">
                             <br/>
                             <span style="color:{{ config('contratos_transporte.color_emp_label') }}; font-weight:bold; font-size:10px;">{{ $empresa->descripcion }}</span>
+                        </div>
+                    @else
+                        <div style="width: {{$porcentaje_ancho_ultima_celda}};float:right;">
+                            <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
                         </div>
                     @endif
                 </div>
