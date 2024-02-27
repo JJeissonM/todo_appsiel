@@ -1,7 +1,7 @@
 <table class="table table-bordered table-striped">
     <tbody>
         <tr>
-            <td class="border" style="width: 30%;"><img style="width: 250px; height: 70px;" src="https://www.mintransporte.gov.co/info/mintransporte/media/galeria/thumbs/thgaleria_220X220_19757.jpg" ></td>
+            <td class="border" style="width: 38%;"><img style="width: 250px; height: 70px;" src="https://www.mintransporte.gov.co/info/mintransporte/media/galeria/thumbs/thgaleria_220X220_19757.jpg" ></td>
             <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
 
             <?php 
@@ -13,10 +13,10 @@
                     $porcentaje_ancho_ultima_celda = '38%';
                 ?>
             @endif
-            <td class="border" style="width: 40%; text-align:center;">
+            <td class="border" style="width: {{$porcentaje_ancho_ultima_celda}}; text-align:center;">
                 <div style="width: 100%;">
                     @if( config('contratos_transporte.color_emp_label') != '')
-                        <div style="width: {{$porcentaje_ancho_ultima_celda}};float:left;">
+                        <div style="width: 40%;float:left;">
                             <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
                         </div>
                         <div style="width: 60%;float:right;">
@@ -24,7 +24,7 @@
                             <span style="color:{{ config('contratos_transporte.color_emp_label') }}; font-weight:bold; font-size:10px;">{{ $empresa->descripcion }}</span>
                         </div>
                     @else
-                        <div style="width: {{$porcentaje_ancho_ultima_celda}};float:right;">
+                        <div style="width: 100%;">
                             <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
                         </div>
                     @endif
