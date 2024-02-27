@@ -115,6 +115,28 @@
 
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$sumar_efectivo_base_en_saldo_esperado = '1';
+								if( isset($parametros['sumar_efectivo_base_en_saldo_esperado'] ) )
+								{
+									$sumar_efectivo_base_en_saldo_esperado = $parametros['sumar_efectivo_base_en_saldo_esperado'];
+								}
+							?>
+							{{ Form::bsSelect('sumar_efectivo_base_en_saldo_esperado', $sumar_efectivo_base_en_saldo_esperado, 'Sumar Saldo inicial (Base) en el Saldo Esperado', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros de Impresión  </h4>
 				<hr>
 

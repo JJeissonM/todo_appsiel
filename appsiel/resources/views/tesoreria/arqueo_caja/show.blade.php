@@ -108,11 +108,23 @@
                                         <td class="subject">
                                             ${{number_format($registro->total_mov_salidas,'0',',','.')}}</td>
                                     </tr>
+
+                                    <?php  
+                                        $efectivo_base = $registro->base;
+                                        $lbl_efectivo_base = '<br>(Saldo inicial incluido)';
+                                        if( config('ventas_pos.sumar_efectivo_base_en_saldo_esperado') == 0)
+                                        {
+                                            $efectivo_base = 0;
+                                            $lbl_efectivo_base = '<br>(Sin saldo inicial)';
+                                        }
+                                    ?>
                                     <tr class="read" style="background-color: #ddd;">
-                                        <td class="contact"><b>Saldo esperado</b></td>
+                                        <td class="contact"><b>Saldo esperado</b> {!! $lbl_efectivo_base !!}</td>
                                         <td class="subject"></td>
                                         <td class="subject">
-                                            ${{number_format($registro->base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}</td>
+                                            
+                                            ${{number_format( $efectivo_base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td colspan="3">

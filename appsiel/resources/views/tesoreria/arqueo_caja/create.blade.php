@@ -155,6 +155,8 @@
                 <input type="hidden" id="total_saldo" name="total_saldo" value="0">
             </div>
         </div>
+
+        <input type="hidden" id="sumar_efectivo_base_en_saldo_esperado" name="sumar_efectivo_base_en_saldo_esperado" value="{{ (int)config('ventas_pos.sumar_efectivo_base_en_saldo_esperado') }}">
     </div>
 @endsection
 
@@ -354,7 +356,13 @@
 
 
             function calcular_total_sistema() {
-                var total_sistema = parseFloat($('#total_mov_entradas').val()) + parseFloat($('#base').val()) - parseFloat($('#total_mov_salidas').val());
+
+                var efectivo_base = parseFloat($('#base').val());
+                if ( $('#sumar_efectivo_base_en_saldo_esperado').val() == 0 ) {
+                    efectivo_base = 0;
+                }
+
+                var total_sistema = parseFloat($('#total_mov_entradas').val()) + efectivo_base - parseFloat($('#total_mov_salidas').val());
 
                 var color_fondo = 'transparent';
                 var color_letra = '#444444';

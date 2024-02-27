@@ -154,6 +154,8 @@
                 <input type="hidden" id="total_saldo" name="total_saldo" value="{{$registro->total_saldo}}">
             </div>
         </div>
+
+        <input type="hidden" id="sumar_efectivo_base_en_saldo_esperado" name="sumar_efectivo_base_en_saldo_esperado" value="{{ (int)config('ventas_pos.sumar_efectivo_base_en_saldo_esperado') }}">
     </div>
 @endsection
 
@@ -265,6 +267,7 @@
                         calcular_total_saldo();
                     });
             }
+
             $('#btn_get_mov_entrada').on('click', function (event){
                 event.preventDefault();
 
@@ -338,7 +341,13 @@
 
 
             function calcular_total_sistema() {
-                var total_sistema = parseFloat($('#total_mov_entradas').val()) + parseFloat($('#base').val()) - parseFloat($('#total_mov_salidas').val());
+
+                var efectivo_base = parseFloat($('#base').val());
+                if ( $('#sumar_efectivo_base_en_saldo_esperado').val() == 0 ) {
+                    efectivo_base = 0;
+                }
+
+                var total_sistema = parseFloat($('#total_mov_entradas').val()) + efectivo_base - parseFloat($('#total_mov_salidas').val());
 
                 var color_fondo = 'transparent';
                 var color_letra = '#444444';
@@ -356,8 +365,6 @@
 
                 $('#total_sistema').val(total_sistema);
                 $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(total_sistema) + '</span>');
-
-                //$('#lbl_total_sistema').text( '$' + new Intl.NumberFormat("de-DE").format( total_sistema ) );
             }
 
 

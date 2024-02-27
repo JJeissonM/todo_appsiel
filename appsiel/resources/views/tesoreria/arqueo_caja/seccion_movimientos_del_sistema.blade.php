@@ -34,7 +34,14 @@
 </div>
 
 <div class="well">
-    <h4> <a href="#" data-toggle="tooltip" data-placement="right" title="Inicial + Entradas - Salidas" style="text-decoration: none;"> <i class="fa fa-question-circle"></i> </a> Saldo esperado:
+    <?php  
+        $title = 'Inicial + Entradas - Salidas';
+        if( config('ventas_pos.sumar_efectivo_base_en_saldo_esperado') == 0)
+        {
+            $title = 'Entradas - Salidas';
+        }
+    ?>
+    <h4> <a href="#" data-toggle="tooltip" data-placement="right" title="{{$title}}" style="text-decoration: none;"> <i class="fa fa-question-circle"></i> </a> Saldo esperado:
         <div id="lbl_total_sistema" style="display: inline;"> $0</div>
     </h4>
     <input type="hidden" id="total_sistema" name="lbl_total_sistema" value="0">

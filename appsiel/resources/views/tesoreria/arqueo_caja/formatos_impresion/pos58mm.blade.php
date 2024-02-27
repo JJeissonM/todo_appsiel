@@ -82,11 +82,22 @@
                         <td>${{number_format($item->valor_movimiento,'0',',','.')}}</td>
                     </tr>
                 @endforeach
+
+                <?php  
+                    $efectivo_base = $registro->base;
+                    $lbl_efectivo_base = '';
+                    if( config('ventas_pos.sumar_efectivo_base_en_saldo_esperado') == 0)
+                    {
+                        $efectivo_base = 0;
+                        $lbl_efectivo_base = '<br>(Sin saldo inicial)';
+                    }
+                ?>
+
                 <tr>
                     <td colspan="2" style="color: black;text-align: center;">
-                        <b>SALDO ESPERADO:</b> 
+                        <b>SALDO ESPERADO:</b> {!! $lbl_efectivo_base !!}
                         <br>
-                        ${{number_format($registro->base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}
+                        ${{number_format($efectivo_base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}
                     </td>
                 </tr>
                 <tr>
