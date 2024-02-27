@@ -17,7 +17,7 @@
                 <div style="width: 100%;">
                     @if( config('contratos_transporte.color_emp_label') != '')
                         <div style="width: 40%;float:left;">
-                            <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
+                            <img style="max-height: 70px; max-width: 300px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
                         </div>
                         <div style="width: 60%;float:right;">
                             <br/>
@@ -25,7 +25,8 @@
                         </div>
                     @else
                         <div style="width: 100%;">
-                            <img style="max-height: 70px; max-width: 250px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
+                            <br>
+                            <img style="max-height: 70px; max-width: 300px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
                         </div>
                     @endif
                 </div>
