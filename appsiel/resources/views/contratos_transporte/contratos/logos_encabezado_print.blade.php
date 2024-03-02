@@ -1,7 +1,7 @@
 <table class="table table-bordered table-striped">
     <tbody>
         <tr>
-            <td class="border" style="width: 38%;"><img style="width: 250px; height: 70px;" src="https://www.mintransporte.gov.co/info/mintransporte/media/galeria/thumbs/thgaleria_220X220_19757.jpg" ></td>
+            <td class="border" style="width: 38%;"><img style="width: 250px; height: 70px;" src="https://appsiel.com/el_software/assets/images/logo_min_transporte.jpg" ></td>
             <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
 
             <?php 
