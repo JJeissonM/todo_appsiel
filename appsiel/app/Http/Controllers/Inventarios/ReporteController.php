@@ -360,7 +360,7 @@ class ReporteController extends Controller
 
     public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item)
     {
-        $items = InvProducto::get_datos_basicos( $grupo_inventario_id, $estado, $items_a_mostrar);
+        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id');
 
         $listado = collect([]);
         foreach ($items as $item) {

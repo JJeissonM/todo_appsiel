@@ -369,6 +369,73 @@ class InvProducto extends Model
         return $registros;
     }
 
+    public static function get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar, $bodega_id, $ordenar_por )
+    {
+        $array_wheres = [ 
+                            ['inv_productos.core_empresa_id' ,'=', Auth::user()->empresa_id],
+                            ['inv_productos.estado' ,'=', $estado ]
+                        ];
+
+        if ( $grupo_inventario_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+        }
+
+        if ( $items_a_mostrar != null && $items_a_mostrar != '')
+        {
+            if ( $items_a_mostrar == 'sin_codigo_barras' )
+            {
+                $array_wheres = array_merge( $array_wheres, ['inv_productos.codigo_barras' => '' ] );
+            }else{
+                $array_wheres = array_merge( $array_wheres, [['inv_productos.codigo_barras', '<>', '' ]] );
+            }
+        }
+
+        $registros = InvProducto::with('impuesto')->leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
+                                ->where( $array_wheres )
+                                ->select(
+                                            'inv_productos.id',
+                                            'inv_productos.descripcion',
+                                            'inv_productos.unidad_medida1',
+                                            'inv_grupos.descripcion AS grupo_descripcion',
+                                            'inv_productos.precio_compra',
+                                            'inv_productos.precio_venta',
+                                            'inv_productos.tipo',
+                                            'inv_productos.impuesto_id',
+                                            'inv_productos.estado',
+                                            'inv_productos.imagen',
+                                            'inv_productos.mostrar_en_pagina_web',
+                                            'inv_productos.codigo_barras',
+                                            'inv_productos.referencia',
+                                            'inv_productos.inv_grupo_id')
+                                ->orderBy($ordenar_por,'ASC')
+                                ->get();
+
+        foreach ($registros as $item)
+        {
+            $tasa_impuesto = 0;
+            if ($item->impuesto != null) {
+                $tasa_impuesto = $item->impuesto->get_tasa2($item->id, 0, 0);
+            }
+            $item->tasa_impuesto = $tasa_impuesto;
+
+            $costo_prom = $item->precio_compra;
+            $existencia_actual = 0;
+            if ( $bodega_id != null )
+            {
+                $costo_prom = $item->get_costo_promedio( $bodega_id );
+                //$existencia_actual = $item->get_existencia_actual( $bodega_id, date('Y-m-d') );
+            }
+
+            $item->costo_promedio = $costo_prom;
+            $item->existencia_actual = $existencia_actual;
+
+            $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('ventas.lista_precios_id'), date('Y-m-d'), $item->id );
+        }
+
+        return $registros;
+    }
+
     public static function get_grupos_pagina_web()
     {
         $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id','inv_grupos.descripcion AS grupo_descripcion','inv_grupos.imagen','inv_productos.estado')->where('inv_productos.mostrar_en_pagina_web',1)->get();
