@@ -16,15 +16,15 @@
     <table  class="tabla_registros table table-bordered table-striped sticky contenido" style="margin-top: 1px; width: 100%;">
         <thead>
             <tr class="">
-                <th> NO. </th>
+                <th> No. </th>
                 <th> EMPLEADO </th>
-                <th> IDENTIFCACIÓN </th>
+                <th> C.C. </th>
                 @foreach ($conceptos as $concepto)
                     <th> {{$concepto->abreviatura}} </th>
                 @endforeach
-                <th> T. DEVENGOS </th>
-                <th>T. DEDUCCIONES</th>
-                <th>TOTAL A PAGAR</th>
+                <th> T. DEVEN. </th>
+                <th>T. DEDUCC.</th>
+                <th>T. A PAGAR</th>
                 <th width="100px">FIRMA</th>
             </tr>
         </thead>

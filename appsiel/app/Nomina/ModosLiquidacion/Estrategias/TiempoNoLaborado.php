@@ -13,10 +13,10 @@ use Illuminate\Support\Facades\Auth;
 class TiempoNoLaborado implements Estrategia
 {
 
-	protected $valor_a_pagar_eps;
-	protected $valor_a_pagar_arl;
-	protected $valor_a_pagar_afp;
-	protected $valor_a_pagar_empresa;
+	protected $valor_a_pagar_eps = 0;
+	protected $valor_a_pagar_arl = 0;
+	protected $valor_a_pagar_afp = 0;
+	protected $valor_a_pagar_empresa = 0;
 	
 	/*
 		tipo_novedad_tnl: { incapacidad | permiso_remunerado | permiso_no_remunerado | suspencion }
