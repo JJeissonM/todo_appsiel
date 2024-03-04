@@ -556,7 +556,7 @@ class ContratoTransporteController extends Controller
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
-        $pdf->setOptions(["enable_remote", true]);
+        //$pdf->setOptions(["enable_remote", true]);
         $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
