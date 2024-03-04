@@ -7,4 +7,4 @@
     */
 ?>
 
-<img style="width: 250px; height: 70px;" src="https://appsiel.com/el_software/assets/images/logo_min_transporte.jpg" >
+<img style="width: 250px; height: 70px;" src="https://www.mintransporte.gov.co/info/mintransporte/media/galeria/thumbs/thgaleria_220X220_19757.jpg" >
