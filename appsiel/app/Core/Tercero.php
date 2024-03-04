@@ -321,7 +321,7 @@ class Tercero extends Model
                 if( (int)$datos['representante_legal_id'] != 0 )
                 {
                     DB::table('core_tercero_tiene_representante_legal')->insert([
-                                                    'tercero_id' => $registro->id,
+                                                    'tercero_id' => $tercero->id,
                                                     'representante_legal_id' => (int)$datos['representante_legal_id']
                                                 ]);
                 }
