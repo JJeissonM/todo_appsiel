@@ -1,7 +1,7 @@
 <table class="table table-bordered table-striped">
     <tbody>
         <tr>
-            <td class="border" style="width: 38%;">
+            <td class="border" style="width: 38%; text-align:center;">
                 @include('contratos_transporte.contratos.images.logo_min_transporte')
             </td>
             <td class="border" style="width: 12%; text-align: center;"><img style="height: 70px;" src="data:image/png;base64,{{DNS2D::getBarcodePNG($url, 'QRCODE')}}" alt="barcode" /></td>
