@@ -310,7 +310,6 @@
 			
 		if( $('#user_rol').val() == 'SupervisorCajas')
 		{
-			console.log('uey');
 			$('.nav').attr('display','none');
 		}
 	</script>
