@@ -60,7 +60,7 @@ class DocumentoSoporteService
 
    }
 
-   public function get_arr_content_data( $empleado, $lapso )
+   public function get_arr_content_data( NomContrato $empleado, $lapso )
    {
       $registros = $empleado->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final);
 
@@ -103,7 +103,7 @@ class DocumentoSoporteService
       
       if ($concepto->cpto_dian == null) {
          $one_line['status'] = 'error';
-         $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN.';
+         $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN: ' . $concepto->descripcion;
          return $one_line;
       }
 

@@ -3,12 +3,39 @@
         Envío Nómina Eectrónica &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Desde: </b>{{ $lapso->fecha_inicial }} &nbsp;&nbsp;&nbsp; <b>Hasta:</b> {{ $lapso->fecha_final }}
     </h5>
 
-    <?php 
-        $status = 'success';
-    ?>
     @foreach ($datos_vista as $comprobante)
 
+        <?php 
+            $status = 'success';
+            $hay_errores = false;
+            
+            $registros = $comprobante['accruals'];
+            foreach ($registros as $registro )
+            {
+                if ($registro['status'] == 'error') 
+                {
+                    $hay_errores = true;
+                }
+            }
+            
+            $registros = $comprobante['deductions'];
+            foreach ($registros as $registro )
+            {
+                if ($registro['status'] == 'error') 
+                {
+                    $hay_errores = true;
+                }
+            }
+        ?>
+
         @include('nomina.reportes.tabla_datos_basicos_empleado',['empleado'=>$comprobante['empleado']])
+
+        @if ( $hay_errores )
+            <br>
+            <div class="alert alert-warning">
+                <i class="fa fa-warning"></i> Hay errores en algunos conceptos. El Documento de soporte para este empleado NO será almacenado, ni Enviado.
+            </div>
+        @endif
 
         <table style="width:100%; font-size: 12px;" class="table table-bordered table-striped">
             <thead>
@@ -122,8 +149,10 @@
                     </td>
                 </tr>
             </tbody>
-        </table>
-    
+        </table>   
+        
+        <hr>
+        
     @endforeach
 
     <input type="hidden" id="status" name="status" value="{{$status}}">

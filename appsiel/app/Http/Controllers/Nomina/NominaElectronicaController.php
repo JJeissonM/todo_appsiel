@@ -112,27 +112,32 @@ class NominaElectronicaController extends TransaccionController
             'core_tipo_doc_app_id' => config('nomina.nom_elect_tipo_doc_app_id'),
             'fecha' => $lapso->fecha_final,
         ];
-
-        $one_doc_generado = DocumentoSoporte::where( $data )->get()->first();
-
-        if($one_doc_generado != null)
-        {
-            return '<h4>Ya existen documentos de nómina electrónica generados para el periodo seleccionado.</h4>';
-        }
+        
+        $ids_contratos_all_docs_generados = DocumentoSoporte::where( $data )->get()->pluck('nom_contrato_id')->toArray();
 
         $empleados_con_movimiento = $lapso->get_empleados_con_movimiento();
+
+        if( count($ids_contratos_all_docs_generados) == count($empleados_con_movimiento) )
+        {
+            return '<h4>Ya se generaron los documentos de nómina electrónica para TODOS los empleados en el periodo seleccionado.</h4>';
+        }
+
         $almacenar_registros = $request->almacenar_registros;
 
         // Un "Documento de soporte de nómina electrónica" por cada empleado
         foreach ( $empleados_con_movimiento as $registro_empleado )
         {
+            if ( in_array($registro_empleado->contrato->id, $ids_contratos_all_docs_generados) ) {
+                continue;
+            }
+
             $empleado = $registro_empleado->contrato;
 
             $datos_doc_soporte = $doc_soporte_service->get_data_for_json( $empleado, $lapso, $almacenar_registros );
             
             $this->actualizar_datos_vista( $datos_doc_soporte );
 
-            if( $almacenar_registros )
+            if( $almacenar_registros && !$this->hay_errores($datos_doc_soporte) )
             {
                 $data2 = [
                     'consecutivo' => $datos_doc_soporte['number'],
@@ -149,10 +154,31 @@ class NominaElectronicaController extends TransaccionController
                 $dos_generado = DocumentoSoporte::create( $data + $data2 );
 
                 $this->arr_ids_docs_generados[] = $dos_generado->id;
-            }                
+            }        
         }
 
         return $this->dibujar_vista();
+    }
+
+    public function hay_errores($datos_doc_soporte)
+    {
+        $hay_errores = false;
+
+        $accruals = $datos_doc_soporte['accruals'];
+        foreach ($accruals as $line) {
+            if ( $line['status'] == 'error' ) {
+                $hay_errores = true;
+            }
+        }
+        
+        $deductions = $datos_doc_soporte['deductions'];
+        foreach ($deductions as $line) {
+            if ( $line['status'] == 'error' ) {
+                $hay_errores = true;
+            }
+        }
+
+        return $hay_errores;
     }
 
     public function actualizar_datos_vista( $datos_doc_soporte )
