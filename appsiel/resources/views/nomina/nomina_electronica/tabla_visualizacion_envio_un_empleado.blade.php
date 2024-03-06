@@ -37,11 +37,14 @@
                     }
 
                     $class_tr = '';
-                    if ($registro['status'] == 'error') {
-                        $class_tr = 'danger';
-                        $descripcion_concepto = $registro['message'];
-                        $status = 'error';
+                    if (isset($registro['status'])) {
+                        if ($registro['status'] == 'error') {
+                            $class_tr = 'danger';
+                            $descripcion_concepto = $registro['message'];
+                            $status = 'error';
+                        }
                     }
+                    
                 ?>
 
                 <tr class="{{$class_tr}}">
@@ -77,10 +80,12 @@
                     }
 
                     $class_tr = '';
-                    if ($registro['status'] == 'error') {
-                        $class_tr = 'danger';
-                        $descripcion_concepto = $registro['message'];
-                        $status = 'error';
+                    if (isset($registro['status'])) {
+                        if ($registro['status'] == 'error') {
+                            $class_tr = 'danger';
+                            $descripcion_concepto = $registro['message'];
+                            $status = 'error';
+                        }
                     }
                 ?>
 
