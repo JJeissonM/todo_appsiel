@@ -227,4 +227,34 @@ class ProcesoController extends Controller
 
         echo 'Se actualizaron ' . $i . ' ítems';
     }
+
+    public function unificar_ids_items_repetidos_en_lineas_registros($inv_document_header_id)
+    {
+        $documento = InvDocEncabezado::find($inv_document_header_id);
+
+        $lineas_agrupadas = $documento->lineas_registros->groupBy('inv_producto_id');
+
+        $i = 0;
+        foreach ($lineas_agrupadas as $grupo) {
+            $is_the_first = true;
+            foreach ($grupo as $linea_registro) {
+                if ($is_the_first) {
+                    
+                    $linea_registro->cantidad = $grupo->sum('cantidad');
+                    
+                    $linea_registro->costo_total = $linea_registro->cantidad * $linea_registro->costo_unitario;
+
+                    $linea_registro->save();
+
+                    $is_the_first = false;
+                    
+                    $i++;
+                }else{
+                    $linea_registro->delete();
+                }
+            }
+        }
+
+        echo 'Fueron unificadas ' . $i . ' líneas.';
+    }
 }

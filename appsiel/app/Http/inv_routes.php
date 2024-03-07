@@ -91,6 +91,9 @@ Route::get('inv_recosteo', 'Inventarios\ProcesoController@recosteo');
 
 Route::get('inv_corregir_cantidades', 'Inventarios\ProcesoController@corregir_cantidades');
 
+
 //Route::get('inv_anulacion_masiva/{lista_id}', 'Inventarios\ProcesoController@anulacion_masiva');
 
 Route::get('inv_asignar_codigos_barras_desde_id', 'Inventarios\ProcesoController@asignar_codigos_barras_desde_id');
+
+Route::get('inv_unificar_ids_items_repetidos_en_lineas_registros/{inv_document_header_id}', 'Inventarios\ProcesoController@unificar_ids_items_repetidos_en_lineas_registros');
