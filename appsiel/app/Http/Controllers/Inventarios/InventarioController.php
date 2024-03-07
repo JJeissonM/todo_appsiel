@@ -1289,7 +1289,10 @@ class InventarioController extends TransaccionController
 
         // Antes de anular el documento, por cada producto ingresado se debe
         // Validar saldos negativos en movimientos de inventarios LÍNEA X LÍNEA
-        $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($documento, 'no_fecha', 'anular', 'segun_motivo');
+        $linea_saldo_negativo = '0';
+        if ((int)config('ventas.permitir_inventarios_negativos') == 0) {
+            $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores_todas_lineas($documento, 'no_fecha', 'anular', 'segun_motivo');
+        }
 
         if ($linea_saldo_negativo != '0')
         {
