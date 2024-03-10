@@ -29,11 +29,15 @@ class StockAmountService
     public function get_total_cost_amount_item($inv_bodega_id, $inv_producto_id, $deadline_date)
     {
         $array_wheres = [
-            ['inv_bodega_id', '=', $inv_bodega_id],
             ['inv_producto_id', '=', $inv_producto_id],
             ['fecha', '<=', $deadline_date]
         ];
 
+        if ( (int)$inv_bodega_id != 0 )
+        {
+            $array_wheres = array_merge( $array_wheres, [['inv_bodega_id', '=', $inv_bodega_id]] );
+        }
+        
         $costo_total = InvMovimiento::where($array_wheres)
             ->sum('costo_total');
 

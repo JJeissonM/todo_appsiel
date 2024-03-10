@@ -100,6 +100,7 @@ class ReporteController extends Controller
             $total_cantidad_item = 0;
             $total_costo_item = 0;
             $aux = [];
+            $cantidad_bodegas = 0;
             foreach ( $lista_bodegas as $key2 => $bodega_id )
             {
                 $productos[$i]['id'] = $item_id;
@@ -117,6 +118,8 @@ class ReporteController extends Controller
                 //$productos[$i]['Cantidad'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('cantidad');
                 $productos[$i]['Cantidad'] = $stock_serv->get_stock_amount_item($bodega_id, $item_id, $fecha_corte);
                 
+                $productos[$i]['CostoPromedio'] = 0;
+
                 if ($productos[$i]['Cantidad'] == 0) {
                     continue;
                 }
@@ -129,7 +132,19 @@ class ReporteController extends Controller
                 $total_costo_item += $productos[$i]['Costo'];
             
                 $i++;
+                $cantidad_bodegas++;
             }
+
+            //dd($productos, $i,$cantidad_bodegas);
+            $costo_promedio = 0;
+            if ($total_cantidad_item != 0) {
+                $costo_promedio = $total_costo_item / $total_cantidad_item;
+                for ($i2=$cantidad_bodegas; $i2 > 0; $i2--) {
+                    if (isset($productos[$i - $i2]['CostoPromedio'])) {
+                        $productos[$i - $i2]['CostoPromedio'] = $costo_promedio;
+                    }                    
+                }                    
+            }            
 
             $productos[$i]['id'] = 0;
             $productos[$i]['descripcion'] = '';
@@ -138,8 +153,10 @@ class ReporteController extends Controller
             $productos[$i]['bodega'] = '';
 
             $productos[$i]['Cantidad'] = $total_cantidad_item;
+            $productos[$i]['CostoPromedio'] = $costo_promedio;
 
             $productos[$i]['Costo'] = $total_costo_item;
+
             $i++;
         }
 
