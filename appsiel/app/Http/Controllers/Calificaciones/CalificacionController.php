@@ -198,13 +198,12 @@ class CalificacionController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Ingresar']
         ];
 
-
         return view('calificaciones.create', compact('cursos', 'periodos', 'miga_pan', 'periodo_lectivo_id', 'curso_id', 'asignatura_id', 'asignaturas'));
         // Lo datos del formulario create se envía vía post al método calificar2
     }
 
     /**
-     * Llamar al formulario de Ingreso/Edición de calificaciones.
+     * Llamar vía AJAX al formulario de Ingreso/Edición de calificaciones.
      *
      */
     public function calificar2(Request $request)
@@ -246,23 +245,6 @@ class CalificacionController extends Controller
         // Warning!!! No usar funciones de Eloquent en el controller (acoplamiento al framework) 
         $curso = Curso::find($request->curso_id);
 
-        $pesos_encabezados = EncabezadoCalificacion::where([
-                                                            [ 'periodo_id', '=', $request->id_periodo ],
-                                                            [ 'curso_id', '=', $request->curso_id ],
-                                                            [ 'asignatura_id', '=', $request->id_asignatura ],
-                                                            [ 'peso', '>', 0 ]
-                                                        ])
-                                                    ->select('columna_calificacion','peso')
-                                                    ->orderBy('columna_calificacion')
-                                                    ->get();
-        $array_pesos = array_fill(0, 16, 0);
-        $hay_pesos = false;
-        foreach ($pesos_encabezados as $peso_encabezado )
-        {
-            $array_pesos[ (int)str_replace('C', '', $peso_encabezado->columna_calificacion ) ] = $peso_encabezado->peso;
-            $hay_pesos = true;
-        }
-
         $creado_por = Auth::user()->email;
         $modificado_por = '';
 
@@ -294,7 +276,7 @@ class CalificacionController extends Controller
                 ->first();
 
             // Si el estudiante tiene calificacion se envian los datos de esta para editarp
-            if (!is_null($calificacion_est))
+            if ( $calificacion_est != null )
             {
                 $creado_por = $calificacion_est->creado_por;
                 $modificado_por = Auth::user()->email;
@@ -329,12 +311,40 @@ class CalificacionController extends Controller
 
         $escala_min_max = EscalaValoracion::get_min_max($periodo->periodo_lectivo_id);
 
-        $id_app = $request->id_app;
+        if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
+            return view('calificaciones.encabezados_fijos.calificar2', [
+                'vec_estudiantes' => $vec_estudiantes,
+                'cantidad_estudiantes' => count($estudiantes),
+                'anio' => $anio,
+                'curso' => $curso,
+                'periodo' => $periodo,
+                'periodo_lectivo' => $periodo_lectivo,
+                'datos_asignatura' => $datos_asignatura,
+                'ruta' => $request->ruta,
+                'escala_min_max' => $escala_min_max,
+                'creado_por' => $creado_por,
+                'modificado_por' => $modificado_por,
+                'id_colegio' => $this->colegio->id
+            ]);
+        }
 
-        $miga_pan = [
-            ['url' => $this->aplicacion->app . '?id=' . Input::get('id'), 'etiqueta' => $this->aplicacion->descripcion],
-            ['url' => 'NO', 'etiqueta' => 'Ingresar periodo ' . $periodo->descripcion]
-        ];
+        $pesos_encabezados = EncabezadoCalificacion::where([
+                [ 'periodo_id', '=', $request->id_periodo ],
+                [ 'curso_id', '=', $request->curso_id ],
+                [ 'asignatura_id', '=', $request->id_asignatura ],
+                [ 'peso', '>', 0 ]
+            ])
+        ->select('columna_calificacion','peso')
+        ->orderBy('columna_calificacion')
+        ->get();
+
+        $array_pesos = array_fill(0, 16, 0);
+        $hay_pesos = false;
+        foreach ($pesos_encabezados as $peso_encabezado )
+        {
+            $array_pesos[ (int)str_replace('C', '', $peso_encabezado->columna_calificacion ) ] = $peso_encabezado->peso;
+            $hay_pesos = true;
+        }
 
         return view('calificaciones.calificar2', [
             'vec_estudiantes' => $vec_estudiantes,
@@ -345,7 +355,6 @@ class CalificacionController extends Controller
             'periodo_lectivo' => $periodo_lectivo,
             'datos_asignatura' => $datos_asignatura,
             'ruta' => $request->ruta,
-            'miga_pan' => $miga_pan,
             'escala_min_max' => $escala_min_max,
             'array_pesos' => $array_pesos,
             'hay_pesos' => $hay_pesos,
@@ -412,7 +421,11 @@ class CalificacionController extends Controller
                             [ 'logros' => $lineas_registros_calificaciones[$i]->logros ] +
                             [ 'creado_por' => $request->creado_por ];
 
-            for ($k=1; $k < 16; $k++)
+            $cantidad_calificaciones = 16;
+            if ((int)$request->cantidad_calificaciones != 0) {
+                $cantidad_calificaciones = (int)$request->cantidad_calificaciones;
+            }
+            for ($k=1; $k < $request->cantidad_calificaciones; $k++)
             {
                 $variable_columna = 'C'.$k;
                 $linea_datos += [ $variable_columna => (float)$lineas_registros_calificaciones[$i]->$variable_columna ];

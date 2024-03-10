@@ -94,6 +94,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$manejar_encabezados_fijos_en_calificaciones = 'No';
+								if( isset($parametros['manejar_encabezados_fijos_en_calificaciones'] ) )
+								{
+									$manejar_encabezados_fijos_en_calificaciones = $parametros['manejar_encabezados_fijos_en_calificaciones'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_encabezados_fijos_en_calificaciones', $manejar_encabezados_fijos_en_calificaciones, 'Manejar encabezados fijos en calificaicones', [''=>'','Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Diseño y formato  </h4>
 				<hr>
 

@@ -203,6 +203,10 @@ class AcademicoEstudianteController extends Controller
             return View::make('calificaciones.incluir.notas_estudiante_periodo_final', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante', 'periodos_del_anio_lectivo'))->render();
         } else {
 
+            if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
+                return View::make('calificaciones.incluir.encabezados_fijos.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante'))->render();
+            }
+
             if ((int)config('calificaciones.manejar_peso_estandar_encabezados_calificaciones')) {
                 return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla_peso_estandar_encabezados', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux'))->render();
             }
