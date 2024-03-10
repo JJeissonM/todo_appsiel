@@ -215,4 +215,83 @@ class ComprasMovimiento extends Model
                                 ->get();
 
     }
+
+    public static function get_movimiento_compras( $fecha_desde, $fecha_hasta, $agrupar_por, $core_tipo_transaccion_id, $proveedor_id )
+    {
+        switch ( $agrupar_por )
+        {
+            case 'proveedor_id':
+                $agrupar_por = 'proveedor';
+                break;
+            case 'core_tercero_id':
+                $agrupar_por = 'core_tercero_id';
+                break;
+            case 'inv_producto_id':
+                $agrupar_por = 'producto';
+                break;
+            case 'tasa_impuesto':
+                $agrupar_por = 'tasa_impuesto';
+                break;
+            case 'vendedor_id':
+                $agrupar_por = 'vendedor_id';
+                break;
+            case 'clase_proveedor_id':
+                $agrupar_por = 'clase_proveedor';
+                break;
+            case 'core_tipo_transaccion_id':
+                $agrupar_por = 'descripcion_tipo_transaccion';
+                break;
+            case 'forma_pago':
+                $agrupar_por = 'forma_pago';
+                break;
+            
+            default:
+                break;
+        }
+        
+        $array_wheres = [
+            ['compras_movimientos.core_empresa_id','=', Auth::user()->empresa_id]
+        ];
+
+        if ($core_tipo_transaccion_id != null ) {
+            $array_wheres = array_merge($array_wheres,[['compras_movimientos.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]]);
+        }
+
+        if ($proveedor_id != null ) {
+            $array_wheres = array_merge($array_wheres,[['compras_movimientos.proveedor_id','=', $proveedor_id]]);
+        }
+
+        $movimiento = ComprasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'compras_movimientos.inv_producto_id')
+                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_movimientos.core_tercero_id')
+                            ->leftJoin('compras_clases_proveedores', 'compras_clases_proveedores.id', '=', 'compras_movimientos.clase_proveedor_id')
+                            ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'compras_movimientos.core_tipo_transaccion_id')
+                            ->where($array_wheres)
+                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                            ->select(
+                                        'compras_movimientos.inv_producto_id',
+                                        DB::raw('CONCAT( inv_productos.id, " - ", inv_productos.descripcion, " (", inv_productos.unidad_medida1, " ", inv_productos.unidad_medida2, ")" ) AS producto'),
+                                        DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS proveedor'),
+                                        'compras_movimientos.proveedor_id',
+                                        'compras_movimientos.core_tercero_id',
+                                        'compras_clases_proveedores.descripcion AS clase_proveedor',
+                                        'compras_movimientos.tasa_impuesto AS tasa_impuesto',
+                                        'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
+                                        'compras_movimientos.forma_pago',
+                                        'compras_movimientos.cantidad',
+                                        'compras_movimientos.precio_total',
+                                        'compras_movimientos.base_impuesto',// AS base_imp_tot
+                                        'compras_movimientos.tasa_descuento',
+                                        'compras_movimientos.valor_total_descuento')
+                            ->get();
+                            
+        foreach ($movimiento as $fila)
+        {
+            $fila->base_impuesto = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
+
+
+            $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
+        }
+
+        return $movimiento->groupBy( $agrupar_por );
+    }
 }

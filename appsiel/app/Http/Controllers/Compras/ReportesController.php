@@ -392,7 +392,7 @@ class ReportesController extends Controller
         $detalla_clientes  = (int)$request->detalla_clientes;
         $iva_incluido  = (int)$request->iva_incluido;
 
-        $movimiento = ComprasMovimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, null, $request->proveedor_id);
+        $movimiento = ComprasMovimiento::get_movimiento_compras($fecha_desde, $fecha_hasta, $agrupar_por, null, $request->proveedor_id);
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
@@ -401,7 +401,7 @@ class ReportesController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $vista = View::make('ventas.reportes.reporte_ventas_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+        $vista = View::make('compras.reportes.reporte_compras_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
