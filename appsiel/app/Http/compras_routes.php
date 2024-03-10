@@ -49,6 +49,7 @@ Route::get('compras/eliminar_producto/{id}', 'Compras\CompraController@eliminar_
 Route::post('compras_ctas_por_pagar', 'Compras\ReportesController@ctas_por_pagar');
 Route::post('compras_precio_compra_por_producto', 'Compras\ReportesController@precio_compra_por_producto');
 Route::post('compras_ultimos_precios_por_producto', 'Compras\ReportesController@ultimos_precios_por_producto');
+Route::post('compras_reporte_compras', 'Compras\ReportesController@reporte_compras');
 
 // PROCESOS
 Route::get('actualizar_valor_total_compras_encabezados_doc', 'Compras\ProcesoController@actualizar_valor_total_compras_encabezados_doc');

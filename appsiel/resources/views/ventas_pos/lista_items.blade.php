@@ -6,7 +6,9 @@
 					<th>Cód.</th>
 					<th>Ref.</th>
 					<th>Producto (U.M.)</th>
+					<th>Precio Vta. <br> (IVA incluido)</th>
 					<th>Costo Prom.</th>
+					<th>Costo Prom. <br> (IVA incluido)</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -25,7 +27,9 @@
 						</td>
 						<td class="table-text"><div>{{ $item->referencia }}</div></td>
 						<td class="table-text"><div>{{ $item->descripcion }}</div></td>
+						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->precio_venta, 0, ',', '.' ) }}</div></td>
 						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio, 0, ',', '.' ) }}</div></td>
+						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio_mas_iva, 0, ',', '.' ) }}</div></td>
 					</tr>
 				@endforeach
 			</tbody>

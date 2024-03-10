@@ -361,6 +361,7 @@ class InvProducto extends Model
             }
 
             $item->costo_promedio = $costo_prom;
+            $item->costo_promedio_mas_iva = $costo_prom * (1 + $tasa_impuesto / 100);
             $item->existencia_actual = $existencia_actual;
 
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('ventas.lista_precios_id'), date('Y-m-d'), $item->id );
