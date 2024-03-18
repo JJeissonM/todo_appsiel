@@ -373,7 +373,11 @@ class ReporteController extends Controller
 
                     for ($c=1; $c < 16; $c++) { 
                         $key = "C".$c;
-                        $vec_estudiantes[$i][$key] = $calificacion_aux->$key;
+                        $cali = '';
+                        if ($calificacion_aux->$key != 0) {
+                            $cali = $calificacion_aux->$key;
+                        }
+                        $vec_estudiantes[$i][$key] = $cali;
                     }
 
                 }
