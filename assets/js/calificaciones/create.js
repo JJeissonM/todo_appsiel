@@ -20,6 +20,7 @@ $(document).ready(function(){
             return false;
         }			
         
+        $('#div_form_ingreso').html('');
         $('#div_cargando').show();
         $('#div_spin').show();
 

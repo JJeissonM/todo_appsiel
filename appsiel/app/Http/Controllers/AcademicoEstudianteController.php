@@ -204,7 +204,7 @@ class AcademicoEstudianteController extends Controller
         } else {
 
             if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
-                return View::make('calificaciones.incluir.encabezados_fijos.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante'))->render();
+                return View::make('calificaciones.incluir.encabezados_fijos.lineal.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante'))->render();
             }
 
             if ((int)config('calificaciones.manejar_peso_estandar_encabezados_calificaciones')) {

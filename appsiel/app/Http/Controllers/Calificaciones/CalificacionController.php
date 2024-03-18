@@ -312,7 +312,7 @@ class CalificacionController extends Controller
         $escala_min_max = EscalaValoracion::get_min_max($periodo->periodo_lectivo_id);
 
         if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
-            return view('calificaciones.encabezados_fijos.calificar2', [
+            return view('calificaciones.encabezados_fijos.lineal.calificar2', [
                 'vec_estudiantes' => $vec_estudiantes,
                 'cantidad_estudiantes' => count($estudiantes),
                 'anio' => $anio,

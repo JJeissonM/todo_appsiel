@@ -388,7 +388,12 @@ class ReporteController extends Controller
                                                             ->where('asignatura_id', $request->asignatura_id)
                                                             ->get();
 
-        $vista = View::make( 'calificaciones.incluir.consulta_notas_auxiliares', compact('vec_estudiantes', 'cantidad_estudiantes', 'anio','curso','periodo','periodo_lectivo', 'asignatura', 'encabezados_calificaciones') )->render();   
+        $vista_blade = 'calificaciones.incluir.consulta_notas_auxiliares';
+        if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
+            $vista_blade = 'calificaciones.incluir.encabezados_fijos.lineal.consulta_notas_auxiliares';
+        }
+
+        $vista = View::make( $vista_blade, compact('vec_estudiantes', 'cantidad_estudiantes', 'anio','curso','periodo','periodo_lectivo', 'asignatura', 'encabezados_calificaciones') )->render();   
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
 

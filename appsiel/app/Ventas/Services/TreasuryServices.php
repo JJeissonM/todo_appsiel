@@ -20,6 +20,9 @@ class TreasuryServices
             'consecutivo' => $account_receivable_document_header->consecutivo
         ] )
         ->get()->first();
+
+        dd($account_receivable_document_header,$payment,$payment_methods_lines);
+
         $data = $account_receivable_document_header->toArray();
 
         // Lines of records of account_receivable

@@ -714,7 +714,7 @@ class TiendaController extends Controller
     function comprar(){
 
         if(!Auth::check()){
-            return redirect(url('ecommerce/public/signIn'))->with('flash_message', 'Vas por buen camino. Ahora regálanos tus datos para continuar.');
+            return redirect(url('ecommerce/public/signIn'))->with('flash_message', '<span style="font-size: 1.5em; color:#F98200;"><i class="fa fa-smile-o"></i></span> Vas por buen camino. Ahora regálanos tus datos para continuar.');
         }
 
         return view('web.tienda.comprar');

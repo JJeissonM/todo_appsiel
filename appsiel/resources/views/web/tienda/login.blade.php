@@ -7,6 +7,16 @@
     <link rel="stylesheet" href="{{asset('assets/tienda/css/main.css')}}">
     <link rel="stylesheet" href="{{asset('assets/tienda/css/login.css')}}">
     <link href="{{asset('assets/css/toastr.min.css')}}" rel="stylesheet">
+
+    <style>
+        .aten{
+            padding: 15px 15px 20px 15px;
+            border-left: 5px solid #F98200;
+            background: #F5F5F5;
+            margin-bottom: 30px;
+            line-height: 26px!important;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -20,8 +30,15 @@
                         <div class="main-inner">
                             <div class="row">
                                 <div class="col-main">
-                                    <br><br>
-                                    @include('layouts.mensajes')
+                                    <br><br>                                   
+
+                                    @if(Session::has('flash_message'))
+
+                                        <p class="aten">
+                                            {!! session('flash_message') !!}
+                                        </p>
+
+                                    @endif
 
                                     <div class="account-login">
                                         <div class="page-title">
