@@ -24,10 +24,10 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-		    <h4>{!! $parametros['titulo'] !!}</h4>
+		    {!! $parametros['titulo'] !!}
 		    <hr>
 
-		    {{ Form::open(['url'=>'guardar_config','id'=>'foea_create','files' => true]) }}
+		    {{ Form::open(['url'=>'guardar_config','id'=>'form_create','files' => true]) }}
 
 		    	<!--
 					// NOTA: La variable que no sea enviada en el request (a través de un input) será borrada del archivo de configuración
@@ -35,7 +35,6 @@
 		    	-->
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
-
 
 				<h5> Para entradas de Almacén </h5>
 				<div class="row">
@@ -190,6 +189,26 @@
 
 @section('scripts')
 
+	<script type="text/javascript">
+		$(document).ready(function(){
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( !validar_requeridos() )
+				{
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).off( event );
+
+				$('#form_create').submit();
+			});
+
+		});
+	</script>
+	
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif

@@ -125,8 +125,8 @@
 	            	</table>
 				</div>
 			<div id="mostrar_medios_recaudos">
-			@include('tesoreria.incluir.medios_recaudos')
-		</div>
+				@include('tesoreria.incluir.medios_recaudos')
+			</div>
 		</div>
 	</div>
 	<br/><br/>
@@ -164,7 +164,6 @@
 
 			checkCookie();
 
-
 			$('#fecha').val( get_fecha_hoy() );
 
 			$('#fecha_vencimiento').attr( 'readonly','readonly' );
@@ -196,10 +195,8 @@
 				$('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
 				$('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
 
-
 				$('#inv_motivo_id').attr('style','background-color:#ECECE5;');
 				$('#inv_motivo_id').attr('disabled','disabled');
-
 
 				$('#precio_unitario').removeAttr('style');
 				$('#precio_unitario').removeAttr('disabled');
@@ -209,11 +206,9 @@
 
 			});
 
-
 		    $('#proveedor_input').on('focus',function(){
 		    	$(this).select();
 		    });
-
 			
 			// Al ingresar número de identificacion o descripción del proveedor
 		    $('#proveedor_input').on('keyup',function(){
@@ -291,7 +286,6 @@
 		    	}	
 		    });
 
-
 		    function tecla_enter_on_keyup( item )
 		    {
 		    	if( item.attr('data-proveedor_id') === undefined )
@@ -303,21 +297,16 @@
 				}
 		    }
 
-
 		    //Al hacer click en alguna de las sugerencias (escoger un producto)
             $(document).on('click','.list-group-item-proveedor', function(){
             	seleccionar_proveedor( $(this) );
             	return false;
             });
 
-
 			// Al seleccionar una bodega, se ubica en el siguiente elemento
 			$('#inv_bodega_id').change(function(){
-
 				$('#inv_producto_id').select();
-
 			});
-
 			
 			$('#doc_proveedor_prefijo').on('keyup',function(){
 				var codigo_tecla_presionada = event.which || event.keyCode;
@@ -325,7 +314,6 @@
 				{
 					$('#doc_proveedor_consecutivo').focus();
 				}
-				
 			});
 			
 			$('#doc_proveedor_consecutivo').on('keyup',function(){

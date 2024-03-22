@@ -132,7 +132,9 @@ class VentaController extends TransaccionController
 
         $registros_medio_pago = new RegistrosMediosPago;
 
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros ) );
+        //$campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros ) );
+
+        $campo_lineas_recaudos = (new TreasuryServices())->get_campo_lineas_recaudos($request->all()['lineas_registros_medios_recaudo'], $lineas_registros);
 
         // TRES TRANSACCIONES
 
@@ -180,20 +182,6 @@ class VentaController extends TransaccionController
         }else{
             return redirect('ventas/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
         }
-    }
-
-    
-    public static function get_total_documento_desde_lineas_registros( array $lineas_registros )
-    {
-        $total_documento = 0;
-
-        $cantidad_registros = count($lineas_registros);
-        for ($i=0; $i < $cantidad_registros; $i++) 
-        {
-            $total_documento += (float)$lineas_registros[$i]->precio_total;
-        } // Fin por cada registro
-
-        return $total_documento;        
     }
 
     // Se crean los registros con base en los registros de la remisión o remisiones
@@ -454,7 +442,7 @@ class VentaController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo )->first();
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
         $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
 
         // Datos de los abonos aplicados a la factura
@@ -615,7 +603,10 @@ class VentaController extends TransaccionController
             $tipo_doc_app = $doc_encabezado->tipo_documento_app;
         }
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion' ) )->render();
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
+        $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago' ) )->render();
     }
 
     /**

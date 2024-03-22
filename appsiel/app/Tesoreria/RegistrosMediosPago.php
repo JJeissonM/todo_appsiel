@@ -16,9 +16,6 @@ class RegistrosMediosPago
             return json_decode( '[]' );
         }
 
-        // Asignar medio de pago por defecto
-        /**[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"","teso_caja_id":"","teso_cuenta_bancaria_id":"","valor":"$1400"},{"teso_medio_recaudo_id":"","teso_motivo_id":"$1400.00","teso_caja_id":"","teso_cuenta_bancaria_id":""}] */
-
         // Eliminar ultimo elemento del array (totales de la tabla)
         array_pop( $lineas_registros_medios_recaudos );
         

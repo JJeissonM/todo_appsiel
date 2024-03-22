@@ -3,9 +3,8 @@
 namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ComprasMotivo extends Model
 {
@@ -20,8 +19,15 @@ class ComprasMotivo extends Model
         $registros = ComprasMotivo::leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'compras_motivos.core_tipo_transaccion_id')
             ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'compras_motivos.cta_contrapartida_id')
             ->where('compras_motivos.core_empresa_id', Auth::user()->empresa_id)
-            ->select('compras_motivos.id AS campo1', 'compras_motivos.descripcion AS campo2', 'sys_tipos_transacciones.descripcion AS campo3', DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS campo4'), 'compras_motivos.estado AS campo5', 'compras_motivos.id AS campo6')
-            ->orderBy('compras_motivos.created_at', 'DESC')
+            ->select(
+                'compras_motivos.id AS campo1',
+                'compras_motivos.descripcion AS campo2',
+                'sys_tipos_transacciones.descripcion AS campo3',
+                DB::raw('CONCAT(contab_cuentas.codigo," ",contab_cuentas.descripcion) AS campo4'),
+                'compras_motivos.estado AS campo5',
+                'compras_motivos.id AS campo6')
+            ->orderBy('compras_motivos.created_at',
+            'DESC')
             ->paginate($nro_registros);
 
         return $registros;

@@ -22,6 +22,61 @@
 
 				<h4> Parámetros para transacciones </h4>
 				<hr>
+
+				<?php
+					$motivos_tesoreria = App\Tesoreria\TesoMotivo::opciones_campo_select();
+				?>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$motivo_tesoreria_compras_contado = 53;
+								if( isset($parametros['motivo_tesoreria_compras_contado'] ) )
+								{
+									$motivo_tesoreria_compras_contado = $parametros['motivo_tesoreria_compras_contado'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_tesoreria_compras_contado', $motivo_tesoreria_compras_contado, 'Mot. de tesorería para compras de contado', $motivos_tesoreria, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$motivo_tesoreria_ventas_contado = 54;
+								if( isset($parametros['motivo_tesoreria_ventas_contado'] ) )
+								{
+									$motivo_tesoreria_ventas_contado = $parametros['motivo_tesoreria_ventas_contado'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_tesoreria_ventas_contado', $motivo_tesoreria_ventas_contado, 'Mot. de tesorería para ventas de contado', $motivos_tesoreria, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$caja_default_id = '';
+								if( isset($parametros['caja_default_id'] ) )
+								{
+									$caja_default_id = $parametros['caja_default_id'];
+								}
+							?>
+							{{ Form::bsSelect('caja_default_id', $caja_default_id, 'Caja por defecto', App\Tesoreria\TesoCaja::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+
+				</div>
+				
 				<div class="row">
 
 					<div class="col-md-6">

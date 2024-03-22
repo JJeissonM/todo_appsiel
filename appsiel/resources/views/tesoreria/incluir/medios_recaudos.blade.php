@@ -74,6 +74,3 @@ $datos = [
 
 <!-- Modal -->
 @include('tesoreria.incluir.ingreso_valores_recaudos')
-@section('scritps')
-
-@endsection

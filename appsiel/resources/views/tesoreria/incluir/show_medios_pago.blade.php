@@ -1,26 +1,44 @@
-<?php
-    $caja = null;
-    $cuenta_bancaria = null;
-    if( !is_null( $registros_tesoreria ) )
-    {
-        if( $registros_tesoreria->teso_caja_id != 0 )
-        {
-            $caja = $registros_tesoreria->caja;
-            $cuenta_bancaria = null;
-        }
+@if( isset($registros_tesoreria))
+    @if( $registros_tesoreria != null )
+        <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Medios de Pago</div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped" style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">
+                {{ Form::bsTableHeader(['Caja/Banco','Monto']) }}
+                <tbody>
+                    <?php 
+                    
+                        $total_movimiento = 0;
 
-        if( $registros_tesoreria->teso_cuenta_bancaria_id != 0 )
-        {
-            $cuenta_bancaria = $registros_tesoreria->cuenta_bancaria;
-            $caja = null;
-        }
-    }   
-?>
-@if( !is_null( $caja ) )
-    <b>Caja: &nbsp;&nbsp;</b> {{ $caja->descripcion }}
-    <br>
-@endif
-@if( !is_null( $cuenta_bancaria ) )
-    <b>Cuenta bancaria: &nbsp;&nbsp;</b> Cuenta {{ $cuenta_bancaria->tipo_cuenta }} {{ $cuenta_bancaria->entidad_financiera->descripcion }} No. {{ $cuenta_bancaria->descripcion }}
-    <br>
+                    ?>
+                    @foreach($registros_tesoreria as $teso_movim )
+                        <tr>
+                            <?php
+                                $caja_banco = '';
+                                if( $teso_movim->caja != null )
+                                {
+                                    $caja_banco = $teso_movim->caja->descripcion;
+                                }
+                                
+                                if( $teso_movim->cuenta_bancaria != null )
+                                {
+                                    $caja_banco = 'Cuenta ' . $teso_movim->cuenta_bancaria->tipo_cuenta . ' ' . $teso_movim->cuenta_bancaria->entidad_financiera->descripcion . ' No. ' . $teso_movim->cuenta_bancaria->descripcion;
+                                }
+                            ?>
+                            <td> {{ $caja_banco }} </td>
+                            <td class="text-right"> ${{ number_format( abs($teso_movim->valor_movimiento), 2, ',', '.') }} </td>
+                        </tr>
+                        <?php 
+                            $total_movimiento += abs($teso_movim->valor_movimiento);
+                        ?>
+                    @endforeach
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td class="text-right"> ${{ number_format($total_movimiento, 2, ',', '.') }} </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    @endif
 @endif

@@ -133,6 +133,11 @@
         {!! $datos_factura->lineas_impuesto !!}
     @endif
 
+    <div style="font-style: normal; font-weight: 100;">
+        {!! $medios_pago !!}
+    </div>
+    
+
     <table style="width: 100%; font-size: 11px;" class="table table-bordered">
         <tbody>
             <tr>

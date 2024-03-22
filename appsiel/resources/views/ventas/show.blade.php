@@ -54,7 +54,6 @@
     </tr>
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
-        	{!! $medios_pago !!}
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
         </td>
     </tr>
@@ -89,6 +88,7 @@
 @endsection
 
 @section('registros_otros_documentos')
+	{!! $medios_pago !!}
 	@include('ventas.incluir.registros_abonos')
 	@include('ventas.incluir.notas_credito')
 @endsection

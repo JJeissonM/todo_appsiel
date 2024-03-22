@@ -60,7 +60,7 @@ class TesoMovimiento extends Model
     // Para cualquier tipo de transacción
     public static function get_registros_un_documento( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
     {
-        return TesoDocEncabezado::where( [ 
+        return TesoMovimiento::where( [ 
                                 'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
                                 'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
                                 'consecutivo' => $consecutivo
@@ -398,7 +398,7 @@ class TesoMovimiento extends Model
                 $teso_motivo_id = (int)config('tesoreria.motivo_comprobante_egresos_id');
             }
             $motivo = TesoMotivo::find($teso_motivo_id);
-            dd($motivo);
+            
             if ($motivo == null) {
                 $motivo = TesoMotivo::where( 'movimiento', $movimiento )->get()->first();
             }

@@ -30,7 +30,7 @@ use App\Compras\ComprasDocRegistro;
 use App\Compras\ComprasMovimiento;
 use App\Compras\NotaCredito;
 use App\Compras\Proveedor;
-
+use App\Compras\Services\TesoreriaService;
 use App\Ventas\ResolucionFacturacion;
 
 use App\Contabilidad\ContabMovimiento;
@@ -82,12 +82,12 @@ class CompraController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        
+    {        
         $lineas_registros_originales = json_decode( $request->all()['lineas_registros'] );
-        $registros_medio_pago = new RegistrosMediosPago;
         
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros_originales ) );
+        //$campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros_originales ) );
+        
+        $campo_lineas_recaudos = (new TesoreriaService())->get_campo_lineas_recaudos($request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales);
 
         // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
         // WARNING. HECHO MANUALMENTE
@@ -98,7 +98,7 @@ class CompraController extends TransaccionController
 
         // 3ro. Crear líneas de registros del documento
         $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $campo_lineas_recaudos );
         CompraController::crear_registros_documento( $request, $doc_encabezado );
 
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
@@ -156,22 +156,6 @@ class CompraController extends TransaccionController
         CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
 
         return true;
-    }
-
-
-    public static function get_total_documento_desde_lineas_registros( $lineas_registros )
-    {
-        $total_documento = 0;
-        
-        $cantidad_registros = count( $lineas_registros );
-        
-        $entrada_almacen_id = '';
-        $primera = true;
-        for ($i=0; $i < $cantidad_registros ; $i++)
-        {
-            $total_documento += (float)$lineas_registros[$i]->precio_total;
-        }
-        return $total_documento;
     }
 
     // Se crean los registros con base en los registros de las entradas de almacén
@@ -420,7 +404,8 @@ class CompraController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo )->first();
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
+
         $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
 
         // Datos de los PAGOS aplicados a la factura

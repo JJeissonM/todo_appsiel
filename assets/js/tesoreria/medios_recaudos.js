@@ -120,6 +120,17 @@ $('#valor_total').keyup(function(event){
 $('#btn_agregar').click(function(event){
     event.preventDefault();
 
+    if ( $("#teso_motivo_id").val() == 0 || $("#teso_motivo_id").val() == '') {
+        $("#teso_motivo_id").focus();
+        Swal.fire({
+            icon: 'error',
+            title: 'Alerta!',
+            text: 'Debe seleccionar un Motivo.'
+        });
+
+        return false;
+    }
+
     var valor_total = $('#valor_total').val();
 
     if($.isNumeric(valor_total) && valor_total>0)

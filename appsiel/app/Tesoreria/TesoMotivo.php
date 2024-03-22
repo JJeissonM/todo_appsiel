@@ -3,9 +3,8 @@
 namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TesoMotivo extends Model
 {
@@ -87,6 +86,36 @@ class TesoMotivo extends Model
     {
         $opciones = TesoMotivo::where('teso_motivos.estado','Activo')
                     ->where('teso_tipo_motivo',$teso_tipo_motivo)
+                    ->select('teso_motivos.id','teso_motivos.descripcion')
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function opciones_campo_select_compras()
+    {
+        $opciones = TesoMotivo::where('id',config('tesoreria.motivo_tesoreria_compras_contado'))
+                    ->select('teso_motivos.id','teso_motivos.descripcion')
+                    ->get();
+
+        $vec['']='';
+        foreach ($opciones as $opcion)
+        {
+            $vec[$opcion->id] = $opcion->descripcion;
+        }
+
+        return $vec;
+    }
+
+    public static function opciones_campo_select_ventas()
+    {
+        $opciones = TesoMotivo::where('id',config('tesoreria.motivo_tesoreria_ventas_contado'))
                     ->select('teso_motivos.id','teso_motivos.descripcion')
                     ->get();
 

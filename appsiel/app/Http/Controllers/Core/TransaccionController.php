@@ -166,17 +166,23 @@ class TransaccionController extends Controller
         switch ( $transaccion->id )
         {
             case 25: // Factura compras
-                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Pago proveedores' );
+                $motivos = TesoMotivo::opciones_campo_select_compras();
                 break;
             case 48: // Doc. Soporte en adquisiciones no obligados a facturas (Compras)
-                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Pago proveedores' );
+                $motivos = TesoMotivo::opciones_campo_select_compras();
                 break;
             case 23: // Factura ventas
-                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+                $motivos = TesoMotivo::opciones_campo_select_ventas();
+                break;
+            case 47: //  Facturas POS
+                $motivos = TesoMotivo::opciones_campo_select_ventas();
+                break;
+            case 52: //  Factura Electrónica de Ventas
+                $motivos = TesoMotivo::opciones_campo_select_ventas();
                 break;
             
             default:
-                $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion( 'Recaudo cartera' );
+                $motivos = TesoMotivo::opciones_campo_select_ventas();
                 break;
         }
         

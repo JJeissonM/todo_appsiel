@@ -60,7 +60,7 @@ class DocumentoSoporteService
 
    }
 
-   public function get_arr_content_data( NomContrato $empleado, $lapso )
+   public function get_arr_content_data( $empleado, $lapso )
    {
       $registros = $empleado->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final);
 
@@ -103,7 +103,7 @@ class DocumentoSoporteService
       
       if ($concepto->cpto_dian == null) {
          $one_line['status'] = 'error';
-         $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN: ' . $concepto->descripcion;
+         $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN.';
          return $one_line;
       }
 
@@ -146,11 +146,9 @@ class DocumentoSoporteService
       
       if($concepto->modo_liquidacion_id == 17) // Cesantias
       {
-         $one_line['percentage'] = 12;
-         $one_line['cesantias-interest'] = 0;
-
          foreach ($registros as $registro) {
             if ($registro->concepto->modo_liquidacion_id == 16) { // Intereses de cesantías
+               $one_line['percentage'] = 12;
                $one_line['cesantias-interest'] = $registro->valor_devengo;
             }
          }
@@ -159,8 +157,8 @@ class DocumentoSoporteService
       if($concepto->cpto_dian->id == 32) // INCAPACIDAD
       {
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
-         if ($registro_concepto->novedad_tnl != null) {
-            $one_line['medical-leave-type'] = strtoupper($registro_concepto->novedad_tnl->origen_incapacidad);
+         if ($registro_concepto->first()->novedad_tnl != null) {
+            $one_line['medical-leave-type'] = strtoupper($registro_concepto->first()->novedad_tnl->origen_incapacidad);
          }         
       }
       

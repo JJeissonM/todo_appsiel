@@ -4,12 +4,11 @@ namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use App\Core\Acl;
 
 use App\Tesoreria\TesoEntidadFinanciera;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TesoCuentaBancaria extends Model
 {

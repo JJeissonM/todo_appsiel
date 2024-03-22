@@ -23,6 +23,7 @@ use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Http\Controllers\Ventas\VentaController;
 use App\Tesoreria\RegistrosMediosPago;
+use App\Ventas\Services\TreasuryServices;
 use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -119,7 +120,9 @@ class FacturaController extends TransaccionController
 
         $registros_medio_pago = new RegistrosMediosPago;
 
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],VentaController::get_total_documento_desde_lineas_registros( $lineas_registros ) );
+        //$campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],VentaController::get_total_documento_desde_lineas_registros( $lineas_registros ) );
+
+        $campo_lineas_recaudos = (new TreasuryServices())->get_campo_lineas_recaudos($request->all()['lineas_registros_medios_recaudo'], $lineas_registros);
 
         // 1ra. Crear documento de salida de inventarios (REMISIÓN)
         $remision = new RemisionVentas;
