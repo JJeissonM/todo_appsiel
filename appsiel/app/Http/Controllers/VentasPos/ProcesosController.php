@@ -230,4 +230,38 @@ class ProcesosController extends Controller
 
         
     }
+
+    // vtas_pos_reducir_porcentaje_facturacion/2024-03-23/2024-03-23/30.23
+    public function reducir_porcentaje_facturacion($fecha_ini, $fecha_fin, $porcentaje_disminucion)
+    {
+        $tasa_disminucion = ( 1 - (float)$porcentaje_disminucion / 100);
+
+        $facturas = FacturaPos::whereBetween('fecha', [$fecha_ini, $fecha_fin])->get();
+
+        $num_lineas = 0;
+
+        foreach ($facturas as $key => $factura) {
+
+            $lineas_registros = $factura->lineas_registros;
+
+            foreach ($lineas_registros as $linea_registro) {
+                $linea_registro->precio_unitario = $linea_registro->precio_unitario * $tasa_disminucion;
+                $linea_registro->precio_total = $linea_registro->precio_total * $tasa_disminucion;
+                $linea_registro->base_impuesto = $linea_registro->base_impuesto * $tasa_disminucion;
+                $linea_registro->tasa_impuesto = $linea_registro->tasa_impuesto * $tasa_disminucion;
+                $linea_registro->valor_impuesto = $linea_registro->valor_impuesto * $tasa_disminucion;
+                $linea_registro->base_impuesto_total = $linea_registro->base_impuesto_total * $tasa_disminucion;
+                $linea_registro->valor_total_descuento = $linea_registro->valor_total_descuento * $tasa_disminucion;
+                $linea_registro->save();
+
+                $num_lineas++;
+            }
+
+            $this->reconstruir_movimiento_ventas_un_documento($factura->id);
+
+            (new AccountingServices())->recontabilizar_factura( $factura->id );
+        }
+
+        echo 'Actualizadas ' . $num_lineas . ' lineas.';
+    }
 }

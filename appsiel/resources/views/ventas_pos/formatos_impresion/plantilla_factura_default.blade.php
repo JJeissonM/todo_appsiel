@@ -135,8 +135,7 @@
 
     <div style="font-style: normal; font-weight: 100;">
         {!! $medios_pago !!}
-    </div>
-    
+    </div>    
 
     <table style="width: 100%; font-size: 11px;" class="table table-bordered">
         <tbody>

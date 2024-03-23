@@ -33,14 +33,6 @@ Route::get('pos_revisar_pedidos_ventas/{pdv_id}', 'VentasPos\ReporteController@r
 
 Route::get('pos_cargar_pedido/{pedido_id}', 'VentasPos\PedidosPosController@cargar_pedido');
 
-// Proceso especial
-Route::get('factura_pos_recontabilizar/{id}', 'VentasPos\FacturaPosController@recontabilizar_factura');
-
-Route::get('ventas_pos_reconstruir_mov_ventas_documento/{documento_id}', 'VentasPos\ProcesosController@reconstruir_mov_ventas_documento');
-
-Route::get('vtas_pos_form_modificar_total_factura/{documento_id}', 'VentasPos\ProcesosController@form_modificar_total_factura');
-Route::post('vtas_pos_store_nuevo_total_factura', 'VentasPos\ProcesosController@store_nuevo_total_factura');
-
 // Generar remisiones para documentos ya acumulados
 Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosController@generar_remisiones');
 
@@ -67,3 +59,14 @@ Route::post('pos_resumen_existencias', 'VentasPos\ReporteController@resumen_exis
 Route::post('pos_comprobante_informe_diario', 'VentasPos\ReporteController@comprobante_informe_diario');
 
 Route::get('pos_get_facturas_con_lineas_registros_sin_movimiento/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@get_facturas_con_lineas_registros_sin_movimiento');
+
+
+// PROCESOS
+Route::get('factura_pos_recontabilizar/{id}', 'VentasPos\FacturaPosController@recontabilizar_factura');
+
+Route::get('ventas_pos_reconstruir_mov_ventas_documento/{documento_id}', 'VentasPos\ProcesosController@reconstruir_mov_ventas_documento');
+
+Route::get('vtas_pos_form_modificar_total_factura/{documento_id}', 'VentasPos\ProcesosController@form_modificar_total_factura');
+Route::post('vtas_pos_store_nuevo_total_factura', 'VentasPos\ProcesosController@store_nuevo_total_factura');
+
+Route::get('vtas_pos_reducir_porcentaje_facturacion/{fecha_ini}/{fecha_fin}/{porcentaje_disminucion}', 'VentasPos\ProcesosController@reducir_porcentaje_facturacion');

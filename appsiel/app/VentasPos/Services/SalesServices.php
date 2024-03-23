@@ -60,6 +60,8 @@ class SalesServices
 
             $lineas_recaudos = json_decode($datos['lineas_registros_medios_recaudos']);
 
+            dd($lineas_recaudos);
+
             if ( $lineas_recaudos != null ) //&& $datos['lineas_registros_medios_recaudos'] != '' )
             {
                 foreach ($lineas_recaudos as $linea)
