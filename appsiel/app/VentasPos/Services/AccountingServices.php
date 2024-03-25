@@ -19,9 +19,7 @@ class AccountingServices
                             [ 'teso_caja_id' => $teso_caja_id]  + 
                             [ 'teso_cta_bancaria_id' => $teso_cta_bancaria_id] 
                         );
-    }
-
-    
+    }    
 
     // Recontabilizar un documento dada su ID
     public function recontabilizar_factura( $documento_id )
@@ -48,10 +46,10 @@ class AccountingServices
             $n++;
         }
 
-        $forma_pago = $documento->forma_pago;
+        $documento->valor_total = $total_documento;
+        $documento->save();
 
-        $datos = $documento->toArray();
-        $obj_sales_serv->contabilizar_movimiento_debito( $forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $documento->pdv->caja_default_id);
+        $obj_sales_serv->contabilizar_movimiento_debito_para_recontabilizacion( $documento );
 
         return true;
     }
