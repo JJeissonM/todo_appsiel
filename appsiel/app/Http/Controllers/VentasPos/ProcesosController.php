@@ -245,6 +245,12 @@ class ProcesosController extends Controller
             $lineas_registros = $factura->lineas_registros;
 
             foreach ($lineas_registros as $linea_registro) {
+
+                // ADVERTENCIA. Solo ventas Gravadas. Comentar esto para todas las ventas.
+                if ($linea_registro->tasa_impuesto == 0) {
+                    continue;
+                }
+
                 $linea_registro->precio_unitario = $linea_registro->precio_unitario * $tasa_disminucion;
                 $linea_registro->precio_total = $linea_registro->precio_total * $tasa_disminucion;
                 $linea_registro->base_impuesto = $linea_registro->base_impuesto * $tasa_disminucion;

@@ -120,35 +120,28 @@
         $('#errormail').css({'display':'none'})
 
         function validarEmail () {
-            var documento = $("#email").val();
-
-            /* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
-            url = "{{ url('core/validar_numero_identificacion/') }}";*/
-            
+            var documento = $("#email").val();            
 
             url = '../../ecommerce/validar_email/'; // crear            
 
             $.get(url + documento, function (datos) {
-                console.log(datos);
                 if (datos != '') {
                     if (datos == documento) {
                         // No hay problema
-                        $('#errormail').css({'display':'block'})
-                        //alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");  
-                        $('#btn_crear_cuenta').attr('type','button')
-                        console.log('false')  ;  
-                        return false;   
-                                
+                        $('#errormail').css({'display':'block'});
+                        $('#btn_crear_cuenta').attr('type','button');
+                        $('#btn_crear_cuenta').attr('disabled','disabled');
+                        return false;                                
                     }else{
-                        $('#errormail').css({'display':'none'})
-                        $('#btn_crear_cuenta').attr('type','submit')
-                        console.log('true')
+                        $('#errormail').css({'display':'none'});
+                        $('#btn_crear_cuenta').removeAttr('disabled');
+                        $('#btn_crear_cuenta').attr('type','submit');
                         return true;
                     }
                 }else{
-                    $('#errormail').css({'display':'none'})
-                    $('#btn_crear_cuenta').attr('type','submit')
-                    console.log('true')
+                    $('#btn_crear_cuenta').removeAttr('disabled');
+                    $('#errormail').css({'display':'none'});
+                    $('#btn_crear_cuenta').attr('type','submit');
                     return true;
                 }
             });

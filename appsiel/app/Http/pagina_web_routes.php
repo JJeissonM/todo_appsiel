@@ -224,7 +224,8 @@ Route::put('tienda/terminos/condiciones/updated/{tienda}', 'web\TiendaController
 
 //TIENDA PUBLICA
 Route::get('ecommerce/public/signIn', 'web\TiendaController@login')->name('tienda.login');
-Route::get('ecommerce/public/nuevacuenta', 'web\TiendaController@crearCuenta')->name('tienda.nuevacuenta');
+Route::get('ecommerce/public/nuevacuenta', 'web\TiendaController@crearCuenta_parte1')->name('tienda.nuevacuenta');
+Route::get('ecommerce/public/nuevacuenta_parte2', 'web\TiendaController@crearCuenta_parte2')->name('tienda.nuevacuenta2');
 Route::get('ecommerce/comprar', 'web\TiendaController@comprar')->name('tienda.comprar');
 Route::get('ecommerce/public/account/{vista?}', 'web\TiendaController@cuenta')->name('tienda.micuenta');
 Route::get('ecommerce/public/newaccount', 'web\TiendaController@newcuenta');

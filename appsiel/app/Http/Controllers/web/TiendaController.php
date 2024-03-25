@@ -284,10 +284,17 @@ class TiendaController extends Controller
         
     }
 
-    public function crearCuenta()   
+    public function crearCuenta_parte1()   
     {
         $tipos = DB::table('core_tipos_docs_id')->get();
-        return view('web.tienda.crearCuenta', compact('tipos'));
+        return view('web.tienda.crearCuenta_parte1', compact('tipos'));
+    }
+
+    public function crearCuenta_parte2()   
+    {
+        dd('hi');
+        $tipos = DB::table('core_tipos_docs_id')->get();
+        return view('web.tienda.crearCuenta_parte1', compact('tipos'));
     }
 
     public function detallepedido($pedido_id){

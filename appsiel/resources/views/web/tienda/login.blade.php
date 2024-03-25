@@ -62,18 +62,18 @@
                                                             <p>Si tiene una cuenta con nosotros, inicie sesión.</p>
                                                             <ul class="form-list">
                                                                 <li>
-                                                                    <label for="email" class="required"><em>*</em>Email</label>
+                                                                    <label for="numero_identificacion" class="required"><em>*</em> Usuario (CC/NIT)</label>
                                                                     <div class="input-box">
-                                                                        <input style="font-size: 16px;" placeholder="Correo Electronico" type="text" name="email"  value="{{old('email')}}" id="email" class="input-text required-entry validate-email" title="Email Address">
+                                                                        <input style="font-size: 16px;" placeholder="Número de identificación" type="text" name="numero_identificacion"  value="{{old('numero_identificacion')}}" id="numero_identificacion" class="input-text required-entry validate-numero_identificacion" title="Número de identificación">
                                                                     </div>
-                                                                    @if ($errors->has('email'))
+                                                                    @if ($errors->has('numero_identificacion'))
                                                                     <span class="help-block text-danger">
-                                                                        <strong>{{ $errors->first('email') }}</strong>
+                                                                        <strong>{{ $errors->first('numero_identificacion') }}</strong>
                                                                     </span>
                                                                     @endif
                                                                 </li>
                                                                 <li>
-                                                                    <label for="pass" class="required"><em>*</em>Contraseña</label>
+                                                                    <label for="pass" class="required"><em>*</em> Contraseña</label>
                                                                     <div class="input-box">
                                                                         <input style="font-size: 16px;" placeholder="Password" type="password" name="password"  class="input-text required-entry validate-password" id="pass" title="Password">
                                                                     </div>
