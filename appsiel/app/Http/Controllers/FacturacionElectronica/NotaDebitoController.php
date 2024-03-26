@@ -4,17 +4,9 @@ namespace App\Http\Controllers\FacturacionElectronica;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use App\Http\Controllers\Ventas\VentaController;
 use App\Http\Controllers\Core\TransaccionController;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Contabilidad\ContabilidadController;
-
-use Auth;
-use View;
-use Input;
 
 use App\Core\EncabezadoDocumentoTransaccion;
 
@@ -33,18 +25,19 @@ use App\Ventas\Cliente;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 
-use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoMotivo;
 
 use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\TFHKA\DocumentoReferenciado;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\ResultadoEnvio;
-use App\FacturacionElectronica\Factura;
+
 use App\FacturacionElectronica\NotaDebito;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class NotaDebitoController extends TransaccionController
 {
@@ -149,7 +142,7 @@ class NotaDebitoController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo )->first();
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
         $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
 
         // Datos de los abonos aplicados a la factura

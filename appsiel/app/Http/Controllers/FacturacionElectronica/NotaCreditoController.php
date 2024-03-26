@@ -172,7 +172,7 @@ class NotaCreditoController extends TransaccionController
 
         $registros_contabilidad = TransaccionController::get_registros_contabilidad( $doc_encabezado );
 
-        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo )->first();
+        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
         $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
 
         // Datos de los abonos aplicados a la factura
