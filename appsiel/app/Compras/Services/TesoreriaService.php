@@ -144,6 +144,7 @@ class TesoreriaService
                 $lineas_detalladas[] = (object)[
                     'item' => $linea_registro_entrada->inv_producto_id . ' - ' . $linea_registro_entrada->item->descripcion,
                     'doc_pago' => $abono->get_label_documento(),
+                    'fecha_pago' => $abono->fecha,
                     'factura_compras' => $factura_compras->get_label_documento(),
                     'total_factura_compras' => $factura_compras->valor_total,
                     'porcentaje_participacion_item' => round($porcentaje_participacion_item * 100, 2) . '%',
