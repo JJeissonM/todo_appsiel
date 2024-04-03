@@ -23,7 +23,7 @@ class TreasuryServices
         ] )
         ->get()->first();
 
-        dd($account_receivable_document_header,$payment,$payment_methods_lines);
+        dd( $account_receivable_record, $account_receivable_document_header,$payment,$payment_methods_lines);
 
         $data = $account_receivable_document_header->toArray();
 

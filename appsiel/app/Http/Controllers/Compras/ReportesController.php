@@ -11,6 +11,7 @@ use Lava;
 use App\Compras\ComprasMovimiento;
 use App\Compras\OrdenCompra;
 use App\Compras\Proveedor;
+use App\Compras\Services\TesoreriaService;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
 use App\CxP\DocumentosPendientes;
@@ -402,6 +403,27 @@ class ReportesController extends Controller
         }
 
         $vista = View::make('compras.reportes.reporte_compras_ordenado', compact('movimiento','agrupar_por','mensaje','iva_incluido','detalla_productos'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    public function descuentos_por_pronto_pago(Request $request)
+    {
+        $user = Auth::user();
+
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;  
+        $detalla_documentos  = (int)$request->detalla_documentos;        
+
+        $items_con_descuento = (new TesoreriaService())->get_lineas_items_compras_con_descuentos_por_pronto_pago($fecha_desde, $fecha_hasta, $detalla_documentos);
+
+        if ($detalla_documentos) {
+            $vista = View::make('compras.reportes.reporte_descuentos_pronto_pago_detallado', compact('items_con_descuento'))->render();
+        }else{
+            $vista = View::make('compras.reportes.reporte_descuentos_pronto_pago', compact('items_con_descuento'))->render();
+        }        
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

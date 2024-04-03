@@ -4,22 +4,17 @@ namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Sistema\ModeloController;
 
-use Auth;
-use DB;
-use Input;
-use Storage;
-
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
-
+use App\Salud\Paciente;
 use App\Ventas\Vendedor;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class VendedorController extends Controller
 {

@@ -2,13 +2,12 @@
 
 namespace App\CxP;
 
+use App\Compras\ComprasDocEncabezado;
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CxpAbono extends Model
 {
@@ -21,6 +20,16 @@ class CxpAbono extends Model
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento pago', 'Proveedor', 'Documento de CxP', 'Documento Cruce', 'Valor abono'];
 
     public $urls_acciones = '{"show":"no"}';
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -196,5 +205,16 @@ class CxpAbono extends Model
                                 'core_terceros.telefono1'
                             )
                     ->get();
+    }
+
+    public function get_encabezado_documento_cxp()
+    {
+        return ComprasDocEncabezado::where([
+                                        [ 'core_tipo_transaccion_id', '=', $this->doc_cxp_transacc_id ],
+                                        [ 'core_tipo_doc_app_id', '=', $this->doc_cxp_tipo_doc_id ],
+                                        [ 'consecutivo', '=', $this->doc_cxp_consecutivo ]
+                                    ])
+                                    ->get()
+                                    ->first();
     }
 }

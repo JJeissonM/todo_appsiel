@@ -13,20 +13,25 @@
 
             <h5 class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></h5>
 
-            <div class="row">
-                <div class="col-md-6 col-lg-6 col-xl-2">
-                    @if( $doc_encabezado->enlaces_remisiones_hijas() == '' )
-                        {{ Form::select( 'generar', [  'remision_y_factura_desde_pedido' => 'Remisión y Factura', 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-                    @else
-                        {{ Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
-                    @endif
+            <!-- 
+                <div class="row">
+                    <div class="col-md-6 col-lg-6 col-xl-2">
+                        @ if( $doc_encabezado->enlaces_remisiones_hijas() == '' )
+                            { { Form::select( 'generar', [  'remision_y_factura_desde_pedido' => 'Remisión y Factura', 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+                        @ else
+                            { { Form::select( 'generar', [ 'remision_desde_pedido' => 'Remisión' ], null, ['class'=>'form-control select2','required'=>'required', 'id' =>'generar']) }}
+                        @ endif
+                    </div>
+                    <div class="col-md-6 col-lg-6 col-xl-2">
+                    </div>
                 </div>
-                <div class="col-md-6 col-lg-6 col-xl-2">
-                </div>
-            </div>
+            -->
             <br>
 
             <div class="row">
+                
+                <input type="hidden" name="generar" id="generar" value="remision_y_factura_desde_pedido">
+
                 <div class="col-md-6 col-lg-6 col-xl-2">
                     {{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
                 </div>

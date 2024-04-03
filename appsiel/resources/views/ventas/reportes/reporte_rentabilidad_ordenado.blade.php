@@ -2,6 +2,11 @@
     REPORTE DE RENTABILIDAD EN VENTAS 
     <span style="background: yellow; color: red;">({!! $mensaje !!})</span> 
 </h3>
+@if($aplicar_descuentos_pronto_pago)
+    <p>
+        dpp = Descuentos por pronto pago aplicados entre las fechas seleccionadas.
+    </p>
+@endif
 <hr>
 
 <?php 
@@ -62,17 +67,23 @@
                         $costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
                         //$costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
                     }else{
-                        $costo_total = $movimiento_inventarios->where( 'inv_producto_id', $coleccion_movimiento->first()->inv_producto_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
+
+                        $inv_producto_id = $coleccion_movimiento->first()->inv_producto_id;
+                        $descuento_item = 0;
+                        $superindice = '';
+                        if (isset($items_con_descuento[$inv_producto_id])) {
+                            $descuento_item = $items_con_descuento[$inv_producto_id];
+                            $superindice = '<sup>dpp</sup>';
+                        }
+                        $costo_total = $movimiento_inventarios->where( 'inv_producto_id', $inv_producto_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1 - $descuento_item; // los movimiento de inventarios de ventas son negativos
 
                         if ($coleccion_movimiento->first()->item->tipo == 'servicio') {
                             $costo_total = $precio * (1 - $coleccion_movimiento->first()->item->precio_compra / 100);
                             $iva_incluido = 0;
                         }
                     }
-                    
-                    /**/
 
-                    $array_lista[$i]['descripcion'] = $campo_agrupado;
+                    $array_lista[$i]['descripcion'] = $campo_agrupado . $superindice;
                     
                     if ( $agrupar_por == 'core_tercero_id' )
                     {
@@ -132,7 +143,7 @@
                 ?>
 
                 <tr class="fila-{{$j}} {{$clase}}">
-                    <td> {{ $array_lista[$i]['descripcion'] }} </td>
+                    <td> {!! $array_lista[$i]['descripcion'] !!} </td>
                     <td> {{ number_format( $array_lista[$i]['cantidad'], 2, ',', '.') }} </td>
                     <td> ${{ number_format( $array_lista[$i]['precio_promedio'], 2, ',', '.') }} </td>
                     <td> ${{ number_format( $array_lista[$i]['precio'], 2, ',', '.') }} </td>

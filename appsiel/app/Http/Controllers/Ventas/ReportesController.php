@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Compras\Services\TesoreriaService;
 use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
@@ -155,9 +156,10 @@ class ReportesController extends Controller
         $fecha_hasta  = $request->fecha_hasta;
 
         $agrupar_por = $request->agrupar_por;
-
         
         $costo_desde = $request->costo_desde;
+
+        $aplicar_descuentos_pronto_pago = (int)$request->aplicar_descuentos_pronto_pago;
 
         if ($costo_desde == 'ultimo_precio_compras') {
             $agrupar_por = 'inv_producto_id';            
@@ -182,11 +184,16 @@ class ReportesController extends Controller
         {
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
+
+        $items_con_descuento = [];
+        if ($aplicar_descuentos_pronto_pago) {
+            $items_con_descuento = (new TesoreriaService())->get_items_compras_con_descuentos_por_pronto_pago($fecha_desde, $fecha_hasta);
+        }
         
         if ($costo_desde == 'ultimo_precio_compras') {
-            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado_v2', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido') )->render();
+            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado_v2', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido', 'items_con_descuento', 'aplicar_descuentos_pronto_pago') )->render();
         }else{
-            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido') )->render();
+            $vista = View::make('ventas.reportes.reporte_rentabilidad_ordenado', compact( 'movimiento', 'movimiento_inventarios', 'agrupar_por', 'mensaje', 'iva_incluido', 'items_con_descuento', 'aplicar_descuentos_pronto_pago') )->render();
         }
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
@@ -338,7 +345,7 @@ class ReportesController extends Controller
         $parametros = config('ventas');
 
         $pedidos_db = VtasPedido::where([['core_tipo_doc_app_id', $parametros['pv_tipo_doc_app_id']], ['fecha_entrega', 'like','%'.$fechahoy.'%'], ['estado', 'Pendiente']])->get();
-        //dd($pedidos_db);
+        
         $pedidos = null;
         if (count($pedidos_db) > 0) {
             foreach ($pedidos_db as $o) {

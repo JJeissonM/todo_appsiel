@@ -4,27 +4,11 @@ namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Http\Controllers\Sistema\ModeloController;
 
-use Auth;
-use DB;
-use Input;
-use Storage;
-use View;
-
 use App\Sistema\Modelo;
-use App\Sistema\Campo;
-use App\Core\Tercero;
-
-use App\Ventas\Cliente;
-use App\Ventas\Vendedor;
-use App\Ventas\VtasMovimiento;
-use App\Ventas\VtasDocEncabezado;
-use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\ListaDctoDetalle;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class DireccionEntregaController extends ModeloController
 {
@@ -105,7 +89,6 @@ class DireccionEntregaController extends ModeloController
 
     public function update(Request $request, $id)
     {
-        //dd($request);
         $modelo = Modelo::find($request->url_id_modelo);
         
         // Se obtinene el registro a modificar del modelo

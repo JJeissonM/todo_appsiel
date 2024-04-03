@@ -289,7 +289,7 @@ class ProcesoController extends Controller
     public function crear_remision_y_factura_desde_doc_venta( Request $request )
     {
         $pedido = VtasDocEncabezado::find( (int)$request->doc_encabezado_id );
-
+        
         $hay_existencias_negativas = $pedido->determinar_posibles_existencias_negativas();
         
         if ( $hay_existencias_negativas )
@@ -297,10 +297,10 @@ class ProcesoController extends Controller
             return redirect( 'vtas_pedidos/' . $pedido->id . '?id=13&id_modelo=175&id_transaccion=42' )->with( 'mensaje_error', 'No hay cantidades suficientes para facturar.' );
         }
 
-        //dd($pedido, $request->all());
-
-        // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
+        // Este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
         $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, $request->fecha );
+
+        $pedido->forma_pago = $request->forma_pago;
 
         $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, $request->fecha );
         $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
@@ -334,7 +334,7 @@ class ProcesoController extends Controller
     public function crear_factura_desde_pasarela_de_pago(Request $request)
     {
         $data = $request->data['transaction'];
-        dd($data['status']);
+        
         if($data['status'] == 'APPROVED'){
             $pedido = VtasDocEncabezado::find( (int)$data['reference'] );        
 

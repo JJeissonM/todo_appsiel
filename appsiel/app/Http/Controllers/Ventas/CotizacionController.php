@@ -2,25 +2,14 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Contabilidad\ContabDocEncabezado;
+use App\Contabilidad\ContabDocRegistro;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use Auth;
-use DB;
-use View;
-use Input;
-use Form;
-
-use Spatie\Permission\Models\Permission;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
-
-use App\Http\Controllers\Inventarios\InventarioController;
-
-use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -28,17 +17,20 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 
 // Modelos
 use App\Core\Empresa;
-use App\Sistema\TipoTransaccion;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
 use App\Core\TransaccionOtrosCampos;
 use App\Core\ModeloEavValor;
-
+use App\Core\TipoDocApp;
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ContactoCliente;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class CotizacionController extends TransaccionController
 {
@@ -162,7 +154,6 @@ class CotizacionController extends TransaccionController
     */
     public function imprimir(Request $request, $id )
     {
-        //dd($request->formato_impresion_id);
         if($request->formato_impresion_id == 1)
         {
             $documento_vista = $this->generar_documento_vista( $id, 'documento_imprimir');
@@ -171,10 +162,7 @@ class CotizacionController extends TransaccionController
         }
 
         // Se prepara el PDF
-        $orientacion='portrait';
-        $tam_hoja = array(0,0,50,800);//'A4';
-
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
@@ -353,7 +341,6 @@ class CotizacionController extends TransaccionController
         return $this->edit( $nuevo_doc_encabezado->id );
     }
 
-
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)
     {
@@ -410,7 +397,4 @@ class CotizacionController extends TransaccionController
         return redirect( 'vtas_cotizacion/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Cotización ANULADA correctamente.');
         
     }
-
-
-
 }

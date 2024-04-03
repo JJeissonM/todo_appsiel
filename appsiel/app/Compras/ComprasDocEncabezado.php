@@ -5,13 +5,13 @@ namespace App\Compras;
 use App\FacturacionElectronica\ResultadoEnvioDocumentoSoporte;
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
 use App\Sistema\TipoTransaccion;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ComprasDocEncabezado extends Model
 {
