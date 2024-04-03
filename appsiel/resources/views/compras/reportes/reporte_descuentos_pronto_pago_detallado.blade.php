@@ -11,7 +11,6 @@
                 <th> Doc. Pago </th>
                 <th> Fecha Doc. Pago </th>
                 <th> Fact. Compras </th>
-                <th> Total  Fact. Compras</th>
                 <th>  % participación Ítem </th>
                 <th> Vlr. Descuento aplicado </th>
             </tr>
@@ -31,7 +30,6 @@
                     <td> {{ $linea->doc_pago }} </td>
                     <td> {{ $linea->fecha_pago }} </td>
                     <td> {{ $linea->factura_compras }} </td>
-                    <td style="text-align: right;"> ${{ number_format( $linea->total_factura_compras, 2, ',', '.') }} </td>
                     <td style="text-align: center;"> {{ $linea->porcentaje_participacion_item }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->valor_descuento, 2, ',', '.') }} </td>
                 </tr>
@@ -43,7 +41,7 @@
             @endforeach
 
             <tr style=" background-color: #67cefb; font-weight: bolder;">
-                <td colspan="6"> </td>
+                <td colspan="5"> </td>
                 <td style="text-align: right;"> ${{ number_format( $total_1_producto, 2, ',', '.') }} </td>
             </tr>
         </tbody>
