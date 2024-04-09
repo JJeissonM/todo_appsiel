@@ -18,9 +18,7 @@
         <tbody>
 
             <?php
-
                 $total_1_producto = 0;
-
             ?>
 
             @foreach( $items_con_descuento as $linea)

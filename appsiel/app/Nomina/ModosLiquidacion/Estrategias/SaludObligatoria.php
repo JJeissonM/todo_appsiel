@@ -47,10 +47,7 @@ class SaludObligatoria implements Estrategia
         $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
 
         $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza,  $total_IBC * $liquidacion['concepto']->porcentaje_sobre_basico / 100 );
-
-                                            if ( $liquidacion['empleado']->id == 76 ) {
-                                                dd([$tiempo_a_liquidar,$total_ibc_devengos, $total_ibc_deducciones,$total_IBC]);
-                                            }
+        
         return [ 
                     [
                         'cantidad_horas' => $tiempo_a_liquidar,
