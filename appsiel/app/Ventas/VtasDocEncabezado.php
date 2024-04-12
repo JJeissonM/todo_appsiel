@@ -102,6 +102,9 @@ class VtasDocEncabezado extends Model
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {
+        /**
+         * NOTA 1: Se puede dar el Caso en que el ID de registro en FacturaPos sea igual al ID de un Pedido (VtasDocEncabezado). Por tanto al buscar el doc_padre en VtasDocEncabezado arrojará el registro de un Pedido cualquiera ($doc_padre != null) y no se buscará la factura real en FacturaPos. Para esto se busca nuevamente en FacturaPos cuando la transaccion de Pedido es igual a la transaccion del doc_padre
+         */
         $doc_padre = VtasDocEncabezado::find( $this->ventas_doc_relacionado_id );
         
         if ( $doc_padre == null )
@@ -115,7 +118,14 @@ class VtasDocEncabezado extends Model
         }
 
         if ($doc_padre->core_tipo_transaccion_id == $this->core_tipo_transaccion_id) {
-            return null;
+
+            // Buscar nuevamente en FacturaPos cuando la transaccion de Pedido es igual a la transaccion del doc_padre
+            $doc_padre = FacturaPos::find( $this->ventas_doc_relacionado_id );
+        
+            if ( $doc_padre == null )
+            {
+                return null;
+            }
         }
 
         return $doc_padre;
