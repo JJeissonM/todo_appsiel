@@ -29,6 +29,8 @@
           'demo@appsiel.com.co' => 'Admin. Empresa Transporte Especial',
           'rector@appsiel.com.co' => 'Rector Colegio',
           'docente@appsiel.com.co' => 'Docente Colegio',
+          'mesero@appsiel.com.co' => 'Mesero',
+          'cajero@appsiel.com.co' => 'Cajero',
           'administrator@appsiel.com.co' => 'Super Admin (contraseña requerida)'
         ];
       }
@@ -53,6 +55,8 @@
               <option value="demo@appsiel.com.co">Admin. Empresa Transporte Especial</option>
               <option value="rector@appsiel.com.co">Rector Colegio</option>
               <option value="docente@appsiel.com.co">Docente Colegio</option>
+              <option value="mesero@appsiel.com.co">Mesero</option>
+              <option value="cajero@appsiel.com.co">Cajero</option>
               <option value="administrator@appsiel.com.co">Super Admin (contraseña requerida)</option>
             </select>
           @endif 
