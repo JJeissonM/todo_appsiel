@@ -491,6 +491,47 @@ class FacturaPosController extends TransaccionController
         return 1;
     }
 
+    public function borrar_propina($doc_encabezado_id)
+    {
+        //return 0;
+
+        $factura = FacturaPos::find($doc_encabezado_id);
+
+        $lineas_recaudos = json_decode($factura->lineas_registros_medios_recaudos);
+
+        $string_lineas_registros_medios_recaudos = '[';
+        
+        if ( !is_null($lineas_recaudos) )
+        {
+            $es_el_primero = true;
+
+            foreach ($lineas_recaudos as $linea)
+            {
+                if ( (int)explode("-", $linea->teso_motivo_id)[0] == (int)config('ventas_pos.motivo_tesoreria_propinas') ) {
+                    continue;
+                };
+                
+                if ($es_el_primero) {
+                    $string_lineas_registros_medios_recaudos .= '{"teso_medio_recaudo_id":"' . $linea->teso_medio_recaudo_id . '","teso_motivo_id":"' . $linea->teso_motivo_id . '","teso_caja_id":"' . $linea->teso_caja_id . '","teso_cuenta_bancaria_id":"' . $linea->teso_cuenta_bancaria_id . '","valor":"' . $linea->valor . '"}';
+                    $es_el_primero = false;
+                }else{
+                    $string_lineas_registros_medios_recaudos .= ',{"teso_medio_recaudo_id":"' . $linea->teso_medio_recaudo_id . '","teso_motivo_id":"' . $linea->teso_motivo_id . '","teso_caja_id":"' . $linea->teso_caja_id . '","teso_cuenta_bancaria_id":"' . $linea->teso_cuenta_bancaria_id . '","valor":"' . $linea->valor . '"}';
+                }
+            }
+        }
+
+        $string_lineas_registros_medios_recaudos .= ']';
+
+        $modificado_por = Auth::user()->email;
+
+        $factura->update([
+            'lineas_registros_medios_recaudos' => $string_lineas_registros_medios_recaudos, 
+            'modificado_por' => $modificado_por]
+        );
+
+        return 1;
+    }
+
     public static function actualizar_cantidades_pendientes( $encabezado_pedido, $operacion )
     {
         $lineas_registros_pedido = $encabezado_pedido->lineas_registros;

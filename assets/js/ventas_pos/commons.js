@@ -1149,6 +1149,29 @@ $(document).ready(function () {
             return false;
         }
     });
+    
+    $(document).on('click', ".btn_borrar_propina", function (event) {
+        event.preventDefault();
+
+        var opcion = confirm('¿Seguro desea borrar la propina de la factura ' + $(this).attr('data-lbl_factura') + ' ?');
+
+        if (opcion) {
+            fila = $(this).closest("tr");
+
+            $('#div_spin2').fadeIn();
+            var url = url_raiz + "/" + "pos_factura_borrar_propina" + "/" + $(this).attr('data-doc_encabezado_id');
+
+            $.get(url, function (respuesta) {
+                $('#div_spin2').hide();
+                
+                alert('Propina borrada correctamente de la factura.');
+                $('#contenido_modal2').html('');
+				$("#myModal2").modal("hide");
+            });
+        } else {
+            return false;
+        }
+    });
 
     function guardar_valor_nuevo(fila) 
     {

@@ -15,6 +15,8 @@ Route::get('pos_hacer_desarme_automatico/{pdv_id}/{fecha}', 'VentasPos\FacturaPo
 // Anular factura que no esté acumulada
 Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_pos');
 
+Route::get('pos_factura_borrar_propina/{doc_encabezado_id}', 'VentasPos\FacturaPosController@borrar_propina');
+
 Route::get('pos_factura_validar_existencias/{pdv_id}', 'VentasPos\FacturaPosController@validar_existencias');
 
 Route::get('pos_acumular_una_factura/{factura_id}', 'VentasPos\FacturaPosController@acumular_una_factura');

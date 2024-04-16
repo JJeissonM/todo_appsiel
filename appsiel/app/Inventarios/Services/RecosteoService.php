@@ -18,7 +18,7 @@ class RecosteoService
      * 16> Entrada por compras
      * 23> Saldos iniciales
      */
-    public $arr_motivos_entradas_ids = [1, 11, 16, 23];
+    public $arr_motivos_entradas_ids = [1, 11, 16, 22, 23];
 
     /**
      * Todos los ids de entradas y ademas

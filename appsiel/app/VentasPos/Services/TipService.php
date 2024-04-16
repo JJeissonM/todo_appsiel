@@ -12,7 +12,6 @@ class TipService
 
         $lineas_recaudos = json_decode($invoice->lineas_registros_medios_recaudos);
 
-
         $tip_value = 0;
         if ( !is_null($lineas_recaudos) )
         {
