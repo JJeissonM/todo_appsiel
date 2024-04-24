@@ -86,12 +86,12 @@
 
 		    });
 
-		    $(document).on('dblclick','textarea',function(){
-				$(this).removeAttr( "disabled" );
+			$(document).on('dblclick','.textarea_observacion',function(){
+				$(this).removeAttr( "readonly" );
 				$(this).next().show(); // Mostrar el botón
 				$(this).focus();
 				//console.log();
-		    });
+			});
 
 		    var boton;
 		    $(document).on('click','.btn_guardar_observacion',function(){
@@ -115,12 +115,8 @@
 				});
 
 				$(this).hide(); // Ocutar el botón
-				textarea.attr('disabled','disabled');
+				textarea.attr('readonly','readonly');
 		    });
-
-
-
-
 		});
 	</script>
 @endsection

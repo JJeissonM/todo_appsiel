@@ -162,7 +162,7 @@
 								</td>
 								<td colspan="2" <?php if($observacion->observacion==""){echo $estilo_advertencia;}?>>
 									
-									{{ Form::textarea("observacion_".$estudiante->id, $observacion->observacion, ['class' => 'form-control', 'rows' => '4', 'disabled'=>'disabled','title'=>'Doble click para editar.'] ) }}
+									{{ Form::textarea("observacion_".$estudiante->id, $observacion->observacion, ['class' => 'form-control textarea_observacion', 'rows' => '4', 'readonly'=>'readonly','title'=>'Doble click para editar.'] ) }}
 
 
 									<button class="btn btn-default pull-left btn-sm btn_guardar_observacion" title="Guardar observación" style="display: none;" data-codigo_matricula="{{$estudiante->codigo}}" data-id_colegio="{{ $colegio->id }}" data-id_periodo="{{ $periodo->id }}" data-curso_id="{{ $estudiante->curso_id }}" data-id_estudiante="{{$estudiante->id_estudiante}}" data-observacion_id="{{ $observacion->id }}">
@@ -181,7 +181,7 @@
 								</td>
 								<td colspan="2">
 									
-									{{ Form::textarea("observacion_".$estudiante->id, null, ['class' => 'form-control', 'rows' => '4', 'disabled'=>'disabled','title'=>'Doble click para editar.'] ) }}
+									{{ Form::textarea("observacion_".$estudiante->id, null, ['class' => 'form-control textarea_observacion', 'rows' => '4', 'readonly'=>'readonly','title'=>'Doble click para editar.'] ) }}
 
 									<button class="btn btn-default pull-left btn-sm btn_guardar_observacion" title="Guardar observación" style="display: none;" data-codigo_matricula="{{$estudiante->codigo}}" data-id_colegio="{{ $colegio->id }}" data-id_periodo="{{ $periodo->id }}" data-curso_id="{{ $estudiante->curso_id }}" data-id_estudiante="{{$estudiante->id_estudiante}}" data-observacion_id="no">
 										<i class="fa fa-btn fa-save"></i>
