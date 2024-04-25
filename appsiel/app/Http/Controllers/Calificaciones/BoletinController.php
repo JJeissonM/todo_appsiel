@@ -199,7 +199,7 @@ class BoletinController extends Controller
 	{
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
 
-        $view = $this->get_view_for_pdf($request->all(), $firmas,false);
+        $view = $this->get_view_for_pdf($request->all(), $firmas, false);
             
         // Se prepara el PDF
         $orientacion='portrait';

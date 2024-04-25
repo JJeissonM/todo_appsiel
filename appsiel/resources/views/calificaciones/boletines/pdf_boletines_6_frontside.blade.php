@@ -8,7 +8,7 @@
         $lbl_asigatura = 'ASIGNATURA';
     }
 
-    $ancho_primera_columna = 110;
+    $ancho_primera_columna = 100;
     $ancho_columna_calificacion = 70;
     $area_anterior = '';
     $cant_columnas = 2;
@@ -71,7 +71,7 @@
                     </td>
                     
                     @if( $curso->maneja_calificacion == 1)
-                        <td style="width:{{$ancho_columna_calificacion}}px; padding: 5; text-align: center;"> 
+                        <td style="width:{{$ancho_columna_calificacion}}px; padding: 5; text-align: center; font-size:11px;"> 
                             @if( !is_null( $linea->calificacion ) )
                                 @if( $linea->calificacion->calificacion > 0)
                                     @include('calificaciones.boletines.lbl_descripcion_calificacion')
@@ -93,6 +93,4 @@
         
     @include('calificaciones.boletines.pie_pagina')
 
-    @if($with_page_breaks)
-        <div class="page-break"></div>	
-    @endif
+    <div class="page-break"></div>

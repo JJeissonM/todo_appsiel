@@ -119,6 +119,10 @@ class CompraController extends TransaccionController
         $ea_tipo_doc_app_id = $parametros['ea_tipo_doc_app_id'];
         
         $lineas_registros = json_decode($request->lineas_registros);
+
+        if ( !(int)$request->liquida_impuestos && (int)config('configuracion.liquidacion_impuestos')) {
+            $lineas_registros = $this->recalcular_lineas_registros(json_decode($request->lineas_registros) );
+        }
         
         // Se crea el documento, se cambia temporalmente el tipo de transacción y el tipo_doc_app
         $tipo_transaccion_id_original = $request['core_tipo_transaccion_id'];
@@ -135,6 +139,24 @@ class CompraController extends TransaccionController
         $request['estado'] = 'Activo';
 
         return $entrada_almacen_id;
+    }
+
+    public function recalcular_lineas_registros($lineas_registros_originales)
+    {
+        $nuevas_lineas = [];
+        foreach ($lineas_registros_originales as $linea_original) {
+
+            $item = InvProducto::find( (int)$linea_original->inv_producto_id );
+
+            $linea_original->costo_total = ( (float)$linea_original->costo_total ) / ( 1 + $item->impuesto->tasa_impuesto / 100 );
+
+            $linea_original->costo_unitario = ( (float)$linea_original->costo_unitario ) / ( 1 + $item->impuesto->tasa_impuesto / 100 );
+            
+            $nuevas_lineas[] = $linea_original;
+
+        }
+
+        return $nuevas_lineas;
     }
 
 
@@ -185,6 +207,9 @@ class CompraController extends TransaccionController
                 $total_base_impuesto = $un_registro->costo_total;
 
                 $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $doc_encabezado->proveedor_id, 0 );
+                if ((int)config('configuracion.liquidacion_impuestos')) {
+                    $tasa_impuesto = $un_registro->item->impuesto->tasa_impuesto;
+                }
 
                 // El costo_unitario se guardó con los descuentos restados
                 $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
@@ -199,6 +224,14 @@ class CompraController extends TransaccionController
                     $valor_total_descuento = $lineas_registros_originales[ $linea ]->valor_total_descuento;
                 }
 
+                $valor_impuesto = $precio_total - $total_base_impuesto;
+
+                if (!(int)$doc_encabezado->proveedor->liquida_impuestos) {
+                    $valor_impuesto = 0;
+                    $tasa_impuesto = 0;
+                    $total_base_impuesto = $precio_total;
+                }
+
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
@@ -207,12 +240,11 @@ class CompraController extends TransaccionController
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_total - $total_base_impuesto ) ] +
+                                [ 'valor_impuesto' => $valor_impuesto ] +
                                 [ 'tasa_descuento' => $tasa_descuento ] +
                                 [ 'valor_total_descuento' => $valor_total_descuento ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
-
                 
                 ComprasDocRegistro::create( 
                                         $datos + 
@@ -907,9 +939,13 @@ class CompraController extends TransaccionController
         // 5. Actualizar el registro del documento de inventario
         $inv_doc_encabezado = InvDocEncabezado::find( $doc_encabezado->entrada_almacen_id );
         //$costo_total_actual = $costo_unitario_actual * $linea_registro->cantidad;
+        
+        if ((int)config('configuracion.liquidacion_impuestos')) {
+            $tasa_impuesto = $producto->impuesto->tasa_impuesto;
+        }
 
-        $costo_total_actual = $linea_registro->precio_total / ( 1 + $linea_registro->tasa_impuesto / 100 );
-        $costo_unitario = $precio_unitario / ( 1 + $linea_registro->tasa_impuesto / 100);
+        $costo_total_actual = $linea_registro->precio_total / ( 1 + $tasa_impuesto / 100 );
+        $costo_unitario = $precio_unitario / ( 1 + $tasa_impuesto / 100);
         $costo_total = $costo_unitario * $cantidad;
         $inv_doc_registro = InvDocRegistro::where('inv_doc_encabezado_id', $doc_encabezado->entrada_almacen_id)
                     ->where('inv_producto_id',$linea_registro->inv_producto_id)
