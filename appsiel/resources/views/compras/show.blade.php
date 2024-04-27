@@ -11,6 +11,8 @@
         @if(!$docs_relacionados[1])
         	<!-- WARNING: Solo se hacen notas para facturas con una sola éntrada de almacén -->
         	<a class="btn-gmail" href="{{ url('compras_notas_credito/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=166&id_transaccion=36') }}" title="Nota crédito"><i class="fa fa-file-text"></i></a>
+			
+        	<a class="btn-gmail" href="{{ url('compras_notas_credito_valor/create?factura_id='.$id.'&id='.Input::get('id').'&id_modelo=332&id_transaccion=61') }}" title="Nota crédito por valor"><i class="fa fa-file-text-o"></i></a>
         @endif
 		
         @can('compras_recontabilizar_un_documento')

@@ -24,6 +24,9 @@ Route::post('orden_compra/entrada_almacen', 'Compras\OrdenCompraController@entra
 Route::get('compras_notas_credito_anular/{id}', 'Compras\NotaCreditoController@anular');
 Route::resource('compras_notas_credito', 'Compras\NotaCreditoController');
 
+Route::get('compras_notas_credito_valor_anular/{id}', 'Compras\NotaCreditoValorController@anular');
+Route::resource('compras_notas_credito_valor', 'Compras\NotaCreditoValorController');
+
 Route::get('compras_notas_credito_directa_anular/{id}', 'Compras\NotaCreditoDirectaController@anular');
 Route::resource('compras_notas_credito_directa', 'Compras\NotaCreditoDirectaController');
 

@@ -434,12 +434,25 @@ $(document).ready(function () {
         calcular_totales();
     });
 
+    //$(document).on('dblclick', '#btn_guardar_factura', function(event) {
+    $('#btn_guardar_factura').dblclick(function (event){
+        event.preventDefault();
+        
+        console.log('doble click');
+
+        return false;
+    });
+
     // GUARDAR EL FORMULARIO
     $('#btn_guardar_factura').click(function (event){
         event.preventDefault();
+        $('#btn_guardar_factura').children('.fa-check').attr('class','fa fa-spinner fa-spin');
+        
+        $('#btn_guardar_factura').prop('id','btn_guardar_factura_no');
 
         if( hay_productos == 0 )
         {
+            $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');   
             alert('No ha ingresado productos.');
             reset_linea_ingreso_default();
             reset_efectivo_recibido();
@@ -447,8 +460,7 @@ $(document).ready(function () {
             return false;
         }
 
-        // Desactivar el click del botón
-        //$( this ).attr( 'disabled', 'disabled' );
+        $( this ).attr( 'disabled', 'disabled' );
 
         $('#linea_ingreso_default').remove();
 
@@ -462,7 +474,6 @@ $(document).ready(function () {
 
         var url = $("#form_create").attr('action');
         var data = $("#form_create").serialize() + "&descripcion=" + $('#descripcion').val();
-        /*console.log(data,$('#descripcion').html(),$('#descripcion').text(),$('#descripcion').val());*/
         
         $.post(url, data , function (doc_encabezado) {
             $('doc_encabezado_documento_transaccion_descripcion').append(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
@@ -477,6 +488,11 @@ $(document).ready(function () {
 
             $('#ingreso_registros').find('tbody').html('');
             $('#descripcion').val('');
+
+            $('#btn_guardar_factura_no').children('.fa-spinner').attr('class','fa fa-save');
+            $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');
+                        
+		    $('#btn_guardar_factura').removeAttr('disabled');
 
             ventana_imprimir();
 
