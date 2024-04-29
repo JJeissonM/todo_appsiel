@@ -13,7 +13,7 @@
 				<tr>
 					<th>Año Lectivo</th>
 					<th>Curso</th>
-					<th>Asignatura</th>
+					<th>Asignatura (Area)</th>
 					<th>IH</th>
 					<th>Profesor</th>
 				</tr>

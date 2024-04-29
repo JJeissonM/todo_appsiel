@@ -159,7 +159,7 @@ class AsignacionProfesorController extends Controller
         {
             $listado[$i]['curso_descripcion'] = $fila->curso_descripcion;
             $listado[$i]['periodo_lectivo_descripcion'] = $fila->periodo_lectivo_descripcion;
-            $listado[$i]['asignatura_descripcion'] = $fila->descripcion;
+            $listado[$i]['asignatura_descripcion'] = $fila->descripcion . ' (' . $fila->area . ')';
             $listado[$i]['asignatura_intensidad_horaria'] = $fila->intensidad_horaria;
             
             $user = AsignacionProfesor::get_user_segun_curso_asignatura( $fila->curso_id, $fila->asignatura_id, $fila->periodo_lectivo_id );
