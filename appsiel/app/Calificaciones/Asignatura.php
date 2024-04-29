@@ -93,7 +93,7 @@ class Asignatura extends Model
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion . '(' . $opcion->area->descripcion . ')';
         }
 
         return $vec;
