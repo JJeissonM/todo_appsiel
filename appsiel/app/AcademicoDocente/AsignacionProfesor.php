@@ -156,7 +156,7 @@ class AsignacionProfesor extends Model
         
         $select = '<option value="">Seleccionar... </option>';
         foreach ($opciones as $opcion){
-            $select.='<option value="'.$opcion->id.'">'.$opcion->descripcion.'</option>';
+            $select.='<option value="'.$opcion->id.'">'.$opcion->descripcion. ' (' . $opcion->area->descripcion . ') </option>';
         }
 
         return $select;
