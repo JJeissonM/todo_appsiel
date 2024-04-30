@@ -169,7 +169,7 @@ class NotaCreditoValorController extends TransaccionController
         // Crear líneas de registros del documento
         $this->crear_registros_nota_credito( $request, $nota_credito, $factura );
 
-        return redirect('compras_notas_credito_directa/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+        return redirect('compras_notas_credito_valor/'.$nota_credito->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
     }
     
     /*
@@ -258,12 +258,12 @@ class NotaCreditoValorController extends TransaccionController
             NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 
         }
 
-        $this->recostear_registros_entrada_almacen($factura, $total_documento);
+        $this->recostear_registros_entrada_almacen($factura, $total_documento, 'crear');
 
         return true;
     }
 
-    public function recostear_registros_entrada_almacen($factura, $total_nota)
+    public function recostear_registros_entrada_almacen($factura, $total_nota, $accion)
     {
         $porc_descuento = abs($total_nota) / $factura->valor_total;
 
@@ -275,7 +275,11 @@ class NotaCreditoValorController extends TransaccionController
 
         foreach ($lineas_registros_entrada_almacen as $linea_entrada_almacen) {
 
-            $costo_unitario = $linea_entrada_almacen->costo_unitario * ( 1 - $porc_descuento);
+            if ($accion == 'crear') {
+                $costo_unitario = $linea_entrada_almacen->costo_unitario * ( 1 - $porc_descuento);
+            }else{
+                $costo_unitario = $linea_entrada_almacen->costo_unitario * ( 1 + $porc_descuento);
+            }            
 
             $doc_line_service->update_document_line($linea_entrada_almacen, $costo_unitario, $linea_entrada_almacen->cantidad);
         }
@@ -285,7 +289,7 @@ class NotaCreditoValorController extends TransaccionController
     {
         $this->set_variables_globales();
 
-        return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show');
+        return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.por_valor.show');
     }
 
     // ANULAR
@@ -335,7 +339,9 @@ class NotaCreditoValorController extends TransaccionController
         // 6to. Se marca como anulado el documento
         $nota->update( [ 'estado' => 'Anulado', 'compras_doc_relacionado_id' => '0', 'entrada_almacen_id' => '0', 'modificado_por' => $modificado_por] );
 
-        return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.show')->with('flash_message','Nota anulada correctamente.');
+        $this->recostear_registros_entrada_almacen($factura, $nota->valor_total, 'anular');
+
+        return redirect( 'compras/'.$id.'?id='.$this->app->id.'&id_modelo='.$this->modelo->id.'&id_transaccion='.$this->transaccion->id.'&vista=compras.notas_credito.por_valor.show')->with('flash_message','Nota anulada correctamente.');
     }
 
 }
