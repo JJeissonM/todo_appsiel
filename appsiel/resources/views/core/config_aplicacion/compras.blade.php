@@ -158,7 +158,7 @@
 									$oc_tipo_doc_app_id = $parametros['oc_tipo_doc_app_id'];
 								}
 							?>
-							{{ Form::bsSelect('oc_tipo_doc_app_id', $oc_tipo_doc_app_id, 'Modelo para devoluciones en compras', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('oc_tipo_doc_app_id', $oc_tipo_doc_app_id, 'Documento para Órdenes de compras', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

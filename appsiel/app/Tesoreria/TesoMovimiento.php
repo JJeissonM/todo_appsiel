@@ -171,6 +171,7 @@ class TesoMovimiento extends Model
 
         return $registros;
     }
+
     public static function sqlString($search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS DOCUMENTO';
@@ -277,7 +278,6 @@ class TesoMovimiento extends Model
             ->where('teso_movimientos.fecha', '<', $fecha)
             ->sum('teso_movimientos.valor_movimiento');
     }
-
 
     public static function get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde )
     {

@@ -30,6 +30,7 @@ use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 
 use App\Contabilidad\Impuesto;
+use App\Tesoreria\TesoMovimiento;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -62,16 +63,13 @@ class NotaCreditoController extends TransaccionController
                             ->get()
                             ->first();
 
-        if ( is_null( $movimiento_cxc ) )
+        if ( $movimiento_cxc != null )
         {
-            return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
+            if ( $movimiento_cxc->saldo_pendiente == 0 )
+            {
+                return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
+            }
         }
-
-        if ( $movimiento_cxc->saldo_pendiente == 0 )
-        {
-            return redirect('compras/'.$factura->id.'?id=9&id_modelo=159&id_transaccion=25')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
-        }
-        
 
         // Información de la Factura de compras
         $doc_encabezado = ComprasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
@@ -149,6 +147,9 @@ class NotaCreditoController extends TransaccionController
         $factura = ComprasDocEncabezado::get_registro_impresion( $request->compras_doc_relacionado_id ); // WARNING: si la factura tiene varias entradas, no se puede hacer la nota
 
         $request['creado_por'] = Auth::user()->email;
+        if ($request->forma_pago == null) {
+            $request['forma_pago'] = $factura->condicion_pago;
+        }
 
         // 1ro. Crear documento de Salida de inventarios (Devolución) con base en la entrada y las cantidades a devolver
         // WARNING. HECHO MANUALMENTE
@@ -157,6 +158,7 @@ class NotaCreditoController extends TransaccionController
 
         // 2do. Crear encabezado del documento de Compras (Nota Crédito)
         $request['compras_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
+        
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $nota_credito = $encabezado_documento->crear_nuevo( $request->all() );
 
@@ -273,6 +275,9 @@ class NotaCreditoController extends TransaccionController
                 $total_base_impuesto = abs($un_registro->costo_total);
 
                 $tasa_impuesto = Impuesto::get_tasa( $un_registro->inv_producto_id, $factura->proveedor_id, 0 );
+                if ((int)config('configuracion.liquidacion_impuestos')) {
+                    $tasa_impuesto = $un_registro->item->impuesto->tasa_impuesto;
+                }
 
                 $precio_unitario = $un_registro->costo_unitario * ( 1 + $tasa_impuesto  / 100 );
 
@@ -284,10 +289,17 @@ class NotaCreditoController extends TransaccionController
                 if ( !is_null( $linea_de_la_cantidad ) )
                 {
                     $tasa_descuento = $linea_de_la_cantidad->tasa_descuento;
-                }
-                
+                }                
 
                 $precio_total_con_descuento = $precio_total * ( 1 - $tasa_descuento / 100 );
+
+                $valor_impuesto = abs($precio_total_con_descuento) - $total_base_impuesto;
+
+                if (!(int)$factura->proveedor->liquida_impuestos) {
+                    $valor_impuesto = 0;
+                    $tasa_impuesto = 0;
+                    $total_base_impuesto = $precio_total_con_descuento;
+                }
 
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
@@ -297,7 +309,7 @@ class NotaCreditoController extends TransaccionController
                                 [ 'precio_total' => $precio_total_con_descuento ] +
                                 [ 'base_impuesto' =>  $total_base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( abs($precio_total_con_descuento) - $total_base_impuesto ) ] +
+                                [ 'valor_impuesto' => $valor_impuesto ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
 
@@ -346,13 +358,17 @@ class NotaCreditoController extends TransaccionController
         $nota_credito->entrada_almacen_id = $entrada_almacen_id;
         $nota_credito->save();
         
-        // Un solo registro de la cuenta por pagar (CR)
-        $forma_pago = 'credito'; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        // Un solo registro Debito
+        $forma_pago = $nota_credito->forma_pago;
 
         NotaCreditoController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion, $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
-        NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 
+        if ($forma_pago == 'contado') {
+            NotaCreditoController::actualizar_movimiento_tesoreria( $total_documento, $factura, $nota_credito, 'crear' ); 
+        }else{
+            NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 
+        }
 
         return true;
     }
@@ -375,11 +391,10 @@ class NotaCreditoController extends TransaccionController
     public static function contabilizar_movimiento_debito( $forma_pago, $datos, $total_documento, $detalle_operacion, $factura = null )
     {
         /*
-            Se crea un SOLO registro contable de la cuenta por pagar (Crédito) o la tesorería (Contado)
+            Se crea un SOLO registro contable de la cuenta por pagar (Crédito) o la Tesorería (Contado)
         */
-
         
-        // Contabilizar Cta. Por Pagar (DB)
+        // Contabilizar Débito (DB)
 
         // Se resetean estos campos del registro
         $datos['inv_producto_id'] = 0;
@@ -389,14 +404,26 @@ class NotaCreditoController extends TransaccionController
         $datos['valor_impuesto'] = 0;
         $datos['inv_bodega_id'] = 0;
 
-        if ( is_null($factura) )
+        $cuenta_debito_id = Proveedor::get_cuenta_por_pagar( $datos['proveedor_id'] );
+        if ( $factura != null )
         {
-            $cxp_id = Proveedor::get_cuenta_por_pagar( $datos['proveedor_id'] );
-        }else{
-            $cxp_id = Proveedor::get_cuenta_por_pagar( $factura->proveedor_id );
+            $cuenta_debito_id = Proveedor::get_cuenta_por_pagar( $factura->proveedor_id );
+            if ($forma_pago == 'contado' ) {
+                $contab_movim_factura = ContabMovimiento::where([
+                    ['core_tipo_transaccion_id', '=', $factura->core_tipo_transaccion_id],
+                    ['core_tipo_doc_app_id', '=', $factura->core_tipo_doc_app_id],
+                    ['consecutivo', '=', $factura->consecutivo],
+                    ['valor_debito', '=', 0]
+                ])->get()
+                ->first();
+
+                if ($contab_movim_factura != null) {
+                    $cuenta_debito_id = $contab_movim_factura->contab_cuenta_id;
+                }
+            }
         }
         
-        ContabilidadController::contabilizar_registro2( $datos, $cxp_id, $detalle_operacion, abs($total_documento), 0 );
+        ContabilidadController::contabilizar_registro2( $datos, $cuenta_debito_id, $detalle_operacion, abs($total_documento), 0 );
     }
 
     public static function actualizar_registro_pago( $total_nota, $factura, $nota, $accion )
@@ -457,6 +484,42 @@ class NotaCreditoController extends TransaccionController
         }
     }
 
+    public static function actualizar_movimiento_tesoreria( $total_nota, $factura, $nota, $accion )
+    {
+        $movimiento_tesoreria_factura = TesoMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                                ->where('consecutivo', $factura->consecutivo)
+                                ->get()
+                                ->first();
+
+        $datos = ['core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id]+
+                  ['core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id]+
+                  ['consecutivo' => $nota->consecutivo]+
+                  ['fecha' => $nota->fecha]+
+                  ['core_empresa_id' => $nota->core_empresa_id]+
+                  ['core_tercero_id' => $nota->core_tercero_id]+
+                  ['valor_movimiento' => abs($total_nota) ]+
+                  ['creado_por' => $nota->creado_por]+
+                  ['teso_medio_recaudo_id' => $movimiento_tesoreria_factura->teso_medio_recaudo_id]+
+                  ['teso_motivo_id' => $movimiento_tesoreria_factura->teso_motivo_id]+
+                  ['teso_caja_id' => $movimiento_tesoreria_factura->teso_caja_id]+
+                  ['teso_cuenta_bancaria_id' => $movimiento_tesoreria_factura->teso_cuenta_bancaria_id]+
+                  ['estado' => 'Activo'];
+                  
+        /*
+            Al crear la nota: Se crea un nuevo registro en el movimiento de Tesoreria.
+            A anular la nota: Se elimina el registro en el movimiento de Tesoreria.
+        */
+        if ( $accion == 'crear')
+        {
+            // Almacenar movimiento de Tesoreria
+            TesoMovimiento::create( $datos );
+        }else{
+            // Eliminar movimiento de Tesoreria
+            TesoMovimiento::where( $datos )->delete();
+        }
+    }
+
     public function show($id)
     {
         $this->set_variables_globales();
@@ -497,8 +560,13 @@ class NotaCreditoController extends TransaccionController
         ContabMovimiento::where($array_wheres)->delete();
 
         // 4to. Se actualiza el registro de la factura a la que afecto la nota en el movimimeto de cuentas por pagar
-        // Se envía el valor en positivo para que sume al saldo pendiente y reste al valor abonado
-        NotaCreditoController::actualizar_registro_pago( $nota->valor_total * -1, $factura, $nota, 'anular' );
+
+        if ( $nota->forma_pago == 'contado') {
+            NotaCreditoController::actualizar_movimiento_tesoreria( $nota->valor_total, $factura, $nota, 'anular' ); 
+        }else{
+            // Se envía el valor en positivo para que sume al saldo pendiente y reste al valor abonado
+            NotaCreditoController::actualizar_registro_pago( $nota->valor_total * -1, $factura, $nota, 'anular' );
+        }        
 
         // 5to. Se elimina el movimiento de compras
         ComprasMovimiento::where($array_wheres)->delete();

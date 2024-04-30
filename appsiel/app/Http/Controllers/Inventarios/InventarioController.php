@@ -48,6 +48,7 @@ use App\VentasPos\DocRegistro;
 use App\Contabilidad\ContabMovimiento;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AverageCost;
+use App\Inventarios\Services\InvDocumentsLinesService;
 use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
 use App\Ventas\ListaPrecioDetalle;
@@ -315,7 +316,6 @@ class InventarioController extends TransaccionController
 
         return $doc_encabezado->id;
     }
-
 
     /*
         No Devuelve nada
@@ -1090,8 +1090,6 @@ class InventarioController extends TransaccionController
         return $html;
     }
 
-
-
     // Parámetro enviados por GET
     public function consultar_existencia_producto()
     {
@@ -1384,8 +1382,6 @@ class InventarioController extends TransaccionController
         $documento->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);
     }
 
-
-
     // Petición AJAX. Parámetro enviados por GET
     public function get_formulario_edit_registro()
     {
@@ -1416,117 +1412,10 @@ class InventarioController extends TransaccionController
             return redirect('inventarios/' . $doc_encabezado->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('mensaje_error', 'Registro NO puede ser modificado. El documento ya ha sido facturado.');
         }
 
-        $motivo = InvMotivo::find($linea_registro->inv_motivo_id);
-
         $costo_unitario = $request->costo_unitario;
         $cantidad = $request->cantidad;
 
-        if ($motivo->movimiento == 'salida') {
-            $cantidad = $request->cantidad * -1;
-        }
-
-        $costo_total = $costo_unitario * $cantidad;
-
-        $producto = InvProducto::find( $linea_registro->inv_producto_id );
-
-        if ( $producto->tipo == 'producto')
-        {
-            // 1. Actualiza movimiento de inventarios
-            InvMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                ->where('consecutivo', $doc_encabezado->consecutivo)
-                ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                ->where('cantidad', $linea_registro->cantidad)
-                ->update([
-                    'costo_unitario' => $costo_unitario,
-                    'cantidad' => $cantidad,
-                    'costo_total' => $costo_total
-                ]);
-
-            // 2. Si es un motivo de entrada, se calcula el costo promedio
-            if ($motivo->movimiento == 'entrada') {
-                // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-
-                $average_cost_serv = new AverageCost();
-                $costo_prom = $average_cost_serv->calculate_average_cost($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_unitario, $doc_encabezado->fecha, $cantidad);
-                
-                self::actualizar_costo_promedio($linea_registro->inv_bodega_id, $linea_registro->inv_producto_id, $costo_prom, $doc_encabezado->core_tipo_transaccion_id, $average_cost_serv);
-
-                // Si el motivo es de entrada SE DEBITA EL INVENTARIO
-                // 3. Actualizar movimiento contable del registro del documento de inventario
-                // Inventarios (DB)
-                $cta_inventarios_id = InvProducto::get_cuenta_inventarios($linea_registro->inv_producto_id);
-                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo', $doc_encabezado->consecutivo)
-                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                    ->where('cantidad', $linea_registro->cantidad)
-                    ->where('contab_cuenta_id', $cta_inventarios_id)
-                    ->update([
-                        'valor_debito' => abs($costo_total),
-                        'valor_saldo' => abs($costo_total),
-                        'cantidad' => $cantidad
-                    ]);
-
-                // Cta. Contrapartida (CR) Dada por el motivo de inventarios de la transaccion 
-                // Motivos de inventarios y ventas: Costo de ventas
-                // Moivos de compras: Cuentas por legalizar
-                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo', $doc_encabezado->consecutivo)
-                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                    ->where('cantidad', $linea_registro->cantidad)
-                    ->where('contab_cuenta_id', $cta_contrapartida_id)
-                    ->update([
-                        'valor_credito' => abs($costo_total) * -1,
-                        'valor_saldo' => abs($costo_total) * -1,
-                        'cantidad' => $cantidad
-                    ]);
-            } else {
-
-                // Si el motivo es de SALIDA se ACREDITA EL INVENTARIO
-                // 3. Actualizar movimiento contable del registro del documento de inventario
-                // Inventarios (CR)
-                $cta_inventarios_id = InvProducto::get_cuenta_inventarios($linea_registro->inv_producto_id);
-                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo', $doc_encabezado->consecutivo)
-                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                    ->where('cantidad', $linea_registro->cantidad)
-                    ->where('contab_cuenta_id', $cta_inventarios_id)
-                    ->update([
-                        'valor_credito' => abs($costo_total) * -1,
-                        'valor_saldo' => abs($costo_total) * -1,
-                        'cantidad' => $cantidad
-                    ]);
-
-                // Cta. Contrapartida (DB) Dada por el motivo de inventarios de la transaccion 
-                // Motivos de inventarios y ventas: Costo de ventas
-                // Moivos de compras: Cuentas por legalizar
-                $cta_contrapartida_id = $motivo->cta_contrapartida_id;
-                ContabMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
-                    ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
-                    ->where('consecutivo', $doc_encabezado->consecutivo)
-                    ->where('inv_producto_id', $linea_registro->inv_producto_id)
-                    ->where('cantidad', $linea_registro->cantidad)
-                    ->where('contab_cuenta_id', $cta_contrapartida_id)
-                    ->update([
-                        'valor_debito' => abs($costo_total),
-                        'valor_saldo' => abs($costo_total),
-                        'cantidad' => $cantidad
-                    ]);
-            }
-        } // Fin Si es producto
-
-        // 4. Actualizar el registro del documento de factura
-        $linea_registro->update([
-            'costo_unitario' => $costo_unitario,
-            'cantidad' => $cantidad,
-            'costo_total' => $costo_total
-        ]);
-
+        (new InvDocumentsLinesService())->update_document_line($linea_registro, $costo_unitario, $cantidad);
 
         return redirect('inventarios/' . $doc_encabezado->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'El registro del documento fue MODIFICADO correctamente.');
     }

@@ -35,6 +35,11 @@ class ComprasDocEncabezado extends Model
         return $this->belongsTo(Proveedor::class, 'proveedor_id');
     }
 
+    public function entrada_almacen()
+    {
+        return $this->belongsTo(InvDocEncabezado::class, 'entrada_almacen_id');
+    }
+
     public function movimientos()
     {
         return $this->hasMany(ComprasMovimiento::class);
@@ -295,6 +300,7 @@ class ComprasDocEncabezado extends Model
             if ( !is_null($un_documento) )
             {
                 $transaccion = TipoTransaccion::find( $un_documento->core_tipo_transaccion_id );
+
                 $modelo_doc_relacionado_id = $transaccion->core_modelo_id;
                 $transaccion_doc_relacionado_id = $transaccion->id;
                 
