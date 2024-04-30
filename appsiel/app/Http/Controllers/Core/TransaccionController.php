@@ -111,6 +111,11 @@ class TransaccionController extends Controller
         foreach($tipos_transacciones as $fila)
         {
             $modelo = Modelo::find( $fila->core_modelo_id );
+            
+            if($modelo == null)
+            {
+                dd('core_modelo_id no esta creado', $fila);
+            }
 
             $variables_url = '?id='.Input::get('id').'&id_modelo='.$modelo->id.'&id_transaccion='.$fila->id;
             $acciones = $this->acciones_basicas_modelo( $modelo, $variables_url );
