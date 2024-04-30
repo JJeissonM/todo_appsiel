@@ -248,7 +248,7 @@ class ProcesosController extends Controller
 
                 // ADVERTENCIA. Solo ventas Gravadas. Comentar esto para todas las ventas.
                 if ($linea_registro->tasa_impuesto == 0) {
-                    continue;
+                    //continue;
                 }
 
                 $linea_registro->precio_unitario = $linea_registro->precio_unitario * $tasa_disminucion;
