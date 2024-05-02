@@ -69,6 +69,11 @@ class Tercero extends Model
         return $this->hasOne(Propietario::class);
     }
 
+    public function firma_autorizada()
+    {
+        return $this->hasOne(FirmaAutorizada::class, 'core_tercero_id');
+    }
+
     public function conductor()
     {
         return $this->hasOne(Conductor::class);

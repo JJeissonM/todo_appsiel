@@ -2,6 +2,7 @@
 
 namespace App\AcademicoDocente;
 
+use App\Core\Tercero;
 use Illuminate\Database\Eloquent\Model;
 
 use App\UserHasRole;
@@ -157,5 +158,26 @@ class Profesor extends Model
         }
         
         return $vec;
+    }
+
+    public function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        $tercero_del_usuario = Tercero::where('user_id', $registro->id)->get()->first();
+
+        if ($tercero_del_usuario == null) {
+            return $lista_campos;
+        }
+
+        // Personalizar campos
+        $cantida_campos = count($lista_campos);
+        for ($i=0; $i <  $cantida_campos; $i++)
+        {
+            if ( $lista_campos[$i]['name'] == 'core_tercero_id' ) 
+            {
+                $lista_campos[$i]['value'] = $tercero_del_usuario->id;
+            }
+        }
+
+        return $lista_campos;
     }
 }

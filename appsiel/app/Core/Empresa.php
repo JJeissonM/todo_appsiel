@@ -40,6 +40,23 @@ class Empresa extends Model
         return '';
     }
 
+    public function tercero()
+    {
+        return Tercero::where('numero_identificacion',$this->numero_identificacion)->get()->first();
+    }
+
+    public function tercero_representante_legal()
+    {
+        $tercero_empresa = Tercero::where('numero_identificacion',$this->numero_identificacion)->get()->first();
+
+        if ( $tercero_empresa != null )
+        {
+            return $tercero_empresa->representante_legal();
+        }
+
+        return null;
+    }
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = Empresa::select(

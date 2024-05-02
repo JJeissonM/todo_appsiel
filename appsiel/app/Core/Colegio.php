@@ -17,6 +17,16 @@ class Colegio extends Model
         return $this->belongsTo('App\Core\Empresa');
     }
 
+    public function tercero_empresa()
+    {
+        return $this->empresa->tercero();
+    }
+
+    public function representante_legal()
+    {
+        return $this->empresa->tercero_representante_legal();
+    }
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripcion', 'Slogan', 'Resolución', 'Dirección', 'Teléfono(s)'];
 
     public static function consultar_registros($nro_registros, $search)

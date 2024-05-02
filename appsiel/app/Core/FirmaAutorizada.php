@@ -3,9 +3,8 @@
 namespace App\Core;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class FirmaAutorizada extends Model
 {

@@ -15,6 +15,7 @@ use App\Matriculas\Estudiante;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Contratotransporte\Vehiculo;
+use App\Core\Tercero;
 use App\Ventas\Vendedor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -52,9 +53,31 @@ class UserController extends ModeloController
 		
 		$role_r = Role::where('id', '=', $request->role)->firstOrFail();            
 		$user->assignRole($role_r); //Assigning role to user
+
+        $this->asignar_tercero($request->core_tercero_id, $user->id);
+
         return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with('flash_message','Usuario creado correctamente.');        
     }
 
+    public function asignar_tercero($core_tercero_id, $user_id)
+    {
+        $tercero_usuario_actual = Tercero::where('user_id', $user_id)->get()->first();
+        
+        $tercero_enviado = Tercero::find((int)$core_tercero_id);
+
+        if ( $tercero_usuario_actual != $tercero_enviado) {
+
+            if ($tercero_usuario_actual != null) {
+                $tercero_usuario_actual->user_id = 0;
+                $tercero_usuario_actual->save();
+            }
+
+            if ($tercero_enviado != null) {
+                $tercero_enviado->user_id = $user_id;
+                $tercero_enviado->save();
+            }
+        }
+    }
 
     /**
      * Update the specified resource in storage.
@@ -79,6 +102,8 @@ class UserController extends ModeloController
 
         // Se borran los roles actuales y se le asigna el enviado en el request
         $user->roles()->sync( [ $request->role ] );
+
+        $this->asignar_tercero($request->core_tercero_id, $user->id);
 		
         return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with('flash_message','Usuario MODIFICADO correctamente.');
     }
@@ -108,7 +133,6 @@ class UserController extends ModeloController
     // Formulario para cambiar contraseña
     public function form_cambiarpasswd( $user_id )
     {
-
         $registro = User::find( $user_id );
 
         // web?id=1&id_modelo=29

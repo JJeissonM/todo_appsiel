@@ -9,7 +9,7 @@ use Spatie\Permission\Traits\HasRoles;
 use Cmgmyr\Messenger\Traits\Messagable;
 
 use App\Core\PasswordReset;
-
+use App\Core\Tercero;
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -55,6 +55,11 @@ class User extends Authenticatable
     public function fororespuestas()
     {
         return $this->hasMany(Fororespuesta::class);
+    }
+
+    public function tercero()
+    {
+        return $this->hasOne(Tercero::class);
     }
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Nombre', 'Email', 'Fecha creación', 'Perfil'];

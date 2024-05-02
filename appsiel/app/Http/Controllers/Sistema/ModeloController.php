@@ -20,7 +20,7 @@ use App\Core\ModeloEavValor;
 use App\User;
 
 use App\Calificaciones\Logro;
-
+use App\Core\Tercero;
 use App\Matriculas\Curso;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -722,6 +722,14 @@ class ModeloController extends Controller
             // PARA LAS ACTIVIDADES ESCOLARES modelo_id=38
             if ($lista_campos[$i]['name'] == 'asignatura_id' and $modelo->id == 38) {
                 $lista_campos[$i]['opciones'] = 'table_asignaturas';
+            }
+
+            if ($lista_campos[$i]['name'] == 'core_tercero_id' and $modelo->id == 178) {
+                $lista_campos[$i]['opciones'] = 'model_App\AcademicoDocente\Profesor';
+                $tercero_usuario_actual = Tercero::where('user_id', $registro->id)->get()->first();
+                if ($tercero_usuario_actual != null) {
+                    $lista_campos[$i]['value'] = $tercero_usuario_actual->id;
+                };
             }
 
             if ($lista_campos[$i]['tipo'] == 'imagen')
