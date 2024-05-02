@@ -1,14 +1,12 @@
 @if ( $area_anterior != $linea->area_descripcion && $mostrar_areas == 'Si')
 	<?php
-		$cant_columnas_aux = $cant_columnas - 1;
+		$cant_columnas_aux = $cant_columnas;
 	?>
-	<tr style="background: #ddd;">
+	<tr style="background-color: {{config('configuracion.color_principal_empresa')}}90;">
 			<!--  122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines" -->
 			@if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
-				<td colspan="{{ $cant_columnas_aux }}" width="60%">
+				<td colspan="{{ $cant_columnas_aux }}" style="text-align: center;">
 					<b> {{ strtoupper( $linea->area_descripcion ) }}</b>
-				</td>
-				<td align="right">
 					&nbsp;
 					@if( $mostrar_calificacion_media_areas )
 						<?php
@@ -55,7 +53,7 @@
 							        break;
 							}
 						?>
-						<b> Cal. media: {!! $lbl_nota_original !!} </b> <span style="color:red;"> {!! $advertencia !!} </span>
+						(<b> Cal. media: {!! $lbl_nota_original !!} </b> <span style="color:red;"> {!! $advertencia !!} </span>)
 					@endif
 				</td>
 			@else

@@ -1,5 +1,8 @@
-<table class="encabezado">
-	<tr>											
+<table class="encabezado">		
+	<tr>
+		<td colspan="3" style="text-align: center; font-weight:bold;">INFORME ACADÉMICO</td>
+	</tr>
+	<tr>									
 		@if($colegio->maneja_puesto=="Si")
 
 			@if( !is_null($registro->observacion) )
