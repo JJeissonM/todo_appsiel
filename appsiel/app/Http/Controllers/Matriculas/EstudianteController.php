@@ -357,8 +357,16 @@ class EstudianteController extends ModeloController
                     $tercero->save();
                 }
 
+                $url_redirect = 'matriculas/estudiantes/show/';
 
-                return redirect('matriculas/estudiantes/show/' . $id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Registro MODIFICADO correctamente.' . $mensaje);
+                if ( $request->url_id == 5) { // 5: Academico Docente
+
+                    $matricula_activa = $estudiante->matricula_activa();
+
+                    $url_redirect = 'academico_docente/revisar_estudiantes/curso_id/' . $matricula_activa->curso_id . '/id_asignatura/' . Input::get('asignatura_id');
+                }
+
+                return redirect( $url_redirect . $id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo )->with('flash_message', 'Registro MODIFICADO correctamente.' . $mensaje);
 
                 break;
         }

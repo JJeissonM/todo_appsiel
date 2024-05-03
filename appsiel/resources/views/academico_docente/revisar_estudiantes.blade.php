@@ -25,6 +25,7 @@
 				<table class="table table-bordered table-striped" id="myTable">
 					<thead>
 						<tr>
+							<th>Foto</th>
 							<th>Nombre</th>
 							<th>Documento</th>
 							<th>Género</th>
@@ -37,29 +38,32 @@
 					</thead>
 
 					<tbody>
-						@foreach ($estudiantes as $estudiante)
+						@foreach ($estudiantes as $matricula)
 							<?php 
-								$edad = calcular_edad($estudiante->fecha_nacimiento);
+								$edad = calcular_edad($matricula->fecha_nacimiento);
 							?>
 							<tr>
-								<td width="300px"> {{ $estudiante->nombre_completo }} </td>
-								<td class="text-center">{{ $estudiante->tipo_y_numero_documento_identidad }}</td>
-								<td>{{ $estudiante->genero }}</td>
-								<td>{{ $estudiante->fecha_nacimiento }} <br/> ({{ $edad }}) </td>
-								<td>{{ $estudiante->direccion1 }}</td>
-								<td>{{ $estudiante->barrio }}</td>
-								<td>{{ $estudiante->telefono1 }}</td>
+								<td width="100px">
+									@include('core.vistas.img_foto_tercero', ['tercero' => $matricula->estudiante->tercero, 'width' => 80, 'height' => 100])
+								</td>
+								<td width="300px"> {{ $matricula->nombre_completo }} </td>
+								<td class="text-center">{{ $matricula->tipo_y_numero_documento_identidad }}</td>
+								<td>{{ $matricula->genero }}</td>
+								<td>{{ $matricula->fecha_nacimiento }} <br/> ({{ $edad }}) </td>
+								<td>{{ $matricula->direccion1 }}</td>
+								<td>{{ $matricula->barrio }}</td>
+								<td>{{ $matricula->telefono1 }}</td>
 								<td style="text-align: left;">
 
 									<?php
 
-										$url_1 = 'academico_docente/novedad_observador/show_observador/'.$estudiante->id_estudiante.'?id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id;
+										$url_1 = 'academico_docente/novedad_observador/show_observador/'.$matricula->id_estudiante.'?id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id;
 
-										$url_2 = 'academico_docente/valorar_aspectos_observador/'.$estudiante->id_estudiante.'?id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id;
+										$url_2 = 'academico_docente/valorar_aspectos_observador/'.$matricula->id_estudiante.'?id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id;
 
-										$url_3 = 'academico_docente/novedad_observador?estudiante_id='.$estudiante->id_estudiante.'&id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id.'&id_modelo=17';
+										$url_3 = 'academico_docente/novedad_observador?estudiante_id='.$matricula->id_estudiante.'&id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id.'&id_modelo=17';
 
-										$url_4 = 'academico_docente/dofa_observador?estudiante_id='.$estudiante->id_estudiante.'&id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id.'&id_modelo=18';
+										$url_4 = 'academico_docente/dofa_observador?estudiante_id='.$matricula->id_estudiante.'&id='.Input::get('id').'&curso_id='.$curso->id.'&asignatura_id='.$asignatura->id.'&id_modelo=18';
 									?>
 
 									<?php
@@ -90,12 +94,12 @@
 								  	?>								
 
 								  	@can('acdo_modificar_datos_estudiante')
-								  		<a class="btn btn-warning btn-xs" href="{{ url( 'matriculas/estudiantes/' . $estudiante->id_estudiante . '/edit?id=' . Input::get('id') . '&id_modelo=29&id_transaccion=' ) }}" title="Modificar datos del estudiante"><i class="fa fa-edit"></i> </a>
+								  		<a class="btn btn-warning btn-xs" href="{{ url( 'matriculas/estudiantes/' . $matricula->id_estudiante . '/edit?id=' . Input::get('id') . '&id_modelo=29&id_transaccion=&asignatura_id=' . $asignatura->id ) }}" title="Modificar datos del estudiante"><i class="fa fa-edit"></i> </a>
 								  	@endcan
 
 								  	@can('acdo_gestionar_responsables_estudiantes')
-								  		<a class="btn btn-success btn-xs" href="{{ url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=' . Input::get('id') . '&id_modelo=29&estudiante_id=' . $estudiante->id_estudiante ) }}" title="Gestionar responsables del estudiante"><i class="fa fa-arrow-right"></i> </a>
-								  	@endcan								  	
+								  		<a class="btn btn-success btn-xs" href="{{ url( 'matriculas/estudiantes/gestionresponsables/estudiante_id?id=' . Input::get('id') . '&id_modelo=29&estudiante_id=' . $matricula->id_estudiante ) }}" title="Gestionar responsables del estudiante"><i class="fa fa-arrow-right"></i> </a>
+								  	@endcan
 								</td>
 							</tr>
 						@endforeach

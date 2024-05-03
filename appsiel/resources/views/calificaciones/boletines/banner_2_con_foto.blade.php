@@ -18,19 +18,7 @@
         </td>
 
         <td width="25%">
-            <div class="imagen">
-                <?php
-                    if ( $registro->estudiante->tercero->imagen == '') {
-                        $campo_imagen = 'avatar.png';
-                    }else{
-                        $campo_imagen = $registro->estudiante->tercero->imagen;
-                    }
-                    $url = config('configuracion.url_instancia_cliente')."/storage/app/fotos_terceros/".$campo_imagen.'?'.rand(1,1000);
-                    $imagen = '<img alt="imagen.jpg" src="'.asset($url).'" style="width: 80px; height: 100px; padding: 5px;" />';
-                ?>
-
-                {!! $imagen !!}
-            </div>
+            @include('core.vistas.img_foto_tercero', ['tercero' => $registro->estudiante->tercero, 'width' => 80, 'height' => 100])
         </td>
     </tr>
 </table>
