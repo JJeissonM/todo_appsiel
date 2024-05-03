@@ -122,7 +122,7 @@ class EstudianteController extends ModeloController
             'campos' => $lista_campos
         ];
 
-        $url_action = $modelo->url_form_create . '/' . $id;
+        $url_action = $modelo->url_form_create . '/' . $id . '?asignatura_id=' . Input::get('asignatura_id');
 
         $miga_pan = $this->get_miga_pan($modelo, $registro->descripcion);
 
@@ -357,16 +357,16 @@ class EstudianteController extends ModeloController
                     $tercero->save();
                 }
 
-                $url_redirect = 'matriculas/estudiantes/show/';
+                $url_redirect = 'matriculas/estudiantes/show/' . $id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo;
 
                 if ( $request->url_id == 5) { // 5: Academico Docente
 
                     $matricula_activa = $estudiante->matricula_activa();
 
-                    $url_redirect = 'academico_docente/revisar_estudiantes/curso_id/' . $matricula_activa->curso_id . '/id_asignatura/' . Input::get('asignatura_id');
+                    $url_redirect = 'academico_docente/revisar_estudiantes/curso_id/' . $matricula_activa->curso_id . '/id_asignatura/' . Input::get('asignatura_id') . '?id=' . $request->url_id;
                 }
 
-                return redirect( $url_redirect . $id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo )->with('flash_message', 'Registro MODIFICADO correctamente.' . $mensaje);
+                return redirect( $url_redirect )->with('flash_message', 'Registro MODIFICADO correctamente.' . $mensaje);
 
                 break;
         }
