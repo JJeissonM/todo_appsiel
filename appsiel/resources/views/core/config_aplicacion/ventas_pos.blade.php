@@ -319,7 +319,7 @@
 
 				</div>
 
-				<h4> Parámetros manejo de propinas  </h4>
+				<h4> Parámetros manejo de propinas </h4>
 				<hr>
 				<div class="row">
 					<div class="col-md-6">
@@ -362,6 +362,60 @@
 								}
 							?>
 							{{ Form::bsSelect('motivo_tesoreria_propinas', $motivo_tesoreria_propinas, 'Motivo Tesorería para Propinas', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Parámetros manejo de Datafono </h4>
+				<hr>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$manejar_datafono = '0';
+								if( isset($parametros['manejar_datafono'] ) )
+								{
+									$manejar_datafono = $parametros['manejar_datafono'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_datafono', $manejar_datafono, 'Manejar Datafono', [ '0'=> 'No', '1'=> 'Sí'], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="row" style="padding:5px;">
+								<?php 
+									$porcentaje_datafono = '5';
+									if( isset($parametros['porcentaje_datafono'] ) )
+									{
+										$porcentaje_datafono = $parametros['porcentaje_datafono'];
+									}
+								?>
+								{{ Form::bsText('porcentaje_datafono', $porcentaje_datafono, 'Porcentaje datafono', ['class'=>'form-control']) }}
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$motivo_tesoreria_datafono = '0';
+								if( isset($parametros['motivo_tesoreria_datafono'] ) )
+								{
+									$motivo_tesoreria_datafono = $parametros['motivo_tesoreria_datafono'];
+								}
+							?>
+							{{ Form::bsSelect('motivo_tesoreria_datafono', $motivo_tesoreria_datafono, 'Motivo Tesorería para ingresos Datafono', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

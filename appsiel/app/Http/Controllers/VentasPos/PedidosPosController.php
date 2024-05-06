@@ -444,6 +444,8 @@ class PedidosPosController extends TransaccionController
             'lbl_total_factura' => '',
             'lbl_total_propina' => '',
             'total_factura_mas_propina' => '',
+            'lbl_total_datafono' => '',
+            'total_factura_mas_datafono' => '',
             'lbl_ajuste_al_peso' => '',
             'lbl_total_recibido' => '0',
             'lbl_total_cambio' => '',

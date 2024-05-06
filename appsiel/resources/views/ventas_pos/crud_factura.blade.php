@@ -308,6 +308,10 @@
     @if( (int)config('ventas_pos.manejar_propinas') )
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/propinas.js?aux=' . uniqid())}}"></script>
     @endif
+
+    @if( (int)config('ventas_pos.manejar_datafono') )
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/datafono.js?aux=' . uniqid())}}"></script>
+    @endif
     
     <script type="text/javascript">
         

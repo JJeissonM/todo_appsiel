@@ -3,17 +3,6 @@
 namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-
-
-use Spatie\Permission\Models\Permission;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
@@ -21,9 +10,7 @@ use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Inventarios\InventarioController;
 
-use App\Http\Controllers\Contabilidad\ContabilidadController;
 use App\Http\Controllers\Ventas\VentaController;
-use App\Http\Controllers\Ventas\ReportesController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -46,7 +33,7 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\Cliente;
-use App\Ventas\ResolucionFacturacion;
+
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\NotaCredito;
 
@@ -62,6 +49,11 @@ use App\Contabilidad\Impuesto;
 use App\Ventas\DocEncabezadoTieneFormulaMedica;
 use App\Salud\FormulaOptica;
 use App\Http\Controllers\Salud\ResultadoExamenMedicoController;
+use App\Ventas\Services\PrintServices;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class FacturaMedicaController extends VentaController
 {
@@ -150,7 +142,7 @@ class FacturaMedicaController extends VentaController
         $documento_vista = $this->generar_documento_vista( $id, 'ventas.formatos_impresion.'.Input::get('formato_impresion_id') );
 
         // Se prepara el PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
@@ -181,24 +173,9 @@ class FacturaMedicaController extends VentaController
     */
     public function generar_documento_vista( $id, $ruta_vista )
     {
-        $this->set_variables_globales();
-        
-        $this->doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
-        
-        $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $this->doc_encabezado->id );
+        $print_service = new PrintServices();
 
-        $doc_encabezado = $this->doc_encabezado;
-        $empresa = $this->empresa;
-
-        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)->where('estado','Activo')->get()->last();
-
-        $etiquetas = $this->get_etiquetas();
-
-        $documento = app( $this->transaccion->modelo_encabezados_documentos )->find( $id );
-
-        $abonos = CxcAbono::get_abonos_documento( $doc_encabezado );
-        
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'documento', 'abonos' ) )->render();
+        return $print_service->generar_documento_vista( $id, $ruta_vista );
     }
 
     /**

@@ -29,6 +29,10 @@
     #tr_total_propina{
         background-color: #eaeaea;
     }
+
+    #tr_total_datafono{
+        background-color: #eaeaea;
+    }
 @endsection
 
 @section('columnas_encabezado')

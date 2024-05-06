@@ -29,9 +29,14 @@ class ReportsServices
         
         $total_contado = 0;
         $motivo_tesoreria_propinas = (int)config('ventas_pos.motivo_tesoreria_propinas');
+        $motivo_tesoreria_datafono = (int)config('ventas_pos.motivo_tesoreria_datafono');
         foreach ($movimientos_tesoreria_para_pdv as $movimiento) {
 
             if ($movimiento->teso_motivo_id == $motivo_tesoreria_propinas) {
+                continue;
+            }
+
+            if ($movimiento->teso_motivo_id == $motivo_tesoreria_datafono) {
                 continue;
             }
 
@@ -92,7 +97,8 @@ class ReportsServices
         return TesoMovimiento::where([
                                     ['core_tipo_transaccion_id', '=', $core_tipo_transaccion_id ],
                                     ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ],
-                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ]
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ]
                                 ])
                                 ->whereIn('consecutivo',$arr_consecutivos)
                                 ->get();

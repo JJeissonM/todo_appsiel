@@ -16,12 +16,17 @@
                 $lineas_registros_medios_recaudos = (json_decode($fila['campo7'],true));
 
                 $valor_propina = 0;
+                $valor_datafono = 0;
 
                 foreach ($lineas_registros_medios_recaudos as $linea_medio_recaudo) {
                     $arr_motivo = explode('-',$linea_medio_recaudo['teso_motivo_id']);
                     
                     if ((int)$arr_motivo[0] == (int)config('ventas_pos.motivo_tesoreria_propinas') ) {
                         $valor_propina += (float)substr($linea_medio_recaudo['valor'],1);
+                    }
+                    
+                    if ((int)$arr_motivo[0] == (int)config('ventas_pos.motivo_tesoreria_datafono') ) {
+                        $valor_datafono += (float)substr($linea_medio_recaudo['valor'],1);
                     }
                 }
             ?>
@@ -55,7 +60,6 @@
                                 <button class="btn btn-danger btn-xs btn_anular_factura" data-pdv_id="{{ $pdv->id }}" data-doc_encabezado_id="{{$fila['campo9']}}" data-lbl_factura="{{$fila['campo2']}}" title="Anular"> <i class="fa fa-trash"></i> </button>
                             @endcan
 
-
                             @if( $valor_propina != 0)
                                 &nbsp;&nbsp;&nbsp;
                                 <button class="btn btn-danger btn-xs btn_borrar_propina" data-pdv_id="{{ $pdv->id }}" data-doc_encabezado_id="{{$fila['campo9']}}" data-valor_factura="{{$fila['campo6']}}" data-lbl_factura="{{$fila['campo2']}}" title="Borrar propina"> <i class="fa fa-minus-circle"></i> </button>
@@ -73,7 +77,7 @@
                             @else
                                 @if( $i == 6)
                                     @can('vtas_pos_ver_valor_documento_en_consultar_facturas_pdv')
-                                        {!! $fila['campo'.$i] + $valor_propina !!}
+                                        {!! $fila['campo'.$i] + $valor_propina + $valor_datafono !!}
                                     @else
                                         $--
                                     @endcan
@@ -87,7 +91,7 @@
                 <?php
                     if( $fila['campo8'] != 'Anulado' )
                     { 
-                        $total_ventas += $fila['campo6'] + $valor_propina;
+                        $total_ventas += $fila['campo6'] + $valor_propina + $valor_datafono;
                     }
                 ?>
             @endforeach

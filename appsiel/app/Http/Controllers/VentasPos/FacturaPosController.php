@@ -62,8 +62,10 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
+use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
+use App\VentasPos\Services\DatafonoService;
 use App\VentasPos\Services\TipService;
 
 class FacturaPosController extends TransaccionController
@@ -167,6 +169,7 @@ class FacturaPosController extends TransaccionController
 
         $valor_sub_total_factura = 0;
         $valor_lbl_propina = 0;
+        $valor_lbl_datafono = 0;
 
         $valor_total_factura = 0;
         $total_efectivo_recibido = 0;
@@ -182,7 +185,7 @@ class FacturaPosController extends TransaccionController
 
         $medios_pago = null;
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'medios_pago'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago'));
     }
 
     /**
@@ -288,7 +291,9 @@ class FacturaPosController extends TransaccionController
     */
     public function imprimir($id)
     {
-        return $this->generar_documento_vista($id, 'ventas.formatos_impresion.pos');
+        $print_service = new PrintServices();
+
+        return $print_service->generar_documento_vista( $id, 'ventas.formatos_impresion.pos' );
     }
 
     /**
@@ -397,6 +402,11 @@ class FacturaPosController extends TransaccionController
         $valor_lbl_propina = (new TipService())->get_tip_amount($factura);
         $valor_total_factura = $valor_sub_total_factura + $valor_lbl_propina;
 
+        // Para Datafono
+        $valor_sub_total_factura = $factura->lineas_registros->sum('precio_total');
+        $valor_lbl_datafono = (new DatafonoService())->get_datafono_amount($factura);
+        $valor_total_factura = $valor_sub_total_factura + $valor_lbl_datafono;
+
         $vendedores = Vendedor::where('estado','Activo')->get();
 
         $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
@@ -404,7 +414,7 @@ class FacturaPosController extends TransaccionController
 
         $medios_pago = null;
         
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura' , 'valor_lbl_propina', 'medios_pago'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago'));
     }
 
     /**
@@ -487,14 +497,11 @@ class FacturaPosController extends TransaccionController
             }                
         }
 
-
         return 1;
     }
 
     public function borrar_propina($doc_encabezado_id)
     {
-        //return 0;
-
         $factura = FacturaPos::find($doc_encabezado_id);
 
         $lineas_recaudos = json_decode($factura->lineas_registros_medios_recaudos);
@@ -1034,62 +1041,6 @@ class FacturaPosController extends TransaccionController
         return $cuerpo_tabla;
     }
 
-    /*
-        Generar la vista para los métodos show(), imprimir() o enviar_por_email()
-    */
-    public function generar_documento_vista($id, $ruta_vista)
-    {
-        $this->set_variables_globales();
-
-        $this->doc_encabezado = app($this->transaccion->modelo_encabezados_documentos)->get_registro_impresion($id);
-
-        $doc_registros = app($this->transaccion->modelo_registros_documentos)->get_registros_impresion($this->doc_encabezado->id);
-
-        $doc_encabezado = $this->doc_encabezado;
-        $empresa = $this->empresa;
-
-        $pdv_descripcion = '';
-        $tipo_doc_app = '';
-        if ( $doc_encabezado->pdv != null )
-        {
-            $tipo_doc_app = $doc_encabezado->pdv->tipo_doc_app;
-            if ( $doc_encabezado->pdv->direccion != '' )
-            {
-                $empresa->direccion1 = $doc_encabezado->pdv->direccion;
-                $empresa->telefono1 = $doc_encabezado->pdv->telefono;
-                $empresa->email = $doc_encabezado->pdv->email;
-            }
-        }
-
-        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)->where('estado', 'Activo')->get()->last();
-
-        $etiquetas = $this->get_etiquetas();
-        $valor_propina = ( new TipService() )->get_tip_amount($doc_encabezado);
-        $datos_factura = (object)[
-            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
-            'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
-            'lbl_fecha' => $doc_encabezado->fecha,
-            'lbl_hora' => '',
-            'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
-            'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
-            'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
-            'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
-            'lbl_total_propina' => '$' . number_format( $valor_propina, 2, ',' , '.'),
-            'total_factura_mas_propina' => '$' . number_format( $doc_encabezado->valor_total + $valor_propina, 2, ',' , '.'),
-            'lbl_ajuste_al_peso' => '',
-            'lbl_total_recibido' => '0',
-            'lbl_total_cambio' => '',
-            'lbl_creado_por_fecha_y_hora' => $doc_encabezado->created_at,
-            'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
-            'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render()
-        ];
-    
-        $cliente = $doc_encabezado->cliente;
-
-
-        return View::make($ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'tipo_doc_app', 'cliente', 'pdv_descripcion', 'datos_factura'))->render();
-    }
-
     public function generar_plantilla_factura($pdv)
     {
         $this->set_variables_globales();
@@ -1122,6 +1073,8 @@ class FacturaPosController extends TransaccionController
             'lbl_total_factura' => '',
             'lbl_total_propina' => '',
             'total_factura_mas_propina' => '',
+            'lbl_total_datafono' => '',
+            'total_factura_mas_datafono' => '',
             'lbl_ajuste_al_peso' => '',
             'lbl_total_recibido' => '0',
             'lbl_total_cambio' => '',

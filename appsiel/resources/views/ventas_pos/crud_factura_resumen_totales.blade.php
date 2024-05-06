@@ -45,6 +45,12 @@
             
         @endif
 
+        @if( (int)config('ventas_pos.manejar_datafono') )
+
+            @include('ventas_pos.datafono.filas_resumen_totales')
+            
+        @endif
+
         <tr class="info">
             <td width="35%">
                 <strong> Total factura </strong>

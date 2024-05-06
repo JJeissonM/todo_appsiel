@@ -121,8 +121,8 @@
         </tbody>
     </table>
 
-    @if( (int)config('ventas_pos.manejar_propinas') )
-        @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales_con_propina')
+    @if( (int)config('ventas_pos.manejar_propinas') || (int)config('ventas_pos.manejar_datafono') )
+        @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales_con_recargos')
     @else
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
     @endif    

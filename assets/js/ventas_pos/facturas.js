@@ -298,6 +298,11 @@ function reset_campos_formulario()
 	{
 		$.fn.reset_propina();
 	}
+		
+	if( $('#manejar_datafono').val() == 1 )
+	{
+		$.fn.reset_datafono();
+	}
 }
 
 function get_precio(producto_id)
@@ -624,11 +629,18 @@ function calcular_totales2()
 	{
 		$.fn.calcular_valor_a_pagar_propina(total_factura);
 
-		$('#valor_sub_total_factura').val( total_factura );
-		$('#lbl_sub_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( total_factura ));
-
 		$.fn.calcular_totales_propina();
-	}	
+	}
+	
+	if( $('#manejar_datafono').val() == 1 && $('#calcular_comision_datafono').is(':checked') )
+	{
+		$.fn.calcular_valor_a_pagar_datafono(total_factura);
+
+		$.fn.calcular_totales_datafono();
+	}
+
+	$('#valor_sub_total_factura').val( total_factura );
+	$('#lbl_sub_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( total_factura ));
 }
 
 function calcular_precio_total2() {

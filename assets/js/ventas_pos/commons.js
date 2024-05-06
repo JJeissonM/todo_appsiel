@@ -600,6 +600,17 @@ $(document).ready(function () {
             }
         }
 
+        if( $('#manejar_datafono').val() == 1 )
+        {
+            if( $('#valor_datafono').val() != 0 )
+            {
+                if ( !$.fn.permitir_guardar_factura_con_datafono() ) 
+                {
+                    return false;    
+                }
+            }
+        }
+
         // Desactivar el click del botón
         $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
         $( this ).attr( 'disabled', 'disabled' );
@@ -617,6 +628,12 @@ $(document).ready(function () {
             json_table2 = $.fn.separar_json_linea_medios_recaudo( json_table2 );
         }
 
+        if( $('#manejar_datafono').val() == 1 )
+        {
+            // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
+            json_table2 = $.fn.separar_json_linea_medios_recaudo( json_table2 );
+        }
+
         // Se asigna el objeto JSON a un campo oculto del formulario
         $('#lineas_registros').val( JSON.stringify( table ) );
         $('#lineas_registros_medios_recaudos').val( json_table2 );
@@ -630,6 +647,11 @@ $(document).ready(function () {
         if( $('#manejar_propinas').val() == 1 )
         {
             data += '&valor_propina=' + $('#valor_propina').val();
+        }
+        
+        if( $('#manejar_datafono').val() == 1 )
+        {
+            data += '&valor_datafono=' + $('#valor_datafono').val();
         }
         
         $.post(url, data, function (doc_encabezado_consecutivo) {
@@ -721,6 +743,14 @@ $(document).ready(function () {
 
             $.fn.reset_propina();
         }
+
+        if( $('#manejar_datafono').val() == 1 )
+        {
+            $('#valor_sub_total_factura').val(0);
+            $('#lbl_sub_total_factura').text('$ 0');
+
+            $.fn.reset_datafono();
+        }
     }
 
     function llenar_tabla_productos_facturados()
@@ -761,10 +791,25 @@ $(document).ready(function () {
             cantidad_total_productos++;
         });
 
-        $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
-        $('.lbl_total_propina').text( '$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_propina').val() ));
+        var total_factura_redondeado = $.fn.redondear_a_centena(lbl_total_factura);
 
-        $('.lbl_total_factura_mas_propina').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( $.fn.redondear_a_centena(lbl_total_factura) ) + parseFloat( $('#valor_propina').val()) ));
+        $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura_redondeado ) );
+
+        var valor_propina = 0.0;
+        var valor_datafono = 0.0;
+        if( $('#manejar_propinas').val() == 1 )
+        {
+            valor_propina = parseFloat( $('#valor_propina').val());
+            $('.lbl_total_propina').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_propina ));
+        }
+        if( $('#manejar_datafono').val() == 1 )
+        {
+            valor_datafono = parseFloat( $('#valor_datafono').val());
+            console.log(valor_datafono);
+            $('.lbl_total_datafono').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_datafono ));
+        }
+
+        $('.lbl_total_factura_mas_recargos').text( '$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( total_factura_redondeado ) + valor_propina + valor_datafono ));
         
         $('.lbl_base_impuesto_total').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_base_impuesto_total)));
         
@@ -798,8 +843,7 @@ $(document).ready(function () {
         
         $('.lbl_descripcion_doc_encabezado').text( $('#descripcion').val() );
 
-        llenar_resumen_medios_recaudo();        
-
+        llenar_resumen_medios_recaudo();
     }
 
     function llenar_resumen_medios_recaudo()
@@ -917,11 +961,18 @@ $(document).ready(function () {
         {
             $.fn.calcular_valor_a_pagar_propina(total_factura);
 
-            $('#valor_sub_total_factura').val( total_factura );
-            $('#lbl_sub_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( total_factura ));
-
             $.fn.calcular_totales_propina();
         }
+        
+        if( $('#manejar_datafono').val() == 1 && $('#calcular_comision_datafono').is(':checked') )
+        {
+            $.fn.calcular_valor_a_pagar_datafono(total_factura);
+
+            $.fn.calcular_totales_datafono();
+        }
+
+        $('#valor_sub_total_factura').val( total_factura );
+        $('#lbl_sub_total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( total_factura ));
     }
 
     var valor_actual, elemento_modificar, elemento_padre;
