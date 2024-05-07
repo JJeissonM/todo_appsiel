@@ -312,6 +312,32 @@
 
 				</div>
 
+				<br>
+				<h4> Académico Estudiantes  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$modulo_activo_solo_para_descargar_informes = '0';
+								if( isset($parametros['modulo_activo_solo_para_descargar_informes'] ) )
+								{
+									$modulo_activo_solo_para_descargar_informes = $parametros['modulo_activo_solo_para_descargar_informes'];
+								}
+							?>
+							{{ Form::bsSelect('modulo_activo_solo_para_descargar_informes', $modulo_activo_solo_para_descargar_informes, 'Modulo activo solo para descargar informes', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

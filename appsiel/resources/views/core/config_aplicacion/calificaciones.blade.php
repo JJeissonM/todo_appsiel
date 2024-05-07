@@ -549,11 +549,6 @@
 
 				</div>
 
-
-
-				cantidad_caracteres_para_proxima_pagina
-
-
 				<h4> Académico Estudiantes  </h4>
 				<hr>
 				<div class="row">

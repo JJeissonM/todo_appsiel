@@ -32,6 +32,10 @@ Route::get('consultar_preinforme/{periodo_id}/{curso_id}/{estudiante_id}','Acade
 Route::get('academico_estudiante/reconocimientos', 'AcademicoEstudianteController@reconocimientos');
 
 
+// SOLO PARA DESCARGAR INFORMES
+Route::get('academico_estudiante_descargar_informes','AcademicoEstudianteController@index_restringido');
+
+
 // Solo deberia contener rutas del AcademicoEstudianteController, nada de Matriculas
 // Route::get('academico_estudiante/usuarios_estudiantes', 'Matriculas\EstudianteController@usuarios_estudiantes');
 

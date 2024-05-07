@@ -76,6 +76,10 @@ class AcademicoEstudianteController extends Controller
             return redirect('inicio')->with('mensaje_error', 'El estudiante no tiene alguna matrícua activa.');
         }
 
+        if ((int)config('configuracion.modulo_activo_solo_para_descargar_informes')) {
+            return redirect('academico_estudiante_descargar_informes?id=6');            
+        }
+
         $curso = Curso::find($matricula->curso_id);
 
         $estudiante = $this->estudiante;
@@ -84,6 +88,55 @@ class AcademicoEstudianteController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Académico estudiante']
         ];
         return view('academico_estudiante.index', compact('miga_pan', 'estudiante', 'curso'));
+    }    
+
+    public function index_restringido()
+    {
+        $estudiante = $this->estudiante;
+
+        $mensaje_facturas_vencidas = (object)[ 'mensaje' => '', 'enlace_libreta' => ''];
+
+        $libreta_pago = $estudiante->matricula_activa()->libretas_pagos->where('estado', 'Activo')->first();
+
+        if (!is_null($libreta_pago))
+        {
+            $cantidad_facturas_vencidas = $libreta_pago->lineas_registros_plan_pagos->where('estado', 'Vencida')->count();
+
+            if ($cantidad_facturas_vencidas > config('matriculas.cantidad_facturas_vencidas_permitidas'))
+            {
+                $mensaje_facturas_vencidas = (object)[ 'mensaje' => 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y Boletines.', 'enlace_libreta' => 'academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6'];
+            }
+        }
+
+        $opciones = Periodo::get_activos_periodo_lectivo();
+
+        $periodos_abiertos = config('calificaciones.periodos_activos_visualizar_calificaciones');
+        $vec[''] = '';
+        foreach ($opciones as $opcion)
+        {
+            if ( !in_array( $opcion->id, $periodos_abiertos ) )
+            {
+                continue;
+            }
+            $vec[$opcion->id] = $opcion->periodo_lectivo_descripcion . ' > ' . $opcion->descripcion;
+        }
+
+        $periodos = $vec;
+
+        $matricula = Matricula::where('estado', 'Activo')->where('id_estudiante', $estudiante->id)->get()[0];
+
+        $curso = Curso::find($matricula->curso_id);
+
+        $codigo_matricula = $matricula->codigo;
+
+        $miga_pan = [
+            ['url' => 'academico_estudiante?id=' . Input::get('id'), 'etiqueta' => 'Académico estudiante'],
+            ['url' => 'NO', 'etiqueta' => 'Calificaciones']
+        ];
+
+        $parametros = config('calificaciones');
+
+        return view('academico_estudiante.solo_imprimir_informes.calificaciones', compact('miga_pan', 'periodos', 'estudiante', 'curso', 'codigo_matricula', 'mensaje_facturas_vencidas', 'parametros'));
     }
 
 
