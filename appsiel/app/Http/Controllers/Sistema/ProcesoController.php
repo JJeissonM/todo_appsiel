@@ -6,23 +6,16 @@ use App\Http\Controllers\Sistema\ModeloController;
 
 use Illuminate\Http\Request;
 
-use Input;
-use DB;
-use PDF;
-use Auth;
-use Storage;
-use View;
-use File;
-use Hash;
-
-use App\Http\Requests;
-
 use Spatie\Permission\Models\Role;
 
 use App\Core\PasswordReset;
 
 use App\UserHasRole;
 use App\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Input;
 
 class ProcesoController extends ModeloController
 {
@@ -31,7 +24,7 @@ class ProcesoController extends ModeloController
     {
 
         $miga_pan = [
-                        ['url' => $this->aplicacion->app.'?id='.Input::get('id'), 'etiqueta'=> $this->aplicacion->descripcion ],
+                        ['url' => $this->aplicacion->app.'?id=' . Input::get('id'), 'etiqueta'=> $this->aplicacion->descripcion ],
                         ['url' => 'NO','etiqueta'=> 'Proceso: Exportar/importar tablas de la BD']
                     ];
 
@@ -252,7 +245,8 @@ class ProcesoController extends ModeloController
         return view( 'core.form_password_resets', compact( 'roles', 'miga_pan' ) );
 
     }
-    public function config_password_resets( $role_id )
+
+    public function config_password_resets( $role_id, $password_mode )
     {
         $usuarios = UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
                                 ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
@@ -260,18 +254,22 @@ class ProcesoController extends ModeloController
                                 ->select('users.id')
                                 ->get()
                                 ->toArray();
-            
+        
         foreach ($usuarios as $key => $value)
         {   
             $usuario = User::find( $value['id'] );
 
-            if ( !is_null( $usuario ) )
+            if ( $usuario != null )
             {
                 // Borrar registro anterior, si ya ha sido reseteada
                 PasswordReset::where('email',$usuario->email)->delete();
 
                 // Almacenar nueva contraseña en 
                 $token = str_random(8);
+                if ( $password_mode == 'only_numbers') {
+                    $token = random_int(1000000,7000000);
+                }
+
                 PasswordReset::insert([
                                         'email' => $usuario->email,
                                         'token' => $token ]);

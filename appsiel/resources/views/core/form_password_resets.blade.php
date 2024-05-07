@@ -23,7 +23,7 @@
 			</div>
 
     		<div class="row">
-    			<div class="col-md-5">
+    			<div class="col-md-4">
 
     				<div class="row" style="padding:5px;">					
 						<label class="control-label col-sm-4" > <b> Perfil: </b> </label>
@@ -35,7 +35,19 @@
 
     			</div>
 
-    			<div class="col-md-5">
+    			<div class="col-md-4">
+
+    				<div class="row" style="padding:5px;">					
+						<label class="control-label col-sm-4" > <b> Modo contraseña: </b> </label>
+
+						<div class="col-sm-8">
+							{{ Form::select('password_mode', ['random' => 'Caractéres aleatorios', 'only_numbers' => 'Solo números'], null, ['id' => 'password_mode', 'class' => 'form-control' ] ) }}
+						</div>					 
+					</div>
+
+    			</div>
+
+    			<div class="col-md-2">
 
     				<div class="row" style="padding:5px;">					
 						{{ Form::checkbox( 'confirmar', null, false,['disabled'=>'disabled', 'id'=>'confirmar']) }} &nbsp;<b> Confirmar </b> 
@@ -118,9 +130,10 @@
 			 		$("#div_cargando").show();
 					$('#btn_reset_passwords').attr('disabled','disabled');
 
-			 		var role_id = $('#role_id').val();
+					var role_id = $('#role_id').val();
+			 		var password_mode = $('#password_mode').val();
 
-					var url = "{{ url('config_password_resets') }}" + "/" + role_id;
+					var url = "{{ url('config_password_resets') }}" + "/" + role_id + "/" + password_mode;
 
 					$.ajax({
 			        	url: url,

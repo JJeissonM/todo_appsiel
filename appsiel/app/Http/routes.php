@@ -217,7 +217,7 @@ Route::get('insertar_registros_tablas_bd', 'Sistema\ProcesoController@insertar_r
 Route::get('generar_lista_tablas_con_sus_campos', 'Sistema\ProcesoController@generar_lista_tablas_con_sus_campos');
 
 Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_resets');
-Route::get('config_password_resets/{role_id}', 'Sistema\ProcesoController@config_password_resets');
+Route::get('config_password_resets/{role_id}/{password_mode}', 'Sistema\ProcesoController@config_password_resets');
 
 
 Route::resource('transaction', 'Core\TransaccionController');
