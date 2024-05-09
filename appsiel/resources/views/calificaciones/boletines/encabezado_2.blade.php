@@ -22,7 +22,7 @@
 							$n_prom_acad = 0;
 							foreach ( $lineas_cuerpo_boletin as $datos_linea_prom )
 							{
-								$suma_calificaciones += $datos_linea->valor_calificacion;
+								$suma_calificaciones += $datos_linea_prom->valor_calificacion;
 								$n_prom_acad++;
 							}
 
