@@ -104,8 +104,14 @@ class AcademicoEstudianteController extends Controller
 
             if ($cantidad_facturas_vencidas > config('matriculas.cantidad_facturas_vencidas_permitidas'))
             {
-                $mensaje_facturas_vencidas = (object)[ 'mensaje' => 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y Boletines.', 'enlace_libreta' => 'academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6'];
+                $mensaje_facturas_vencidas = (object)[ 'mensaje' => 'El estudiante tiene más de ' . config('matriculas.cantidad_facturas_vencidas_permitidas') . ' facturas vencidas. Debe ponerse al día para consultar Calificaciones y descargar Informes.', 'enlace_libreta' => 'academico_estudiante/mi_plan_de_pagos/' . $libreta_pago->id . '?id=6'];
             }
+        }
+
+        // Bloqueado por mora
+        if( (int)$estudiante->tercero->digito_verificacion )
+        {
+            $mensaje_facturas_vencidas = (object)[ 'mensaje' => 'El estudiante tiene facturas vencidas. Debe ponerse al día para consultar Calificaciones y descargar Informes.', 'enlace_libreta' => ''];
         }
 
         $opciones = Periodo::get_activos_periodo_lectivo();

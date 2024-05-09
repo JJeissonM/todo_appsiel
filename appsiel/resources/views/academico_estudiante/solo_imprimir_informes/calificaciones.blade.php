@@ -112,9 +112,11 @@
 						  <br>
 						  {{ $mensaje_facturas_vencidas->mensaje }}
 						</div>
-						<div class="alert alert-info">
-						  Consulte su libreta de pagos <a href="{{ url( $mensaje_facturas_vencidas->enlace_libreta ) }}">AQUÍ</a>.
-						</div>
+						@if( $mensaje_facturas_vencidas->enlace_libreta != '')
+							<div class="alert alert-info">
+							Consulte su libreta de pagos <a href="{{ url( $mensaje_facturas_vencidas->enlace_libreta ) }}">AQUÍ</a>.
+							</div>
+						@endif
 					@endif
 				</div>
 

@@ -94,6 +94,9 @@ class EstudianteController extends ModeloController
                 case 'telefono1':
                     $lista_campos[$i]['value'] = $tercero->telefono1;
                     break;
+                case 'digito_verificacion':
+                    $lista_campos[$i]['value'] = $tercero->digito_verificacion;
+                    break;
                 case 'email':
                     $lista_campos[$i]['value'] = $tercero->email;
                     break;
