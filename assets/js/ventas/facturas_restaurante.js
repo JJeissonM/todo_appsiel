@@ -493,7 +493,7 @@ function calcular_precio_total2() {
 	precio_total = (precio_unitario - valor_unitario_descuento) * 1;
 	$('#precio_total').val(0);
 
-	if ($.isNumeric(precio_total) && precio_total > 0) {
+	if ($.isNumeric(precio_total) && precio_total >= 0) {
 		$('#precio_total').val(precio_total);
 		return true;
 	} else {
