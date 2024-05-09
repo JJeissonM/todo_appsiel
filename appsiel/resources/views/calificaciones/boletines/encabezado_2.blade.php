@@ -12,7 +12,27 @@
 				@if( $registro->observacion->puesto == "" )
 					<td> <b> ¡¡Puesto No calculado!! </b> </td>
 				@else
-					<td><span class="etiqueta"> Puesto:  </span> {{ $registro->observacion->puesto }} </td>
+					<td>
+						<span class="etiqueta"> Puesto:  </span> 
+						{{ $registro->observacion->puesto }}
+						&nbsp;&nbsp;
+						<span class="etiqueta"> Prom. Acad.:  </span> 
+						<?php
+							$suma_calificaciones = 0;
+							$n_prom_acad = 0;
+							foreach ( $lineas_cuerpo_boletin as $datos_linea_prom )
+							{
+								$suma_calificaciones += $datos_linea->valor_calificacion;
+								$n_prom_acad++;
+							}
+
+							$prom_academico = 0;
+							if ($n_prom_acad != 0) {
+								$prom_academico = $suma_calificaciones / $n_prom_acad;
+							}
+						?>
+						{{ $prom_academico }} 
+					</td>
 				@endif
 
 			@else

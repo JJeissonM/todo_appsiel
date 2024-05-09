@@ -60,6 +60,12 @@
 						if ($linea->asignatura_id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
 							continue;
 						}
+
+						$porcentaje_asignatura = '';
+						if( $mostrar_calificacion_media_areas )
+						{
+							$porcentaje_asignatura = ' (' . $linea->peso_asignatura . ')';
+						}
 					?>
 
 					@include('calificaciones.boletines.fila_area')
@@ -67,7 +73,7 @@
 					<tr>
 
 						<td style="width:150px;">
-							<b>{{ $linea->asignatura_descripcion }} </b>
+							<b>{{ $linea->asignatura_descripcion }} </b> {{ $porcentaje_asignatura }}
 						</td>
 						
 						<td align="center">
