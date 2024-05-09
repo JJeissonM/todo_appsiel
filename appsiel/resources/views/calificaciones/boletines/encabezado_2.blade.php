@@ -10,7 +10,7 @@
 				<td colspan="2"><span class="etiqueta">Estudiante:</span> {{ $registro->estudiante->tercero->descripcion }}</td>
 				
 				@if( $registro->observacion->puesto == "" )
-					<td> <b> ¡¡Puesto No calculado!! </b> </td>
+					<td> <b> &nbsp; </b> </td>
 				@else
 					<td>
 						<span class="etiqueta"> Puesto:  </span> 
