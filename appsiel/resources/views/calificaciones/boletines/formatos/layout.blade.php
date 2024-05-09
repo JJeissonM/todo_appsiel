@@ -16,7 +16,7 @@
             /*margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px;*/
         }
 
-        @page{ margin: 60px 40px 20px 40px !important; }
+        @page{ margin: 30px 15px 15px 15px !important; }
         
         .page-break {
             page-break-after: always;
