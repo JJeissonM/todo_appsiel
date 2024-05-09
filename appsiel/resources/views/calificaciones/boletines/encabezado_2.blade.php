@@ -29,9 +29,18 @@
 							$prom_academico = 0;
 							if ($n_prom_acad != 0) {
 								$prom_academico = $suma_calificaciones / $n_prom_acad;
+
+								$escala_valoracion_prom_academico = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $prom_academico, $periodo->periodo_lectivo_id );
+							
+								$lbl_escala_valoracion_prom_academico = '';
+								if ( $escala_valoracion_prom_academico )
+								{
+									$lbl_escala_valoracion_prom_academico = ' (' . $escala_valoracion_prom_academico->nombre_escala . ')';
+								}
+
 							}
 						?>
-						{{ $prom_academico }} 
+						{{ number_format( $prom_academico, (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones'), ',', '.' ) }} {{ $lbl_escala_valoracion_prom_academico }} 
 					</td>
 				@endif
 

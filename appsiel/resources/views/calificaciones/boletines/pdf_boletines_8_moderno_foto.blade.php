@@ -24,13 +24,19 @@
 						if ($linea->asignatura_id == (int)config('calificaciones.asignatura_id_para_asistencias')) {
 							continue;
 						}
+
+						$porcentaje_asignatura = '';
+						if( $mostrar_calificacion_media_areas )
+						{
+							$porcentaje_asignatura = ' (' . $linea->peso_asignatura . '% )';
+						}
 					?>
 
 					@include('calificaciones.boletines.fila_area')
 
 					<tr style="background-color: {{config('configuracion.color_principal_empresa')}}50;">
 						<td style="border: 0px;">
-							<b>{{ $linea->asignatura_descripcion }} </b>
+							<b>{{ $linea->asignatura_descripcion }} </b> {{ $porcentaje_asignatura }}
 						</td>
 						<td style="border: 0px;" width="45%">
 							@if( $linea->intensidad_horaria != 0 )

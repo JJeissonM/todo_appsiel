@@ -18,10 +18,6 @@
 	}
 
 	$lbl_peso_asignatura = '';
-	if( config('calificaciones.mostrar_peso_asignaturas_boletines') == '1' && $mostrar_calificacion_media_areas )
-	{
-		$lbl_peso_asignatura = ' (' . $linea->peso_asignatura . '%)';
-	}
 
 	switch( config('calificaciones.etiqueta_calificacion_boletines') )
 	{

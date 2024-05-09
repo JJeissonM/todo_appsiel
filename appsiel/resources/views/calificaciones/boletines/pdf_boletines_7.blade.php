@@ -9,7 +9,9 @@
 		}else{
 
 			$lbl_asigatura = 'Asignaturas';
-		}		
+		}
+		
+		$mostrar_peso_asignaturas_boletines = config('calificaciones.mostrar_peso_asignaturas_boletines');
 	?>
 
 	@foreach($datos as $registro)
@@ -62,16 +64,15 @@
 						}
 
 						$porcentaje_asignatura = '';
-						if( $mostrar_calificacion_media_areas )
+						if( $mostrar_peso_asignaturas_boletines == '1' && $mostrar_calificacion_media_areas )
 						{
-							$porcentaje_asignatura = ' (' . $linea->peso_asignatura . ')';
+							$porcentaje_asignatura = ' (' . $linea->peso_asignatura . '%)';
 						}
 					?>
 
 					@include('calificaciones.boletines.fila_area')
 
 					<tr>
-
 						<td style="width:150px;">
 							<b>{{ $linea->asignatura_descripcion }} </b> {{ $porcentaje_asignatura }}
 						</td>
