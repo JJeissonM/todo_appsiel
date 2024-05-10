@@ -216,15 +216,17 @@ class ReportesController extends ModeloController
             $lista_logros_del_periodo = [];
             foreach ($logros_del_periodo as $logro)
             {
-
                 if ( $logro->asignatura_id == $asignacion->id_asignatura && $logro->curso_id == $asignacion->curso_id )
                 {
-                    $lista_logros_del_periodo[$a]['descripcion'] = $logro->escala_valoracion->nombre_escala . ': ' . substr($logro->descripcion,0,150) . '...';
+                    $nombre_escala = 'ADICIONAL';
+                    if ($logro->escala_valoracion != null) {
+                        $nombre_escala = $logro->escala_valoracion->nombre_escala;
+                    }
+                    $lista_logros_del_periodo[$a]['descripcion'] = $nombre_escala . ': ' . substr($logro->descripcion,0,150) . '...';
 
                     $lista_logros_del_periodo[$a]['enlace_logro'] = '<a href="' . url('web/' . $logro->id . '?id=2&id_modelo=70&id_transaccion=') . '" target="_blank"> Revisar Logro </a>';
                     $a++;
                 }
-
             }
             
             $linea->lista_logros = $lista_logros_del_periodo;
