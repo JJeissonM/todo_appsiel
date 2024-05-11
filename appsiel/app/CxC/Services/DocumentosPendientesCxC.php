@@ -2,11 +2,10 @@
 
 namespace App\CxC\Services;
 
-use DB;
-use Auth;
-
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DocumentosPendientesCxC
 {

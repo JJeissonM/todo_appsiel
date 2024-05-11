@@ -61,6 +61,10 @@ class DocumentoSoporte extends Model
                 'nom_elect_doc_soporte.estado AS campo4',
                 'nom_elect_doc_soporte.id AS campo5'
             )
+            ->where("nom_elect_doc_soporte.fecha", "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",nom_elect_doc_soporte.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_elect_doc_soporte.estado", "LIKE", "%$search%")
             ->orderBy('nom_elect_doc_soporte.created_at', 'DESC')
             ->paginate($nro_registros);
    }

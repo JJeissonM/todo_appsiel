@@ -332,6 +332,11 @@ class DocumentoSoporteService
 
       $json = json_decode( (string) $response->getBody() );
       
+      if($json->dian_status == 'DIAN_RECHAZADO')
+      {
+          return $json->qrcode;
+      }
+      
       return $json->pdf;
    }
 }
