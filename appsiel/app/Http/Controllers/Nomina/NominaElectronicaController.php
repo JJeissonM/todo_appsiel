@@ -144,8 +144,8 @@ class NominaElectronicaController extends TransaccionController
                     'nom_contrato_id' => $datos_doc_soporte['empleado']->id,
                     'descripcion' => '',
                     'head_data_json' => '',
-                    'accruals_json' => json_encode($datos_doc_soporte['accruals']),
-                    'deductions_json' => json_encode($datos_doc_soporte['deductions']),
+                    'accruals_json' => json_encode( $this->remove_status_line($datos_doc_soporte['accruals']) ),
+                    'deductions_json' => json_encode( $this->remove_status_line($datos_doc_soporte['deductions']) ),
                     'employee_json' => json_encode($datos_doc_soporte['employee']),
                     'estado' => 'Sin enviar',
                     'creado_por' => Auth::user()->id
@@ -158,6 +158,17 @@ class NominaElectronicaController extends TransaccionController
         }
 
         return $this->dibujar_vista();
+    }
+
+    public function remove_status_line($json_string)
+    {
+        $rows = [];
+        foreach ($json_string as $line) {
+            array_shift($line);
+            $rows[] = $line;
+        }
+        
+        return $rows;
     }
 
     public function hay_errores($datos_doc_soporte)

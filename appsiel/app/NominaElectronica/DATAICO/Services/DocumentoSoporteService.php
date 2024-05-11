@@ -48,6 +48,7 @@ class DocumentoSoporteService
          'prefix' => $core_tipo_doc_app->prefijo,
          'number' => $consecutivo,
          'salary' =>  $empleado->sueldo,
+         'send_dian' =>  true,
          'periodicity' => 'MENSUAL',
          'initial-settlement-date' => $lapso->fecha_inicial,
          'final-settlement-date' => $lapso->fecha_final,
@@ -103,7 +104,7 @@ class DocumentoSoporteService
       
       if ($concepto->cpto_dian == null) {
          $one_line['status'] = 'error';
-         $one_line['message'] = 'Concepto NO está relacionado a un Concepto DIAN.';
+         $one_line['message'] = 'Concepto (' . $concepto->descripcion . ') NO está relacionado a un Concepto DIAN.';
          return $one_line;
       }
 
