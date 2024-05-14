@@ -144,6 +144,7 @@ class FacturaPosController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
+        $productos = $productos->sortBy('precio_venta');
         
         $productosTemp = $this->get_productos($pdv,$productos);
         
@@ -373,6 +374,7 @@ class FacturaPosController extends TransaccionController
         
         //$total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
+        $productos = $productos->sortBy('precio_venta');
         $productosTemp = $this->get_productos($pdv,$productos);
 
         $vista_categorias_productos = '';
