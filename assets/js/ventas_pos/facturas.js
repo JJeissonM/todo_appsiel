@@ -114,22 +114,6 @@ $.fn.set_valor_pendiente_ingresar_medios_recaudos = function () {
 	$('#lbl_vlr_pendiente_ingresar').html( '$ ' + ( valor_total_factura - valor_total_lineas_medios_recaudos).toFixed(2) );
 };
 
-$.fn.checkCookie = function () {
-	var ultimo_valor_total_factura = parseFloat($.fn.getCookie("ultimo_valor_total_factura"));
-	var ultimo_valor_efectivo_recibido = parseFloat($.fn.getCookie("ultimo_valor_efectivo_recibido"));
-	var ultimo_valor_total_cambio = parseFloat($.fn.getCookie("ultimo_valor_total_cambio"));
-	var ultimo_valor_ajuste_al_peso = parseFloat($.fn.getCookie("ultimo_valor_ajuste_al_peso"));
-
-	if (ultimo_valor_total_factura > 0) {
-		$('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format($.fn.redondear_a_centena(ultimo_valor_total_factura)));
-		//$('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
-		$('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
-		$('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
-	}
-
-	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
-};
-
 $.fn.getCookie = function (cname) {
 	var name = cname + "=";
 	var ca = document.cookie.split(';');

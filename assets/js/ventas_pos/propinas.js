@@ -1,9 +1,10 @@
 
 $.fn.calcular_totales_propina = function () {
 
-    var valor_total_factura = parseFloat($('#valor_sub_total_factura').val()) + parseFloat( $('#valor_propina').val());
+    var valor_total_factura = parseFloat( $('#valor_total_factura').val()) + parseFloat( $('#valor_propina').val());
 
     $('#lbl_propina').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_propina').val() ));
+    
     $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_total_factura ));
 
     // input hidden
@@ -24,6 +25,10 @@ $.fn.reset_propina = function () {
     $('#lbl_propina').text('$ 0');
     $('#valor_propina').val(0);
     $('#aux_propina').val(0);
+
+    $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_sub_total_factura').val() ));
+    $('#valor_total_factura').val( $('#valor_sub_total_factura').val() );
+
 }
 
 var motivos_registrados_lineas_medios_recaudos, cantidad_lineas_medios_recaudos;
@@ -156,6 +161,9 @@ $(document).ready(function () {
 				// 
 				break;
 		}
+        
+        $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_sub_total_factura').val() ));
+        $('#valor_total_factura').val( $('#valor_sub_total_factura').val() );
 
         $.fn.calcular_totales_propina();
         $('#total_valor_total').actualizar_medio_recaudo();

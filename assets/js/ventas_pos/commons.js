@@ -525,6 +525,10 @@ $(document).ready(function () {
 
         numero_linea++;
         $('#efectivo_recibido').removeAttr('readonly');
+
+        
+        console.log(total_factura, $('#total_factura').text());
+
     }
 
     function deshabilitar_campos_encabezado() 
@@ -948,6 +952,9 @@ $(document).ready(function () {
 
         // label Total factura  (Sumatoria de precio_total)
         var valor_redondeado = $.fn.redondear_a_centena(total_factura);
+        
+        console.log('1)',total_factura,valor_redondeado, $('#total_factura').text());
+
         $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
 
         // input hidden
@@ -962,6 +969,9 @@ $(document).ready(function () {
             $.fn.calcular_valor_a_pagar_propina(total_factura);
 
             $.fn.calcular_totales_propina();
+
+            
+            console.log('2) manejar propinas',total_factura,valor_redondeado, $('#total_factura').text());
         }
         
         if( $('#manejar_datafono').val() == 1 && $('#calcular_comision_datafono').is(':checked') )
