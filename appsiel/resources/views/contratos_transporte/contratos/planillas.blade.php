@@ -52,7 +52,7 @@
 					<table class="table table-bordered table-striped">
 						<thead>
 							<tr style=" vertical-align: middle !important;">
-								<th>Id Planilla</th>
+								<th>Nro. FUEC</th>
 								<th>Título Plantilla</th>
 								<th>Fecha Generada</th>
 								<th>Imprimir FUEC</th>
@@ -62,7 +62,7 @@
 							@if(count($planillas)>0)
 								@foreach($planillas as $p)
 								<tr>
-									<td>{{$p->id}}</td>
+									<td>{{$c->numero_contrato}}</td>
 									<td>{{$p->plantilla->titulo}}</td>
 									<td>{{$p->created_at}}</td>
 									<td>
@@ -71,6 +71,23 @@
 								</tr>
 								@endforeach
 							@endif
+							@if(count($fuec_adicionales)>0)
+								@foreach($fuec_adicionales as $fuec_adicional)
+								<tr>
+									<td>{{$fuec_adicional->id}}</td>
+									<td>{{$fuec_adicional->plantilla->titulo}}</td>
+									<td>{{$fuec_adicional->created_at}}</td>
+									<td>
+										<a target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$c->id)}}" class="btn-gmail" title="IMPRIMIR FUEC"><i class="fa fa-print"></i></a>
+									</td>
+								</tr>
+								@endforeach
+							@endif
+							<tr>
+								<td colspan="4">
+									<a target="_blank" href="{{route('cte_contratos_fuec_adicional.create')}}" class="btn btn-primary btn-md"><i class="fa fa-plus"></i> Crear nuevo FUEC</a>
+								</td>
+							</tr>
 						</tbody>
 					</table>
 				</div>

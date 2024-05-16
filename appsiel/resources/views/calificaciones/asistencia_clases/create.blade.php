@@ -15,7 +15,7 @@
 			
 			<div class="panel-body">
 				{{Form::open(array('route'=>array('calificaciones.asistencia_clases.store' ), 'class'=>'form-horizontal', 'id' => 'form_create' ) ) }}
-					<h2 align="center">Registro de asistencias ey</h2>
+					<h2 align="center">Registro de asistencias</h2>
 					<h4>
 						<b>Fecha: </b> {{ $fecha }}
 						{{ Form::hidden('fecha',$fecha) }}

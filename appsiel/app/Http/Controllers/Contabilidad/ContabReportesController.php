@@ -106,23 +106,24 @@ class ContabReportesController extends Controller
         }
         
         $detallar_grupo_cuentas = $request->detallar_grupo_cuentas;
-        $detallar_terceros = $request->detallar_terceros;
+        $detallar_terceros = $request->detalla_terceros;
         $detallar_documentos = $request->detallar_documentos;
 
         if ( $contab_cuenta_id == 'todas' ) {
-            $cuentas_con_movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-                                                ->where('contab_movimientos.core_empresa_id','=',Auth::user()->empresa_id)
-                                                ->select( 
-                                                            'contab_cuentas.id',
-                                                            'contab_cuentas.codigo',
-                                                            'contab_cuentas.descripcion'
-                                                        )
-                                                ->orderBy('contab_cuentas.contab_cuenta_clase_id')
-                                                ->groupBy('contab_movimientos.contab_cuenta_id')
-                                                ->get()
-                                                ->toArray();
+            $movimiento_agrupado_por_cuentas = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
+                                        ->whereBetween('fecha',[$fecha_desde,$fecha_hasta])
+                                        ->select('contab_movimientos.*','contab_cuentas.contab_cuenta_clase_id')
+                                        ->orderBy('contab_cuentas.contab_cuenta_clase_id')
+                                        ->get()
+                                        ->groupBy('contab_cuenta_id');
 
-            $vista = View::make( 'contabilidad.formatos.balance_comprobacion_1', compact('cuentas_con_movimiento','fecha_desde', 'fecha_hasta') )->render();
+            if ( $detallar_terceros == 'Si') {
+                $movimientos_cuentas = $this->get_movimientos_cuentas_por_terceros($movimiento_agrupado_por_cuentas, $fecha_desde);
+            }else{
+                $movimientos_cuentas = $this->get_movimientos_cuentas($movimiento_agrupado_por_cuentas, $fecha_desde);
+            }
+
+            $vista = View::make( 'contabilidad.formatos.balance_comprobacion_new', compact('movimientos_cuentas','fecha_desde', 'fecha_hasta') )->render();
 
             Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
   
@@ -131,6 +132,81 @@ class ContabReportesController extends Controller
         }
    
         return $vista;
+    }
+
+    public function get_movimientos_cuentas($movimiento_agrupado_por_cuentas, $fecha_desde)
+    {
+        $movimientos_cuentas = collect([]);
+
+        foreach ($movimiento_agrupado_por_cuentas as $contab_movim) {
+            $arr = (object)[];
+
+            $arr->cuenta = $contab_movim->first()->cuenta;
+
+            if ($arr->cuenta == null) {
+                continue;
+            }
+
+            $arr->tercero = null;
+            $arr->saldo_inicial = ContabMovimiento::where([
+                                            ['fecha', '<', $fecha_desde],
+                                            ['contab_cuenta_id', '=', $arr->cuenta->id]
+                                        ])
+                                        ->sum('valor_saldo');
+            $arr->debitos = $contab_movim->sum('valor_debito');
+            $arr->creditos = $contab_movim->sum('valor_credito');
+            $arr->saldo_final = $arr->saldo_inicial + $arr->debitos + $arr->creditos;
+
+            $movimientos_cuentas->push($arr);
+        }
+
+        return $movimientos_cuentas;
+    }
+
+    public function get_movimientos_cuentas_por_terceros($movimiento_agrupado_por_cuentas, $fecha_desde)
+    {
+        $movimientos_cuentas = collect([]);
+
+        foreach ($movimiento_agrupado_por_cuentas as $grupo_cuentas) {
+
+            $cuenta = $grupo_cuentas->first()->cuenta;
+
+            if ($cuenta == null) {
+                continue;
+            }
+
+            $terceros_con_movim = ContabMovimiento::get()->unique('core_tercero_id');
+            
+            foreach ($terceros_con_movim as $linea_movim) {
+                
+                $arr = (object)[];
+
+                $arr->cuenta = $cuenta;
+
+                $tercero = $linea_movim->tercero;
+
+                $arr->tercero = $tercero;
+
+                $arr->saldo_inicial = ContabMovimiento::where([
+                                                ['fecha', '<', $fecha_desde],
+                                                ['contab_cuenta_id', '=', $cuenta->id],
+                                                ['core_tercero_id', '=', $tercero->id],
+                                            ])
+                                            ->sum('valor_saldo');
+
+                $arr->debitos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_debito');
+                $arr->creditos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_credito');
+                $arr->saldo_final = $arr->saldo_inicial + $arr->debitos + $arr->creditos;
+                
+                if ($arr->saldo_final == 0) {
+                    continue;
+                }
+
+                $movimientos_cuentas->push($arr);
+            }            
+        }
+
+        return $movimientos_cuentas;
     }
 
     public function impuestos( Request $request )

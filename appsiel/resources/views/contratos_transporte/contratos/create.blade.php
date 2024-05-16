@@ -26,12 +26,12 @@
 <div class="container-fluid">
 	<div class="marco_formulario">
 		&nbsp;
-		<div class="row" style="padding: 20px;">
+		<div class="row" style="padding: 2px;">
 			<div class="col-md-12">
 				<!-- <div class="panel panel-primary"> -->
 					<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Crear Contrato</h4>
 					<!-- <div class="panel-body"> -->
-						<div class="col-md-12 page"><!-- -->
+						<div class="col-md-12"><!-- -->
 							{{ Form::open(['route'=>'cte_contratos.store','method'=>'post','class'=>'form-horizontal', 'id' => 'form_create']) }}
 							<input type="hidden" name="variables_url" value="{{$variables_url}}" />
 							<input type="hidden" name="source" value="{{$source}}" />

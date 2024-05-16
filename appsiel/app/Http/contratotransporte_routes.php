@@ -60,3 +60,8 @@ Route::get('cte_mantenimientos/mantenimientos/reportes/{id}/delete', 'ContratoTr
 Route::get('cte_mantenimientos/mantenimientos/observaciones/{id}/delete', 'ContratoTransporte\MantenimientoController@deleteobs')->name('mantenimiento.deleteobs');
 Route::post('cte_mantenimientos/reportes/store', 'ContratoTransporte\MantenimientoController@storemant')->name('mantenimiento.storemant');
 Route::post('cte_mantenimientos/observaciones/store', 'ContratoTransporte\MantenimientoController@storeobs')->name('mantenimiento.storeobs');
+
+// FUEC ADICIONALES
+
+Route::get('cte_contratos_fuec_adicional_imprimir/{fuec_adicional_id}', 'ContratoTransporte\FuecAdicionalController@imprimir')->name('cte_contratos_fuec_adicional.imprimir');
+Route::resource('cte_contratos_fuec_adicional', 'ContratoTransporte\FuecAdicionalController');
