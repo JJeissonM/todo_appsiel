@@ -188,6 +188,8 @@ class ContabReportesController extends Controller
                 $arr->tercero = $tercero;
 
                 $arr->saldo_inicial = 0;
+                $arr->debitos = 0;
+                $arr->creditos = 0;
                 if ($tercero != null) {
                     $arr->saldo_inicial = ContabMovimiento::where([
                         ['fecha', '<', $fecha_desde],
@@ -195,10 +197,10 @@ class ContabReportesController extends Controller
                         ['core_tercero_id', '=', $tercero->id],
                     ])
                     ->sum('valor_saldo');
+                    $arr->debitos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_debito');
+                    $arr->creditos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_credito');
                 }                
 
-                $arr->debitos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_debito');
-                $arr->creditos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_credito');
                 $arr->saldo_final = $arr->saldo_inicial + $arr->debitos + $arr->creditos;
                 
                 if ($arr->saldo_final == 0) {
