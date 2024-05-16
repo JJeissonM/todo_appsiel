@@ -187,12 +187,15 @@ class ContabReportesController extends Controller
 
                 $arr->tercero = $tercero;
 
-                $arr->saldo_inicial = ContabMovimiento::where([
-                                                ['fecha', '<', $fecha_desde],
-                                                ['contab_cuenta_id', '=', $cuenta->id],
-                                                ['core_tercero_id', '=', $tercero->id],
-                                            ])
-                                            ->sum('valor_saldo');
+                $arr->saldo_inicial = 0;
+                if ($tercero != null) {
+                    $arr->saldo_inicial = ContabMovimiento::where([
+                        ['fecha', '<', $fecha_desde],
+                        ['contab_cuenta_id', '=', $cuenta->id],
+                        ['core_tercero_id', '=', $tercero->id],
+                    ])
+                    ->sum('valor_saldo');
+                }                
 
                 $arr->debitos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_debito');
                 $arr->creditos = $grupo_cuentas->where('core_tercero_id', $tercero->id)->sum('valor_credito');
