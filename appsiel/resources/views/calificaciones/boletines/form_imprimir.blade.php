@@ -269,6 +269,7 @@
 					$('#message_print').show();
 					
 					window.open( '../../calif_descargar_pdfs_curso_v2/' + $('#curso_id').val() + '/'  + $('#tam_hoja').val(), '_blank');
+					//window.open( '../../calif_descargar_pdfs_curso/' + $('#curso_id').val(), '_blank');
 
 					return true;
 				}

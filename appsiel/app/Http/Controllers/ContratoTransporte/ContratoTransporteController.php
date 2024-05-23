@@ -33,29 +33,38 @@ class ContratoTransporteController extends Controller
         ];
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
+        if (strlen($mes_actual) == 1) {
+            $mes_actual = '0'.$mes_actual;
+        }
+
 
         $cont = [];
         $user = Auth::user();
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
             $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
             if (!is_null($vehiculo)) {
-                $cont = Contrato::where('vehiculo_id', $vehiculo->id)->orderBy('created_at', 'DESC')->get();
+                $cont = Contrato::where('fecha_inicio','like', date('Y').'-'.$mes_actual.'%' )
+                                ->where('vehiculo_id', $vehiculo->id)->orderBy('created_at', 'DESC')->get();
             }
         } else {
-            $cont = Contrato::orderBy('created_at', 'DESC')->get();
+            $cont = Contrato::where('fecha_inicio','like', date('Y').'-'.$mes_actual.'%' )
+                            ->orderBy('created_at', 'DESC')->get();
         }
 
         $contratos = null;
         if (count($cont) > 0) {
             foreach ($cont as $c) {
-                if ((int) explode('-', $c->fecha_inicio)[1] == $mes_actual) {
-                    $contratos[] = $c;
+                $c->tipo_registro = 'contrato';
+                $contratos[] = $c;
+
+                $fuec_adicionales = $c->fuec_adicionales;
+                foreach ($fuec_adicionales as $fuec_adicional) {                    
+                    $fuec_adicional->tipo_registro = 'fuec_adicional';
+                    $contratos[] = $fuec_adicional;
                 }
             }
         }
-        if ($mes_actual < 10) {
-            $mes_actual = "0" . $mes_actual;
-        }
+        
         $mes_actual = $this->mes()[$mes_actual];
 
         $documentos_vencidos_conductores = $this->get_documentos_vencidos_condutores($user);
@@ -211,7 +220,7 @@ class ContratoTransporteController extends Controller
                 ],
                 [
                     'url' => 'NO',
-                    'etiqueta' => 'Crear Contrato'
+                    'etiqueta' => 'Consultar Contrato'
                 ]
             ];
         } else {
@@ -226,7 +235,7 @@ class ContratoTransporteController extends Controller
                 ],
                 [
                     'url' => 'NO',
-                    'etiqueta' => 'Crear Contrato'
+                    'etiqueta' => 'Consultar Contrato'
                 ]
             ];
         }
@@ -309,6 +318,7 @@ class ContratoTransporteController extends Controller
         $c->version = null;
         $c->fecha = null;
         $c->numero_contrato = $this->nroContrato();
+        $c->numero_fuec = $this->nroFUEC();
         $c->pie_uno = "--";
         $c->pie_dos = "--";
         $c->pie_tres = "--";
@@ -342,13 +352,7 @@ class ContratoTransporteController extends Controller
         $nro = SecuenciaCodigo::get_codigo('cte_contratos');
         // Se incrementa el consecutivo
         SecuenciaCodigo::incrementar_consecutivo('cte_contratos');
-        /*
-        $contratos = Contrato::all();
-        $nro = count($contratos) + 1;
-        if (strlen($nro) == 0) {
-            return "0001";
-        }
-        */
+        
         if (strlen($nro) == 1) {
             return "000" . $nro;
         }
@@ -369,8 +373,10 @@ class ContratoTransporteController extends Controller
     //calcula el numero del FUEC
     function nroFUEC()
     {
-        $planillas = Planillac::all();
-        $nro = count($planillas) + 1;
+        $nro = SecuenciaCodigo::get_codigo('cte_fuec');
+        // Se incrementa el consecutivo
+        SecuenciaCodigo::incrementar_consecutivo('cte_fuec');
+        
         if (strlen($nro) == 0) {
             return "0001";
         }
@@ -402,42 +408,12 @@ class ContratoTransporteController extends Controller
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
 
+        $route = 'CONTRATOS';
         if ( Auth::user()->hasRole('Vehículo (FUEC)') ) {
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'cte_contratos_propietarios' . '?id=' . $idapp . '&id_modelo=' . $modelo . '&id_transaccion=' . $transaccion,
-                    'etiqueta' => 'Mis Contratos'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Ver Contrato'
-                ]
-            ];
-
             $route = 'MISCONTRATOS';
-        }else{
-        
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                    'etiqueta' => 'Contratos'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Ver Contrato'
-                ]
-            ];
-
-            $route = 'CONTRATOS';
         }
+
+        $miga_pan = $this->get_miga_pan($route);
 
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         $contratante = $c->contratante;
@@ -612,6 +588,7 @@ class ContratoTransporteController extends Controller
         $transaccion = Input::get('id_transaccion');
         $miga_pan = null;
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
+
         if ($source == 'MISCONTRATOS') {
             $miga_pan = [
                 [
@@ -654,6 +631,7 @@ class ContratoTransporteController extends Controller
         $c = Contrato::find($id);
         $planillas = $c->planillacs;
         $fuec_adicionales = $c->fuec_adicionales;
+
         return view('contratos_transporte.contratos.planillas')
             ->with('variables_url', $variables_url)
             ->with('miga_pan', $miga_pan)
@@ -804,7 +782,7 @@ class ContratoTransporteController extends Controller
         
         $nro_planilla = config('contratos_transporte.numero_territorial') . config('contratos_transporte.resolucion_habilitacion') . config('contratos_transporte.anio_creacion_empresa');
 
-        $nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $c->numero_contrato;
+        $nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $c->numero_fuec;
         $p->nro = $nro_planilla;
         $result = 0;
         if ($p->save()) {
@@ -922,7 +900,7 @@ class ContratoTransporteController extends Controller
         }
     }
 
-    //verificar planilla pública
+    //verificar planilla pública (Con el QR)
     public function verificarPlanilla($id)
     {
         //return $this->planillaimprimir($id);

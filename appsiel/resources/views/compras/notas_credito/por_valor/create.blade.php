@@ -134,6 +134,9 @@
 				{
 					return false;	
 				}
+				
+				// Desactivar el click del botón
+				$( this ).off( event );
 
 				// Enviar formulario
 				//console.log( 'Enviar formulario' );

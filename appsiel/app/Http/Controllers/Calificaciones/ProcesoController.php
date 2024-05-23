@@ -250,7 +250,7 @@ class ProcesoController extends ModeloController
         $array_cursos_id = Curso::where('sga_grado_id',$grado_id)->get()->pluck('id')->toArray();
 
         $asignaturas_del_periodo_lectivo = CursoTieneAsignatura::asignaturas_del_grado( $array_cursos_id, $periodo_lectivo_id );
-        //dd($asignaturas_del_periodo_lectivo);
+        
         $vista = View::make('calificaciones.procesos.formulario_asignaturas_por_area', [ 'asignaturas' => $asignaturas_del_periodo_lectivo, 'periodo_lectivo_id' => $periodo_lectivo_id, 'grado_id' => $grado_id ] )->render();
         
         return $vista;

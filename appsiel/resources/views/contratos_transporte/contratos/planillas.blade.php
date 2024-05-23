@@ -74,18 +74,18 @@
 							@if(count($fuec_adicionales)>0)
 								@foreach($fuec_adicionales as $fuec_adicional)
 								<tr>
-									<td>{{$fuec_adicional->id}}</td>
-									<td>{{$fuec_adicional->plantilla->titulo}}</td>
+									<td>{{$fuec_adicional->numero_fuec}}</td>
+									<td>{{$fuec_adicional->contrato->planillacs->first()->plantilla->titulo}}</td>
 									<td>{{$fuec_adicional->created_at}}</td>
 									<td>
-										<a target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$c->id)}}" class="btn-gmail" title="IMPRIMIR FUEC"><i class="fa fa-print"></i></a>
+										<a target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$fuec_adicional->id)}}" class="btn-gmail" title="IMPRIMIR FUEC"><i class="fa fa-print"></i></a>
 									</td>
 								</tr>
 								@endforeach
 							@endif
 							<tr>
 								<td colspan="4">
-									<a target="_blank" href="{{route('cte_contratos_fuec_adicional.create')}}" class="btn btn-primary btn-md"><i class="fa fa-plus"></i> Crear nuevo FUEC</a>
+									<a href="{{route('cte_contratos_fuec_adicional.create',['contrato_id='.$c->id, 'id=19', 'modelo_id=197',  'route=' .Input::get('route') ])}}" class="btn btn-primary btn-md"><i class="fa fa-plus"></i> Crear nuevo FUEC</a>
 								</td>
 							</tr>
 						</tbody>

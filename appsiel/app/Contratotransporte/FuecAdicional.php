@@ -115,6 +115,11 @@ class FuecAdicional extends Model
     }
 
 
+    public function contrato()
+    {
+        return $this->belongsTo(Contrato::class);
+    }
+
     public function contratante()
     {
         return $this->belongsTo(Contratante::class);
@@ -125,9 +130,19 @@ class FuecAdicional extends Model
         return $this->belongsTo(Vehiculo::class);
     }
 
-    public function conductor()
+    public function conductor1()
     {
-        return $this->belongsTo(Conductor::class);
+        return $this->belongsTo(Conductor::class,'conductor1_id');
+    }
+
+    public function conductor2()
+    {
+        return $this->belongsTo(Conductor::class,'conductor2_id');
+    }
+
+    public function conductor3()
+    {
+        return $this->belongsTo(Conductor::class,'conductor3_id');
     }
 
     public function contratogrupous()

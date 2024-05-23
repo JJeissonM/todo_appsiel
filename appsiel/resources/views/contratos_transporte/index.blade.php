@@ -25,7 +25,7 @@
 								<table class="table table-striped table-responsive">
 									<thead>
 										<tr style=" vertical-align: middle !important;">
-											<th>Nro.</th>
+											<th>Nro. FUEC</th>
 											<th>Origen - Destino</th>
 											<th>Vigencia</th>
 											<th>Contratante</th>
@@ -35,19 +35,35 @@
 									<tbody>
 										@if($contratos!=null)
 											@foreach($contratos as $c)
-												<tr>
-													<td>{{$c->numero_contrato}}</td>
-													<td>{{$c->origen." - ".$c->destino}}</td>
-													<td>{{"DESDE: ".$c->fecha_inicio." - HASTA: ".$c->fecha_fin}}</td>
-													<td>@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
-													<td>
-														@if($c->estado=='ANULADO')
-														<p>ANULADO</p>
-														@else
-														<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="Imprimir"><i class="fa fa-print"></i></a>
-														@endif
-													</td>
-												</tr>
+												@if($c->tipo_registro == 'contrato')
+													<tr>
+														<td>{{$c->numero_fuec}}</td>
+														<td>{{$c->origen." - ".$c->destino}}</td>
+														<td>{{"DESDE: ".$c->fecha_inicio." - HASTA: ".$c->fecha_fin}}</td>
+														<td>@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion}} @endif</td>
+														<td>
+															@if($c->estado=='ANULADO')
+															<p>ANULADO</p>
+															@else
+															<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="Imprimir"><i class="fa fa-print"></i></a>
+															@endif
+														</td>
+													</tr>
+												@else
+													<tr>
+														<td>{{$c->numero_fuec}}</td>
+														<td>{{$c->origen." - ".$c->destino}}</td>
+														<td>{{"DESDE: ".$c->fecha_inicio." - HASTA: ".$c->fecha_fin}}</td>
+														<td>@if($c->contrato->contratante_id==null || $c->contrato->contratante_id=='null') {{$c->contrato->contratanteText}} @else {{$c->contrato->contratante->tercero->descripcion}} @endif</td>
+														<td>
+															@if($c->estado=='ANULADO')
+																<p>ANULADO</p>
+															@else
+																<a target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$c->id)}}" class="btn-gmail" title="Imprimir"><i class="fa fa-print"></i></a>
+															@endif
+														</td>
+													</tr>
+												@endif
 											@endforeach
 										@endif
 									</tbody>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\ContratoTransporte;
 
+use App\Contratotransporte\Conductor;
 use App\Sistema\SecuenciaCodigo;
 
 use App\Contratotransporte\Contratante;
@@ -9,6 +10,7 @@ use App\Contratotransporte\Contrato;
 use App\Contratotransporte\Contratogrupou;
 use App\Contratotransporte\Documentosconductor;
 use App\Contratotransporte\Documentosvehiculo;
+use App\Contratotransporte\FuecAdicional;
 use App\Contratotransporte\Planillac;
 use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
@@ -29,6 +31,12 @@ class FuecAdicionalController extends Controller
     //crear contrato
     public function create()
     {
+        if (Input::get('contrato_id') == null) {            
+            return redirect( 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with('mensaje_error', 'NO fue enviado el parametro contrato_id');
+        }
+
+        $contrato = Contrato::find((int)Input::get('contrato_id'));
+
         $source = 'CONTRATOS';
         $sourceTemp = Input::get('source');
         if ($sourceTemp != null) {
@@ -39,22 +47,7 @@ class FuecAdicionalController extends Controller
 
         $emp = null;
         $emp = Empresa::find(1);
-        $contratantes = null;
-        $cont = Contratante::all();
-        if (count($cont) > 0) {
-            foreach ($cont as $c) {
-                
-                if ($c->estado == 'Inactivo') {
-                    continue;
-                }
-                
-                if ($c->tercero->estado == 'Inactivo') {
-                    continue;
-                }
-
-                $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion;
-            }
-        }
+        
         $vehiculos_permitidos = null;
         $lista_vehiculos = null;
         if ($source == 'MISCONTRATOS') {
@@ -90,12 +83,12 @@ class FuecAdicionalController extends Controller
 
         $permitir_ingreso_contrato_en_mes_distinto_al_actual = config('contratos_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual');
 
-        return view('contratos_transporte.contratos.create')
+        return view('contratos_transporte.contratos.fuec_adicional.create')
             ->with('variables_url', '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))
             ->with('miga_pan', $miga_pan)
             ->with('e', $emp)
-            ->with('contratantes', $contratantes)
             ->with('vehiculos', $vehiculos_permitidos)
+            ->with('contrato', $contrato)
             ->with('source', $source)
             ->with('ciudades', $ciudades)
             ->with('permitir_ingreso_contrato_en_mes_distinto_al_actual', $permitir_ingreso_contrato_en_mes_distinto_al_actual)
@@ -148,24 +141,16 @@ class FuecAdicionalController extends Controller
 
     public function store(Request $request)
     {
-        $mes_fecha_fin = explode('-', $request->fecha_fin)[1];
-        $hoy = getdate();
-        $mes_actual = $hoy['mon'];
+        $ruta_show = 'cte_contratos/' . $request->contrato_id . '/planillas/' . $request->route . '/index';
         
-        if ((int) $mes_fecha_fin > (int) $mes_actual && config('contratos_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual') == 0) {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. La fecha final debe estar en el mes actual', $request->source);
-        }
-
-        if ($request->vehiculo_id == "0") {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. Debe indicar el vehículo para guardar el contrato', $request->source);
-        }
-        
-        $contrato_id = $this->storeContract($request);
-        if ($contrato_id > 0) {
+        $fuec_adicional_id = $this->storeFuecAdicional($request);
+        if ($fuec_adicional_id > 0) {
             //verifico si el vehiculo ya hizo 4 contratos este mes, si los hizo se bloquea... debe pagar para hacerlo la proxima
             $contratosMes = Contrato::where('vehiculo_id', $request->vehiculo_id)->get();
             if (count($contratosMes) > 0) {
                 $total = 0;
+                $hoy = getdate();
+                $mes_actual = $hoy['mon'];
                 foreach ($contratosMes as $cm) {
                     $mes_fecha = explode('-', $cm->fecha_inicio)[1];
                     if ($mes_actual == $mes_fecha) {
@@ -179,40 +164,37 @@ class FuecAdicionalController extends Controller
                     $lista_vehiculos->save();
                 }
             }
-            //genero planilla
-            if ($this->planillacsStore($request, $contrato_id) > 0) {
-                return $this->redirectTo($request->variables_url, 'flash_message', 'Almacenado con exito', $request->source);
-            } else {
-                $con = Contrato::find($contrato_id);
-                if ($con != null) {
-                    $con->delete();
-                }
-                return $this->redirectTo($request->variables_url, 'mensaje_error', 'No pudo ser almacenado', $request->source);
-            }
+            
+            $messageType = 'flash_message';
+            $message = 'FUEC Adicional Almacenado con exito';
         } else {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'No pudo ser almacenado', $request->source);
+            $messageType = 'mensaje_error';
+            $message = 'FUEC Adicional No pudo ser almacenado';
         }
-    }
 
-    //redirecciona para contrato
-    public function redirectTo($variables_url, $messageType, $message, $source)
-    {
-        if ($source == 'CONTRATOS') {
-            //listado de contratos web genérico
-            return redirect("web/" . $variables_url)->with($messageType, $message);
-        } else {
-            //mis contratos
-            return redirect('cte_contratos_propietarios' . $variables_url)->with($messageType, $message);
-        }
+        return redirect( $ruta_show . $request->variables_url)->with($messageType, $message);
+
     }
 
     //almacena un contrato con su grupo de usuarios
-    public function storeContract(Request $request)
+    public function storeFuecAdicional(Request $request)
     {
+        $datos = $request->all();        
+
+        $datos['conductor2_id'] = $request->conductor2_id;
+        if ($request->conductor2_id == '') {
+            $datos['conductor2_id'] = null;
+        }
+
+        $datos['conductor3_id'] = $request->conductor3_id;
+        if ($request->conductor3_id == '') {
+            $datos['conductor3_id'] = null;
+        }
+
         $result = 0;
-        $c = new Contrato($request->all());
+        $c = new FuecAdicional( $datos );
         $c->valor_empresa = 0;
-        $c->valor_contrato = 0;
+        $c->valor_fuec = 0;
         $c->valor_propietario = 0;
         $c->direccion_notificacion = "--";
         $c->telefono_notificacion = "--";
@@ -220,28 +202,13 @@ class FuecAdicionalController extends Controller
         $c->codigo = null;
         $c->version = null;
         $c->fecha = null;
-        $c->numero_contrato = $this->nroContrato();
-        $c->pie_uno = "--";
+        $c->numero_fuec = $this->nroFUEC();
         $c->pie_dos = "--";
         $c->pie_tres = "--";
         $c->pie_cuatro = "--";
-        $c->contratanteText = '--';
-        $c->contratanteIdentificacion = '--';
-        $c->contratanteDireccion = '--';
-        $c->contratanteTelefono = '--';
-        if ($c->contratante_id == 'MANUAL') {
-            $c->contratante_id = null;
-            $c->contratanteText = strtoupper($request->contratanteText);
-            $c->contratanteIdentificacion = $request->contratanteIdentificacion;
-            $c->contratanteDireccion = strtoupper($request->contratanteDireccion);
-            $c->contratanteTelefono = $request->contratanteTelefono;
-        }
-        $c->rep_legal = strtoupper($c->rep_legal);
-        $c->representacion_de = strtoupper($c->representacion_de);
         $c->origen = strtoupper($c->origen);
         $c->destino = strtoupper($c->destino);
-        $c->objeto = strtoupper($c->objeto);
-        $c->mes_contrato = strtoupper($c->mes_contrato);
+
         if ($c->save()) {
             $result = $c->id;
         }
@@ -252,15 +219,10 @@ class FuecAdicionalController extends Controller
     function nroContrato()
     {
         $nro = SecuenciaCodigo::get_codigo('cte_contratos');
+
         // Se incrementa el consecutivo
         SecuenciaCodigo::incrementar_consecutivo('cte_contratos');
-        /*
-        $contratos = Contrato::all();
-        $nro = count($contratos) + 1;
-        if (strlen($nro) == 0) {
-            return "0001";
-        }
-        */
+        
         if (strlen($nro) == 1) {
             return "000" . $nro;
         }
@@ -281,8 +243,10 @@ class FuecAdicionalController extends Controller
     //calcula el numero del FUEC
     function nroFUEC()
     {
-        $planillas = Planillac::all();
-        $nro = count($planillas) + 1;
+        $nro = SecuenciaCodigo::get_codigo('cte_fuec');
+        // Se incrementa el consecutivo
+        SecuenciaCodigo::incrementar_consecutivo('cte_fuec');
+        
         if (strlen($nro) == 0) {
             return "0001";
         }
@@ -303,134 +267,35 @@ class FuecAdicionalController extends Controller
         }
     }
 
-    //show
-    public function show($id)
-    {
-        $c = Contrato::find($id);
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
-        if ($c->estado == 'ANULADO') {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
-        }
-
-        if ( Auth::user()->hasRole('Vehículo (FUEC)') ) {
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'cte_contratos_propietarios' . '?id=' . $idapp . '&id_modelo=' . $modelo . '&id_transaccion=' . $transaccion,
-                    'etiqueta' => 'Mis Contratos'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Ver Contrato'
-                ]
-            ];
-
-            $route = 'MISCONTRATOS';
-        }else{
-        
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                    'etiqueta' => 'Contratos'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Ver Contrato'
-                ]
-            ];
-
-            $route = 'CONTRATOS';
-        }
-
-        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-        $contratante = $c->contratante;
-        $vehiculo = $c->vehiculo;
-        $emp = null;
-        $emp = Empresa::find(1);
-
-        $p = Planillac::where('contrato_id', $id)->first();
-        $v = $p->plantilla;
-
-        return view('contratos_transporte.contratos.show')
-            ->with('variables_url', $variables_url)
-            ->with('miga_pan', $miga_pan)
-            ->with('c', $c)
-            ->with('v', $v)
-            ->with('contratante', $contratante)
-            ->with('route', $route)
-            ->with('vehiculo', $vehiculo)
-            ->with('e', $emp);
-    }
-
-    //elimina usuario del grupo de usuarios del contrato
-    public function deletegrupousuario($id)
-    {
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
-        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-        $g = Contratogrupou::find($id);
-        if ($g->delete()) {
-            return redirect("cte_contratos/" . $g->contrato_id . "/show" . $variables_url)->with('flash_message', 'Eliminado con exito');
-        } else {
-            return redirect("cte_contratos/" . $g->contrato_id . "/show" . $variables_url)->with('mensaje_error', 'No pudo ser eliminado');
-        }
-    }
-
-    //agrega nuevos usuarios al grupo de usuario
-    public function storegrupousuario(Request $request)
-    {
-        if (isset($request->identificacion)) {
-            if (count($request->identificacion) > 0) {
-                foreach ($request->identificacion as $key => $value) {
-                    $gu = null;
-                    $gu = new Contratogrupou();
-                    $gu->identificacion = $value;
-                    $gu->persona = strtoupper($request->persona[$key]);
-                    $gu->contrato_id = $request->id;
-                    $gu->save();
-                }
-            }
-        }
-        return redirect("cte_contratos/" . $request->id . "/show" . $request->variables_url)->with('flash_message', 'Usuarios procesados');
-    }
-
-
-    //imprime un contrato a partir del id
+    //imprime un Fuec Adicional a partir del id
     public function imprimir($id)
     {
-        $c = Contrato::find($id);
+        $fuec_adicional = FuecAdicional::find($id);
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
         $transaccion = Input::get('id_transaccion');
-        if ($c->estado == 'ANULADO') {
+        if ($fuec_adicional->estado == 'ANULADO') {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
 
-        $vehiculo = $c->vehiculo;
-        $p = Planillac::where('contrato_id', $id)->first();
-        $conductores = $p->planillaconductors;
-        $url = route('cte_contratos.planillaverificar', $p->id);
+        $vehiculo = $fuec_adicional->vehiculo;
+        $p = Planillac::where('contrato_id', $fuec_adicional->contrato_id)->first();
+
+        $p->nro = $this->get_numero_planilla($p, $fuec_adicional);
+
+        $url = route('cte_contratos_fuec_adicional.planillaverificar', $fuec_adicional->id);
+
         //$empresa = null;
         $empresa = Empresa::find(1);
         $contratante = null;
-        if ($c->contratante_id != null) {
-            $contratante = $c->contratante;
+        if ($fuec_adicional->contrato->contratante_id != null) {
+            $contratante = $fuec_adicional->contrato->contratante;
         }
         $v = $p->plantilla;
-        $fi = explode('-', $c->fecha_inicio);
-        $ff = explode('-', $c->fecha_fin);
+        $fi = explode('-', $fuec_adicional->fecha_inicio);
+        $ff = explode('-', $fuec_adicional->fecha_fin);
         $to = null;
-        $docs = $c->vehiculo->documentosvehiculos;
+        $docs = $fuec_adicional->vehiculo->documentosvehiculos;
         if (count($docs) > 0) {
             foreach ($docs as $d) {
                 if ($d->tarjeta_operacion == 'SI') {
@@ -438,19 +303,23 @@ class FuecAdicionalController extends Controller
                 }
             }
         }
-        if (count($conductores) > 0) {
-            foreach ($conductores as $cond) {
-                $cond->licencia = null;
-                $docs = null;
-                $docs = $cond->conductor->documentosconductors;
-                if (count($docs) > 0) {
-                    foreach ($docs as $do) {
-                        if ($do->licencia == 'SI') {
-                            $cond->licencia = $do;
-                        }
-                    }
-                }
-            }
+
+        $conductores = [];
+        
+        $cond = $fuec_adicional->conductor1;
+        $cond->licencia = $this->get_numero_licencia_coductor($cond);
+        $conductores[] = $cond;
+        
+        $cond = $fuec_adicional->conductor2;
+        if ( $cond != null ) {
+            $cond->licencia = $this->get_numero_licencia_coductor($cond);
+            $conductores[] = $cond;
+        }
+        
+        $cond = $fuec_adicional->conductor3;
+        if ( $cond != null ) {
+            $cond->licencia = $this->get_numero_licencia_coductor($cond);
+            $conductores[] = $cond;
         }
 
         $representante_legal_contratante = '';
@@ -463,164 +332,36 @@ class FuecAdicionalController extends Controller
             }
         }
         
-        $documento_vista =  View::make('contratos_transporte.contratos.print', compact('c', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'empresa', 'representante_legal_contratante'))->render();
-
+        $documento_vista =  View::make('contratos_transporte.contratos.fuec_adicional.print2', compact('fuec_adicional', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'empresa', 'representante_legal_contratante'))->render();
+        
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;
-        return $pdf->stream('contrato.pdf');
+        return $pdf->stream('fuec.pdf');
+
     }
 
-
-    //contratos de un vehiculo
-    public function miscontratos()
+    public function get_numero_licencia_coductor( Conductor $conductor)
     {
-        $u = Auth::user();
-        $v = Vehiculo::where('placa', $u->email)->first();
-        if ($v != null) {
-            $contratos = null;
-            $cont = $v->contratos->sortByDesc('created_at');
-            if (count($cont) > 0) {
-                foreach ($cont as $c) {
-                    $contratos[] = [
-                        'propietario' => $c->vehiculo->propietario,
-                        'bloqueado' => $c->vehiculo->bloqueado_cuatro_contratos,
-                        'contrato' => $c,
-                        'vehiculo' => $v
-                    ];
-                }
-            }
-            $idapp = Input::get('id');
-            $modelo = Input::get('id_modelo');
-            $transaccion = Input::get('id_transaccion');
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Mis Contratos'
-                ]
-            ];
-            $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-            return view('contratos_transporte.contratos.miscontratos')
-                ->with('variables_url', $variables_url)
-                ->with('miga_pan', $miga_pan)
-                ->with('contratos', $contratos)
-                ->with('v', $v);
-        } else {
-            return redirect("contratos_transporte?id=" . Input::get('id'))->with('mensaje_error', 'Usted no tiene vehículos asociados');
-        }
-    }
-
-    //crear planilla
-    public function planillacreate($id, $source)
-    {
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
-        $miga_pan = null;
-        $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
-        if ($source == 'MISCONTRATOS') {
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'cte_contratos_propietarios' . $variables_url,
-                    'etiqueta' => 'Mis Contratos'
-                ],
-                [
-                    'url' => 'cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url,
-                    'etiqueta' => 'Planillas FUEC'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Generar Planilla'
-                ]
-            ];
-        } else {
-            $miga_pan = [
-                [
-                    'url' => 'contratos_transporte' . '?id=' . $idapp,
-                    'etiqueta' => 'Contratos transporte'
-                ],
-                [
-                    'url' => 'web?id=' . $idapp . "&id_modelo=" . $modelo,
-                    'etiqueta' => 'Contratos'
-                ],
-                [
-                    'url' => 'cte_contratos/' . $id . '/show' . $variables_url,
-                    'etiqueta' => 'Ver Contrato'
-                ],
-                [
-                    'url' => 'cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url,
-                    'etiqueta' => 'Planillas FUEC'
-                ],
-                [
-                    'url' => 'NO',
-                    'etiqueta' => 'Generar Planilla'
-                ]
-            ];
-        }
-        $co = Contrato::find($id);
-        $p = Plantilla::where('estado', 'SI')->first();
-        if ($p == null) {
-            return redirect('cte_contratos/' . $id . '/planillas/' . $source . '/index' . $variables_url)->with('mensaje_error', 'No hay plantilla para generar planilla, contacte al administrador del sistema.');
-        }
-        $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $co->vehiculo_id)->get();
-        $conductores = null;
-        if (count($conductoresDelVehiculo) > 0) {
-            foreach ($conductoresDelVehiculo as $c) {
-                $docs = $c->conductor->documentosconductors;
-                if (count($docs) > 0) {
-                    $vencido = false;
-                    foreach ($docs as $d) {
-                        if ($d->licencia == 'SI') {
-                            //tiene licencia, se revisa si esta vencida
-                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
-                                $vencido = true;
-                            }
-                        }
-                    }
-                    if (!$vencido) {
-                        $conductores[$c->conductor_id] = $c->conductor->tercero->descripcion;
-                    }
-                }
-            }
-        }
-        $emp = Empresa::find(1);
-        $docs = $co->vehiculo->documentosvehiculos;
-        $to = null;
+        $licencia = null;
+        $docs = null;
+        $docs = $conductor->documentosconductors;
         if (count($docs) > 0) {
-            foreach ($docs as $d) {
-                if ($d->tarjeta_operacion == 'SI') {
-                    $to = $d;
+            foreach ($docs as $do) {
+                if ($do->licencia == 'SI') {
+                    $licencia = $do;
                 }
             }
         }
-        $hoy = getdate();
-        $consecutivo = count(Planillac::all());
-        $nro_planilla = config('contratos_transporte.numero_territorial') . config('contratos_transporte.resolucion_habilitacion') . config('contratos_transporte.anio_creacion_empresa');
-        $nro_planilla = $nro_planilla . $hoy['year'] . $co->numero_contrato . ($consecutivo + 1);
-        $fi = explode('-', $co->fecha_inicio);
-        $ff = explode('-', $co->fecha_fin);
-        return view('contratos_transporte.contratos.generaplanilla')
-            ->with('variables_url', $variables_url)
-            ->with('miga_pan', $miga_pan)
-            ->with('c', $co)
-            ->with('source', $source)
-            ->with('v', $p)
-            ->with('conductores', $conductores)
-            ->with('e', $emp)
-            ->with('to', $to)
-            ->with('nro', $nro_planilla)
-            ->with('fi', $fi)
-            ->with('ff', $ff);
+
+        return $licencia;
+    }
+
+    public function get_numero_planilla($planilla_contrato, $fuec_adicional)
+    {
+        return substr($planilla_contrato->nro,0,17) . $fuec_adicional->numero_fuec;
     }
 
     public static function mes()
@@ -641,125 +382,10 @@ class FuecAdicionalController extends Controller
         ];
     }
 
-    //guarda una planilla inmediatamente despues del contrato
-    public function planillacsStore(Request $request, $contrato)
-    {
-        $c = Contrato::find($contrato);
-        $p = new Planillac();
-        $e = Empresa::find(1);
-        $p->razon_social = $e->descripcion;
-        $p->nit = $e->numero_identificacion . "-" . $e->digito_verificacion;
-        $p->convenio = strtoupper($request->convenio);
-        $p->contrato_id = $contrato;
-        $p->plantilla_id = $request->plantilla_id;
-        $hoy = getdate();
-        
-        $nro_planilla = config('contratos_transporte.numero_territorial') . config('contratos_transporte.resolucion_habilitacion') . config('contratos_transporte.anio_creacion_empresa');
-
-        $nro_planilla = $nro_planilla . $hoy['year'] . $c->numero_contrato . $c->numero_contrato;
-        $p->nro = $nro_planilla;
-        $result = 0;
-        if ($p->save()) {
-            $result = $p->id;
-            if (isset($request->conductor_id)) {
-                foreach ($request->conductor_id as $c) {
-                    if ($c != '') {
-                        $pc = new Planillaconductor();
-                        $pc->conductor_id = $c;
-                        $pc->planillac_id = $p->id;
-                        $pc->save();
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-
-
-    //guarda una planilla
-    public function planillastore(Request $request)
-    {
-        $p = new Planillac();
-        $e = Empresa::find(1);
-        $p->razon_social = $e->descripcion;
-        $p->nit = $e->numero_identificacion . "-" . $e->digito_verificacion;
-        $p->convenio = " -- ";
-        $p->contrato_id = $request->id;
-        $p->plantilla_id = $request->plantilla_id;
-        $p->nro = $request->nro;
-        $result = false;
-        if ($p->save()) {
-            $result = true;
-            if (isset($request->conductor_id)) {
-                foreach ($request->conductor_id as $c) {
-                    if ($c != '') {
-                        $pc = new Planillaconductor();
-                        $pc->conductor_id = $c;
-                        $pc->planillac_id = $p->id;
-                        $pc->save();
-                    }
-                }
-            }
-        }
-        if ($result) {
-            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $request->variables_url)->with('flash_message', 'Planilla generada con éxito.');
-        } else {
-            return redirect('cte_contratos/' . $request->id . '/planillas/' . $request->source . '/index' . $request->variables_url)->with('mensaje_error', 'La planilla no pudo ser generada.');
-        }
-    }
-
-
-    //imprime una planilla FUEC a partir del id
-    public function planillaimprimir($id)
-    {
-        $p = Planillac::find($id);
-        $c = $p->contrato;
-        //$contratante = $c->contratante;
-        $conductores = $p->planillaconductors;
-        $v = $p->plantilla;
-        $fi = explode('-', $c->fecha_inicio);
-        $ff = explode('-', $c->fecha_fin);
-        $docs = $c->vehiculo->documentosvehiculos;
-        $to = null;
-        if (count($docs) > 0) {
-            foreach ($docs as $d) {
-                if ($d->tarjeta_operacion == 'SI') {
-                    $to = $d;
-                }
-            }
-        }
-        if (count($conductores) > 0) {
-            foreach ($conductores as $cond) {
-                $cond->licencia = null;
-                $docs = null;
-                $docs = $cond->conductor->documentosconductors;
-                if (count($docs) > 0) {
-                    foreach ($docs as $do) {
-                        if ($do->licencia == 'SI') {
-                            $cond->licencia = $do;
-                        }
-                    }
-                }
-            }
-        }
-        $empresa = null;
-        $empresa = Empresa::find(1);
-        $url = route('cte_contratos.planillaverificar', $p->id);
-        $documento_vista =  View::make('contratos_transporte.contratos.print2', compact('p', 'url', 'conductores', 'v', 'c', 'fi', 'ff', 'to', 'empresa'))->render();
-
-        // Se prepara el PDF
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
-
-        //echo $documento_vista;
-        return $pdf->stream('fuec.pdf');
-    }
-
-
-    //permite anular un contrato por su id
+    //permite anular un Fuec Adicional por su id
     public function anular($id)
     {
-        $contrato = Contrato::find($id);
+        $contrato = FuecAdicional::find($id);
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
         $transaccion = Input::get('id_transaccion');
@@ -774,56 +400,10 @@ class FuecAdicionalController extends Controller
         }
     }
 
-    //verificar planilla pública
+    //verificar planilla pública (Con el QR)
     public function verificarPlanilla($id)
     {
         //return $this->planillaimprimir($id);
-        return redirect('cte_contratos/planillas/' . $id . '/imprimir');
-    }
-
-
-    //obtiene los conductores de un vehiculo
-    public function conductores($id)
-    {
-        $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $id)->get();
-        $conductores = null;
-        if (count($conductoresDelVehiculo) > 0) {
-            foreach ($conductoresDelVehiculo as $c) {
-                $docs = $c->conductor->documentosconductors;
-                if (count($docs) > 0) {
-                    $vencido = false;
-                    foreach ($docs as $d) {
-                        if ($d->licencia == 'SI') {
-                            //tiene licencia, se revisa si esta vencida
-                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
-                                $vencido = true;
-                            }
-                        }
-                    }
-                    if (!$vencido) {
-                        $conductores[$c->conductor_id] = $c->conductor->tercero->descripcion;
-                    }
-                }
-            }
-            if ($conductores != null) {
-                return json_encode([
-                    'error' => 'NO',
-                    'data' => $conductores,
-                    'mensaje' => ''
-                ]);
-            } else {
-                return json_encode([
-                    'error' => 'SI',
-                    'data' => null,
-                    'mensaje' => 'Los conductores no tienen sus documentos en regla'
-                ]);
-            }
-        } else {
-            return json_encode([
-                'error' => 'SI',
-                'data' => null,
-                'mensaje' => 'No hay conductores asociados al vehículo'
-            ]);
-        }
+        return redirect('cte_contratos_fuec_adicional_imprimir/' . $id);
     }
 }

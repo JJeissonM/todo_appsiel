@@ -42,7 +42,8 @@
 								<th>Vigencia</th>
 								<th>Contratante</th>
 								<th>Vehículo</th>
-								<th width="150px">Planillas FUEC</th>
+								<th width="150px">Planilla FUEC</th>
+								<th width="150px">FUEC Adicionales</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -63,13 +64,21 @@
 										@if($c['bloqueado']=='NO')
 											<a href="{{ url('/') . '/cte_contratos/' . $c['contrato']->id . '/show' . $variables_url}}" class="btn-gmail" title="Consultar"><i class="fa fa-eye"></i></a>
 
-											<a target="_blank" href="{{route('cte_contratos.imprimir',$c['contrato']->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
+											<a target="_blank" href="{{route('cte_contratos.imprimir',$c['contrato']->id)}}" class="btn btn-info btn-md" title="IMPRIMIR CONTRATO Y FUEC"><i class="fa fa-print"></i> {{ $c['contrato']->numero_fuec }} </a>
 										@else
 										-- Usted no puede generar planillas --
 										@endif
 									@else
 										-- ANULADO --
 									@endif
+								</td>
+								<td>
+									<?php 
+										$fuec_adicionales = $c['contrato']->fuec_adicionales;
+									?>
+									@foreach($fuec_adicionales as $fuec_adicional)
+										<a class="btn btn-info btn-md" target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$fuec_adicional->id)}}" style="margin: 5px;"  title="IMPRIMIR FUEC"> <i class="fa fa-print"></i> {{ $fuec_adicional->numero_fuec }}</a>
+									@endforeach
 								</td>
 							</tr>
 							@endforeach

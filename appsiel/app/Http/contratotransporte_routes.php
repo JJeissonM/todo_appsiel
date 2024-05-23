@@ -14,6 +14,7 @@ Route::resource('contratos_transporte', 'ContratoTransporte\ContratoTransporteCo
 Route::get('cte_contratos/{id}/show', 'ContratoTransporte\ContratoTransporteController@show');
 
 Route::get('cte_contratos/{id}/imprimir', 'ContratoTransporte\ContratoTransporteController@imprimir')->name('cte_contratos.imprimir');
+
 Route::get('cte_contratos/{id}/gestion/grupousuarios', 'ContratoTransporte\ContratoTransporteController@grupousuarios');
 Route::get('cte_contratos/gestion/grupousuarios/{id}/delete', 'ContratoTransporte\ContratoTransporteController@deletegrupousuario')->name('cte_contratos.deletegu');
 Route::post('cte_contratos/gestion/grupousuarios/store', 'ContratoTransporte\ContratoTransporteController@storegrupousuario')->name('cte_contratos.storegu');
@@ -65,3 +66,4 @@ Route::post('cte_mantenimientos/observaciones/store', 'ContratoTransporte\Manten
 
 Route::get('cte_contratos_fuec_adicional_imprimir/{fuec_adicional_id}', 'ContratoTransporte\FuecAdicionalController@imprimir')->name('cte_contratos_fuec_adicional.imprimir');
 Route::resource('cte_contratos_fuec_adicional', 'ContratoTransporte\FuecAdicionalController');
+Route::get('cte_contratos_fuec_adicional_imprimir/planillas/{id}/verificar', 'ContratoTransporte\FuecAdicionalController@verificarPlanilla')->name('cte_contratos_fuec_adicional.planillaverificar');

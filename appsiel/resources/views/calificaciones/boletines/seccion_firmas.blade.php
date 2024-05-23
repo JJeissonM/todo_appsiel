@@ -6,14 +6,14 @@
 	<?php
 	
 		$nombre_archivo = 'firma_rector';
+		$tercero_rector_descripcion = '';
+		$titulo_tercero_rector = $colegio->piefirma1;
 
 		if ($firmas[0] != 'No cargada') {
 			$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/'.$nombre_archivo.'.png';
 		}else{
 
 			$url_firma = '';
-			$tercero_rector_descripcion = '';
-			$titulo_tercero_rector = '';
 			$firma_autorizada_1 = null;
 			
 			if ( $colegio->representante_legal() != null) {
@@ -42,14 +42,14 @@
 		$url_firma = '';
 		$nombre_archivo = 'firma_profesor';
 		$firma_autorizada_2 = null;
+		$tercero_profesor_descripcion = '';
+		$titulo_tercero_profesor = $colegio->piefirma2;
 
 		if ($firmas[1] != 'No cargada') {
 			$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/'.$nombre_archivo.'.png';
 		}else{
 
 			$url_firma = '';
-			$tercero_profesor_descripcion = '';
-			$titulo_tercero_profesor = '';
 
 			if ( $curso->director_grupo->first() != null) {
 				$tercero_profesor = $curso->director_grupo->first()->tercero;
