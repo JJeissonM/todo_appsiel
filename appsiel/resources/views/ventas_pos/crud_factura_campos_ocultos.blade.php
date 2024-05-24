@@ -18,11 +18,16 @@
 <input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
         value="{{$cliente->clase_cliente_id}}" required="required">
 
-<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}"
-        required="required">
+<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}" required="required">
 
 <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
-<input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="{{$pdv->caja->descripcion}}">
+
+@if ($pdv->caja != null)
+        <input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="{{$pdv->caja->descripcion}}">
+@else
+        <input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="">
+@endif
+
 
 <input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}" value="{{$vendedor->id}}">
 
