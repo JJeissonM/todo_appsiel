@@ -207,7 +207,7 @@
 	});
 
 	function addRow(tabla) {
-		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required="required"/></td><td><input type='text' class='form-control' name='persona[]' required="required"/></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
+		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required='required'/></td><td><input type='text' class='form-control' name='persona[]' required='required'/></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
 		$('#' + tabla + ' tr:last').after(html);
 	}
 
