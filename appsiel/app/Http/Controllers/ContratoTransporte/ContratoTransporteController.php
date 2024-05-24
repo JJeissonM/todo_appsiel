@@ -90,6 +90,11 @@ class ContratoTransporteController extends Controller
         $documentos_vencidos = null;
         if (count($docs) > 0) {
             foreach ($docs as $d) {
+
+                if ($d->conductor->estado == 'Inactivo') {
+                    continue;
+                }
+                
                 if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
                     $documentos_vencidos[] = $d;
                 }

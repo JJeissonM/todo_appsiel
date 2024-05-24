@@ -43,11 +43,11 @@
 							<div class="col-md-6" style="padding: 30px;">
 								<div class="form-group">
 									<label>Representante Legal (CONTRATISTA)</label>
-									<input type="text" name="rep_legal" class="form-control" required value="{{$e->representante_legal()}}">
+									<input type="text" name="rep_legal" class="form-control" required="required" value="{{$e->representante_legal()}}">
 								</div>
 								<div class="form-group">
 									<label>Contratante</label>
-									<select class="form-control select2" id="contratante" name="contratante_id" onchange="manual()" required>
+									<select class="form-control select2" id="contratante" name="contratante_id" onchange="manual()" required="required">
 										<option value="">-- Seleccione una opción --</option>
 										<option value="MANUAL">INTRODUCCIÓN MANUAL</option>
 										@if($contratantes!=null)
@@ -63,11 +63,11 @@
 								</div>
 								<div class="form-group">
 									<label>En Representación de...</label>
-									<textarea required class="form-control" name="representacion_de">{{config('contratos_transporte.texto_en_representacion_de')}}</textarea>
+									<textarea required="required" class="form-control" name="representacion_de">{{config('contratos_transporte.texto_en_representacion_de')}}</textarea>
 								</div>
 								<div class="form-group">
 									<label>Objeto del Contrato</label>
-									<textarea class="form-control" required name="objeto">Prestacion del servicio transporte especial para un grupo especifico de usuarios de transporte de personal (transporte particular).</textarea>
+									<textarea class="form-control" required="required" name="objeto">Prestacion del servicio transporte especial para un grupo especifico de usuarios de transporte de personal (transporte particular).</textarea>
 								</div>
 								<div class="form-group">
 									<label>Vehículo</label>
@@ -85,7 +85,7 @@
 								</div>
 								<div class="form-group">
 									<label>Tipo de Servicio</label>
-									<select class="form-control" name="tipo_servicio" required>
+									<select class="form-control" name="tipo_servicio" required="required">
 										<option value="IDA-REGRESO">IDA Y REGRESO</option>
 										<option value="IDA">SOLO IDA</option>
 										<option value="REGRESO">SOLO REGRESO</option>
@@ -93,7 +93,7 @@
 								</div>
 								<div class="form-group">
 									<label>Disponibilidad</label>
-									<select class="form-control" name="disponibilidad" required>
+									<select class="form-control" name="disponibilidad" required="required">
 										<option value="SI">SI</option>
 										<option value="NO">NO</option>
 									</select>
@@ -102,11 +102,10 @@
 							<div class="col-md-6" style="padding: 30px;">
 								<div class="form-group">
 									<label>Nro. de Personas a Movilizar</label>
-									<input type="number" class="form-control" name="nro_personas" required>
+									<input type="number" class="form-control" name="nro_personas" required="required">
 								</div>
 								<div class="form-group">
 									<label>Origen</label>
-									<!-- <input type="text" class="form-control" name="origen" required /> -->
 									<select class="form-control select2" name="origen" id="origen" required="required">
 										@foreach($ciudades as $key=>$value)
 											<option value="{{$key}}">{!!$value!!}</option>
@@ -115,7 +114,6 @@
 								</div>
 								<div class="form-group">
 									<label>Destino</label>
-									<!-- <input type="text" class="form-control" name="destino" required /> -->
 									<select class="form-control select2" name="destino" id="destino" required="required">
 										@foreach($ciudades as $key=>$value)
 											<option value="{{$key}}">{!!$value!!}</option>
@@ -124,17 +122,17 @@
 								</div>
 								<div class="form-group">
 									<label>Fecha de Inicio</label>
-									<input type="date" class="form-control" name="fecha_inicio" required />
+									<input type="date" class="form-control" name="fecha_inicio" required="required"/>
 								</div>
 								<div class="form-group">
 									<label>Fecha de Terminación</label>
-									<input onchange="validar()" class="form-control" type="date" name="fecha_fin" id="fecha_fin" required />
+									<input onchange="validar()" class="form-control" type="date" name="fecha_fin" id="fecha_fin" required="required"/>
 								</div>
 								<div class="form-group">
 									<label>Fecha Firma</label>
-									<input type="number" class="form-control" placeholder="Día" required name="dia_contrato" />
-									<input type="text" class="form-control" placeholder="Mes" name="mes_contrato" required />
-									<input type="number" class="form-control" placeholder="Año" required name="anio_contrato" />
+									<input type="number" class="form-control" placeholder="Día" required="required" name="dia_contrato" />
+									<input type="text" class="form-control" placeholder="Mes" name="mes_contrato" required="required"/>
+									<input type="number" class="form-control" placeholder="Año" required="required" name="anio_contrato" />
 								</div>
 								<div class="form-group">
 									<label>Convenio Consorcio Unión Temporar Con</label>
@@ -209,7 +207,7 @@
 	});
 
 	function addRow(tabla) {
-		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required /></td><td><input type='text' class='form-control' name='persona[]' required /></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
+		var html = "<tr><td><input type='text' class='form-control' name='identificacion[]' required="required"/></td><td><input type='text' class='form-control' name='persona[]' required="required"/></td><td><a class='btn btn-xs btn-danger delete'><i class='fa fa-trash-o'></i></a></td></tr>";
 		$('#' + tabla + ' tr:last').after(html);
 	}
 
