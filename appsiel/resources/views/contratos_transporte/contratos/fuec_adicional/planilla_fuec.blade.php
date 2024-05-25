@@ -105,10 +105,10 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border_center" style="width: 40%; font-weight: bold;">CLASE</td>
         </tr>
         <tr>
-            <td class="border_center" style="width: 15%;font-size: 12px;">{{$fuec_adicional->contrato->vehiculo->placa}}</td>
-            <td class="border_center" style="width: 25%;font-size: 12px;">{{$fuec_adicional->contrato->vehiculo->modelo}}</td>
-            <td class="border_center" style="width: 20%;font-size: 12px;">{{$fuec_adicional->contrato->vehiculo->marca}}</td>
-            <td class="border_center" style="width: 40%;font-size: 12px;">{{$fuec_adicional->contrato->vehiculo->clase}}</td>
+            <td class="border_center" style="width: 15%;font-size: 12px;">{{$fuec_adicional->vehiculo->placa}}</td>
+            <td class="border_center" style="width: 25%;font-size: 12px;">{{$fuec_adicional->vehiculo->modelo}}</td>
+            <td class="border_center" style="width: 20%;font-size: 12px;">{{$fuec_adicional->vehiculo->marca}}</td>
+            <td class="border_center" style="width: 40%;font-size: 12px;">{{$fuec_adicional->vehiculo->clase}}</td>
         </tr>
     </tbody>
 </table>
