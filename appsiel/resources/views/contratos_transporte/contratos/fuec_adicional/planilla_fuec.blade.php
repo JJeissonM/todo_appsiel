@@ -119,7 +119,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border_center" style="width: 60%; font-weight: bold;">NÚMERO TARJETA DE OPERACIÓN</td>
         </tr>
         <tr>
-            <td class="border_center" style="width: 40%;font-size: 12px;">{{$fuec_adicional->contrato->vehiculo->int}}</td>
+            <td class="border_center" style="width: 40%;font-size: 12px;">{{$fuec_adicional->vehiculo->int}}</td>
             <td class="border_center" style="width: 60%;font-size: 12px;">@if($to!=null) {{$to->nro_documento}} @else --- @endif</td>
         </tr>
     </tbody>
