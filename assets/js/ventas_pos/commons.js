@@ -661,14 +661,14 @@ $(document).ready(function () {
             
             $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
 
-            llenar_tabla_productos_facturados();         
+            llenar_tabla_productos_facturados();
 
             if ( $('#usar_complemento_JSPrintManager').val() == 1 )
             {
                 $('#div_formato_impresion_cocina').show();
                 print_comanda();
                 $('#div_formato_impresion_cocina').hide();
-            }  
+            }
             
             $("#msj_ventana_impresion_abierta").show();
             ventana_imprimir();

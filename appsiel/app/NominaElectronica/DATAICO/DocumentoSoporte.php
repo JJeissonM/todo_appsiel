@@ -199,6 +199,7 @@ class DocumentoSoporte extends Model
 
       $data = [ 
          'env' => config('nomina.nom_elec_ambiente'),
+         'send_dian' => true,
          'prefix' => $this->tipo_documento_app->prefijo,
          'number' => $this->consecutivo,
          'salary' =>  $this->empleado->sueldo,

@@ -5,3 +5,5 @@
 <input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ $params_JSPrintManager->impresora_cocina_por_defecto }}">
 
 <input type="hidden" id="ancho_formato_impresion" name="ancho_formato_impresion" value="{{ config('ventas_pos.ancho_formato_impresion') }}">
+
+<input type="hidden" id="tamanio_letra_impresion_items_cocina" name="tamanio_letra_impresion_items_cocina" value="{{ config('ventas_pos.tamanio_letra_impresion_items_cocina') }}">

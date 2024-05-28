@@ -48,7 +48,6 @@ class DocumentoSoporteService
          'prefix' => $core_tipo_doc_app->prefijo,
          'number' => $consecutivo,
          'salary' =>  $empleado->sueldo,
-         'send_dian' =>  true,
          'periodicity' => 'MENSUAL',
          'initial-settlement-date' => $lapso->fecha_inicial,
          'final-settlement-date' => $lapso->fecha_final,
@@ -176,19 +175,26 @@ class DocumentoSoporteService
       $data['worker-type'] = $this->get_worker_type_for_technology_supplier($empleado->tipo_cotizante);
       $data['sub-code'] = 'NO_APLICA';
       $data['start-date'] = $fecha_ingreso[2].'/'.$fecha_ingreso[1].'/'.$fecha_ingreso[0];
-      $data['fire-date'] = '';
+      //$data['fire-date'] = '';
       $data['high-risk'] = false;
       $data['integral-salary'] = ($empleado->salario_integral)?true:false;
       $data['contract-type'] = 'TERMINO_FIJO';
       $data['identification-type'] = $this->get_identification_type_for_technology_supplier($empleado->tercero->tipo_doc_identidad->abreviatura);
       $data['identification'] = "" . $empleado->tercero->numero_identificacion . "";
       $data['first-name'] = $empleado->tercero->nombre1;
-      $data['other-names'] = $empleado->tercero->otros_nombres;
+
+      if ($empleado->tercero->otros_nombres != '') {
+         $data['other-names'] = $empleado->tercero->otros_nombres;
+      }
+      
       $data['last-name'] = $empleado->tercero->apellido1;
-      $data['second-last-name'] = $empleado->tercero->apellido2;
-      $data['bank'] = '';
-      $data['account-type-kw'] = '';
-      $data['account-number'] = '';
+      
+      if ($empleado->tercero->apellido2 != '') {
+         $data['second-last-name'] = $empleado->tercero->apellido2;
+      }
+      //$data['bank'] = '';
+      //$data['account-type-kw'] = '';
+      //$data['account-number'] = '';
       
       // 16925001 = 169 pais, 25 departamento, 001 ciudad
       $department_id = substr($empleado->tercero->ciudad->id,3,2);

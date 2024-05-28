@@ -249,6 +249,11 @@
         {!! $plantilla_pedido !!}
     </div>
     
+    <input type="hidden" id="usar_complemento_JSPrintManager" name="usar_complemento_JSPrintManager" value="{{ $params_JSPrintManager->usar_complemento_JSPrintManager }}">
+
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+        @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
+    @endif    
 
     <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
         @include('ventas_pos.componente_vendedores')
@@ -259,6 +264,14 @@
 @section('scripts')
 
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/commons.js?aux=' . uniqid() )}}"></script>
+
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+        <script src="{{ asset( 'assets/js/ventas_pos/cptable.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+    @endif
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/facturas.js?aux=' . uniqid() )}}"></script>
 

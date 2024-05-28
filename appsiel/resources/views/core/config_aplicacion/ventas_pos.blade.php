@@ -233,6 +233,28 @@
 					</div>
 
 				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$tamanio_letra_impresion_items_cocina = '0.5';
+								if( isset($parametros['tamanio_letra_impresion_items_cocina'] ) )
+								{
+									$tamanio_letra_impresion_items_cocina = $parametros['tamanio_letra_impresion_items_cocina'];
+								}
+							?>
+							{{ Form::bsText('tamanio_letra_impresion_items_cocina', $tamanio_letra_impresion_items_cocina, 'Tamaño letra para los ítems en la factura de cocina', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 				
 				<div class="row">
 
