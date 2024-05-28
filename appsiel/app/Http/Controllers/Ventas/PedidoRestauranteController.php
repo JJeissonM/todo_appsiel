@@ -216,9 +216,11 @@ class PedidoRestauranteController extends TransaccionController
             return 'El punto de ventas NO tiene asociada una Bodega por defecto.';
         }
 
+        /*
         if ( is_null( $pdv->caja ) ) {
             return 'El punto de ventas NO tiene asociada una Caja por defecto.';
         }
+        */
 
         if ( is_null( $pdv->cajero ) ) {
             return 'El punto de ventas NO tiene asociado un Cajero por defecto.';
