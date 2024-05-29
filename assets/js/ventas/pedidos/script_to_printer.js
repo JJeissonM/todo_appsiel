@@ -137,6 +137,8 @@
 
         });
 
+        cmds += 'Detalle: ' + $('#lbl_descripcion_doc_encabezado').val();
+        cmds += newLine;
         cmds += newLine;
 
         cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
@@ -144,9 +146,6 @@
         
         cmds += 'VENTA TOTAL: ' + $('#lbl_total_factura').val();
         cmds += newLine;
-        
-        cmds += 'Detalle: ' + $('#lbl_descripcion_doc_encabezado').val();
-
         
         //cmds += '11/03/13  19:53:17';
 
