@@ -83,6 +83,7 @@
                         .text('PEDIDO # ' + $('#lbl_consecutivo_doc_encabezado').val())
                         .text('F. ' + $('#lbl_fecha').val())
                         .text($('#lbl_cliente_descripcion').val())
+                        .text('Atiende: ' + $('#nombre_vendedor').val())
                         .font(escpos.FontFamily.B)
                         .size(1, parseFloat($('#tamanio_letra_impresion_items_cocina').val()) )
                         .text( lineas_registros )
@@ -122,7 +123,7 @@
         cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
         cmds += newLine;
         
-        cmds += 'VENTA TOTAL: $' + $('#lbl_total_factura').val();
+        cmds += 'VENTA TOTAL: ' + $('#lbl_total_factura').val();
         cmds += newLine;
         
         cmds += 'Detalle: ' + $('#lbl_descripcion_doc_encabezado').val();
