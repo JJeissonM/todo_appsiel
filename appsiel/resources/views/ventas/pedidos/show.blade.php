@@ -26,6 +26,24 @@
 	Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
 	{{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
 	{{ Form::bsBtnEmail( 'vtas_pedidos_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
+
+	@if( (int)config('ventas_pos.imprimir_pedidos_en_cocina') )
+		<div class="col">
+			<br><br>
+			<button class="btn btn-success btn-sm" id="btn_imprimir_en_cocina"><i class="fa fa-btn fa-print"></i> Imprimir en Cocina </button>
+			
+			<input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
+
+			<input type="hidden" id="tamanio_letra_impresion_items_cocina" name="tamanio_letra_impresion_items_cocina" value="{{ config('ventas_pos.tamanio_letra_impresion_items_cocina') }}">
+
+			<input type="hidden" id="lbl_consecutivo_doc_encabezado" value="{{ $doc_encabezado->consecutivo }}">
+			<input type="hidden" id="lbl_fecha" value="{{ $doc_encabezado->fecha }}">
+			<input type="hidden" id="lbl_cliente_descripcion" value="{{ $doc_encabezado->tercero_nombre_completo }}">
+			<input type="hidden" id="lbl_descripcion_doc_encabezado" value="{{ $doc_encabezado->descripcion }}">
+			<input type="hidden" id="lbl_total_factura" value="{{ '$ ' . number_format($doc_encabezado->valor_total,0,',','.') }}">
+
+		</div>
+	@endif	
 @endsection
 
 @section('botones_anterior_siguiente')
@@ -123,16 +141,19 @@
 				$impuesto_iva = 0;//iva en firma
 				?>
 				@foreach($doc_registros as $linea )
-					<tr>
+					<tr class="linea_registro">
 						<td class="text-center"> {{ $i }} </td>
-						<td width="250px"> {{ $linea->producto_descripcion }} </td>
-						<td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+						<td width="250px" class="lbl_producto_descripcion"> {{ $linea->producto_descripcion }} </td>
+						<td class="text-center" class="cantidad"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
 						<td class="text-center"> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
 						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
 						<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
 						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) * $linea->cantidad, 0, ',', '.') }} </td>
 						<td  class="text-right"> {{ '$ '.number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
-						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
+						<td  class="text-right">
+							{{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }}
+							<span class="precio_total">{{$linea->precio_total}}</span>
+						</td>
 	                    <td>
 	                        @if( $doc_encabezado->estado == 'Pendiente' && !$user->hasRole('SupervisorCajas') )
 	                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
@@ -200,6 +221,15 @@
 @endsection
 
 @section('otros_scripts')
+
+	@if( (int)config('ventas_pos.imprimir_pedidos_en_cocina') )
+        <script src="{{ asset( 'assets/js/ventas_pos/cptable.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+    @endif
+
 	<script type="text/javascript">
 		var array_registros = [];
 		var cliente = <?php echo $cliente; ?>;
@@ -238,16 +268,6 @@
 				}
 				
 				$('#form_create').submit();
-
-				/*
-				var form = $('#form_create');
-				var url = $("#form_create").attr('action');
-				var data = $("#form_create").serialize();
-
-				$.post(url, data, function (respuesta) {
-					conso
-				});
-				*/
 			});
 
 			$(".btn_editar_registro").click(function(event){
@@ -329,7 +349,6 @@
 
 			});
 
-
 	        $(document).on('keyup','#tasa_descuento',function(event){
 	        	if( validar_input_numerico( $(this) ) )
 				{	
@@ -356,7 +375,6 @@
 					return false;
 				}
 			});
-
 
 			$('#generar').on('change',function(){
 				

@@ -250,7 +250,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$imprimir_pedidos_en_cocina = '0';
+								if( isset($parametros['imprimir_pedidos_en_cocina'] ) )
+								{
+									$imprimir_pedidos_en_cocina = $parametros['imprimir_pedidos_en_cocina'];
+								}
+							?>
+							{{ Form::bsSelect('imprimir_pedidos_en_cocina', $imprimir_pedidos_en_cocina, 'Imprimir PEDIDO directamente en la cocina', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

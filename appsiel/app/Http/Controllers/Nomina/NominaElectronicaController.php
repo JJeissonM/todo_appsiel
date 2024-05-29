@@ -317,18 +317,19 @@ class NominaElectronicaController extends TransaccionController
          * "dian_status": { 'DIAN_ACEPTADO', 'DIAN_RECHAZADO'}
          * "number"
          * "dian_messages": []
-         * "pdf"
+         * "pdf": Cuando es aceptado
          * "email_status"
          * "cune"
          * "qrcode"
-         * "response_xml"
+         * "response_xml": Cuando es aceptado
+         * "request_xml": Cuando es rechazado.
          */
 
         if($json_response->dian_status != 'DIAN_ACEPTADO')
         {
             return dd($json_response);
         }
-        
+
         $documento_electronico = $json_response->pdf;
 
         $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','encabezado_doc') )->render();
