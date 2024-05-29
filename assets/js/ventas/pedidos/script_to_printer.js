@@ -108,7 +108,7 @@
         var cantidad_total_productos = 0;
         $('.linea_registro').each(function( ){
             //Libro Matemáticas D     1 
-            cmds += formatear_cadena($(this).find('.lbl_producto_descripcion').text(),22,'.') + '......' + formatear_cadena($(this).find('.cantidad').text(),5,' ');
+            cmds += formatear_cadena( $(this).find('.lbl_producto_descripcion').text(),19,'.') + '......' + formatear_cadena($(this).find('.cantidad').text(),5,' ');
             
             cmds += newLine;
 
