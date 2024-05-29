@@ -322,7 +322,6 @@ class PedidoRestauranteController extends TransaccionController
         
     }
 
-
     /*
         Crea los registros de un documento.
         No Devuelve nada.
@@ -423,7 +422,6 @@ class PedidoRestauranteController extends TransaccionController
 
         return ['encabezado' => $encabezado, 'pie_pagina' => $pie_pagina];
     }
-
 
     public function set_catalogos( $pdv_id )
     {
