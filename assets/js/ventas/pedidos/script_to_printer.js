@@ -99,7 +99,7 @@
         var newLine = '\n';
 
         var cmds = newLine;
-        cmds += '        ITEM             CANT.';
+        cmds += '  CANT.        ITEM           ';
         cmds += newLine;
         cmds += '______________________________';
         cmds += newLine;
@@ -107,9 +107,28 @@
         var lbl_total_factura = 0;
         var cantidad_total_productos = 0;
         $('.linea_registro').each(function( ){
-            //Libro Matemáticas D     1 
-            cmds += formatear_cadena( $(this).find('.lbl_producto_descripcion').text(),22,'.') + '...' + formatear_cadena($(this).find('.cantidad').text(),5,' ');
-            
+            //Libro Matemáticas D     1
+            var item_name = $(this).find('.lbl_producto_descripcion').text();
+
+            let end = 20;
+            cmds += $(this).find('.cantidad').text() + ' - ' + item_name.substring(0, end);
+
+            cmds += newLine;
+
+            let length_pendiente = item_name.length - end;
+            let start = end;
+             
+            while (length_pendiente > 0) {
+                end += 20;   
+
+                cmds += '     ' + item_name.substring(start, end);
+                cmds += newLine;
+
+                length_pendiente = length_pendiente - start;
+
+                start = end;
+            }
+
             cmds += newLine;
 
             lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
