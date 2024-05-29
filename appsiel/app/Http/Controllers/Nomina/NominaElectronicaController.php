@@ -303,7 +303,7 @@ class NominaElectronicaController extends TransaccionController
         {
             case 'documento_soporte_nomina':
                 $encabezado_doc = DocumentoSoporte::find( $doc_encabezado_id );
-                $documento_electronico = (new DocumentoSoporteService())->consultar_documento_emitido($encabezado_doc);
+                $json_response = (new DocumentoSoporteService())->consultar_documento_emitido($encabezado_doc);
 
                 break;
             
@@ -311,6 +311,25 @@ class NominaElectronicaController extends TransaccionController
                 // code...
                 break;
         }
+
+        /**
+         * CAMPOS DEL JSON
+         * "dian_status": { 'DIAN_ACEPTADO', 'DIAN_RECHAZADO'}
+         * "number"
+         * "dian_messages": []
+         * "pdf"
+         * "email_status"
+         * "cune"
+         * "qrcode"
+         * "response_xml"
+         */
+
+        if($json_response->dian_status != 'DIAN_ACEPTADO')
+        {
+            return dd($json_response);
+        }
+        
+        $documento_electronico = $json_response->pdf;
 
         $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','encabezado_doc') )->render();
 

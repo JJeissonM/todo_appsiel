@@ -10,7 +10,7 @@
 
 @section('informacion_antes_encabezado')
 	<div style="width: 100%; text-align: center;">
-		<code>Nota: La visualización de este documento es diferente al documento enviado al cliente por el proveedor tecnológico.</code>	
+		<code>Nota: La visualización de este documento es diferente al documento enviado al empleado por el proveedor tecnológico.</code>	
 	</div>
 	<br>
 @endsection
