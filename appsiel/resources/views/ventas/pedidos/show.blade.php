@@ -149,7 +149,10 @@
 					<tr class="linea_registro">
 						<td class="text-center"> {{ $i }} </td>
 						<td width="250px" class="lbl_producto_descripcion"> {{ $linea->producto_descripcion }} </td>
-						<td class="text-center" class="cantidad"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
+						<td class="text-center">
+							{{ number_format( $linea->cantidad, 0, ',', '.') }}
+							<span class="cantidad" style="display: none;">{{$linea->cantidad}}</span>
+						</td>
 						<td class="text-center"> {{ number_format( $linea->cantidad_pendiente, 0, ',', '.') }} </td>
 						<td  class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
 						<td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
@@ -157,7 +160,7 @@
 						<td  class="text-right"> {{ '$ '.number_format( $linea->valor_total_descuento, 0, ',', '.') }} </td>
 						<td  class="text-right">
 							{{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }}
-							<span class="precio_total">{{$linea->precio_total}}</span>
+							<span class="precio_total" style="display: none;">{{$linea->precio_total}}</span>
 						</td>
 	                    <td>
 	                        @if( $doc_encabezado->estado == 'Pendiente' && !$user->hasRole('SupervisorCajas') )
