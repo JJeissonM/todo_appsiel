@@ -494,7 +494,16 @@ $(document).ready(function () {
                         
 		    $('#btn_guardar_factura').removeAttr('disabled');
 
-            ventana_imprimir();
+            if ( $('#imprimir_pedidos_en_cocina').val() != 1 ) {
+                ventana_imprimir();   
+            }else{
+                $('.btn_vendedor').first().focus();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Muy bien!',
+                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente.'
+                });
+            }
 
             reset_datos_pedido();
             

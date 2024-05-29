@@ -6,6 +6,12 @@
 
             print_comanda();
 
+            Swal.fire({
+                icon: 'info',
+                title: 'Muy bien!',
+                text: 'Pedido enviado a la impresora de COCINA.'
+            });
+
         });
         
 	});
@@ -112,7 +118,7 @@
         });
 
         cmds += newLine;
-        
+
         cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
         cmds += newLine;
         
