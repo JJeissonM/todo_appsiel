@@ -501,7 +501,7 @@ $(document).ready(function () {
                 Swal.fire({
                     icon: 'info',
                     title: 'Muy bien!',
-                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente.'
+                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. RECUERDA: Debes informar al responsable para su impresión.'
                 });
             }
 
