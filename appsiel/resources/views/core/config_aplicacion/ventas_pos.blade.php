@@ -456,6 +456,30 @@
 
 				</div>
 
+				<h4> Parámetros Facturación Electrónica </h4>
+				<hr>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$modulo_fe_activo = '0';
+								if( isset($parametros['modulo_fe_activo'] ) )
+								{
+									$modulo_fe_activo = $parametros['modulo_fe_activo'];
+								}
+							?>
+							{{ Form::bsSelect('modulo_fe_activo', $modulo_fe_activo, 'Módulo de Fact. Electrónica Activo',['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

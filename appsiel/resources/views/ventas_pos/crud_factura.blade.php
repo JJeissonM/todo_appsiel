@@ -179,18 +179,7 @@
 
             {{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-            @include('ventas_pos.crud_factura_campos_ocultos')         
-
-            <div class="row well">
-                <div class="col-md-6">
-                    {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'class'=>'form-control'] ) }}
-                    {{ Form::bsText( 'direccion1', $cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
-                </div>
-                <div class="col-md-6">
-                    {{ Form::bsText( 'numero_identificacion', $cliente->tercero->numero_identificacion, config("configuracion.tipo_identificador").'/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
-                    {{ Form::bsText( 'telefono1', $cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
-                </div>
-            </div>
+            @include('ventas_pos.crud_factura_campos_ocultos')
 
             <div id="popup_alerta"></div>         
 
@@ -217,7 +206,7 @@
                     @include('ventas_pos.crud_factura_cinta_filtro_items')
 
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
-                    <div class="col-md-8 well"><div class="container-fluid">
+                    <div class="col-md-8"><div class="container-fluid">
 
     <div class="marco_formulario">
                         {!! str_replace("<tbody>
@@ -243,10 +232,8 @@
                     </div>
 
                     <div class="col-md-4 well" style="font-size: 1.2em;">
-                        <div class="container-fluid">
-                            <div class="marco_formulario">                       
-                                @include('ventas_pos.crud_factura_resumen_totales')
-                            </div>
+                        <div class="marco_formulario">
+                            @include('ventas_pos.crud_factura.tabs_totales_y_clientes')
                         </div>
                     </div>
 
@@ -311,6 +298,10 @@
 
     @if( (int)config('ventas_pos.manejar_datafono') )
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/datafono.js?aux=' . uniqid())}}"></script>
+    @endif
+
+    @if ( (int)config('ventas_pos.modulo_fe_activo'))
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?aux=' . uniqid())}}"></script>
     @endif
     
     <script type="text/javascript">

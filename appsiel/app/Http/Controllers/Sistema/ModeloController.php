@@ -1190,6 +1190,8 @@ class ModeloController extends Controller
 
         $vista = 'layouts.registro_modelo_create';
 
+        $archivo_js = app($modelo->name_space)->archivo_js;
+
         return view($vista, compact('modelo', 'form_create', 'miga_pan', 'archivo_js'));
     }
 }

@@ -18,7 +18,7 @@
 			<?php
 				$botones = "El modelo no tiene campos asociados.";
 			  	if ( count($form_create['campos'])>0 ) {
-			  		$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
+			  		$url = url('/');
 			  		$botones = Form::bsButtonsForm($url);
 			  	}
 			?>

@@ -67,6 +67,7 @@ $.fn.cambiar_estilo_div_total_cambio = function () {
 $.fn.activar_boton_guardar_factura = function () {
 
 	$('#btn_guardar_factura').attr('disabled', 'disabled');
+	$('#btn_guardar_factura_electronica').attr('disabled', 'disabled');
 	$('#div_efectivo_recibido').show();
 	$('#div_total_cambio').show();
 
@@ -75,6 +76,7 @@ $.fn.activar_boton_guardar_factura = function () {
 	if (total_cambio.toFixed(0) >= 0 && valor_total_lineas_medios_recaudos == 0)
 	{
 		$('#btn_guardar_factura').removeAttr('disabled');
+		$('#btn_guardar_factura_electronica').removeAttr('disabled');
 		return true;
 	}
 
@@ -83,6 +85,7 @@ $.fn.activar_boton_guardar_factura = function () {
 		$('#div_efectivo_recibido').hide();
 		$('#div_total_cambio').hide();
 		$('#btn_guardar_factura').removeAttr('disabled');
+		$('#btn_guardar_factura_electronica').removeAttr('disabled');
 		return true;
 	}
 
@@ -96,6 +99,7 @@ $.fn.activar_boton_guardar_factura = function () {
 		if (  Math.abs(diferencia) < 1 )
 		{
 			$('#btn_guardar_factura').removeAttr('disabled');
+			$('#btn_guardar_factura_electronica').removeAttr('disabled');
 			$('#msj_medios_pago_diferentes_total_factura').hide();
 		}else{
 			$('#div_total_cambio').attr('class', 'danger');
@@ -270,13 +274,15 @@ function reset_campos_formulario()
 	$('#core_tercero_id').val( cliente_default.core_tercero_id );
 	$('#zona_id').val( cliente_default.zona_id );
 	$('#clase_cliente_id').val( cliente_default.clase_cliente_id );
-
+	
 	$('#cliente_descripcion_aux').val( cliente_default.descripcion );
 	$('#numero_identificacion').val( cliente_default.numero_identificacion );
 	$('#direccion1').val( cliente_default.direccion1 );
 	$('#telefono1').val( cliente_default.telefono1 );
 
 	$('#lineas_registros').val(0); // Input que recoge el listado de productos
+
+	$.fn.activar_boton_guardar_factura();
 
 	if( $('#manejar_propinas').val() == 1 )
 	{
@@ -339,7 +345,6 @@ function ventana_imprimir() {
 
 	ventana_factura.print();
 }
-
 
 // Se llama desde el listado de productos (boton de la lupa)
 function mandar_codigo(item_id) {
@@ -501,7 +506,6 @@ function agregar_la_linea2()
 	hay_productos++;
 	$('#btn_nuevo').show();
 	$('#numero_lineas').text(hay_productos);
-	deshabilitar_campos_encabezado2();
 
 	// Bajar el Scroll hasta el final de la página
 	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
@@ -523,6 +527,7 @@ function reset_efectivo_recibido2()
 	//$('#lbl_ajuste_al_peso').text('$ ');
 	total_cambio = 0;
 	$('#btn_guardar_factura').attr('disabled', 'disabled');
+	$('#btn_guardar_factura_electronica').attr('disabled', 'disabled');
 }
 
 function reset_linea_ingreso_default2() {
@@ -562,12 +567,6 @@ function mostrar_mensaje_item_agregado()
 	$('#popup_alerta').css('opacity', 'revert');
 	$('#popup_alerta').text('Producto agregado.');
 	$('#popup_alerta').show(200);
-}
-
-function deshabilitar_campos_encabezado2() {
-	$('#cliente_input').attr('disabled', 'disabled');
-	$('#fecha').attr('disabled', 'disabled');
-	$('#inv_bodega_id').attr('disabled', 'disabled');
 }
 
 function calcular_totales2() 
@@ -699,11 +698,9 @@ $(document).ready(function () {
 	$('#fecha').val(fecha);
 	$('#fecha_vencimiento').val(fecha_vencimiento);
 
-	agregar_la_linea_ini();
+	$('#inv_bodega_id').parent().parent().hide();
 
-	// Elementos al final de la página
-	$('#cliente_input').parent().parent().attr('style','left: 0');
-	$('#cliente_input').parent().parent().attr('class', 'elemento_fondo');
+	agregar_la_linea_ini();
 
 	$('#cliente_input').on('focus', function () {
 		$(this).select();
@@ -723,6 +720,13 @@ $(document).ready(function () {
 	// Al OCULTAR la ventana modal
 	$("#recaudoModal").on('hidden.bs.modal', function () {
 		$('#div_pendiente_ingresar_medio_recaudo').remove();
+	});
+
+	
+	$('#cliente_input').on('blur', function (event) {
+		if ($('#cliente_input').val() == '') {
+			$('#cliente_input').val( $('#cliente_descripcion_aux').val() );	
+		}
 	});
 
 	// Al ingresar código, descripción o código de barras del producto
@@ -762,7 +766,7 @@ $(document).ready(function () {
 				if (item.attr('data-cliente_id') === undefined)
 				{
 					alert('El cliente ingresado no existe.');
-					reset_campos_formulario();
+					//reset_campos_formulario();
 				} else {
 					seleccionar_cliente(item);
 				}
@@ -781,6 +785,11 @@ $(document).ready(function () {
 				}
 
 				var url = '../vtas_consultar_clientes';
+
+				if ( $('#action').val() == 'edit' )
+				{
+					var url = '../../vtas_consultar_clientes';
+				}
 
 				$.get(url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda })
 					.done(function (data) {

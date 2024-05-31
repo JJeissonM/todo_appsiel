@@ -4122,6 +4122,8 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   line-height: 1.846;
   border: 1px solid transparent;
   border-radius: 3px 3px 0 0;
+  font-size: 16px;
+  font-weight: bold;
 }
 .nav-tabs > li > a:hover {
   border-color: #eeeeee #eeeeee transparent;

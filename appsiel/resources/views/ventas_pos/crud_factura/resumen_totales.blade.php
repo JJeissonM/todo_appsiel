@@ -1,8 +1,6 @@
 <div id="div_resumen_totales" style="font-size:13px;">
     
-
-    <h5 style="width: 100%; text-align: center;">Totales</h5>
-    <hr>
+    <hr>    
 
     @if( Input::get('action') == 'create_from_order' )
         <div class="container-fluid" style="text-align: center;">
@@ -14,6 +12,11 @@
     <div id="total_cantidad" style="display: none;"> 0</div>
 
     <table class="table table-bordered table-striped">
+        <tr>
+            <td colspan="2">
+                {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'readonly'=>'readonly', 'class'=>'form-control'] ) }}
+            </td>
+        </tr>
         <tr>
             <td width="35%">
                 <strong> Subtotal </strong>
