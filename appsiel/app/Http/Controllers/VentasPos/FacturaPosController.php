@@ -197,14 +197,6 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
-        /*
-        dd($request->all());
-
-        if ( $request->cliente_descripcion_aux != $request->cliente_descripcion ) {
-            $request->datos_temporales_cliente = $request->cliente_descripcion_aux . 'a3p0' . 'a3p0' . $request-> . 'a3p0' . 'a3p0'
-        }
-        */
-
         $lineas_registros = json_decode($request->lineas_registros);
 
         // Crear documento de Ventas

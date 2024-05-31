@@ -82,15 +82,12 @@ class FacturaElectronicaController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $request->lineas_registros_medios_recaudo = $request->lineas_registros_medios_recaudos;
-        $request->url_id_modelo = 244; // Fact. Electronica
-        $request->core_tipo_transaccion_id = config('facturacion_electronica.transaction_type_id_default');
-        $request->core_tipo_doc_app_id = config('facturacion_electronica.document_type_id_default');
+        $request['lineas_registros_medios_recaudo'] = $request->lineas_registros_medios_recaudos;
+        $request['url_id_modelo'] = 244; // Fact. Electronica
+        $request['core_tipo_transaccion_id'] = config('facturacion_electronica.transaction_type_id_default');
+        $request['core_tipo_doc_app_id'] = config('facturacion_electronica.document_type_id_default');
         
-        dd('uey',$request->all());
         $doc_encabezado = (new DocumentHeaderService())->store_invoice( $request, 0 );
-        
-        dd($doc_encabezado);
 
         $obj_inv_serv = new InventoriesServices();
         $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $doc_encabezado, $request->inv_bodega_id ); // Sin contabilizar
