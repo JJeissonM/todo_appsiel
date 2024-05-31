@@ -74,4 +74,4 @@ Route::post('vtas_pos_store_nuevo_total_factura', 'VentasPos\ProcesosController@
 Route::get('vtas_pos_reducir_porcentaje_facturacion/{fecha_ini}/{fecha_fin}/{porcentaje_disminucion}', 'VentasPos\ProcesosController@reducir_porcentaje_facturacion');
 
 // fact. elct.
-Route::resource('pos_factura_electronica', 'VentasPos\FacturaElectroicaController');
+Route::resource('pos_factura_electronica', 'VentasPos\FacturaElectronicaController');
