@@ -233,6 +233,8 @@ class VentaController extends TransaccionController
 
         $total_documento = 0;
 
+        $motivo_id = $request->inv_motivo_id;
+
         $cantidad_registros = count($lineas_registros);
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
@@ -240,7 +242,11 @@ class VentaController extends TransaccionController
                 continue;
             }
 
-            $linea_datos = [ 'vtas_motivo_id' => (int)$lineas_registros[$i]->inv_motivo_id ] +
+            if ($motivo_id == null) {
+                $motivo_id = (int)$lineas_registros[$i]->inv_motivo_id;
+            }
+
+            $linea_datos = [ 'vtas_motivo_id' =>  $motivo_id] +
                             [ 'inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id ] +
                             [ 'precio_unitario' => (float)$lineas_registros[$i]->precio_unitario ] +
                             [ 'cantidad' => (float)$lineas_registros[$i]->cantidad ] +

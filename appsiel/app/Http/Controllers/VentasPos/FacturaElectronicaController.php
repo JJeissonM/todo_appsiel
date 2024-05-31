@@ -61,7 +61,9 @@ use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
+use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\InvGrupo;
+use App\Inventarios\Services\InvDocumentsService;
 use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
@@ -80,21 +82,24 @@ class FacturaElectronicaController extends TransaccionController
      */
     public function store(Request $request)
     {
-        /*
-        dd($request->all());
+        $request->lineas_registros_medios_recaudo = $request->lineas_registros_medios_recaudos;
+        $request->url_id_modelo = 244; // Fact. Electronica
+        $request->core_tipo_transaccion_id = config('facturacion_electronica.transaction_type_id_default');
+        $request->core_tipo_doc_app_id = config('facturacion_electronica.document_type_id_default');
+        
+        dd('uey',$request->all());
+        $doc_encabezado = (new DocumentHeaderService())->store_invoice( $request, 0 );
+        
+        dd($doc_encabezado);
 
-        if ( $request->cliente_descripcion_aux != $request->cliente_descripcion ) {
-            $request->datos_temporales_cliente = $request->cliente_descripcion_aux . 'a3p0' . 'a3p0' . $request-> . 'a3p0' . 'a3p0'
-        }
-        */
+        $obj_inv_serv = new InventoriesServices();
+        $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $doc_encabezado, $request->inv_bodega_id ); // Sin contabilizar
 
-        $lineas_registros = json_decode($request->lineas_registros);
+        $doc_encabezado->remision_doc_encabezado_id = $doc_remision->id;
+        $doc_encabezado->save();
 
-        // Crear documento de Ventas
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
-        // Crear Registros del documento de ventas
-        FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+        $obj_inv_doc_serv = new InvDocumentsService();
+        $obj_inv_doc_serv->store_accounting_doc_head( $doc_remision->id, '' );
 
         if ( $request->pedido_id != 0) {
             $pedido = VtasPedido::find($request->pedido_id);

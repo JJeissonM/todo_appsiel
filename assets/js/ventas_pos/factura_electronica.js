@@ -46,9 +46,9 @@ $(document).ready(function () {
         }
 
         // Desactivar el click del botón
-        $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
-        $( this ).attr( 'disabled', 'disabled' );
-        $( this ).attr( 'id', 'btn_guardando_fe' );
+        //$( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
+        //$( this ).attr( 'disabled', 'disabled' );
+        //$( this ).attr( 'id', 'btn_guardando_fe' );
 
         $('#linea_ingreso_default').remove();
 
@@ -91,7 +91,9 @@ $(document).ready(function () {
             $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
             $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
 
-            $("#pedido_id").val(0); 
+            $("#pedido_id").val(0);
+
+            console.log(url_print);
                         
             ventana_imprimir_fe( url_print );  
 

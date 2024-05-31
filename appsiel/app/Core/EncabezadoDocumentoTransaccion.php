@@ -20,6 +20,7 @@ class EncabezadoDocumentoTransaccion
 
 	public function crear_nuevo( array $datos )
 	{
+		dd($datos);
 		$this->almacenar( $datos );
 		$this->asignar_consecutivo();
 		$this->incrementar_consecutivo_tipo_documento();

@@ -3,18 +3,24 @@
 namespace App\FacturacionElectronica\Services;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Core\EncabezadoDocumentoTransaccion;
 use App\Core\TipoDocApp;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 
+use App\Http\Controllers\Ventas\VentaController;
+
+use App\Inventarios\RemisionVentas;
+use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoMovimiento;
+use App\Ventas\Services\TreasuryServices;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PhpParser\Node\Stmt\Foreach_;
 
 class DocumentHeaderService
 {
@@ -132,6 +138,34 @@ class DocumentHeaderService
             'message'=>'El documento ' . $original_document_label  . ' fue convertido en Factura electrónica exitosamente.',
             'new_document_header_id'=> $vtas_document_header->id
         ];
+    }
+
+    public function store_invoice( Request $request, $remision_doc_encabezado_id )
+    {
+        dd($request->all() );
+        $lineas_registros = json_decode( $request->lineas_registros );
+        $registros_medio_pago = new RegistrosMediosPago;
+
+        $campo_lineas_recaudos = (new TreasuryServices())->get_campo_lineas_recaudos($request->lineas_registros_medios_recaudo, $lineas_registros);
+
+        // Crear documento de Ventas
+        $request['remision_doc_encabezado_id'] = $remision_doc_encabezado_id;
+        $request['estado'] = 'Contabilizado - Sin enviar';
+
+        if ( !isset($request['creado_por']) ) {
+            $request['creado_por'] = Auth::user()->email;
+        }
+
+        $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
+
+        $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
+
+        // 3ra. Crear Registro del documento de ventas
+        $request['creado_por'] = Auth::user()->email;
+        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+        VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+
+        return $doc_encabezado;
     }
         
 }

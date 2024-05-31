@@ -9,8 +9,6 @@ use App\Http\Controllers\Core\TransaccionController;
 use App\Core\TipoDocApp;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 
-use App\Inventarios\RemisionVentas;
-
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\NotaCredito;
 
@@ -21,11 +19,9 @@ use App\Tesoreria\TesoMovimiento;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
-use App\Http\Controllers\Ventas\VentaController;
-use App\Tesoreria\RegistrosMediosPago;
-use App\Ventas\Services\TreasuryServices;
+use App\Inventarios\RemisionVentas;
 use App\VentasPos\FacturaPos;
-use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -116,28 +112,11 @@ class FacturaController extends TransaccionController
 
     public function store( Request $request )
     {
-        dd($request->all());
-        $lineas_registros = json_decode( $request->lineas_registros );
-
-        $registros_medio_pago = new RegistrosMediosPago;
-
-        //$campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],VentaController::get_total_documento_desde_lineas_registros( $lineas_registros ) );
-
-        $campo_lineas_recaudos = (new TreasuryServices())->get_campo_lineas_recaudos($request->all()['lineas_registros_medios_recaudo'], $lineas_registros);
-
         // 1ra. Crear documento de salida de inventarios (REMISIÓN)
-        $remision = new RemisionVentas;
+        $remision = new RemisionVentas();
         $documento_remision = $remision->crear_nueva( $request->all() );
 
-        // 2da. Crear documento de Ventas
-        $request['remision_doc_encabezado_id'] = $documento_remision->id;
-        $request['estado'] = 'Contabilizado - Sin enviar';
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
-        // 3ra. Crear Registro del documento de ventas
-        $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
-        VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
+        $doc_encabezado = (new DocumentHeaderService())->store_invoice( $request, $documento_remision->id );
 
         $mensaje = (object)[ 'tipo'=>'flash_message', 'contenido' => 'Documento creado correctamente.' ];
 
@@ -149,7 +128,6 @@ class FacturaController extends TransaccionController
         }
 
     	return redirect( 'fe_factura/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion)->with( $mensaje->tipo, $mensaje->contenido );
-
     }
 
     public function set_fields_default($datos)
