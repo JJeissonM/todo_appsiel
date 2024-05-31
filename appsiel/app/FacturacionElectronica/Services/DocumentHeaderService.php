@@ -142,7 +142,6 @@ class DocumentHeaderService
 
     public function store_invoice( Request $request, $remision_doc_encabezado_id )
     {
-        dd($request->all() );
         $lineas_registros = json_decode( $request->lineas_registros );
         $registros_medio_pago = new RegistrosMediosPago;
 
