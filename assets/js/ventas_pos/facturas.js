@@ -698,8 +698,6 @@ $(document).ready(function () {
 	$('#fecha').val(fecha);
 	$('#fecha_vencimiento').val(fecha_vencimiento);
 
-	$('#inv_bodega_id').parent().parent().hide();
-
 	agregar_la_linea_ini();
 
 	$('#cliente_input').on('focus', function () {

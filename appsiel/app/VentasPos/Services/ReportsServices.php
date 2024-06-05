@@ -5,6 +5,7 @@ namespace App\VentasPos\Services;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMovimiento;
+use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
 use App\VentasPos\Pdv;
 
@@ -21,11 +22,15 @@ class ReportsServices
             ];
         }
 
-        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv->id, $fecha, $fecha);
+        $documentos_pdv = FacturaPos::where([
+                                        ['pdv_id','=',$pdv->id]
+                                    ])
+                                ->whereBetween('fecha', [$fecha, $fecha])
+                                ->get();
 
-        $total_credito = $movimientos_pdv->where( 'forma_pago', 'credito')->sum('precio_total');
+        $total_credito = $documentos_pdv->where( 'forma_pago', 'credito')->sum('valor_total');
                 
-        $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($pdv->id, $fecha, $fecha);
+        $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha, $fecha);
         
         $total_contado = 0;
         $motivo_tesoreria_propinas = (int)config('ventas_pos.motivo_tesoreria_propinas');
@@ -81,25 +86,28 @@ class ReportsServices
         return $movimientos_pdv->where( 'forma_pago', 'credito');
     }
 
-    public function get_movimiento_tesoreria_pdv($pdv_id, $fecha_desde, $fecha_hasta)
-    {        
-        $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
-        
+    public function get_movimiento_tesoreria_pdv($documentos_pdv)
+    {
         $arr_consecutivos = [];
-        $core_tipo_transaccion_id = 0;
-        $core_tipo_doc_app_id = 0;
-        foreach ($movimientos_pdv as $movimiento) {
-            $arr_consecutivos[] = $movimiento->consecutivo;
-            $core_tipo_transaccion_id = $movimiento->core_tipo_transaccion_id;
-            $core_tipo_doc_app_id = $movimiento->core_tipo_doc_app_id;
+        $arr_core_tipo_transaccion_id = [];
+        $arr_core_tipo_doc_app_id = [];
+        foreach ($documentos_pdv as $documento) {
+            $arr_consecutivos[] = $documento->consecutivo;
+
+            if ( !in_array($documento->core_tipo_transaccion_id, $arr_core_tipo_transaccion_id)) {
+                $arr_core_tipo_transaccion_id[] = $documento->core_tipo_transaccion_id;
+            }
+
+            if ( !in_array($documento->core_tipo_doc_app_id, $arr_core_tipo_doc_app_id)) {
+                $arr_core_tipo_doc_app_id[] = $documento->core_tipo_doc_app_id;
+            }
         }
 
         return TesoMovimiento::where([
-                                    ['core_tipo_transaccion_id', '=', $core_tipo_transaccion_id ],
-                                    ['core_tipo_doc_app_id', '=', $core_tipo_doc_app_id ],
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ]
                                 ])
+                                ->whereIn('core_tipo_transaccion_id',$arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id',$arr_core_tipo_doc_app_id)
                                 ->whereIn('consecutivo',$arr_consecutivos)
                                 ->get();
     }

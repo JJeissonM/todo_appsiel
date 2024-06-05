@@ -80,7 +80,12 @@ class ArqueoCajaController extends ModeloController
     {
         $registro = ArqueoCaja::find($id);
         $empresa = Empresa::find($registro->core_empresa_id);
-        $doc_encabezado =['documento'=>'ARQUEO DE CAJA No. ' . $registro->id,'fecha'=>$registro->fecha,'titulo'=>'ARQUEO DE CAJA'];
+        $doc_encabezado = [
+            'documento'=>'ARQUEO DE CAJA No. ' . $registro->id,
+            'fecha'=>$registro->fecha,
+            'titulo'=>'ARQUEO DE CAJA'
+        ];
+        
         $user = User::where('email', $registro->creado_por)->first();
         $reg_anterior = app($this->modelo->name_space)->where('id', '<', $registro->id)->max('id');
         $reg_siguiente = app($this->modelo->name_space)->where('id', '>', $registro->id)->min('id');

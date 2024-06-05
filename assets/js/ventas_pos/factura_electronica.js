@@ -1,7 +1,9 @@
-
-
 function ventana_imprimir_fe(url) {
-	window.open(url, "Impresión de Factura Electronica", "width=400,height=600,menubar=no");
+	ventana_factura = window.open('', "Impresión de Factura Electronica", "width=400,height=600,menubar=no");
+
+	ventana_factura.document.write( '<h3 style="padding: 45px;">Cargando . . . .</h3>' );
+
+    ventana_factura.location = url;
 }
 
 $(document).ready(function () {
@@ -46,9 +48,9 @@ $(document).ready(function () {
         }
 
         // Desactivar el click del botón
-        //$( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
-        //$( this ).attr( 'disabled', 'disabled' );
-        //$( this ).attr( 'id', 'btn_guardando_fe' );
+        $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
+        $( this ).attr( 'disabled', 'disabled' );
+        $( this ).attr( 'id', 'btn_guardando_fe' );
 
         $('#linea_ingreso_default').remove();
 
@@ -92,10 +94,15 @@ $(document).ready(function () {
             $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
 
             $("#pedido_id").val(0);
-
-            console.log(url_print);
                         
-            ventana_imprimir_fe( url_print );  
+            ventana_imprimir_fe( url_print );
+            resetear_ventana();
+
+            $('#header_tab3').removeAttr('class');
+            $('#header_tab1').attr('class','active');
+            
+            $('#tab3').attr('class','tab-pane fade');
+            $('#tab1').attr('class','tab-pane fade active in');
 
             if ( $('#action').val() != 'create' )
             {

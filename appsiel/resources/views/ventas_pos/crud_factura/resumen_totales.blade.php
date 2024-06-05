@@ -14,7 +14,10 @@
     <table class="table table-bordered table-striped">
         <tr>
             <td colspan="2">
-                {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'readonly'=>'readonly', 'class'=>'form-control'] ) }}
+                <label class="control-label col-sm-3 col-md-3" for="cliente_input">Cliente:</label>              
+                <div class="col-sm-9 col-md-9">
+                    <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}"><div id="clientes_suggestions"> </div>
+                </div>
             </td>
         </tr>
         <tr>

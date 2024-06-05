@@ -1268,7 +1268,7 @@ class FacturaPosController extends TransaccionController
                     break;
 
                 case 'inv_bodega_id':
-                    $lista_campos[$i]['opciones'] = [$pdv->bodega_default_id => $pdv->bodega->descripcion];
+                    $lista_campos[$i]['value'] = $pdv->bodega_default_id;
                     break;
                             
                 default:

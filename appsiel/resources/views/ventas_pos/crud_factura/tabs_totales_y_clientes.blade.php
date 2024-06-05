@@ -1,8 +1,8 @@
 
 <ul class="nav nav-tabs">
-    <li class="active"><a data-toggle="tab" href="#tab1"> Totales </a></li>
-    <li><a data-toggle="tab" href="#tab2"> Cliente </a></li>
-    <li><a data-toggle="tab" href="#tab3"> Fact. Elect. </a></li>
+    <li class="active" id="header_tab1"><a data-toggle="tab" href="#tab1"> Totales </a></li>
+    <li id="header_tab2"><a data-toggle="tab" href="#tab2"> Cliente </a></li>
+    <li id="header_tab3"><a data-toggle="tab" href="#tab3"> Fact. Elect. </a></li>
 </ul>
 
 <div class="tab-content">

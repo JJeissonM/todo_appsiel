@@ -68,6 +68,7 @@ use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\DatafonoService;
+use App\VentasPos\Services\InvoicingService;
 use App\VentasPos\Services\TipService;
 
 class FacturaElectronicaController extends TransaccionController
@@ -82,21 +83,30 @@ class FacturaElectronicaController extends TransaccionController
      */
     public function store(Request $request)
     {
-        $request['lineas_registros_medios_recaudo'] = $request->lineas_registros_medios_recaudos;
-        $request['url_id_modelo'] = 244; // Fact. Electronica
-        $request['core_tipo_transaccion_id'] = config('facturacion_electronica.transaction_type_id_default');
-        $request['core_tipo_doc_app_id'] = config('facturacion_electronica.document_type_id_default');
+        $invoice_service = new InvoicingService();
+
+        //$request['core_tipo_transaccion_id'] = config('facturacion_electronica.transaction_type_id_default');
+        //$request['core_tipo_doc_app_id'] = config('facturacion_electronica.document_type_id_default');
         
-        $doc_encabezado = (new DocumentHeaderService())->store_invoice( $request, 0 );
+        if ( !isset($request['creado_por']) ) {
+            $request['creado_por'] = Auth::user()->email;
+        }
+        
+        $request['estado'] = 'Pendiente';
 
-        $obj_inv_serv = new InventoriesServices();
-        $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $doc_encabezado, $request->inv_bodega_id ); // Sin contabilizar
+        $factura_pos_encabezado = $invoice_service->almacenar_factura_pos( $request ); // Con su Remision
 
-        $doc_encabezado->remision_doc_encabezado_id = $doc_remision->id;
-        $doc_encabezado->save();
+        $obj_acumm_serv = new AccumulationService( 0 );
 
-        $obj_inv_doc_serv = new InvDocumentsService();
-        $obj_inv_doc_serv->store_accounting_doc_head( $doc_remision->id, '' );
+        $obj_acumm_serv->accumulate_one_invoice( $factura_pos_encabezado->id );
+
+        //$request['lineas_registros_medios_recaudo'] = $request->lineas_registros_medios_recaudos;
+        //$request['url_id_modelo'] = 244; // Fact. Electronica
+        
+        //$factura_electronica_encabezado = $invoice_service->almacenar_factura_electronica( $request );
+
+        $doc_header_serv = new DocumentHeaderService();
+        $result = $doc_header_serv->convert_to_electronic_invoice( $factura_pos_encabezado->id );
 
         if ( $request->pedido_id != 0) {
             $pedido = VtasPedido::find($request->pedido_id);
@@ -106,14 +116,14 @@ class FacturaElectronicaController extends TransaccionController
                     $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
 
                     foreach ($todos_los_pedidos as $un_pedido) {
-                        $un_pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
+                        $un_pedido->ventas_doc_relacionado_id = $factura_pos_encabezado->id;
                         $un_pedido->estado = 'Facturado';
                         $un_pedido->save(); 
                         
                         self::actualizar_cantidades_pendientes( $un_pedido, 'restar' );
                     }
                 }else{
-                    $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
+                    $pedido->ventas_doc_relacionado_id = $factura_pos_encabezado->id;
                     $pedido->estado = 'Facturado';
                     $pedido->save();
                     self::actualizar_cantidades_pendientes( $pedido, 'restar' );
@@ -121,7 +131,7 @@ class FacturaElectronicaController extends TransaccionController
             }
         }
 
-        $url_print = url('/') . '/vtas_imprimir/' . $doc_encabezado->id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
+        $url_print = url('/') . '/vtas_imprimir/' . $result->new_document_header_id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
 
         return $url_print;
     }

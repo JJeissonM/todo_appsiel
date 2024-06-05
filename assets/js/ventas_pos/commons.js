@@ -191,6 +191,8 @@ function resetear_ventana()
     $("#btn_cancelar").show();
     $("#btn_cancelar_pedido").hide();
     
+    $('#lbl_ajuste_al_peso').text('$ ');
+    
     $("#msj_ventana_impresion_abierta").hide();
     
     // Vendedor default
@@ -719,6 +721,7 @@ $(document).ready(function () {
         $(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
         
         $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
+        console.log(item_sugerencia.attr('data-inv_bodega_id'));
 
         $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
         $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
