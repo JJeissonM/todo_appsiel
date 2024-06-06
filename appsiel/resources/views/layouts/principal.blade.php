@@ -665,7 +665,7 @@
 	@yield('odontograma')
 	@yield('multiselect')
 
-	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script src="{{ asset('assets/js/gstatic/loader.js') }}"></script>
 	<script>
 		window.google.charts.load('46', {
 			packages: ['corechart'],
