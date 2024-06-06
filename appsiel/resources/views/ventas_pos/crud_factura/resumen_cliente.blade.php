@@ -27,5 +27,10 @@
                 {{ Form::bsText( 'direccion1', $cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
             </td>
         </tr>
+        <tr>
+            <td>
+                {{ Form::bsText( 'email', $cliente->tercero->email, 'Email', ['id'=>'email', 'required'=>'required', 'class'=>'form-control'] ) }}
+            </td>
+        </tr>
     </table>
 </div>

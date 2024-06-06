@@ -166,5 +166,49 @@ class DocumentHeaderService
 
         return $doc_encabezado;
     }
+
+    public function validar_datos_tercero($tercero)
+    {
+        $status = 'success';
+        $message = '';
+
+        if ( $tercero->direccion1 == '' || strlen( $tercero->direccion1 ) < 10 )
+        {
+            $status = 'error';
+            $message .= ' - Revisar dirección';
+        }
+
+        if ( $tercero->email == '' || gettype( filter_var($tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
+        {
+            $status = 'error';
+            $message .= ' - Revisar email - ';
+        }
+
+        if ( $tercero->telefono1 == '' || !is_numeric( $tercero->telefono1 ) )
+        {
+            $status = 'error';
+            $message .= ' - Revisar teléfono - ';
+        }
+
+        if ( $tercero->tipo == 'Persona natural' )
+        {
+            if ( $tercero->nombre1 == '' || strlen( $tercero->nombre1 ) < 2 )
+            {
+                $status = 'error';
+                $message .= ' - Revisar nombre completo. No tiene asignado el primer nombre. ';
+            }
+
+            if ( $tercero->apellido1 == '' || strlen( $tercero->apellido1 ) < 2 )
+            {
+                $status = 'error';
+                $message .= 'No tiene asignado el primer apellido.';
+            }
+        }
+
+        return (object)[
+            'status' => $status,
+            'message' => $message
+        ];
+    }
         
 }

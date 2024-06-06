@@ -721,11 +721,11 @@ $(document).ready(function () {
         $(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
         
         $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
-        console.log(item_sugerencia.attr('data-inv_bodega_id'));
 
         $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
         $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
         $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
+        $('#email').val(item_sugerencia.attr('data-email'));
         $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
         $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
 

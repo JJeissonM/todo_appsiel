@@ -6,6 +6,47 @@ function ventana_imprimir_fe(url) {
     ventana_factura.location = url;
 }
 
+function validar_datos_tercero()
+{
+    var status = 'success';
+    var message = '';
+
+    if ( $('#numero_identificacion').val() == '' || $('#numero_identificacion').val().length < 9 )
+    {
+        status = 'error';
+        message += ' - Revisar NIT/CC. No puede estar vacio. Debe tener mas de 9 caracteres.';
+    }
+
+    if ( $('#direccion1').val() == '' || $('#direccion1').val().length < 10 )
+    {
+        status = 'error';
+        message += ' - Revisar dirección. No puede estar vacia. Debe tener mas de 10 caracteres.';
+    }
+
+    if ( $('#email').val() == '' )
+    {
+        status = 'error';
+        message += ' - Revisar email - ';
+    }
+
+    if ( $('#telefono1').val() == '' || !$.isNumeric( parseInt( $('#telefono1').val() ) ) )
+    {
+        status = 'error';
+        message += ' - Revisar teléfono. No puede estar vacio.';
+    }
+
+    if ( $('#cliente_descripcion_aux').val() == '' || $('#cliente_descripcion_aux').val().length < 2 )
+    {
+        status = 'error';
+        message += ' - Revisar nombre completo. No puede estar vacio. Debe tener mas de 2 caracteres.';
+    }
+
+    return {
+        'status': status,
+        'message': message
+    };
+}
+
 $(document).ready(function () {
 
     // GUARDAR EL FORMULARIO
@@ -22,6 +63,16 @@ $(document).ready(function () {
             reset_linea_ingreso_default();
             reset_efectivo_recibido();
             $('#btn_nuevo').hide();
+            return false;
+        }
+
+        var val_tercero = validar_datos_tercero();
+        if ( val_tercero.status == 'error' ) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Alerta!',
+                text: val_tercero.message
+            });
             return false;
         }
 

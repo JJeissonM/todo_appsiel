@@ -61,6 +61,7 @@ use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
+use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\Services\InvDocumentsService;
@@ -130,6 +131,9 @@ class FacturaElectronicaController extends TransaccionController
                 }
             }
         }
+
+        Factura::find((int)$result->new_document_header_id)->enviar_al_proveedor_tecnologico();
+        //$mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();
 
         $url_print = url('/') . '/vtas_imprimir/' . $result->new_document_header_id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
 
