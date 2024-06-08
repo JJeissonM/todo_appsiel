@@ -55,7 +55,7 @@ class PrestacionSocial
 
         $array_fecha_final = explode('-', $fecha_final);
         $dias_adicionales = 0;
-        if ( $array_fecha_final[1] == '02') {
+        if ( $array_fecha_final[1] == '02' && $array_fecha_final[2] == 28) {
             $dias_adicionales = 2; // Se completan los treinta días
         }
 

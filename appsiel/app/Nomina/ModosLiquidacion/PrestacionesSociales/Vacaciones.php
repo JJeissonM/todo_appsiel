@@ -5,17 +5,16 @@ namespace App\Nomina\ModosLiquidacion\PrestacionesSociales;
 use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 
-use Auth;
 use Carbon\Carbon;
 
 use App\Nomina\NomDocRegistro;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\LibroVacacion;
-use App\Nomina\CambioSalario;
 use App\Nomina\ProgramacionVacacion;
 use App\Nomina\PrestacionesLiquidadas;
 
 use App\Nomina\ModosLiquidacion\Estrategias\PrestacionSocial;
+use Illuminate\Support\Facades\Auth;
 
 class Vacaciones implements Estrategia
 {
