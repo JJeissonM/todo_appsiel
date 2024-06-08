@@ -32,7 +32,7 @@
         </td>
         <td>
             <button id="btn_listar_items" style="border: 0; background: transparent;"><i
-                        class="fa fa-btn fa-search"></i></button>
+                        class="fa fa-btn fa-search"></i>&nbsp;</button>
         </td>
         <td>
             {{ Form::text( 'inv_producto_id', null, [ 'class' => 'form-control', 'id' => 'inv_producto_id', 'autocomplete' => 'off' ] ) }}

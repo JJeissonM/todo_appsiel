@@ -11,16 +11,16 @@ function validar_datos_tercero()
     var status = 'success';
     var message = '';
 
-    if ( $('#numero_identificacion').val() == '' || $('#numero_identificacion').val().length < 9 )
+    if ( $('#numero_identificacion').val() == '' || $('#numero_identificacion').val().length < 7 )
     {
         status = 'error';
-        message += ' - Revisar NIT/CC. No puede estar vacio. Debe tener mas de 9 caracteres.';
+        message += ' - Revisar NIT/CC. No puede estar vacio. Debe tener mas de 6 caracteres.';
     }
 
-    if ( $('#direccion1').val() == '' || $('#direccion1').val().length < 10 )
+    if ( $('#direccion1').val() == '' || $('#direccion1').val().length < 9 )
     {
         status = 'error';
-        message += ' - Revisar dirección. No puede estar vacia. Debe tener mas de 10 caracteres.';
+        message += ' - Revisar dirección. No puede estar vacia. Debe tener mas de 8 caracteres.';
     }
 
     if ( $('#email').val() == '' )

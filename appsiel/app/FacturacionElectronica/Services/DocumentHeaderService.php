@@ -195,13 +195,7 @@ class DocumentHeaderService
             if ( $tercero->nombre1 == '' || strlen( $tercero->nombre1 ) < 2 )
             {
                 $status = 'error';
-                $message .= ' - Revisar nombre completo. No tiene asignado el primer nombre. ';
-            }
-
-            if ( $tercero->apellido1 == '' || strlen( $tercero->apellido1 ) < 2 )
-            {
-                $status = 'error';
-                $message .= 'No tiene asignado el primer apellido.';
+                $message .= ' - Revisar nombre completo. No tiene asignado el primer nombre. Debe tener mas de 2 caracteres.';
             }
         }
 

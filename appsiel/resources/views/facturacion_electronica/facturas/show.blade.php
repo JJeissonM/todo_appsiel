@@ -297,6 +297,7 @@
 			$('#btn_enviar_fe').click(function(){
 				
 				$(this).children('.fa-send').attr('class','fa fa-spinner fa-spin');
+				$(this).css('pointer-events','none');
 
 			});
 
