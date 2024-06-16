@@ -181,7 +181,7 @@
 									$usar_complemento_JSPrintManager = $parametros['usar_complemento_JSPrintManager'];
 								}
 							?>
-							{{ Form::bsSelect('usar_complemento_JSPrintManager', $usar_complemento_JSPrintManager, 'Usar complemento JSPrintManager', ['No','Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('usar_complemento_JSPrintManager', $usar_complemento_JSPrintManager, 'Mostrar aviso para imprimir pedidos de meseros', ['No','Si'], ['class'=>'form-control']) }}
 							
 							@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
 								<br>
@@ -192,14 +192,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$enviar_impresion_directamente_a_la_impresora = '0';
-								if( isset($parametros['enviar_impresion_directamente_a_la_impresora'] ) )
-								{
-									$enviar_impresion_directamente_a_la_impresora = $parametros['enviar_impresion_directamente_a_la_impresora'];
-								}
-							?>
-							{{ Form::bsSelect('enviar_impresion_directamente_a_la_impresora', $enviar_impresion_directamente_a_la_impresora, 'Enviar impresión directamente a la(s) impresora(s)', ['No','Si'], ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
@@ -208,27 +201,13 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php
-								$impresora_principal_por_defecto = '';
-								if( isset($parametros['impresora_principal_por_defecto'] ) )
-								{
-									$impresora_principal_por_defecto = $parametros['impresora_principal_por_defecto'];
-								}
-							?>
-							{{ Form::bsText('impresora_principal_por_defecto', $impresora_principal_por_defecto, 'Nombre Impresora Principal', ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$impresora_cocina_por_defecto = '';
-								if( isset($parametros['impresora_cocina_por_defecto'] ) )
-								{
-									$impresora_cocina_por_defecto = $parametros['impresora_cocina_por_defecto'];
-								}
-							?>
-							{{ Form::bsText('impresora_cocina_por_defecto', $impresora_cocina_por_defecto, 'Nombre Impresora Cocina', ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
@@ -250,14 +229,17 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
+							&nbsp;
+							<!-- 
+							< ?php 
 								$imprimir_pedidos_en_cocina = '0';
 								if( isset($parametros['imprimir_pedidos_en_cocina'] ) )
 								{
 									$imprimir_pedidos_en_cocina = $parametros['imprimir_pedidos_en_cocina'];
 								}
 							?>
-							{{ Form::bsSelect('imprimir_pedidos_en_cocina', $imprimir_pedidos_en_cocina, 'Imprimir PEDIDO directamente en la cocina', ['No','Si'], ['class'=>'form-control']) }}
+							{ { Form::bsSelect('imprimir_pedidos_en_cocina', $imprimir_pedidos_en_cocina, 'Imprimir PEDIDO directamente en la cocina', ['No','Si'], ['class'=>'form-control']) }}
+							-->
 						</div>
 					</div>
 

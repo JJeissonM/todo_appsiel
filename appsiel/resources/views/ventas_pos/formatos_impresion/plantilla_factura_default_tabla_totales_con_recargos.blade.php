@@ -21,7 +21,7 @@
         @endif
         @if( (int)config('ventas_pos.manejar_datafono') )
             <tr style="font-weight: bold;">
-                <td style="text-align: right;" id="tr_total_datafono"> Com. Datafono: </td>
+                <td style="text-align: right;" id="tr_total_datafono"> Comisión: </td>
                 <td style="text-align: right;">
                     <div class="lbl_total_datafono" style="display: inline; margin-right: 15px;">{{$datos_factura->lbl_total_datafono}} </div>
                 </td>

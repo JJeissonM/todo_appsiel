@@ -11,7 +11,7 @@
 </tr>
 <tr class="default">
     <td width="35%">
-        <strong> Com. Datafono </strong>
+        <strong> Comisión </strong>
     </td>
     <td style="text-align: right;">
         <input type="hidden" name="motivo_tesoreria_datafono" id="motivo_tesoreria_datafono" value="{{ (int)config('ventas_pos.motivo_tesoreria_datafono') }}">

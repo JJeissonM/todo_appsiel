@@ -847,8 +847,6 @@ class ContabReportesController extends Controller
 
         $obj_repor_serv->grupos_cuentas = ContabCuentaGrupo::all();
 
-        $obj_repor_serv->cuentas = ContabCuenta::all(); 
-
         $obj_repor_serv->movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
                             ->leftJoin('contab_cuenta_clases','contab_cuenta_clases.id','=','contab_cuentas.contab_cuenta_clase_id')
                             ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
@@ -861,6 +859,8 @@ class ContabReportesController extends Controller
                                     'contab_movimientos.fecha'
                                 )
                             ->get();
+
+        $obj_repor_serv->cuentas = ContabCuenta::whereIn('id', $obj_repor_serv->movimiento->unique('contab_cuenta_id')->pluck('contab_cuenta_id')->toArray())->get(); 
 
         // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
         $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos();

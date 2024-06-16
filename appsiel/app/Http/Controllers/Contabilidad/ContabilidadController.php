@@ -188,7 +188,7 @@ class ContabilidadController extends TransaccionController
                                     </div>
 
                                     <div class="alert alert-warning">
-                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable. Además, todos los registros de <b>cxc</b> y <b>cxp</b> se cambiaron por registros de <b>causacion</b>.
+                                      <strong> ¡Nota! </strong> Debe guardar el documento para afectar el movimiento contable.
                                     </div>';
             $this->duplicado = false;
         }

@@ -81,8 +81,8 @@
     'normal' => $fontDir . '/glyphicons-halflings-normal_4ced20531a4f462a8c5c535d4debd2eb',
   ),
   'open sans' => array(
-    'normal' => $fontDir . '/open-sans-normal_e3f9da90edb379e243cceabb2fdb3f0a',
-    'bold' => $fontDir . '/open-sans-bold_074d893389082c36506eb383f9ca70e7',
+    'normal' => $fontDir . '/open-sans-normal_2bf6e8a03908d49a7fa7b1094b0c2804',
+    'bold' => $fontDir . '/open-sans-bold_0e7196744e416eea97ecd5b9781a44c2',
   ),
   'fontawesome' => array(
     'normal' => $fontDir . '/fontawesome-normal_b9be68b0c5f28a446c6cb0ef95254567',

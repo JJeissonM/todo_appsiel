@@ -67,14 +67,13 @@
 	@if( app()->environment() == 'demo' )
 	<!-- Global site tag (gtag.js) - Google Analytics -->
 	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-123891072-2"></script>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-XW7BPKHWM7"></script>
 	<script>
-		window.dataLayer = window.dataLayer || [];
+	window.dataLayer = window.dataLayer || [];
+	function gtag(){dataLayer.push(arguments);}
+	gtag('js', new Date());
 
-		function gtag() {
-			dataLayer.push(arguments);
-		}
-		gtag('js', new Date());
-		gtag('config', 'UA-123891072-2');
+	gtag('config', 'G-XW7BPKHWM7');
 	</script>
 	@endif
 

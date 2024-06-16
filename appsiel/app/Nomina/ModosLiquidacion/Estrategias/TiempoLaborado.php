@@ -6,9 +6,9 @@ use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\NomDocRegistro;
 
 use Carbon\Carbon;
-use Auth;
 
 use App\Nomina\ProgramacionVacacion;
+use Illuminate\Support\Facades\Auth;
 
 class TiempoLaborado implements Estrategia
 {
@@ -67,9 +67,14 @@ class TiempoLaborado implements Estrategia
 					];
 		}
 
-		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+		$horas_ya_liquidadas_en_el_lapso_del_documento = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+
+		$horas_liquidadas_empleado = $horas_ya_liquidadas_en_el_lapso_del_documento;
+
 		// Para que no se liquide el tiempo después de vacaciones, si estas termina dentro del mismo lapso del documento
-		$horas_liquidadas_empleado += $this->get_horas_descontar_por_vacaciones( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+		//$horas_descontar_por_vacaciones = $this->get_horas_descontar_por_vacaciones( $horas_liquidadas_empleado, $liquidacion['documento_nomina'], $liquidacion['empleado'] );
+
+		//$horas_liquidadas_empleado += $horas_descontar_por_vacaciones;
 		
 		$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 		
@@ -97,7 +102,7 @@ class TiempoLaborado implements Estrategia
         
         foreach ($registros_documento as $registro )
         {   
-            if ( !is_null($registro->concepto) )
+            if ( $registro->concepto != null )
             {
             	// 1:Tiempo laborado, 7:Tiempo NO laborado
                 if ( in_array($registro->concepto->modo_liquidacion_id, [1,7] ) )
@@ -105,12 +110,16 @@ class TiempoLaborado implements Estrategia
                     $horas_liquidadas_empleado += $registro->cantidad_horas;
                 }
             }
+
+			if ( $registro->concepto->id == (int)config('nomina.concepto_vacaciones_dias_no_habiles') ) {
+				$horas_liquidadas_empleado += $registro->cantidad_horas;
+			}
         }
 
         return $horas_liquidadas_empleado;
 	}
 
-	// Cuando las vacaciones terminan en el lapso, NO se liquida el tiempo después del tiempo final de las mismas
+	// Cuando las vacaciones terminan en el lapso, NO se liquida el tiempo después del tiempo final de las mismas, es decir quedan un tiempo por pagar despues de las vacaciones hasta el final del periodo de documento
 	public function get_horas_descontar_por_vacaciones( $horas_liquidadas_empleado, $documento_nomina, $empleado )
 	{
 		if ( $horas_liquidadas_empleado >= $documento_nomina->tiempo_a_liquidar )
@@ -143,7 +152,7 @@ class TiempoLaborado implements Estrategia
 				return 0;
 			}
 
-			return ( $this->diferencia_en_dias_entre_fechas( $vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) + 1 ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+			return ( $this->diferencia_en_dias_entre_fechas( $vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) ) * self::CANTIDAD_HORAS_DIA_LABORAL;
 		}
 
 		// Caso 2. Hay programación de vacaciones que empiezan en el lapso pero aún no se ha liquidado la prestación social.
@@ -185,7 +194,6 @@ class TiempoLaborado implements Estrategia
 
 		return 0;
 	}
-
 
 	public function get_tiempo_a_liquidar( $empleado, $documento_nomina, $horas_liquidadas_empleado )
 	{

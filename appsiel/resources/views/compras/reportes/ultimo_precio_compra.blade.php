@@ -31,11 +31,16 @@
                         continue;
                     }
 
+                    $cantidad = $ultima_compra->cantidad;
+                    if ($cantidad == 0) {
+                        $cantidad = 1;
+                    }
+
                     $precio_unitario = $ultima_compra->precio_unitario;
                     $precio_total = $ultima_compra->precio_total;
                     if ( !$iva_incluido )
                     {
-                        $precio_unitario = $ultima_compra->base_impuesto / $ultima_compra->cantidad;
+                        $precio_unitario = $ultima_compra->base_impuesto / $cantidad;
                         $precio_total = $ultima_compra->base_impuesto;
                     }
                 ?>
@@ -50,7 +55,7 @@
                     </td>
                     <td> {{ $ultima_compra->fecha }} </td>
                     <td> ${{ number_format( $precio_unitario, 2, ',', '.') }} </td>
-                    <td> ${{ number_format( $ultima_compra->cantidad, 2, ',', '.') }} </td>
+                    <td> ${{ number_format( $cantidad, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $precio_total, 2, ',', '.') }} </td>
                     <td> {{ $ultima_compra->get_label_documento() }} </td>
                     <td> {{ $ultima_compra->proveedor->tercero->numero_identificacion }} - {{ $ultima_compra->proveedor->tercero->descripcion }} </td>

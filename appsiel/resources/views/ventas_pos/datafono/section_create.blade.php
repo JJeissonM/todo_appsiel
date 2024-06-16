@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div class="marco_formulario">
-        <h5>Com. Datafono</h5>
+        <h5>Comisión</h5>
         <hr>
         <div id="div_ingreso_registro_datafono">
             <br>

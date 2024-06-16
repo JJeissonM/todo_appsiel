@@ -5,8 +5,6 @@ namespace App\Nomina\Services;
 use App\Nomina\NomContrato;
 use App\Nomina\NomDocEncabezado;
 
-use Auth;
-
 use App\Core\Tercero;
 use App\Contabilidad\ContabCuenta;
 use App\Contabilidad\ContabMovimiento;
@@ -15,6 +13,7 @@ use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+use Illuminate\Support\Facades\Auth;
 
 class ContabilizacionDocumentoNomina
 {
@@ -95,7 +94,7 @@ class ContabilizacionDocumentoNomina
 			
 			$empleados = $this->encabezado_doc->empleados;
 			$registros_liquidacion = $this->encabezado_doc->registros_liquidacion;
-			//dd( $empleados );
+			
 			foreach ( $empleados as $empleado )
 			{
 				$total_devengos = $registros_liquidacion->where('nom_contrato_id',$empleado->id)->sum('valor_devengo');
@@ -198,10 +197,12 @@ class ContabilizacionDocumentoNomina
 
 				break;
 			case 'tercero_especifico':
-				if ( !is_null( $equ_contab->tercero ) )
+				
+				if ( $equ_contab->tercero_especifico != null )
 				{
-					$tercero = $equ_contab->tercero;
+					$tercero = $equ_contab->tercero_especifico;
 				}
+
 				break;
 			
 			default:
@@ -320,7 +321,7 @@ class ContabilizacionDocumentoNomina
 	}
 
 	public function get_observacion( $linea_movimiento_contab )
-	{
+	{		
 		$error = 0;
 		$descripcion = '';
 
