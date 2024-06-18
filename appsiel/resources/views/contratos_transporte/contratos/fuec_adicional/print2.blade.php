@@ -168,8 +168,11 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 			@include('contratos_transporte.contratos.fuec_adicional.planilla_fuec_backside', compact('empresa'))
 			
 			@if(count($fuec_adicional->contrato->contratogrupous)>0)
+				<?php  
+					$c = $fuec_adicional->contrato;
+				?>
 				<div class="page-break"></div>			
-				@include('contratos_transporte.contratos.listado_usuarios', compact('empresa'))
+				@include('contratos_transporte.contratos.listado_usuarios', compact('empresa','c'))
 			@endif
 
 		</div>

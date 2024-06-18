@@ -5,18 +5,14 @@ namespace App\Http\Controllers\ContratoTransporte;
 use App\Contratotransporte\Conductor;
 use App\Sistema\SecuenciaCodigo;
 
-use App\Contratotransporte\Contratante;
 use App\Contratotransporte\Contrato;
-use App\Contratotransporte\Contratogrupou;
-use App\Contratotransporte\Documentosconductor;
-use App\Contratotransporte\Documentosvehiculo;
+
 use App\Contratotransporte\FuecAdicional;
 use App\Contratotransporte\Planillac;
-use App\Contratotransporte\Planillaconductor;
+
 use App\Contratotransporte\Plantilla;
 
 use App\Contratotransporte\Vehiculo;
-use App\Contratotransporte\Vehiculoconductor;
 use App\Core\Empresa;
 
 use Illuminate\Http\Request;

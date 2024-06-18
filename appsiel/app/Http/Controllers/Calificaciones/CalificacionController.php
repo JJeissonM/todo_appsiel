@@ -400,12 +400,10 @@ class CalificacionController extends Controller
     {
         $lineas_registros_calificaciones = json_decode( $request->lineas_registros_calificaciones );
 
-
         $resultados = [];
         $numero_fila = 1;
         $cantidad_registros = count( $lineas_registros_calificaciones );
 
-        //dd($cantidad_registros,$lineas_registros_calificaciones);
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
             $id_calificacion = (int)$lineas_registros_calificaciones[$i]->id_calificacion;
@@ -427,7 +425,7 @@ class CalificacionController extends Controller
             if ((int)$request->cantidad_calificaciones != 0) {
                 $cantidad_calificaciones = (int)$request->cantidad_calificaciones;
             }
-            for ($k=1; $k < $request->cantidad_calificaciones; $k++)
+            for ($k=1; $k < $cantidad_calificaciones; $k++)
             {
                 $variable_columna = 'C'.$k;
                 $linea_datos += [ $variable_columna => (float)$lineas_registros_calificaciones[$i]->$variable_columna ];

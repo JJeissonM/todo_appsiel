@@ -66,6 +66,10 @@ class ContabilizacionPilaNomina
 		{
 			$valor_cotizacion = $linea_registro->total_cotizacion;
 
+			if ($linea_registro->entidad == null) {
+				continue;
+			}
+
 			switch ( $linea_registro->entidad->tipo_entidad )
 			{
 				case 'EPS':

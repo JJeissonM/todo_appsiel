@@ -12,6 +12,11 @@
 			$gran_total = 0;
 		?>
 		@foreach( $movimiento AS $registro )
+			<?php 
+				if ( $registro->entidad == null ) {
+					continue;
+				}
+			?>
 			<tr>
 				<td> {{ $registro->entidad->tercero->numero_identificacion }} </td>
 				<td> {{ $registro->entidad->descripcion }} </td> 
