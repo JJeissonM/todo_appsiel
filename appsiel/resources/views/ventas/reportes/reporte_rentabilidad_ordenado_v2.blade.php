@@ -58,8 +58,13 @@
                     $costo_total = $precio_unitario_compras * $cantidad;
                     //$costo_total = $movimiento_inventarios->where( 'inv_producto_id', $coleccion_movimiento->first()->inv_producto_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
 
+                    $array_lista[$i]['tipo'] = 'producto';
+
                     if ($coleccion_movimiento->first()->item->tipo == 'servicio') {
-                        $costo_total = $precio / (1 + $item->precio_compra / 100);
+                        $costo_total = $precio * (1 - $item->precio_compra / 100);
+
+                        $array_lista[$i]['tipo'] = 'servicio';
+
                         $iva_incluido = 0;
                     }
                     
@@ -128,6 +133,11 @@
                         if ( $array_lista[$i]['costo_total'] != 0)
                         {
                             $margen_rentabilidad = $array_lista[$i]['rentabilidad'] / $array_lista[$i]['costo_total'] * 100;
+                        }
+
+                        if ( $array_lista[$i]['tipo'] == 'servicio')
+                        {
+                            $margen_rentabilidad = 1 - ( $array_lista[$i]['costo_total'] / $array_lista[$i]['precio'] ) * 100;
                         }
                     ?>
                     <td> {{ number_format( $margen_rentabilidad, 2, ',', '.') }}% </td>
