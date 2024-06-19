@@ -137,7 +137,7 @@
 
                         if ( $array_lista[$i]['tipo'] == 'servicio')
                         {
-                            $margen_rentabilidad = 1 - ( $array_lista[$i]['costo_total'] / $array_lista[$i]['precio'] ) * 100;
+                            $margen_rentabilidad = (1 - ( $array_lista[$i]['costo_total'] / $array_lista[$i]['precio'] ) ) * 100;
                         }
                     ?>
                     <td> {{ number_format( $margen_rentabilidad, 2, ',', '.') }}% </td>
