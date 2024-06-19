@@ -99,9 +99,9 @@ $(document).ready(function () {
         }
 
         // Desactivar el click del botón
-        $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
-        $( this ).attr( 'disabled', 'disabled' );
-        $( this ).attr( 'id', 'btn_guardando_fe' );
+        //$( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
+        //$( this ).attr( 'disabled', 'disabled' );
+        //$( this ).attr( 'id', 'btn_guardando_fe' );
 
         $('#linea_ingreso_default').remove();
 
