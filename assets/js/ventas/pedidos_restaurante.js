@@ -1059,7 +1059,7 @@ $(document).ready(function () {
 
     function mostrar_botones_productos()
     {
-        $('#accordionExample2').find('button').each(function () {
+        $('#accordionExample').find('button').each(function () {
             $(this).parent().show();
         });
     }

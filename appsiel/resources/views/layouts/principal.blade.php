@@ -248,6 +248,8 @@
 
 	@include('layouts.menu_principal')
 
+	@include('layouts.cartel_morosidad')
+
 	<div class="container-fluid">
 
 		@if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
