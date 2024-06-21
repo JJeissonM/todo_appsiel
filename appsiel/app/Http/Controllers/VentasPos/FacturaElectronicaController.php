@@ -133,7 +133,13 @@ class FacturaElectronicaController extends TransaccionController
         }
 
         Factura::find((int)$result->new_document_header_id)->enviar_al_proveedor_tecnologico();
-        //$mensaje = $encabezado_factura->enviar_al_proveedor_tecnologico();
+        
+        $factura_pos_encabezado->estado = 'Enviada';
+        $factura_pos_encabezado->save();
+        
+        $vtas_document_header = VtasDocEncabezado::find( (int)$result->new_document_header_id );
+        $vtas_document_header->estado = 'Enviada';
+        $vtas_document_header->save();
 
         $url_print = url('/') . '/vtas_imprimir/' . $result->new_document_header_id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
 
