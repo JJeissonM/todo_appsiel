@@ -86,6 +86,29 @@
             </tr>
 
     </table>
+
+    <?php
+
+        $json_dataico = (object)[];
+        $errores_einvoice = '';
+
+        if($datos_factura->core_tipo_transaccion_id == 52)
+        {
+            $encabezado_doc = \App\FacturacionElectronica\Factura::find( $doc_encabezado->id );
+
+            $object_dataico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $encabezado_doc, 'factura' ));
+            $json_dataico =  $object_dataico->get_einvoice_in_dataico();
+
+            $errores_einvoice =  $object_dataico->get_errores($json_dataico);
+        }
+    ?>
+
+    @if ($errores_einvoice != '')
+        <div style="background: #f15f5f;">
+            <h4>Factura no fue Enviada hacia la DIAN.<smal>Click Aquí para enviarla nuevamente: <a href="{{url('/fe_factura/' . $doc_encabezado->id . '?id=21&id_modelo=244&id_transaccion=52') }}" target="_blank">ENVIAR</a></smal></h4>
+            {{ $errores_einvoice }}
+        </div>
+    @endif
     
     <div class="lbl_doc_anulado" style="display: none;">
         Documento Anulado

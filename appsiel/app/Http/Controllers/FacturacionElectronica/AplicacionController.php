@@ -36,9 +36,14 @@ class AplicacionController extends Controller
             default:
                 // code...
                 break;
-        }            
-
-        $pdf_url = $documento_electronico->consultar_documento()->pdf_url;
+        }
+        
+        // Representacion Grafica (PDF)
+        $json_dataico = $documento_electronico->get_einvoice_in_dataico();
+        $pdf_url = '#';
+        if ( isset($json_dataico->invoice) ) {
+            $pdf_url = $json_dataico->invoice->pdf_url;
+        }       
     	
         return Redirect::away( $pdf_url );
     }

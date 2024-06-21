@@ -152,8 +152,9 @@ class FacturaGeneral
       $factura_dataico = new FacturaGeneral( $factura_doc_encabezado, 'factura' );
 
       $invoice_id = 0;
-      if ($factura_dataico->consultar_documento() != null) {
-         $invoice_id = $factura_dataico->consultar_documento()->uuid;
+      $json_dataico = $factura_dataico->get_einvoice_in_dataico();
+      if ( isset($json_dataico->invoice) ) {
+         $invoice_id = $json_dataico->invoice->uuid;
       }      
 
       $payment_means_type = 'CREDITO';
@@ -232,8 +233,7 @@ class FacturaGeneral
       return $string_items;
    }
 
-   // Representacion Grafica (PDF)
-   public function consultar_documento()
+   public function get_einvoice_in_dataico()
    {
       if ( $this->env == 'PRODUCCION' )
       {
@@ -269,13 +269,35 @@ class FacturaGeneral
           $response = $e->getResponse();
       }
 
-      $json = json_decode( (string) $response->getBody() );
+      return json_decode( (string) $response->getBody() );
+   }
+
+   public function get_errores( $json_dataico )
+   {
+      $errors_list = '';
       
-      if(!isset($json->invoice))
-      {
-         return null;
+      if (isset($json_dataico->errors)) {
+
+         if (gettype($json_dataico->errors) == 'string') {
+            $errors_list .= ' - ' . $json_dataico->errors;
+         }else{
+            foreach ($json_dataico->errors as $key => $object) {
+               $errors_list .= ' - ' . $object->error;
+            }
+         }
+     }
+
+     if (isset($json_dataico->invoice )) {
+         if ($json_dataico->invoice->dian_status == 'DIAN_RECHAZADO') {
+
+               $errors_list = '';
+
+               foreach ($json_dataico->invoice->dian_messages as $key => $object) {
+                  $errors_list .= ' - ' . $object;
+               }
+         }
       }
 
-      return $json->invoice;
+      return $errors_list;
    }
 }
