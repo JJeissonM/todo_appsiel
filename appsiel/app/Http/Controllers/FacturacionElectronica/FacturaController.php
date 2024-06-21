@@ -168,6 +168,8 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. <br> El cliente presenta inconsistencia en sus datos básicos: ' . $result->message);
         }
 
+        $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
+
         $documento_electronico = new FacturaGeneral( $vtas_doc_encabezado, 'factura' );
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
         
@@ -188,8 +190,6 @@ class FacturaController extends TransaccionController
 
             return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
         }
-
-        $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();                
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {
