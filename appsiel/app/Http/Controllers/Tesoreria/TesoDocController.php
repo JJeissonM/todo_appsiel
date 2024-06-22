@@ -4,18 +4,7 @@ namespace App\Http\Controllers\Tesoreria;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use NumerosEnLetras;
-use Form;
-
-
-use App\Http\Controllers\Core\ConfiguracionController;
 use App\Http\Controllers\Sistema\ModeloController;
 
 
@@ -25,9 +14,6 @@ use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
 
-use App\Matriculas\Grado;
-use App\Matriculas\Estudiante;
-use App\Core\Colegio;
 use App\Core\Empresa;
 
 use App\Tesoreria\TesoCaja;
@@ -40,6 +26,12 @@ use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\ContabCuenta;
+use Collective\Html\FormFacade as Form;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class TesoDocController extends Controller
 {
@@ -285,7 +277,7 @@ class TesoDocController extends Controller
         $orientacion='portrait';
         $tam_hoja='Letter';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         //$pdf->set_option('isRemoteEnabled', TRUE);
         $pdf->loadHTML( $view_pdf )->setPaper($tam_hoja,$orientacion);
 
@@ -321,7 +313,7 @@ class TesoDocController extends Controller
         $registros = TesoDocRegistroPago::leftJoin('teso_motivos','teso_motivos.id','=','teso_doc_registros_pagos.teso_motivo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_registros_pagos.core_tercero_id')
                             ->where('teso_encabezado_pago_id',$encabezado_doc->id)
-                            ->select(DB::raw($select_raw2),'teso_motivos.descripcion AS motivo','teso_doc_registros_pagos.detalle_operacion AS detalle_operacion','teso_doc_registros_pagos.valor AS valor')
+                            ->select('teso_motivos.descripcion AS motivo','teso_doc_registros_pagos.detalle_operacion AS detalle_operacion','teso_doc_registros_pagos.valor AS valor')
                             ->get();
 
         $total_pago=0;

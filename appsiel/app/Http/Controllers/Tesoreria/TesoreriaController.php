@@ -176,7 +176,7 @@ class TesoreriaController extends TransaccionController
 
         // Linea crear nuevo registro
         $modelo_id = 49; // Cuentas contables
-        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" href="' . url('/web/create?id=3&id_modelo=50&id_transaccion=') . '" > + Crear nuevo </a>';
 
         $html .= '</div>';
 

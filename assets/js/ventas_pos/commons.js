@@ -1,6 +1,6 @@
 var hay_productos = 0;
 var url_raiz, redondear_centena, numero_linea;
-var productos, precios, descuentos, clientes, cliente_default, forma_pago_default, fecha_vencimiento_default;
+var productos, precios, descuentos, clientes, cliente_default, forma_pago_default, fecha_vencimiento_default, inv_producto_id;
 
 $('#btn_nuevo').hide();
 $('#btnPaula').hide();
@@ -278,7 +278,7 @@ function reset_linea_ingreso_default()
 
     $('#popup_alerta').hide();
 
-    producto_id = 0;
+    inv_producto_id = 0;
     precio_total = 0;
     costo_total = 0;
     base_impuesto_total = 0;
@@ -355,6 +355,7 @@ $(document).ready(function () {
     //Al hacer click en alguna de las sugerencias (escoger un cliente)
     $(document).on('click', '.list-group-item-cliente', function () {
         seleccionar_cliente($(this));
+        
         return false;
     });
 
@@ -363,10 +364,12 @@ $(document).ready(function () {
         $('#cliente_input').val(cliente_default.descripcion);
         $('#cliente_input').css('background-color', 'transparent');
         
-        window.open($(this).attr('href'), '_blank');
-        
         $('#clientes_suggestions').html('');
         $('#clientes_suggestions').hide();
+
+        if ( $(this).attr('data-accion') == 'crear_nuevo_registro' ) {
+            window.open($(this).attr('href'), '_blank');
+        }
 
         return false;
     });
