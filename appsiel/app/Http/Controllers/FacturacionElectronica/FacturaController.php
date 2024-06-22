@@ -179,17 +179,19 @@ class FacturaController extends TransaccionController
             return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no pudo ser enviado. <br> Presenta inconsistencias: ' . $errores_einvoice);
         }
 
-        if ($json_dataico->invoice->dian_status != 'DIAN_RECHAZADO') {
-            // La factura ya está en DATAICO, pero no se reflejó en Appsiel
-            $this->contabilizar_factura($vtas_doc_encabezado);
-
-            $mensaje = (object)[
-                'tipo'=>'flash_message',
-    			'contenido' => '<h3>Documento ya fue enviado correctamente hacia el proveedor tecnológico.</h3>'
-            ];
-
-            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
-        }
+        if (isset($json_dataico->invoice)) {
+            if ($json_dataico->invoice->dian_status != 'DIAN_RECHAZADO') {
+                // La factura ya está en DATAICO, pero no se reflejó en Appsiel
+                $this->contabilizar_factura($vtas_doc_encabezado);
+    
+                $mensaje = (object)[
+                    'tipo'=>'flash_message',
+                    'contenido' => '<h3>Documento ya fue enviado correctamente hacia el proveedor tecnológico.</h3>'
+                ];
+    
+                return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+            }
+        }        
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {
