@@ -43,10 +43,6 @@
 			<input type="hidden" id="lbl_total_factura" value="{{ '$ ' . number_format($doc_encabezado->valor_total,0,',','.') }}">
 			<input type="hidden" id="nombre_vendedor" value="{{ $doc_encabezado->vendedor->tercero->descripcion }}">
 
-			<?php 
-				//dd($doc_encabezado);
-			?>
-
 		</div>
 	@endif	
 @endsection
