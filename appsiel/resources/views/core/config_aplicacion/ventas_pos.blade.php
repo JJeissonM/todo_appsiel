@@ -201,7 +201,14 @@
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$impresora_cocina_por_defecto = '';
+								if( isset($parametros['impresora_cocina_por_defecto'] ) )
+								{
+									$impresora_cocina_por_defecto = $parametros['impresora_cocina_por_defecto'];
+								}
+							?>
+							{{ Form::bsText('impresora_cocina_por_defecto', $impresora_cocina_por_defecto, 'Nombre Impresora Cocina', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

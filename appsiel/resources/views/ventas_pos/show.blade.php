@@ -12,13 +12,16 @@
 		@endif
 
 		@if( $doc_encabezado->estado != 'Enviada' && $doc_encabezado->estado != 'Contabilizado - Sin enviar' )
-	    	<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+			
+			@can('vtas_pos_anular_documento_en_consultar_facturas_pdv')
+	    		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+
+	    		<button class="btn-gmail" id="btn_modificar_total_factura" title="Modificar total factura"><i class="fa fa-btn fa-edit"></i></button>
+			@endcan
 
 			@can('Facturación Electrónica')
 				<button class="btn-gmail" id="btn_convertir_en_factura_electronica" data-href="{{ url( 'fe_convertir_en_factura_electronica/'. $id . $variables_url ) }}" title="Convertir en Factura Electrónica"><i class="fa fa-file-text-o"></i></button>
 			@endcan
-
-	    	<button class="btn-gmail" id="btn_modificar_total_factura" title="Modificar total factura"><i class="fa fa-btn fa-edit"></i></button>
 		@endif
 
         @can('vtas_recontabilizar')
