@@ -178,13 +178,13 @@ class DocumentHeaderService
             $message .= ' - Revisar dirección';
         }
 
-        /*
         if ( $tercero->email == '' || gettype( filter_var($tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
         {
             $status = 'error';
             $message .= ' - Revisar email - ';
         }
 
+        /*
         if ( $tercero->telefono1 == '' || !is_numeric( $tercero->telefono1 ) )
         {
             $status = 'error';
