@@ -190,7 +190,6 @@ class DocumentHeaderService
             $status = 'error';
             $message .= ' - Revisar teléfono - ';
         }
-        */
 
         if ( $tercero->tipo == 'Persona natural' )
         {
@@ -200,6 +199,7 @@ class DocumentHeaderService
                 $message .= ' - Revisar nombre completo. No tiene asignado el primer nombre. Debe tener mas de 2 caracteres.';
             }
         }
+        */
 
         return (object)[
             'status' => $status,
