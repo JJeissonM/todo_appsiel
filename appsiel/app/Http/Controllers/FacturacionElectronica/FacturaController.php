@@ -170,6 +170,11 @@ class FacturaController extends TransaccionController
 
         $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
 
+        if ( $mensaje->tipo == 'mensaje_error' )
+        {
+            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+        }
+
         $documento_electronico = new FacturaGeneral( $vtas_doc_encabezado, 'factura' );
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
         
@@ -191,7 +196,7 @@ class FacturaController extends TransaccionController
     
                 return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
             }
-        }        
+        }
 
         if ( $mensaje->tipo != 'mensaje_error' )
         {
