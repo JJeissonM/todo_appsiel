@@ -23,12 +23,15 @@ class ReportsServices
         }
 
         $documentos_pdv = FacturaPos::where([
-                                        ['pdv_id','=',$pdv->id]
+                                        ['pdv_id','=',$pdv->id],
+                                        ['estado', '<>', 'Anulado']
                                     ])
                                 ->whereBetween('fecha', [$fecha, $fecha])
                                 ->get();
 
-        $total_credito = $documentos_pdv->where( 'forma_pago', 'credito')->sum('valor_total');
+        $total_credito = $documentos_pdv->where( [
+                ['forma_pago', '=', 'credito']
+            ])->sum('valor_total');
                 
         $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha, $fecha);
         
