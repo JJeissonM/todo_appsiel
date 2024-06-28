@@ -158,7 +158,7 @@ class FacturaController extends TransaccionController
 
         if ( empty( $vtas_doc_encabezado->tipo_documento_app->resolucion_facturacion->toArray() ) )
         {
-            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $vtas_doc_encabezado->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
+           // return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $vtas_doc_encabezado->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
         }
 
         $result = (new DocumentHeaderService())->validar_datos_tercero($vtas_doc_encabezado->cliente->tercero);
@@ -172,7 +172,7 @@ class FacturaController extends TransaccionController
 
         if ( $mensaje->tipo == 'mensaje_error' )
         {
-            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+            //return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
         }
 
         $documento_electronico = new FacturaGeneral( $vtas_doc_encabezado, 'factura' );

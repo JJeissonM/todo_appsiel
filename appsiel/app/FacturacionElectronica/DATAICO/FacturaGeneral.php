@@ -143,7 +143,7 @@ class FacturaGeneral
       if ($this->doc_encabezado->descripcion != null || $this->doc_encabezado->descripcion != '') {
 	 $notes = str_replace('"', '\"', $this->doc_encabezado->descripcion);
       }
-
+      
       return '"env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","invoice_type_code": "' . $this->invoice_type_code . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '},"notes":["' . $notes . '"], "customer": ' . $this->get_datos_cliente();
    }
 
@@ -191,9 +191,16 @@ class FacturaGeneral
       {
          $party_type = 'PERSONA_NATURAL';
          $tax_level_code = 'SIMPLIFICADO';
-         $company_name = '';
-         $first_name = $cliente->tercero->descripcion;
-         $family_name = '';
+         $first_name = explode(" ", $cliente->tercero->descripcion)[0];
+         $family_name = substr($cliente->tercero->descripcion, strlen($first_name) + 1);
+
+         if ( $cliente->tercero->nombre1 != '') {
+            $first_name = $cliente->tercero->nombre1;
+         }
+         
+         if ( $cliente->tercero->apellido1 != '') {
+            $family_name = $cliente->tercero->apellido1;
+         }
       }
       $regimen = 'ORDINARIO';
 
