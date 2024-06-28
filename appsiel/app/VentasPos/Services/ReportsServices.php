@@ -29,9 +29,7 @@ class ReportsServices
                                 ->whereBetween('fecha', [$fecha, $fecha])
                                 ->get();
 
-        $total_credito = $documentos_pdv->where( [
-                ['forma_pago', '=', 'credito']
-            ])->sum('valor_total');
+        $total_credito = $documentos_pdv->where( 'forma_pago', 'credito' )->sum('valor_total');
                 
         $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha, $fecha);
         
