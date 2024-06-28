@@ -63,14 +63,13 @@ class FacturaGeneral
             break;
          
          default:
-            // code...
             break;
       }
       
       $tokenPassword = config('facturacion_electronica.tokenPassword');
 
       //$tokenPassword = 'd1f0a8fd20c3a7455d63903a8d7c4a48'; // Rey del huevo
-      //$json_doc_electronico_enviado = '{"actions":{"send_dian":true,"send_email":true,"email":"cliente@hotmail.com"},"invoice":{"env":"PRODUCCION","dataico_account_id":"018613f2-7cda-8a66-9033-3c5091733d8d","number":3019,"issue_date":"27\/06\/2024","payment_date":"27\/06\/2024","invoice_type_code":"FACTURA_VENTA","payment_means_type":"DEBITO","payment_means":"MUTUAL_AGREEMENT","numbering":{"resolution_number":"18764073883921","prefix":"FVE","flexible":true},"notes":["MELLO OVER "],"customer":{"email":"cliente@hotmail.com","phone":"3007631467","party_type":"PERSONA_NATURAL","company_name":"CONSUMIDOR FINAL","first_name":"CONSUMIDOR","family_name":"FINAL","party_identification":"222222222","tax_level_code":"SIMPLIFICADO","regimen":"ORDINARIO","department":"20","city":"001","address_line":"VALLEDUPAR"},"items":[{"sku":"1","description":"CANASTA DE HUEVO TIPO A","quantity":20,"price":12500,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]}],"charges":[]}}';
+      //$json_doc_electronico_enviado = '{"actions":{"send_dian":true,"send_email":true,"email":"cliente@hotmail.com"},"invoice":{"env":"PRODUCCION","dataico_account_id":"018613f2-7cda-8a66-9033-3c5091733d8d","number":3020,"issue_date":"27\/06\/2024","payment_date":"27\/06\/2024","invoice_type_code":"FACTURA_VENTA","payment_means_type":"DEBITO","payment_means":"MUTUAL_AGREEMENT","numbering":{"resolution_number":"18764073883921","prefix":"FVE","flexible":true},"notes":["MELLO OVER "],"customer":{"email":"cliente@hotmail.com","phone":"3007631467","party_type":"PERSONA_NATURAL","company_name":"CONSUMIDOR FINAL","first_name":"CONSUMIDOR","family_name":"FINAL","party_identification":"222222222","tax_level_code":"SIMPLIFICADO","regimen":"ORDINARIO","department":"20","city":"001","address_line":"VALLEDUPAR"},"items":[{"sku":"1","description":"CANASTA DE HUEVO TIPO A","quantity":20,"price":12500,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]}],"charges":[]}}';
 
       try {
          $client = new Client(['base_uri' => $this->url_emision]);

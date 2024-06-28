@@ -169,7 +169,7 @@ class FacturaController extends TransaccionController
         }
 
         $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
-        
+
         if ( $mensaje->tipo == 'mensaje_error' )
         {
             return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
@@ -204,6 +204,15 @@ class FacturaController extends TransaccionController
         }
 
         return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+    }
+    
+    public function actualizar_fecha_y_enviar( $id )
+    {
+        $vtas_doc_encabezado = Factura::find( $id );
+        $vtas_doc_encabezado->fecha = date('Y-m-d');
+        $vtas_doc_encabezado->save();
+
+        return redirect( url('/') . '/fe_factura_enviar/' . $id . '?id=21&id_modelo=244&id_transaccion=52');        
     }
 
     public function contabilizar_factura($encabezado_factura)

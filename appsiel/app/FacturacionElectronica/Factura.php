@@ -164,7 +164,6 @@ class Factura extends VtasDocEncabezado
                 break;
             
             default:
-                // code...
                 break;
         }
                 

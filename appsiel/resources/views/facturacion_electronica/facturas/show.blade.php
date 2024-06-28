@@ -40,6 +40,16 @@
 		<a class="btn-gmail" href="{{ url( 'fe_factura_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar" id="btn_enviar_fe"><i class="fa fa-btn fa-send"></i></a>
         <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>
 
+		@if ( $doc_encabezado->fecha != date('d-m-Y') )
+			<br>
+			<span style="color: red;"><i class="fa fa-warning"></i> Nota: La fecha de la factura es diferente a la fecha actual. La factura no será aceptada por la DIAN.</span>
+			<br>
+			<button class="btn btn-xs btn-primary" id="btn_actualizar_fecha_y_enviar" data-href="{{url('/') . '/fe_actualizar_fecha_y_enviar/' . $doc_encabezado->id }}"> <i class="fa fa-calendar"></i> Actualizar fecha y enviar</button>
+
+			
+			@include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>''])
+		@endif
+		
 
 	@endif
 
@@ -135,152 +145,6 @@
 
 		$(document).ready(function(){
 
-			$(".btn_editar_registro").click(function(event){
-		        $("#myModal").modal({backdrop: "static"});
-		        $("#div_spin").show();
-		        $(".btn_edit_modal").hide();
-
-		        var url = '../vtas_get_formulario_edit_registro';
-
-				$.get( url, { 
-								linea_registro_id: $(this).attr('data-linea_registro_id'), 
-								id: getParameterByName('id'), 
-								id_modelo: getParameterByName('id_modelo'), 
-								id_transaccion: getParameterByName('id_transaccion')
-							} )
-					.done(function( data ) {
-
-						$('#saldo_original').val( $('#saldo_a_la_fecha').val() );
-						$('#cantidad_original').val( $('#cantidad').val() );
-
-		                $('#contenido_modal').html(data);
-
-		                $("#div_spin").hide();
-
-		                $('#precio_unitario').select();
-
-					});		        
-		    });
-
-		    // Al modificar el precio 
-            $(document).on('keyup','#precio_unitario',function(event){
-				
-				if( validar_input_numerico( $(this) ) )
-				{	
-
-					var x = event.which || event.keyCode;
-					if( x==13 )
-					{
-						$('#cantidad').select();				
-					}
-
-					calcular_valor_descuento();
-
-					calcular_precio_total();
-
-				}else{
-					$(this).focus();
-					return false;
-				}
-
-			});
-
-		    // Al modificar la cantidad
-            $(document).on('keyup','#cantidad',function(event){
-				
-				if( validar_input_numerico( $(this) ) && $(this).val() > 0 )
-				{	
-					calcula_nuevo_saldo_a_la_fecha();
-					if ( !validar_existencia_actual() )
-					{
-						$('#precio_total').val('');
-						return false;
-					}
-
-					var x = event.which || event.keyCode;
-					if( x==13 )
-					{
-						$('#tasa_descuento').select();
-					}
-
-					calcular_valor_descuento();
-
-					calcular_precio_total();
-					
-				}else{
-					$(this).focus();
-					return false;
-				}
-
-			});
-
-
-            $(document).on('keyup','#tasa_descuento',function(event){
-            	if( validar_input_numerico( $(this) ) )
-				{	
-					// máximo valor de 100
-					if ( $(this).val() > 100 )
-					{ 
-						$(this).val(100);
-					}
-
-					var x = event.which || event.keyCode;
-					if( x == 13 )
-					{
-						$('.btn_save_modal').focus();
-						return true;
-					}
-					
-					calcular_valor_descuento();
-
-					calcular_precio_total();
-
-				}else{
-
-					$(this).focus();
-					return false;
-				}
-			});
-
-			function calcular_valor_descuento()
-			{
-				var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
-
-				$('#valor_total_descuento_no').val( valor_total_descuento );
-				$('#valor_total_descuento').val( valor_total_descuento );
-			}
-
-
-
-			function calcular_precio_total()
-			{
-				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
-
-				var precio_unitario = parseFloat( $('#precio_unitario').val() );
-
-				var cantidad = parseFloat( $('#cantidad').val() );
-				
-				var precio_total = precio_unitario * cantidad - valor_total_descuento;
-
-				$('#precio_total').val( precio_total );
-			}
-
-
-            $('.btn_save_modal').click(function(event){
-
-            	if ( $.isNumeric( $('#precio_total').val() ) && $('#precio_total').val() > 0 )
-            	{
-            		if ( !validar_existencia_actual() )
-					{
-						$('#precio_total').val('');
-						return false;
-					}
-                    validacion_saldo_movimientos_posteriores();
-            	}else{
-            		alert('El precio total es incorrecto. Verifique lo valores ingresados.');
-            	}
-            });
-
 			$('#enlace_anular').click(function(){
 				
 				if ( !$("#opcion1").is(":checked") && !$("#opcion2").is(":checked") )
@@ -304,69 +168,33 @@
             $("#myModal").on('hide.bs.modal', function(){
                 $('#popup_alerta_danger').hide();
             });
+			
+			$("#btn_actualizar_fecha_y_enviar").click(function (event) {
+				event.preventDefault();
+				
+				$('#contenido_modal2').html('<h3> <i class="fa fa-warning"></i> Nota: este proceso solo cambiará la fecha del encabezado de la factura para legalizarla ante la DIAN con la fecha de HOY. <br> <small style="color: red;">No se afectará la fecha para los Movimientos contables, de Remisiones, de Cajas ó Bancos ni de Cuentas por Cobrar (CxC). </small></h3> ');
 
-			/*
-				validar_existencia_actual
-			*/
-			function validar_existencia_actual()
-			{
-				if ( $('#tipo').val() == 'servicio' ) { return true; }
+				$("#myModal2").modal(
+					{keyboard: true}
+				);
 
-				if ( parseFloat( $('#saldo_a_la_fecha').val() ) < 0 ) 
-				{
-					alert('Nueva EXISTENCIA negativa.');
-					$('#cantidad').val('');
-					$('#cantidad').focus();
-					return false;
-				}
-				return true;
-			}
+				$("#myModal2 .modal-title").text('Actualizar fecha y enviar Factura Electrónica');
 
-			function validar_venta_menor_costo()
-			{
-				var ok = true;
-				var costo_unitario = parseFloat ( $('#linea_ingreso_default').find('.costo_unitario').html() );
-				var base_impuesto = parseFloat ( $('#linea_ingreso_default').find('.base_impuesto').html() );
+				$("#myModal2 .btn_edit_modal").hide();
+				$("#myModal2 .btn_save_modal").html('<i class="fa fa-send"></i> Actualizar fecha y enviar');
+				
+				$("#myModal2 .btn_save_modal").attr( 'data-href', $(this).attr( 'data-href') );
 
-				if ( base_impuesto < costo_unitario)
-				{
-					$('#popup_alerta').show();
-					$('#popup_alerta').css('background-color','red');
-					$('#popup_alerta').text( 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA' );
-					ok = false;
-				}else{
-					$('#popup_alerta').hide();
-					ok = true;
-				}
-
-				return ok;
-			}
-            
-            function validacion_saldo_movimientos_posteriores()
-            {
-                var url = '../inv_validacion_saldo_movimientos_posteriores/' + $('#bodega_id').val() + '/' + $('#producto_id').val() + '/' + $('#fecha').val() + '/' + $('#cantidad').val() + '/' + $('#saldo_a_la_fecha2').val() + '/salida';
-
-                $.get( url )
-                    .done( function( data ) {
-                        if ( data != 0 )
-                        {
-                            $('#popup_alerta_danger').show();
-                            $('#popup_alerta_danger').text( data );
-                        }else{
-                            $('.btn_save_modal').off( 'click' );
-                            $('#form_edit').submit();
-                            $('#popup_alerta_danger').hide();
-                        }
-                    });
-            }
-
-			function calcula_nuevo_saldo_a_la_fecha()
-			{
-				var nuevo_saldo = parseFloat( $('#saldo_original').val() ) + parseFloat( $('#cantidad_original').val() ) - parseFloat( $('#cantidad').val() );
-
-				$('#saldo_a_la_fecha').val( nuevo_saldo );
-				$('#saldo_a_la_fecha2').val( nuevo_saldo );
-			}
+			});
+			
+            $('.btn_save_modal').click(function(event){
+				event.preventDefault();
+				// Desactivar el click del botón				
+				$(this).children('.fa-send').attr('class','fa fa-spinner fa-spin');
+		        $(this).attr( 'disabled', 'disabled' );
+				$( this ).off( event );
+				location.href = $(this).attr( 'data-href' );
+			});
 
 		});
 	</script>

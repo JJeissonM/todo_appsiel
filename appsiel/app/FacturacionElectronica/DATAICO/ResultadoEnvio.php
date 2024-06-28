@@ -117,15 +117,28 @@ class ResultadoEnvio
                 if ( $resultado['esValidoDian'] )
                 {
                     $mensaje->tipo = 'flash_message';
-                    $mensaje->contenido = '<h3>Documento enviado correctamente hacia la DIAN</h3>';
+                    $mensaje->contenido = '<h3><i class="fa fa-check"></i> Documento enviado correctamente hacia la DIAN</h3>';
                     $mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Consecutivo:  " .$resultado["consecutivoDocumento"] ."</br>CUFE:  " .$resultado["cufe"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Hash:  " .$resultado["hash"] ."</br>Reglas de validación DIAN:  " .$resultado["reglasNotificacionDIAN"] ."</br>Resultado:  " .$resultado["resultado"];
                 }else{
+
+                    $errores = '';
+                    if ( isset($resultado['dian_messages']) ) {
+                        if ( !empty($resultado['dian_messages']) ) {
+                            $arr_errors = $resultado['dian_messages'];
+                            foreach ($arr_errors as $key => $arr_error) {
+                                $errores .= '<br>' . $arr_error;
+                            }
+                        }
+                    }
+
                     $mensaje->tipo = 'mensaje_error';
 
-                    $mensaje->contenido = '<h3><i class="fa fa-check"></i>Documento fue enviado hacia el proveedor tecnológico correctamente... SIN EMBARGO fue rechazado por la DIAN.</h3>';
+                    $mensaje->contenido = '<h3><i class="fa fa-warning"></i> Documento fue rechazado por la DIAN.</h3>';
                     $mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  ";
 
                     $mensaje->contenido .= "</br>" . $resultado["reglasNotificacionDIAN"];
+                
+                    $mensaje->contenido .= $errores;
                 }
         			
     			break;
@@ -137,7 +150,6 @@ class ResultadoEnvio
                     if ( !empty($resultado['errors']) ) {
                         $arr_errors = $resultado['errors'];
                         foreach ($arr_errors as $key => $arr_error) {
-                            //dd($arr_error);
                             $errores .= '<br>' . 'path: ' . $arr_error['path'][0] . '. ' . $arr_error['error'];
                         }
                     }
@@ -145,7 +157,7 @@ class ResultadoEnvio
 
     			$mensaje->tipo = 'mensaje_error';
 
-    			$mensaje->contenido = '<h3>Documento NO fue enviado hacia el proveedor tecnológico. Presenta errores de validación.</h3>';
+    			$mensaje->contenido = '<h3><i class="fa fa-warning"></i> Documento NO fue enviado hacia el proveedor tecnológico. Presenta errores de validación.</h3>';
 				$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  ";
 
 				$mensaje->contenido .= "</br>" . $resultado["reglasNotificacionDIAN"];
