@@ -53,7 +53,7 @@ class ResultadoEnvio
     	$resultado_almacenar['resultado'] = 'Error';
 
         /* 201: La solicitud se ha cumplido y ha dado lugar a la creación de un nuevo recurso, la factura fue creada satisfactoriamente.*/
-        if ( $resultado['codigo'] == 201 ) // 
+        if ( $resultado['codigo'] == 201 || $resultado['codigo'] == 200 ) // 
         {
             $resultado_almacenar['consecutivoDocumento'] = $resultado['number'];
         	$resultado_almacenar['cufe'] = $resultado['cufe'];
@@ -107,6 +107,10 @@ class ResultadoEnvio
     {
     	$mensaje = (object)['tipo'=>'','contenido'=>''];
 
+        if ( $resultado["codigo"] == 200 ) {
+            $resultado["codigo"] = 201;
+        }
+
     	switch ( $resultado["codigo"] ) {
     		case '201':
 
@@ -127,12 +131,26 @@ class ResultadoEnvio
     			break;
     		
     		default:
+
+                $errores = '';
+                if ( isset($resultado['errors']) ) {
+                    if ( !empty($resultado['errors']) ) {
+                        $arr_errors = $resultado['errors'];
+                        foreach ($arr_errors as $key => $arr_error) {
+                            //dd($arr_error);
+                            $errores .= '<br>' . 'path: ' . $arr_error['path'][0] . '. ' . $arr_error['error'];
+                        }
+                    }
+                }
+
     			$mensaje->tipo = 'mensaje_error';
 
     			$mensaje->contenido = '<h3>Documento NO fue enviado hacia el proveedor tecnológico. Presenta errores de validación.</h3>';
 				$mensaje->contenido .= "Código: " .$resultado["codigo"] ."</br>Fecha de Respuesta:  " .$resultado["fechaRespuesta"] ."</br>Mensaje Validación:  ";
 
 				$mensaje->contenido .= "</br>" . $resultado["reglasNotificacionDIAN"];
+                
+				$mensaje->contenido .= $errores;
     			break;
     	}
 
