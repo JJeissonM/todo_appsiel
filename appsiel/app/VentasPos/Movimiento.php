@@ -231,7 +231,8 @@ class Movimiento extends Model
                                         'vtas_pos_movimientos.precio_total',
                                         'vtas_pos_movimientos.base_impuesto_total',// AS base_imp_tot
                                         'vtas_pos_movimientos.tasa_descuento',
-                                        'vtas_pos_movimientos.valor_total_descuento')
+                                        'vtas_pos_movimientos.valor_total_descuento',
+                                        'vtas_pos_movimientos.creado_por')
                             ->get();
 
         foreach ($movimiento as $fila)

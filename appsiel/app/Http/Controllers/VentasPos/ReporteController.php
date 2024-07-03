@@ -124,12 +124,20 @@ class ReporteController extends Controller
         $iva_incluido  = (int)$request->iva_incluido;
         $pdv_id  = (int)$request->pdv_id;
 
+        $pdv = Pdv::find($pdv_id);
+        $user_cajero_pdv = null;
+        if ( $pdv != null ) {
+            if ($pdv->cajero != null) {
+                $user_cajero_pdv = explode('@',$pdv->cajero->email)[0];
+            }
+        }
+
         $estado_facturas = 'Todos';//$request->estado_facturas;
 
-        $movimiento = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id);
+        $movimiento_pos = Movimiento::get_movimiento_ventas($fecha_desde, $fecha_hasta, $agrupar_por, $estado_facturas, null, $pdv_id);
         
         $array_lista = [];
-        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, 'POS');
+        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'POS', $user_cajero_pdv);
 
         /**
          * 23 = Factura de venta
@@ -145,7 +153,8 @@ class ReporteController extends Controller
          */        
         $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por,[23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
 
-        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE');
+
+        $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
 
         // En el movimiento se trae el precio_total con IVA incluido
         $mensaje = 'IVA Incluido en precio';
@@ -154,8 +163,6 @@ class ReporteController extends Controller
             $mensaje = 'IVA <b>NO</b> incluido en precio';
         }
 
-        $pdv = Pdv::find($pdv_id);
-
         $vista = View::make('ventas_pos.reportes.reporte_ventas_ordenado', compact('array_lista','agrupar_por','mensaje','iva_incluido','detalla_productos','pdv'))->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
@@ -163,15 +170,22 @@ class ReporteController extends Controller
         return $vista;
     }
 
-    public function get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, $app_movimiento)
+    public function get_array_lista_registros($array_lista, $movimiento, $agrupar_por, $detalla_productos, $iva_incluido, $app_movimiento, $user_cajero_pdv)
     {
         $i = count($array_lista);
 
         foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
         {
+
             $cantidad = $coleccion_movimiento->sum('cantidad');
             $precio_total = $coleccion_movimiento->sum('precio_total');
             $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
+
+            if ( $user_cajero_pdv != null && $app_movimiento == 'Estandar_FE' ) {
+                $cantidad = $coleccion_movimiento->where('creado_por', $user_cajero_pdv)->sum('cantidad');
+                $precio_total = $coleccion_movimiento->where('creado_por', $user_cajero_pdv)->sum('precio_total');
+                $base_impuesto_total = $coleccion_movimiento->where('creado_por', $user_cajero_pdv)->sum('base_impuesto_total');
+            }
             
             $array_lista[$i]['descripcion'] = $campo_agrupado;
             if ( $app_movimiento == 'Estandar_FE' ) {
@@ -209,6 +223,10 @@ class ReporteController extends Controller
             if($detalla_productos)
             {
                 $items = $coleccion_movimiento->groupBy('inv_producto_id');
+                
+                if ( $user_cajero_pdv != null && $app_movimiento == 'Estandar_FE' ) {
+                    $items = $coleccion_movimiento->where('creado_por', $user_cajero_pdv)->groupBy('inv_producto_id');
+                }
                 
                 $array_detalle_productos = [];
                 $p = 0;

@@ -473,6 +473,7 @@ class VtasMovimiento extends Model
                             ->whereIn('vtas_movimientos.core_tipo_transaccion_id',$core_tipo_transaccion_id)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
                             ->select(
+                                        'vtas_movimientos.id',
                                         'vtas_movimientos.inv_producto_id',
                                         DB::raw($raw_producto),
                                         DB::raw('CONCAT( core_terceros.numero_identificacion, " - ", core_terceros.descripcion ) AS cliente'),
@@ -487,7 +488,8 @@ class VtasMovimiento extends Model
                                         'vtas_movimientos.precio_total',
                                         'vtas_movimientos.base_impuesto_total',// AS base_imp_tot
                                         'vtas_movimientos.tasa_descuento',
-                                        'vtas_movimientos.valor_total_descuento')
+                                        'vtas_movimientos.valor_total_descuento',
+                                        'vtas_movimientos.creado_por')
                             ->get();
 
         foreach ($movimiento as $fila)
