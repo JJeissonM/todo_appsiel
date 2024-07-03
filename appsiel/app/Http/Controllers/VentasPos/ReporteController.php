@@ -128,7 +128,7 @@ class ReporteController extends Controller
         $user_cajero_pdv = null;
         if ( $pdv != null ) {
             if ($pdv->cajero != null) {
-                $user_cajero_pdv = explode('@',$pdv->cajero->email)[0];
+                $user_cajero_pdv = $pdv->cajero->email;
             }
         }
 
@@ -152,7 +152,6 @@ class ReporteController extends Controller
          * 55 = Factura Electrónica de Contingencia de Ventas
          */        
         $movimiento_vtas_no_pos = VtasMovimiento::get_movimiento_ventas_por_transaccion($fecha_desde, $fecha_hasta, $agrupar_por,[23, 38, 41, 44, 49, 50, 52, 53, 54, 55]);
-
 
         $array_lista = $this->get_array_lista_registros($array_lista, $movimiento_vtas_no_pos, $agrupar_por, $detalla_productos, $iva_incluido, 'Estandar_FE', $user_cajero_pdv);
 
