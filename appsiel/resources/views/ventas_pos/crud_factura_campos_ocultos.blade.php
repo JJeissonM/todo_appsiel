@@ -89,3 +89,5 @@
 @endcan
 
 <input type="hidden" name="plantilla_factura_pos_default" id="plantilla_factura_pos_default" value="{{ $pdv->plantilla_factura_pos_default }}">
+
+<input type="hidden" name="ocultar_boton_guardar_factura_pos" id="ocultar_boton_guardar_factura_pos" value="{{ (int)config('ventas_pos.ocultar_boton_guardar_factura_pos') }}">

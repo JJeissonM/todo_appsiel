@@ -461,7 +461,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$ocultar_boton_guardar_factura_pos = '0';
+								if( isset($parametros['ocultar_boton_guardar_factura_pos'] ) )
+								{
+									$ocultar_boton_guardar_factura_pos = $parametros['ocultar_boton_guardar_factura_pos'];
+								}
+							?>
+							{{ Form::bsSelect('ocultar_boton_guardar_factura_pos', $ocultar_boton_guardar_factura_pos, 'Ocultar botón Guardar Factura POS',['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

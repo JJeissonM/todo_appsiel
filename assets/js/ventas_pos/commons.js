@@ -534,6 +534,20 @@ $(document).ready(function () {
                     if (total_cambio.toFixed(0) >= 0) 
                     {
                         $('#btn_guardar_factura').focus();
+
+                        if ( $('#ocultar_boton_guardar_factura_pos').val() == 1) 
+                        {
+                            $('#header_tab1').removeAttr('class');
+                            $('#header_tab3').attr('class','active');
+                            
+                            $('#tab1').attr('class','tab-pane fade');
+                            $('#tab3').attr('class','tab-pane fade active in');
+
+                            console.log('sip');
+
+                            $('#btn_guardar_factura_electronica').focus();
+                        }
+
                     } else {
                         return false;
                     }

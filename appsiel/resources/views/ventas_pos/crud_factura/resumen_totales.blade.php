@@ -89,9 +89,12 @@
         </tr>
         <tr class="default">
             <td colspan="3" style="text-align: center;">
-                <button class="btn btn-lg btn-primary" id="btn_guardar_factura" disabled="disabled">
-                    <i class="fa fa-check"></i> Guardar factura
-                </button>
+
+                @if ( !(int)config('ventas_pos.ocultar_boton_guardar_factura_pos') )
+                    <button class="btn btn-lg btn-primary" id="btn_guardar_factura" disabled="disabled">
+                        <i class="fa fa-check"></i> Guardar factura
+                    </button>
+                @endif                
                 
                 <p style="color:rgb(248, 51, 51);">
                     <span id="msj_ventana_impresion_abierta" style="display: none;"><i class="fa fa-warning"></i> ¡Ventana de impresión abierta!</span>
