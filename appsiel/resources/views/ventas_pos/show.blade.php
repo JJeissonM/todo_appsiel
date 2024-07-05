@@ -16,7 +16,7 @@
 			@can('vtas_pos_anular_documento_en_consultar_facturas_pdv')
 	    		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
 
-	    		<button class="btn-gmail" id="btn_modificar_total_factura" title="Modificar total factura"><i class="fa fa-btn fa-edit"></i></button>
+	    		<!-- <button class="btn-gmail" id="btn_modificar_total_factura" title="Modificar total factura"><i class="fa fa-btn fa-edit"></i></button> -->
 			@endcan
 
 			@can('Facturación Electrónica')
@@ -28,9 +28,8 @@
         	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endcan
     @else
-	<a class="btn-gmail" href="{{ url( 'pos_acumular_una_factura_individual/'.$id.$variables_url ) }}" title="Acumular"><i class="fa fa-cogs"></i></a>
-	@endif
-	
+		<a class="btn-gmail" href="{{ url( 'pos_acumular_una_factura_individual/'.$id.$variables_url ) }}" title="Acumular"><i class="fa fa-cogs"></i></a>
+	@endif	
 @endsection
 
 @section('botones_imprimir_email')

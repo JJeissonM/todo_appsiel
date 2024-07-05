@@ -411,15 +411,27 @@ class TesoMovimiento extends Model
 
             TesoMovimiento::create( $datos );
         }else{
-            foreach ($registros_medio_pago as $linea_registro_medio_pago) {
-                $datos['teso_motivo_id'] = $linea_registro_medio_pago['teso_motivo_id'];
-                $datos['teso_caja_id'] = $linea_registro_medio_pago['teso_caja_id'];
-                $datos['teso_cuenta_bancaria_id'] = $linea_registro_medio_pago['teso_cuenta_bancaria_id'];
-                $datos['teso_medio_recaudo_id'] = $linea_registro_medio_pago['teso_medio_recaudo_id'];
-                $datos['valor_movimiento'] = $linea_registro_medio_pago['valor_recaudo'] * $signo_unidad;
+
+            if (isset( $registros_medio_pago['teso_caja_id'])) { // Un solo registro
+                $datos['teso_motivo_id'] = $registros_medio_pago['teso_motivo_id'];
+                $datos['teso_caja_id'] = $registros_medio_pago['teso_caja_id'];
+                $datos['teso_cuenta_bancaria_id'] = $registros_medio_pago['teso_cuenta_bancaria_id'];
+                $datos['teso_medio_recaudo_id'] = $registros_medio_pago['teso_medio_recaudo_id'];
+                $datos['valor_movimiento'] = $registros_medio_pago['valor_recaudo'] * $signo_unidad;
 
                 TesoMovimiento::create( $datos );
-            }
+            }else{
+                foreach ($registros_medio_pago as $linea_registro_medio_pago) {
+
+                    $datos['teso_motivo_id'] = $linea_registro_medio_pago['teso_motivo_id'];
+                    $datos['teso_caja_id'] = $linea_registro_medio_pago['teso_caja_id'];
+                    $datos['teso_cuenta_bancaria_id'] = $linea_registro_medio_pago['teso_cuenta_bancaria_id'];
+                    $datos['teso_medio_recaudo_id'] = $linea_registro_medio_pago['teso_medio_recaudo_id'];
+                    $datos['valor_movimiento'] = $linea_registro_medio_pago['valor_recaudo'] * $signo_unidad;
+
+                    TesoMovimiento::create( $datos );
+                }
+            }            
         }
         
     }

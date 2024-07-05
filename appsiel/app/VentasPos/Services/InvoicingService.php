@@ -7,6 +7,7 @@ use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\Services\InvDocumentsService;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\DocRegistro;
+use App\VentasPos\Movimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -51,7 +52,7 @@ class InvoicingService
 
         // Movimiento
         $this->crear_movimiento_pos($doc_encabezado);
-
+        
         $obj_acumm_serv = new AccumulationService( 0 );
 
         $obj_acumm_serv->accumulate_one_invoice($doc_encabezado->id);
@@ -106,8 +107,8 @@ class InvoicingService
         $lineas_registros = $invoice->lineas_registros;
         foreach ($lineas_registros as $linea)
         {            
-            // Movimiento de Ventas
-            VtasMovimiento::create( $datos + $linea->toArray() );
+            // Movimiento POS
+            Movimiento::create( $datos + $linea->toArray() );
         }
     }
 }

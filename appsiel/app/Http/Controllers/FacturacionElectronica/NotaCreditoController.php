@@ -692,6 +692,9 @@ class NotaCreditoController extends TransaccionController
 
             $obj_teso_movim = new TesoMovimiento();
             $obj_teso_movim->almacenar_registro_pago_contado( $datos, $registros_medio_pago, 'salida', abs($total_nota) );
+
+            //$obj_teso_movim->almacenar_registro_pago_contado(array('core_tipo_transaccion_id' => '53', 'core_tipo_doc_app_id' => '45', 'consecutivo' => '10', 'fecha' => '2024-07-04', 'core_empresa_id' => '1', 'core_tercero_id' => '242', 'creado_por' => 'administrator@appsiel.com.co', 'teso_motivo_id' => null, 'teso_caja_id' => null, 'teso_cuenta_bancaria_id' => null, 'teso_medio_recaudo_id' => null, 'valor_movimiento' => '0'), array('teso_caja_id' => '6', 'teso_cuenta_bancaria_id' => '0', 'teso_medio_recaudo_id' => '1', 'teso_motivo_id' => '75', 'valor_recaudo' => '20390330'), 'salida', '20390330')
+
         }else{
 
             $movimiento_teso = TesoMovimiento::where('core_tipo_transaccion_id', $nota->core_tipo_transaccion_id)

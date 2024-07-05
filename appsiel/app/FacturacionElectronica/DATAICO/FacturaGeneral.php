@@ -271,9 +271,6 @@ class FacturaGeneral
 
       $tokenPassword = config('facturacion_electronica.tokenPassword');
 
-      
-      //$tokenPassword = 'd1f0a8fd20c3a7455d63903a8d7c4a48'; // Rey del huevo
-
       $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
 

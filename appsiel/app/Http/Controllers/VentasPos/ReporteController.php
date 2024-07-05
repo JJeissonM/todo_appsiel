@@ -52,8 +52,6 @@ class ReporteController extends Controller
 
         $view = Input::get('view');
 
-        //dd($encabezados_documentos2);
-
         $tabla_encabezados_documentos = View::make( 'ventas_pos.tabla_encabezados_documentos', compact( 'encabezados_documentos', 'pdv','view' ) )->render();
         
         return $tabla_encabezados_documentos;

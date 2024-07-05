@@ -80,7 +80,7 @@ class ResultadoEnvio
 
         if ( $resultado['codigo'] == 500 ) // 
         {
-            if( gettype($resultado['errors']) == "string" )
+            if( gettype($resultado['errors']) == 'string' )
             {
                 $mensaje = '<br>Notificaciones DIAN<br>' . $resultado['errors'];
             }else{
@@ -125,8 +125,13 @@ class ResultadoEnvio
                     if ( isset($resultado['dian_messages']) ) {
                         if ( !empty($resultado['dian_messages']) ) {
                             $arr_errors = $resultado['dian_messages'];
-                            foreach ($arr_errors as $key => $arr_error) {
-                                $errores .= '<br>' . $arr_error;
+                            if( gettype($arr_errors) == 'string' )
+                            {
+                                $errores .= '<br>' . $arr_errors;
+                            }else{
+                                foreach ($arr_errors as $key => $arr_error) {
+                                    $errores .= '<br>' . $arr_error;
+                                }
                             }
                         }
                     }
@@ -149,9 +154,15 @@ class ResultadoEnvio
                 if ( isset($resultado['errors']) ) {
                     if ( !empty($resultado['errors']) ) {
                         $arr_errors = $resultado['errors'];
-                        foreach ($arr_errors as $key => $arr_error) {
-                            $errores .= '<br>' . 'path: ' . $arr_error['path'][0] . '. ' . $arr_error['error'];
-                        }
+
+                        if( gettype($arr_errors) == 'string' )
+                        {
+                            $errores .= '<br>' . $arr_errors;
+                        }else{
+                            foreach ($arr_errors as $key => $arr_error) {
+                                $errores .= '<br>' . 'path: ' . $arr_error['path'][0] . '. ' . $arr_error['error'];
+                            }
+                        }                        
                     }
                 }
 

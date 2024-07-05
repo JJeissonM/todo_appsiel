@@ -106,6 +106,7 @@ class AccumulationService
 
         //if ($this->is_pending_accounting($array_wheres)) {
             $lineas_registros = $invoice->lineas_registros;
+
             foreach ($lineas_registros as $linea)
             {
                 if ($linea->estado == 'Acumulado') {
@@ -114,18 +115,18 @@ class AccumulationService
                 
                 // Movimiento de Ventas
                 VtasMovimiento::create( $datos + $linea->toArray() );
-
+                
                 $linea->estado = 'Acumulado';
                 $linea->save();
             }
         //}       
 
         // Actualiza Movimiento POS
-        $movim_pos = Movimiento::where($array_wheres)->get()->first();
-        if ($movim_pos != null) {
-            $movim_pos->estado = 'Acumulado';
-            $movim_pos->save();
-        }                    
+        $movim_pos = Movimiento::where($array_wheres)->get();
+        foreach ($movim_pos as $mov_line) {
+            $mov_line->estado = 'Acumulado';
+            $mov_line->save();
+        }                 
 
         $datos['estado'] = 'Activo';
 
