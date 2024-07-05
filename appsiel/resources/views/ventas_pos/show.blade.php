@@ -121,11 +121,11 @@
 @endsection
 
 @section('documento_vista')
+	{!! $medios_pago !!}
 
 	@include('ventas.incluir.documento_vista')
 	
 	<input name="datos_doc_encabezado" id="datos_doc_encabezado" type="hidden" value="{{ $doc_encabezado->documento_transaccion_descripcion.' '.$doc_encabezado->documento_transaccion_prefijo_consecutivo }}">
-
 	
 	@include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>''])
 

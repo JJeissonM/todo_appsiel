@@ -101,7 +101,6 @@
     </tr>
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
-        	{!! $medios_pago !!}
             <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
         </td>
     </tr>
@@ -132,6 +131,7 @@
 @endsection
 
 @section('documento_vista')
+    {!! $medios_pago !!}
 	@include('ventas.incluir.documento_vista')
 @endsection
 
