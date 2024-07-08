@@ -68,8 +68,10 @@ class FacturaGeneral
       
       $tokenPassword = config('facturacion_electronica.tokenPassword');
 
+      $tokenPassword = '36ab07cc09fe9963425b7d556b066dce'; // Minimarket LM3
+
       //$tokenPassword = 'd1f0a8fd20c3a7455d63903a8d7c4a48'; // Rey del huevo
-      //$json_doc_electronico_enviado = '{"actions":{"send_dian":true,"send_email":true,"email":"cliente@hotmail.com"},"invoice":{"env":"PRODUCCION","dataico_account_id":"018613f2-7cda-8a66-9033-3c5091733d8d","number":3020,"issue_date":"27\/06\/2024","payment_date":"27\/06\/2024","invoice_type_code":"FACTURA_VENTA","payment_means_type":"DEBITO","payment_means":"MUTUAL_AGREEMENT","numbering":{"resolution_number":"18764073883921","prefix":"FVE","flexible":true},"notes":["MELLO OVER "],"customer":{"email":"cliente@hotmail.com","phone":"3007631467","party_type":"PERSONA_NATURAL","company_name":"CONSUMIDOR FINAL","first_name":"CONSUMIDOR","family_name":"FINAL","party_identification":"222222222","tax_level_code":"SIMPLIFICADO","regimen":"ORDINARIO","department":"20","city":"001","address_line":"VALLEDUPAR"},"items":[{"sku":"1","description":"CANASTA DE HUEVO TIPO A","quantity":20,"price":12500,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]}],"charges":[]}}';
+      $json_doc_electronico_enviado = '{"actions":{"send_dian":true,"send_email":true,"email":"gilmapineda592@gmail.com"},"invoice":{"env":"PRODUCCION","dataico_account_id":"01904071-5b3f-88be-98ff-1856a11d52ea","number":8,"issue_date":"08\/07\/2024","payment_date":"15\/07\/2024","invoice_type_code":"FACTURA_VENTA","payment_means_type":"CREDITO","payment_means":"MUTUAL_AGREEMENT","numbering":{"resolution_number":"18764073458421","prefix":"LM3","flexible":true},"notes":["---"],"customer":{"email":"gilmapineda592@gmail.com","phone":"5843090","party_type":"PERSONA_NATURAL","company_name":"GILMA PINEDA DE RAMIREZ","first_name":"GILMA","family_name":" ","party_identification":"28421831","tax_level_code":"SIMPLIFICADO","regimen":"ORDINARIO","department":"20","city":"001","address_line":"CRA 7 A 41 A 3B BRR DOCE DE OCTUBRE"},"items":[{"sku":"78","description":"PUNTA GORDA","quantity":3.015,"price":31000,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]},{"sku":"126","description":"CAPON ESPECIAL","quantity":9.015,"price":29000,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]}],"charges":[]}}';
 
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
@@ -90,6 +92,8 @@ class FacturaGeneral
       $array_respuesta = json_decode( (string) $response->getBody(), true );
 
       $array_respuesta['codigo'] = $response->getStatusCode();
+
+      dd($array_respuesta);
 
       $obj_resultado = new ResultadoEnvio;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );
@@ -199,11 +203,8 @@ class FacturaGeneral
          $first_name = explode(" ", $cliente->tercero->descripcion)[0];
          $family_name = substr($cliente->tercero->descripcion, strlen($first_name) + 1);
 
-         if ( $cliente->tercero->nombre1 != '') {
+         if ( $cliente->tercero->nombre1 != '' && $cliente->tercero->apellido1 != '') {
             $first_name = $cliente->tercero->nombre1;
-         }
-         
-         if ( $cliente->tercero->apellido1 != '') {
             $family_name = $cliente->tercero->apellido1;
          }
       }
