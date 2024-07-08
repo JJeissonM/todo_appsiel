@@ -91,8 +91,6 @@ class FacturaGeneral
 
       $array_respuesta['codigo'] = $response->getStatusCode();
 
-      dd($array_respuesta);
-
       $obj_resultado = new ResultadoEnvio;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );
 
