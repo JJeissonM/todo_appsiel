@@ -259,8 +259,9 @@ class EstudianteController extends ModeloController
         $formato = 'pdf_estudiantes' . $request->tipo_listado;
 
         $tam_letra = $request->tam_letra;
+        $tam_hoja = $request->tam_hoja;
         //dd($colegio);
-        $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra','colegio'))->render();
+        $view =  View::make('matriculas/estudiantes/' . $formato, compact('estudiantes', 'tam_letra','colegio', 'tam_hoja'))->render();
 
         $vista = View::make( 'layouts.pdf3', compact('view') )->render();
         

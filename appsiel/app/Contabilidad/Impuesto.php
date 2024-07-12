@@ -13,7 +13,7 @@ class Impuesto extends Model
 {
     protected $table = 'contab_impuestos';
     
-    protected $fillable = ['descripcion', 'tasa_impuesto', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'estado'];
+    protected $fillable = ['descripcion', 'tasa_impuesto', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'tax_category', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Tasa', 'Cta. ventas', 'Cta. ventas devoluciones', 'Cta. compras', 'Cta. compras devoluciones', 'Estado'];
 

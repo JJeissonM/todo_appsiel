@@ -237,9 +237,14 @@ class FacturaGeneral
          if ( $linea->tasa_descuento != 0 )
          {
             $string_items .= ',"discount_rate": ' . $linea->tasa_descuento;
-         } 
+         }
 
-         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "' . config('ventas.etiqueta_impuesto_principal') . '"}]}';
+         $tax_category = config('ventas.etiqueta_impuesto_principal');
+         if ( $linea->item->impuesto->tax_category != null && $linea->item->impuesto->tax_category != '' ) {
+            $tax_category = $linea->item->impuesto->tax_category;
+         }
+
+         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "' . $tax_category . '"}]}';
          $es_primera_linea = false;
       }
 
@@ -247,7 +252,7 @@ class FacturaGeneral
 
       return $string_items;
    }
-
+   
    public function get_einvoice_in_dataico()
    {
       if ( $this->env == 'PRODUCCION' )
