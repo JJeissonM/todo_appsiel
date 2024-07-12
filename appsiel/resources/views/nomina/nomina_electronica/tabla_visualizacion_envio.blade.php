@@ -58,7 +58,16 @@
                     <?php
                         $cantidad_horas = 0;
                         $deduccion = '';
-                        $devengo = Form::TextoMoneda( $registro['amount'] );
+
+                        $amount = 0;
+                        if (isset($registro['amount'])) {
+                            $amount = $registro['amount'];
+                        }                    
+                        if (isset($registro['amount-ns'])) {
+                            $amount = $registro['amount-ns'];
+                        } 
+
+                        $devengo = Form::TextoMoneda( $amount );
 
                         $descripcion_concepto = $registro['code'];
 
@@ -83,7 +92,7 @@
                     </tr>
 
                     <?php
-                        $total_devengos += $registro['amount'];
+                        $total_devengos += $amount;
                     ?>
                 @endforeach
 
@@ -98,7 +107,16 @@
                     <?php
                         $cantidad_horas = 0;
                         $devengo = '';
-                        $deduccion = Form::TextoMoneda( $registro['amount'] );
+                        
+                        $amount = 0;
+                        if (isset($registro['amount'])) {
+                            $amount = $registro['amount'];
+                        }                    
+                        if (isset($registro['amount-ns'])) {
+                            $amount = $registro['amount-ns'];
+                        } 
+
+                        $deduccion = Form::TextoMoneda( $amount );
 
                         $descripcion_concepto = $registro['code'];
 
@@ -123,7 +141,7 @@
                     </tr>
 
                     <?php
-                        $total_deducciones += $registro['amount'];
+                        $total_deducciones += $amount;
                     ?>
                 @endforeach
 

@@ -159,10 +159,19 @@ class DocumentoSoporteService
          $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
          if ($registro_concepto->first()->novedad_tnl != null) {
             $one_line['medical-leave-type'] = strtoupper($registro_concepto->first()->novedad_tnl->origen_incapacidad);
-         }         
+         }
       }
       
-      $one_line['amount'] = $amount;
+      if ( $concepto->cpto_dian->tipo_concepto == 'amount-ns') {
+         $one_line['amount-ns'] = $amount;
+         unset($one_line['amount']);
+      }else{
+         $one_line['amount'] = $amount;
+      }
+
+      if ( $concepto->id == 78 ) {
+         //dd( $concepto->cpto_dian->tipo_concepto, $concepto->cpto_dian, $one_line);
+      }
 
       return $one_line;
    }
