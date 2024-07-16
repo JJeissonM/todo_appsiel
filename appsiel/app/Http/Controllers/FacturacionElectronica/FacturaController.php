@@ -21,7 +21,7 @@ use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\RemisionVentas;
 use App\VentasPos\FacturaPos;
-
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -209,10 +209,27 @@ class FacturaController extends TransaccionController
     public function actualizar_fecha_y_enviar( $id )
     {
         $vtas_doc_encabezado = Factura::find( $id );
+
+        $aux_fecha_vencimiento = Carbon::createFromFormat('Y-m-d', $vtas_doc_encabezado->fecha_vencimiento);
+
+        $dias_diferencia = $this->diferencia_en_dias_entre_fechas($vtas_doc_encabezado->fecha, date('Y-m-d'));
+
+        $fecha_vencimiento = $aux_fecha_vencimiento->addDays($dias_diferencia);
+
         $vtas_doc_encabezado->fecha = date('Y-m-d');
+        $vtas_doc_encabezado->fecha_vencimiento = $fecha_vencimiento->format('Y-m-d');
+        
         $vtas_doc_encabezado->save();
 
         return redirect( url('/') . '/fe_factura_enviar/' . $id . '?id=21&id_modelo=244&id_transaccion=52');        
+    }
+
+    public function diferencia_en_dias_entre_fechas( string $fecha_inicial, string $fecha_final )
+    {
+        $fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
+        $fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
+
+        return abs( $fecha_ini->diffInDays($fecha_fin) );
     }
 
     public function contabilizar_factura($encabezado_factura)
