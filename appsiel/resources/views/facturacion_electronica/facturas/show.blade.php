@@ -131,7 +131,10 @@
 @endsection
 
 @section('documento_vista')
-    {!! $medios_pago !!}
+	@if( $doc_encabezado->forma_pago == 'contado')
+		{!! $medios_pago !!}	
+	@endif
+    
 	@include('ventas.incluir.documento_vista')
 @endsection
 

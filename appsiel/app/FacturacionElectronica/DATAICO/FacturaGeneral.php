@@ -139,7 +139,7 @@ class FacturaGeneral
       {
          $resolucion = $this->doc_encabezado->resolucion_facturacion();
       }else{
-         $resolucion = (object)['prefijo'=>'CONR','numero_resolucion'=>18763647];
+         $resolucion = (object)['prefijo'=>'FEE','numero_resolucion'=>18760000001];
       }
 
       $flexible = 'true';
