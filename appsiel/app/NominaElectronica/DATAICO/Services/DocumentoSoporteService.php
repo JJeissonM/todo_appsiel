@@ -217,7 +217,7 @@ class DocumentoSoporteService
 
       $direccion1 = $empleado->tercero->direccion1;
       if ($direccion1 == '') {
-         $direccion1 == $empleado->tercero->ciudad->descripcion;
+         $direccion1 = $empleado->tercero->ciudad->descripcion;
       }
 
       $data['address'] = [
