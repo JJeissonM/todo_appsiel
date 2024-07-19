@@ -197,10 +197,16 @@ class DocumentoSoporteService
       }
       
       $data['last-name'] = $empleado->tercero->apellido1;
+      if ($data['last-name'] == '') {
+         $nombre1 = explode(' ', $empleado->tercero->descripcion);
+         $data['first-name'] = $nombre1[0];
+         $data['last-name'] = $nombre1[1];
+      }
       
       if ($empleado->tercero->apellido2 != '') {
          $data['second-last-name'] = $empleado->tercero->apellido2;
       }
+
       //$data['bank'] = '';
       //$data['account-type-kw'] = '';
       //$data['account-number'] = '';
@@ -209,9 +215,14 @@ class DocumentoSoporteService
       $department_id = substr($empleado->tercero->ciudad->id,3,2);
       $city_id = substr($empleado->tercero->ciudad->id, 5, strlen($empleado->tercero->ciudad->id)-1);
 
+      $direccion1 = $empleado->tercero->direccion1;
+      if ($direccion1 == '') {
+         $direccion1 == $empleado->tercero->ciudad->descripcion;
+      }
+
       $data['address'] = [
          'city' => $city_id,
-         'line' => $empleado->tercero->direccion1,
+         'line' => $direccion1,
          'department' => $department_id
       ];
 
