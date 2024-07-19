@@ -286,8 +286,15 @@ class FacturaPosController extends TransaccionController
         ->whereIn('core_tipo_transaccion_id',[42,60])
         ->get();
 
-        $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
-        $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+        if ($doc_encabezado->core_tipo_transaccion_id == 47 ) { // POS
+            
+            $registros_tesoreria = json_decode(str_replace("$", "", $doc_encabezado->lineas_registros_medios_recaudos));
+
+            $medios_pago = View::make('ventas_pos.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+        }else{
+            $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
+            $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+        }       
 
         return view($vista, compact('id', 'botones_anterior_siguiente', 'miga_pan', 'documento_vista', 'doc_encabezado', 'registros_contabilidad', 'abonos', 'empresa', 'docs_relacionados', 'doc_registros', 'url_crear', 'id_transaccion', 'notas_credito','pedidos_padres', 'medios_pago'));
     }
