@@ -9,7 +9,7 @@ use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\ResultadoEnvio;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
-
+use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +25,14 @@ class Factura extends VtasDocEncabezado
     public $urls_acciones = '{"create":"web/create","store":"fe_factura","show":"fe_factura/id_fila"}';
 
     public $vistas = '{"index":"layouts.index3","create":"facturacion_electronica.facturas.create"}';
+
+    public function resolucion_facturacion()
+    {
+        return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )
+                                //->where('estado','Activo')
+                                ->get()
+                                ->last();
+    }
 
     // ¡Extiende métodos!
 

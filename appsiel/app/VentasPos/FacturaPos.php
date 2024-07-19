@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Input;
 use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
 use App\Tesoreria\TesoMovimiento;
+use App\Ventas\ResolucionFacturacion;
 use Illuminate\Support\Facades\Auth;
 
 class FacturaPos extends Model
@@ -144,6 +145,14 @@ class FacturaPos extends Model
         $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 
         return $enlace;
+    }
+
+    public function resolucion_facturacion()
+    {
+        return ResolucionFacturacion::where( 'tipo_doc_app_id', $this->core_tipo_doc_app_id )
+                                //->where('estado','Activo')
+                                ->get()
+                                ->last();
     }
 
     // SOLO PARA UN MOVIMIENTO. No funciona Si se paga con varios medios de pago

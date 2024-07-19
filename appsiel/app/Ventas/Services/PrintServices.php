@@ -43,6 +43,7 @@ class PrintServices
         $doc_registros = app( $this->transaccion->modelo_registros_documentos )->get_registros_impresion( $this->doc_encabezado->id );
 
         $doc_encabezado = $this->doc_encabezado;
+
         $doc_encabezado->documento_transaccion_prefijo_consecutivo = $this->get_documento_transaccion_prefijo_consecutivo( $doc_encabezado );
         $empresa = $this->empresa;
         $plantilla_factura_pos_default = config('ventas_pos.plantilla_factura_pos_default');

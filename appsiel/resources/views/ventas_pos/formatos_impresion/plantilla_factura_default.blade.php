@@ -96,6 +96,11 @@
         {
             $encabezado_doc = \App\FacturacionElectronica\Factura::find( $doc_encabezado->id );
 
+            if( Input::get('id_transaccion') == 47 )
+            {
+                $encabezado_doc = \App\VentasPos\FacturaPos::find( $doc_encabezado->id );
+            }
+            
             $object_dataico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $encabezado_doc, 'factura' ));
             $json_dataico =  $object_dataico->get_einvoice_in_dataico();
 
