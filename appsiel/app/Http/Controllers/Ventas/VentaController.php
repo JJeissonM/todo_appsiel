@@ -18,7 +18,6 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use App\Sistema\Modelo;
 use App\Core\Tercero;
 use App\Core\EncabezadoDocumentoTransaccion;
-use App\Core\TransaccionOtrosCampos;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
@@ -33,7 +32,6 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\Cliente;
-use App\Ventas\ResolucionFacturacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\NotaCredito;
@@ -55,8 +53,6 @@ use App\Matriculas\FacturaAuxEstudiante;
 use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentHeaderService;
 use App\Ventas\Services\PrintServices;
-use App\VentasPos\Services\DatafonoService;
-use App\VentasPos\Services\TipService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -489,6 +485,10 @@ class VentaController extends TransaccionController
         if ( Input::get('formato_impresion_id') == 'pos') {
             return $documento_vista;
         }
+
+        $this->set_variables_globales();
+
+        $this->doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
