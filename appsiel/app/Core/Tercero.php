@@ -183,7 +183,6 @@ class Tercero extends Model
 
     public static function crear_nuevo_tercero($modelo_controller, $request)
     {
-
         // OJO!!!!! Datos manuales
         $codigo_ciudad = '16920001'; // Valledupar
         $tipo = 'Persona natural';

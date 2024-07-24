@@ -46,7 +46,6 @@ class EstudianteController extends ModeloController
 
         $lista_campos = ModeloController::get_campos_modelo($modelo, $registro, 'edit');
 
-
         //eliminamos los campos de acudiente por defecto en el modelo
         if (count($lista_campos) > 0) {
             foreach ($lista_campos as $key => $lc) {

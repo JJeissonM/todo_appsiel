@@ -3,6 +3,7 @@
 namespace App\AcademicoDocente;
 
 use App\Core\Tercero;
+use App\Sistema\Modelo;
 use Illuminate\Database\Eloquent\Model;
 
 use App\UserHasRole;
@@ -160,23 +161,122 @@ class Profesor extends Model
         return $vec;
     }
 
+    public function get_campos_adicionales_create( $lista_campos )
+    {
+        $lista_campos = $this->agregar_campos_adicionales($lista_campos, null);
+
+        return $lista_campos;
+    }
+
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
         $tercero_del_usuario = Tercero::where('user_id', $registro->id)->get()->first();
 
-        if ($tercero_del_usuario == null) {
-            return $lista_campos;
+        $lista_campos = $this->agregar_campos_adicionales($lista_campos, $tercero_del_usuario);
+
+        return $lista_campos;
+    }
+
+    public function agregar_campos_adicionales($lista_campos, $tercero_del_usuario)
+    {
+        $id = null;
+        $numero_identificacion = '';
+        $direccion1 = '';
+        $telefono1 = '';
+        $imagen = '';
+        if ($tercero_del_usuario != null) {
+            $id = $tercero_del_usuario->id;
+            $numero_identificacion = $tercero_del_usuario->numero_identificacion;
+            $direccion1 = $tercero_del_usuario->direccion1;
+            $telefono1 = $tercero_del_usuario->telefono1;
+
+            $imagen = url('/') . '/appsiel//storage/app/firmas_autorizadas/' . $tercero_del_usuario->firma_autorizada->imagen;
+
         }
 
-        // Personalizar campos
+        
+        $campo_core_tercero_id_esta = false;
         $cantida_campos = count($lista_campos);
+        // Personalizar campos
         for ($i=0; $i <  $cantida_campos; $i++)
         {
             if ( $lista_campos[$i]['name'] == 'core_tercero_id' ) 
             {
-                $lista_campos[$i]['value'] = $tercero_del_usuario->id;
+                $lista_campos[$i]['value'] = $id;
+                $lista_campos[$i]['tipo'] = 'hidden';
+                $lista_campos[$i]['opciones'] = '';
+                $lista_campos[$i]['atributos'] = [];
+                $campo_core_tercero_id_esta = true;
             }
         }
+        
+        if ( !$campo_core_tercero_id_esta ) {
+            array_push($lista_campos, [
+                "id" => 588,
+                "descripcion" => 'Tercero',
+                "tipo" => "hidden",
+                "name" => "core_tercero_id",
+                "opciones" => "",
+                "value" => $id,
+                "atributos" => [],
+                "definicion" => "",
+                "requerido" => 0,
+                "editable" => 1,
+                "unico" => 0
+            ]);
+        }
+        array_push($lista_campos, [
+            "id" => 46,
+            "descripcion" => 'Número identificación',
+            "tipo" => "bsText",
+            "name" => "numero_identificacion",
+            "opciones" => "",
+            "value" => $numero_identificacion,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 1,
+            "editable" => 1,
+            "unico" => 0
+        ]);
+        array_push($lista_campos, [
+            "id" => 50,
+            "descripcion" => 'Dirección',
+            "tipo" => "bsText",
+            "name" => "direccion1",
+            "opciones" => "",
+            "value" => $direccion1,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ]);
+        array_push($lista_campos, [
+            "id" => 55,
+            "descripcion" => 'Teléfono',
+            "tipo" => "bsText",
+            "name" => "telefono1",
+            "opciones" => "",
+            "value" => $telefono1,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ]);
+        array_push($lista_campos, [
+            "id" => 140,
+            "descripcion" => 'Imágen Firma',
+            "tipo" => "imagen",
+            "name" => "imagen",
+            "opciones" => "jpg,png,gif",
+            "value" => $imagen,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ]);
 
         return $lista_campos;
     }

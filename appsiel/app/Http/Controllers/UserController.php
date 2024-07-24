@@ -15,6 +15,8 @@ use App\Matriculas\Estudiante;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Contratotransporte\Vehiculo;
+use App\Core\Services\FirmaAutorizadaService;
+use App\Core\Services\TerceroService;
 use App\Core\Tercero;
 use App\Ventas\Vendedor;
 use Illuminate\Support\Facades\Auth;
@@ -51,20 +53,27 @@ class UserController extends ModeloController
             					'estado' => $request->estado
                             ]);
 		
-		$role_r = Role::where('id', '=', $request->role)->firstOrFail();            
+		$role_r = Role::where('id', '=', $request->role)->firstOrFail();
 		$user->assignRole($role_r); //Assigning role to user
 
-        $this->asignar_tercero($request->core_tercero_id, $user->id);
+        $tercero_enviado = (new TerceroService())->create_tercero($request);
+
+        $data['core_empresa_id'] = Auth::user()->empresa_id;
+        $data['core_tercero_id'] = $tercero_enviado->id;
+        $data['titulo_tercero'] = $role_r->name;
+        $data['estado'] = 'Activo';
+        (new FirmaAutorizadaService())->create($request, $data);
+
+        $this->asignar_tercero($tercero_enviado, $user->id);
 
         return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with('flash_message','Usuario creado correctamente.');        
     }
 
-    public function asignar_tercero($core_tercero_id, $user_id)
+    public function asignar_tercero($tercero_enviado, $user_id)
     {
-        $tercero_usuario_actual = Tercero::where('user_id', $user_id)->get()->first();
-        
-        $tercero_enviado = Tercero::find((int)$core_tercero_id);
+        $tercero_usuario_actual = Tercero::where('user_id', $user_id)->get()->first();        
 
+        // Cambio el Tercero
         if ( $tercero_usuario_actual != $tercero_enviado) {
 
             if ($tercero_usuario_actual != null) {
@@ -103,7 +112,15 @@ class UserController extends ModeloController
         // Se borran los roles actuales y se le asigna el enviado en el request
         $user->roles()->sync( [ $request->role ] );
 
-        $this->asignar_tercero($request->core_tercero_id, $user->id);
+        $tercero_enviado = (new TerceroService())->create_or_update_tercero($request);
+
+        $data['core_empresa_id'] = Auth::user()->empresa_id;
+        $data['core_tercero_id'] = $tercero_enviado->id;
+        $data['titulo_tercero'] = $user->roles()->first()->name;
+        $data['estado'] = 'Activo';
+        (new FirmaAutorizadaService())->create_or_update($request, $data);
+
+        $this->asignar_tercero($tercero_enviado, $user->id);
 		
         return redirect( 'web?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with('flash_message','Usuario MODIFICADO correctamente.');
     }
