@@ -539,10 +539,15 @@ class PlanClaseEncabezado extends Model
             if (!is_null($registro_elemento)) {
                 $contenido = $registro_elemento->contenido;
             }
+            
+            $elemento_descripcion = $elemento->descripcion;
+            if ($elemento->descripcion == '_formato_default_') {
+                $elemento_descripcion = 'CONTENIDO';
+            }
 
             array_push($lista_campos, [
                 "id" => $elemento->id,
-                "descripcion" => $elemento->descripcion,
+                "descripcion" => $elemento_descripcion,
                 "tipo" => "bsTextArea",
                 "name" => "elemento_descripcion[]",
                 "opciones" => "",
@@ -554,7 +559,7 @@ class PlanClaseEncabezado extends Model
                 "unico" => 0
             ], [
                 "id" => $elemento->id,
-                "descripcion" => $elemento->descripcion,
+                "descripcion" => $elemento_descripcion,
                 "tipo" => "hidden",
                 "name" => "elemento_id[]",
                 "opciones" => "",
