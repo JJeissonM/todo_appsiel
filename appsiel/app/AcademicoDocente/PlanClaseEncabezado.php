@@ -28,6 +28,7 @@ class PlanClaseEncabezado extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Plan de clases', 'Fecha', 'Semana académica', 'Periodo', 'Curso', 'Asignatura', 'Profesor', 'Estado'];
 
+	//public $vistas = '{"create":"academico_docente.planes_clases.create"}';
     
     public function secciones()
     {
@@ -337,32 +338,62 @@ class PlanClaseEncabezado extends Model
                                 ->get();
 
         foreach ($elementos_plantilla as $elemento) {
-            array_push($lista_campos, [
-                "id" => $elemento->id,
-                "descripcion" => $elemento->descripcion,
-                "tipo" => "bsTextArea",
-                "name" => "elemento_descripcion[]",
-                "opciones" => "",
-                "value" => null,
-                "atributos" => ['class' => 'contenido'],
-                "definicion" => "",
-                "requerido" => 0,
-                "editable" => 1,
-                "unico" => 0
-            ], [
-                "id" => $elemento->id,
-                "descripcion" => $elemento->descripcion,
-                "tipo" => "hidden",
-                "name" => "elemento_id[]",
-                "opciones" => "",
-                "value" => $elemento->id,
-                "atributos" => [],
-                "definicion" => "",
-                "requerido" => 0,
-                "editable" => 1,
-                "unico" => 0
-            ]);
-        }
+            
+            if ($elemento->descripcion == '_formato_default_') {
+                array_push($lista_campos, [
+                    "id" => $elemento->id,
+                    "descripcion" => 'CONTENIDO',
+                    "tipo" => "bsTextArea",
+                    "name" => "elemento_descripcion[]",
+                    "opciones" => "",
+                    "value" => $plantilla_default->formato_default,
+                    "atributos" => ['class' => 'contenido'],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ], [
+                    "id" => $elemento->id,
+                    "descripcion" => 'CONTENIDO',
+                    "tipo" => "hidden",
+                    "name" => "elemento_id[]",
+                    "opciones" => "",
+                    "value" => $elemento->id,
+                    "atributos" => [],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ]);
+            }else{
+                array_push($lista_campos, [
+                    "id" => $elemento->id,
+                    "descripcion" => $elemento->descripcion,
+                    "tipo" => "bsTextArea",
+                    "name" => "elemento_descripcion[]",
+                    "opciones" => "",
+                    "value" => null,
+                    "atributos" => ['class' => 'contenido'],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ], [
+                    "id" => $elemento->id,
+                    "descripcion" => $elemento->descripcion,
+                    "tipo" => "hidden",
+                    "name" => "elemento_id[]",
+                    "opciones" => "",
+                    "value" => $elemento->id,
+                    "atributos" => [],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ]);
+            }
+
+        } // Fin por cada elemento de la Planilla
 
         array_push(
             $lista_campos,

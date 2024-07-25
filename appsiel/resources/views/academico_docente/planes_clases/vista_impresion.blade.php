@@ -3,7 +3,7 @@
 </div>
 
 
-<table class="table table-fluid" style="font-size: 11px;">
+<table class="table table-fluid" style="font-size: 12px;">
     <tr>
         <td colspan="3" align="center"> <b>{{ $encabezado->plantilla_decripcion }}</b></td>
     </tr>
@@ -66,7 +66,7 @@
 
 @foreach( $registros as $registro )
     
-    @if( $registro->elemento_descripcion != '' )
+    @if( $registro->elemento_descripcion != '' &&  $registro->elemento_descripcion != '_formato_default_')
         <h4> <b> {{ $registro->elemento_descripcion }} </b> </h4>
     @else
         <h4> <b> CONTENIDO </b> </h4>

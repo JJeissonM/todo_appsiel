@@ -13,7 +13,7 @@ class PlanClaseEstrucPlantilla extends Model
     protected $table = 'sga_plan_clases_struc_plantillas';
 
     // tipo_plantilla: { planeador | guia_academica }
-	protected $fillable = ['periodo_lectivo_id', 'tipo_plantilla', 'descripcion', 'detalle', 'estado'];
+	protected $fillable = ['periodo_lectivo_id', 'tipo_plantilla', 'descripcion', 'detalle', 'estado', 'formato_default'];
     
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año Lectivo', 'Descripción', 'Detalle', 'Estado'];
 

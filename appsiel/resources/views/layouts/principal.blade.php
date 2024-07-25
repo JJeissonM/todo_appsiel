@@ -306,9 +306,6 @@
 	<script src="{{asset('assets/js/tableExport/FileSaver.min.js')}}"></script>
 	<script src="{{asset('assets/js/tableExport/tableexport.min.js')}}"></script>
 
-
-	<!-- <script src="{ {asset('js/ckeditor/ckeditor.js')}}"></script> -->
-
 	<script src="https://cdn.ckeditor.com/4.16.0/standard-all/ckeditor.js"></script>
 
 	<script src="{{asset('js/sweetAlert2.min.js')}}"></script>

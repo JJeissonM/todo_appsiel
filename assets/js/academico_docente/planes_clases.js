@@ -1,6 +1,7 @@
 $(document).ready(function(){
 
 	var direccion = location.href;
+	
 	/*
 	  * Cuando se está editando un registro
 	*/
@@ -71,7 +72,10 @@ $(document).ready(function(){
 			  height: 200
 	    });
 
+		$('.cke_notification cke_notification_warning').hide(); // no funcioa
 	});
+	
+	//	extraPlugins: 'colorbutton,font,justify,print,tableresize,pastefromword,liststyle',
 
 	$('.contenido').on( 'blur', function(){
 
