@@ -70,12 +70,22 @@ class DocumentHeaderService
 
         $contab_movim = ContabMovimiento::where( $array_wheres )->get();
         foreach ($contab_movim as $line_movin) {
-            $line_movin->update( $new_data );
+            $line_movin->core_tipo_transaccion_id = $fe_transaction_type_id_default;
+            $line_movin->core_tipo_doc_app_id = $fe_document_type_id_default;
+            $line_movin->consecutivo = $new_consecutivo;
+            $line_movin->modificado_por = $modificado_por;
+            $line_movin->save();
+            //$line_movin->update( $new_data );
         }
         
         $cxc_movim = CxcMovimiento::where( $array_wheres )->get()->first();
         if ($cxc_movim != null) {
-            $cxc_movim->update( $new_data );
+            //$cxc_movim->update( $new_data );
+            $cxc_movim->core_tipo_transaccion_id = $fe_transaction_type_id_default;
+            $cxc_movim->core_tipo_doc_app_id = $fe_document_type_id_default;
+            $cxc_movim->consecutivo = $new_consecutivo;
+            $cxc_movim->modificado_por = $modificado_por;
+            $cxc_movim->save();
         }
 
         // Cambiar abonos de CxC
@@ -87,26 +97,41 @@ class DocumentHeaderService
         ];
         $cxc_abono = CxcAbono::where( $array_wheres2 )->get();
         foreach ($cxc_abono as $cxc_line_abono) {
-            $cxc_line_abono->update( [
-                'doc_cxc_transacc_id' => $fe_transaction_type_id_default,
-                'doc_cxc_tipo_doc_id' => $fe_document_type_id_default,
-                'doc_cxc_consecutivo' => $new_consecutivo,
-                'modificado_por' => $modificado_por
-            ] );
+            $cxc_line_abono->doc_cxc_transacc_id = $fe_transaction_type_id_default;
+            $cxc_line_abono->doc_cxc_tipo_doc_id = $fe_document_type_id_default;
+            $cxc_line_abono->doc_cxc_consecutivo = $new_consecutivo;
+            $cxc_line_abono->modificado_por = $modificado_por;
+            $cxc_line_abono->save();
         }
         
         // Movimiento de Tesoreria
         $teso_movim = TesoMovimiento::where( $array_wheres )->get();
         foreach ($teso_movim as $teso_line_movin) {
-            $teso_line_movin->update( $new_data );
+            $teso_line_movin->core_tipo_transaccion_id = $fe_transaction_type_id_default;
+            $teso_line_movin->core_tipo_doc_app_id = $fe_document_type_id_default;
+            $teso_line_movin->consecutivo = $new_consecutivo;
+            $teso_line_movin->modificado_por = $modificado_por;
+            $teso_line_movin->save();
+            //$teso_line_movin->update( $new_data );
         }
 
         // Tablas POS
-        $original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
+        //$original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
+        $original_document_header->core_tipo_transaccion_id = $fe_transaction_type_id_default;
+        $original_document_header->core_tipo_doc_app_id = $fe_document_type_id_default;
+        $original_document_header->consecutivo = $new_consecutivo;
+        $original_document_header->modificado_por = $modificado_por;
+        $original_document_header->estado = 'Contabilizado - Sin enviar';
+        $original_document_header->save();
         
         $pos_movim = Movimiento::where( $array_wheres )->get();
         foreach ($pos_movim as $line_pos_movim) {
-            $line_pos_movim->update( $new_data );
+            $line_pos_movim->core_tipo_transaccion_id = $fe_transaction_type_id_default;
+            $line_pos_movim->core_tipo_doc_app_id = $fe_document_type_id_default;
+            $line_pos_movim->consecutivo = $new_consecutivo;
+            $line_pos_movim->modificado_por = $modificado_por;
+            $line_pos_movim->save();
+            //$line_pos_movim->update( $new_data );
         }
 
         // Crear encabezado y lineas de registros en en Vtas estandar
@@ -130,7 +155,12 @@ class DocumentHeaderService
         // Mover movimiento de ventas
         $vtas_movim = VtasMovimiento::where( $array_wheres )->get();
         foreach ($vtas_movim as $line_vtas_movim) {
-            $line_vtas_movim->update( $new_data );
+            $line_vtas_movim->core_tipo_transaccion_id = $fe_transaction_type_id_default;
+            $line_vtas_movim->core_tipo_doc_app_id = $fe_document_type_id_default;
+            $line_vtas_movim->consecutivo = $new_consecutivo;
+            $line_vtas_movim->modificado_por = $modificado_por;
+            $line_vtas_movim->save();
+            //$line_vtas_movim->update( $new_data );
         }
 
         return (object)[
