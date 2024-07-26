@@ -92,6 +92,11 @@ class RecetaCocina extends Model
 
       $vec['']='';
       foreach ($opciones as $opcion){
+
+          if ($opcion->item_platillo == null) {
+            continue;
+          }
+          
           $vec[$opcion->id] = $opcion->item_platillo->id.' '.$opcion->item_platillo->descripcion;
       }
 

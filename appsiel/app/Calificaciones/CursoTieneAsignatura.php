@@ -152,7 +152,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.curso_id',
                                         'sga_periodos_lectivos.descripcion as periodo_lectivo_descripcion',
                                         'sga_curso_tiene_asignaturas.periodo_lectivo_id')
-                            ->orderBy('sga_areas.orden_listados','ASC')
+                            ->orderBy('sga_curso_tiene_asignaturas.orden_boletin','ASC')
                             ->get()
                             ->unique('asignatura_id');
     }

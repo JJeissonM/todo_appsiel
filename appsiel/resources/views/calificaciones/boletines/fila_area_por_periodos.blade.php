@@ -17,7 +17,7 @@
         }
 	?>
 	<tr style="background: #ddd;">
-        <td colspan="{{ $cant_columnas_aux }}">
+        <td colspan="{{ $cant_columnas_aux }}" style="text-align: center;">
             <b> {{ $area_descripcion }}</b>
         </td>
     </tr>
