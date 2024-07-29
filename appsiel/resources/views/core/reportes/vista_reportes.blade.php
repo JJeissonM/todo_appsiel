@@ -300,7 +300,7 @@
 				arr_ids_estudiantes = JSON.parse($("#ids_estudiantes").val());
 				arr_ids_estudiantes.shift();
 				
-				$.get("../../calif_delete_pdfs_curso" + "/" + $('#curso_id').val(), function(respuesta){ 
+				$.get("../../calif_delete_pdfs_of_folder_of_curso_id" + "/" + $('#curso_id').val(), function(respuesta){ 
 					// fires off the first call 
 					ejecucion_recursiva_generar_un_boletin();					
 				});
@@ -316,7 +316,7 @@
 					$('#btn_generar_pdfs').children('.fa-spinner').attr('class','fa fa-print');
 					$('#message_print').show();
 					
-					window.open( '../../calif_descargar_pdfs_curso_v2/' + $('#curso_id').val() + '/'  + $('#tam_hoja').val(), '_blank');
+					window.open( '../../calif_merge_pdfs_and_download_by_curso/' + $('#curso_id').val() + '/'  + $('#tam_hoja').val(), '_blank');
 
 					return true;
 				}

@@ -44,7 +44,6 @@ use ZipArchive;
 
 class BoletinController extends Controller
 {
-	
 	public function __construct()
     {
 		$this->middleware('auth');
@@ -108,7 +107,10 @@ class BoletinController extends Controller
         return View::make('calificaciones.boletines.revisar2',compact('estudiantes','asignaturas','colegio','periodo','anio','calificaciones','escala_valoracion','observaciones'))->render();
 		
     }
-
+    
+    /**
+     * 
+     */
     public function consultar_preinforme($periodo_id, $curso_id, $estudiante_id)
     {
         $periodo = Periodo::find($periodo_id);
@@ -166,7 +168,10 @@ class BoletinController extends Controller
         $parametros = config('calificaciones');
         return view( 'calificaciones.boletines.form_imprimir', compact('cursos','periodos_lectivos', 'formatos', 'miga_pan', 'parametros' ) );
     }
-	
+    
+    /**
+     * 
+     */
 	public function generarPDF( Request $request )
 	{
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
@@ -184,8 +189,11 @@ class BoletinController extends Controller
         //return $view; 
 		return $pdf->download('boletines_del_curso_'.$curso->descripcion.'.pdf');
 	}
-	
-	public function delete_pdfs_curso( $curso_id )
+    
+    /**
+     * 
+     */
+	public function delete_pdfs_of_folder_of_curso_id( $curso_id )
 	{
         $folderName = '/app/pdf_boletines_curso_id_' . $curso_id;
         
@@ -195,7 +203,10 @@ class BoletinController extends Controller
 
         return 1;
 	}
-	
+    
+    /**
+     * 
+     */
 	public function generar_pdf_un_boletin( Request $request )
 	{
         $firmas = $this->almacenar_imagenes_de_firmas( $request );
@@ -208,31 +219,22 @@ class BoletinController extends Controller
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
 
+        $estudiante = Estudiante::find((int)$request->estudiante_id);
+
         $nombrearchivo = uniqid() . '.pdf';
+        if ($estudiante != null) {
+            $nombrearchivo = str_slug( $estudiante->tercero->descripcion ) . '-' . uniqid() . '.pdf';
+        }
 
         Storage::put( 'pdf_boletines_curso_id_' . $request->curso_id . '/' . $nombrearchivo, $pdf->output());
 
         return 'true';
 	}
-	
-	public function generar_html_un_boletin( Request $request )
-	{
-        $firmas = $this->almacenar_imagenes_de_firmas( $request );
-
-        $view = $this->get_view_for_pdf($request->all(), $firmas);
-        
-        $nombrearchivo = 'html_boletines_curso_id_' . $request->curso_id . '.htmls';
-        
-        if ( Storage::exists($nombrearchivo) ) {
-            Storage::append($nombrearchivo, $view);
-        }else{
-            Storage::put($nombrearchivo, $view);
-        }
-        
-        return 1;
-	}
     
-    public function descargar_pdfs_curso($curso_id)
+    /**
+     * 
+     */
+    public function create_zip_of_folder_of_curso_id($curso_id)
     {
         $zip = new ZipArchive;
    
@@ -241,8 +243,10 @@ class BoletinController extends Controller
 
         $path_complete = storage_path() . '/app/' . $fileName;
         
-        Storage::delete( $path_complete );
-   
+        if (file_exists($path_complete)) {
+            unlink( $path_complete );
+        }
+
         if ($zip->open($path_complete, ZipArchive::CREATE) === TRUE)
         {
         	// Folder files to zip and download
@@ -262,7 +266,22 @@ class BoletinController extends Controller
         return response()->download($path_complete);
     }
     
-    public function descargar_pdfs_curso_v2($curso_id,$tam_hoja)
+    /**
+     * 
+     */
+    public function download_zip_of_curso_id($curso_id)
+    {
+        $fileName = 'pdf_boletines_curso_id_' . $curso_id . '.zip';
+
+        $path_complete = storage_path() . '/app/' . $fileName;
+
+        return response()->download($path_complete);
+    }
+    
+    /**
+     * 
+     */
+    public function merge_pdfs_and_download_by_curso($curso_id)
     {
         // MERGE PDFs
         $folderName = '/app/pdf_boletines_curso_id_' . $curso_id;
@@ -284,7 +303,10 @@ class BoletinController extends Controller
     	// Download the generated PDF
         return $oMerger->download();
     }
-
+    
+    /**
+     * 
+     */
     public function get_view_for_pdf($data_request, $firmas, $with_page_breaks = true)
     {
         $colegio = Auth::user()->empresa->colegio;
@@ -364,7 +386,10 @@ class BoletinController extends Controller
 
         return $view;
     }
-
+    
+    /**
+     * 
+     */
     public function get_periodos_para_columnas($periodo, $operador)
     {
         $periodos = Periodo::get_activos_periodo_lectivo( $periodo->periodo_lectivo_id );
@@ -393,7 +418,10 @@ class BoletinController extends Controller
 
         return $new_periodos;
     }
-
+    
+    /**
+     * 
+     */
     public function get_view_for_pdf_boletines_6($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros, $with_page_breaks)
     {
         $lbl_numero_periodo = $this->get_label_periodo($periodo);
@@ -422,14 +450,20 @@ class BoletinController extends Controller
 
         return View::make( 'calificaciones.boletines.pdf_boletines_6', compact( 'all_boletines','curso', 'tam_hoja', 'tam_letra','margenes', 'mostrar_areas'))->render();
     }
-
+    
+    /**
+     * 
+     */
     public function get_view_for_pdf_boletines_7($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros, $with_page_breaks)
     {
         $lbl_calificaciones_aux = (new CalificacionesService())->get_object_calificaciones_auxiliares($periodo->id, $curso->id);
 
         return  View::make('calificaciones.boletines.'.$formato, compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'datos','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','ancho_columna_asignatura','mostrar_logros','lbl_calificaciones_aux', 'with_page_breaks') )->render();
     }
-
+    
+    /**
+     * 
+     */
     public function dividir_lineas_cuerpo_boletin($lineas,$cantidad_caracteres_para_proxima_pagina)
     {
         $cant_caracteres = 0;
@@ -463,7 +497,10 @@ class BoletinController extends Controller
 
         return $obj_lineas;
     }
-
+    
+    /**
+     * 
+     */
     public function get_label_periodo($periodo)
     {
         $lbl_numero_periodo = '';
@@ -496,6 +533,9 @@ class BoletinController extends Controller
         return $lbl_numero_periodo;
     }
 
+    /**
+     * 
+     */
     public function preparar_datos_boletin( $periodo, $curso, $matriculas, $mostrar_fallas, $mostrar_nombre_docentes, $mostrar_usuarios_estudiantes, $mostrar_notas_auxiliares, $mostrar_notas_periodos_anteriores )
     {
         $all_passwords = collect([]);
@@ -712,7 +752,10 @@ class BoletinController extends Controller
         
         return $datos->estudiantes;
     }
-
+    
+    /**
+     * 
+     */
     public function get_inasistencias_estudiante_asignatura( $asistencias_del_curso_en_el_periodo, $estudiante_id, $asignatura_id)
     {
         $cant_fallas = 0;
@@ -725,13 +768,19 @@ class BoletinController extends Controller
         
         return $cant_fallas;
     }
-
+    
+    /**
+     * 
+     */
     public function get_profesor_de_la_asignatura( $profesores_del_curso_en_el_periodo_lectivo, $asignatura_id )
     {
         return $profesores_del_curso_en_el_periodo_lectivo->where('id_asignatura',$asignatura_id)
                                     ->first();
     }
-
+    
+    /**
+     * 
+     */
     public function get_escala_valoracion($escalas_valoracion_periodo_lectivo, $valor_calificacion)
     {
         foreach ($escalas_valoracion_periodo_lectivo as $escala) {
@@ -743,7 +792,10 @@ class BoletinController extends Controller
 
         return null;
     }
-
+    
+    /**
+     * 
+     */
     public function get_logros_adicionales( $logros_del_curso_en_el_periodo, $calificacion, $asignatura_id )
     {
         $vec_logros = explode( ",", $calificacion->logros);
@@ -758,7 +810,10 @@ class BoletinController extends Controller
 
         return $all_logros;
     }
-
+    
+    /**
+     * 
+     */
     public function almacenar_imagenes_de_firmas( $request )
     {
         $firmas = [];
@@ -779,8 +834,10 @@ class BoletinController extends Controller
 
         return $firmas;
     }
-	
-    // Muestra formulario para el cálculo del puesto (g = get)
+    
+    /**
+     * Muestra formulario para el cálculo del puesto (g = get)
+     */
 	public function calcular_puesto_g()
     {
         $cursos = $this->get_array_cursos_segun_usuario();

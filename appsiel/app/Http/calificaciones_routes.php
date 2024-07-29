@@ -60,13 +60,14 @@ Route::post('calificaciones/boletines/revisar2', ['as' => 'revision', 'uses' =>'
 Route::get('/calificaciones/boletines/imprimir', 'Calificaciones\BoletinController@imprimir');
 Route::post('/calificaciones/boletines/generarPDF', 'Calificaciones\BoletinController@generarPDF');
 Route::post('calif_generar_pdf_un_boletin', 'Calificaciones\BoletinController@generar_pdf_un_boletin');
-Route::get('calif_descargar_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@descargar_pdfs_curso');
+Route::get('calif_create_zip_of_folder_of_curso_id/{curso_id}', 'Calificaciones\BoletinController@create_zip_of_folder_of_curso_id');
+Route::get('calif_download_zip_of_curso_id/{curso_id}', 'Calificaciones\BoletinController@download_zip_of_curso_id');
+
 Route::get('calif_eliminar_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@eliminar_pdfs_curso');
 
 
-Route::get('calif_delete_pdfs_curso/{curso_id}', 'Calificaciones\BoletinController@delete_pdfs_curso');
-Route::post('calif_generar_html_un_boletin', 'Calificaciones\BoletinController@generar_html_un_boletin');
-Route::get('calif_descargar_pdfs_curso_v2/{curso_id}/{tam_hoja}', 'Calificaciones\BoletinController@descargar_pdfs_curso_v2');
+Route::get('calif_delete_pdfs_of_folder_of_curso_id/{curso_id}', 'Calificaciones\BoletinController@delete_pdfs_of_folder_of_curso_id');
+Route::get('calif_merge_pdfs_and_download_by_curso/{curso_id}', 'Calificaciones\BoletinController@merge_pdfs_and_download_by_curso');
 
 
 // Calcular puesto

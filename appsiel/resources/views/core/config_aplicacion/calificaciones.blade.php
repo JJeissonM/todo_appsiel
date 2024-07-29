@@ -230,7 +230,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$forma_generar_pdfs = '0';
+								if( isset($parametros['forma_generar_pdfs'] ) )
+								{
+									$forma_generar_pdfs = $parametros['forma_generar_pdfs'];
+								}
+							?>
+							{{ Form::bsSelect('forma_generar_pdfs', $forma_generar_pdfs, 'Forma de generar los PDFs', [ 'Un solo PDF con todos los estudiantes.','Un PDF individual por cada estudiante (Archivo comprimido)' ], ['class'=>'form-control']) }}							
 						</div>
 					</div>
 

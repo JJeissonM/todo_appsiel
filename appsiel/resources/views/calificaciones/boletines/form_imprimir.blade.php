@@ -77,6 +77,15 @@
 					</div>
 
 		    	</div>
+				
+				@if( config('calificaciones.modo_impresion_boletines') == 'ajax')
+
+					<div class="well">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect('forma_generar_pdfs', $parametros['forma_generar_pdfs'], 'Forma de generar los PDFs',['Un solo PDF con todos los estudiantes.','Un PDF individual por cada estudiante (Archivo comprimido)'],[]) }}
+						</div>
+					</div>
+				@endif
 
 				<div style="padding:5px;" align="center">
 					@if( config('calificaciones.modo_impresion_boletines') == 'ajax')
@@ -93,12 +102,19 @@
 					@endif				
 				</div>
 
+				<div style="padding:5px; display: none; text-align: center; color: red;" id="message_counting">
+					Por favor espere.
+					<br>
+					Generando PDFs... <span id="counter" style="color:#9c27b0"></span> restantes
+				</div>
+
 				<div style="padding:5px; display: none; text-align: center; color: red;" id="message_print">
 					El informe se generó en una nueva ventana del navegador.
 					<br>
 					Deben estar activas las ventanas emergentes.
+					<br>
+					<button class="btn btn-sm btn-info" id="download_zip_again">Si el archivo no se descargó, haga clic aquí para descargar nuevamente</button>
 				</div>
-
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
 
@@ -115,6 +131,7 @@
 	<script type="text/javascript">
 	
 		var arr_ids_estudiantes;
+		var restantes;
 		
 		$(document).ready(function(){
 			
@@ -132,6 +149,7 @@
 				$('#periodo_id').html('<option value=""></option>');
 				if ( $(this).val() == '') { return false; }
 				$('#message_print').hide();
+				$('#message_counting').hide();
 
 				var periodo_lectivo_id = $('#periodo_lectivo_id').val();
 
@@ -155,12 +173,14 @@
 			$("#periodo_id").on('change',function(){
 				if ( $(this).val() == '') { return false; }
 				$('#message_print').hide();
+				$('#message_counting').hide();
 				$('#curso_id').focus();
 			});
 
 			$("#curso_id").on('change',function(){
 				if ( $(this).val() == '') { return false; }
 				$('#message_print').hide();
+				$('#message_counting').hide();
 				
 				if( $('#estudiante_id').html() !== undefined )
 				{
@@ -189,18 +209,9 @@
 			});
 
 			
-			$("#estudiante_id").on('change',function(){
-				
+			$("#estudiante_id").on('change',function(){				
 				$('#message_print').hide();
-
-				if ( $(this).val() == '') { 
-					$('#btn_imprimir2').hide();
-					$('#btn_generar_pdfs').show();
-				}else{
-					$('#btn_imprimir2').show();
-					$('#btn_generar_pdfs').hide();
-				}
-				
+				$('#message_counting').hide();
 			});
 
 			$("#btn_imprimir").on('click',function(){
@@ -220,7 +231,6 @@
 				
 				$('#formulario').submit();
 			});
-			
 
 			$('#btn_generar_pdfs').click(function(event){
         
@@ -234,25 +244,42 @@
 				$(this).children('.fa-print').attr('class','fa fa-spinner fa-spin');
 				$('#div_cargando').show();
 				$('#message_print').hide();
+				$('#message_counting').show();
 
 				var arr_ids = '0';
-				$("#estudiante_id option").each(function(i){
-					if ($.isNumeric( $(this).val() )) {
-						arr_ids += ',' + $(this).val() ;
-					}					
-				});
+				if ( $("#estudiante_id").val() == '' ) { 
+					$("#estudiante_id option").each(function(i){
+						if ($.isNumeric( $(this).val() )) {
+							arr_ids += ',' + $(this).val() ;
+						}
+					});
+				}else{
+					arr_ids += ',' + $("#estudiante_id").val() ;
+				}				
 
 				$("#ids_estudiantes").val( '[' + arr_ids + ']' );
 
 				generar_pdf_boletines();
 			});
 
+			/*
+			 * download_zip_again
+			*/
+			$('#download_zip_again').click(function(event){        
+				event.preventDefault();
+				window.open( '../../calif_download_zip_of_curso_id/' + $('#curso_id').val(), '_blank');
+			});
+
 			function generar_pdf_boletines()
 			{
 				arr_ids_estudiantes = JSON.parse($("#ids_estudiantes").val());
-				arr_ids_estudiantes.shift();
+				arr_ids_estudiantes.shift(); // Retirar ID cero (0) del select			
+
+				restantes = arr_ids_estudiantes.length;
+
+				$('#counter').html( restantes );
 				
-				$.get("../../calif_delete_pdfs_curso" + "/" + $('#curso_id').val(), function(respuesta){ 
+				$.get("../../calif_delete_pdfs_of_folder_of_curso_id" + "/" + $('#curso_id').val(), function(respuesta){ 
 					// fires off the first call 
 					ejecucion_recursiva_generar_un_boletin();					
 				});
@@ -261,23 +288,28 @@
 			// The recursive function 
 			function ejecucion_recursiva_generar_un_boletin() { 
 				
-				// terminate if array exhausted 
+				// Si ya se generaron todos los PDFs
 				if (arr_ids_estudiantes.length === 0) 
 				{
 					$('#div_cargando').hide();
 					$('#btn_generar_pdfs').children('.fa-spinner').attr('class','fa fa-print');
 					$('#message_print').show();
+					$('#message_counting').hide();
 					
-					window.open( '../../calif_descargar_pdfs_curso_v2/' + $('#curso_id').val() + '/'  + $('#tam_hoja').val(), '_blank');
-					//window.open( '../../calif_descargar_pdfs_curso/' + $('#curso_id').val(), '_blank');
+					if ( $('forma_generar_pdfs').val() == 0) {
+						// Un Solo PDF
+						window.open( '../../calif_merge_pdfs_and_download_by_curso/' + $('#curso_id').val(), '_blank');
+					}else{
+						// PDFs individuales
+						window.open( '../../calif_create_zip_of_folder_of_curso_id/' + $('#curso_id').val(), '_blank');
+					}
 
 					return true;
 				}
 
 				// pop top value 
 				var estudiante_id = arr_ids_estudiantes[0];
-				arr_ids_estudiantes.shift(); 
-				//var url = '../../calif_generar_pdf_un_boletin';
+				arr_ids_estudiantes.shift();
 				var url = '../../calif_generar_pdf_un_boletin';
 
 				var formData = new FormData(document.getElementById('formulario'));
@@ -293,6 +325,8 @@
 					processData: false
 				})
 				.done(function(res){
+					restantes--;
+					document.getElementById('counter').innerHTML = restantes;
 					ejecucion_recursiva_generar_un_boletin();
 				});
 			}
