@@ -92,6 +92,7 @@ class ReportsServices
         $arr_consecutivos = [];
         $arr_core_tipo_transaccion_id = [];
         $arr_core_tipo_doc_app_id = [];
+        $arr_fechas = [];
         foreach ($documentos_pdv as $documento) {
             $arr_consecutivos[] = $documento->consecutivo;
 
@@ -102,14 +103,19 @@ class ReportsServices
             if ( !in_array($documento->core_tipo_doc_app_id, $arr_core_tipo_doc_app_id)) {
                 $arr_core_tipo_doc_app_id[] = $documento->core_tipo_doc_app_id;
             }
+
+            if ( !in_array($documento->fecha, $arr_fechas) ) {
+                $arr_fechas[] = $documento->fecha;
+            }
         }
 
         return TesoMovimiento::where([
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ]
                                 ])
-                                ->whereIn('core_tipo_transaccion_id',$arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id',$arr_core_tipo_doc_app_id)
-                                ->whereIn('consecutivo',$arr_consecutivos)
+                                ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id', $arr_core_tipo_doc_app_id)
+                                ->whereIn('consecutivo', $arr_consecutivos)
+                                ->whereIn('fecha', $arr_fechas)
                                 ->get();
     }
 

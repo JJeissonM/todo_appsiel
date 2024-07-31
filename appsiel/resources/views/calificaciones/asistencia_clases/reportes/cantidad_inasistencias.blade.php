@@ -16,21 +16,39 @@
 	<thead>
 	    <tr>
 	        <th>Estudiante</th>
-	        <th>Cantidad de fallas</th>
+	        <th>Cant. fallas</th>
+	        <th>Detalles</th>
 	    </tr>
 	</thead>
 	<tbody>
 	    <?php $i=0; ?>
-	    @foreach ($registros as $fila)	    
+	    @foreach ($matriculas as $matricula)
+			<?php 
+				$fallas = $registros->where('id_estudiante',$matricula->estudiante->id)->where('asistio','No');
+			?>
 	    	<tr>
-	            <td> {{ App\Matriculas\Estudiante::get_nombre_completo($fila->id_estudiante) }} </td>
-	            <td> {{ $fila->cantidad }} </td>
+	            <td> {{ $matricula->estudiante->tercero->descripcion }} </td>
+	            <td align="center"> {{ $fallas->count() }} </td>
+	            <td>
+					<ul>
+						@foreach ($fallas as $falla)
+							<li> 
+								Fecha: {{ $falla->fecha }} <br>
+								Asignatura: {{ $falla->asignatura->descripcion }} <br>
+								Anotación: {{ $falla->anotacion }} <br>
+							</li>
+						@endforeach
+					</ul> 	
+				</td>
 	        </tr>
-	        <?php $i += $fila->cantidad; ?>
+	        <?php
+				$i += $registros->where('id_estudiante',$matricula->estudiante->id)->where('asistio','No')->count();
+			?>
 	    @endforeach
 	    	<tr>
 	            <td> Total fallas</td>
-	            <td> {{ $i }} </td>
+	            <td align="center"> {{ $i }} </td>
+	            <td> &nbsp;</td>
 	        </tr>
 	</tbody>
 </table>

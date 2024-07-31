@@ -57,24 +57,18 @@
         $arr_header[] = translate_day( date_format($actual_date,"l") ) . '/' . date_format($actual_date,"d");        
         date_add($actual_date, date_interval_create_from_date_string('1 days'));
     }
-    //$arr_header[] = 'Total';
-    
-    //dd($registros);
-    
-    //dd($estudiantes);
-
 ?>
 <div class="table-responsive">
 <table class="table table-bordered table-striped">
     {{ Form::bsTableHeader($arr_header) }}
 	<tbody>
 	    <?php $i=0; ?>
-	    @foreach ($estudiantes as $estudiante)	    
+	    @foreach ($matriculas as $matricula )	    
 	    	<tr>
-	            <td> {{ $estudiante->tercero->descripcion }} </td>
+	            <td> {{ $matricula->estudiante->tercero->descripcion }} </td>
                 @foreach ($arr_dates as $obj_date)
                     <?php 
-                        $asistencia = $registros->where('id_estudiante',$estudiante->id)->where('fecha',$obj_date->date)->first();
+                        $asistencia = $registros->where('id_estudiante',$matricula->estudiante->id)->where('fecha',$obj_date->date)->first();
                         //dd($asistencia);
                         $icono = '--';
                         if($asistencia != null)

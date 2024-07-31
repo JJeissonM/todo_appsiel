@@ -180,7 +180,7 @@ class AsistenciaClaseController extends Controller
         return view('calificaciones.asistencia_clases.reportes',compact('miga_pan','registros'));
     }
 
-    public function generar_reporte($fecha_inicial,$fecha_final,$curso_id,$tipo_reporte)
+    public function generar_reporte($fecha_inicial, $fecha_final, $curso_id, $tipo_reporte)
     {
         $colegio = Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
 
@@ -193,15 +193,16 @@ class AsistenciaClaseController extends Controller
 
         $estudiantes_matriculados = Matricula::estudiantes_matriculados($curso_id, PeriodoLectivo::get_actual()->id, 'Activo');
         
-        $estudiantes = [];
+        $matriculas = [];
         foreach ($estudiantes_matriculados as $key => $matricula) {
-            $estudiantes[] = $matricula->estudiante;
+            $matriculas[] = $matricula;
         }
 
         $registros = AsistenciaClase::whereBetween('fecha', [$fecha_inicial, $fecha_final])
                                 ->where( [ 
                                         ['curso_id', '=', $curso_id] 
                                     ] )
+                                ->orderBy('fecha')
                                 ->get();
 
         $curso = Curso::find($curso_id);
@@ -210,6 +211,6 @@ class AsistenciaClaseController extends Controller
          * $tipo_reporte = { planilla_asistencias | cantidad_inasistencias }
          */
 
-        return View::make('calificaciones.asistencia_clases.reportes.' . $tipo_reporte, compact('registros', 'fecha_inicial','fecha_final','curso', 'estudiantes' ));
+        return View::make('calificaciones.asistencia_clases.reportes.' . $tipo_reporte, compact('registros', 'fecha_inicial','fecha_final','curso', 'matriculas' ));
     }
 }

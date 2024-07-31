@@ -28,7 +28,7 @@ class AsistenciaClase extends Model
 
     public function asignatura()
     {
-        return $this->belongsTo(Estudiante::class,'asignatura_id');
+        return $this->belongsTo(Asignatura::class,'asignatura_id');
     }
 
     public static function consultar_registros($nro_registros, $search)
