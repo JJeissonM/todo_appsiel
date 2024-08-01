@@ -45,13 +45,13 @@ class FacturaGeneral
       $this->env = config('facturacion_electronica.fe_ambiente'); //'PRUEBAS' || 'PRODUCCION'
    }
 
-   public function procesar_envio_factura( $factura_doc_encabezado = null )
+   public function procesar_envio_factura( $factura_doc_encabezado )
    {
 
       switch ( $this->tipo_transaccion )
       {
          case 'factura':
-            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura();
+            $json_doc_electronico_enviado = $this->preparar_cadena_json_factura( $factura_doc_encabezado );
             break;
          
          case 'nota_credito':
@@ -90,6 +90,10 @@ class FacturaGeneral
       $array_respuesta = json_decode( (string) $response->getBody(), true );
 
       $array_respuesta['codigo'] = $response->getStatusCode();
+
+      if ( !isset( $array_respuesta['number'] ) ) {
+         $array_respuesta['number'] = $factura_doc_encabezado->get_label_documento();
+      }
 
       $obj_resultado = new ResultadoEnvio;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );

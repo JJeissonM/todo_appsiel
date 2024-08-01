@@ -156,33 +156,32 @@ class FacturaController extends TransaccionController
     {
         $vtas_doc_encabezado = Factura::find( $id );
 
-        if ( empty( $vtas_doc_encabezado->tipo_documento_app->resolucion_facturacion->toArray() ) )
-        {
-           return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. El prefijo ' . $vtas_doc_encabezado->tipo_documento_app->prefijo . ' no tiene una resolución asociada.');
-        }
+        $ruta_show = 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
 
-        $result = (new DocumentHeaderService())->validar_datos_tercero($vtas_doc_encabezado->cliente->tercero);
+        $error_message = $this->validar_resolucion_y_tercero( $vtas_doc_encabezado );
 
-        if ( $result->status == 'error' )
+        if ( $error_message != '' )
         {
-            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no puede ser enviado. <br> El cliente presenta inconsistencia en sus datos básicos: ' . $result->message);
+           return redirect( $ruta_show )->with( 'mensaje_error',  $error_message );
         }
 
         $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
 
         if ( $mensaje->tipo == 'mensaje_error' )
         {
-            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+            return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
         }
 
         $documento_electronico = new FacturaGeneral( $vtas_doc_encabezado, 'factura' );
+
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
         
         $errores_einvoice =  $documento_electronico->get_errores($json_dataico);
 
         if ( $errores_einvoice != '' ) {
-            return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( 'mensaje_error', 'Documento no pudo ser enviado. <br> Presenta inconsistencias: ' . $errores_einvoice);
+            return redirect( $ruta_show )->with( 'mensaje_error', 'Documento no pudo ser enviado. <br> Presenta inconsistencias: ' . $errores_einvoice);
         }
+        
 
         if (isset($json_dataico->invoice)) {
             if ($json_dataico->invoice->dian_status != 'DIAN_RECHAZADO') {
@@ -194,7 +193,7 @@ class FacturaController extends TransaccionController
                     'contenido' => '<h3>Documento ya fue enviado correctamente hacia el proveedor tecnológico.</h3>'
                 ];
     
-                return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+                return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
             }
         }
 
@@ -203,10 +202,36 @@ class FacturaController extends TransaccionController
             $this->contabilizar_factura($vtas_doc_encabezado);
         }
 
-        return redirect( 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+        return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
+    }
+
+    public function validar_resolucion_y_tercero( Factura $vtas_doc_encabezado )
+    {
+        $error_message = '';
+
+        if ( empty( $vtas_doc_encabezado->tipo_documento_app->resolucion_facturacion->toArray() ) )
+        {
+           $error_message = 'Documento no puede ser enviado. El prefijo ' . $vtas_doc_encabezado->tipo_documento_app->prefijo . ' no tiene una resolución asociada.';
+        }
+
+        $result = (new DocumentHeaderService())->validar_datos_tercero($vtas_doc_encabezado->cliente->tercero);
+
+        if ( $result->status == 'error' )
+        {
+            $error_message = 'Documento no puede ser enviado. <br> El cliente presenta inconsistencia en sus datos básicos: ' . $result->message;
+        }
+
+        return $error_message;
     }
     
     public function actualizar_fecha_y_enviar( $id )
+    {
+        $this->actualizar_fecha_documento( $id );
+
+        return redirect( url('/') . '/fe_factura_enviar/' . $id . '?id=21&id_modelo=244&id_transaccion=52');        
+    }
+
+    public function actualizar_fecha_documento( $id )
     {
         $vtas_doc_encabezado = Factura::find( $id );
 
@@ -220,8 +245,6 @@ class FacturaController extends TransaccionController
         $vtas_doc_encabezado->fecha_vencimiento = $fecha_vencimiento->format('Y-m-d');
         
         $vtas_doc_encabezado->save();
-
-        return redirect( url('/') . '/fe_factura_enviar/' . $id . '?id=21&id_modelo=244&id_transaccion=52');        
     }
 
     public function diferencia_en_dias_entre_fechas( string $fecha_inicial, string $fecha_final )
@@ -320,5 +343,58 @@ class FacturaController extends TransaccionController
 
         return redirect( 'fe_factura/'. $result->new_document_header_id.'?id=21&id_modelo=244&id_transaccion=52' )->with($result->status,$result->message);
     }
+
+    public function envio_masivo( int $doc_encabezado_id, bool $cambiar_fecha)
+    {
+        if ( $cambiar_fecha ) {
+            $this->actualizar_fecha_documento( $doc_encabezado_id );
+        }
+
+        $vtas_doc_encabezado = Factura::find( $doc_encabezado_id );
+
+        $error_message = $this->validar_resolucion_y_tercero( $vtas_doc_encabezado );
+
+        if ( $error_message != '' )
+        {
+           return 0;
+        }
+
+        $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();
+
+        if ( $mensaje->tipo == 'mensaje_error' )
+        {
+            return 0;
+        }
+
+        $documento_electronico = new FacturaGeneral( $vtas_doc_encabezado, 'factura' );
+
+        $json_dataico = $documento_electronico->get_einvoice_in_dataico();
+        
+        $errores_einvoice =  $documento_electronico->get_errores($json_dataico);
+
+        if ( $errores_einvoice != '' ) {
+            return 0;
+        }
+
+        if (isset($json_dataico->invoice)) {
+            if ($json_dataico->invoice->dian_status != 'DIAN_RECHAZADO') {
+                // La factura ya está en DATAICO, pero no se reflejó en Appsiel
+                $this->contabilizar_factura($vtas_doc_encabezado);
     
+                $mensaje = (object)[
+                    'tipo'=>'flash_message',
+                    'contenido' => '<h3>Documento ya fue enviado correctamente hacia el proveedor tecnológico.</h3>'
+                ];
+    
+                return 1;
+            }
+        }
+
+        if ( $mensaje->tipo != 'mensaje_error' )
+        {
+            $this->contabilizar_factura($vtas_doc_encabezado);
+        }
+
+        return 1;
+    }
 }

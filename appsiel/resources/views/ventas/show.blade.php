@@ -177,7 +177,8 @@
 
 			});
 
-
+			/*
+			*/
             $(document).on('keyup','#tasa_descuento',function(event){
             	if( validar_input_numerico( $(this) ) )
 				{	
@@ -204,7 +205,9 @@
 					return false;
 				}
 			});
-
+			
+			/*
+			*/
 			function calcular_valor_descuento()
 			{
 				var valor_total_descuento = $('#precio_unitario').val() * $('#tasa_descuento').val() / 100 * $('#cantidad').val();
@@ -213,8 +216,8 @@
 				$('#valor_total_descuento').val( valor_total_descuento );
 			}
 
-
-
+			/*
+			*/
 			function calcular_precio_total()
 			{
 				var valor_total_descuento = parseFloat( $('#valor_total_descuento').val() );
@@ -227,7 +230,6 @@
 
 				$('#precio_total').val( precio_total );
 			}
-
 
             $('.btn_save_modal').click(function(event){
 

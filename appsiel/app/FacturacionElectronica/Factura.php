@@ -160,7 +160,7 @@ class Factura extends VtasDocEncabezado
         {
             case 'DATAICO':
                 $factura_dataico = new FacturaGeneral( $this, 'factura' );
-                $mensaje = $factura_dataico->procesar_envio_factura();
+                $mensaje = $factura_dataico->procesar_envio_factura( $this );
                 break;
             
             case 'TFHKA':

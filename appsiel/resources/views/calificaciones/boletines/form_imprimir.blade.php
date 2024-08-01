@@ -262,14 +262,6 @@
 				generar_pdf_boletines();
 			});
 
-			/*
-			 * download_zip_again
-			*/
-			$('#download_zip_again').click(function(event){        
-				event.preventDefault();
-				window.open( '../../calif_download_zip_of_curso_id/' + $('#curso_id').val(), '_blank');
-			});
-
 			function generar_pdf_boletines()
 			{
 				arr_ids_estudiantes = JSON.parse($("#ids_estudiantes").val());
@@ -330,6 +322,14 @@
 					ejecucion_recursiva_generar_un_boletin();
 				});
 			}
+
+			/*
+			* download_zip_again
+			*/
+			$('#download_zip_again').click(function(event){        
+				event.preventDefault();
+				window.open( '../../calif_download_zip_of_curso_id/' + $('#curso_id').val(), '_blank');
+			});
 
 			// Accordion
 			var acc = document.getElementsByClassName("accordion");
