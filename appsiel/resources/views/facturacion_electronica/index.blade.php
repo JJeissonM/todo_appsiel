@@ -57,13 +57,11 @@
         $('#btn_enviar_documentos').click(function(event){
         
             event.preventDefault();
-
-            //console.log( $('input[name="cambiar_fecha"]:checked').val() );
-
-            /**/
-            
-            if(!validar_requeridos()){
-                alert('Faltan campor por diligenciar.');
+            	
+            if ( !$("#opcion1").is(":checked") && !$("#opcion2").is(":checked") )
+            {
+                alert('Debe escoger una opción.');
+                $("#opcion1").focus();
                 return false;
             }
 
@@ -106,9 +104,7 @@
             // pop top value 
             var vtas_doc_encabezados_id = arr_vtas_doc_encabezados_ids_list[0];
             arr_vtas_doc_encabezados_ids_list.shift();
-            var url = 'fe_envio_masivo/' + vtas_doc_encabezados_id + '/' + $('input[name="cambiar_fecha"]:checked').val();//$('#cambiar_fecha').val();
-
-            //var formData = new FormData(document.getElementById('form_envio_masivo'));
+            var url = 'fe_envio_masivo/' + vtas_doc_encabezados_id + '/' + $('input[name="cambiar_fecha"]:checked').val();
 
             $.ajax({
                 url: url,

@@ -10,8 +10,8 @@
 			<br>
 			¿Desea cambiar la fecha para los docuentos anteriores a la fecha de HOY?
             <br>
-			<label class="radio-inline"> <input type="radio" name="cambiar_fecha" value="1" id="opcion1">Si</label>
-			<label class="radio-inline"> <input type="radio" name="cambiar_fecha" value="0" id="opcion2">No</label>
+			<label class="radio-inline"> <input type="radio" name="cambiar_fecha" value="1" id="opcion1" required="required">Si</label>
+			<label class="radio-inline"> <input type="radio" name="cambiar_fecha" value="0" id="opcion2" required="required">No</label>
 			<br>
 			Para hacer el envío masivo, haga click en el siguiente botón: <small> <button class="btn btn-xs btn-primary" id="btn_enviar_documentos" data-url="{{ url('fe_envio_masivo') }}"> <i class="fa fa-send"></i> Enviar </button> </small>
 		</div>
