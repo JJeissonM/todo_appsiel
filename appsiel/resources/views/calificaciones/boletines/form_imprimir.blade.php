@@ -288,7 +288,7 @@
 					$('#message_print').show();
 					$('#message_counting').hide();
 					
-					if ( $('forma_generar_pdfs').val() == 0) {
+					if ( $('#forma_generar_pdfs').val() == 0) {
 						// Un Solo PDF
 						window.open( '../../calif_merge_pdfs_and_download_by_curso/' + $('#curso_id').val(), '_blank');
 					}else{
