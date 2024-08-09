@@ -20,7 +20,7 @@ class Cliente extends Model
 	
 	protected $fillable = ['core_tercero_id', 'encabezado_dcto_pp_id', 'clase_cliente_id', 'lista_precios_id', 'lista_descuentos_id', 'vendedor_id','inv_bodega_id', 'zona_id', 'liquida_impuestos', 'condicion_pago_id', 'cupo_credito', 'bloquea_por_cupo', 'bloquea_por_mora', 'estado'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de cliente', 'Lista de precios', 'Lista de descuentos', 'Zona'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de cliente', 'Lista de precios', 'Lista de descuentos', 'Vendedor', 'Estado'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
@@ -104,7 +104,8 @@ class Cliente extends Model
             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
             ->leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_clientes.lista_precios_id')
             ->leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_clientes.lista_descuentos_id')
-            ->leftJoin('vtas_zonas', 'vtas_zonas.id', '=', 'vtas_clientes.zona_id')
+            ->leftJoin('vtas_vendedores', 'vtas_vendedores.id', '=', 'vtas_clientes.vendedor_id')
+            ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_vendedores.core_tercero_id')
             ->select(
                 'core_terceros.numero_identificacion AS campo1',
                 'core_terceros.descripcion AS campo2',
@@ -113,8 +114,9 @@ class Cliente extends Model
                 'vtas_clases_clientes.descripcion AS campo5',
                 'vtas_listas_precios_encabezados.descripcion AS campo6',
                 'vtas_listas_dctos_encabezados.descripcion AS campo7',
-                'vtas_zonas.descripcion AS campo8',
-                'vtas_clientes.id AS campo9'
+                'terceros_vendedores.descripcion AS campo8',
+                'vtas_clientes.estado AS campo9',
+                'vtas_clientes.id AS campo10'
             )
             ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
@@ -123,7 +125,8 @@ class Cliente extends Model
             ->orWhere("vtas_clases_clientes.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_listas_precios_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_zonas.descripcion", "LIKE", "%$search%")
+            ->orWhere("terceros_vendedores.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_clientes.estado", "LIKE", "%$search%")
             ->orderBy('vtas_clientes.created_at', 'DESC')
             ->paginate($nro_registros);
 
@@ -143,7 +146,8 @@ class Cliente extends Model
             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_clientes.clase_cliente_id')
             ->leftJoin('vtas_listas_precios_encabezados', 'vtas_listas_precios_encabezados.id', '=', 'vtas_clientes.lista_precios_id')
             ->leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_clientes.lista_descuentos_id')
-            ->leftJoin('vtas_zonas', 'vtas_zonas.id', '=', 'vtas_clientes.zona_id')
+            ->leftJoin('vtas_vendedores', 'vtas_vendedores.id', '=', 'vtas_clientes.vendedor_id')
+            ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_vendedores.core_tercero_id')
             ->leftJoin('core_ciudades', 'core_ciudades.id', '=', 'core_terceros.codigo_ciudad')
             ->select(
                 'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
@@ -155,7 +159,8 @@ class Cliente extends Model
                 'vtas_clases_clientes.descripcion AS CLASE_DE_CLIENTE',
                 'vtas_listas_precios_encabezados.descripcion AS LISTA_DE_PRECIOS',
                 'vtas_listas_dctos_encabezados.descripcion AS LISTA_DE_DESCUENTOS',
-                'vtas_zonas.descripcion AS ZONA'
+                'terceros_vendedores.descripcion AS VENDEDOR',
+                'vtas_clientes.estado AS ESTADO'
             )
             ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
@@ -164,7 +169,8 @@ class Cliente extends Model
             ->orWhere("vtas_clases_clientes.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_listas_precios_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_zonas.descripcion", "LIKE", "%$search%")
+            ->orWhere("terceros_vendedores.descripcion", "LIKE", "%$search%")
+            ->orWhere("vtas_clientes.estado", "LIKE", "%$search%")
             ->orderBy('vtas_clientes.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
