@@ -7,14 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class ListaDctoEncabezado extends Model
 {
     protected $table = 'vtas_listas_dctos_encabezados';
+    
     protected $fillable = ['descripcion', 'estado'];
+    
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Estado'];
+
     public static function consultar_registros($nro_registros, $search)
     {
         $registros = ListaDctoEncabezado::select(
             'vtas_listas_dctos_encabezados.descripcion AS campo1',
             'vtas_listas_dctos_encabezados.estado AS campo2',
-            'vtas_listas_dctos_encabezados.estado AS campo3'
+            'vtas_listas_dctos_encabezados.id AS campo3'
         )
             ->where("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_listas_dctos_encabezados.estado", "LIKE", "%$search%")
