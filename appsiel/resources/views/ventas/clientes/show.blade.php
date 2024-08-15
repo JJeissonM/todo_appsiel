@@ -51,6 +51,8 @@
 		@include('ventas.clientes.tabla_datos_contactos')
 
 		@include('ventas.clientes.tabla_datos_ventas')
+
+		@include('ventas.clientes.tabla_datos_auditoria')
 	</div>
 
 @endsection

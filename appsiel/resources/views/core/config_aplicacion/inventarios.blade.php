@@ -136,7 +136,7 @@
 
 				</div>
 
-				<h4> Parámetros por defecto creación de Ensambles automáticos  </h4>
+				<h4> Parámetros de Ensambles/Fabricaciones de Recetas/Kits</h4>
 				<hr>
 				<div class="row">
 
@@ -238,6 +238,29 @@
 
 					<div class="col-md-6">
 						&nbsp;
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$categoria_id_paquetes_con_materiales_ocultos = 0;
+								if( isset($parametros['categoria_id_paquetes_con_materiales_ocultos'] ) )
+								{
+									$categoria_id_paquetes_con_materiales_ocultos = $parametros['categoria_id_paquetes_con_materiales_ocultos'];
+								}
+							?>
+							{{ Form::bsSelect('categoria_id_paquetes_con_materiales_ocultos', $categoria_id_paquetes_con_materiales_ocultos, 'Categoría para paquetes con materiales ocultos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
 					</div>
 
 				</div>

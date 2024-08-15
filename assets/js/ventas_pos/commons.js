@@ -1102,11 +1102,18 @@ $(document).ready(function () {
     // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
     $(document).on('dblclick', '.elemento_modificar', function(){
 
-        if ($('#bloqueo_cambiar_precio_unitario').val() == 1 && $(this).attr('id') == 'elemento_modificar_precio_unitario') {            
-            $('#popup_alerta').show();
-            $('#popup_alerta').css('background-color', 'red');
-            $('#popup_alerta').text('No tiene permiso para modificar precios.');
-            return false;
+        if ($('#bloqueo_cambiar_precio_unitario').val() == 1 && $(this).attr('id') == 'elemento_modificar_precio_unitario') {
+            
+            var fila = $(this).closest("tr");
+            
+            var producto = productos.find(item => item.id === parseInt( fila.find('.inv_producto_id').text() ) );
+
+            if ( producto.inv_grupo_id != $('#categoria_id_paquetes_con_materiales_ocultos').val() ) {
+                $('#popup_alerta').show();
+                $('#popup_alerta').css('background-color', 'red');
+                $('#popup_alerta').text('No tiene permiso para modificar precios.');
+                return false;
+            }
         }
 
         $('#popup_alerta').hide();
