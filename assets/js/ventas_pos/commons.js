@@ -542,8 +542,6 @@ $(document).ready(function () {
                             $('#tab1').attr('class','tab-pane fade');
                             $('#tab3').attr('class','tab-pane fade active in');
 
-                            console.log('sip');
-
                             $('#btn_guardar_factura_electronica').focus();
                         }
 
@@ -836,8 +834,6 @@ $(document).ready(function () {
         var fila = $('#linea_ingreso_default');
 
         var string_fila = $.fn.generar_string_celdas( fila );
-
-        console.log(string_fila);
 
         if (string_fila == false) 
         {

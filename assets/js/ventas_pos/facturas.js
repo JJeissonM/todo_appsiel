@@ -219,7 +219,6 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
-	console.log('generando string celda', $('#lista_oculta_items_contorno_ids').text());
 	celdas[num_celda] = '<td style="display: none;"><div class="lista_oculta_items_contorno_ids">' + $('#lista_oculta_items_contorno_ids').text() + '</div></td>';
 
 	num_celda++;

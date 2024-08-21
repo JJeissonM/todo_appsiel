@@ -10,6 +10,17 @@ use App\Inventarios\RecetaCocina;
 
 class RecetasController extends ModeloController
 {
+    public function agregar_ingrediente_a_receta( Request $request )
+    {
+        RecetaCocina::create(
+            [ 'item_platillo_id' => $request->item_platillo_id ,
+            'item_ingrediente_id' => $request->item_ingrediente_id ,
+            'cantidad_porcion' => $request->cantidad_porcion ]
+        );
+
+        return redirect( 'web/' . $request->registro_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with( 'flash_message', 'Ingrediente agregado correctamente.' );
+    }
+    
     public function get_items_contorno()
     {
         return response()->json(

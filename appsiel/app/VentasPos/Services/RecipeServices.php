@@ -177,8 +177,7 @@ class RecipeServices
         $cantidad_registros = count($lineas_registros);
 
         for ($i = 0; $i < $cantidad_registros; $i++)
-        {
-            
+        {            
             if ( (int)$lineas_registros[$i]->inv_producto_id == 0 )
             {
                 continue;
@@ -191,9 +190,9 @@ class RecipeServices
                 continue;
             }
 
-            array_prepend( $arr_items_contorno_ids, $lineas_registros[$i]->inv_producto_id);
+            array_push( $arr_items_contorno_ids, $lineas_registros[$i]->inv_producto_id);
 
-            $nuevo_item_id = $this->get_nuevo_item_id($arr_items_contorno_ids);
+            $nuevo_item_id = $this->get_nuevo_item_id( $lineas_registros[$i]->inv_producto_id,$arr_items_contorno_ids);
 
             if ( $nuevo_item_id == null )
             {
@@ -206,33 +205,48 @@ class RecipeServices
         return $lineas_registros;
     }
 
-    public function get_nuevo_item_id( array $arr_items_contorno_ids)
+    public function get_nuevo_item_id( int $platillo_principal_id, array $arr_items_contorno_ids)
     {
-        $matched_ids_array = [];
-        $is_first = true;
-        foreach ($arr_items_contorno_ids as $key => $item_ingrediente_id) {
-            if ($is_first) {
-                $matched_ids_array = RecetaCocina::where([
-                    ['item_ingrediente_id', '=', $item_ingrediente_id]
-                ])->get()
-                    ->pluck('item_platillo_id')
-                    ->toArray();
-                $is_first = false;
-            }else{
-                $matched_ids_array = RecetaCocina::where([
-                    ['item_ingrediente_id', '=', $item_ingrediente_id]
-                ])
-                    ->whereIn('item_platillo_id', $matched_ids_array)
-                    ->get()
-                    ->pluck('item_platillo_id')
-                    ->toArray();
+        $matched_ids = RecetaCocina::where([
+            ['item_ingrediente_id', '=', $platillo_principal_id]
+        ])->get()
+            ->pluck('item_platillo_id')
+            ->toArray();
+
+        if (empty($matched_ids)) {
+            return null;
+        }
+
+        $grupos_platillos = RecetaCocina::whereIn('item_platillo_id', $matched_ids)->get()->groupBy('item_platillo_id');
+        
+        $keys_auxiliary_array = [];
+        foreach ($grupos_platillos as $item_platillo_id => $grupo) {
+            $key_array = (object)[
+                'item_platillo_id' => $item_platillo_id,
+                'arr_ids_items_ingredientes' => []
+            ];
+            
+            foreach ($grupo as $linea) {
+                $key_array->arr_ids_items_ingredientes[] =  $linea->item_ingrediente_id;
             }
 
-            if (empty($matched_ids_array)) {
-                return null;
-            }
-        }        
+            $keys_auxiliary_array[] = $key_array;
+        }
 
-        return $matched_ids_array[0];
+        foreach ($keys_auxiliary_array as $linea) {            
+
+            if ($this->sameElements($linea->arr_ids_items_ingredientes,$arr_items_contorno_ids)) {
+                return $linea->item_platillo_id;
+            }
+        }
+
+        return null;
+    }
+
+    public function sameElements($a, $b)
+    {
+        sort($a);
+        sort($b);
+        return $a == $b;
     }
 }
