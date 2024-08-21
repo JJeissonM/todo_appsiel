@@ -13,6 +13,11 @@
 			</thead>
 			<tbody>
 				@foreach( $productos as $item)
+					<?php 
+						if ( $item->mostrar_en_pagina_web == 0 || $item->estado != 'Activo' ) {
+							continue;
+						}
+					?>
 					<tr>
 						<td class="table-text">
 							@if((int)config('ventas_pos.cerrar_modal_al_seleccionar_producto'))

@@ -265,6 +265,61 @@
 
 				</div>
 
+				<h5> Manejo de Platillos con Contorno </h5>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$manejar_platillos_con_contorno = 0;
+								if( isset($parametros['manejar_platillos_con_contorno'] ) )
+								{
+									$manejar_platillos_con_contorno = $parametros['manejar_platillos_con_contorno'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_platillos_con_contorno', $manejar_platillos_con_contorno, 'Permitir el manejo de platillos con Contorno', ['No','Si'], []) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$categoria_id_platillos_con_contornos = 0;
+								if( isset($parametros['categoria_id_platillos_con_contornos'] ) )
+								{
+									$categoria_id_platillos_con_contornos = $parametros['categoria_id_platillos_con_contornos'];
+								}
+							?>
+							{{ Form::bsSelect('categoria_id_platillos_con_contornos', $categoria_id_platillos_con_contornos, 'Categoría para Platillos que manejan contornos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$categoria_id_items_contorno = 0;
+								if( isset($parametros['categoria_id_items_contorno'] ) )
+								{
+									$categoria_id_items_contorno = $parametros['categoria_id_items_contorno'];
+								}
+							?>
+							{{ Form::bsSelect('categoria_id_items_contorno', $categoria_id_items_contorno, 'Categoría para Ítems Contorno', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+						</div>
+					</div>
+
+				</div>
+
 
 				<h4> Parámetros por defecto creación Entradas de almacén  </h4>
 				<hr>

@@ -166,5 +166,6 @@ class RecipeServices
         return $obj_inv_docum_serv->create_doc_delivery_note( self::INV_DOC_HEADER_MODEL_NAME, $datos_remision, $bodega_default_id, 'Facturada' );
     }
 
+    
         
 }

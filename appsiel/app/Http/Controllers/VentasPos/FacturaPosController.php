@@ -25,7 +25,6 @@ use App\Core\TipoDocApp;
 
 use App\VentasPos\Services\AccumulationService;
 use App\VentasPos\Services\InventoriesServices;
-use App\VentasPos\Services\SalesServices;
 
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvProducto;
@@ -66,6 +65,7 @@ use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\DatafonoService;
+use App\VentasPos\Services\RecipeServices;
 use App\VentasPos\Services\TipService;
 
 class FacturaPosController extends TransaccionController
@@ -203,6 +203,10 @@ class FacturaPosController extends TransaccionController
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+
+        if ((int)config('inventarios.manejar_platillos_con_contorno')) {
+            $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+        }
 
         // Crear Registros del documento de ventas
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
@@ -441,6 +445,10 @@ class FacturaPosController extends TransaccionController
     {
         $lineas_registros = json_decode($request->lineas_registros);
         $total_factura = $this->get_total_factura_from_arr_lineas_registros($lineas_registros);
+
+        if ((int)config('inventarios.manejar_platillos_con_contorno')) {
+            $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+        }
 
         $doc_encabezado = FacturaPos::find($id);
         $doc_encabezado->fecha = $request->fecha;

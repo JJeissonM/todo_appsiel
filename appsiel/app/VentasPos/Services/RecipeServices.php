@@ -74,8 +74,6 @@ class RecipeServices
                 $lineas_desarme .= ',{"inv_producto_id":"' . $ingrediente['ingrediente']->id . '","Producto":"' . $ingrediente['ingrediente']->id . ' ' . $ingrediente['ingrediente']->descripcion . ' (' . $ingrediente['ingrediente']->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_ingrediente . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_ingrediente) . '"}';
             }
 
-            //$costo_unitario_platillo = $costo_total_ingredientes / $cantidad_a_ingresar;
-            //dd($costo_total_ingredientes, $cantidad_a_ingresar);
             $lineas_desarme .= ',';
             
             // Un solo registro de entrada para el platillo
@@ -174,5 +172,67 @@ class RecipeServices
         return $obj_inv_docum_serv->create_doc_delivery_note( self::INV_DOC_HEADER_MODEL_NAME, $datos_remision, $bodega_default_id, 'Facturada' );
     }
 
-        
+    public function cambiar_items_con_contornos($lineas_registros)
+    {
+        $cantidad_registros = count($lineas_registros);
+
+        for ($i = 0; $i < $cantidad_registros; $i++)
+        {
+            
+            if ( (int)$lineas_registros[$i]->inv_producto_id == 0 )
+            {
+                continue;
+            }
+
+            $arr_items_contorno_ids = explode(',',$lineas_registros[$i]->lista_oculta_items_contorno_ids);
+            
+            if ( $arr_items_contorno_ids[0] == '' )
+            {
+                continue;
+            }
+
+            array_prepend( $arr_items_contorno_ids, $lineas_registros[$i]->inv_producto_id);
+
+            $nuevo_item_id = $this->get_nuevo_item_id($arr_items_contorno_ids);
+
+            if ( $nuevo_item_id == null )
+            {
+                continue;
+            }
+            
+            $lineas_registros[$i]->inv_producto_id = $nuevo_item_id;
+        } // Fin por cada registro
+
+        return $lineas_registros;
+    }
+
+    public function get_nuevo_item_id( array $arr_items_contorno_ids)
+    {
+        $matched_ids_array = [];
+        $is_first = true;
+        foreach ($arr_items_contorno_ids as $key => $item_ingrediente_id) {
+            if ($is_first) {
+                $matched_ids_array = RecetaCocina::where([
+                    ['item_ingrediente_id', '=', $item_ingrediente_id]
+                ])->get()
+                    ->pluck('item_platillo_id')
+                    ->toArray();
+                $is_first = false;
+            }else{
+                $matched_ids_array = RecetaCocina::where([
+                    ['item_ingrediente_id', '=', $item_ingrediente_id]
+                ])
+                    ->whereIn('item_platillo_id', $matched_ids_array)
+                    ->get()
+                    ->pluck('item_platillo_id')
+                    ->toArray();
+            }
+
+            if (empty($matched_ids_array)) {
+                return null;
+            }
+        }        
+
+        return $matched_ids_array[0];
+    }
 }

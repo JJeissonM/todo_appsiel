@@ -3,8 +3,10 @@ function draw_items(lista_items)
     $('.filtros').html('');
     $.each(lista_items,function(key,item)
     {
-        var label = item.referencia + ' ' + item.descripcion + ' (' + item.id + ')';
-        $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');
+        if ( item.mostrar_en_pagina_web != 0 && item.estado == 'Activo') {
+            var label = item.referencia + ' ' + item.descripcion + ' (' + item.id + ')';
+            $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');
+        }        
     });
 }
 

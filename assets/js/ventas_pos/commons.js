@@ -229,8 +229,6 @@ function reset_tabla_ingreso_items()
     hay_productos = 0;
     numero_lineas = 0;
     $('#numero_lineas').text('0');
-
-    //agregar_la_linea_ini();
 }
 
 function reset_resumen_de_totales()
@@ -455,6 +453,7 @@ $(document).ready(function () {
 
     });
 
+    // Al presionar Enter en el ingreso del producto sea por ID, Referencia o Codigo de barras
     function agregar_linea_producto_ingresado(producto, barcode, barcode_precio_unitario, campo_busqueda)
     {
         tasa_impuesto = producto.tasa_impuesto;
@@ -489,7 +488,7 @@ $(document).ready(function () {
             calcular_valor_descuento();
             calcular_impuestos();
             calcular_precio_total();
-            agregar_nueva_linea();
+            agregar_nueva_linea(); // Solo cuando es por Codigo de barras
         }
     }
     
@@ -838,6 +837,8 @@ $(document).ready(function () {
 
         var string_fila = $.fn.generar_string_celdas( fila );
 
+        console.log(string_fila);
+
         if (string_fila == false) 
         {
             $('#popup_alerta').show();
@@ -864,6 +865,10 @@ $(document).ready(function () {
 
         numero_linea++;
         $('#efectivo_recibido').removeAttr('readonly');
+
+        if ($('#manejar_platillos_con_contorno').val() == 1) {
+            reset_component_items_contorno();
+        }
     }
 
     /*

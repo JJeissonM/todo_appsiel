@@ -251,9 +251,14 @@
 
     @include('ventas_pos.crud_factura_tabla_oculta_linea_ingreso_default_aux')
 
-    <!-- La ventana contiene la variable contenido_modal hacer un @ incl para que funcione-->
-    @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>'']) <!-- -->
-
+    <!-- 
+        La ventana contiene la variable $contenido_modal que se envia desde FacturaPosController.
+    -->
+    @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
+    
+    <!-- 
+       Esta venta modal se usa el resgistro de Otros Ingreso y Gastos.
+    -->
     @include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])
 
     <div id="div_plantilla_factura" style="display: none;">
@@ -303,7 +308,11 @@
     @if ( (int)config('ventas_pos.modulo_fe_activo'))
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?aux=' . uniqid())}}"></script>
     @endif
-    
+
+    @if ( (int)config('inventarios.manejar_platillos_con_contorno'))
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
+    @endif
+
     <script type="text/javascript">
         
         var url_raiz = "{{ url('/') }}";

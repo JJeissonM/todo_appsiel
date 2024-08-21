@@ -18,11 +18,14 @@ Route::get('producto/delete/ficha/{id}','Inventarios\ProductoController@delete_f
 Route::post('inv_agregar_ingrediente_a_receta','Inventarios\RecetasController@agregar_ingrediente_a_receta');
 Route::get('inv_cambiar_cantidad_porcion/{item_platillo_id}/{item_ingrediente_id}/{nueva_cantidad_porcion}', 'Inventarios\RecetasController@cambiar_cantidad_porcion');
 
+Route::get('inv_get_items_contorno', 'Inventarios\RecetasController@get_items_contorno');
 
 Route::get('get_ajax','Inventarios\InventarioController@get_ajax');
 
 // AL cambiar la selección de un producto en el formulario de ingreso_productos_2.blade.php
 Route::post('post_ajax','Inventarios\InventarioController@post_ajax');
+
+
 
 // CONSULTAS GENERALES
 Route::get('inv_consultar_productos','Inventarios\InventarioController@consultar_productos');

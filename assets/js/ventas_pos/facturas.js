@@ -219,11 +219,21 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
+	console.log('generando string celda', $('#lista_oculta_items_contorno_ids').text());
+	celdas[num_celda] = '<td style="display: none;"><div class="lista_oculta_items_contorno_ids">' + $('#lista_oculta_items_contorno_ids').text() + '</div></td>';
+
+	num_celda++;
+
 	celdas[num_celda] = '<td> &nbsp; </td>';
 
 	num_celda++;
 
-	celdas[num_celda] = '<td> <span style="background-color:#F7B2A3;">' + inv_producto_id + '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
+	var descripcion_item = $('#inv_producto_id').val();
+	if ($('#manejar_platillos_con_contorno').val() == 1) {
+		descripcion_item = cambiar_descripcion_item_ingresado( descripcion_item );
+	}
+
+	celdas[num_celda] = '<td> <span style="background-color:#F7B2A3;">' + inv_producto_id + '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' + descripcion_item + ' </div> </td>';
 
 	num_celda++;
 
@@ -349,8 +359,6 @@ function ventana_imprimir() {
 // Se llama desde el listado de productos (boton de la lupa)
 function mandar_codigo(item_id) {
 
-	//$('#myModal').modal("hide");
-
 	var producto = productos.find(item => item.id === parseInt(item_id));
 
 	tasa_impuesto = producto.tasa_impuesto;
@@ -373,13 +381,6 @@ function mandar_codigo(item_id) {
 	calcular_impuestos2();
 	calcular_precio_total2();
 	agregar_la_linea2();
-
-	/*
-	$('#inv_producto_id').val(producto.descripcion);
-	$('#precio_unitario').val(get_precio(producto.id));
-
-	$('#cantidad').select();
-	*/
 }
 
 // Agrega la linea completa del item (Usanda en Tactil)

@@ -30,6 +30,9 @@
         <td style="display: none;">
             <div class="valor_total_descuento"></div>
         </td>
+        <td style="display: none;">
+            <div id="lista_oculta_items_contorno_ids"></div>
+        </td>
         <td>
             <button id="btn_listar_items" style="border: 0; background: transparent;"><i
                         class="fa fa-btn fa-search"></i>&nbsp;</button>
