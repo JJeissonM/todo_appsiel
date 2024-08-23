@@ -201,6 +201,12 @@ class ProcesoController extends Controller
             $registro_costo_prom->costo_promedio = $costo_promedio;
             $registro_costo_prom->save();
         }
+
+        $item_platillo = InvProducto::find($item_platillo_id);
+        if ($item_platillo != null) {
+            $item_platillo->precio_compra = $costo_promedio;
+            $item_platillo->save();
+        }        
         
         $registro_receta = RecetaCocina::where([
             ['item_platillo_id','=',$item_platillo_id]

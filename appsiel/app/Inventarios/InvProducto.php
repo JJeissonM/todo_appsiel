@@ -112,6 +112,8 @@ class InvProducto extends Model
                                                 ])
                                         ->value('costo_promedio');
 
+                                        //dd($this->id, $costo_prom, $bodega_id, $this->precio_compra);
+
         if ( is_null( $costo_prom ) || $costo_prom <= 0 )
         {
             $costo_prom = $this->precio_compra;

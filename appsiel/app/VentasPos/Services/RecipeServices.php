@@ -23,12 +23,11 @@ class RecipeServices
 
     // item_ingrediente_id: el que se compra
     // item_platillo_id: el que se vende
-    public function get_lineas_registros_desarme( $pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha )
+    public function get_lineas_registros_ensamble( $cantidades_facturadas, $bodega_default_id, $parametros_config_inventarios, $fecha )
     {
         $motivo_salida = InvMotivo::find( (int)$parametros_config_inventarios['motivo_salida_id'] );
         $motivo_entrada = InvMotivo::find( (int)$parametros_config_inventarios['motivo_entrada_id'] );
 
-        $cantidades_facturadas = $this->resumen_cantidades_facturadas($pdv_id);
         $ids_items_facturados = $cantidades_facturadas->pluck('inv_producto_id')->all();
 
         $items_con_receta = RecetaCocina::whereIn('item_platillo_id', $ids_items_facturados)->groupBy('item_platillo_id')->get();
@@ -58,11 +57,16 @@ class RecipeServices
             foreach ($ingredientes as $ingrediente) {
                 $cantidad_a_sacar = $ingrediente['cantidad_porcion'] * $cantidad_a_ingresar;
 
+                // ---------------- Ensambles anidados
+                $this->create_document_making_for_ingredient( $ingrediente['ingrediente']->id, $cantidad_a_sacar, $bodega_default_id, $fecha, $parametros_config_inventarios );
+                // ----------------
+
                 $costo_unitario_ingrediente = $ingrediente['ingrediente']->get_costo_promedio( $bodega_default_id );
 
                 $costo_total_ingredientes += $costo_unitario_ingrediente * $ingrediente['cantidad_porcion'];
 
                 $arr[] = [
+                    'ingrediente_id' => $ingrediente['ingrediente']->id,
                     'ingrediente' => $ingrediente['ingrediente']->descripcion,
                     'cantidad_a_sacar'=> $cantidad_a_sacar,
                     'costo_unitario_ingrediente' => $costo_unitario_ingrediente,
@@ -117,10 +121,10 @@ class RecipeServices
         return $cantidades_facturadas;
     }
 
-    public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios )
+    public function create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios )
     {
-        $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha);
-        
+        $movimiento = $this->get_lineas_registros_ensamble($cantidades_facturadas, $bodega_default_id, $parametros_config_inventarios, $fecha);
+
         if ( gettype($movimiento) == "integer" )
         {
             return 0;
@@ -248,5 +252,25 @@ class RecipeServices
         sort($a);
         sort($b);
         return $a == $b;
+    }
+
+    public function create_document_making_for_ingredient( $item_ingrediente_id, $cantidad_facturada, $bodega_default_id, $fecha, $parametros_config_inventarios )
+    {        
+        $cantidades_facturadas = $this->get_obj_cantidades_facturadas_ingrediente( $cantidad_facturada, $item_ingrediente_id );
+        
+        return $this->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios );
+    }
+
+    public function get_obj_cantidades_facturadas_ingrediente( $cantidad_facturada, $item_ingrediente_id )
+    {
+        $cantidades2 = collect();
+
+        $aux_registro = new DocRegistro();
+        $aux_registro->cantidad_facturada = $cantidad_facturada;
+        $aux_registro->inv_producto_id = $item_ingrediente_id;
+
+        $cantidades2->push( $aux_registro );
+
+        return $cantidades2;
     }
 }

@@ -16,6 +16,7 @@ use App\Ventas\VtasMovimiento;
 use App\CxC\DocumentosPendientes;
 use App\Inventarios\Services\InvDocumentsService;
 use App\Tesoreria\TesoMovimiento;
+use App\VentasPos\DocRegistro;
 
 class AccumulationService
 {
@@ -60,7 +61,10 @@ class AccumulationService
         $parametros_config_inventarios = config('inventarios');
 
         $obj_inv_doc_serv = new RecipeServices();
-        return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios );
+        
+        $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id);
+        
+        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios );
     }
 
     public function accumulate_one_invoice($invoice_id)

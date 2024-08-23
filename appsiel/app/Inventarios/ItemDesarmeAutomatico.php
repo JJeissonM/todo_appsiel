@@ -23,8 +23,8 @@ class ItemDesarmeAutomatico extends Model
 {
     protected $table = 'inv_items_desarmes_automaticos'; 
 
-    // item_consumir_id: el que se compra
-    // item_producir_id: el que se vende
+    // item_consumir_id: el que se compra (para dar salida)
+    // item_producir_id: el que se vende (para dar entrada)
     // cantidad_proporcional: cantidad a producir por cada unidad (1) de item a consumir
     protected $fillable = [ 'item_consumir_id', 'item_producir_id', 'cantidad_proporcional', 'estado'];
 

@@ -85,6 +85,7 @@ class InventoriesServices
         $cantidades_facturadas = $this->resumen_cantidades_facturadas($pdv_id);
         $ids_items_facturados = $cantidades_facturadas->pluck('inv_producto_id')->all();
 
+        // Para dar entradas en MK
         $parametros_items_producir = ItemDesarmeAutomatico::whereIn('item_producir_id', $ids_items_facturados)->groupBy('item_producir_id')->get();
 
         /**

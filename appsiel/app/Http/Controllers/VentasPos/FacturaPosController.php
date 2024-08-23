@@ -685,7 +685,7 @@ class FacturaPosController extends TransaccionController
         {
             // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
             $obj_acumm_serv->hacer_preparaciones_recetas();
-        }        
+        }
 
         if ( !(int)config( 'ventas_pos.validar_existencias_al_acumular' ) )
         {
