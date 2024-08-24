@@ -55,19 +55,21 @@
                                                     @endif
                                                     <div class="item-inner">
                                                         <div class="ma-box-content" data-id="{{$item->id}}">
+                                                            <?php 
+                                                                $url_imagen_producto = '#';
+                                                                if ( $item->imagen != '' )
+                                                                {
+                                                                    $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen );
+                                                                }
+
+                                                                $destiny_url = url('/') . '/' . str_slug($item->descripcion) . '-p-' . $item->id;
+                                                            ?>
                                                             <input id="tasa_impuesto" type="hidden" value="{{$item->tasa_impuesto}}">
                                                             <input id="precio_venta" type="hidden" value="{{$item->precio_venta}}">
                                                             <div class="products clearfix">
-                                                                <a href="{{route('tienda.detalleproducto',$item->id)}}"
-                                                                   title="{{$item->descripcion}}" class="product-image">
+                                                                <a href="{{ $destiny_url }}"
+                                                                   title="{{ $item->descripcion }}" class="product-image">
                                                                     <div class="product-image"> 
-                                                                        <?php 
-                                                                            $url_imagen_producto = '#';
-                                                                            if ( $item->imagen != '' )
-                                                                            {
-                                                                                $url_imagen_producto = asset( config('configuracion.url_instancia_cliente') . 'storage/app/inventarios/' . $item->imagen );
-                                                                            }
-                                                                        ?>
                                                                         
                                                                         <img src="{{ $url_imagen_producto }}" loading="lazy"
                                                                              width="200" height="200" alt="{{$item->descripcion}}" onerror="imgError(this)" style="object-fit: contain;">
@@ -75,8 +77,8 @@
                                                                     </div>
                                                                 </a>
                                                             </div>
-                                                            <h2 class="font-oswald product-name text-center mx-2" onclick="window.location.href='{{route('tienda.detalleproducto',$item->id)}}'">
-                                                                <a href="{{route('tienda.detalleproducto',$item->id)}}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
+                                                            <h2 class="font-oswald product-name text-center mx-2" onclick="window.location.href='{{ $destiny_url }}'">
+                                                                <a href="{{ $destiny_url }}" title="{{$item->descripcion}}">{{$item->descripcion}}</a>
                                                             </h2>
                                                             <div class="price-box text-center">
                                                                 @if( $item->descuento == 0)

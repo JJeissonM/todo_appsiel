@@ -8,7 +8,6 @@ use App\Ventas\ListaPrecioDetalle;
 use App\web\Footer;
 use App\web\RedesSociales;
 use Illuminate\Http\Request;
-use Input;
 
 use App\Sistema\Modelo;
 use App\Sistema\Aplicacion;
@@ -16,6 +15,7 @@ use App\Sistema\Aplicacion;
 use App\Http\Controllers\Controller;
 use App\Inventarios\InvProducto;
 use App\Sistema\Html\MigaPan;
+use Illuminate\Support\Facades\Input;
 
 class ProductoController extends  Controller {
 
@@ -54,7 +54,6 @@ class ProductoController extends  Controller {
 
     public function delete_ficha($id)
     {
-
         $ficha  = InvFichaProducto::findOrFail($id);
         $result = $ficha->delete();
         if($result){

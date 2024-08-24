@@ -7,13 +7,16 @@ use App\web\Configuraciones;
 use App\web\Pagina;
 
 use App\Http\Controllers\Controller;
+use App\Inventarios\InvProducto;
 use App\web\Configuracionfuente;
 
 use App\web\Seccion;
 use App\web\Widget;
 use App\web\WidgetsElementsDesign;
 use App\User;
-
+use App\Ventas\ListaPrecioDetalle;
+use App\web\Footer;
+use App\web\RedesSociales;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -236,6 +239,21 @@ class PaginaController extends Controller
             return redirect('/inicio')->with('flash_message','La página a la que intenta acceder no existe.');
         }
 
+        // Para productos de la tienda online
+        $arr_slug = explode('-', $slug);
+        $arr_index = count($arr_slug) - 1;
+        if (isset($arr_slug[$arr_index-1])) {
+            if ( $arr_slug[$arr_index-1] == 'p' && is_numeric($arr_slug[$arr_index])  ) {
+                $footer = Footer::all()->first();
+                $redes = RedesSociales::all();
+                $inv_producto =  InvProducto::get_producto_pagina_web( (int)$arr_slug[$arr_index] );
+                $inv_producto->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), (int)$arr_slug[$arr_index] );
+
+                return view('web.tienda.detalle',compact('footer','redes','inv_producto'));
+            }
+        }
+
+        // Para Páginas de Artículos
         $pagina = Pagina::where('slug', $slug)->first();
 
         if (is_null($pagina)) {
