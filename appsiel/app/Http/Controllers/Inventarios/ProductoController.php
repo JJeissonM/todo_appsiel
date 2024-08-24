@@ -65,6 +65,10 @@ class ProductoController extends  Controller {
 
     }
 
+    /**
+     * Para motra la pagina del Producto en la tienda Online
+     */
+
     public function detalle_producto($id){
 
         $footer = Footer::all()->first();
@@ -72,7 +76,7 @@ class ProductoController extends  Controller {
         $inv_producto =  InvProducto::get_producto_pagina_web($id);
         $inv_producto->precio_venta = ListaPrecioDetalle::get_precio_producto( config('pagina_web.lista_precios_id'), date('Y-m-d'), $id );
 
-        return view('web.tienda.detalle',compact('footer','redes','inv_producto')); 
+        return view('web.tienda.detalle',compact('footer','redes','inv_producto'));
     }
 
 }
