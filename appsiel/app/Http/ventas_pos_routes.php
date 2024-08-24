@@ -75,3 +75,5 @@ Route::get('vtas_pos_reducir_porcentaje_facturacion/{fecha_ini}/{fecha_fin}/{por
 
 // fact. elct.
 Route::resource('pos_factura_electronica', 'VentasPos\FacturaElectronicaController');
+
+Route::get('pos_acumulacion_convertir_en_factura_electronica/{vtas_doc_encabezado_id}', 'VentasPos\FacturaElectronicaController@convertir_en_factura_electronica');

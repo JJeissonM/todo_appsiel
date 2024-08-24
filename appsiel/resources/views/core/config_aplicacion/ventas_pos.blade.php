@@ -473,6 +473,27 @@
 					</div>
 
 				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$convertir_facturas_pos_a_electronicas_en_acumulacion = '0';
+								if( isset($parametros['convertir_facturas_pos_a_electronicas_en_acumulacion'] ) )
+								{
+									$convertir_facturas_pos_a_electronicas_en_acumulacion = $parametros['convertir_facturas_pos_a_electronicas_en_acumulacion'];
+								}
+							?>
+							{{ Form::bsSelect('convertir_facturas_pos_a_electronicas_en_acumulacion', $convertir_facturas_pos_a_electronicas_en_acumulacion, 'Convertir Fact. POS a Fact. Electrónicas en Acumulación',['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 
 				<br><br>
 

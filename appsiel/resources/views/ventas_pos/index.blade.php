@@ -230,6 +230,8 @@
 
 	@include( 'components.design.ventana_modal2',[ 'titulo2' => '', 'texto_mensaje2' => '', 'clase_tamanio' => 'modal-lg' ] )
 
+	<input type="hidden" name="convertir_facturas_pos_a_electronicas_en_acumulacion" id="convertir_facturas_pos_a_electronicas_en_acumulacion" value="{{ (int)config('ventas_pos.convertir_facturas_pos_a_electronicas_en_acumulacion') }}">
+
 @endsection
 
 @section('scripts')
@@ -320,11 +322,22 @@
 			arr_ids_facturas.shift(); 
 			
 			// ajax request 
-			$.get("{{url('pos_acumular_una_factura')}}" + "/" + factura_id, function(){ 
-				// call completed - so start next request 
-				restantes--;
-				document.getElementById('contador_facturas').innerHTML = restantes;
-				getShelfRecursive();
+			$.get("{{url('pos_acumular_una_factura')}}" + "/" + factura_id, function(){
+
+				if ( $('#convertir_facturas_pos_a_electronicas_en_acumulacion').val() == 0) {
+					// call completed - so start next request 
+					restantes--;
+					document.getElementById('contador_facturas').innerHTML = restantes;
+					getShelfRecursive();	
+				}else{
+					$.get("{{url('pos_acumulacion_convertir_en_factura_electronica')}}" + "/" + factura_id, function(){
+						restantes--;
+						document.getElementById('contador_facturas').innerHTML = restantes;
+						getShelfRecursive();
+					});
+				}
+
+				
 			}); 
 		}
 
