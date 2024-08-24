@@ -106,13 +106,16 @@ class InvProducto extends Model
 
     public function get_costo_promedio( $bodega_id )
     {
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
+        {
+            $bodega_id = 0;
+        }
+
         $costo_prom = InvCostoPromProducto::where([
                                                     ['inv_bodega_id','=',$bodega_id],
                                                     ['inv_producto_id','=', $this->id]
                                                 ])
                                         ->value('costo_promedio');
-
-                                        //dd($this->id, $costo_prom, $bodega_id, $this->precio_compra);
 
         if ( is_null( $costo_prom ) || $costo_prom <= 0 )
         {
