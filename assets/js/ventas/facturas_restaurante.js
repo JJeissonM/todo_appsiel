@@ -344,7 +344,7 @@ function mandar_codigo2(item_id) {
 		return false;
 	}
 	numero_linea = 1;
-    $("#btn_"+item_id).hide();
+    //$("#btn_"+item_id).hide();
     
     $('#btn_guardar_factura').removeAttr('disabled');
     

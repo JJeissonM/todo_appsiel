@@ -81,7 +81,7 @@ function show_form_add_contorno(object_button)
 {
     var fila = object_button.closest("tr");
     
-	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="componente_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select></div><button type="button" class="btn btn-success btn-xs btn_confirm_contornos"><i class="fa fa-btn fa-check"></i>Confirmar</button></div>' );
+	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="form_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select></div><button type="button" class="btn btn-success btn-xs" id="btn_confirm_contornos"><i class="fa fa-btn fa-check"></i>Confirmar</button><button type="button" class="btn btn-default btn-xs" id="btn_cancelar_add_contornos"><i class="fa fa-btn fa-cancel"></i>Cancelar</button></div>' );
     
     reset_select_items_contorno();
 }
@@ -111,11 +111,24 @@ $(document).ready(function () {
 
     $(document).on('click', '.btn_add_contorno', function () {
         show_form_add_contorno($(this));
+
+        $(this).remove();
         
         return false;
     });
 
-    $(document).on('click', '.btn_confirm_contornos', function () {
+    $(document).on('click', '#btn_cancelar_add_contornos', function () {
+
+        var fila = $(this).closest("tr");
+
+        fila.find('.btn_eliminar').after("<button type='button' class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>");
+        
+        document.getElementById('form_lista_contornos').remove();
+        
+        return false;
+    });
+
+    $(document).on('click', '#btn_confirm_contornos', function () {
         cambiar_descripcion_item_ingresado($(this));
 
         update_lista_items_contorno_ids($(this));
@@ -124,7 +137,7 @@ $(document).ready(function () {
 
         fila.find('.btn_add_contorno').remove();
         
-        document.getElementById('componente_lista_contornos').remove();
+        document.getElementById('form_lista_contornos').remove();
         
         return false;
     });
