@@ -186,13 +186,19 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
+	celdas[num_celda] = '<td style="display: none;"><div class="lista_oculta_items_contorno_ids"></div></td>';
+
+	num_celda++;
+
 	celdas[num_celda] = '<td> &nbsp; </td>';
 
 	num_celda++;
 
-	var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+	var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";	
 
-	celdas[num_celda] = '<td> ' + btn_borrar + ' &nbsp;&nbsp; <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
+	var btn_add_contorno = "<button type='button' class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>";
+
+	celdas[num_celda] = '<td> ' + btn_borrar + btn_add_contorno + ' &nbsp;&nbsp; <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
 
 	num_celda++;
 
@@ -226,8 +232,6 @@ $.fn.generar_string_celdas = function (fila) {
 
 	return string_celdas;
 };
-
-
 
 function reset_campos_formulario()
 {
@@ -307,25 +311,6 @@ function ventana_imprimir() {
 	ventana_factura.print();
 }
 
-
-// Se llama desde el listado de productos (boton de la lupa)
-function mandar_codigo(item_id) {
-	$('#myModal').modal("hide");
-
-	var producto = productos.find(item => item.id === parseInt(item_id));
-
-	tasa_impuesto = producto.tasa_impuesto;
-	inv_producto_id = producto.id;
-	unidad_medida = producto.unidad_medida1;
-	costo_unitario = producto.costo_promedio;
-
-	$('#inv_producto_id').val(producto.descripcion);
-	$('#precio_unitario').val(get_precio(producto.id));
-	$('#tasa_descuento').val(get_descuento(producto.id));
-
-	$('#cantidad').select();
-}
-
 function mandar_codigo2(item_id) {
 
 	if ( $('#lbl_vendedor_mesero').text() == '') {
@@ -402,7 +387,11 @@ function agregar_la_linea2()
 	reset_linea_ingreso_default2();
 	reset_efectivo_recibido2();
 
-	numero_linea++;
+	numero_linea++;	
+
+	if ($('#manejar_platillos_con_contorno').val() == 1) {
+		reset_component_items_contorno();
+	}
 }
 
 function reset_efectivo_recibido2()

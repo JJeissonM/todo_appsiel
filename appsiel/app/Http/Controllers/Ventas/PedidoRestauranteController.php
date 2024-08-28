@@ -30,6 +30,7 @@ use App\Tesoreria\TesoMotivo;
 
 use App\Inventarios\InvGrupo;
 use App\Ventas\Services\PedidosRestauranteServices;
+use App\VentasPos\Services\RecipeServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -245,6 +246,10 @@ class PedidoRestauranteController extends TransaccionController
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+
+        if ((int)config('inventarios.manejar_platillos_con_contorno')) {
+            $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+        }
 
         if ($doc_encabezado->core_tercero_id == 0)
         {
