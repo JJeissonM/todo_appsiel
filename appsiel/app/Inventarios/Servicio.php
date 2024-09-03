@@ -4,14 +4,8 @@ namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Auth;
-
-use App\Inventarios\InvGrupo;
-
-use App\Contabilidad\Impuesto;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class Servicio extends Model
 {
@@ -19,7 +13,7 @@ class Servicio extends Model
 
     protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Descripción', 'UM-1', 'Grupo inventario', 'Precio compra', 'Precio venta', 'IVA', 'Tipo', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Referencia', 'Descripción', 'UM-1', 'Grupo inventario', 'Precio compra', 'Precio venta', 'IVA', 'Tipo', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
@@ -31,15 +25,16 @@ class Servicio extends Model
             ->where('inv_productos.tipo', 'servicio')
             ->select(
                         'inv_productos.id AS campo1',
-                        'inv_productos.descripcion AS campo2',
-                        'inv_productos.unidad_medida1 AS campo3',
-                        'inv_grupos.descripcion AS campo4',
-                        'inv_productos.precio_compra AS campo5',
-                        'inv_productos.precio_venta AS campo6',
-                        'contab_impuestos.tasa_impuesto AS campo7',
-                        'inv_productos.tipo AS campo8',
-                        'inv_productos.estado AS campo9',
-                        'inv_productos.id AS campo10'
+                        'inv_productos.referencia AS campo2',
+                        'inv_productos.descripcion AS campo3',
+                        'inv_productos.unidad_medida1 AS campo4',
+                        'inv_grupos.descripcion AS campo5',
+                        'inv_productos.precio_compra AS campo6',
+                        'inv_productos.precio_venta AS campo7',
+                        'contab_impuestos.tasa_impuesto AS campo8',
+                        'inv_productos.tipo AS campo9',
+                        'inv_productos.estado AS campo10',
+                        'inv_productos.id AS campo11'
                     )
             ->orderBy('inv_productos.created_at', 'DESC')
             ->get();
@@ -112,6 +107,7 @@ class Servicio extends Model
             ->where('inv_productos.tipo', 'servicio')
             ->select(
                 'inv_productos.id AS CÓDIGO',
+                'inv_productos.referencia AS REFERENCIA',
                 'inv_productos.descripcion AS DESCRIPCIÓN',
                 'inv_productos.unidad_medida1 AS UM-1',
                 'inv_grupos.descripcion AS GRUPO_INVENTARIO',
@@ -123,6 +119,7 @@ class Servicio extends Model
             )
             ->where("inv_productos.id", "LIKE", "%$search%")
             ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_productos.referencia", "LIKE", "%$search%")
             ->orWhere("inv_productos.unidad_medida1", "LIKE", "%$search%")
             ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_productos.precio_compra", "LIKE", "%$search%")
