@@ -69,12 +69,12 @@
 			</div>
 
 			<div class="row">
-				<div class="col-md-6">
+				<div class="col-md-6"><!-- 
 					<h5>Estado de clientes</h5>
 					<hr>
 					<div style="text-align:center;width: 100%;">
-						<!-- <img height="350px" src="{ {asset('assets/images/grafica_clientes_crm.png')}}" /> -->
-					</div>
+						<img height="350px" src="{ {asset('assets/images/grafica_clientes_crm.png')}}" /> 
+					</div>-->
 				</div>
 				<div class="col-md-6">
 					&nbsp;

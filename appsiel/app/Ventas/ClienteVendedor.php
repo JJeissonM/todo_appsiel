@@ -17,13 +17,12 @@ class ClienteVendedor extends Cliente
 	
 	protected $fillable = [ 'core_tercero_id', 'encabezado_dcto_pp_id', 'clase_cliente_id', 'lista_precios_id', 'lista_descuentos_id', 'vendedor_id','inv_bodega_id', 'zona_id', 'liquida_impuestos', 'condicion_pago_id', 'cupo_credito', 'bloquea_por_cupo', 'bloquea_por_mora', 'estado' ];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Lista de precios', 'Email', 'Zona'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Email', 'Zona', 'Estado'];
 
     public $urls_acciones = '{"index":"web","create":"web/create","edit":"web/id_fila/edit","store":"web","update":"web/id_fila","show":"vtas_clientes/id_fila","eliminar":"no"}';
 
 	public static function consultar_registros($nro_registros, $search)
     {
-
         $array_wheres = [['vtas_clientes.id', '>', 0]];
 
         $vendedor = Vendedor::where('user_id', Auth::user()->id)->get()->first();
@@ -44,9 +43,9 @@ class ClienteVendedor extends Cliente
                     'core_terceros.descripcion AS campo2',
                     'core_terceros.direccion1 AS campo3',
                     'core_terceros.telefono1 AS campo4',
-                    'vtas_listas_precios_encabezados.descripcion AS campo5',
-                    'core_terceros.email AS campo6',
-                    'vtas_zonas.descripcion AS campo7',
+                    'core_terceros.email AS campo5',
+                    'vtas_zonas.descripcion AS campo6',
+                    'vtas_listas_precios_encabezados.descripcion AS campo7',
                     'vtas_clientes.id AS campo8')
             ->orderBy('vtas_clientes.created_at', 'DESC')
             ->paginate($nro_registros);
