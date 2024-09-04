@@ -28,7 +28,7 @@ class AsistenciaClase extends Model
 
     public function asignatura()
     {
-        return $this->belongsTo(Asignatura::class,'asignatura_id');
+        return $this->belongsTo(Estudiante::class,'asignatura_id');
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -88,8 +88,8 @@ class AsistenciaClase extends Model
             $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS ESTUDIANTE';
         }
         
-        $string = AsistenciaClase::leftJoin('sga_estuzzdiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
-            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_idzz')
+        $string = AsistenciaClase::leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_asistencia_clases.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_asistencia_clases.curso_id')
             ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_asistencia_clases.asignatura_id')
             ->where($array_wheres)
@@ -97,12 +97,12 @@ class AsistenciaClase extends Model
                 'sga_asistencia_clases.id',
                 'sga_asistencia_clases.fecha AS FECHA',
                 DB::raw($raw_nombre_completo),
-                'sga_cursos.descrssipcion AS CURSO',
+                'sga_cursos.descripcion AS CURSO',
                 'sga_asignaturas.descripcion AS ASIGNATURA',
                 'sga_asistencia_clases.asistio AS ASISTIÓ',
                 'sga_asistencia_clases.anotacion AS ANOTACIÓN'
             )->where("sga_asistencia_clases.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw($raw_nombre_completo), "LIKE", "%$search%")
+            //->orWhere(DB::raw($raw_nombre_completo), "LIKE", "%$search%")
             ->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asignaturas.descripcion", "LIKE", "%$search%")
             ->orWhere("sga_asistencia_clases.asistio", "LIKE", "%$search%")

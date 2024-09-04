@@ -83,18 +83,9 @@ class ClienteVendedor extends Cliente
         $datos_tercero = $vendedor->tercero;
         $datos_cliente = $vendedor->cliente;
 
-        $datos = $this->get_customer_data($datos_cliente,$datos);
+        $datos = $this->get_customer_data($datos_cliente, $datos, $datos_tercero);
 
-        $datos['codigo_ciudad'] = $datos_tercero->codigo_ciudad;
-        $datos['core_empresa_id'] = $datos_tercero->core_empresa_id;
-        $datos['tipo'] = $datos_tercero->tipo;
-        $datos['id_tipo_documento_id'] = $datos_tercero->id_tipo_documento_id;
-        $datos['digito_verificacion'] = $datos_tercero->digito_verificacion;
-        $datos['vendedor_id'] = $vendedor->id;
-        
-        $datos['estado'] = 'Activo';
-        $datos['creado_por'] = Auth::user()->email;
-
+        // Crear Tercero
         $tercero = new Tercero;    
         $datos['razon_social'] = $datos['descripcion'];    
         $tercero->fill( $datos );
@@ -102,9 +93,8 @@ class ClienteVendedor extends Cliente
 
         $datos['core_tercero_id'] = $tercero->id;
         
-        // Datos del Cliente
+        // Completar Datos del Cliente
         $registro->fill( $datos );
-        $datos['estado'] = $estado_cliente;
         $registro->save();
 
         // Crear contacto de asociado al cliente
@@ -128,7 +118,7 @@ class ClienteVendedor extends Cliente
         }
     }
 
-    public function get_customer_data($customer,$datos)
+    public function get_customer_data($customer, $datos, $datos_tercero)
     {
         
         if ($customer == null) {
@@ -145,7 +135,19 @@ class ClienteVendedor extends Cliente
             $datos['cupo_credito'] = $customer->cupo_credito;
             $datos['bloquea_por_cupo'] = $customer->bloquea_por_cupo;
             $datos['bloquea_por_mora'] = $customer->bloquea_por_mora;
-        }
+            $datos['vendedor_id'] = $customer->vendedor_id;            
+
+            if ($datos_tercero != null) {
+                $datos['codigo_ciudad'] = $datos_tercero->codigo_ciudad;
+                $datos['core_empresa_id'] = $datos_tercero->core_empresa_id;
+                $datos['tipo'] = $datos_tercero->tipo;
+                $datos['id_tipo_documento_id'] = $datos_tercero->id_tipo_documento_id;
+                $datos['digito_verificacion'] = $datos_tercero->digito_verificacion;
+            }
+            
+            $datos['estado'] = 'Activo';
+            $datos['creado_por'] = Auth::user()->email;
+        }       
 
         return $datos;
     }

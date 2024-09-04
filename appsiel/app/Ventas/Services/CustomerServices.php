@@ -4,6 +4,7 @@ namespace App\Ventas\Services;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Ventas\Cliente;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerServices
 {
@@ -62,22 +63,22 @@ class CustomerServices
 
         if( !isset($datos['vendedor_id']) )
         {
-            $datos['vendedor_id'] = '1';
+            $datos['vendedor_id'] = (int)config('ventas.vendedor_id');
         } 
 
         if( !isset($datos['inv_bodega_id']) )
         {
-            $datos['inv_bodega_id'] = '1';
+            $datos['inv_bodega_id'] = (int)config('inventarios.item_bodega_principal_id');
         } 
 
         if( !isset($datos['lista_precios_id']) )
         {
-            $datos['lista_precios_id'] = '1';
+            $datos['lista_precios_id'] = (int)config('ventas.lista_precios_id');
         } 
 
         if( !isset($datos['lista_descuentos_id']) )
         {
-            $datos['lista_descuentos_id'] = '1';
+            $datos['lista_descuentos_id'] = (int)config('ventas.lista_descuentos_id');
         } 
 
         if( !isset($datos['liquida_impuestos']) )
@@ -93,6 +94,11 @@ class CustomerServices
         if( !isset($datos['estado']) )
         {
             $datos['estado'] = 'Activo';
+        } 
+
+        if( !isset($datos['creado_por']) )
+        {
+            $datos['creado_por'] = Auth::user()->email;
         } 
         
         return $datos;
