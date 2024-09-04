@@ -217,7 +217,7 @@
 @section('footer')
 	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
 
-		@if( !$user->hasRole('SupervisorCajas') )
+		@if( !$user->hasRole('SupervisorCajas') && !$user->hasRole('Vendedor'))
 			@include('ventas.pedidos.formulario_vista_show_pedidos')
 		@endif
 		
