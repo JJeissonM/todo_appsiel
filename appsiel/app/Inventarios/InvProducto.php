@@ -104,7 +104,7 @@ class InvProducto extends Model
         return $impuesto->tasa_impuesto;
     }
 
-    public function get_costo_promedio( $bodega_id )
+    public function get_costo_promedio( $bodega_id = 0 )
     {
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
         {
@@ -447,7 +447,6 @@ class InvProducto extends Model
         $grup = InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')->select('inv_grupos.id','inv_grupos.descripcion AS grupo_descripcion','inv_grupos.imagen','inv_productos.estado')->where('inv_productos.mostrar_en_pagina_web',1)->get();
         return $grup->groupBy('grupo_descripcion')->all();
     }
-
 
     public static function get_producto_pagina_web($id)
     {

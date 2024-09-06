@@ -2,6 +2,8 @@
 
 namespace App\Inventarios;
 
+use App\Inventarios\Services\CodigoBarras;
+use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -150,6 +152,51 @@ class Servicio extends Model
         }
 
         return $vec;
+    }
+
+    public static function store_adicional($datos, $registro)
+    {        
+        if (config('ventas.agregar_precio_a_lista_desde_create_item'))
+        {
+            ListaPrecioDetalle::create([
+                'lista_precios_id' => (int)config('ventas.lista_precios_id'),
+                'inv_producto_id' => $registro->id,
+                'fecha_activacion' => date('Y-m-d'),
+                'precio' => $registro->precio_venta
+            ]);
+        }
+    }
+
+    public function update_adicional( $datos, $id )
+    {
+        if (config('ventas.agregar_precio_a_lista_desde_create_item'))
+        {
+            $nuevo_precio_venta = 0;
+            if (isset($datos['precio_venta'])) {
+                $nuevo_precio_venta = $datos['precio_venta'];
+            }
+
+            $reg_precio_actual = ListaPrecioDetalle::where([
+                ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+                ['inv_producto_id', '=', $id]
+            ])
+            ->get()
+            ->last();
+
+            if ($reg_precio_actual == null) {
+                ListaPrecioDetalle::create([
+                    'lista_precios_id' => (int)config('ventas.lista_precios_id'),
+                    'inv_producto_id' => $id,
+                    'fecha_activacion' => date('Y-m-d'),
+                    'precio' => $nuevo_precio_venta
+                ]);
+            }else{
+                if ($nuevo_precio_venta != $reg_precio_actual->precio) {
+                    $reg_precio_actual->precio = $nuevo_precio_venta;
+                    $reg_precio_actual->save();
+                }
+            }
+        }
     }
     
 }

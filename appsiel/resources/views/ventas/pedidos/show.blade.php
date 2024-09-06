@@ -13,6 +13,10 @@
 	@else
 		@if( !$user->hasRole('SupervisorCajas') )
 			{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+
+			<!-- { { Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
+			-->
+
 		@endif
 	@endcan
 	

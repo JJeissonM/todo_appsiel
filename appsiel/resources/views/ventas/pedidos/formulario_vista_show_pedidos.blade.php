@@ -11,7 +11,7 @@
             {{ csrf_field() }}
             
 
-            <h5 class="control-label">Genere de forma automática su remisión o remisión y factura <i class="fa fa-arrow-down" aria-hidden="true"></i></h5>
+            <h5 class="control-label">Formulario para Generar Factura <i class="fa fa-arrow-down" aria-hidden="true"></i></h5>
 
             <!-- 
                 <div class="row">

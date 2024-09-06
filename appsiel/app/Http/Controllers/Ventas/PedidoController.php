@@ -444,7 +444,7 @@ class PedidoController extends TransaccionController
 
         $tipo_transaccion = TipoTransaccion::find($id_transaccion);
 
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, 'create', null);
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, 'edit', null);
 
         $tercero = Tercero::find($registro->core_tercero_id);
         $registro->cliente_input = $tercero->apellido1 . " " . $tercero->apellido2 . " " . $tercero->nombre1 . " " . $tercero->otros_nombres;
@@ -457,7 +457,7 @@ class PedidoController extends TransaccionController
         ];
 
 
-        $body = View::make('ventas.incluir.lineas_registros', compact('registro', 'registros'))->render();
+        $body = View::make('ventas.incluir.lineas_registros_edit', compact('registro', 'registros'))->render();
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
@@ -471,7 +471,9 @@ class PedidoController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros(VtasTransaccion::get_datos_tabla_ingreso_lineas_registros($tipo_transaccion, $motivos, $body));
 
-        return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros'));
+        $cliente = $registro->cliente;
+
+        return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros', 'cliente'));
     }
 
     /*

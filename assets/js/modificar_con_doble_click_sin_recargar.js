@@ -58,6 +58,6 @@ $(document).ready( function(){
 
 		elemento_padre.find('#valor_nuevo').remove();
 
-		window[ejecutar_funcion_guardar_nuevo_valor_doble_click( campo_modificado, valor_nuevo ) ];	
+		window[ejecutar_funcion_guardar_nuevo_valor_doble_click( elemento_modificar, valor_nuevo, valor_actual ) ];	
 	}
 });

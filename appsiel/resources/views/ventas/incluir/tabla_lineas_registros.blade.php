@@ -51,7 +51,8 @@
                     <td style="display: none;"><div class="costo_total"></div></td>
                     <td style="display: none;"><div class="precio_total"></div></td>
                     <td style="display: none;"><div class="tasa_descuento"></div></td>
-                    <td style="display: none;"><div class="valor_total_descuento"></div></td><td> <label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso" value="false"><i class="fa fa-barcode"></i></label> </td>
+                    <td style="display: none;"><div class="valor_total_descuento"></div></td>
+                    <td> <label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso" value="false"><i class="fa fa-barcode"></i></label> </td>
                     <td> 
                             <input id="inv_producto_id" data-toggle="tooltip" autocomplete="off" title="" name="inv_producto_id" type="text" data-original-title="Presione dos veces ESC para terminar."><input id="tipo_producto" name="tipo_producto" type="hidden" value="producto">
                             <div id="suggestions" style="display: none;"></div>

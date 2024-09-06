@@ -612,7 +612,6 @@ class InventarioController extends TransaccionController
         return $lineas;
     }
 
-
     /**
      * Mostrar las EXISTENCIAS de una bodega ($id).
      *
