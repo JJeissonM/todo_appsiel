@@ -39,10 +39,10 @@
 
 			$('#tabla_documentos_pendientes > tbody > tr').each(function( ){
                 if ( es_el_primero ) {
-                    arr_ids_facturas = $(this).attr('data-vtas_doc_encaezado_id');
+                    arr_ids_facturas = $(this).attr('data-vtas_doc_encabezado_id');
                     es_el_primero = false;
                 }else{
-                    arr_ids_facturas += ',' +  $(this).attr('data-vtas_doc_encaezado_id');
+                    arr_ids_facturas += ',' +  $(this).attr('data-vtas_doc_encabezado_id');
                 }
             });
 

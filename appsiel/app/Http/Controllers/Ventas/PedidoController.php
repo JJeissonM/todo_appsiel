@@ -114,6 +114,92 @@ class PedidoController extends TransaccionController
         }
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $this->set_variables_globales();
+
+        $general = new ModeloController();
+        $id_transaccion = Input::get('id_transaccion');
+
+        // Se obtiene el modelo según la variable modelo_id  de la url
+        $modelo = Modelo::find(Input::get('id_modelo'));
+
+        // Se obtiene el registro a modificar del modelo
+        $registro = app($modelo->name_space)->find($id);
+        $registros = VtasDocRegistro::get_registros_impresion($registro->id);
+
+        $lista_campos = $general->get_campos_modelo($modelo, $registro, 'edit');
+
+        $cantidad_campos = count($lista_campos);
+
+        $tipo_transaccion = TipoTransaccion::find($id_transaccion);
+
+        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, 'edit', null);
+
+        $tercero = Tercero::find($registro->core_tercero_id);
+        $registro->cliente_input = $tercero->apellido1 . " " . $tercero->apellido2 . " " . $tercero->nombre1 . " " . $tercero->otros_nombres;
+
+        $registro->inv_bodega_id = 1;
+        
+        $url_action = 'web/'.$id.$this->variables_url;
+        if ($modelo->url_form_create != '') {
+            $url_action = $modelo->url_form_create.'/'.$id.$this->variables_url;
+        }
+
+        $form_create = [
+            'url' => $url_action,
+            'campos' => $lista_campos
+        ];
+
+        $body = View::make('ventas.incluir.lineas_registros_edit', compact('registro', 'registros'))->render();
+
+        // Enviar valores predeterminados
+        // WARNING!!!! Este motivo es de INVENTARIOS
+        $motivos = ['10-salida' => 'Ventas POS'];
+
+        $miga_pan = [
+            ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
+            ['url' => 'NO', 'etiqueta' => $tipo_transaccion->descripcion]
+        ];
+
+        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
+        $tabla = new TablaIngresoLineaRegistros(VtasTransaccion::get_datos_tabla_ingreso_lineas_registros($tipo_transaccion, $motivos, $body));
+
+        $cliente = $registro->cliente;
+
+        return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros', 'cliente'));
+    }
+
+    //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
+    public function update(Request $request, $id)
+    {
+        $datos = $request->all();
+        $modelo = Modelo::find( $request->url_id_modelo );
+
+        $registro_encabezado_doc = app( $modelo->name_space )->find($id);
+
+        // Borrar registros viejos del documento
+        VtasDocRegistro::where( 'vtas_doc_encabezado_id', $id )->delete();
+
+        $request['core_tipo_transaccion_id'] = $registro_encabezado_doc->core_tipo_transaccion_id;
+        $request['core_tipo_doc_app_id'] = $registro_encabezado_doc->core_tipo_doc_app_id;
+        $request['consecutivo'] = $registro_encabezado_doc->consecutivo;
+
+        $lineas_registros = json_decode($request->lineas_registros);
+        
+        (new DocumentsLinesServices())->crear_registros_documento($request, $registro_encabezado_doc, $lineas_registros);
+
+        $registro_encabezado_doc->fill( $datos );
+        $registro_encabezado_doc->save();
+
+        return redirect( 'vtas_pedidos/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
+    }
     
     // Desde la Web
     public function completar_request( $request )
@@ -246,7 +332,6 @@ class PedidoController extends TransaccionController
         $doc_encabezado->save();
     }
 
-
     /**
      * Mostrar las EXISTENCIAS de una bodega ($id).
      *
@@ -258,9 +343,13 @@ class PedidoController extends TransaccionController
         $this->set_variables_globales();
 
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
+        
         $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+        
         $doc_registros = VtasDocRegistro::get_registros_impresion($this->doc_encabezado->id);
+
         $this->empresa = Empresa::find($this->doc_encabezado->core_empresa_id);
+        
         $resolucion = '';
         $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
@@ -347,7 +436,6 @@ class PedidoController extends TransaccionController
 
     }
 
-
     /*
         Generar la vista para los métodos show(), imprimir() o enviar_por_email()
     */
@@ -374,8 +462,6 @@ class PedidoController extends TransaccionController
 
         return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas','contacto'))->render();
     }
-
-
 
     public function get_etiquetas()
     {
@@ -417,63 +503,6 @@ class PedidoController extends TransaccionController
         }
 
         return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];
-    }
-
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        $general = new ModeloController();
-        $id_transaccion = Input::get('id_transaccion');
-
-        // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
-
-        // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
-        $registros = VtasDocRegistro::get_registros_impresion($registro->id);
-
-        $lista_campos = $general->get_campos_modelo($modelo, $registro, 'edit');
-
-        $cantidad_campos = count($lista_campos);
-
-        $tipo_transaccion = TipoTransaccion::find($id_transaccion);
-
-        $lista_campos = ModeloController::personalizar_campos($id_transaccion, $tipo_transaccion, $lista_campos, $cantidad_campos, 'edit', null);
-
-        $tercero = Tercero::find($registro->core_tercero_id);
-        $registro->cliente_input = $tercero->apellido1 . " " . $tercero->apellido2 . " " . $tercero->nombre1 . " " . $tercero->otros_nombres;
-
-        $registro->inv_bodega_id = 1;
-
-        $form_create = [
-            'url' => $modelo->url_form_create,
-            'campos' => $lista_campos
-        ];
-
-
-        $body = View::make('ventas.incluir.lineas_registros_edit', compact('registro', 'registros'))->render();
-
-        // Enviar valores predeterminados
-        // WARNING!!!! Este motivo es de INVENTARIOS
-        $motivos = ['10-salida' => 'Ventas POS'];
-
-        $miga_pan = [
-            ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
-            ['url' => 'NO', 'etiqueta' => $tipo_transaccion->descripcion]
-        ];
-
-        // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
-        $tabla = new TablaIngresoLineaRegistros(VtasTransaccion::get_datos_tabla_ingreso_lineas_registros($tipo_transaccion, $motivos, $body));
-
-        $cliente = $registro->cliente;
-
-        return view('ventas.pedidos.edit', compact('form_create', 'id_transaccion', 'miga_pan', 'tabla', 'registro', 'registros', 'cliente'));
     }
 
     /*
@@ -543,8 +572,6 @@ class PedidoController extends TransaccionController
         return redirect('inventarios/' . $remision_creada_id . '?id=' . $request->url_id . '&id_modelo=' . $rm_modelo_id . '&id_transaccion=' . $rm_tipo_transaccion_id);
     }
 
-
-
     // Petición AJAX. Parámetro enviados por GET
     public function get_formulario_edit_registro()
     {
@@ -559,7 +586,6 @@ class PedidoController extends TransaccionController
 
         return $formulario;
     }
-
 
     public function doc_registro_guardar( Request $request )
     {

@@ -41,7 +41,7 @@
             $i = 1;
         ?>
         @foreach($facturas as $factura )
-            <tr data-vtas_doc_encaezado_id="{{ $factura->id }}">
+            <tr data-vtas_doc_encabezado_id="{{ $factura->id }}">
                 <td>{{ $i }}</td>
                 <td>{{ $factura->fecha }}</td>
                 <td>{!! $factura->enlace_show_documento() !!}</td>

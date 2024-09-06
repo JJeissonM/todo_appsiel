@@ -26,11 +26,12 @@ Route::resource('ventas', 'Ventas\VentaController');
 // PEDIDOS
 Route::get('vtas_pedidos_enviar_por_email/{id}', 'Ventas\PedidoController@enviar_por_email');
 Route::get('vtas_pedidos_imprimir/{id}', 'Ventas\PedidoController@imprimir');
-Route::resource('vtas_pedidos', 'Ventas\PedidoController');
 Route::post('vtas_pedidos_remision', 'Ventas\PedidoController@remision')->name('pedido.remision');
 Route::get('vtas_pedidos_anular/{id}', 'Ventas\PedidoController@anular_pedido');
 Route::get('vtas_pedidos_get_formulario_edit_registro','Ventas\PedidoController@get_formulario_edit_registro');
 Route::post('vtas_pedidos_doc_registro_guardar','Ventas\PedidoController@doc_registro_guardar');
+
+Route::resource('vtas_pedidos', 'Ventas\PedidoController');
 
 // Direciones de entrega (Domicilios)
 Route::resource('vtas_direcciones_entrega', 'Ventas\DireccionEntregaController');

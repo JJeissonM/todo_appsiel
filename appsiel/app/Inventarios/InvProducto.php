@@ -551,7 +551,7 @@ class InvProducto extends Model
         }
 
         return $vec;
-    }    
+    }
 
     public static function store_adicional($datos, $registro)
     {

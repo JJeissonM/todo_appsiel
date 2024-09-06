@@ -81,6 +81,9 @@
 
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
 
+				<input type="hidden" name="permitir_venta_menor_costo" id="permitir_venta_menor_costo" value="{{ config('ventas.permitir_venta_menor_costo') }}">
+				<input type="hidden" name="permitir_inventarios_negativos" id="permitir_inventarios_negativos" value="{{ config('ventas.permitir_inventarios_negativos') }}">
+
 				<div id="popup_alerta"> </div>
 				
 			{{ Form::close() }}
