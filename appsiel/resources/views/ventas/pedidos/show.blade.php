@@ -8,16 +8,17 @@
 
 @section('botones_acciones')
 
-	@can('vtas_bloquear_vista_index')
+	<!-- @ can('vtas_bloquear_vista_index')
 		
-	@else
-		@if( !$user->hasRole('SupervisorCajas') )
-			{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
+	@ else
+		
+	@ endcan
+	-->
+	@if( !$user->hasRole('SupervisorCajas') )
+		{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
 
-			{{ Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
-
-		@endif
-	@endcan
+		{{ Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
+	@endif
 	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado == 'Pendiente')
 		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
