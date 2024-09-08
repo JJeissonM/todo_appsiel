@@ -79,10 +79,8 @@ class ClienteVendedor extends Cliente
         // Se copia los datos asociados al Usuario/Vendedor que esta creando al cliente
         $user_id = Auth::user()->id;
         $vendedor = Vendedor::where('user_id',$user_id)->get()->first();
-        $datos_tercero = $vendedor->tercero;
-        $datos_cliente = $vendedor->cliente;
 
-        $datos = $this->get_customer_data($datos_cliente, $datos, $datos_tercero);
+        $datos = $this->get_customer_data($datos, $vendedor);
 
         // Crear Tercero
         $tercero = new Tercero;    
@@ -117,8 +115,10 @@ class ClienteVendedor extends Cliente
         }
     }
 
-    public function get_customer_data($customer, $datos, $datos_tercero)
+    public function get_customer_data($datos, $vendedor)
     {
+        $datos_tercero = $vendedor->tercero;
+        $customer = $vendedor->cliente;
         
         if ($customer == null) {
             $datos = (new CustomerServices())->preparar_datos($datos);
@@ -134,7 +134,8 @@ class ClienteVendedor extends Cliente
             $datos['cupo_credito'] = $customer->cupo_credito;
             $datos['bloquea_por_cupo'] = $customer->bloquea_por_cupo;
             $datos['bloquea_por_mora'] = $customer->bloquea_por_mora;
-            $datos['vendedor_id'] = $customer->vendedor_id;            
+
+            $datos['vendedor_id'] = $vendedor->id;            
 
             if ($datos_tercero != null) {
                 $datos['codigo_ciudad'] = $datos_tercero->codigo_ciudad;
@@ -146,7 +147,17 @@ class ClienteVendedor extends Cliente
             
             $datos['estado'] = 'Activo';
             $datos['creado_por'] = Auth::user()->email;
-        }       
+        }
+        
+        if( !isset($datos['numero_identificacion'])  )
+        {
+            $datos['numero_identificacion'] = abs( crc32( uniqid() ) ); // Cedula de ciudadania
+        }else{
+            if( (int)$datos['numero_identificacion'] == 0  )
+            {
+                $datos['numero_identificacion'] = abs( crc32( uniqid() ) ); // Cedula de ciudadania
+            }
+        }
 
         return $datos;
     }

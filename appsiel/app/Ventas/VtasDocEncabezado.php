@@ -325,6 +325,10 @@ class VtasDocEncabezado extends Model
 
     public function determinar_posibles_existencias_negativas()
     {
+        if ((int)config('ventas.permitir_inventarios_negativos')) {
+            return 0;
+        }
+        
         $lineas_registros = $this->lineas_registros;
         foreach ($lineas_registros as $linea)
         {

@@ -105,5 +105,7 @@
 		hay_productos = $('.linea_registro').length
 
 		numero_linea = $('.linea_registro').length
+
+		$('#cliente_input').val("{{ $registro->tercero->numero_identificacion . ' ' . $registro->tercero->descripcion }}");
 	</script>
 @endsection

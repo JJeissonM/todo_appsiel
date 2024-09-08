@@ -10,6 +10,11 @@ class CustomerServices
 {
     public function preparar_datos($datos)
     {
+        if( !isset($datos['numero_identificacion']) )
+        {
+            $datos['numero_identificacion'] = abs( crc32( uniqid() ) ); // Cedula de ciudadania
+        } 
+
         $descripcion = '';
         // Almacenar datos básicos (Tercero)
         if( isset($datos['apellido1']) && isset($datos['apellido2']) && isset($datos['nombre1']) && isset($datos['otros_nombres']))

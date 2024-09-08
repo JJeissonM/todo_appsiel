@@ -1,6 +1,9 @@
 var valor_actual, elemento_modificar, elemento_padre;
 
-$(document).ready( function(){				
+//var btn_elemento_modificar;
+
+$(document).ready( function(){
+
 	// Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
 	$(document).on('dblclick','.elemento_modificar',function(){
 		
@@ -8,7 +11,7 @@ $(document).ready( function(){
 
 		elemento_padre = elemento_modificar.parent();
 
-		valor_actual = $(this).html();
+		valor_actual = elemento_modificar.html();
 
 		elemento_modificar.hide();
 
@@ -18,6 +21,30 @@ $(document).ready( function(){
 		document.getElementById('valor_nuevo').select();
 
 	});
+
+	/*   NUEVO BTN EDITAR
+	$(document).on('click','.btn_elemento_modificar',function(e){
+		e.preventDefault();
+
+		btn_elemento_modificar = $(this);
+		
+		elemento_modificar = btn_elemento_modificar.prev('.elemento_modificar');
+		
+		btn_elemento_modificar.hide();
+
+		elemento_padre = elemento_modificar.parent();
+
+		valor_actual = elemento_modificar.html();
+
+		elemento_modificar.hide();
+
+		elemento_modificar.after( '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> ');
+
+		document.getElementById('valor_nuevo').value = valor_actual;
+		document.getElementById('valor_nuevo').select();
+
+	});
+	*/
 
 	// Si la caja de texto pierde el foco
 	$(document).on('blur','#valor_nuevo',function(){
@@ -34,6 +61,7 @@ $(document).ready( function(){
 		{
 			elemento_padre.find('#valor_nuevo').remove();
 	    	elemento_modificar.show();
+			//btn_elemento_modificar.show();
 	    	return false;
 		}
 
@@ -53,8 +81,9 @@ $(document).ready( function(){
 
 		elemento_modificar.html( valor_nuevo );
 		elemento_modificar.show();
+		//btn_elemento_modificar.show();
 
-		var campo_modificado = elemento_modificar.attr('data-campo_modificado');
+		//var campo_modificado = elemento_modificar.attr('data-campo_modificado');
 
 		elemento_padre.find('#valor_nuevo').remove();
 

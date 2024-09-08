@@ -291,7 +291,7 @@ class ProcesoController extends Controller
         $pedido = VtasDocEncabezado::find( (int)$request->doc_encabezado_id );
         
         $hay_existencias_negativas = $pedido->determinar_posibles_existencias_negativas();
-        
+
         if ( $hay_existencias_negativas )
         {
             return redirect( 'vtas_pedidos/' . $pedido->id . '?id=13&id_modelo=175&id_transaccion=42' )->with( 'mensaje_error', 'No hay cantidades suficientes para facturar.' );

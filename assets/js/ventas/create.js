@@ -93,7 +93,6 @@ function validar_venta_menor_costo()
 	return ok;
 }
 
-
 function ejecutar_funcion_guardar_nuevo_valor_doble_click( campo_modificado, nuevo_valor, valor_actual )
 {
 	actualizar_valores_fila( campo_modificado )

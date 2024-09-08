@@ -65,13 +65,15 @@ class FacturaGeneral
          default:
             break;
       }
+
       
       $tokenPassword = config('facturacion_electronica.tokenPassword');
+      
+      return $this->enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $factura_doc_encabezado->get_label_documento());      
+   }
 
-      //$tokenPassword = 'd1f0a8fd20c3a7455d63903a8d7c4a48'; // Rey del huevo
-      //$tokenPassword = 'a565ea23b7a2e32f700ed36a466b056b'; // Provisiones Leon
-      //$json_doc_electronico_enviado = '{"actions":{"send_dian":true,"send_email":true,"email":"DAVIANAPAOLA29@GMAIL.COM"},"invoice":{"env":"PRODUCCION","dataico_account_id":"018dfbcb-b9e2-8ec7-a27a-019cad0c4bba","number":2,"issue_date":"06\/09\/2024","payment_date":"06\/09\/2024","invoice_type_code":"FACTURA_VENTA","payment_means_type":"DEBITO","payment_means":"MUTUAL_AGREEMENT","numbering":{"resolution_number":"18764078952935","prefix":"FPL","flexible":true},"notes":["---"],"customer":{"email":"DAVIANAPAOLA29@GMAIL.COM","phone":"3147578125","party_type":"PERSONA_NATURAL","company_name":"DAVIANA PAOLA FARIA GALUE","first_name":"DAVIANA ","family_name":"FARIA","party_identification":"1300420514","tax_level_code":"SIMPLIFICADO","regimen":"ORDINARIO","department":"20","city":"001","address_line":"MZ 10 CASA 36"},"items":[{"sku":"1","description":"ACEITE VIUDA X 3000ML","quantity":1,"price":16000,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]}],"charges":[]}}';
-
+   public function enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $label_documento, $testing = false )
+   {
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
 
@@ -93,10 +95,12 @@ class FacturaGeneral
       $array_respuesta['codigo'] = $response->getStatusCode();
 
       if ( !isset( $array_respuesta['number'] ) ) {
-         $array_respuesta['number'] = $factura_doc_encabezado->get_label_documento();
+         $array_respuesta['number'] = $label_documento;
       }
 
-      //dd( $array_respuesta );
+      if ( $testing ) {
+         dd( $array_respuesta );
+      }      
 
       $obj_resultado = new ResultadoEnvio;
       $mensaje = $obj_resultado->almacenar_resultado( $array_respuesta, json_decode( $json_doc_electronico_enviado ), $this->doc_encabezado->id );

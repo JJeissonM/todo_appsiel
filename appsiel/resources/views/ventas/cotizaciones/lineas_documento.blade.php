@@ -1,5 +1,7 @@
 <?php  
     $i = 1;
+
+	//$btn_elemento_modificar = '<button class="btn btn-sm btn-warning btn_elemento_modificar"><i class="fa fa-edit"></i></button>';
 ?>
 @foreach( $doc_registros as $linea )
 	<tr id="fila_{{$i}}" class="linea_registro">
@@ -56,7 +58,7 @@
 			0
 		</td>
 		<td>
-			<div style="display: inline;"><div class="elemento_modificar" title="Doble click para modificar.">{{$linea->cantidad}}</div></div>
+			<div style="display: inline;"><div class="elemento_modificar" title="Doble click para modificar.">{{$linea->cantidad}}</div> <!--  { !! $btn_elemento_modificar !!} --> </div>
 		</td>
 		<td>  
 			$ <div style="display: inline;"><div class="elemento_modificar" title="Doble click para modificar.">{{$linea->precio_unitario}}</div></div>
