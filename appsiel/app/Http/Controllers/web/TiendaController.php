@@ -15,6 +15,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Inventarios\InventarioController;
+use App\Ventas\Services\DocumentHeaderService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -363,22 +364,24 @@ class TiendaController extends Controller
 
             }
 
-            $nueva_factura = $encabezado_doc_venta->clonar_encabezado(date('Y-m-d'), (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion, $modelo_id );
+            $vtas_doc_header_serv = new DocumentHeaderService();
+            $nueva_factura = $vtas_doc_header_serv->clonar_encabezado( $encabezado_doc_venta, date('Y-m-d'), (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion, $modelo_id );
             
             $nueva_factura->forma_pago = 'contado';            
 
             $nueva_factura->estado = 'Activo';
             $nueva_factura->save();
             
-            $encabezado_doc_venta->clonar_lineas_registros( $nueva_factura->id );
-
-            $nueva_factura->crear_movimiento_ventas();
+            
+            $vtas_doc_header_serv->clonar_lineas_registros( $encabezado_doc_venta, $nueva_factura->id );
+            
+            $vtas_doc_header_serv->crear_movimiento_ventas($nueva_factura);
 
                 // Contabilizar
-            $nueva_factura->contabilizar_movimiento_debito();
-            $nueva_factura->contabilizar_movimiento_credito();
+            $vtas_doc_header_serv->contabilizar_movimiento_debito( $nueva_factura );
+            $vtas_doc_header_serv->contabilizar_movimiento_credito( $nueva_factura );
 
-            $nueva_factura->crear_registro_pago();
+            $vtas_doc_header_serv->crear_registro_pago( $nueva_factura );
 
             //crear_remision_desde_doc_venta
             $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;

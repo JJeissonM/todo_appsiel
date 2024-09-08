@@ -128,12 +128,6 @@ class VentaController extends TransaccionController
         
         $lineas_registros = json_decode($request->lineas_registros);
 
-        $registros_medio_pago = new RegistrosMediosPago;
-
-        //$campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros ) );
-
-        $campo_lineas_recaudos = (new TreasuryServices())->get_campo_lineas_recaudos($request->all()['lineas_registros_medios_recaudo'], $lineas_registros);
-
         // TRES TRANSACCIONES
 
         // 1ra. Crear documento de salida de inventarios (REMISIÓN)
@@ -147,7 +141,8 @@ class VentaController extends TransaccionController
 
         // 3ra. Crear Registro del documento de ventas
         $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+
+        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros );
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         $modelo = Modelo::find( $request->url_id_modelo );
@@ -162,7 +157,7 @@ class VentaController extends TransaccionController
             if ( $abono != 0 )
             {
                 $obj_trea_serv = new TreasuryServices();
-                $obj_trea_serv->create_account_receivable_payment_from_invoice($doc_encabezado,$abono,$request['lineas_registros_medios_recaudo']);
+                $obj_trea_serv->create_account_receivable_payment_from_invoice($doc_encabezado, $abono,$request['lineas_registros_medios_recaudo']);
             }            
         }
 
@@ -288,9 +283,11 @@ class VentaController extends TransaccionController
 
         // Cartera ó Caja (DB)
         VentaController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
-
+        
         // Crear registro del pago: cuenta por cobrar(cartera) o recaudo
-        VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
+        $vtas_doc_header_serv = new DocumentHeaderService();
+        $vtas_doc_header_serv->crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento );
+        //VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
         
     }
 
@@ -390,27 +387,6 @@ class VentaController extends TransaccionController
         // La cuenta de ingresos se toma del grupo de inventarios
         $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $una_linea_registro['inv_producto_id'] );
         ContabilidadController::contabilizar_registro2( $una_linea_registro, $cta_ingresos_id, $detalle_operacion, 0, $una_linea_registro['base_impuesto_total']);
-    }
-
-    public static function crear_registro_pago( $forma_pago, $datos, $total_documento, $detalle_operacion )
-    {        
-        // Cargar la cuenta por cobrar (CxC)
-        if ( $forma_pago == 'credito')
-        {
-            $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
-            $datos['referencia_tercero_id'] = $datos['cliente_id'];
-            $datos['valor_documento'] = $total_documento;
-            $datos['valor_pagado'] = 0;
-            $datos['saldo_pendiente'] = $total_documento;
-            $datos['estado'] = 'Pendiente';
-            DocumentosPendientes::create( $datos );
-        }
-
-        if ( $forma_pago == 'contado')
-        {
-            $teso_movimiento = new TesoMovimiento();
-            $teso_movimiento->almacenar_registro_pago_contado( $datos, $datos['registros_medio_pago'], 'entrada', $total_documento );
-        }
     }
 
     /**
@@ -1315,10 +1291,7 @@ class VentaController extends TransaccionController
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
-
-        $registros_medio_pago = new RegistrosMediosPago;
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ) );        
-        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ) );
 
         VentaController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
 
@@ -1483,7 +1456,10 @@ class VentaController extends TransaccionController
         VentaController::contabilizar_movimiento_debito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
 
         // Crear registro del pago: cuenta por cobrar(cartera) o recaudo
-        VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
+        
+        $vtas_doc_header_serv = new DocumentHeaderService();
+        $vtas_doc_header_serv->crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento );
+        //VentaController::crear_registro_pago( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
 
         return true;
     }

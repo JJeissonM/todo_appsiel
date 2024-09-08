@@ -2,12 +2,6 @@
 
 namespace App\Tesoreria;
 
-use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-use Exception;
-
 use Illuminate\Pagination\LengthAwarePaginator;
 
 use App\Core\EncabezadoDocumentoTransaccion;
@@ -24,6 +18,9 @@ use App\Core\Transactions\TransactionMovements;
 
 use App\Tesoreria\Services\AccountsReceivableServices;
 use App\Tesoreria\Services\FacturaEstudiantesService;
+use Exception;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
@@ -263,6 +260,7 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 
         // Create document header
         $obj_transaction = new TransactionDocumentHeader($model);
+        
         $this->validate_data_fillables($this->getFillable(),$data);
         $data['core_tipo_transaccion_id'] = config('tesoreria.recaudo_tipo_transaccion_id');
         $data['core_tipo_doc_app_id'] = config('tesoreria.recaudo_tipo_doc_app_id');
@@ -270,7 +268,9 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 
         // Create document lines
         $obj_document_lines = new TransactionDocumentLines('teso_documents_lines');
-        $document_lines = $this->set_and_validate_document_lines($obj_document_lines,$obj_transaction->document_header,$data['document_lines']);
+
+        $document_lines = $this->set_and_validate_document_lines($obj_document_lines,$obj_transaction->document_header, $data['document_lines']);
+
         $obj_document_lines->create($document_lines);
 
         // Create movement 
@@ -289,18 +289,29 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
         $obj_ar_serv->create_record_payment_accounts_receivable($obj_transaction->document_header,$data['account_receivable_lines']);
     }
 
-    public function set_and_validate_document_lines( $obj_document_lines,$document_header,$data )
+    public function set_and_validate_document_lines( $obj_document_lines, $document_header, $data )
 	{
         $data_lines_new = [];
         $data_lines = json_decode($data,true);
         foreach ($data_lines as $line) {
             $line['teso_encabezado_id'] = $document_header->id;
             $line['estado'] = 'Activo';
-            $this->validate_data_fillables(app($obj_document_lines->model->name_space)->getFillable(),$line);
             
-            if ($line['core_tercero_id'] == '') {
+            if ( !isset($line['core_tercero_id'])) {
                 $line['core_tercero_id'] = $document_header->core_tercero_id;
             }
+            
+            if ( !isset($line['valor'])) {
+                if ( isset($line['valor_recaudo'])) {
+                    $line['valor'] = $line['valor_recaudo'];
+                }
+            }
+            
+            if ( !isset($line['detalle_operacion'])) {
+                $line['detalle_operacion'] = '';
+            }
+
+            $this->validate_data_fillables(app($obj_document_lines->model->name_space)->getFillable(),$line);
 
             $data_lines_new[] = $line;
         }

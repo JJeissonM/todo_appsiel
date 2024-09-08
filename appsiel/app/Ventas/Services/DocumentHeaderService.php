@@ -3,12 +3,18 @@
 namespace App\Ventas\Services;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Core\EncabezadoDocumentoTransaccion;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Inventarios\InvDocEncabezado;
+use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvProducto;
 use App\Matriculas\FacturaAuxEstudiante;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMovimiento;
+use App\Ventas\Cliente;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
@@ -178,17 +184,211 @@ class DocumentHeaderService
 
         return $actions;
     }
-    
-    public static function get_total_documento_desde_lineas_registros( array $lineas_registros )
+
+    public function crear_movimiento_ventas( $vta_doc_encabezado )
     {
-        $total_documento = 0;
-
-        $cantidad_registros = count($lineas_registros);
-        for ($i=0; $i < $cantidad_registros; $i++) 
+        $lineas_registros = $vta_doc_encabezado->lineas_registros;
+        foreach ($lineas_registros as $linea)
         {
-            $total_documento += (float)$lineas_registros[$i]->precio_total;
-        } // Fin por cada registro
+            $datos = $vta_doc_encabezado->toArray() + $linea->toArray();
 
-        return $total_documento;        
+            // Movimiento de Ventas
+            $datos['estado'] = 'Activo';
+
+            VtasMovimiento::create($datos);
+        }
+    }
+
+    public function contabilizar_movimiento_debito( $vta_doc_encabezado, $caja_banco_id = null )
+    {
+        $datos = $vta_doc_encabezado->toArray();
+        $datos['registros_medio_pago'] = [];
+
+        $movimiento_contable = new ContabMovimiento();
+        $detalle_operacion = 'Contabilización ' . $vta_doc_encabezado->tipo_transaccion->descripcion . ' ' . $vta_doc_encabezado->tipo_documento_app->prefijo . ' ' . $vta_doc_encabezado->consecutivo;
+        if ( $vta_doc_encabezado->forma_pago == 'credito')
+        {
+            // La cuenta de CARTERA se toma de la clase del cliente
+            $cta_x_cobrar_id = Cliente::get_cuenta_cartera( $vta_doc_encabezado->cliente_id );
+            $datos['tipo_transaccion'] = 'cxc';
+            $movimiento_contable->contabilizar_linea_registro( $datos, $cta_x_cobrar_id, $detalle_operacion, $vta_doc_encabezado->valor_total, 0);
+        }
+        
+        // Agregar el movimiento a tesorería
+        if ( $vta_doc_encabezado->forma_pago == 'contado')
+        {
+            if( is_null( $caja_banco_id ) )
+            {
+                if ( empty( $datos['registros_medio_pago'] ) )
+                {   
+                    // Por defecto
+                    $caja = TesoCaja::get()->first();
+                    $teso_caja_id = $caja->id;
+                    $teso_cuenta_bancaria_id = 0;
+                    $contab_cuenta_id = $caja->contab_cuenta_id;
+                }else{
+
+                    // WARNING!!! Por ahora solo se está aceptando un solo medio de pago
+                    $contab_cuenta_id = TesoCaja::find( 1 )->contab_cuenta_id;
+
+                    $teso_caja_id = $datos['registros_medio_pago']['teso_caja_id'];
+                    if ($teso_caja_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCaja::find( $teso_caja_id )->contab_cuenta_id;
+                    }
+
+                    $teso_cuenta_bancaria_id = $datos['registros_medio_pago']['teso_cuenta_bancaria_id'];
+                    if ($teso_cuenta_bancaria_id != 0)
+                    {
+                        $contab_cuenta_id = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id )->contab_cuenta_id;
+                    }                    
+                }
+            }else{
+                // $caja_banco_id se manda desde Ventas POS
+                $caja = TesoCaja::find( $caja_banco_id );
+                $teso_caja_id = $caja->id;
+                $teso_cuenta_bancaria_id = 0;
+                $contab_cuenta_id = $caja->contab_cuenta_id;
+            }
+            
+            $datos['teso_caja_id'] = $teso_caja_id;
+            $datos['teso_cuenta_bancaria_id'] = $teso_cuenta_bancaria_id;
+            $datos['tipo_transaccion'] = 'recaudo';
+            $movimiento_contable->contabilizar_linea_registro( $datos, $contab_cuenta_id, $detalle_operacion, $vta_doc_encabezado->valor_total, 0 );
+        }
+    }
+
+    // Contabilizar Ingresos de ventas e Impuestos
+    public function contabilizar_movimiento_credito( $vta_doc_encabezado )
+    {
+        $datos = $vta_doc_encabezado->toArray();
+        $detalle_operacion = 'Contabilización ' . $vta_doc_encabezado->tipo_transaccion->descripcion . ' ' . $vta_doc_encabezado->tipo_documento_app->prefijo . ' ' . $vta_doc_encabezado->consecutivo;
+
+        $lineas_registros = $vta_doc_encabezado->lineas_registros;
+        foreach ($lineas_registros as $linea)
+        {
+            $una_linea_registro = $datos + $linea->toArray();
+            $una_linea_registro['creado_por'] = 'paula@appsiel.com.co';
+            if(Auth::user()){
+                $una_linea_registro['creado_por']  = Auth::user()->email;
+            }   
+            $una_linea_registro['modificado_por'] = '';
+            $una_linea_registro['estado'] = 'Activo';
+            $una_linea_registro['tipo_transaccion'] = 'facturacion_ventas';
+
+            $movimiento_contable = new ContabMovimiento();
+
+            // IVA generado (CR)
+            // Si se ha liquidado impuestos en la transacción
+            $valor_total_impuesto = 0;
+            if ( $una_linea_registro['tasa_impuesto'] > 0 )
+            {
+                $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $una_linea_registro['inv_producto_id'] );
+                $valor_total_impuesto = abs( $una_linea_registro['valor_impuesto'] * $una_linea_registro['cantidad'] );
+
+                $movimiento_contable->contabilizar_linea_registro( $una_linea_registro, $cta_impuesto_ventas_id, $detalle_operacion, 0, abs($valor_total_impuesto) );
+            }
+
+            // Contabilizar Ingresos (CR)
+            // La cuenta de ingresos se toma del grupo de inventarios
+            $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $una_linea_registro['inv_producto_id'] );
+            $movimiento_contable->contabilizar_linea_registro( $una_linea_registro, $cta_ingresos_id, $detalle_operacion, 0, $una_linea_registro['base_impuesto_total'] );
+        }                
+    }
+
+    /*
+        Movimiento de Tesoreria o Cartera de clientes (CxC)
+    */
+    public function crear_registro_pago( $forma_pago, $datos, $total_documento )
+    {
+        // Cargar la cuenta por cobrar (CxC)
+        if ( $forma_pago == 'credito')
+        {
+            $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
+            $datos['referencia_tercero_id'] = $datos['cliente_id'];
+            $datos['valor_documento'] = $total_documento;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $total_documento;
+            $datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $datos );
+        }
+
+        if ( $forma_pago == 'contado')
+        {
+            $teso_movimiento = new TesoMovimiento();
+            $teso_movimiento->almacenar_registro_pago_contado( $datos, $datos['registros_medio_pago'], 'entrada', $total_documento );
+        }
+    }
+
+    public function determinar_posibles_existencias_negativas( $vta_doc_encabezado )
+    {
+        if ((int)config('ventas.permitir_inventarios_negativos')) {
+            return 0;
+        }
+
+        $lineas_registros = $vta_doc_encabezado->lineas_registros;
+        foreach ($lineas_registros as $linea)
+        {
+            if ( $linea->item->tipo == 'servicio' )
+            {
+                continue;
+            }
+            
+            $existencia_actual = InvMovimiento::get_existencia_actual( $linea->inv_producto_id, $vta_doc_encabezado->cliente->inv_bodega_id, $vta_doc_encabezado->fecha );
+
+            if ( ( $existencia_actual - abs($linea->cantidad) ) < 0 )
+            {
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public function clonar_encabezado( $vta_doc_encabezado_padre, $fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $descripcion, $modelo_id )
+    {
+        $datos = $vta_doc_encabezado_padre->toArray();
+
+        if ( $fecha != null )
+        {
+            $datos['fecha'] = $fecha;
+        }
+
+        if ( $core_tipo_transaccion_id != null )
+        {
+            $datos['core_tipo_transaccion_id'] = $core_tipo_transaccion_id;
+        }
+
+        if ( $core_tipo_doc_app_id != null )
+        {
+            $datos['core_tipo_doc_app_id'] = $core_tipo_doc_app_id;
+        }
+
+        if ( $descripcion != null )
+        {
+            $datos['descripcion'] = $descripcion;
+        }
+
+        $datos['consecutivo'] = 0;
+        $datos['id'] = 0;
+
+        return (new EncabezadoDocumentoTransaccion( $modelo_id ))->crear_nuevo( $datos );
+    }
+
+    public function clonar_lineas_registros( $vta_doc_encabezado_padre, $vtas_doc_encabezado_hijo_id )
+    {
+        $lineas_registros = $vta_doc_encabezado_padre->lineas_registros;
+
+        foreach ($lineas_registros as $linea)
+        {
+            $datos = $linea->toArray();
+            $datos['vtas_doc_encabezado_id'] = $vtas_doc_encabezado_hijo_id;
+            $datos['creado_por'] = 'paula@appsiel.com.co';
+            if(Auth::user()){
+                $datos['creado_por'] = Auth::user()->email;
+            }   
+            $datos['modificado_por'] = '';
+
+            VtasDocRegistro::create( $datos );
+        }
     }
 }

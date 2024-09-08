@@ -58,6 +58,8 @@ class ProcesoController extends Controller
     {
         $documento = VtasDocEncabezado::find($documento_id);
 
+        dd('Error metodo contabilizar_movimiento_debito(). ProcesoController::get_lineas_medios_recaudos().');
+
         // Recontabilizar la remisión
         /* ¿Qué hacer cuando tiene varias remisiones?
         if ( $documento->remision_doc_encabezado_id != 0)
@@ -117,7 +119,11 @@ class ProcesoController extends Controller
         $campo_lineas_recaudos = json_decode('[{"teso_medio_recaudo_id":"1-' . $medio_recaudo . '","teso_motivo_id":"' . $motivo . '","teso_caja_id":"' . $registro->teso_caja_id . '-' . $caja->descripcion . '","teso_cuenta_bancaria_id":"' . $registro->teso_cuenta_bancaria_id . '-' . $cuenta_bancaria->descripcion . '","valor":"$' . $registro->valor_movimiento . '"}]');
 
         $registros_medio_pago = new RegistrosMediosPago;
-        return $registros_medio_pago->get_datos_ids($campo_lineas_recaudos);
+        $lineas_registros_medios_recaudo = 'pendiente';
+        $lineas_registros = 'pendiente';
+        $total_documento = 'pendiente';
+        //$campo_lineas_recaudos
+        return $registros_medio_pago->get_datos_ids( $lineas_registros_medios_recaudo, $lineas_registros, $total_documento );
     }
 
 
@@ -263,11 +269,13 @@ class ProcesoController extends Controller
     // Crea solo pedido
     public function soloPedido($cotizacion, $request)
     {
+        $vtas_doc_header_serv = new DocumentHeaderService();
+
         $core_tipo_transaccion_id = 42;
         $core_tipo_doc_app_id = 41;
         $modelo_id = 175;
 
-        $pedido = $cotizacion->clonar_encabezado( $request->fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $cotizacion->descripcion, $modelo_id );
+        $pedido = $vtas_doc_header_serv->clonar_encabezado( $cotizacion, $request->fecha, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $cotizacion->descripcion, $modelo_id );
 
         $pedido->fecha_entrega = $request->fecha_entrega;
         $pedido->fecha_vencimiento = $request->fecha_entrega;
@@ -275,7 +283,8 @@ class ProcesoController extends Controller
         $pedido->ventas_doc_relacionado_id = $cotizacion->id;
         $pedido->save();
         
-        $cotizacion->clonar_lineas_registros( $pedido->id );
+        
+        $vtas_doc_header_serv->clonar_lineas_registros( $cotizacion, $pedido->id );
 
         $cotizacion->estado = 'Cumplido';
         $cotizacion->save();
@@ -290,7 +299,9 @@ class ProcesoController extends Controller
     {
         $pedido = VtasDocEncabezado::find( (int)$request->doc_encabezado_id );
         
-        $hay_existencias_negativas = $pedido->determinar_posibles_existencias_negativas();
+        $vtas_doc_header_serv = new DocumentHeaderService();
+
+        $hay_existencias_negativas = $vtas_doc_header_serv->determinar_posibles_existencias_negativas( $pedido );
 
         if ( $hay_existencias_negativas )
         {
@@ -302,7 +313,7 @@ class ProcesoController extends Controller
 
         $pedido->forma_pago = $request->forma_pago;
 
-        $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, $request->fecha );
+        $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, $request->fecha, $request->tipo_factura[0], $request->lineas_registros_medios_recaudo );
         $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
         $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
         $nueva_factura->save();
@@ -317,7 +328,7 @@ class ProcesoController extends Controller
             if ( $abono != 0 )
             {
                 $obj_trea_serv = new TreasuryServices();
-                $obj_trea_serv->create_account_receivable_payment_from_invoice($nueva_factura,$abono,$request['lineas_registros_medios_recaudo']);
+                $obj_trea_serv->create_account_receivable_payment_from_invoice($nueva_factura, $abono,  $request['lineas_registros_medios_recaudo']);
             }            
         }
 
@@ -341,7 +352,7 @@ class ProcesoController extends Controller
             // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
             $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, date('Y-m-d') );
 
-            $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, date('Y-m-d') );
+            $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, date('Y-m-d'), config('web.tipo_factura_default') );
             $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
             $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
             $nueva_factura->save();
@@ -365,35 +376,53 @@ class ProcesoController extends Controller
         
     }
 
-    public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha, $parametros = null )
+    public function crear_factura_desde_doc_venta( $encabezado_doc_venta, $fecha, $tipo_factura, $lineas_registros_medios_recaudo = '{}' )
     {
-        $modelo_id = 139;
+        $modelo_id = 139; // FV estandar
+        $tipo_transaccion_id = (int)config('ventas.factura_ventas_tipo_transaccion_id');
+        $tipo_doc_app_id = (int)config('ventas.factura_ventas_tipo_doc_app_id');
+        $estado = 'Activo';
+
+        if ( $tipo_factura == 'electronica' )
+        {            
+            $modelo_id = 244; // FV Electronica
+            $tipo_transaccion_id = (int)config('facturacion_electronica.transaction_type_id_default');
+            $tipo_doc_app_id = (int)config('facturacion_electronica.document_type_id_default');
+            $estado = 'Contabilizado - Sin enviar';
+        }
+
+        $vtas_doc_header_serv = new DocumentHeaderService();
 
         $descripcion = 'Generada desde ' . $encabezado_doc_venta->tipo_transaccion->descripcion . ' ' . $encabezado_doc_venta->tipo_documento_app->prefijo . ' ' . $encabezado_doc_venta->consecutivo;
 
-        $nueva_factura = $encabezado_doc_venta->clonar_encabezado( $fecha, (int)config('ventas.factura_ventas_tipo_transaccion_id'), (int)config('ventas.factura_ventas_tipo_doc_app_id'), $descripcion, $modelo_id );
+        $nueva_factura = $vtas_doc_header_serv->clonar_encabezado( $encabezado_doc_venta, $fecha, $tipo_transaccion_id, $tipo_doc_app_id, $descripcion, $modelo_id );
         
         if ( $nueva_factura->forma_pago == 'credito' )
         {
             $nueva_factura->fecha_vencimiento = $this->sumar_dias_calendario_a_fecha( $fecha, $nueva_factura->cliente->condicion_pago->dias_plazo );
         }
 
-        $nueva_factura->estado = 'Activo';
-        $nueva_factura->save();
+        $nueva_factura->estado = $estado;
+        $nueva_factura->save();        
         
-        $encabezado_doc_venta->clonar_lineas_registros( $nueva_factura->id );
+        $vtas_doc_header_serv->clonar_lineas_registros( $encabezado_doc_venta, $nueva_factura->id );
 
-        $nueva_factura->crear_movimiento_ventas();
+        $vtas_doc_header_serv->crear_movimiento_ventas($nueva_factura);
 
         // Contabilizar
-        $nueva_factura->contabilizar_movimiento_debito();
-        $nueva_factura->contabilizar_movimiento_credito();
+        $vtas_doc_header_serv->contabilizar_movimiento_debito($nueva_factura);
+        $vtas_doc_header_serv->contabilizar_movimiento_credito($nueva_factura);
 
-        $nueva_factura->crear_registro_pago();
+        $datos = $nueva_factura->toArray();
+        
+        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $lineas_registros_medios_recaudo, $nueva_factura->lineas_registros->toArray(), $nueva_factura->valor_total );
+
+        $vtas_doc_header_serv->crear_registro_pago( $nueva_factura->forma_pago, $datos, $nueva_factura->valor_total );
+
+        //$vtas_doc_header_serv->crear_registro_pago($nueva_factura);
 
         return $nueva_factura;
     }
-
 
     /*
         Este metodo crea una remision con las cantidades completas de un documento de venta.

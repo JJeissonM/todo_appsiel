@@ -34,8 +34,9 @@ class FacturaEntradaPendienteController extends CompraController
         $lineas_registros = json_decode( $request->lineas_registros );
 
         $registros_medio_pago = new RegistrosMediosPago;
-        $campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'], self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ) );
-        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $campo_lineas_recaudos );
+        
+        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ) );
+        
         CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
 
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);

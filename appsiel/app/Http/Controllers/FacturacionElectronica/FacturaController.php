@@ -20,6 +20,7 @@ use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\RemisionVentas;
+use App\Ventas\Services\DocumentHeaderService as VtasDocumentHeaderService;
 use App\VentasPos\FacturaPos;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -259,13 +260,14 @@ class FacturaController extends TransaccionController
     {
         if ( $encabezado_factura->estado != 'Contabilizado - Sin enviar')
         {
-            $encabezado_factura->crear_movimiento_ventas();
+            $vtas_doc_header_serv = new VtasDocumentHeaderService();
+            $vtas_doc_header_serv->crear_movimiento_ventas($encabezado_factura);
 
             // Contabilizar
-            $encabezado_factura->contabilizar_movimiento_debito();
-            $encabezado_factura->contabilizar_movimiento_credito();
+            $vtas_doc_header_serv->contabilizar_movimiento_debito($encabezado_factura);
+            $vtas_doc_header_serv->contabilizar_movimiento_credito($encabezado_factura);
 
-            $encabezado_factura->crear_registro_pago();
+            $vtas_doc_header_serv->crear_registro_pago($encabezado_factura);
         }
         
         FacturaPos::where([

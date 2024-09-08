@@ -15,6 +15,7 @@ class AccountsReceivablePayment
 	public function store( CxcAbono $model, $data )
 	{
         $this->validate_data_fillables($model->getFillable(),$data);
+        
         return CxcAbono::create( $data );
 	}
 

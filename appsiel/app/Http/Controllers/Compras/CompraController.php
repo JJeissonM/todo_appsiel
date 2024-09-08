@@ -84,10 +84,6 @@ class CompraController extends TransaccionController
     public function store(Request $request)
     {        
         $lineas_registros_originales = json_decode( $request->all()['lineas_registros'] );
-        
-        //$campo_lineas_recaudos = $registros_medio_pago->depurar_tabla_registros_medios_recaudos( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros( $lineas_registros_originales ) );
-        
-        $campo_lineas_recaudos = (new TesoreriaService())->get_campo_lineas_recaudos($request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales);
 
         // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
         // WARNING. HECHO MANUALMENTE
@@ -98,7 +94,7 @@ class CompraController extends TransaccionController
 
         // 3ro. Crear líneas de registros del documento
         $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $campo_lineas_recaudos );
+        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales );
         CompraController::crear_registros_documento( $request, $doc_encabezado );
 
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);

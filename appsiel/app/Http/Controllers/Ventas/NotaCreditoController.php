@@ -176,8 +176,6 @@ class NotaCreditoController extends TransaccionController
         // remision_doc_encabezado_id es el ID de una devolución en ventas
         $lineas_registros = [(object)[ 'id_doc' => $nota_credito->remision_doc_encabezado_id ]];
 
-        //dd( $lineas_registros );
-
         NotaCreditoController::crear_lineas_registros_ventas( $datos, $nota_credito, $lineas_registros, $factura );
 
         return true;

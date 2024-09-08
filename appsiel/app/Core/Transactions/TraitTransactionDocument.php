@@ -6,7 +6,7 @@ use Exception;
 
 trait TraitTransactionDocument
 {
-	public function validate_data_fillables($fillables,$data)
+	public function validate_data_fillables( $fillables, $data)
     {
         $missed_fields = '';
         $data_keys = array_keys($data);

@@ -30,11 +30,23 @@
 
             <div class="row">
                 
+                <div class="col-md-6 col-lg-6 col-xl-2">
+                    {{ Form::bsRadioBtn('tipo_factura','estandar','Tipo de factura','{"estandar":"Estándar","electronica":"Electrónica"}',['required'=>'required']) }}
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-2">
+                    &nbsp;
+                </div>
+            </div>
+
+            <div class="row">
+                
                 <input type="hidden" name="generar" id="generar" value="remision_y_factura_desde_pedido">
 
                 <div class="col-md-6 col-lg-6 col-xl-2">
                     {{ Form::bsFecha('fecha',date('Y-m-d'),'Fecha', null,[]) }}
                 </div>
+                
                 <div class="col-md-6 col-lg-6 col-xl-2">
                     {{ Form::bsSelect('bodega_id', $inv_services->get_bodega_id($doc_encabezado->cliente_id), 'Bodega', $inv_services->get_bodegas()->pluck('descripcion','id')->toArray(), ['required'=>'required']) }}
                 </div>
@@ -45,13 +57,22 @@
                     {{ Form::bsSelect('forma_pago', null, 'Forma de pago', [ 'credito'=>'Crédito', 'contado' => 'Contado'], ['required'=>'required']) }}
                 </div>
                 <div class="col-md-6 col-lg-6 col-xl-2">
-                    
+                    {{ Form::bsText('vlr_total_pedido', '$ ' . number_format($total_factura,0,',','.'), 'Vlr. total pedido', ['class'=>'form-control', 'readonly' => 'readonly']) }}
+                </div>
+            </div>
+
+            <div class="row">
+                
+                <div class="col-md-6 col-lg-6 col-xl-2">
+                    {{ Form::bsText('abono', 0, 'Abono', ['class'=>'form-control', 'readonly' => 'readonly']) }}
+                </div>
+                
+                <div class="col-md-6 col-lg-6 col-xl-2">
+                    &nbsp;
                 </div>
             </div>
 
             <input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
-
-            <input type="text" name="abono" id="abono" value="0">
 
         </form>
 

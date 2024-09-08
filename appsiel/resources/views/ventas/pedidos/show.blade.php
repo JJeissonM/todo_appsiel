@@ -17,7 +17,10 @@
 	@if( !$user->hasRole('SupervisorCajas') )
 		{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
 
-		{{ Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
+		@if( $doc_encabezado->estado == 'Pendiente')
+			{{ Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
+		@endif
+
 	@endif
 	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado == 'Pendiente')
@@ -219,7 +222,7 @@
 @endsection
 
 @section('footer')
-	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') != 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
+	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') > 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
 
 		@if( !$user->hasRole('SupervisorCajas') && !$user->hasRole('Vendedor'))
 			@include('ventas.pedidos.formulario_vista_show_pedidos')
@@ -259,22 +262,49 @@
 
 			calcular_saldo_pendiente_documento();
 
+			// Almacenar la factura
 			$("#btn_generar").on('click',function(event){
 				event.preventDefault();
 
+				if ( $('#forma_pago').val() == 'contado') {
+					
+					if ( $('#total_valor_total').text()=='$0.00' ) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Alerta!',
+							text: 'No ha ingresado ningún registro de Medios de pago para la Factura de Contado.'
+						});
+
+						return false;
+					}
+					
+					var valor_total_recaudos = parseFloat( $('#total_valor_total').text().substring(1) );
+					if (  valor_total_recaudos != parseFloat( $('#vlr_total_factura').text() ) ) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Alerta!',
+							text: 'El Valor total de los registros de Medios de pago es diferente al Valor total del Pedido.'
+						});
+
+						return false;
+					}
+				}
+
+
 				if ( parseFloat( $('#vlr_total_factura').text() ) < $('#abono').val() )
 				{
-					console.log( $('#vlr_total_factura').text() , $('#abono').val(), $('#div_saldo_pendiente_documento').attr('data-vlr_saldo_pendiente_documento') );
-
 					Swal.fire({
 						icon: 'error',
 						title: 'Alerta!',
-						text: 'El valor de los medios de pago no puede ser mayor que valor del Documento.'
+						text: 'El Valor total de los registros de Medios de pago no puede ser mayor que el Valor total del Pedido.'
 					});
 
 					return false;
 				}
 				
+				var tabla_recaudos = $('#ingreso_registros_medios_recaudo').tableToJSON();
+				$('#lineas_registros_medios_recaudo').val( JSON.stringify(tabla_recaudos) );
+
 				$('#form_create').submit();
 			});
 
@@ -393,6 +423,21 @@
 					$('#form_create').attr('action', url_raiz + '/' + 'vtas_crear_remision_y_factura_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&crear_remision_desde_pedido=yes&doc_ventas_id=' + $('#doc_encabezado_id').val() );
 				}
 			});
+
+			$('#forma_pago').on('change',function(){		
+				
+				$('#ingreso_registros_medios_recaudo').find('tbody').html('');
+				$('#total_valor_total').text('$0.00');
+				
+				if ( $(this).val() == 'contado' )
+				{
+					$('#abono').parent().parent().hide();
+					$('#abono').val(0);
+				}else{
+					$('#abono').parent().parent().show();
+					$('#abono').val(0);
+				}
+			});			
 
 			function calcular_valor_descuento()
 			{
