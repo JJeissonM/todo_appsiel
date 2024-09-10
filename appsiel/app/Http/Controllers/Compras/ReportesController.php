@@ -357,12 +357,9 @@ class ReportesController extends Controller
     {
         $p = Proveedor::find($o->proveedor_id);
         $tercero = Tercero::find($p->core_tercero_id);
-        $proveedor = $tercero->razon_social;
+        $proveedor = $tercero->descripcion;
         if ($proveedor == "") {
             $proveedor = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
-        }
-        if ($proveedor == "") {
-            $proveedor = $tercero->descripcion;
         }
         $orden = [
             'id' => $o->id,

@@ -1,4 +1,3 @@
-@include('ventas.incluir.lineas_registros_imprimir',compact('total_cantidad','total_factura'))
 
 @if( !is_null( $otroscampos ) )
     {!! $otroscampos->terminos_y_condiciones !!}

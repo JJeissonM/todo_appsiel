@@ -1,3 +1,6 @@
+<div style="width: 100%; text-align:right;">
+    Pág. 1/{{$cantidad_total_paginas}}
+</div>
 <table class="table">
     <tr>
         <td style="border: none;" width="60%">
@@ -90,15 +93,3 @@
         </table>    
     </div>
 </div>
-
-@include('ventas.formatos_impresion.estandar_con_copia.tabla_registros_1')
-
-@include('transaccion.registros_contables')
-
-@include('transaccion.auditoria')
-
-@include('core.firmas')
-
-<table style="width: 100%;">
-    @yield('firma_fila_adicional')
-</table>
