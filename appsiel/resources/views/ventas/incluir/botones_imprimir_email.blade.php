@@ -10,7 +10,7 @@
     }
 ?>
 <div>
-    Formato: {{ Form::select('formato_impresion_id', $arr_select, $default, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=' . $default ) }}
-	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=' . $default ) }}
+    Formato: {{ Form::select('formato_impresion_id', $arr_select, $default_key, [ 'id' =>'formato_impresion_id' ]) }}
+	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=' . $default_key ) }}
+	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=' . $default_key ) }}
 </div>
