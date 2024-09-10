@@ -2,10 +2,11 @@
     $campo = \App\Sistema\Campo::where('name','formato_impresion_facturas_ventas')->get()->first();
 
     $arr_select = ['pos'=>'POS','estandar'=>'Estándar','estandar2'=>'Estándar v2','colegio'=>'Colegio','estandar_con_copia'=>'Estándar con copia'];
-    $default = 'pos';
+    $default_key = 'pos';
     if ( $campo != null ) {
         $arr_select = json_decode($campo->opciones,true);
-        $default = array_key_first($arr_select);
+        //$default_key = array_key_first($arr_select);
+        $default_key = array_keys($arr_select)[0];
     }
 ?>
 <div>
