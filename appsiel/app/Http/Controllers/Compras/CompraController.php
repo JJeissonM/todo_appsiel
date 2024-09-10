@@ -409,8 +409,6 @@ class CompraController extends TransaccionController
         }
     }
 
-
-
     /**
      * Mostrar las EXISTENCIAS de una bodega ($id).
      *

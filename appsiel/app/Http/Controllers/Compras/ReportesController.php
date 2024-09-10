@@ -361,6 +361,9 @@ class ReportesController extends Controller
         if ($proveedor == "") {
             $proveedor = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
         }
+        if ($proveedor == "") {
+            $proveedor = $tercero->descripcion;
+        }
         $orden = [
             'id' => $o->id,
             'documento' => TipoDocApp::find($o->core_tipo_doc_app_id)->prefijo . " - " . $o->consecutivo,

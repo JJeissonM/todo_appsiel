@@ -12,8 +12,6 @@
 
 	$entradas = ReportesController::entradas_pendientes_por_facturar();
 
-	//dd($entradas);
-
 ?>
 @section('estilos_2')
 <style>
