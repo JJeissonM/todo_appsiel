@@ -139,16 +139,18 @@
 											<h5 style="text-align: center; width: 100%; background-color: #ffcd39; color: #636363;">{{$s['fecha']}}</h5>
 											@endif
 											@if($s['data']!=null)
-											<ol>
-												@foreach($s['data'] as $d)
-												<li>
-													<a style="color: #0b97c4;" target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}">{{$d['documento']}}</a>
-													<span title="{{ $d['cliente'] }}"> {{ substr( $d['cliente'], 0, 10) }}. @if($d['estado'] == "Cumplido")<i class="fa fa-check"></i>@endif </span>
-												</li>
-												@endforeach
-											</ol>
-											@else
-											<p>---</p>
+												<ol>
+													@foreach($s['data'] as $d)
+														@if($d['estado'] == "Cumplido")
+															@php continue; @endphp
+														@endif 
+													<li>
+														<a style="color: #0b97c4;" target="_blank" href="{{url('vtas_pedidos/'.$d['id'].'?id=13&id_modelo=175&id_transaccion=42')}}" title="{{ $d['cliente'] }}">
+															{{$d['documento']}}	/ {{ substr( $d['cliente'], 0, 10) }}.
+														</a>
+													</li>
+													@endforeach
+												</ol>
 											@endif
 										</td>
 										@endforeach
