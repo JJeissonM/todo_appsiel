@@ -38,12 +38,6 @@
                         </td>
                     </tr>
                 @endif
-                <tr>
-                    <td colspan="4">
-                        Esta factura se asimila en todos sus efectos a una Letra de Cambio según Art. 774 del Código de Comercio.
-                    </td>
-                </tr>
-
             </tbody>
         </table>
     </div>

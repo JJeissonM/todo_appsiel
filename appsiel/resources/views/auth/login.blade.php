@@ -23,7 +23,7 @@
         $mensaje2 = '<div style="color: red; width: 100%; text-align: center;">Presione el botón para ingresar. <i class="fa fa-arrow-up"></i><div>';
         
           $email = 'demo@appsiel.com.co';
-        $contrasenia = 'demo123*';
+        $contrasenia = 'demo123*'; // $2y$10$b0biqss8VcS1RN7/nBKv5e4.CByVrx9Q1WMg664IYFavA803uLOxC
         $options = [ 
           'administrador@appsiel.com.co' => 'Administrador Negocio',
           'demo@appsiel.com.co' => 'Admin. Empresa Transporte Especial',

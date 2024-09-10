@@ -33,9 +33,7 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar'],null, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'vtas_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
-	{{ Form::bsBtnEmail( 'vtas_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
+	@include('ventas.incluir.botones_imprimir_email')
 @endsection
 
 @section('botones_anterior_siguiente')

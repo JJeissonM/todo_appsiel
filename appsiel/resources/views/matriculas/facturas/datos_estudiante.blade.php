@@ -51,4 +51,5 @@
 		<br>
 		<b>Concepto:</b> {{ $doc_encabezado->datos_auxiliares_estudiante->cartera_estudiante->concepto->descripcion }} &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; <b>Mes: </b> {{ nombre_mes( explode( '-', $doc_encabezado->datos_auxiliares_estudiante->cartera_estudiante->fecha_vencimiento)[1] ) }} / {{ explode( '-', $doc_encabezado->datos_auxiliares_estudiante->cartera_estudiante->fecha_vencimiento)[0] }}
 	</div>
+	<br>
 @endif

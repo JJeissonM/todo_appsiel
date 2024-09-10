@@ -1,15 +1,16 @@
 <table class="table table-bordered table-striped">
     {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cant.','Precio','IVA','Dcto.','Total']) }}
     <tbody>
+        <?php 
+            $cant_items = 0;
+        ?>
         @foreach($doc_registros as $linea )
-            <?php 
-
+            <?php
                 $unidad_medida = $linea->unidad_medida1;
                 if( $linea->producto->unidad_medida2 != '' )
                 {
                     $unidad_medida = $linea->producto->unidad_medida1 . ' - Talla: ' . $linea->producto->unidad_medida2;
                 }
-
             ?>
 
             <tr>
@@ -22,25 +23,28 @@
                 <td style="text-align: center;"> {{ number_format( $linea->tasa_descuento, 2, ',', '.').'%' }} </td>
                 <td style="text-align: right;"> {{ '$ '.number_format( $linea->precio_total, 2, ',', '.') }} </td>
             </tr>
+            <?php 
+                $cant_items++;
+            ?>
         @endforeach
     </tbody>
     <tfoot>
-        <tr>
-            <td colspan="3">&nbsp;</td>
-            <td style="text-align: center;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
-            <td colspan="3">&nbsp;</td>
-            <td style="text-align: right;"> ${{ number_format($total_factura, 2, ',', '.') }} </td>
-        </tr>
-        @if( $total_abonos != 0)
+        @if( $total_abonos == 0)
             <tr>
-                <td colspan="6">&nbsp;</td>
-                <td style="text-align: right;"> Total abonos: </td>
-                <td style="text-align: right;"> ${{ number_format($total_abonos, 2, ',', '.') }} </td>
+                <td colspan="8"><b>Cant. Ítems:</b>{{ $cant_items }}</td>
             </tr>
+        @else
             <tr>
-                <td colspan="6">&nbsp;</td>
-                <td style="text-align: right;"> Total saldo: </td>
-                <td style="text-align: right;"> ${{ number_format( $total_factura - $total_abonos, 2, ',', '.') }} </td>
+                <td>
+                    <b>Cant. Ítems:</b>{{ $cant_items }}
+                </td>
+                <td>
+                    <b>Total abonos:</b> ${{ number_format($total_abonos, 2, ',', '.') }} 
+                </td>
+                <td>
+                    <b>Total saldo:</b> ${{ number_format( $total_factura - $total_abonos, 2, ',', '.') }} 
+                </td>
+                <td colspan="5">&nbsp;</td>
             </tr>
         @endif
     </tfoot>

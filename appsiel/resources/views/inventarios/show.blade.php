@@ -1,6 +1,23 @@
 <?php  
     $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
+
+    // 4 = Ensambles
+    $transaccion_no_editar = [4];
 ?>
+
+@can('inv_bloqueo_modificar_entradas_almacen')
+    <?php
+        // 1 = Entradas de almacen
+        $transaccion_no_editar[] = 1;
+    ?>
+@endcan
+
+@can('compras_bloqueo_modificar_entradas_por_compras')
+    <?php
+        // 1 = Entradas de almacen
+        $transaccion_no_editar[] = 1;
+    ?>
+@endcan
 
 @extends('transaccion.show') 
 
@@ -9,7 +26,7 @@
     <!-- @ if( in_array($id_transaccion, [1, 2, 3, 4, 27, 28, 35]) ) -->
         @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) )
 
-            @if( $id_transaccion != 4 ) <!-- No se pueden editar documentos de Ensambles  -->
+            @if( !in_array($id_transaccion, $transaccion_no_editar) )
                 {{ Form::bsBtnEdit2(str_replace('id_fila', $id, 'inventarios/id_fila/edit'.$variables_url ),'Editar') }}
             @endif
             

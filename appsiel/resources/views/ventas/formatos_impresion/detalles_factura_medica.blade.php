@@ -9,4 +9,5 @@
     @if( $caja_trabajo != '' )
         &nbsp;&nbsp;&nbsp;&nbsp;  | &nbsp;&nbsp;&nbsp; <b>Caja de trabajo: &nbsp;&nbsp;</b> {{ $caja_trabajo }}
     @endif
+    <br>
 @endif
