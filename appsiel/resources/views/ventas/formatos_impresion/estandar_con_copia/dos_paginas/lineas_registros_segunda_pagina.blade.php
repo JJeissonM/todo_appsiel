@@ -1,8 +1,8 @@
 <!-- Segunda pagina -->
-<div style="width: 100%; text-align:right;">
+<div style="width: 100%; text-align:right; clear:both;">
     Pág. 2/{{$cantidad_total_paginas}}
 </div>
-<table class="table table-bordered table-striped">
+<table class="table table-bordered">
     <tbody>
         @foreach($doc_registros_restantes as $linea )
             <?php

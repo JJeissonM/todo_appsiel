@@ -3,7 +3,7 @@
 
 @include('ventas.formatos_impresion.estandar_con_copia.una_sola_pagina.lineas_registros')
 
-@include('ventas.formatos_impresion.estandar_con_copia.tabla_impuestos_totales_y_firma')
+@include('ventas.formatos_impresion.estandar_con_copia.footer')
 
 @include('transaccion.registros_contables')
 

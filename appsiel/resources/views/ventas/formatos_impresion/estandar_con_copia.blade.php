@@ -18,6 +18,7 @@
             height: 48%;
             border-bottom: 1px #ddd dashed;
             /*background-color: aquamarine;*/
+            clear: both;
         }
 
         .lbl_doc_anulado {
@@ -36,6 +37,39 @@
             left: 0;
         }
 
+        .contenedor_col {
+            text-align: right;
+            width: 100%;
+            margin: auto;
+
+            /* Para limpiar los floats */
+            content: "";
+            display: table;
+            clear: both;
+
+            font-size: 1.1em;
+        }
+
+        /*  
+        .contenedor_col  > div {
+           width: 50%;
+        }
+  
+        */
+        .columna_izq_resumen_totales{
+            width: 45%;  /* Este será el ancho que tendrá tu columna */
+            float: left;; /* Aquí determinas de lado quieres quede esta "columna" */
+
+            font-weight: bold;
+
+        }
+
+        .columna_resumen_totales{
+            width: 45%;
+            float: right;
+            background-color: #FFFFFF;
+            padding-right: 10px;
+        }   
     </style>
 </head>
 
@@ -106,7 +140,6 @@
         */
         $cant_items_minimo_una_sola_pagina = 6;
         $cantidad_items_primera_pagina_sin_footer = 10;
-
         
         /*
           $cant_maxima_items_segunda_pagina_con_footer: es el numero de lineas que soporta una factura para quedar completa en media hoja carta.   
@@ -114,9 +147,6 @@
         $cant_maxima_items_segunda_pagina_con_footer = 18;
         
         $items_restantes = $cantidad_items - $cant_items_minimo_una_sola_pagina;
-
-        //dd($items_restantes, $cantidad_items, $cant_items_minimo_una_sola_pagina);
-
     ?>
 
     @if( $cantidad_items <= $cant_items_minimo_una_sola_pagina )
@@ -144,80 +174,10 @@
 
     @endif
     
+    <!-- DOS PAGINAS -->
     @if( $items_restantes > 0 && $items_restantes <= $cant_maxima_items_segunda_pagina_con_footer )
 
-        <!-- DOS PAGINAS -->
-        <?php
-            
-            $cantidad_total_paginas = 2;
-
-            $encabezado_factura = \View::make( 'ventas.formatos_impresion.estandar_con_copia.encabezado_factura', compact('doc_encabezado', 'empresa', 'resolucion', 'etiquetas', 'cantidad_total_paginas' ) )->render();
-            // , 'doc_registros', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago','total_cantidad', 'total_abonos', 'array_tasas', 'subtotal', 'total_descuentos', 'total_impuestos', 'impuesto_iva'
-            
-            // doc_registros queda truncado
-            $doc_registros_restantes = $doc_registros->splice( $cantidad_items_primera_pagina_sin_footer );
-
-            // Para agregar leyenda de ESPACIO EN BLANCO
-            $row_span = $cantidad_items_primera_pagina_sin_footer - $doc_registros->count() - 1;
-
-            $lineas_registros_primera_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_primera_pagina', compact( 'doc_registros', 'row_span' ) )->render();
-            
-            $lineas_registros_segunda_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_segunda_pagina', compact( 'doc_registros_restantes', 'total_abonos', 'cantidad_items', 'cantidad_total_paginas' ) )->render();
-            
-            $tabla_impuestos_totales_y_firma = \View::make( 'ventas.formatos_impresion.estandar_con_copia.tabla_impuestos_totales_y_firma', compact( 'otroscampos', 'resolucion', 'array_tasas', 'subtotal', 'total_descuentos', 'total_impuestos', 'impuesto_iva', 'total_factura' ) )->render();
-
-                //dd( $lineas_registros_primera_pagina, $lineas_registros_segunda_pagina );
-
-
-                // ,, 'abonos', 'docs_relacionados', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago','total_cantidad',
-
-        ?>
-        <div class="contenedor">
-            {!! $encabezado_factura !!}
-
-            {!! $lineas_registros_primera_pagina !!}
-
-            <div class="generado_por">
-                {!! generado_por_appsiel() !!}
-            </div>
-        </div>
-
-        <br>
-
-        <div class="contenedor">
-            {!! $encabezado_factura !!}
-
-            {!! $lineas_registros_primera_pagina !!}
-
-            <div class="generado_por">
-                {!! generado_por_appsiel() !!}
-            </div>
-        </div>
-
-        <div class="page-break"></div>
-
-        <!-- Segunda pagina -->
-        <div class="contenedor">
-            {!! $lineas_registros_segunda_pagina !!}
-            
-            {!! $tabla_impuestos_totales_y_firma !!}  
-
-            <div class="generado_por">
-                {!! generado_por_appsiel() !!}
-            </div>
-        </div>
-
-        <br>
-
-        <div class="contenedor">
-            {!! $lineas_registros_segunda_pagina !!}
-            
-            {!! $tabla_impuestos_totales_y_firma !!} 
-
-            <div class="generado_por">
-                {!! generado_por_appsiel() !!}
-            </div>
-        </div>
+        @include('ventas.formatos_impresion.estandar_con_copia.dos_paginas.factura')
 
     @endif
     

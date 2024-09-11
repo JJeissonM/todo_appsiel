@@ -1,4 +1,4 @@
-<table class="table table-bordered table-striped">
+<table class="table table-bordered">
     {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cant.','Precio','IVA','Dcto.','Total']) }}
     <tbody>
         <?php 

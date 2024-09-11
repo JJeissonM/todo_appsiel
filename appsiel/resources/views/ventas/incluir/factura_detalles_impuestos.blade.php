@@ -1,7 +1,10 @@
 @if( (int)config('configuracion.liquidacion_impuestos') )
-    <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Detalle de impuestos</div>
-    <div class="table-responsive">
-        <table style="width: 100%;" class="table table-bordered">
+    <div class="container">        
+        <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold; clear:both;">
+            Detalle de impuestos
+        </div>
+
+        <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Tipo</th>
