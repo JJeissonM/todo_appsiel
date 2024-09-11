@@ -29,5 +29,13 @@
                 Continua...
             </td>
         </tr>
+        @if($row_span > 0)
+            
+        <tr>
+            <td style="text-align: center; vertical-align: middle; font-size: 3em; color: #ddd; height:{{$row_span * 25}}px" colspan="8">
+                ESPACIO EN BLANCO
+            </td>
+        </tr>
+        @endif
     </tbody>
 </table>

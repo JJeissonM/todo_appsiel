@@ -1291,7 +1291,7 @@ class VentaController extends TransaccionController
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
-        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'],self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ) );
+        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros,self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ) );
 
         VentaController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
 

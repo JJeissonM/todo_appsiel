@@ -16,6 +16,8 @@
 
         .contenedor{
             height: 48%;
+            border-bottom: 1px #ddd dashed;
+            /*background-color: aquamarine;*/
         }
 
         .lbl_doc_anulado {
@@ -25,6 +27,13 @@
             transform: rotate(-45deg);
             text-align: center;
             font-size: 2em;
+        }
+
+        .generado_por{
+            /*background-color: blueviolet;*/
+            position: absolute;
+            bottom: 27px;
+            left: 0;
         }
 
     </style>
@@ -92,11 +101,28 @@
 
         $subtotal += $total_factura + $total_descuentos - $total_impuestos;
 
-        $cant_item_minimo = 5;
-        $cant_item_por_pagina_adicional = 2;
+        /*
+          $cant_items_minimo_una_sola_pagina: es el numero de lineas que soporta una factura para quedar completa en media hoja carta.   
+        */
+        $cant_items_minimo_una_sola_pagina = 6;
+        $cantidad_items_primera_pagina_sin_footer = 10;
+
+        
+        /*
+          $cant_maxima_items_segunda_pagina_con_footer: es el numero de lineas que soporta una factura para quedar completa en media hoja carta.   
+        */
+        $cant_maxima_items_segunda_pagina_con_footer = 18;
+        
+        $items_restantes = $cantidad_items - $cant_items_minimo_una_sola_pagina;
+        
+        $cantidad_total_paginas = 2;
+
+
+        //dd($items_restantes, $cantidad_items, $cant_items_minimo_una_sola_pagina);
+
     ?>
 
-    @if( $cantidad_items <= $cant_item_minimo )
+    @if( $cantidad_items <= $cant_items_minimo_una_sola_pagina )
 
         <!-- UNA SOLA PAGINA -->
         <?php  
@@ -104,24 +130,21 @@
         ?>
         <div class="contenedor">
             {!! $factura !!}
+
+            {!! generado_por_appsiel() !!}
         </div>
+
+        <br>
 
         <div class="contenedor">
             {!! $factura !!}
+
+            {!! generado_por_appsiel() !!}
         </div>
 
     @endif
-
-    <?php 
-        $items_restantes = $cantidad_items - $cant_item_minimo;
-        
-        $cantidad_total_paginas = 2;
-
-        $cantidad_items_primera_pagina = 6;
-
-    ?>
     
-    @if( $items_restantes > 0 && $items_restantes <= $cant_item_por_pagina_adicional )
+    @if( $items_restantes > 0 && $items_restantes <= $cant_maxima_items_segunda_pagina_con_footer )
 
         <!-- DOS PAGINAS -->
         <?php
@@ -129,9 +152,12 @@
             // , 'doc_registros', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago','total_cantidad', 'total_abonos', 'array_tasas', 'subtotal', 'total_descuentos', 'total_impuestos', 'impuesto_iva'
             
             // doc_registros queda truncado
-            $doc_registros_restantes = $doc_registros->splice( $cantidad_items_primera_pagina );
+            $doc_registros_restantes = $doc_registros->splice( $cantidad_items_primera_pagina_sin_footer );
 
-            $lineas_registros_primera_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_primera_pagina', compact( 'doc_registros' ) )->render();
+            // Para agregar leyenda de ESPACIO EN BLANCO
+            $row_span = $cantidad_items_primera_pagina_sin_footer - $doc_registros->count() - 1;
+
+            $lineas_registros_primera_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_primera_pagina', compact( 'doc_registros', 'row_span' ) )->render();
             
             $lineas_registros_segunda_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_segunda_pagina', compact( 'doc_registros_restantes', 'total_abonos', 'cantidad_items', 'cantidad_total_paginas' ) )->render();
             
@@ -147,12 +173,22 @@
             {!! $encabezado_factura !!}
 
             {!! $lineas_registros_primera_pagina !!}
+
+            <div class="generado_por">
+                {!! generado_por_appsiel() !!}
+            </div>
         </div>
+
+        <br>
 
         <div class="contenedor">
             {!! $encabezado_factura !!}
 
             {!! $lineas_registros_primera_pagina !!}
+
+            <div class="generado_por">
+                {!! generado_por_appsiel() !!}
+            </div>
         </div>
 
         <div class="page-break"></div>
@@ -161,13 +197,23 @@
         <div class="contenedor">
             {!! $lineas_registros_segunda_pagina !!}
             
-            {!! $tabla_impuestos_totales_y_firma !!}            
+            {!! $tabla_impuestos_totales_y_firma !!}  
+
+            <div class="generado_por">
+                {!! generado_por_appsiel() !!}
+            </div>
         </div>
+
+        <br>
 
         <div class="contenedor">
             {!! $lineas_registros_segunda_pagina !!}
             
-            {!! $tabla_impuestos_totales_y_firma !!}  
+            {!! $tabla_impuestos_totales_y_firma !!} 
+
+            <div class="generado_por">
+                {!! generado_por_appsiel() !!}
+            </div>
         </div>
 
     @endif
