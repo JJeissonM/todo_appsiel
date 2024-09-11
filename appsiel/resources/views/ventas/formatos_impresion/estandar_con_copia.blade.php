@@ -14,6 +14,10 @@
             height: 100%;
         }
 
+        .tabla_con_bordes > tr > td {
+            border: 1px solid black;
+        }
+        
         .contenedor{
             height: 48%;
             border-bottom: 1px #ddd dashed;

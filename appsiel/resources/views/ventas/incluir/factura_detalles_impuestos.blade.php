@@ -1,19 +1,16 @@
 @if( (int)config('configuracion.liquidacion_impuestos') )
     <div class="container">        
-        <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold; clear:both;">
+        <div style="text-align: center; widtd: 100%; background: #ddd; font-weight: bold; clear:botd;">
             Detalle de impuestos
         </div>
 
-        <table class="table table-bordered">
-            <thead>
+        <table class="tabla_con_bordes">
                 <tr>
-                    <th>Tipo</th>
-                    <th>Vlr. Compra</th>
-                    <th>Base IVA</th>
-                    <th>Vlr. IVA</th>
-                </tr>            
-            </thead>
-            <tbody>
+                    <td>Tipo</td>
+                    <td>Vlr. Compra</td>
+                    <td>Base IVA</td>
+                    <td>Vlr. IVA</td>
+                </tr> 
                 @foreach( $array_tasas as $key => $value )
                     <tr>
                         <td> {{ $value['tipo'] }} </td>
@@ -41,7 +38,6 @@
                         </td>
                     </tr>
                 @endif
-            </tbody>
         </table>
     </div>
 @endif
