@@ -33,7 +33,7 @@
 		</tr>
 		<tr>
 			<td>
-				<b>Nombre establecimiento:</b> {{ $registro->tercero->descripcion }}
+				<b>Cliente:</b> {{ $registro->tercero->descripcion }}
 			</td>
 			<td>
 				<b>Razón social:</b> 
