@@ -54,6 +54,11 @@
 
     <?php
         $elaboro = $doc_encabezado->creado_por;
+
+        $descripcion_cliente = $doc_encabezado->tercero->descripcion;
+        if ( $doc_encabezado->tercero->razon_social != '') {
+            $descripcion_cliente .= '(' . $doc_encabezado->tercero->razon_social . ')';
+        }
     ?>
 
     @if( $etiquetas['encabezado'] != '')
@@ -70,7 +75,7 @@
     <div style="width: 100%;">
         <table style="width: 100%;">
             <tr>
-                <td colspan="2"><b>Cliente:</b> {{ $doc_encabezado->tercero->descripcion }}</td>
+                <td colspan="2"><b>Cliente:</b> {{ $descripcion_cliente }}</td>
                 <td rowspan="2">
                     <b>Dirección:</b> {{ $doc_encabezado->tercero->direccion1 }},
                     {{ $doc_encabezado->tercero->ciudad->descripcion }} -
