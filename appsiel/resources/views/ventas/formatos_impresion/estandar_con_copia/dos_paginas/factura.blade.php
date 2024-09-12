@@ -11,7 +11,7 @@
     // Para agregar leyenda de ESPACIO EN BLANCO
     $row_span = $cantidad_items_primera_pagina_sin_footer - $doc_registros->count() - 1;
 
-    $lineas_registros_primera_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_primera_pagina', compact( 'doc_registros', 'row_span' ) )->render();
+    $lineas_registros_primera_pagina_sin_footer = \View::make( 'ventas.formatos_impresion.estandar_con_copia.lineas_registros_primera_pagina_sin_footer', compact( 'doc_registros', 'row_span' ) )->render();
     
     $lineas_registros_segunda_pagina = \View::make( 'ventas.formatos_impresion.estandar_con_copia.dos_paginas.lineas_registros_segunda_pagina', compact( 'doc_registros_restantes', 'total_abonos', 'cantidad_items', 'cantidad_total_paginas' ) )->render();
     
@@ -20,7 +20,7 @@
 <div class="contenedor">
     {!! $encabezado_factura !!}
 
-    {!! $lineas_registros_primera_pagina !!}
+    {!! $lineas_registros_primera_pagina_sin_footer !!}
 
     <div class="generado_por">
         {!! generado_por_appsiel() !!}
@@ -32,7 +32,7 @@
 <div class="contenedor">
     {!! $encabezado_factura !!}
 
-    {!! $lineas_registros_primera_pagina !!}
+    {!! $lineas_registros_primera_pagina_sin_footer !!}
 
     <div class="generado_por">
         {!! generado_por_appsiel() !!}

@@ -215,6 +215,7 @@ class NotaCreditoController extends TransaccionController
     	$datos['creado_por'] = Auth::user()->email;
         $datos['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura
         $datos['forma_pago'] = $factura->forma_pago;
+        $datos['vendedor_id'] = $factura->vendedor_id;
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_nota_credito = $encabezado_documento->crear_nuevo( $datos );
 

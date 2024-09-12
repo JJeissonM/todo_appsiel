@@ -162,6 +162,7 @@
 
             $factura = \View::make( 'ventas.formatos_impresion.estandar_con_copia.una_sola_pagina.factura', compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago','total_cantidad','total_factura', 'total_abonos', 'array_tasas', 'subtotal', 'total_descuentos', 'total_impuestos', 'impuesto_iva', 'cantidad_total_paginas' ) )->render();
         ?>
+        
         <div class="contenedor">
             {!! $factura !!}
 

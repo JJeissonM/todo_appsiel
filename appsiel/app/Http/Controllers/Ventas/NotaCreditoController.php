@@ -144,6 +144,7 @@ class NotaCreditoController extends TransaccionController
         $factura = VtasDocEncabezado::get_registro_impresion( $request->ventas_doc_relacionado_id ); // WARNING: si la factura tiene varias entradas, no se puede hacer la nota
 
         $request['creado_por'] = Auth::user()->email;
+        $request['vendedor_id'] = $factura->vendedor_id;
 
         // 1ro. Crear documento de Entrada de inventarios (Devolución) con base en la remisión y las cantidades a devolver
         $devolucion = new DevolucionVentas;

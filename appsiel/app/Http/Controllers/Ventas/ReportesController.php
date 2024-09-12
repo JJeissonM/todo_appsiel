@@ -76,7 +76,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -114,7 +114,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -147,7 +147,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -276,7 +276,7 @@ class ReportesController extends Controller
         $date2 = strtotime($fecha);
         $inicio0 = strtotime('sunday this week -1 week', $date2);
         $inicio = date('Y-m-d', $inicio0);
-        $fechas = null;
+        $fechas = [];
         for ($i = 1; $i <= 7; $i++) {
             $fechas[] = date("Y-m-d", strtotime("$inicio +$i day"));
         }
@@ -307,6 +307,7 @@ class ReportesController extends Controller
                 'data' => $pedidos
             ];
         }
+        
         return $data;
     }
     
@@ -376,7 +377,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -414,13 +415,6 @@ class ReportesController extends Controller
 
     public function ventas_por_vendedor(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') ) 
-        {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
-        }
-
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -448,7 +442,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') )
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -509,6 +503,13 @@ class ReportesController extends Controller
 
     public function reporte_pedidos(Request $request)
     {
+        $user = Auth::user();
+
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -527,7 +528,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -548,7 +549,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }

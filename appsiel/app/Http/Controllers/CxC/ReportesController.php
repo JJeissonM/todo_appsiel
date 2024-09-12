@@ -27,7 +27,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') )
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }
@@ -112,7 +112,7 @@ class ReportesController extends Controller
     {
         $user = Auth::user();
 
-        if ( $user->hasRole('SupervisorCajas') ) 
+        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') )
         {
             return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
         }

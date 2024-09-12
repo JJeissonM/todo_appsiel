@@ -3,9 +3,8 @@
 namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class NotaCredito extends Model
 {
@@ -14,6 +13,56 @@ class NotaCredito extends Model
     protected $fillable = ['core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'plazo_entrega_id', 'fecha_vencimiento', 'orden_compras', 'valor_total'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Documento compra', 'Fecha', 'Cliente', 'Detalle', 'Valor total', 'Estado'];
+
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
+    }
+
+    public function cliente()
+    {
+        return $this->belongsTo(Cliente::class, 'cliente_id');
+    }
+
+    public function contacto_cliente()
+    {
+        return $this->belongsTo(ContactoCliente::class, 'contacto_cliente_id');
+    }
+
+    public function vendedor()
+    {
+        return $this->belongsTo(Vendedor::class, 'vendedor_id');
+    }
+
+    public function plazo_entrega()
+    {
+        return $this->belongsTo( PlazoEntrega::class, 'plazo_entrega_id' );
+    }
+
+    public function lineas_registros()
+    {
+        return $this->hasMany(VtasDocRegistro::class, 'vtas_doc_encabezado_id');
+    }
+
+    public function movimientos()
+    {
+        return $this->hasMany(VtasMovimiento::class);
+    }
+
+    public function get_label_documento()
+    {
+        return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+    } 
 
     public static function consultar_registros($nro_registros, $search)
     {

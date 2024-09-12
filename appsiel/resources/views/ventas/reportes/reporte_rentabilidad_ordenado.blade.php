@@ -162,7 +162,7 @@
                             $margen_rentabilidad = $array_lista[$i]['rentabilidad'] / $array_lista[$i]['costo_total'] * 100;
                         }
 
-                        if ( $array_lista[$i]['tipo'] == 'servicio')
+                        if ( $array_lista[$i]['tipo'] == 'servicio' && $array_lista[$i]['precio'] != 0)
                         {
                             $margen_rentabilidad = (1 - ( $array_lista[$i]['costo_total'] / $array_lista[$i]['precio'] ) ) * 100;
                         }

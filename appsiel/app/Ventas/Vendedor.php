@@ -4,12 +4,11 @@ namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Schema;
-
 use App\Core\Tercero;
 use App\User;
 use App\Ventas\Cliente;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Vendedor extends Model
 {

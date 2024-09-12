@@ -203,7 +203,6 @@
 					});
 		    });
 
-
 		    //Al hacer click en alguna de las sugerencias (escoger un producto)
             $(document).on('click','.list-group-item-cliente', function(){
             	seleccionar_cliente( $(this) );
@@ -237,9 +236,6 @@
 		    	
 		    	reset_linea_ingreso_default();
 		    });
-
-
-
 
 		    $('[data-toggle="tooltip"]').tooltip();
 		    var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botón guardar
@@ -402,8 +398,6 @@
 
 		    		case 13: // Al presionar Enter
 
-
-
 		    			if ( $(this).val() == '' )
 						{
 							return false;
@@ -538,11 +532,9 @@
 	            valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
 			}
 
+			$('#tasa_descuento').keyup(function(){
 
-
-            $('#tasa_descuento').keyup(function(){
-
-            	if( validar_input_numerico( $(this) ) )
+				if( validar_input_numerico( $(this) ) )
 				{	
 					tasa_descuento = parseFloat( $(this).val() );
 
@@ -567,6 +559,26 @@
 
 					$(this).select();
 					return false;
+				}
+			});
+
+			$('#valor_unitario_descuento').keyup(function(){
+
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
+				{
+					agregar_nueva_linea();
+					return true;
+				}
+			});
+
+			$('#precio_total').keyup(function(){
+
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
+				{
+					agregar_nueva_linea();
+					return true;
 				}
 			});
 

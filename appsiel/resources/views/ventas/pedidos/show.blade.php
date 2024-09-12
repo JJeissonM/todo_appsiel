@@ -97,6 +97,10 @@
 			@else 
 				{{ $doc_encabezado->numero_identificacion}} 
 			@endif
+            <br/>
+            <b>Dirección: &nbsp;&nbsp;</b> {{ $doc_encabezado->direccion1 }}
+            <br/>
+            <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
 		</td>
 		<td style="border: solid 1px #ddd;">
 			<b>Vendedor: </b> {{ $doc_encabezado->vendedor->tercero->descripcion }}

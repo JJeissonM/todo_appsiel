@@ -15,7 +15,7 @@
             <td>
                 <div class="container">
                     <div style="text-align: center; width:100%; padding: 0px 5px;">
-                        <br><br><br>
+                        <br>
                         __________________
                         <br>
                         <b> Firma <br> del aceptante </b> 

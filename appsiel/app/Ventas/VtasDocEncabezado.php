@@ -5,15 +5,7 @@ namespace App\Ventas;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvDocEncabezado;
-use App\Core\EncabezadoDocumentoTransaccion;
-
-use App\Contabilidad\ContabMovimiento;
-use App\CxC\CxcMovimiento;
 use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
-use App\Inventarios\InvProducto;
-use App\Inventarios\InvMovimiento;
 use App\Ventas\ResolucionFacturacion;
 
 use Illuminate\Pagination\LengthAwarePaginator;

@@ -184,7 +184,8 @@ class NotaDebitoController extends TransaccionController
         // Paso 2
         $datos['remision_doc_encabezado_id'] = $documento_remision->id;
         $datos['ventas_doc_relacionado_id'] = $factura->id; // Relacionar Nota con la Factura  
-        $datos['forma_pago'] = $factura->forma_pago; // Relacionar Nota con la Factura       
+        $datos['forma_pago'] = $factura->forma_pago; // Relacionar Nota con la Factura   
+        $datos['vendedor_id'] = $factura->vendedor_id;    
         $encabezado_documento = new EncabezadoDocumentoTransaccion( $request->url_id_modelo );
         $encabezado_nota_debito = $encabezado_documento->crear_nuevo( $datos );
 

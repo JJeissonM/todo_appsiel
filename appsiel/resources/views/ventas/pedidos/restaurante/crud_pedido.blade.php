@@ -271,7 +271,7 @@ input[type=number]::-webkit-outer-spin-button {
         {!! $plantilla_factura !!}
     </div>
     
-    <input type="hidden" id="imprimir_pedidos_en_cocina" value="{{ (int)config('ventas_pos.imprimir_pedidos_en_cocina') }}">
+    <input type="text" id="imprimir_pedidos_en_cocina" value="{{ (int)config('ventas_pos.imprimir_pedidos_en_cocina') }}">
     
 @endsection
 

@@ -777,6 +777,10 @@ class VentaController extends TransaccionController
 
         // Linea crear nuevo registro
         $modelo_id = 138; // App\Ventas\Clientes
+        if (Auth::user()->hasRole('Vendedor')) {
+            $modelo_id = 216;
+        }
+
         $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
@@ -928,7 +932,6 @@ class VentaController extends TransaccionController
 
         return redirect( $arr[0] . '/' . $arr[1] . '/' . $arr[2] . '?' . $arr[3] . '&' . $arr[4] . '&' . $arr[5] )->with( 'flash_message','Tercero CREADO como Cliente correctamente.' );
     }
-
 
     // Petición AJAX. Parámetro enviados por GET
     public function get_formulario_edit_registro()
@@ -1179,7 +1182,6 @@ class VentaController extends TransaccionController
 
         return redirect( 'ventas/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','El registro de la Factura de ventas fue MODIFICADO correctamente.');
     }
-
     
     // Parámetro enviados por GET
     // Cuando se hace la Remisión y queda pendiente hacer la factura
@@ -1279,7 +1281,6 @@ class VentaController extends TransaccionController
         return (object)[ 'precio_unitario' => $precio_unitario, 'tasa_descuento' => $tasa_descuento ];
     }
 
-
     /*
         Este metodo se llama desde la vista create de ventas via POST
     */
@@ -1354,7 +1355,6 @@ class VentaController extends TransaccionController
                     $valor_total_descuento
                 ];
     }
-
 
     // Se crean los registros con base en los registros de la remisión o remisiones
     public static function crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros )
@@ -1466,7 +1466,6 @@ class VentaController extends TransaccionController
 
     public function agregar_precio_lista( Request $request )
     {
-
         if ( (float)$request->precio == 0)
         {
             return redirect( 'web/'.$request->lista_precios_id.'?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion)->with('mensaje_error', 'Precio incorrecto. Por favor ingréselo nuevamente.');

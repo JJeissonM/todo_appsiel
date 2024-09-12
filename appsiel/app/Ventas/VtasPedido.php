@@ -2,13 +2,9 @@
 
 namespace App\Ventas;
 
-use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class VtasPedido extends VtasDocEncabezado
 {
@@ -51,12 +47,29 @@ class VtasPedido extends VtasDocEncabezado
     public static function consultar_registros2($nro_registros, $search)
     {
         $core_tipo_transaccion_id = 42; // Pedido de ventas
+        
+            
+        $array_wheres = [
+            ['vtas_doc_encabezados.core_empresa_id','=', Auth::user()->empresa_id],
+            ['vtas_doc_encabezados.core_tipo_transaccion_id', '=', $core_tipo_transaccion_id]
+        ];
+        $user = Auth::user();
+
+        if ( $user->hasRole('Vendedor') )
+        {
+            $vendedor = Vendedor::where([
+                ['user_id', '=', $user->id]
+            ])->get()->first();
+
+            if ($vendedor != null) {
+                $array_wheres = array_merge($array_wheres,[['vtas_doc_encabezados.vendedor_id','=', $vendedor->id]]);
+            }            
+        }
 
         $collection = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
-        ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
                 ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
-                ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
-                ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                ->where( $array_wheres )
                 ->select(
                     DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo) AS campo2'),
@@ -74,7 +87,7 @@ class VtasPedido extends VtasDocEncabezado
         if (count($collection) > 0) {
             if (strlen($search) > 0) {
                 $nuevaColeccion = $collection->filter(function ($c) use ($search) {
-                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6], $search)) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7], $search)) {
                         return $c;
                     }
                 });
