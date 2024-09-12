@@ -57,7 +57,7 @@
 
         $descripcion_cliente = $doc_encabezado->tercero->descripcion;
         if ( $doc_encabezado->tercero->razon_social != '') {
-            $descripcion_cliente .= '(' . $doc_encabezado->tercero->razon_social . ')';
+            $descripcion_cliente .= ' (' . $doc_encabezado->tercero->razon_social . ')';
         }
     ?>
 
