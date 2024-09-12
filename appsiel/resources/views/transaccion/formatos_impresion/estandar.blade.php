@@ -65,12 +65,17 @@
     
         <?php
             $elaboro = $doc_encabezado->creado_por;
+
+            $descripcion_cliente = $doc_encabezado->tercero->descripcion;
+            if ( $doc_encabezado->tercero->razon_social != '') {
+                $descripcion_cliente .= ' (' . $doc_encabezado->tercero->razon_social . ')';
+            }
         ?>
     
         @yield('encabezado_2')
     
         <div>
-            <b>@yield('lbl_tercero')</b> {{ $doc_encabezado->tercero->descripcion }}
+            <b>@yield('lbl_tercero')</b> {{ $descripcion_cliente }}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <b>{{ config("configuracion.tipo_identificador") }} / CC:</b> 
             @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->tercero->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->tercero->numero_identificacion}} @endif - {{ $doc_encabezado->tercero->digito_verificacion }}
