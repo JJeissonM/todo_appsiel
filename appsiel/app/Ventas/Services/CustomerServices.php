@@ -111,12 +111,17 @@ class CustomerServices
 
     public function get_linea_item_sugerencia( Cliente $linea, $clase, $primer_item, $ultimo_item )
     {
+        $descripcion = $linea->descripcion;
+        if ( $linea->razon_social != '' ) {
+            $descripcion .=  ' ('. $linea->razon_social . ')';
+        }
+
         $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
                                 '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
 
-        $html .=            '" data-nombre_cliente="'.$linea->descripcion.
+        $html .=            '" data-nombre_cliente="'.$descripcion.
                             '" data-zona_id="'.$linea->zona_id.
                             '" data-clase_cliente_id="'.$linea->clase_cliente_id.
                             '" data-liquida_impuestos="'.$linea->liquida_impuestos.
@@ -132,7 +137,8 @@ class CustomerServices
                             '" data-dias_plazo="'.$linea->dias_plazo.
                             '" data-lista_precios_id="'.$linea->lista_precios_id.
                             '" data-lista_descuentos_id="'.$linea->lista_descuentos_id.
-                            '" > '.$linea->descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+                            '" > '.$descripcion.' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
+                            
         return $html;
     }
 }

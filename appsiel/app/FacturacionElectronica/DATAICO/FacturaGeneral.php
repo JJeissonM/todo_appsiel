@@ -65,7 +65,6 @@ class FacturaGeneral
          default:
             break;
       }
-
       
       $tokenPassword = config('facturacion_electronica.tokenPassword');
       
@@ -207,6 +206,7 @@ class FacturaGeneral
       {
          $party_type = 'PERSONA_NATURAL';
          $tax_level_code = 'SIMPLIFICADO';
+
          $first_name = explode(" ", $cliente->tercero->descripcion)[0];
          $family_name = substr($cliente->tercero->descripcion, strlen($first_name) + 1);
 
@@ -215,6 +215,7 @@ class FacturaGeneral
             $family_name = $cliente->tercero->apellido1;
          }
       }
+      
       $regimen = 'ORDINARIO';
 
       // 16925001 = 169 pais, 25 departamento, 001 ciudad

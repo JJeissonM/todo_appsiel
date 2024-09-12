@@ -726,7 +726,8 @@ class VentaController extends TransaccionController
                                 ->leftJoin('vtas_listas_dctos_encabezados','vtas_listas_dctos_encabezados.id','=','vtas_clientes.lista_descuentos_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','vtas_clientes.inv_bodega_id')
                                 ->where('vtas_clientes.estado','Activo')
-                                ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
+                                ->where( 'core_terceros.'.$campo_busqueda, $operador, $texto_busqueda)
+                                ->orWhere( 'core_terceros.razon_social', 'LIKE', $texto_busqueda)
                                 ->select(
                                             'vtas_clientes.id',
                                             'vtas_clientes.id AS cliente_id',
@@ -736,6 +737,7 @@ class VentaController extends TransaccionController
                                             'vtas_clientes.vendedor_id',
                                             'core_terceros.id AS core_tercero_id',
                                             'core_terceros.descripcion',
+                                            'core_terceros.razon_social',
                                             'core_terceros.numero_identificacion',
                                             'core_terceros.direccion1',
                                             'core_terceros.telefono1',

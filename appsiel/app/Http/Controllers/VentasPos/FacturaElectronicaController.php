@@ -2,75 +2,24 @@
 
 namespace App\Http\Controllers\VentasPos;
 
-use App\Http\Controllers\Tesoreria\RecaudoController;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\Facades\Input;
 
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
-use App\Http\Controllers\Inventarios\InventarioController;
-
-// Objetos 
-use App\Sistema\Html\TablaIngresoLineaRegistros;
-use App\Sistema\Html\BotonesAnteriorSiguiente;
-use App\Sistema\TipoTransaccion;
-
-// Modelos
-use App\Sistema\Modelo;
-use App\Core\TipoDocApp;
-
 use App\VentasPos\Services\AccumulationService;
-use App\VentasPos\Services\InventoriesServices;
-use App\VentasPos\Services\SalesServices;
-
-use App\Inventarios\InvDocEncabezado;
-use App\Inventarios\InvProducto;
-
-use App\VentasPos\PreparaTransaccion;
 
 use App\VentasPos\FacturaPos;
-use App\VentasPos\DocRegistro;
-use App\VentasPos\Movimiento;
 
 use App\Ventas\VtasPedido;
-use App\Ventas\Vendedor;
 
-use App\VentasPos\Pdv;
-
-use App\Ventas\Cliente;
-use App\Ventas\ResolucionFacturacion;
-use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\ListaDctoDetalle;
 use App\Ventas\VtasDocEncabezado;
-use App\Ventas\NotaCredito;
 
-use App\Ventas\VtasMovimiento;
-
-use App\CxC\CxcMovimiento;
-use App\CxC\CxcAbono;
-
-use App\CxP\CxpMovimiento;
-
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoMovimiento;
-use App\Tesoreria\TesoMotivo;
-
-use App\Contabilidad\ContabMovimiento;
-use App\Core\Services\ResolucionFacturacionService;
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
-use App\Inventarios\InvGrupo;
-use App\Inventarios\Services\InvDocumentsService;
-use App\Ventas\Services\PrintServices;
-use App\VentasPos\Services\AccountingServices;
-use App\VentasPos\Services\CrudService;
-use App\VentasPos\Services\DatafonoService;
+
 use App\VentasPos\Services\InvoicingService;
-use App\VentasPos\Services\TipService;
 
 class FacturaElectronicaController extends TransaccionController
 {
