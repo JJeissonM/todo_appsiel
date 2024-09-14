@@ -329,6 +329,8 @@
 
         $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
 
+        $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
+
         $.fn.set_catalogos( $('#pdv_id').val() );
 
         function mySearchInputFunction() {

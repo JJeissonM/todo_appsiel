@@ -810,7 +810,7 @@ $(document).ready(function () {
 
 		$('#vendedor_id').val( $(this).attr('data-vendedor_id') );
 		$('#vendedor_id').attr( 'data-vendedor_descripcion', $(this).attr('data-vendedor_descripcion') );
-        $(document).prop('title', $(this).attr('data-vendedor_descripcion'));
+        $(document).prop('title', $(this).attr('data-vendedor_descripcion').toUpperCase() );
 		
 	});
 	
