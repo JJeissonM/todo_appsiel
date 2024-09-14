@@ -48,7 +48,11 @@
         @foreach($lineas_registros as $linea)
 
             <?php 
-                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $signo = 1;
+                if ( $linea->precio_total < 0 ) {
+                    $signo = -1;
+                }
+                $gran_base_impuesto_total += $linea->base_impuesto_total * $signo;
                 $gran_precio_total += $linea->precio_total;
             ?>
 
@@ -60,8 +64,8 @@
                 <td> {{ $documento->cliente->tercero->descripcion }} </td>
                 <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
                 <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                <td> ${{ number_format( $linea->base_impuesto_total, 0, ',', '.') }} </td>
-                <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
                 <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
             </tr>
         @endforeach
@@ -72,10 +76,15 @@
             $precio_total = 0;
             foreach($lineas_registros as $linea)
             {
-                $base_impuesto_total += $linea->base_impuesto_total;
+                $signo = 1;
+                if ( $linea->precio_total < 0 ) {
+                    $signo = -1;
+                }
+
+                $base_impuesto_total += $linea->base_impuesto_total * $signo;
                 $precio_total += $linea->precio_total;
 
-                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $gran_base_impuesto_total += $linea->base_impuesto_total * $signo;
                 $gran_precio_total += $linea->precio_total;
             }
         ?>
@@ -103,7 +112,11 @@
         @foreach($lineas_registros as $linea)
 
             <?php 
-                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $signo = 1;
+                if ( $linea->precio_total < 0 ) {
+                    $signo = -1;
+                }
+                $gran_base_impuesto_total += $linea->base_impuesto_total * $signo;
                 $gran_precio_total += $linea->precio_total;
             ?>
 
@@ -115,8 +128,8 @@
                 <td> {{ $documento->cliente->tercero->descripcion }} </td>
                 <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
                 <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                <td> ${{ number_format( $linea->base_impuesto_total, 0, ',', '.') }} </td>
-                <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
+                <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
                 <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
             </tr>
         @endforeach
@@ -127,10 +140,15 @@
             $precio_total = 0;
             foreach($lineas_registros as $linea)
             {
-                $base_impuesto_total += $linea->base_impuesto_total;
+                $signo = 1;
+                if ( $linea->precio_total < 0 ) {
+                    $signo = -1;
+                }
+                
+                $base_impuesto_total += $linea->base_impuesto_total * $signo;
                 $precio_total += $linea->precio_total;
 
-                $gran_base_impuesto_total += $linea->base_impuesto_total;
+                $gran_base_impuesto_total += $linea->base_impuesto_total * $signo;
                 $gran_precio_total += $linea->precio_total;
             }
         ?>
