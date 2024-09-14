@@ -63,6 +63,8 @@
                     }
 
                     $superindice = '';
+                    $array_lista[$i]['tipo'] = 'producto';
+                    
                     if ( $agrupar_por == 'core_tercero_id' )
                     {
                         $costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
@@ -77,7 +79,6 @@
                         }
                         $costo_total = $movimiento_inventarios->where( 'inv_producto_id', $inv_producto_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1 - $descuento_item; // los movimiento de inventarios de ventas son negativos
 
-                        $array_lista[$i]['tipo'] = 'producto';
                         
                         if ($coleccion_movimiento->first()->item->tipo == 'servicio') {
                             $costo_total = $precio * (1 - $coleccion_movimiento->first()->item->precio_compra / 100);
