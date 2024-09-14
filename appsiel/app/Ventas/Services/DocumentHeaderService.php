@@ -88,15 +88,32 @@ class DocumentHeaderService
         // 5to. Se marcan como anulados los registros del documento
         VtasDocRegistro::where( 'vtas_doc_encabezado_id', $document_header->id )->update( [ 'estado' => 'Anulado', 'modificado_por' => $modificado_por] );
 
-        // 6to. Se marca como anulado el documento
-        $document_header->update(['estado'=>'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
-
-        // 7mo. Si es una factura de Estudiante
+        // 6to. Si es una factura de Estudiante
         $factura_estudiante = FacturaAuxEstudiante::where('vtas_doc_encabezado_id',$document_header->id)->get()->first();
         if (!is_null($factura_estudiante))
         {
             $factura_estudiante->delete();
         }
+
+        // 7mo. Si tiene pedido Padre
+        $pedido = VtasDocEncabezado::find( $document_header->ventas_doc_relacionado_id );
+        if( $pedido != null )
+        {
+            $pedido->estado = "Pendiente";
+            $pedido->ventas_doc_relacionado_id = 0;
+            $pedido->remision_doc_encabezado_id = '';
+            $pedido->save();
+
+            $this->actualizar_cantidades_pendientes( $pedido, 'sumar' );              
+        }
+
+        // 8vo. Se marca como anulado el documento
+        $document_header->update([
+            'estado'=>'Anulado',
+            'remision_doc_encabezado_id' => '',
+            'ventas_doc_relacionado_id' => 0,
+            'modificado_por' => $modificado_por
+        ]);
 
         return (object)[
             'status'=>'flash_message',
@@ -389,6 +406,24 @@ class DocumentHeaderService
             $datos['modificado_por'] = '';
 
             VtasDocRegistro::create( $datos );
+        }
+    }    
+
+    public function actualizar_cantidades_pendientes( $encabezado_pedido, $operacion )
+    {
+        $lineas_registros_pedido = $encabezado_pedido->lineas_registros;
+
+        foreach( $lineas_registros_pedido AS $linea_pedido )
+        {            
+            if ( $operacion == 'restar' )
+            {
+                $linea_pedido->cantidad_pendiente = 0;
+            }else{
+                // sumar: al anular
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad;
+            }
+                
+            $linea_pedido->save();
         }
     }
 }

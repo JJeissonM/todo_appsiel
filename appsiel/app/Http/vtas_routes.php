@@ -98,6 +98,7 @@ Route::get('actualizar_valor_total_vtas_encabezados_doc', 'Ventas\ProcesoControl
 Route::get('recontabilizar_documentos_ventas', 'Ventas\ProcesoController@recontabilizar_documentos_ventas');
 
 Route::get('vtas_reconstruir_movimiento_documento/{documento_id}', 'Ventas\ProcesoController@reconstruir_movimiento_documento');
+Route::get('vtas_reconstruir_movimiento_documento_por_lote/{inicial_documento_id}/{final_documento_id}', 'Ventas\ProcesoController@reconstruir_movimiento_documento_por_lote');
 
 // Anular facturas masivas
 Route::get('sales_documents_massive_canceling/{ids_list}', 'Ventas\ProcesoController@documents_massive_canceling');

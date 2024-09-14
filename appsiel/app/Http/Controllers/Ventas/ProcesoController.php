@@ -312,8 +312,10 @@ class ProcesoController extends Controller
         $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, $request->fecha );
 
         $pedido->forma_pago = $request->forma_pago;
+        $pedido->remision_doc_encabezado_id = $doc_remision->id;
 
         $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, $request->fecha, $request->tipo_factura[0], $request->lineas_registros_medios_recaudo );
+
         $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
         $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
         $nueva_factura->save();
@@ -351,8 +353,10 @@ class ProcesoController extends Controller
 
             // este metodo crear_remision_desde_doc_venta() debe estar en una clase Model
             $doc_remision = $this->crear_remision_desde_doc_venta( $pedido, date('Y-m-d') );
+            
+            $pedido->remision_doc_encabezado_id = $doc_remision->id;
 
-            $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, date('Y-m-d'), config('web.tipo_factura_default') );
+            $nueva_factura = $this->crear_factura_desde_doc_venta( $pedido, $doc_remision->id, date('Y-m-d'), config('web.tipo_factura_default') );
             $nueva_factura->remision_doc_encabezado_id = $doc_remision->id;
             $nueva_factura->ventas_doc_relacionado_id = $pedido->id;
             $nueva_factura->save();
@@ -596,13 +600,36 @@ class ProcesoController extends Controller
 
     public function reconstruir_movimiento_documento($documento_id)
     {
-        ProcesoController::reconstruir_movimiento_un_documento($documento_id);
+        $this->reconstruir_movimiento_un_documento($documento_id);
         return redirect('ventas/' . $documento_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Movimiento de ventas actualizado.');
     }
 
-    public static function reconstruir_movimiento_un_documento($documento_id)
+    public function reconstruir_movimiento_documento_por_lote($documento_inicial_id, $documento_final_id)
+    {
+        for ( $id = $documento_inicial_id; $id <= $documento_final_id; $id++) { 
+            $this->reconstruir_movimiento_un_documento($id);
+        }
+
+        return redirect( 'ventas/' . $documento_inicial_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Movimiento de ventas actualizado.');
+    }
+
+    public function reconstruir_movimiento_un_documento($documento_id)
     {
         $documento = VtasDocEncabezado::find($documento_id);
+
+        if ( $documento == null ) {
+            return false;
+        }
+
+        /**
+         * 23: Facturas de Ventas Estándar
+         * 38: Nota crédito
+         * 52: Factura de Ventas Electrónica
+         * 53: Nota crédito Electrónica
+         */
+        if ( !in_array( $documento->core_tipo_transaccion_id, [23, 38, 52, 53]) ) { 
+            return false;
+        }
 
         // Eliminar movimientos actuales
         VtasMovimiento::where([
@@ -612,18 +639,23 @@ class ProcesoController extends Controller
             ])
             ->delete();
 
+        if ( $documento->estado == 'Anulado' ) {
+            return false;
+        }
+
         // Obtener líneas de registros del documento
         $registros_documento = VtasDocRegistro::where('vtas_doc_encabezado_id', $documento->id)->get();
         
         $datos = $documento->toarray();
         $total_documento = 0;
         $n = 1;
+
         foreach ($registros_documento as $linea)
         {
-            VtasMovimiento::create( 
-                $datos +
-                $linea
-            );
+            $nuevos_datos = $datos + $linea->toArray();
+
+            VtasMovimiento::create( $nuevos_datos );
+
             $total_documento += $linea->precio_total;
             $n++;
         }
