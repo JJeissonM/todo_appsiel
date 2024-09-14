@@ -341,17 +341,24 @@ class PedidoController extends TransaccionController
     public function show($id)
     {
         $this->set_variables_globales();
-
-        $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
-        
         $this->doc_encabezado = VtasDocEncabezado::get_registro_impresion($id);
+        $doc_encabezado = $this->doc_encabezado;
+        
+        $aditional_wheres = [];
+        if ( Auth::user()->hasRole('Vendedor') ) {
+            $aditional_wheres = [
+                ['vendedor_id', '=' , $doc_encabezado->vendedor_id]
+            ];
+        }
+
+        $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id, $aditional_wheres);
+        
         
         $doc_registros = VtasDocRegistro::get_registros_impresion($this->doc_encabezado->id);
 
         $this->empresa = Empresa::find($this->doc_encabezado->core_empresa_id);
         
         $resolucion = '';
-        $doc_encabezado = $this->doc_encabezado;
         $empresa = $this->empresa;
         //$documento_vista = $this->generar_documento_vista($id, 'documento_vista');
         $documento_vista = "";

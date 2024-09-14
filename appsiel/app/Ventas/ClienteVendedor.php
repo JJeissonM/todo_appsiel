@@ -65,13 +65,43 @@ class ClienteVendedor extends Cliente
         }
 
         return $vec;
-    }
-    
+    }    
 
     public static function get_cuenta_cartera( $cliente_id )
     {
         $clase_cliente_id = Cliente::where( 'id', $cliente_id )->value( 'clase_cliente_id' );
         return ClaseCliente::where( 'id', $clase_cliente_id )->value( 'cta_x_cobrar_id' );
+    }
+
+    public static function get_campos_adicionales_create( $lista_campos )
+    {
+        $user = Auth::user();
+
+        /*
+            Personalizar los campos
+            Para Académico docente
+        */
+        $cantida_campos = count($lista_campos);
+        for ($i=0; $i <  $cantida_campos; $i++)
+        {
+            switch ( $lista_campos[$i]['name'] )
+            {
+                case 'vendedor_id':
+
+                    if ( $user->hasRole('Vendedor') ) 
+                    {
+                        $vendedor = Vendedor::where( 'user_id', $user->id )->get()->first();
+                        $lista_campos[$i]['value'] = $vendedor->id;
+                    }
+                    break;
+
+                default:
+                    # code...
+                break;
+            }                 
+        }
+
+        return $lista_campos;
     }
 
     public function store_adicional( $datos, $registro )
@@ -95,24 +125,27 @@ class ClienteVendedor extends Cliente
         $registro->save();
 
         // Crear contacto de asociado al cliente
-        if ( $datos['nombre_contacto'] != '' )
-        {
-            // Crear tercero
-            $datos['descripcion'] = $datos['nombre_contacto'];
-            $datos['telefono1'] = $datos['telefono1'];
-            $datos['email'] = $datos['email'];
-            $datos['numero_identificacion'] = $datos['telefono1'];
-            $tercero2 = new Tercero;
-            $tercero2->fill( $datos );
-            $tercero2->save();
+        if ( isset($datos['nombre_contacto']) ) {
+            if ( $datos['nombre_contacto'] != '' )
+            {
+                // Crear tercero
+                $datos['descripcion'] = $datos['nombre_contacto'];
+                $datos['telefono1'] = $datos['telefono1'];
+                $datos['email'] = $datos['email'];
+                $datos['numero_identificacion'] = $datos['telefono1'];
+                $tercero2 = new Tercero;
+                $tercero2->fill( $datos );
+                $tercero2->save();
 
-            // Asociar nuevo tercero al cliente
-            $contacto = new ContactoCliente();
-            $contacto->core_tercero_id = $tercero2->id;
-            $contacto->cliente_id = $registro->id;
-            $contacto->estado = 'Activo';
-            $contacto->save();
+                // Asociar nuevo tercero al cliente
+                $contacto = new ContactoCliente();
+                $contacto->core_tercero_id = $tercero2->id;
+                $contacto->cliente_id = $registro->id;
+                $contacto->estado = 'Activo';
+                $contacto->save();
+            }
         }
+        
     }
 
     public function get_customer_data($datos, $vendedor)
@@ -172,15 +205,14 @@ class ClienteVendedor extends Cliente
             switch ($lista_campos[$i]['name'])
             {
                 case 'nombre_contacto':
-                    if( !is_null($contacto_default) )
+                    if( $contacto_default != null )
                     {
                         $lista_campos[$i]['value'] = $contacto_default->tercero->descripcion;
                     }
                     break;
-
                 
                 case 'contacto_id':
-                    if( !is_null($contacto_default) )
+                    if( $contacto_default != null )
                     {
                         $lista_campos[$i]['value'] = $contacto_default->id;
                     }
@@ -225,19 +257,18 @@ class ClienteVendedor extends Cliente
         $tercero_cliente->email = $datos['email'];
         $tercero_cliente->save();
 
-        $contacto_default = ContactoCliente::find( (int)$datos['contacto_id'] );
-        //dd( $contacto_default );
-        if( !is_null($contacto_default) )
-        {
-            $tercero_contacto = $contacto_default->tercero;
+        if ( isset($datos['contacto_id']) ) {
+            $contacto_default = ContactoCliente::find( (int)$datos['contacto_id'] );
+            if( $contacto_default != null )
+            {
+                $tercero_contacto = $contacto_default->tercero;
 
-            $tercero_contacto->descripcion = $datos['nombre_contacto'];
-            $tercero_contacto->direccion1 = $datos['direccion1'];
-            $tercero_contacto->telefono1 = $datos['telefono1'];
-            $tercero_contacto->email = $datos['email'];
-            $tercero_contacto->save();
+                $tercero_contacto->descripcion = $datos['nombre_contacto'];
+                $tercero_contacto->direccion1 = $datos['direccion1'];
+                $tercero_contacto->telefono1 = $datos['telefono1'];
+                $tercero_contacto->email = $datos['email'];
+                $tercero_contacto->save();
+            }
         }
-        
-
     }
 }

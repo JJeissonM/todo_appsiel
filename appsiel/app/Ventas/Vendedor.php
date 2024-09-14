@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Core\Tercero;
 use App\User;
 use App\Ventas\Cliente;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -101,12 +102,22 @@ class Vendedor extends Model
         }
 
         $opciones = Vendedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_vendedores.core_tercero_id')->where('vtas_vendedores.estado', 'Activo')
-            ->select('vtas_vendedores.id', DB::raw($raw))
+            ->select(
+                'vtas_vendedores.id', 
+                DB::raw($raw),
+                'vtas_vendedores.user_id'
+                )
             ->get();
 
         $vec['']='';
-        //$vec = [];
+        $user =Auth::user();
+        
         foreach ($opciones as $opcion) {
+
+            if ($user->hasRole('Vendedor') && ($opcion->user_id != $user->id)) {
+                continue;
+            }
+
             $vec[$opcion->id] = $opcion->descripcion;
         }
         

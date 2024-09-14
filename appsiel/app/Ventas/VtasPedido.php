@@ -68,7 +68,8 @@ class VtasPedido extends VtasDocEncabezado
 
         $collection = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
-                ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
+                ->leftJoin('vtas_vendedores', 'vtas_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
+                ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_vendedores.core_tercero_id')
                 ->where( $array_wheres )
                 ->select(
                     DB::raw('DATE_FORMAT(vtas_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
