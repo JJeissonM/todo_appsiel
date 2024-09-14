@@ -62,6 +62,7 @@
                         $precio = $coleccion_movimiento->sum('base_impuesto_total');
                     }
 
+                    $superindice = '';
                     if ( $agrupar_por == 'core_tercero_id' )
                     {
                         $costo_total = $movimiento_inventarios->where( 'core_tercero_id', $coleccion_movimiento->first()->core_tercero_id )->whereIn( 'inv_doc_encabezado_id', $arr_remisiones )->sum('costo_total') * -1; // los movimiento de inventarios de ventas son negativos
@@ -70,7 +71,6 @@
 
                         $inv_producto_id = $coleccion_movimiento->first()->inv_producto_id;
                         $descuento_item = 0;
-                        $superindice = '';
                         if (isset($items_con_descuento[$inv_producto_id])) {
                             $descuento_item = $items_con_descuento[$inv_producto_id];
                             $superindice = '<sup>dpp</sup>';
