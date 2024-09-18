@@ -75,3 +75,4 @@
 <input type="hidden" name="categoria_id_paquetes_con_materiales_ocultos" id="categoria_id_paquetes_con_materiales_ocultos" value="{{ (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos') }}">
 
 <input type="hidden" name="manejar_platillos_con_contorno" id="manejar_platillos_con_contorno" value="{{ (int)config('inventarios.manejar_platillos_con_contorno') }}">
+<input type="hidden" name="categoria_id_platillos_con_contornos" id="categoria_id_platillos_con_contornos" value="{{ (int)config('inventarios.categoria_id_platillos_con_contornos') }}">

@@ -271,7 +271,21 @@ input[type=number]::-webkit-outer-spin-button {
         {!! $plantilla_factura !!}
     </div>
     
-    <input type="text" id="imprimir_pedidos_en_cocina" value="{{ (int)config('ventas_pos.imprimir_pedidos_en_cocina') }}">
+    <input type="hidden" id="mostrar_mensaje_impresion_delegada" value="{{ (int)config('ventas.mostrar_mensaje_impresion_delegada') }}">
+    <input type="hidden" id="usar_servidor_de_impresion" value="{{ (int)config('ventas.usar_servidor_de_impresion') }}">
+    <input type="hidden" id="url_post_servidor_impresion" value="{{ config('ventas.url_post_servidor_impresion') }}">
+
+    <?php 
+        $cocinas = config('pedidos_restaurante.cocinas');
+        $la_cocina = [];
+        if (isset($cocinas[Input::get('cocina_index')])) {
+            $la_cocina = $cocinas[Input::get('cocina_index')];
+        }
+    ?>
+
+    @if( isset( $la_cocina['printer_ip'] ) )
+        <input type="hidden" name="printer_ip" id="printer_ip" value="{{ $la_cocina['printer_ip'] }}">        
+    @endif
     
 @endsection
 

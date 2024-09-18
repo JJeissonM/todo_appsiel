@@ -830,11 +830,8 @@ $(document).ready(function () {
             return false;
         }
 
-        // Se escogen los campos de la fila ingresada
-        var fila = $('#linea_ingreso_default');
-
-        var string_fila = $.fn.generar_string_celdas( fila );
-
+        var string_fila = $.fn.generar_string_celdas();
+        
         if (string_fila == false) 
         {
             $('#popup_alerta').show();
@@ -897,7 +894,7 @@ $(document).ready(function () {
         llenar_tabla_productos_facturados();
     });
 
-    // GUARDAR EL FORMULARIO
+    // BOTON GUARDAR EL FORMULARIO
     $('#btn_guardar_factura').click(function (event){
         event.preventDefault();
 

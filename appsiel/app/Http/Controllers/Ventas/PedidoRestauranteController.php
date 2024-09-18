@@ -44,6 +44,14 @@ class PedidoRestauranteController extends TransaccionController
     public function create()
     {
         $pdv_id = 1;
+        $pdv = Pdv::find($pdv_id);        
+        
+        $validar = $this->verificar_datos_por_defecto( $pdv );
+        if ( $validar != 'ok' )
+        {
+            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
+        }
+
         $this->set_variables_globales();
 
         // Enviar valores predeterminados
@@ -59,18 +67,8 @@ class PedidoRestauranteController extends TransaccionController
             $tabla = '';
         }
         
-        $user = Auth::user();
-
-        $pdv = Pdv::find($pdv_id);
-        
         $cliente = Cliente::find(config('pedidos_restaurante.cliente_default_id'));
         $vendedor = $cliente->vendedor;
-        
-        $validar = $this->verificar_datos_por_defecto( $pdv );
-        if ( $validar != 'ok' )
-        {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
-        }
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
         $cantidad_campos = count($lista_campos);
@@ -209,25 +207,31 @@ class PedidoRestauranteController extends TransaccionController
 
     public function verificar_datos_por_defecto( $pdv )
     {
-        if ( is_null( $pdv->cliente ) ) {
-            return 'El punto de ventas NO tiene asociado un Cliente por defecto.';
+        $cliente = Cliente::find(config('pedidos_restaurante.cliente_default_id'));
+
+        if ( $cliente == null ) {
+            return 'En la configuración del restaurante NO hay asignado un Cliente por defecto.';
         }
 
-        if ( is_null( $pdv->bodega ) ) {
+        if ( $cliente->vendedor == null ) {
+            return 'El Cliente por defecto NO tiene asociado un Vendedor.';
+        }
+
+        if ( $pdv->bodega == null ) {
             return 'El punto de ventas NO tiene asociada una Bodega por defecto.';
         }
 
         /*
-        if ( is_null( $pdv->caja ) ) {
+        if ( $pdv->caja == null ) {
             return 'El punto de ventas NO tiene asociada una Caja por defecto.';
         }
         */
 
-        if ( is_null( $pdv->cajero ) ) {
+        if ( $pdv->cajero == null ) {
             return 'El punto de ventas NO tiene asociado un Cajero por defecto.';
         }
 
-        if ( is_null( $pdv->tipo_doc_app ) ) {
+        if ( $pdv->tipo_doc_app == null ) {
             return 'El punto de ventas NO tiene asociado un Tipo de documento por defecto.';
         }
 

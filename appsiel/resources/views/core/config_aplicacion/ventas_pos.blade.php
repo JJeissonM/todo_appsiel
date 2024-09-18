@@ -191,8 +191,15 @@
 					</div>
 
 					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
+						<div class="row" style="padding:5px;">							
+							<?php 
+								$mostrar_efectivo_recibio_y_cambio = 1;
+								if( isset($parametros['mostrar_efectivo_recibio_y_cambio'] ) )
+								{
+									$mostrar_efectivo_recibio_y_cambio = $parametros['mostrar_efectivo_recibio_y_cambio'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_efectivo_recibio_y_cambio', $mostrar_efectivo_recibio_y_cambio, 'Mostrar efectivo Recibido y Cambio en formato de impresión', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -237,6 +244,7 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								// Complemento JSPrintManager debe estar instalado en el PC del Cliente
 								$imprimir_pedidos_en_cocina = '0';
 								if( isset($parametros['imprimir_pedidos_en_cocina'] ) )
 								{

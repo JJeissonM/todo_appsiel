@@ -14,7 +14,12 @@
             <?php 
 
                 $lineas_registros_medios_recaudos = (json_decode($fila['campo7'],true));
-
+                
+                if( !is_array($lineas_registros_medios_recaudos) )
+                {
+                    dd($fila['campo7'], $fila);
+                }
+                
                 $valor_propina = 0;
                 $valor_datafono = 0;
 

@@ -337,6 +337,7 @@
 
 				</div>
 
+				<br>
 
 				<h4> Parámetros por defecto para Pedidos  </h4>
 				<hr>
@@ -393,6 +394,64 @@
 					</div>
 
 				</div>
+
+				
+				<h4> Pedidos en restaurantes  </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_mensaje_impresion_delegada = 0;
+								if( isset($parametros['mostrar_mensaje_impresion_delegada'] ) )
+								{
+									$mostrar_mensaje_impresion_delegada = $parametros['mostrar_mensaje_impresion_delegada'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_mensaje_impresion_delegada', $mostrar_mensaje_impresion_delegada, 'Mostrar mensaje "Debes informar al responsable para su impresión"', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$usar_servidor_de_impresion = 1;
+								if( isset($parametros['usar_servidor_de_impresion'] ) )
+								{
+									$usar_servidor_de_impresion = $parametros['usar_servidor_de_impresion'];
+								}
+							?>
+							{{ Form::bsSelect('usar_servidor_de_impresion', $usar_servidor_de_impresion, 'Usar servidor de impresión para pedidos', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$url_post_servidor_impresion = 1;
+								if( isset($parametros['url_post_servidor_impresion'] ) )
+								{
+									$url_post_servidor_impresion = $parametros['url_post_servidor_impresion'];
+								}
+							?>
+							{{ Form::bsText('url_post_servidor_impresion', $url_post_servidor_impresion, 'URL para enviar petición POST al servidor de impresión', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 
 
 				<br>

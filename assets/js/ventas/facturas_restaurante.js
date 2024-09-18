@@ -138,7 +138,7 @@ $.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
 
 // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 // Debe ser complatible con las columnas de la tabla de ingreso de registros
-$.fn.generar_string_celdas = function (fila) {
+$.fn.generar_string_celdas = function () {
 	if (inv_producto_id === undefined) {
 		return false;
 	}
@@ -194,9 +194,14 @@ $.fn.generar_string_celdas = function (fila) {
 
 	num_celda++;
 
-	var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";	
+	var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
 
-	var btn_add_contorno = "<button type='button' class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>";
+	var producto = productos.find(item => item.id === parseInt(inv_producto_id));
+
+	var btn_add_contorno = ''
+	if ( producto.inv_grupo_id == $('#categoria_id_platillos_con_contornos').val() ) {
+		btn_add_contorno = "<button type='button' class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>";
+	}	
 
 	celdas[num_celda] = '<td> ' + btn_borrar + btn_add_contorno + ' &nbsp;&nbsp; <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
 
@@ -312,7 +317,7 @@ function ventana_imprimir() {
 }
 
 function mandar_codigo2(item_id) {
-
+/*
 	if ( $('#lbl_vendedor_mesero').text() == '') {
 		alert('Debe seleccionar un MESERO.');
 		return false;
@@ -322,7 +327,7 @@ function mandar_codigo2(item_id) {
 		alert('Debe seleccionar una MESA.');
 		return false;
 	}
-
+	*/
 	var producto = productos.find(item => item.id === parseInt(item_id));
 
 	tasa_impuesto = producto.tasa_impuesto;
@@ -344,13 +349,15 @@ function mandar_codigo2(item_id) {
 		return false;
 	}
 	numero_linea = 1;
-    //$("#btn_"+item_id).hide();
+
+	if ($('#manejar_platillos_con_contorno').val() == 0) {
+		$("#btn_"+item_id).hide();
+	}
     
     $('#btn_guardar_factura').removeAttr('disabled');
     
 	agregar_la_linea2();
 }
-/**/
 
 function agregar_la_linea2()
 {

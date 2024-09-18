@@ -259,9 +259,6 @@
 		@else
 			@include('layouts.demo_pagina_bloqueo_aplicaciones')
 		@endif
-
-		
-		<!-- <button onclick="topFunction()" id="myTopBtn" title="Go to top">Top &uarr;</button> -->
 	</div>
 	<a href="{{route('ayuda.videos')}}">
 		<div id="paula" style="background-size: 100% 100%; background-image: url('{{asset('assets/images/ayuda.png')}}'); height: 160px; width: 174px">
@@ -273,28 +270,6 @@
 	<div id="btnPaula">
 		<button onclick="paula()" style="border-radius: 50px;" class="btn btn-danger">¿Ayuda?</button>
 	</div>
-
-	<script>
-		// Get the button
-		let mybutton = document.getElementById("myTopBtn");
-		
-		// When the user scrolls down 20px from the top of the document, show the button
-		window.onscroll = function() {scrollFunction()};
-		
-		function scrollFunction() {
-		  if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-			mybutton.style.display = "block";
-		  } else {
-			mybutton.style.display = "none";
-		  }
-		}
-		
-		// When the user clicks on the button, scroll to the top of the document
-		function topFunction() {
-		  document.body.scrollTop = 0;
-		  document.documentElement.scrollTop = 0;
-		}
-	</script>
 
 	<!-- JQuery -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"
