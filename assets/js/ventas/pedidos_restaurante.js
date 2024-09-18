@@ -501,19 +501,20 @@ $(document).ready(function () {
                         type: 'POST',
                         crossDomain: true,
                         dataType: 'jsonp',
-                        success: function( response ) { 
+                        success: function( response, status, jqXHR ) {
+
                             $('.btn_vendedor').first().focus();
                             Swal.fire({
                                 icon: 'info',
                                 title: 'Muy bien!',
-                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
+                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.' + "\n" +  'Exito! ' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
                             }); 
                         },
                         error: function( response, status, jqXHR ) { 
                             Swal.fire({
-                                icon: 'danger',
+                                icon: 'error',
                                 title: 'Error!',
-                                text: 'Failed! \n ' + JSON.stringify(response) + '\n ' + status +  '\n ' + jqXHR
+                                text: 'Failed!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
                             });
                         }
                     });
