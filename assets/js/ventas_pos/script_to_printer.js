@@ -2,11 +2,12 @@
     //Do printing...
     function print_comanda( doc_encabezado ) {
 
-        var url = $('#url_post_servidor_impresion').val()
+        var url = url_raiz + '/sys_send_printing_to_server'
 
         var data = crear_string_json_para_envio_servidor_impresion( doc_encabezado )
         
         data.printer_ip = $('#impresora_cocina_por_defecto').val()
+        data.url_servidor_impresion = $('#url_post_servidor_impresion').val()
 
         $('#popup_alerta_success').show();
         $('#popup_alerta_success').css('background-color', 'blue');
@@ -16,14 +17,12 @@
             url: url,
             data: data,
             type: 'GET',
-            crossDomain: true,
-            dataType: 'jsonp',
             success: function( response, status, jqXHR ) {
                 $('#popup_alerta_success').hide();
                 Swal.fire({
                     icon: 'info',
                     title: 'Muy bien!',
-                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
+                    text: 'Factura ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creada correctamente. Impresión enviada.'
                 }); 
             },
             error: function( response, status, jqXHR ) { 

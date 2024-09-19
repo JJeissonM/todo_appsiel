@@ -233,6 +233,10 @@ Route::post('core_movimiento_con_fecha_distinta_a_su_creacion','Core\ReporteCont
 
 Route::post('table/export', 'Sistema\ExporttableController@export')->name('export.table');
 
+// SISTEMA
+include __DIR__ . '/system.php';
+
+
 // Aplicación MATRICULAS
 include __DIR__ . '/matriculas_routes.php';
 
