@@ -113,8 +113,12 @@ class ClienteVendedor extends Cliente
         $datos = $this->get_customer_data($datos, $vendedor);
 
         // Crear Tercero
-        $tercero = new Tercero;    
-        $datos['razon_social'] = $datos['descripcion'];    
+        $tercero = new Tercero;
+
+        if ( !isset( $datos['razon_social'] ) ) {
+            $datos['razon_social'] = $datos['descripcion'];
+        }
+        
         $tercero->fill( $datos );
         $tercero->save();
 
@@ -251,6 +255,11 @@ class ClienteVendedor extends Cliente
         $tercero_cliente = $registro->tercero;
         
         $tercero_cliente->descripcion = $datos['descripcion'];
+
+        if ( isset( $datos['razon_social'] ) ) {
+            $tercero_cliente->razon_social = $datos['razon_social'];
+        }
+
         $tercero_cliente->numero_identificacion = $datos['numero_identificacion'];
         $tercero_cliente->direccion1 = $datos['direccion1'];
         $tercero_cliente->telefono1 = $datos['telefono1'];
