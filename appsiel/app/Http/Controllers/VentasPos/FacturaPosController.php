@@ -234,7 +234,21 @@ class FacturaPosController extends TransaccionController
             }
         }
 
-        return $doc_encabezado->consecutivo;
+        return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
+    }    
+
+    public function build_json_doc_encabezado($doc_encabezado)
+    {
+        return [
+            'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
+            'consecutivo' => $doc_encabezado->consecutivo,
+            'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo,
+            'doc_encabezado_fecha' => $doc_encabezado->fecha,
+            'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
+            'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
+            'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
+            'doc_encabezado_descripcion' => $doc_encabezado->descripcion
+        ];        
     }
 
     /**
@@ -475,7 +489,7 @@ class FacturaPosController extends TransaccionController
         $request['modificado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
-        return $doc_encabezado->consecutivo;
+        return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
     }
 
     /*

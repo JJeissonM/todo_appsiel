@@ -494,27 +494,32 @@ $(document).ready(function () {
                     
                     data.printer_ip = $('#printer_ip').val()
 
+                    $('#popup_alerta_success').show();
+                    $('#popup_alerta_success').css('background-color', 'blue');
+                    $('#popup_alerta_success').text('Enviando impresión a la cocina... Por favor, espere!');
+
                     $.ajax({
 
                         url: url,
                         data: data,
-                        type: 'POST',
+                        type: 'GET',
                         crossDomain: true,
                         dataType: 'jsonp',
                         success: function( response, status, jqXHR ) {
-
+                            $('#popup_alerta_success').hide();
                             $('.btn_vendedor').first().focus();
                             Swal.fire({
                                 icon: 'info',
                                 title: 'Muy bien!',
-                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.' + "\n" +  'Exito! ' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
                             }); 
                         },
                         error: function( response, status, jqXHR ) { 
+                            $('#popup_alerta_success').hide();
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error!',
-                                text: 'Failed!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                                text: 'No se pudo enviar la impresión a la cocina!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
                             });
                         }
                     });

@@ -1,130 +1,68 @@
-    //WebSocket settings
-    JSPM.JSPrintManager.auto_reconnect = true;
-    JSPM.JSPrintManager.start();
-    JSPM.JSPrintManager.WS.onStatusChanged = function () {
-        if (jspmWSStatus()) {
-            //get client installed printers
-            JSPM.JSPrintManager.getPrinters().then(function (myPrinters) {
-                var options = '';
-                for (var i = 0; i < myPrinters.length; i++) {
-				    options += '<option>' + myPrinters[i] + '</option>';
-				}
-                $('#lista_impresoras_equipo_local').html(options);
-            });
-        }
-    };
-
-    //Check JSPM WebSocket status
-    function jspmWSStatus() {
-        if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Open)
-            return true;
-        else if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Closed) {
-            alert('El componente JSPrintManager (JSPM) no está instalado o no se está ejecutando en su computador! Debe descargar, instalar y ejecutar JSPM Client App desde https://neodynamic.com/downloads/jspm');
-            return false;
-        }
-        else if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Blocked) {
-            alert('JSPM has blocked this website!');
-            return false;
-        }
-    }
 
     //Do printing...
-    function print_comanda(o) {
-        if (jspmWSStatus()) {
+    function print_comanda( doc_encabezado ) {
 
-            /*  IMPRIMIR CON COMANDOS ESC/POS */
-            
-            //Create a ClientPrintJob
-            var cpj = new JSPM.ClientPrintJob();
+        var url = $('#url_post_servidor_impresion').val()
 
-            //Set Printer type (Refer to the help, there many of them!)
-            cpj.clientPrinter = new JSPM.InstalledPrinter($('#impresora_cocina_por_defecto').val());
-
-            //Set content to print...
-            //cpj.printerCommands = generate_string_commands();
-            cpj.binaryPrinterCommands = generate_string_commands();
-
-            //Send print job to printer!
-            cpj.sendToClient();
-        }
-    }
-
-    function generate_string_commands()
-    {
-        var escpos = Neodynamic.JSESCPOSBuilder;
-        var doc = new escpos.Document();
+        var data = crear_string_json_para_envio_servidor_impresion( doc_encabezado )
         
-        var lineas_registros = get_lineas();
+        data.printer_ip = $('#impresora_cocina_por_defecto').val()
 
-        var escposCommands = doc
-                        //.image(logo, escpos.BitmapDensity.D24)
-                        //.setPrintWidth(720)
-                        .font(escpos.FontFamily.A)
-                        .align(escpos.TextAlignment.Center)
-                        .style([escpos.FontStyle.Bold])
-                        .size(0, 1)
-                        .text($('#pdv_label').val())
-                        .text('Fact. Vtas. #' + $('.lbl_consecutivo_doc_encabezado').text() + ' / F. ' + $('#lbl_fecha').text())
-                        .text($('.lbl_cliente_descripcion').text())
-                        .font(escpos.FontFamily.B)
-                        .size(1, 0)
-                        .text( lineas_registros )
-                        .feed(5)
-                        .cut()
-                        .generateUInt8Array();
+        $('#popup_alerta_success').show();
+        $('#popup_alerta_success').css('background-color', 'blue');
+        $('#popup_alerta_success').text('Enviando impresión a la cocina... Por favor, espere!');
 
-        return escposCommands;
-    }
-
-    function get_lineas()
-    {
-        var newLine = '\n';
-
-        var cmds = newLine;
-        cmds += '        ITEM             CANT.';
-        cmds += newLine;
-        cmds += '______________________________';
-        cmds += newLine;
-        
-        var lbl_total_factura = 0;
-        var cantidad_total_productos = 0;
-        $('.linea_registro').each(function( ){
-            //Libro Matemáticas D     1 
-            cmds += formatear_cadena($(this).find('.lbl_producto_descripcion').text(),22,'.') + '......' + formatear_cadena($(this).find('.cantidad').text(),5,' ');
-            
-            cmds += newLine;
-
-            lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
-
-            cantidad_total_productos++;
-
-        });
-
-        cmds += '# TOTAL ITEMS: ' + cantidad_total_productos;
-        cmds += newLine;
-        
-        cmds += 'VENTA TOTAL: ' + $('.lbl_total_factura').first().text();
-        cmds += newLine;
-        
-        cmds += 'Detalle: ' + $('.lbl_descripcion_doc_encabezado').text();
-
-        
-        //cmds += '11/03/13  19:53:17';
-
-        return cmds;
-    }
-
-    function formatear_cadena(cadena, longitud_maxima, caracter_relleno)
-    {
-        var largo = cadena.length;
-        if (largo <= longitud_maxima) {
-            var tope = longitud_maxima - largo;
-            for (let index = 0; index < tope; index++) {
-                cadena += caracter_relleno;
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'GET',
+            crossDomain: true,
+            dataType: 'jsonp',
+            success: function( response, status, jqXHR ) {
+                $('#popup_alerta_success').hide();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Muy bien!',
+                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
+                }); 
+            },
+            error: function( response, status, jqXHR ) { 
+                $('#popup_alerta_success').hide();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'No se pudo enviar la impresión a la cocina!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                });
             }
-        }else{
-            cadena = cadena.substring(0, longitud_maxima)
-        }
+        });
+    }
 
-        return cadena;
+    function crear_string_json_para_envio_servidor_impresion( doc_encabezado )
+    {
+        var json = {
+            'header': {
+                        'transaction_label': doc_encabezado.doc_encabezado_documento_transaccion_descripcion,
+                        'date': doc_encabezado.doc_encabezado_fecha,
+                        'customer_name': doc_encabezado.doc_encabezado_tercero_nombre_completo,
+                        'number_label': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo,
+                        'seller_label': doc_encabezado.doc_encabezado_vendedor_descripcion,
+                        items_quantity: doc_encabezado.cantidad_total_productos,
+                        'detail': doc_encabezado.doc_encabezado_descripcion
+                    }
+                }
+        
+        var lines = {}
+        var i = 0;
+        $('.linea_registro').each(function(){
+            
+            lines[i] = {
+                        'item': $(this).find('.lbl_producto_descripcion').text(),
+                        'quantity': $(this).find('.cantidad').text()
+                    }
+            i++
+        });
+        
+        json.lines = lines
+
+        return json
     }

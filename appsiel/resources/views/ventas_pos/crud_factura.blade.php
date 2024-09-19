@@ -267,7 +267,7 @@
     
     <input type="hidden" id="usar_complemento_JSPrintManager" name="usar_complemento_JSPrintManager" value="{{ $params_JSPrintManager->usar_complemento_JSPrintManager }}">
 
-    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2 )
         @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
     @endif
 
@@ -281,7 +281,7 @@
 
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
 
-    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1)
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2)
         <script src="{{ asset( 'assets/js/ventas_pos/cptable.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
