@@ -2,19 +2,8 @@
 
 namespace App\Core;
 
-use App\Contratotransporte\Conductor;
-use App\Contratotransporte\Contratante;
-use App\Contratotransporte\Propietario;
-use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-use Storage;
-
-use App\Matriculas\Estudiante;
-use App\Sistema\Modelo;
-use App\Core\Departamento;
-use App\Ventas\Cliente;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TerceroCreadoVehiculo extends Tercero
 {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Inventarios;
 
 use App\Compras\ComprasMovimiento;
+use App\Core\Tercero;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
@@ -211,12 +212,14 @@ class ReporteController extends Controller
 
         $productos = InvProducto::opciones_campo_select();
 
+        $terceros = Tercero::opciones_campo_select();
+
         $miga_pan = [
                 ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
                 ['url'=>'NO','etiqueta'=>'Movimientos']
             ];
 
-        return view('inventarios.movimientos',compact('productos','bodegas','miga_pan'));
+        return view('inventarios.movimientos',compact('productos', 'bodegas', 'terceros', 'miga_pan'));
     }
 
     //  CONSULTA DE MOVIMIENTOS
@@ -226,10 +229,11 @@ class ReporteController extends Controller
         $bodega_id = $request->mov_bodega_id;
         $fecha_inicial = $request->fecha_inicial;
         $fecha_final = $request->fecha_final;
+        $tercero_id = (int)$request->mov_tercero_id;
 
-        $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial );
+        $saldo_inicial = InvMovimiento::get_saldo_inicial($id_producto, $bodega_id, $fecha_inicial, $tercero_id );
 
-        $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final );
+        $sql_productos = InvMovimiento::get_movimiento2($id_producto, $bodega_id, $fecha_inicial, $fecha_final, $tercero_id );
         
         $cantidad_saldo = 0;
         $costo_total_saldo = 0;  
@@ -320,6 +324,10 @@ class ReporteController extends Controller
         $mensaje_advertencia = '';
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0 ) {
             $mensaje_advertencia = 'El sistema maneja un solo costo para todas las bodegas. El costo VISUALIZADO en el Saldo total puede parecer incoherente. Debe revisar el costo promedio en otro reporte.';
+        }
+
+        if ( $tercero_id != 0 ) {
+            $mensaje_advertencia .= '<br><br><b>Nota: </b> Al seleccionar un TERCERO, los saldos y el costo promedio pueden ser diferentes a las Existencias totales del producto.';
         }
 
         $view = View::make('inventarios.incluir.movim_productos',compact('productos','bodega','mensaje_advertencia'));

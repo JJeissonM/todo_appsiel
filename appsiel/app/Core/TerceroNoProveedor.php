@@ -2,10 +2,7 @@
 
 namespace App\Core;
 
-use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class TerceroNoProveedor extends Tercero
 {
@@ -31,19 +28,7 @@ class TerceroNoProveedor extends Tercero
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $nombre_completo = $opcion->descripcion;
-
-            if ( $nombre_completo == '' )
-            {
-                $nombre_completo = $opcion->razon_social;
-            }
-
-            if ( $nombre_completo == '' )
-            {
-                $nombre_completo = $opcion->apellido1 . ' ' . $opcion->apellido2 . ' ' . $opcion->nombre1 . ' ' . $opcion->otros_nombres;
-            }
-
-            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $nombre_completo;
+            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->get_label_to_show();
         }
 
         return $vec;

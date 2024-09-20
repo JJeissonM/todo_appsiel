@@ -3,17 +3,20 @@
 @section('sidebar')
 	
 	{{ Form::open(['url'=>'ajax_movimiento','id'=>'form_consulta']) }}
-		{{ Form::label('fecha_inicial','Fecha inicial') }}
+		{{ Form::label('fecha_inicial','*Fecha inicial') }}
 		{{ Form::date('fecha_inicial',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_inicial']) }}
 		
-		{{ Form::label('fecha_final','Fecha final') }}
+		{{ Form::label('fecha_final','*Fecha final') }}
 		{{ Form::date('fecha_final',date('Y-m-d'),['class'=>'form-control','id'=>'fecha_final']) }}
 		
-		{{ Form::label('mov_bodega_id','Bodega') }}
+		{{ Form::label('mov_bodega_id','*Bodega') }}
 		{{ Form::select('mov_bodega_id',$bodegas,null,['class'=>'form-control','id'=>'mov_bodega_id']) }}
 		
-		{{ Form::label('mov_producto_id','Producto') }}
+		{{ Form::label('mov_producto_id','*Producto') }}
 		{{ Form::select('mov_producto_id',$productos,null,['class'=>'combobox','id'=>'mov_producto_id']) }}
+		
+		{{ Form::label('mov_tercero_id','Tercero') }}
+		{{ Form::select('mov_tercero_id',$terceros,null,['class'=>'combobox','id'=>'mov_tercero_id']) }}
 		
 		{{ Form::label(' ','.') }}
 		<a href="#" class="btn btn-primary bt-detail form-control" id="btn_generar"><i class="fa fa-play"></i> Generar</a>
@@ -76,7 +79,7 @@
 			// Click para generar la consulta
 			$('#btn_generar').click(function(event){
 				if(!valida_campos()){
-					alert('Debe diligencias todos los campos.');
+					alert('Debe diligencias todos los campos marcados con asterisco.');
 					return false;
 				}
 

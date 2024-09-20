@@ -97,9 +97,11 @@
 
 			<div id="div_ingreso_registros">
 
-				<div class="container-fluid"> 
-					<label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso"><i class="fa fa-barcode"></i> <i>Activar ingreso por código de barras</i></label>
-				</div>
+				<!-- 
+					<div class="container-fluid"> 
+						<label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso"><i class="fa fa-barcode"></i> <i>Activar ingreso por código de barras</i></label>
+					</div>
+				-->
 
 			    {!! $tabla->dibujar() !!}
 

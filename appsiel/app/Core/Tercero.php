@@ -94,6 +94,23 @@ class Tercero extends Model
         return $this->hasOne(NomContrato::class, 'core_tercero_id');
     }
 
+    public function get_label_to_show()
+    {
+        $nombre_completo = $this->descripcion;
+
+        if ( $this->razon_social != '' )
+        {
+            $nombre_completo .= ' (' . $this->razon_social . ')';
+        }
+
+        if ( $nombre_completo == '' )
+        {
+            $nombre_completo = $this->apellido1 . ' ' . $this->apellido2 . ' ' . $this->nombre1 . ' ' . $this->otros_nombres;
+        }
+
+        return $nombre_completo;
+    }
+
     public function representante_legal()
     {
     	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
@@ -226,19 +243,7 @@ class Tercero extends Model
         $vec['']='';
         foreach ($opciones as $opcion)
         {
-            $nombre_completo = $opcion->descripcion;
-
-            if ( $nombre_completo == '' )
-            {
-                $nombre_completo = $opcion->razon_social;
-            }
-
-            if ( $nombre_completo == '' )
-            {
-                $nombre_completo = $opcion->apellido1 . ' ' . $opcion->apellido2 . ' ' . $opcion->nombre1 . ' ' . $opcion->otros_nombres;
-            }
-
-            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $nombre_completo;
+            $vec[$opcion->id] = $opcion->numero_identificacion . ' ' . $opcion->get_label_to_show();
         }
 
 

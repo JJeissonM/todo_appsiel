@@ -10,11 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class InvMovimiento extends Model
 {
-    //protected $table = 'inv_movimientos';
+    protected $fillable = [ 'core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
 
-    protected $fillable = ['core_empresa_id', 'inv_doc_encabezado_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'inv_motivo_id', 'inv_bodega_id', 'inv_producto_id', 'costo_unitario', 'cantidad', 'costo_total', 'creado_por', 'modificado_por', 'codigo_referencia_tercero', 'core_tercero_id'];
-
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Producto', 'Bodega', 'Motivo', 'Movimiento', 'Costo unit.', 'Cantidad', 'Costo total', '&nbsp;'];
+    public $encabezado_tabla = [ '<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Producto', 'Bodega', 'Motivo', 'Movimiento', 'Costo unit.', 'Cantidad', 'Costo total', '&nbsp;'];
 
     public $vistas = '{"index":"layouts.index3"}';
     
@@ -58,9 +56,9 @@ class InvMovimiento extends Model
         $app_id = 8;
         
         $document_header_id = InvDocEncabezado::where([
-            ['core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
-            ['core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
-            ['consecutivo','=',$this->consecutivo]
+            [ 'core_tipo_transaccion_id','=',$this->core_tipo_transaccion_id],
+            [ 'core_tipo_doc_app_id','=',$this->core_tipo_doc_app_id],
+            [ 'consecutivo','=',$this->consecutivo]
         ])->get()->first()->id;
 
         $enlace = '<a href="' . url( 'inventarios/' . $document_header_id . '?id=' . $app_id . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
@@ -73,6 +71,7 @@ class InvMovimiento extends Model
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
 
         $registros = InvMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_movimientos.core_tercero_id')
             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
             ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
@@ -80,20 +79,22 @@ class InvMovimiento extends Model
             ->select(
                 'inv_movimientos.fecha AS campo1',
                 DB::raw($select_raw),
-                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'),
-                'inv_bodegas.descripcion AS campo4',
-                'inv_motivos.descripcion AS campo5',
-                'inv_motivos.movimiento AS campo6',
-                'inv_movimientos.costo_unitario AS campo7',
-                'inv_movimientos.cantidad AS campo8',
-                'inv_movimientos.costo_total AS campo9',
-                'inv_movimientos.id AS campo10',
-                'inv_movimientos.id AS campo11'
+                DB::raw('CONCAT(core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS campo3'),
+                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo4'),
+                'inv_bodegas.descripcion AS campo5',
+                'inv_motivos.descripcion AS campo6',
+                'inv_motivos.movimiento AS campo7',
+                'inv_movimientos.costo_unitario AS campo8',
+                'inv_movimientos.cantidad AS campo9',
+                'inv_movimientos.costo_total AS campo10',
+                'inv_movimientos.id AS campo11',
+                'inv_movimientos.id AS campo12'
             )
 
             ->where("inv_movimientos.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo)'), "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.numero_identificacion," - ",core_terceros.descripcion)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_motivos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_motivos.movimiento", "LIKE", "%$search%")
@@ -112,6 +113,7 @@ class InvMovimiento extends Model
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS DOCUMENTO';
 
         $string = InvMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_movimientos.core_tercero_id')
             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
             ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
@@ -119,6 +121,7 @@ class InvMovimiento extends Model
             ->select(
                 'inv_movimientos.fecha AS FECHA',
                 DB::raw($select_raw),
+                DB::raw('CONCAT(core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS TERCERO'),
                 DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS PRODUCTO'),
                 'inv_bodegas.descripcion AS BODEGA',
                 'inv_motivos.descripcion AS MOTIVO',
@@ -131,6 +134,7 @@ class InvMovimiento extends Model
 
             ->where("inv_movimientos.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.numero_identificacion," - ",core_terceros.descripcion)'), "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_motivos.descripcion", "LIKE", "%$search%")
@@ -155,6 +159,7 @@ class InvMovimiento extends Model
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo) AS campo2';
 
         $registros = InvMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_movimientos.core_tipo_doc_app_id')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_movimientos.core_tercero_id')
             ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
             ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_movimientos.inv_bodega_id')
             ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'inv_movimientos.inv_motivo_id')
@@ -162,19 +167,21 @@ class InvMovimiento extends Model
             ->select(
                 'inv_movimientos.fecha AS campo1',
                 DB::raw($select_raw),
-                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo3'),
-                'inv_bodegas.descripcion AS campo4',
-                'inv_motivos.descripcion AS campo5',
-                'inv_motivos.movimiento AS campo6',
-                'inv_movimientos.costo_unitario AS campo7',
-                'inv_movimientos.cantidad AS campo8',
-                'inv_movimientos.costo_total AS campo9',
-                'inv_movimientos.id AS campo10',
-                'inv_movimientos.id AS campo11'
+                DB::raw('CONCAT(core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS campo3'),
+                DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion) AS campo4'),
+                'inv_bodegas.descripcion AS campo5',
+                'inv_motivos.descripcion AS campo6',
+                'inv_motivos.movimiento AS campo7',
+                'inv_movimientos.costo_unitario AS campo8',
+                'inv_movimientos.cantidad AS campo9',
+                'inv_movimientos.costo_total AS campo10',
+                'inv_movimientos.id AS campo11',
+                'inv_movimientos.id AS campo12'
             )
             ->where("inv_movimientos.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_movimientos.consecutivo)'), "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(inv_productos.id," - ",inv_productos.descripcion)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.numero_identificacion," - ",core_terceros.descripcion)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_motivos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_motivos.movimiento", "LIKE", "%$search%")
@@ -240,14 +247,22 @@ class InvMovimiento extends Model
                                 ->get();
     }
 
-    public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial )
+    public static function get_saldo_inicial($id_producto, $id_bodega, $fecha_inicial, $tercero_id )
     {
+        $array_wheres = [
+            [ 'inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id ],
+            [ 'inv_movimientos.inv_bodega_id', '=', $id_bodega ],
+            [ 'inv_movimientos.inv_producto_id', '=', $id_producto ],
+            [ 'inv_doc_encabezados.fecha','<',$fecha_inicial ]
+        ];
+
+        if ($tercero_id != 0) {
+            $array_wheres = array_merge($array_wheres, [ 'inv_movimientos.core_tercero_id' => $tercero_id ]);
+        }
+
         $sql_saldo_inicial = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                     ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
-                    ->where('inv_productos.id','=',$id_producto)
-                    ->where('inv_movimientos.inv_bodega_id','=', $id_bodega)
-                    ->where('inv_doc_encabezados.fecha','<',$fecha_inicial)
-                    ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                    ->where( $array_wheres )
                     ->select(DB::raw('sum(inv_movimientos.cantidad) as mCantidad'),DB::raw('sum(inv_movimientos.costo_total) as mCosto'))
                     ->get()
                     ->toArray();
@@ -257,17 +272,17 @@ class InvMovimiento extends Model
     public static function get_saldos_iniciales_items( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial )
     {
         $array_wheres = [ 
-                            ['inv_doc_encabezados.fecha' ,'<', $fecha_inicial]
+                            [ 'inv_doc_encabezados.fecha' ,'<', $fecha_inicial]
                         ];
 
         if ( $grupo_inventario_id != '')
         {
-          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+          $array_wheres = array_merge( $array_wheres, [ 'inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
         }
 
         if ( $inv_bodega_id != '')
         {
-          $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
+          $array_wheres = array_merge( $array_wheres, [ 'inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
         }
         
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
@@ -286,23 +301,23 @@ class InvMovimiento extends Model
     public static function get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento )
     {
         $array_wheres = [ 
-                            ['inv_doc_encabezados.fecha' ,'>=', $fecha_inicial ],
-                            ['inv_doc_encabezados.fecha' ,'<=', $fecha_final ]
+                            [ 'inv_doc_encabezados.fecha' ,'>=', $fecha_inicial ],
+                            [ 'inv_doc_encabezados.fecha' ,'<=', $fecha_final ]
                         ];
 
         if ( $grupo_inventario_id != '')
         {
-          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+          $array_wheres = array_merge( $array_wheres, [ 'inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
         }
 
         if ( $inv_bodega_id != '')
         {
-          $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
+          $array_wheres = array_merge( $array_wheres, [ 'inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
         }
 
         if ( $tipo_movimiento != '')
         {
-          $array_wheres = array_merge( $array_wheres, ['inv_motivos.movimiento' => $tipo_movimiento ] );
+          $array_wheres = array_merge( $array_wheres, [ 'inv_motivos.movimiento' => $tipo_movimiento ] );
         }
 
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
@@ -343,13 +358,21 @@ class InvMovimiento extends Model
                                 ->get();
     }
 
-    public static function get_movimiento2($id_producto, $id_bodega, $fecha_inicial, $fecha_final )
+    public static function get_movimiento2($id_producto, $id_bodega, $fecha_inicial, $fecha_final, $tercero_id )
     {
+        $array_wheres = [
+            [ 'inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
+            [ 'inv_movimientos.inv_bodega_id', '=', $id_bodega],
+            [ 'inv_movimientos.inv_producto_id', '=', $id_producto]
+        ];
+
+        if ($tercero_id != 0) {
+            $array_wheres = array_merge($array_wheres, [ 'inv_movimientos.core_tercero_id' => $tercero_id]);
+        }
+
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                                 ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
-                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                ->where('inv_movimientos.inv_bodega_id','=',$id_bodega)
-                                ->where('inv_movimientos.inv_producto_id','=',$id_producto)
+                                ->where( $array_wheres )
                                 ->whereBetween('inv_movimientos.fecha', [$fecha_inicial, $fecha_final])
                                 ->select('inv_movimientos.core_tipo_doc_app_id',
                                         'inv_movimientos.fecha',

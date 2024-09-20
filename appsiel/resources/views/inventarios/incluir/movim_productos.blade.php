@@ -23,7 +23,7 @@
 <h3>Movimiento de inventarios <small>{{ $bodega->descripcion }}</small></h3>
 @if($mensaje_advertencia != '')
     <div class="alert alert-warning">
-        <strong>Advertencia!</strong> {{$mensaje_advertencia}}
+        <strong>Advertencia!</strong> {!! $mensaje_advertencia !!}
     </div>
 @endif
 <div class="table-responsive">
