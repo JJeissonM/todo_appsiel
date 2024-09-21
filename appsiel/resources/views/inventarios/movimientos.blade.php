@@ -78,12 +78,14 @@
 
 			// Click para generar la consulta
 			$('#btn_generar').click(function(event){
+				
+				$('#resultado_consulta').html('');
+
 				if(!valida_campos()){
 					alert('Debe diligencias todos los campos marcados con asterisco.');
 					return false;
 				}
 
-				$('#resultado_consulta').html('');
 				$('#div_spin').show();
 
 				// Preparar datos de los controles para enviar formulario
