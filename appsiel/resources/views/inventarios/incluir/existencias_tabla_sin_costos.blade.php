@@ -12,9 +12,10 @@
         </tr>
 
         <?php 
-        $total_cantidad=0;
-        $total_costo_total=0;
-        for($i=0;$i<count($productos);$i++){ ?>
+            $total_cantidad=0;
+            $total_costo_total=0;
+        ?>
+        @for($i=0;$i<count($productos);$i++)
             @if( $productos[$i]['id'] != 0 )
 	            <tr>
                     <td>{{ $productos[$i]['id'] }}</td>
@@ -29,6 +30,10 @@
                     @endif
 	                
 	            </tr>
+                <?php 
+                    $total_cantidad+= $productos[$i]['Cantidad'];
+                    $total_costo_total+= $productos[$i]['Costo'];
+                ?>
             @else
                 @if($mostrar_cantidad)
                     <tr style="background: #4a4a4a; color: white;">
@@ -41,10 +46,7 @@
                     </tr>
                 @endif
             @endif
-        <?php 
-            $total_cantidad+= $productos[$i]['Cantidad'];
-            $total_costo_total+= $productos[$i]['Costo'];
-        } ?>
+        @endfor
         <tr>            
             <td colspan="3"> &nbsp; </td>
             <td> &nbsp; </td>

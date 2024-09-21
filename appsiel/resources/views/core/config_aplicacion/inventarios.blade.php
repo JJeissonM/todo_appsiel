@@ -253,7 +253,7 @@
 									$categoria_id_paquetes_con_materiales_ocultos = $parametros['categoria_id_paquetes_con_materiales_ocultos'];
 								}
 							?>
-							{{ Form::bsSelect('categoria_id_paquetes_con_materiales_ocultos', $categoria_id_paquetes_con_materiales_ocultos, 'Categoría para paquetes con materiales ocultos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+							{{ Form::bsSelect('categoria_id_paquetes_con_materiales_ocultos', $categoria_id_paquetes_con_materiales_ocultos, 'Grupo de Inventarios para paquetes con materiales ocultos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
 						</div>
 					</div>
 
@@ -301,7 +301,7 @@
 									$categoria_id_platillos_con_contornos = $parametros['categoria_id_platillos_con_contornos'];
 								}
 							?>
-							{{ Form::bsSelect('categoria_id_platillos_con_contornos', $categoria_id_platillos_con_contornos, 'Categoría para Platillos que manejan contornos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+							{{ Form::bsSelect('categoria_id_platillos_con_contornos', $categoria_id_platillos_con_contornos, 'Grupo de Inventarios para Platillos que manejan contornos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
 						</div>
 					</div>
 
@@ -314,7 +314,7 @@
 									$categoria_id_items_contorno = $parametros['categoria_id_items_contorno'];
 								}
 							?>
-							{{ Form::bsSelect('categoria_id_items_contorno', $categoria_id_items_contorno, 'Categoría para Ítems Contorno', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+							{{ Form::bsSelect('categoria_id_items_contorno', $categoria_id_items_contorno, 'Grupo de Inventarios para Ítems Contorno', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
 						</div>
 					</div>
 

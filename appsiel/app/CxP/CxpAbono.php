@@ -57,7 +57,6 @@ class CxpAbono extends Model
         
         switch ( $this->core_tipo_transaccion_id )
         {
-
             case '25': // Factura de compras
                 $url = 'compras/';
                 break;
