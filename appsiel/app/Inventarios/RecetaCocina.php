@@ -12,7 +12,7 @@ class RecetaCocina extends Model
 	
     protected $fillable = ['item_platillo_id','item_ingrediente_id','cantidad_porcion'];
 
-	  public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Platillo', 'Ingrediente', 'Cant. porción'];
+	  public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Producto terminado', 'Insumo', 'Cant. porción'];
 
     public $vistas = '{"show":"inventarios.recetas.show"}';
 

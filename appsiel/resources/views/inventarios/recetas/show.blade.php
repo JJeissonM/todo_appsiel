@@ -51,7 +51,7 @@
 			<div class="btn-group">
 				<div style="vertical-align: center;">
 					<br/>
-					{{ Form::label('item_platillo_id','Platillo:') }}
+					{{ Form::label('item_platillo_id','Producto terminado:') }}
 					{{ Form::select('item_platillo_id',$platillos,null,['class'=>'combobox','id'=>'item_platillo_id']) }}
 					&nbsp;&nbsp;&nbsp;
 					<a class="btn btn-info btn-xs cambiar_platillo"><i class="fa fa-arrow-right"></i> Cambiar </a>
@@ -78,7 +78,7 @@
 	<div class="container-fluid">
 		<div class="marco_formulario">
 		    <div class="container">
-			    <h3 style="width: 100%;text-align: center;">Ingredientes para la receta "{{ $registro->item_platillo->descripcion }}"</h3>
+			    <h3 style="width: 100%;text-align: center;">Producto terminado: "{{ $registro->item_platillo->descripcion }}"</h3>
 			    <div class="row">
 			    	<div class="col-md-4" style="padding:5px;"> 
 			    		<b>Unid. Medida: </b> {{ $registro->item_platillo->unidad_medida1 }}
@@ -108,8 +108,8 @@
 						<table class="table table-bordered table-striped" id="myTable">
 							<thead>
 								<tr>
-									<th>ID item ingred.</th>
-									<th>Ingrediente (U.M.)</th>
+									<th>ID item insumo</th>
+									<th>Insumo (U.M.)</th>
 									<th>Cant. x una(1) porción</th>
 									<th>Costo unit.</th>
 									<th>Costo total</th>
@@ -171,10 +171,10 @@
 			{{ Form::open(array('url'=>'inv_agregar_ingrediente_a_receta')) }}
 				<div class="row">
 					<div class="col-md-8 col-md-offset-2" style="vertical-align: center; border: 1px solid gray;">
-						<h3>Agregar ingrediente</h3>
+						<h3>Agregar Insumo</h3>
 						<div class="row">
 							<div class="col-md-6">
-								{{ Form::bsSelect('item_ingrediente_id',null,'Ingrediente',$vec,['class'=>'combobox']) }}
+								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$vec,['class'=>'combobox']) }}
 							</div>
 							<div class="col-md-6">
 								{{ Form::bsText('cantidad_porcion',null,'Cant. porción',[]) }}
