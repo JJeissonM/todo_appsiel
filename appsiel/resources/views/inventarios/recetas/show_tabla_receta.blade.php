@@ -14,8 +14,8 @@
     <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>ID item ingred.</th>
-                    <th>Ingrediente (U.M.)</th>
+                    <th>ID item insumo</th>
+                    <th>Insumo (U.M.)</th>
                     <th>Cant. x una(1) porción</th>
                     <th>Costo unit.</th>
                     <th>Costo total</th>

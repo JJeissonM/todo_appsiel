@@ -157,7 +157,7 @@
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
-                                    <td align="right"> <a class="btn btn-primary btn-xs" href="{{ url('inv_actualizar_costo_promedio_platilllo/' . $registro->item_platillo->id . '/' . $sum_costo_total) }}"><i class="fa fa-save"></i> Actualizar Costo Prom. Platillo</a></td>
+                                    <td align="right"> <a class="btn btn-primary btn-xs" href="{{ url('inv_actualizar_costo_promedio_platilllo/' . $registro->item_platillo->id . '/' . $sum_costo_total) }}"><i class="fa fa-save"></i> Actualizar Costo Prom. Producto terminado</a></td>
                                     <td> &nbsp; </td>
                                 </tr>
 							</tbody>
