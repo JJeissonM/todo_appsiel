@@ -2,19 +2,18 @@
     <table class="table table-bordered table-striped">
         {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
         <tbody>
-            <?php 
-            
-            $total_cantidad = 0;
-            $total_bruto = 0;
-            $subtotal = 0;
-            $total_impuestos = 0;
-            $total_descuentos = 0;
-            $total_factura = 0;
-            $cantidad_items = 0;
+            <?php            
+                $total_cantidad = 0;
+                $total_bruto = 0;
+                $subtotal = 0;
+                $total_impuestos = 0;
+                $total_descuentos = 0;
+                $total_factura = 0;
+                $cantidad_items = 0;
             ?>
             @foreach($doc_registros as $linea )
 
-                <?php 
+                <?php
                     if ($linea->cantidad == 0) {
                         continue;
                     }

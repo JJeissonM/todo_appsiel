@@ -88,8 +88,6 @@ if (! function_exists('formatear_fecha_factura_electronica'))
     }
 }
 
-
-
 if (! function_exists('diferencia_en_dias_entre_fechas'))
 {
     function diferencia_en_dias_entre_fechas( string $fecha_inicial, string $fecha_final )
@@ -100,3 +98,30 @@ if (! function_exists('diferencia_en_dias_entre_fechas'))
         return $fecha_ini->diffInDays($fecha_fin, false);
     }
 }
+
+/**
+ * 
+ */
+if (! function_exists('sumar_dias_calendario_a_fecha'))
+{
+    function sumar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        return $fecha_aux->addDays( $cantidad_dias )->format('Y-m-d');
+    }
+}
+
+/**
+ * 
+ */
+if (! function_exists('restar_dias_calendario_a_fecha'))
+{
+    function restar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )
+    {
+        $fecha_aux = Carbon::createFromFormat('Y-m-d', $fecha );
+
+        return $fecha_aux->subDays( $cantidad_dias )->format('Y-m-d');
+    }
+}
+

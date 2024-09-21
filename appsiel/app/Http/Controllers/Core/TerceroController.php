@@ -148,11 +148,14 @@ class TerceroController extends Controller
 
     public function get_label_linea( $tercero )
     {
-        $label = $tercero->descripcion.' ('.number_format($tercero->numero_identificacion,0,',','.').')';
+        $label = number_format( $tercero->numero_identificacion,0,',','.') . ' ' . $tercero->descripcion;
+        if ( $tercero->razon_social != '' ) {
+            $label .=  ' ('. $tercero->razon_social . ')';
+        }
 
         $aplicacion_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
 
-        if ( !is_null($aplicacion_contratos_transporte) )
+        if ( $aplicacion_contratos_transporte != null )
         {
             if ( Aplicacion::where('app','contratos_transporte')->get()->first()->estado == 'Activo' )
             {
@@ -176,12 +179,11 @@ class TerceroController extends Controller
 
         $array_wheres = [ 
                             [ 'core_terceros.estado', '=', 'Activo' ],
-                            //[ 'core_terceros.core_empresa_id', '=', Auth::user()->empresa_id ],
                             [ 'core_terceros.'.$campo_busqueda, 'LIKE', $cadena_busqueda ]
                         ];
 
         $aplicacion_contratos_transporte = Aplicacion::where('app','contratos_transporte')->get()->first();
-        if ( !is_null( $aplicacion_contratos_transporte ) )
+        if ( $aplicacion_contratos_transporte != null )
         {
             if ( $aplicacion_contratos_transporte->estado == 'Activo' )
             {
@@ -189,13 +191,24 @@ class TerceroController extends Controller
                                 ->leftJoin('core_terceros','core_terceros.id','=','cte_propietarios.tercero_id')
                                 ->where($array_wheres)
                                 ->orWhere('cte_vehiculos.placa','LIKE',$cadena_busqueda)
-                                ->select('core_terceros.id','core_terceros.descripcion','core_terceros.numero_identificacion','core_terceros.direccion1','core_terceros.telefono1','core_terceros.email','cte_vehiculos.placa','cte_vehiculos.id AS vehiculo_id')
+                                ->orWhere( 'core_terceros.razon_social', 'LIKE', $cadena_busqueda)
+                                ->select(
+                                    'core_terceros.id',
+                                    'core_terceros.descripcion',
+                                    'core_terceros.razon_social',
+                                    'core_terceros.numero_identificacion',
+                                    'core_terceros.direccion1',
+                                    'core_terceros.telefono1',
+                                    'core_terceros.email',
+                                    'cte_vehiculos.placa',
+                                    'cte_vehiculos.id AS vehiculo_id')
                                 ->get()
                                 ->take(7);
 
                 if( empty( $vehiculos->toArray() ) )
                 {
                     return Tercero::where($array_wheres)
+                                ->orWhere( 'core_terceros.razon_social', 'LIKE', $cadena_busqueda)
                                 ->get()
                                 ->take(7);
                 }
@@ -205,6 +218,7 @@ class TerceroController extends Controller
         }
         
         return Tercero::where($array_wheres)
+                        ->orWhere( 'core_terceros.razon_social', 'LIKE', $cadena_busqueda)
                         ->get()
                         ->take(7);
     }

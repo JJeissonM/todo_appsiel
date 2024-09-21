@@ -5,9 +5,9 @@ namespace App\CxC;
 use App\Core\Tercero;
 use App\Sistema\TipoTransaccion;
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class CxcMovimiento extends Model
 {

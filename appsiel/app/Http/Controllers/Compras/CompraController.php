@@ -546,7 +546,6 @@ class CompraController extends TransaccionController
             {
                 $ultimo_item = 1;
             }
-
             
             $descripcion = $linea->nombre_proveedor;
             if ( $linea->razon_social != '' ) {

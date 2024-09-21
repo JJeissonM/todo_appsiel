@@ -5,11 +5,10 @@ namespace App\CxC;
 use App\Sistema\TipoTransaccion;
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class CxcAbono extends Model
 {

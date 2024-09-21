@@ -3,9 +3,8 @@
 namespace App\Sistema;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Input;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class TipoTransaccion extends Model
 {

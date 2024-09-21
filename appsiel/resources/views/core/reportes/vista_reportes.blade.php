@@ -2,10 +2,11 @@
 
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
+	//dd($reporte->url_form_action);
 ?>
 
 @section('sidebar')
-	{{ Form::open(['url'=> $reporte->url_form_action,'id'=>'form_consulta']) }}
+	{{ Form::open(['url'=> $reporte->url_form_action . '?id=' . Input::get('id') ,'id'=>'form_consulta']) }}
 
 		@foreach( $lista_campos as $campo)
 			<?php 

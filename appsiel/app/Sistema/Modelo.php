@@ -3,10 +3,8 @@
 namespace App\Sistema;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Input;
-use View;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\View;
 
 class Modelo extends Model
 {
@@ -161,24 +159,5 @@ class Modelo extends Model
         }
 
         return $vec;
-    }
-
-    /*
-        Proceso para asignar automáticamente los campos un modelo, según sus campos en el array $fillable
-        No está teminado... 
-    */
-    public static function asignar_campos_a_modelo($modelo_id)
-    {
-        $modelo = Modelo::find($modelo_id);
-
-        dd($modelo->fillable);
-
-        /*
-          * Por cada campo en el array $fillable, se busca un Campo con un name correpondiente en Campo
-          * y se almacena en la tabla sys_modelo_tiene_campos
-        */
-        foreach ($variable as $key => $value) {
-            # code...
-        }
     }
 }

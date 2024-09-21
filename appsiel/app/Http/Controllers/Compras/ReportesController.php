@@ -6,14 +6,14 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
 
-use Lava;
-
 use App\Compras\ComprasMovimiento;
 use App\Compras\OrdenCompra;
 use App\Compras\Proveedor;
 use App\Compras\Services\TesoreriaService;
 use App\Core\Tercero;
 use App\Core\TipoDocApp;
+use App\CxP\CxpAbono;
+use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
 
 use App\Inventarios\InvDocEncabezado;
@@ -330,7 +330,7 @@ class ReportesController extends Controller
         $date2 = strtotime($fecha);
         $inicio0 = strtotime('sunday this week -1 week', $date2);
         $inicio = date('Y-m-d', $inicio0);
-        $fechas = null;
+        $fechas = [];
         for ($i = 1; $i <= 7; $i++) {
             $fechas[] = date("Y-m-d", strtotime("$inicio +$i day"));
         }
@@ -430,4 +430,141 @@ class ReportesController extends Controller
         return $vista;
     }
 
+    public function movimientos_de_cxp(Request $request)
+    {
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta  = $request->fecha_hasta;
+        $core_tercero_id = (int)$request->core_tercero_id;
+    
+        $data = $this->get_saldo_anterior( $core_tercero_id, $fecha_desde, $fecha_hasta);
+    
+        $data = $this->get_datos_movimientos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta);
+    
+        $data = $this->get_datos_abonos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta);
+
+        $sorted = $data->sortBy('fecha');
+ 
+        $data_ordered = $sorted->values()->all();
+
+        $tercero = Tercero::find($core_tercero_id);
+
+        $vista = View::make( 'compras.incluir.movimientos_ctas_por_pagar', compact('data_ordered', 'tercero') )->render();
+
+        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+   
+        return $vista;
+    }
+
+    public function get_saldo_anterior( $core_tercero_id, $fecha_desde, $fecha_hasta)
+    {
+        $data = collect([]);
+
+        $fecha_anterior = restar_dias_calendario_a_fecha( $fecha_desde, 1 );
+
+        $valor_cartera = CxpMovimiento::where([
+                                        ['core_tercero_id', '=', $core_tercero_id],
+                                        ['fecha', '<=', $fecha_anterior],
+                                        ['valor_documento', '>=', 0]
+                                    ])
+                                    ->sum('valor_documento');
+
+        $valor_a_favor = CxpMovimiento::where([
+                                        ['core_tercero_id', '=', $core_tercero_id],
+                                        ['fecha', '<=', $fecha_anterior],
+                                        ['valor_documento', '<', 0]
+                                    ])
+                                    ->sum('valor_documento') * -1;
+
+        $valor_a_favor += CxpAbono::where([
+                                        ['core_tercero_id', '=', $core_tercero_id],
+                                        ['fecha', '<=', $fecha_anterior],
+                                        ['doc_cruce_transacc_id', '=', 0]
+                                    ])
+                                    ->sum('abono');
+
+        $valor_saldo = $valor_cartera - $valor_a_favor;
+
+        $aux_arr = (object)[
+                    'fecha' => $fecha_anterior,
+                    'documento' => 'Movimientos anteriores',
+                    'estado' => '',
+                    'detalle' => '',
+                    'valor_cartera' => $valor_cartera,
+                    'valor_a_favor' => $valor_a_favor,
+                    'valor_saldo' => $valor_saldo
+                ];
+
+        $data->push($aux_arr);
+
+        return $data;
+    }
+
+    public function get_datos_movimientos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta)
+    {
+        $movimientos = CxpMovimiento::where('core_tercero_id', $core_tercero_id)
+                                    ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
+                                    ->get();
+
+        $valor_saldo = 0;
+        foreach ($movimientos as $movimiento) {
+
+            $valor_cartera = 0;
+            $valor_a_favor = 0;
+            if ($movimiento->valor_documento >= 0) {
+                $valor_cartera = $movimiento->valor_documento;
+            }else{
+                $valor_a_favor = $movimiento->valor_documento * -1;
+            }
+
+            $valor_saldo += $valor_cartera - $valor_a_favor;
+            
+            $aux_arr = (object)[
+                        'fecha' => $movimiento->fecha,
+                        'documento' => $movimiento->enlace_show_documento(),
+                        'estado' => $movimiento->estado,
+                        'detalle' => '',
+                        'valor_cartera' => $valor_cartera,
+                        'valor_a_favor' => $valor_a_favor,
+                        'valor_saldo' => $valor_saldo
+                    ];
+
+            $data->push($aux_arr);
+        }
+
+        return $data;
+    }
+
+    public function get_datos_abonos_cxc( $data, $core_tercero_id, $fecha_desde, $fecha_hasta)
+    {
+        $movimientos = CxpAbono::where('core_tercero_id', $core_tercero_id)
+                            ->whereBetween( 'fecha', [ $fecha_desde, $fecha_hasta] )
+                            ->get();
+
+        $valor_saldo = 0;
+        foreach ($movimientos as $movimiento) {
+
+            if ( $movimiento->doc_cruce_transacc_id != 0) {
+                continue;
+            }
+
+            $valor_cartera = 0;
+            $valor_a_favor = $movimiento->abono;
+
+            $valor_saldo += $valor_cartera - $valor_a_favor;
+
+            $aux_arr = (object)[
+                        'fecha' => $movimiento->fecha,
+                        'documento' => $movimiento->enlace_show_documento(),
+                        'estado' => $movimiento->estado,
+                        'detalle' => '',
+                        'valor_cartera' => $valor_cartera,
+                        'valor_a_favor' => $valor_a_favor,
+                        'valor_saldo' => $valor_saldo
+                    ];
+
+            $data->push($aux_arr);
+        }
+
+        return $data;
+    }
 }

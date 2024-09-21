@@ -3,9 +3,9 @@
 namespace App\CxP;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class CxpMovimiento extends Model
 {
@@ -21,6 +21,64 @@ class CxpMovimiento extends Model
                               "update":"compras_registro_cxp/id_fila"
                           }';
 
+    public function tipo_transaccion()
+    {
+        return $this->belongsTo('App\Sistema\TipoTransaccion', 'core_tipo_transaccion_id');
+    }
+
+    public function tipo_documento_app()
+    {
+        return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
+    }
+
+    public function tercero()
+    {
+        return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');
+    }
+
+  public function enlace_show_documento()
+  {
+      $doc_transaccion = app($this->tipo_transaccion->modelo->name_space)->where([
+          ['core_tipo_transaccion_id', '=', $this->core_tipo_transaccion_id ],
+          ['core_tipo_doc_app_id', '=', $this->core_tipo_doc_app_id ],
+          ['consecutivo', '=', $this->consecutivo ]
+      ])->get()->first();
+      
+      if ( $doc_transaccion == null ) {
+          return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
+      }
+
+      switch ( $this->core_tipo_transaccion_id )
+      {
+          case '25': // Factura de compras
+              $url = 'compras/';
+              break;
+          
+          case '48': // Documentos soporte en adquisiciones efectuadas a SNOAEF
+              $url = 'compras/';
+              break;      
+      
+          case '17': // Pagos de Tesoreria
+              $url = 'tesoreria/pagos/';
+          break;
+  
+          case '33': // Pagos de CxP
+              $url = 'tesoreria/pagos_cxp/';
+          break;
+      
+          case '9': // Nota de contabilidad
+              $url = 'contabilidad/';
+              break;
+          
+          default:
+              $url = 'compras/';
+              break;
+      }
+
+      $enlace = '<a href="' . url( $url . $doc_transaccion->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank" title="' . $this->tipo_transaccion->descripcion . '">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+
+      return $enlace;
+  }
 
   public function actualizar_saldos($abono)
   {
