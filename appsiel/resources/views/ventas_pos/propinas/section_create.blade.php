@@ -1,6 +1,3 @@
-<?php 
-    //dd($cajas, $cuentas_bancarias);
-?>
 <div class="container-fluid">
     <div class="marco_formulario">
         <h5>Propina sugerida</h5>

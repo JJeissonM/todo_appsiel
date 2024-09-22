@@ -84,7 +84,7 @@ class TesoCuentaBancaria extends Model
     {
         $opciones = self::get_cuentas_permitidas();
 
-        $vec['']='';
+        //$vec['']='';
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->entidad_financiera . ' - ' . $opcion->descripcion;

@@ -1,4 +1,3 @@
-
     //Do printing...
     function print_comanda( doc_encabezado ) {
 
@@ -10,7 +9,7 @@
         data.url_servidor_impresion = $('#url_post_servidor_impresion').val()
 
         $('#popup_alerta_success').show();
-        $('#popup_alerta_success').css('background-color', 'blue');
+        $('#popup_alerta_success').css('background-color', 'black');
         $('#popup_alerta_success').text('Enviando impresión a la cocina... Por favor, espere!');
 
         $.ajax({

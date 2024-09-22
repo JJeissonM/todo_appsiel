@@ -111,6 +111,12 @@
 @section('scripts')
 	
 	<script type="text/javascript">
+
+		function ejecutar_acciones_con_item_sugerencia()
+		{
+			return true;
+		}
+
 		$(document).ready(function(){
 
 			$('#fecha').val( get_fecha_hoy() );

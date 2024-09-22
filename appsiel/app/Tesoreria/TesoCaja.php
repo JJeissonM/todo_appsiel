@@ -4,9 +4,9 @@ namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
 use App\Core\Acl;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TesoCaja extends Model
 {
@@ -65,7 +65,7 @@ class TesoCaja extends Model
     {
         $opciones = self::get_cajas_permitidas();
 
-        $vec[''] = '';
+        //$vec[''] = '';
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

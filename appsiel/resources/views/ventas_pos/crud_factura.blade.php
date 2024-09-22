@@ -205,6 +205,11 @@
                     F2: Buscar Ítems
                     @include('ventas_pos.crud_factura_cinta_filtro_items')
 
+                    
+                    <div class="container">
+                        @include('ventas_pos.crud_factura_btn_revisar_pedidos')
+                    </div>
+
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
                     <div class="col-md-8"><div class="container-fluid">
 

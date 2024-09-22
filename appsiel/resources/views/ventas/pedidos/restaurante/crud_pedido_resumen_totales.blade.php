@@ -22,7 +22,7 @@
                     class="fa fa-check"></i> Guardar pedido
         </button>
         <button style="display: none;" class="btn btn-sm btn-success" id="btn_imprimir_pedido"><i
-                    class="fa fa-print"></i> Imprimir pedido
+                    class="fa fa-print"></i> Re-Imprimir pedido
         </button>
         <button style="display: none;" class="btn btn-lg btn-primary" id="btn_modificar_pedido"><i
                     class="fa fa-check"></i> Modificar pedido

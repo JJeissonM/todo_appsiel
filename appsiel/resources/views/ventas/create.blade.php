@@ -60,7 +60,6 @@
 				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="" required="required">
 				<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="" required="required">
 
-
 				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="" required="required">
 				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="" required="required">
 				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="" required="required">

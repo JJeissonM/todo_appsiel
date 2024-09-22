@@ -25,9 +25,8 @@
     </div>
     
     <div class="col-md-4 col-xs-12">
-        <div class="btn-group pull-right">
-            
-            @include('ventas_pos.crud_factura_btn_revisar_pedidos')
+        <div class="btn-group pull-right">            
+            <!-- @ include('ventas_pos.crud_factura_btn_revisar_pedidos') -->
         </div>
     </div>
 </div>

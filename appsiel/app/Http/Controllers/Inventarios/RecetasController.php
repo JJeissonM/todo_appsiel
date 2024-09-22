@@ -7,6 +7,7 @@ use App\Inventarios\InvProducto;
 use Illuminate\Http\Request;
 
 use App\Inventarios\RecetaCocina;
+use Illuminate\Support\Facades\Input;
 
 class RecetasController extends ModeloController
 {
@@ -18,7 +19,7 @@ class RecetasController extends ModeloController
             'cantidad_porcion' => $request->cantidad_porcion ]
         );
 
-        return redirect( 'web/' . $request->registro_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with( 'flash_message', 'Ingrediente agregado correctamente.' );
+        return redirect( 'web/' . $request->registro_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with( 'flash_message', 'Insumo agregado correctamente.' );
     }
     
     public function get_items_contorno()
@@ -39,7 +40,26 @@ class RecetasController extends ModeloController
                                     ] )
                             ->update( [ 'cantidad_porcion' => $nueva_cantidad_porcion ] );
 
-        return 'true';
-        
+        return 'true';        
+    }
+    
+    public function eliminar_ingrediente( $item_platillo_id, $item_ingrediente_id )
+    {
+        RecetaCocina::where( [
+                            'item_platillo_id' => $item_platillo_id,
+                            'item_ingrediente_id' => $item_ingrediente_id
+                            ] )
+                    ->delete();
+
+        $platillo = RecetaCocina::where( [
+                                    'item_platillo_id' => $item_platillo_id
+                                    ] )
+                            ->get()->first();
+
+        if ( $platillo == null ) {
+            return redirect( 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with( 'flash_message', 'Se retiraron todos los insumos del Producto terminado.' );
+        }
+
+        return redirect( 'web/' . $platillo->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') )->with( 'flash_message', 'Insumo retirado.' );
     }
 }

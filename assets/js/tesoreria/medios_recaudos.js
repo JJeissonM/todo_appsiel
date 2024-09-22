@@ -37,6 +37,9 @@ $('#teso_medio_recaudo_id').change(function(){
 
     var texto_motivo = $( "#teso_motivo_id" ).html();//[ , $( "#teso_motivo_id option:selected" ).text() ];
 
+    $("#teso_caja_id option:first").removeAttr('selected');
+    $("#teso_cuenta_bancaria_id option:first").removeAttr('selected');
+
     if (texto_motivo == '')
     {
         alert('No se han creado motivos para el TIPO DE RECAUDO selecccionado. Debe crear al menos un MOTIVO para cada TIPO DE RECAUDO. No puede continuar.');
@@ -45,17 +48,18 @@ $('#teso_medio_recaudo_id').change(function(){
 
         $('#div_cuenta_bancaria').hide();
         $('#div_caja').show();
-        $('#div_caja').children().children().children().focus();
+
+        $("#teso_caja_id option:first").attr('selected','selected');
+        $("#teso_cuenta_bancaria_id option:first").attr('selected','selected');
 
         if ( valor[1] == 'Tarjeta bancaria' )
         {
             $('#div_caja').hide();
             $('#div_cuenta_bancaria').show();
-            $('#div_cuenta_bancaria').children().children().children().focus();
         }
 
         habilitar_text($('#valor_total'));
-
+        $('#valor_total').focus();
     }
 
 });

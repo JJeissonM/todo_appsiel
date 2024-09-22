@@ -657,8 +657,8 @@
                 // Cargar contactos asociados al cliente
 				$('#contacto_cliente_id').html('<option value=""></option>');
 		    	$('#div_cargando').show();
-
-                var url = "{{ url('get_opciones_select_contactos') }}" + "/" + $('#cliente_id').val();
+				
+                var url = url_raiz + "/get_opciones_select_contactos/" + $('#cliente_id').val();
 
 				$.ajax({
 		        	url: url,

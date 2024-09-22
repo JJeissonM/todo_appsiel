@@ -166,9 +166,9 @@ $(document).ready(function(){
 
 	$('#fecha').val( get_fecha_hoy() );
 
-	$('#cliente_input').focus( );
+	$('#cliente_input').focus();
 
-	if ( $('#item_sugerencia_cliente').val() != '0' && $('#item_sugerencia_cliente').val() != undefined )
+	if ( $('#item_sugerencia_cliente').val() != '' && $('#item_sugerencia_cliente').val() != '0' && $('#item_sugerencia_cliente').val() != undefined )
 	{
 		$('#item_sugerencia_cliente').after( $('#item_sugerencia_cliente').val() );
 		seleccionar_cliente( $('#item_sugerencia_cliente').next() );

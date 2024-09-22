@@ -17,6 +17,7 @@ Route::get('producto/delete/ficha/{id}','Inventarios\ProductoController@delete_f
 // RECETAS
 Route::post('inv_agregar_ingrediente_a_receta','Inventarios\RecetasController@agregar_ingrediente_a_receta');
 Route::get('inv_cambiar_cantidad_porcion/{item_platillo_id}/{item_ingrediente_id}/{nueva_cantidad_porcion}', 'Inventarios\RecetasController@cambiar_cantidad_porcion');
+Route::get('inv_eliminar_ingrediente/{item_platillo_id}/{item_ingrediente_id}', 'Inventarios\RecetasController@eliminar_ingrediente');
 
 Route::get('inv_get_items_contorno', 'Inventarios\RecetasController@get_items_contorno');
 

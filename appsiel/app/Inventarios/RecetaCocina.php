@@ -54,6 +54,8 @@ class RecetaCocina extends Model
           'inv_recetas_cocina.id AS campo4'
         )
         ->where("items_consumir.descripcion", "LIKE", "%$search%")
+        ->orWhere("items_consumir.id", "LIKE", "%$search%")
+        ->orWhere("items_producir.id", "LIKE", "%$search%")
         ->orWhere("items_producir.descripcion", "LIKE", "%$search%")
         ->orWhere("inv_recetas_cocina.cantidad_porcion", "LIKE", "%$search%")
         ->orderBy('inv_recetas_cocina.created_at', 'DESC')
@@ -66,12 +68,13 @@ class RecetaCocina extends Model
     $string = RecetaCocina::leftJoin('inv_productos AS items_consumir', 'items_consumir.id', '=', 'inv_recetas_cocina.item_platillo_id')
       ->leftJoin('inv_productos AS items_producir', 'items_producir.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
       ->select(
-        DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS campo1'),
-        DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS campo2'),
-        'inv_recetas_cocina.cantidad_porcion AS campo3',
-        'inv_recetas_cocina.id AS campo4'
+        DB::raw('CONCAT(items_consumir.id," - ",items_consumir.descripcion," (",items_consumir.unidad_medida1,")") AS PRODUCTO_TERMINADO'),
+        DB::raw('CONCAT(items_producir.id," - ",items_producir.descripcion," (",items_producir.unidad_medida1,")") AS INSUMO'),
+        'inv_recetas_cocina.cantidad_porcion AS CANTIDAD_PORCION'
       )
       ->where("items_consumir.descripcion", "LIKE", "%$search%")
+      ->orWhere("items_consumir.id", "LIKE", "%$search%")
+      ->orWhere("items_producir.id", "LIKE", "%$search%")
       ->orWhere("items_producir.descripcion", "LIKE", "%$search%")
       ->orWhere("inv_recetas_cocina.cantidad_porcion", "LIKE", "%$search%")
       ->orderBy('inv_recetas_cocina.created_at', 'DESC')

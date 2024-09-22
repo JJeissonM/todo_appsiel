@@ -437,9 +437,6 @@ $(document).ready(function () {
     //$(document).on('dblclick', '#btn_guardar_factura', function(event) {
     $('#btn_guardar_factura').dblclick(function (event){
         event.preventDefault();
-        
-        console.log('doble click');
-
         return false;
     });
 
@@ -452,11 +449,30 @@ $(document).ready(function () {
 
         if( hay_productos == 0 )
         {
-            $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');   
-            alert('No ha ingresado productos.');
+            $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');  
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia!',
+                text: 'No ha ingresado productos.'
+            });
             reset_linea_ingreso_default();
             reset_efectivo_recibido();
             $('#btn_nuevo').hide();
+
+            restablecer_btn_guardar_factura()
+
+            return false;
+        }
+
+        if ( !validar_producto_con_contorno() ) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia!',
+                text: 'Ha ingresado productos que requieren Contorno, pero NO ha agregado el Contorno.'
+            });
+            
+            restablecer_btn_guardar_factura()
+
             return false;
         }
 
@@ -475,92 +491,117 @@ $(document).ready(function () {
         var url = $("#form_create").attr('action');
         var data = $("#form_create").serialize() + "&descripcion=" + $('#descripcion').val();
         
-        $.post(url, data , function (doc_encabezado) {
+        $.post(url, data , function (doc_encabezado) {// Almacenar el pedido
 
-            if ( $('#mostrar_mensaje_impresion_delegada').val() == 1 ) { 
-                $('.btn_vendedor').first().focus();
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Muy bien!',
-                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. RECUERDA: Debes informar al responsable para su impresión.'
-                });
-            }else{
-                
-                if ( $('#usar_servidor_de_impresion').val() == 1 ) {
+            enviar_impresion( doc_encabezado )
 
-                    var url = url_raiz + '/sys_send_printing_to_server'
-
-                    var data = crear_string_json_para_envio_servidor_impresion( doc_encabezado )
-                    
-                    data.printer_ip = $('#printer_ip').val()
-                    data.url_servidor_impresion = $('#url_post_servidor_impresion').val()
-
-                    $('#popup_alerta_success').show();
-                    $('#popup_alerta_success').css('background-color', 'blue');
-                    $('#popup_alerta_success').text('Enviando impresión a la cocina... Por favor, espere!');
-
-                    $.ajax({
-                        url: url,
-                        data: data,
-                        type: 'GET',
-                        success: function( response, status, jqXHR ) {
-
-                            $('#popup_alerta_success').hide();
-                            if ( response.status == 'Completado' ) {
-                                Swal.fire({
-                                    icon: 'info',
-                                    title: 'Muy bien!',
-                                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
-                                }); 
-                                
-                            }else{
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error!',
-                                    text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresión a la cocina!' + "\n" + response.message
-                                });
-                            }
-                        },
-                        error: function( response, status, jqXHR ) { 
-                            $('#popup_alerta_success').hide();
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error!',
-                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresión a la cocina!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
-                            });
-                        }
-                    });
-
-                }else{
-
-                    $('.doc_encabezado_documento_transaccion_descripcion').append(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
-
-                    $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
-
-                    llenar_tabla_productos_facturados(doc_encabezado);
-
-                    ventana_imprimir();
-                }
-            }
-
-            reset_componente_meseros();
-            reset_componente_mesas();
-            reset_pedidos_mesero_para_una_mesa();
-
-            $('#ingreso_registros').find('tbody').html('');
-            $('#descripcion').val('');
-
-            $('#btn_guardar_factura_no').children('.fa-spinner').attr('class','fa fa-save');
-            $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');
-                        
-		    $('#btn_guardar_factura').removeAttr('disabled');
-
-            reset_datos_pedido();
-            
-            resetear_ventana();
         });
         
     });
+
+    function validar_producto_con_contorno()
+    {        
+        var is_ok = true;
+        $('.linea_registro').each(function(){
+            if( $(this).find('.btn_add_contorno').length == 1 )
+            {
+                is_ok = false;
+                return false
+            }
+        });
+        
+        return is_ok
+    }
+
+    function enviar_impresion( doc_encabezado )
+    {
+        if ( $('#mostrar_mensaje_impresion_delegada').val() == 1 ) { 
+            $('.btn_vendedor').first().focus();
+            Swal.fire({
+                icon: 'info',
+                title: 'Muy bien!',
+                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. RECUERDA: Debes informar al responsable para su impresión.'
+            });
+        }else{
+            
+            if ( $('#usar_servidor_de_impresion').val() == 1 ) {
+
+                var url = url_raiz + '/sys_send_printing_to_server'
+
+                var data = crear_string_json_para_envio_servidor_impresion( doc_encabezado )
+                
+                data.printer_ip = $('#printer_ip').val()
+                data.url_servidor_impresion = $('#url_post_servidor_impresion').val()
+
+                $('#popup_alerta_success').show();
+                $('#popup_alerta_success').css('background-color', 'black');
+                $('#popup_alerta_success').text('Enviando impresión a la cocina... Por favor, espere!');
+
+                $.ajax({
+                    url: url,
+                    data: data,
+                    type: 'GET',
+                    success: function( response, status, jqXHR ) {
+
+                        $('#popup_alerta_success').hide();
+                        if ( response.status == 'Completado' ) {
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Muy bien!',
+                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
+                            }); 
+                            
+                        }else{
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error!',
+                                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresión a la cocina!' + "\n" + response.message
+                            });
+                        }
+                    },
+                    error: function( response, status, jqXHR ) { 
+                        $('#popup_alerta_success').hide();
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresión a la cocina!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                        });
+                    }
+                });
+
+            }else{
+
+                $('.doc_encabezado_documento_transaccion_descripcion').append(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
+
+                $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
+
+                llenar_tabla_productos_facturados(doc_encabezado);
+
+                ventana_imprimir();
+            }
+        }
+
+        reset_componente_meseros();
+        reset_componente_mesas();
+        reset_pedidos_mesero_para_una_mesa();
+
+        $('#ingreso_registros').find('tbody').html('');
+        $('#descripcion').val('');
+
+        restablecer_btn_guardar_factura()        
+
+        reset_datos_pedido();
+        
+        resetear_ventana();
+    }
+
+    function restablecer_btn_guardar_factura()
+    {
+        $('#btn_guardar_factura_no').children('.fa-spinner').attr('class','fa fa-save');
+        $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');
+                    
+        $('#btn_guardar_factura').removeAttr('disabled');
+    }
 
     function crear_string_json_para_envio_servidor_impresion( doc_encabezado )
     {
@@ -599,17 +640,8 @@ $(document).ready(function () {
 
         $.get(url, function (un_pedido) {
             
-            $('doc_encabezado_documento_transaccion_descripcion').text( un_pedido.doc_encabezado_documento_transaccion_descripcion );
+            enviar_impresion( un_pedido )
 
-            $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text( un_pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo );
-
-            llenar_tabla_productos_facturados(un_pedido);
-
-            ventana_imprimir();
-
-            reset_datos_pedido();
-            
-            resetear_ventana();
         });
         
     });
@@ -1212,7 +1244,7 @@ $(document).ready(function () {
         
             $("#div_ingreso_registros").find('h5').html('Ingreso de productos<br><span style="color:red;">Modificar pedido: '+un_pedido.pedido_label+ ', ' +un_pedido.mesa_label+'</span>');
             $('#pedido_id').val(un_pedido.pedido_id);
-            console.log(un_pedido.doc_encabezado_descripcion);
+            
             $('#descripcion').val(un_pedido.doc_encabezado_descripcion);
             
             $('#numero_lineas').text(un_pedido.numero_lineas);

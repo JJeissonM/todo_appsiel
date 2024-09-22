@@ -78,8 +78,10 @@
 	<div class="container-fluid">
 		<div class="marco_formulario">
 		    <div class="container">
-			    <h3 style="width: 100%;text-align: center;">Producto terminado: "{{ $registro->item_platillo->descripcion }}"</h3>
-			    <div class="row">
+			    <div class="container">
+					<h3 style="width: 100%;text-align: center;">Producto terminado: "{{ $registro->item_platillo->descripcion }}"</h3>
+				</div>
+			    <div class="container">
 			    	<div class="col-md-4" style="padding:5px;"> 
 			    		<b>Unid. Medida: </b> {{ $registro->item_platillo->unidad_medida1 }}
 			    	</div>
@@ -103,7 +105,7 @@
 			    </div>
 			    <hr>
 
-			    <div class="row">
+			    <div class="container">
 			    	<div class="table-responsive" id="table_content">
 						<table class="table table-bordered table-striped" id="myTable">
 							<thead>
@@ -120,6 +122,7 @@
                                 <?php
 									$sum_cantidad_porcion = 0;
                                     $sum_costo_total = 0;
+									$cantidad_items = 0;
                                 ?>
 								@foreach( $ingredientes as $linea)
                                     <?php
@@ -127,6 +130,8 @@
                                         $sum_costo_total += $linea['cantidad_porcion'] * $linea['ingrediente']->get_costo_promedio(0); 
 
                                         $string_search_platillo = $registro->item_platillo->descripcion;
+
+										$cantidad_items++;
                                     ?>
                                     <tr>
 										<td>{{ $linea['ingrediente']->id }}</td>
@@ -139,7 +144,7 @@
 										<td align="right">${{ number_format( $linea['cantidad_porcion'] * $linea['ingrediente']->get_costo_promedio(0), 2, ',', '.') }}</td>
 										<td>
                                             &nbsp;
-                                            <a class="btn btn-danger btn-xs btn-detail eliminarElement" data-linea_receta_id="{{$linea['id']}}" data-ruta_redirect_completa="{{urlencode('web?id=8&id_modelo=321&curso_id=&asignatura_id=&search='.$string_search_platillo)}}" title="Eliminar"><i class="fa fa-trash"></i></a>
+                                            <a class="btn btn-danger btn-xs btn-detail eliminarElement" data-ingrediente_id="{{ $linea['ingrediente']->id }}" data-item_platillo_id="{{ $registro->item_platillo->id }}" title="Eliminar"><i class="fa fa-trash"></i></a>
 										</td>
 									</tr>
 								@endforeach
@@ -153,8 +158,8 @@
                                 </tr>
                                 <!-- 
 							--><tr>
-                                    <td> &nbsp; </td>
-                                    <td> &nbsp; </td>
+									<td> &nbsp; </td>
+									<td> &nbsp; </td>
                                     <td> &nbsp; </td>
                                     <td> &nbsp; </td>
                                     <td align="right"> <a class="btn btn-primary btn-xs" href="{{ url('inv_actualizar_costo_promedio_platilllo/' . $registro->item_platillo->id . '/' . $sum_costo_total) }}"><i class="fa fa-save"></i> Actualizar Costo Prom. Producto terminado</a></td>
@@ -162,8 +167,12 @@
                                 </tr>
 							</tbody>
 						</table>
+						<div class="well">
+							<b>Cantidad de ítems:</b> {{ $cantidad_items}}
+						</div>
 					</div>
 			    </div>
+
 			</div>
 
 			<br/><br/>
@@ -174,10 +183,10 @@
 						<h3>Agregar Insumo</h3>
 						<div class="row">
 							<div class="col-md-6">
-								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$vec,['class'=>'combobox']) }}
+								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$vec,['class'=>'combobox','required'=>'required']) }}
 							</div>
 							<div class="col-md-6">
-								{{ Form::bsText('cantidad_porcion',null,'Cant. porción',[]) }}
+								{{ Form::bsText('cantidad_porcion',null,'Cant. porción',['required'=>'required']) }}
 							</div>
 
 							{{ Form::hidden( 'registro_id', $registro->id ) }}
@@ -208,8 +217,13 @@
 
 			$(".eliminarElement").click(function(event){
                 event.preventDefault();
-			    var url = "{{url('')}}" + "/" + "web_eliminar/" + $(this).attr('data-linea_receta_id') + "?id=8&id_modelo=321&id_transaccion=&ruta_redirect_completa=" + $(this).attr('data-ruta_redirect_completa');
-                location.href = url;
+
+				if ( confirm( "¿Realmente Quiere retirar este insumo?" ) == true ) {
+                    var url = "{{ url('') }}" + "/" + "inv_eliminar_ingrediente/" + $(this).attr('data-item_platillo_id') + "/" + $(this).attr('data-ingrediente_id') + "?id=8&id_modelo=321";
+
+                	location.href = url;
+                }
+			    
 		    });
 
 			$(".cambiar_platillo").click(function(event){
