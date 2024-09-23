@@ -368,7 +368,7 @@ function mandar_codigo(item_id) {
 	$('#inv_producto_id').val(producto.descripcion);
 	
 	$('#existencia_actual').html('Stock: ' + producto.existencia_actual.toFixed(2));
-	$('#existencia_actual').show();
+	//$('#existencia_actual').show();
 	
 	$('#precio_unitario').val(get_precio(producto.id));
 	$('#tasa_descuento').val(get_descuento(producto.id));
