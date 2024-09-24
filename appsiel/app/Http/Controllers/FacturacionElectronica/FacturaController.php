@@ -157,8 +157,6 @@ class FacturaController extends TransaccionController
     {
         $vtas_doc_encabezado = Factura::find( $id );
 
-        dd($vtas_doc_encabezado);
-
         $ruta_show = 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
 
         $error_message = $this->validar_resolucion_y_tercero( $vtas_doc_encabezado );
