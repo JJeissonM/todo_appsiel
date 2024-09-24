@@ -221,8 +221,13 @@ class FacturaGeneral
       // 16925001 = 169 pais, 25 departamento, 001 ciudad
       $department_id = substr($cliente->tercero->ciudad->id,3,2);
       $city_id = substr($cliente->tercero->ciudad->id, 5, strlen($cliente->tercero->ciudad->id)-1);
+
+      $address_line = $cliente->tercero->ciudad->descripcion;
+      if ( $cliente->tercero->direccion1 != '') {
+         $address_line = $cliente->tercero->direccion1;
+      }
       
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
+      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $address_line . '"}';
    }
 
    public function get_lineas_registros()

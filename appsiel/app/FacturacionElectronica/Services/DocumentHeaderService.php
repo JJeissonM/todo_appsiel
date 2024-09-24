@@ -199,11 +199,13 @@ class DocumentHeaderService
         $status = 'success';
         $message = '';
 
+        /*
         if ( $tercero->direccion1 == '' || strlen( $tercero->direccion1 ) < 2 )
         {
             $status = 'error';
             $message .= ' - Revisar dirección';
         }
+        */
 
         if ( $tercero->email == '' || gettype( filter_var($tercero->email, FILTER_VALIDATE_EMAIL) ) != 'string' )
         {

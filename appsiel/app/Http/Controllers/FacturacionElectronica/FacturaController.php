@@ -157,6 +157,8 @@ class FacturaController extends TransaccionController
     {
         $vtas_doc_encabezado = Factura::find( $id );
 
+        dd($vtas_doc_encabezado);
+
         $ruta_show = 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
 
         $error_message = $this->validar_resolucion_y_tercero( $vtas_doc_encabezado );
@@ -267,7 +269,12 @@ class FacturaController extends TransaccionController
             $vtas_doc_header_serv->contabilizar_movimiento_debito($encabezado_factura);
             $vtas_doc_header_serv->contabilizar_movimiento_credito($encabezado_factura);
 
-            $vtas_doc_header_serv->crear_registro_pago($encabezado_factura);
+            $forma_pago = $encabezado_factura->forma_pago;
+            $datos = $encabezado_factura->toArray();
+            $datos['registros_medio_pago'] = [];
+            $total_documento = $encabezado_factura->valor_total;
+
+            $vtas_doc_header_serv->crear_registro_pago(  $forma_pago, $datos, $total_documento );
         }
         
         FacturaPos::where([
