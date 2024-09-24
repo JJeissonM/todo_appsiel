@@ -184,11 +184,11 @@ Cliente:
 
 @section('firma_fila_adicional')
     @if( $etiquetas['pie_pagina'] != '')
-    <tr>
-        <td style="border: solid 1px #ddd; text-align: center; font-style: italic;">
-            <b> {!! $etiquetas['pie_pagina'] !!} </b>
-        </td>
-    </tr>
+        <tr>
+            <td style="border: solid 1px #ddd; text-align: justify; font-style: italic;">
+                <b> {!! $etiquetas['pie_pagina'] !!} </b>
+            </td>
+        </tr>
     @endif
 @endsection
 

@@ -5,12 +5,10 @@ $("#teso_motivo_id option:first").next().attr('selected','selected');
 			*/
 $("#btn_nuevo").click(function(event){
     event.preventDefault();
-    if (validar_requeridos()) {
-        reset_form_registro();
-        $("#recaudoModal").modal(
-            {backdrop: "static",keyboard: 'true'}
-        );
-    }
+    reset_form_registro();
+    $("#recaudoModal").modal(
+        {backdrop: "static",keyboard: 'true'}
+    );
 });
 
 // Al mostrar la ventana modal

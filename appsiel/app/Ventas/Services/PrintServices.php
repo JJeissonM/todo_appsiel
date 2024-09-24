@@ -104,15 +104,19 @@ class PrintServices
             $tipo_doc_app = $doc_encabezado->tipo_documento_app;
         }
 
-        if ($doc_encabezado->core_tipo_transaccion_id == 47 ) { // POS
-            
-            $registros_tesoreria = json_decode(str_replace("$", "", $doc_encabezado->lineas_registros_medios_recaudos));
+        $medios_pago = '';
+        if($doc_encabezado->condicion_pago == 'contado')
+        {
+            if ($doc_encabezado->core_tipo_transaccion_id == 47 ) { // POS
+                
+                $registros_tesoreria = json_decode(str_replace("$", "", $doc_encabezado->lineas_registros_medios_recaudos));
 
-            $medios_pago = View::make('ventas_pos.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
-        }else{
-            $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
-            $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
-        }  
+                $medios_pago = View::make('ventas_pos.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+            }else{
+                $registros_tesoreria = TesoMovimiento::get_registros_un_documento( $doc_encabezado->core_tipo_transaccion_id, $doc_encabezado->core_tipo_doc_app_id, $doc_encabezado->consecutivo );
+                $medios_pago = View::make('tesoreria.incluir.show_medios_pago', compact('registros_tesoreria'))->render();
+            }  
+        }
         
         return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion', 'etiquetas', 'abonos', 'docs_relacionados', 'otroscampos', 'datos_factura', 'cliente', 'tipo_doc_app', 'pdv_descripcion', 'medios_pago' ) )->render();
     }

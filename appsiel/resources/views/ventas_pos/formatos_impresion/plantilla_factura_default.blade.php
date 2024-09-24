@@ -153,14 +153,13 @@
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales_con_recargos')
     @else
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
-    @endif    
-
-    @include('ventas_pos.formatos_impresion.tabla_medios_pago')
+    @endif
 
     @if($datos_factura->lineas_impuesto != '')
         {!! $datos_factura->lineas_impuesto !!}
     @endif
 
+    @include('ventas_pos.formatos_impresion.tabla_medios_pago')
     @if(isset($medios_pago))
         <div style="font-style: normal; font-weight: 100;">
             {!! $medios_pago !!}
@@ -193,8 +192,9 @@
                 
         @if( $etiquetas['pie_pagina'] != '')
             <br>
-            <b> {!! $etiquetas['pie_pagina'] !!} </b>
-                   
+            <div style="width: 100%; text-align: justify; font-style: italic;">
+                <b> {!! $etiquetas['pie_pagina'] !!} </b>
+            </div>
         @endif
         <br>
         <div id="lbl_creado_por_fecha_y_hora"></div>{{$datos_factura->lbl_creado_por_fecha_y_hora}}

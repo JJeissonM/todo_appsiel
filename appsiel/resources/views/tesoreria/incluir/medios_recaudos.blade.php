@@ -28,7 +28,7 @@ $datos = [
 
 <div class="container-fluid">
     <div class="marco_formulario">
-        <h5>Medios de Pago</h5>
+        <h5>Medios de pago</h5>
         <hr>
         <div id="div_ingreso_registros_medios_recaudo">
             <br>
