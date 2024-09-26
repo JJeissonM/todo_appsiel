@@ -78,8 +78,6 @@ if (! function_exists('get_valores_devengo_deduccion'))
     }
 }
 
-
-
 if (! function_exists('formatear_fecha_factura_electronica'))
 {
     function formatear_fecha_factura_electronica(string $fecha)

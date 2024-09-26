@@ -356,7 +356,7 @@
 			$("#myModal2 .btn_edit_modal").hide();
 			$("#myModal2 .btn_save_modal").hide();
 			
-			var url = "{{ url('pos_consultar_documentos_pendientes') }}" + "/" + $(this).attr('data-pdv_id') + "/" + $(this).attr('data-fecha_primera_factura') + "/" + $(this).attr('data-fecha_hoy') + "?view=" + $(this).attr('data-view');
+			var url = "{{ url('pos_consultar_documentos_pendientes') }}" + "/" + $(this).attr('data-pdv_id') + "/" + $(this).attr('data-fecha_primera_factura') + "/" + $(this).attr('data-fecha_hoy') + "?view=" + $(this).attr('data-view') + "&id=20";
 
 			$.get( url, function( respuesta ){
 				$('#div_spin2').hide();
