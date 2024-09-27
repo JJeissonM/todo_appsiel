@@ -19,6 +19,7 @@ Route::resource('calificaciones_logros', 'Calificaciones\LogroController');
 
 //Calificaciones
 Route::post('calificaciones/calificar2', 'Calificaciones\CalificacionController@calificar2');
+Route::get('calificaciones/almacenar_linea_calificacion_estudiante/{matricula_id}/{json_fila}', 'Calificaciones\CalificacionController@almacenar_linea_calificacion_estudiante');
 
 //  Asistencia a clases
 Route::get('calificaciones/asistencia_clases/reportes', 'Calificaciones\AsistenciaClaseController@reportes');

@@ -10,6 +10,7 @@ use App\Calificaciones\EncabezadoCalificacion;
 use Collective\Html\FormFacade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class EncabezadoCalificacionController extends Controller
 {
@@ -37,11 +38,27 @@ class EncabezadoCalificacionController extends Controller
     public function create()
     {
         // Verificar si ya hay encabezado ingresado para la columna enviada
-        $encabezado = EncabezadoCalificacion::where(['columna_calificacion' => Input::get('columna_calificacion'), 'periodo_id' => Input::get('periodo_id'), 'curso_id' => Input::get('curso_id'), 'asignatura_id' => Input::get('asignatura_id')])->get()->first();
-
-        if ( isset($encabezado->id) )
+        $encabezado = EncabezadoCalificacion::where([
+                                'columna_calificacion' => Input::get('columna_calificacion'),
+                                'periodo_id' => Input::get('periodo_id'),
+                                'curso_id' => Input::get('curso_id'),
+                                'asignatura_id' => Input::get('asignatura_id')
+                            ])
+                            ->get()
+                            ->first();
+        
+        // Datos Para crear nuevo
+        $mensaje_descripcion = '';
+        $fecha = date('Y-m-d');
+        $descripcion = '';
+        $opcion = 'create';
+        $id_encabezado_calificacion = 0;
+        $creado_por = Auth::user()->email;
+        $modificado_por = '';
+        $peso = 0;
+        if ( $encabezado != null )
         {
-            // Para editar
+            // Datos Para editar
             $fecha = $encabezado->fecha;
             $descripcion = $encabezado->descripcion;
             $opcion = 'edit';
@@ -49,56 +66,20 @@ class EncabezadoCalificacionController extends Controller
             $creado_por = $encabezado->creado_por;
             $modificado_por = Auth::user()->email;
             $peso = $encabezado->peso;
-        } else {
-            // Para crear nuevo
-            $fecha = date('Y-m-d');
-            $descripcion = '';
-            $opcion = 'create';
-            $id_encabezado_calificacion = 0;
-            $creado_por = Auth::user()->email;
-            $modificado_por = '';
-            $peso = 0;
-        }
 
-        $mensaje_descripcion = '';
-        if ( $id_encabezado_calificacion != 0 )
-        {
             $mensaje_descripcion = '<span style="color:#ff4d4d; font-size: 0.9em;">Para eliminar el encabezado, deje vacía la descripción de la actividad y presione guardar.</span><br>';
         }
-        
-        $formulario = '<h4>Actividad para la calificación ' . Input::get('columna_calificacion') . '</h4>' . FormFacade::open(['url' => url('calificaciones_encabezados'), 'id' => 'formulario_modal']) . '
-                          <div class="form-group">
-                            <label for="fecha">Fecha actividad:</label>
-                            <input name="fecha" type="date" class="form-control" id="fecha" value="' . $fecha . '" required="required">
-                          </div>
-                          <div class="form-group">
-                            <label for="descripcion">' . $mensaje_descripcion . 'Descripción actividad: </label>
-                            <textarea name="descripcion" class="form-control" id="descripcion" rows="2" required="required">' . $descripcion . '</textarea>
-                          </div>
-                          <div class="form-group">
-                            <label for="fecha">Peso actividad (%)</label>
-                            <p><b>Nota:</b> Éste campo es opcional. Si asigna un Peso, tenga en cuenta que todas las calificaciones deberán tener Peso y que todos los pesos deben sumar 100%; sino, habrá inconsitencias en el cálculo de la definitiva.</p>
-                            <input name="peso" type="text" class="form-control" id="peso" value="' . $peso . '">
-                          </div>
-                          <input type="hidden" name="opcion" value="' . $opcion . '" id="opcion">
-                          <input type="hidden" name="id_encabezado_calificacion" value="' . $id_encabezado_calificacion . '" id="id_encabezado_calificacion">
-                          <input type="hidden" name="columna_calificacion" value="' . Input::get('columna_calificacion') . '" id="columna_calificacion">
-                          <input type="hidden" name="anio" value="' . Input::get('anio') . '" id="anio">
-                          <input type="hidden" name="periodo_id" value="' . Input::get('periodo_id') . '" id="periodo_id">
-                          <input type="hidden" name="curso_id" value="' . Input::get('curso_id') . '" id="curso_id">
-                          <input type="hidden" name="asignatura_id" value="' . Input::get('asignatura_id') . '" id="asignatura_id">
-                          <input type="hidden" name="creado_por" value="' . $creado_por . '" id="creado_por">
-                          <input type="hidden" name="modificado_por" value="' . $modificado_por . '" id="modificado_por">
-                        ' . FormFacade::close();
 
-        return $formulario;
+        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'mensaje_descripcion' ))->render();
     }
 
+    /**
+     * Store/Update/Delete
+     */
     public function store(Request $request)
     {
         $cerrar_modal = "true";
 
-        // Se valida la sumatoria de todos los pesos
         $encabezados = EncabezadoCalificacion::where([
                                                         ['curso_id', $request->curso_id],
                                                         ['asignatura_id', $request->asignatura_id],
@@ -114,18 +95,22 @@ class EncabezadoCalificacionController extends Controller
             $sumaPesos = $sumaPesos + $e->peso;
         }
 
+        $data =  $request->all();
+        $data['descripcion'] = trim( $request->descripcion );
+
         switch ( $request->id_encabezado_calificacion )
         {
             case '0':
 
-                // Crear
+                // Se valida la sumatoria de todos los pesos
                 if (($sumaPesos + (float)$request->peso) > 100)
                 {
                     return "pesos";
                 }
 
-                EncabezadoCalificacion::create($request->all());
-                $cerrar_modal = "CREADO";
+                // Crear
+                EncabezadoCalificacion::create( $data );
+                return "CREADO";
                     
                 break;
 
@@ -137,6 +122,7 @@ class EncabezadoCalificacionController extends Controller
                     return "pesos";
                 }
 
+                // Se valida la sumatoria de todos los pesos
                 if ( ( ($sumaPesos - $registro->peso) + (float)$request->peso ) > 100 )
                 {
                     return "pesos";
@@ -147,7 +133,7 @@ class EncabezadoCalificacionController extends Controller
                     $registro->delete();
                     $cerrar_modal = "ELIMINADO";
                 }else{
-                    $registro->fill($request->all());
+                    $registro->fill( $data );
                     $registro->save();
                     $cerrar_modal = "MODIFICADO";
                 }

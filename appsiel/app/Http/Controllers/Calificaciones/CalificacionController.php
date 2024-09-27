@@ -123,8 +123,7 @@ class CalificacionController extends Controller
 
     public function index2()
     {
-        if (!is_null($this->colegio))
-        {
+        if (!is_null($this->colegio)) {
             //determinar la cantidad de registros a mostrar
             $nro_registros = 10;
             $temp = Input::get('nro_registros');
@@ -187,7 +186,7 @@ class CalificacionController extends Controller
         $curso_id = null;
         $asignatura_id = null;
         $asignaturas = null;
-        
+
         $periodo_lectivo_actual = PeriodoLectivo::get_actual();
         if ($periodo_lectivo_actual != null) {
             $periodo_lectivo_id = $periodo_lectivo_actual->id;
@@ -216,12 +215,10 @@ class CalificacionController extends Controller
         // Validación del ingreso de calificaciones
         $parametros = config('calificaciones');
 
-        if ($parametros['permitir_calificaciones_sin_logros'] == 'No')
-        {
+        if ($parametros['permitir_calificaciones_sin_logros'] == 'No') {
             $logros = Logro::get_logros($this->colegio->id, $request->curso_id, $request->id_asignatura, $request->id_periodo, $nro_registros, $search);
-            
-            if ( $logros->count() == 0 )
-            {
+
+            if ($logros->count() == 0) {
                 return redirect(url()->previous())->with('mensaje_error', 'No se permite ingresar calificaciones para las asignaturas que aún no tienen logros en el periodo seleccionado.');
             }
         }
@@ -229,8 +226,7 @@ class CalificacionController extends Controller
         $periodo = Periodo::find($request->id_periodo);
         $datos_asignatura = CursoTieneAsignatura::get_datos_asignacion($periodo->periodo_lectivo_id, $request->curso_id, $request->id_asignatura);
 
-        if ( is_null($datos_asignatura) )
-        {
+        if (is_null($datos_asignatura)) {
             return redirect()->back()->with('mensaje_error', 'Hay problemas en la asignación de la asignatura al curso. Consulte con el administrador.');
         }
 
@@ -251,39 +247,41 @@ class CalificacionController extends Controller
         // Se crea un array con los valores de las calificaciones de cada estudiante
         $vec_estudiantes = array();
         $i = 0;
-        foreach ($estudiantes as $estudiante)
-        {
+        foreach ($estudiantes as $estudiante) {
             $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
             $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo; //." ".$estudiante->apellido2." ".$estudiante->nombres;
             $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
+            $vec_estudiantes[$i]['matricula_id'] = $estudiante->id;
             $vec_estudiantes[$i]['id_calificacion'] = "no";
             $vec_estudiantes[$i]['calificacion'] = 0;
             $vec_estudiantes[$i]['logros'] = '';
             $vec_estudiantes[$i]['id_calificacion_aux'] = "no";
-            for ($c = 1; $c < 16; $c++)
-            {
+            for ($c = 1; $c < 16; $c++) {
                 $key = "C" . $c;
                 $vec_estudiantes[$i][$key] = 0;
             }
 
             // Se verifica si cada estudiante tiene calificación creada
             $calificacion_est = Calificacion::where([
-                'anio' => $anio, 'id_periodo' => $request->id_periodo,
-                'curso_id' => $request->curso_id, 'id_asignatura' => $request->id_asignatura,
+                'anio' => $anio,
+                'id_periodo' => $request->id_periodo,
+                'curso_id' => $request->curso_id,
+                'id_asignatura' => $request->id_asignatura,
                 'id_estudiante' => $estudiante->id_estudiante
             ])
                 ->get()
                 ->first();
 
             // Si el estudiante tiene calificacion se envian los datos de esta para editarp
-            if ( $calificacion_est != null )
-            {
+            if ($calificacion_est != null) {
                 $creado_por = $calificacion_est->creado_por;
                 $modificado_por = Auth::user()->email;
                 // Obtener la calificación auxiliar del estudiante
                 $calificacion_aux = CalificacionAuxiliar::where([
-                    'anio' => $anio, 'id_periodo' => $request->id_periodo,
-                    'curso_id' => $request->curso_id, 'id_asignatura' => $request->id_asignatura,
+                    'anio' => $anio,
+                    'id_periodo' => $request->id_periodo,
+                    'curso_id' => $request->curso_id,
+                    'id_asignatura' => $request->id_asignatura,
                     'id_estudiante' => $estudiante->id_estudiante
                 ])
                     ->get()
@@ -300,8 +298,7 @@ class CalificacionController extends Controller
                 $vec_estudiantes[$i]['logros'] = $calificacion_est->logros;
                 $vec_estudiantes[$i]['id_calificacion_aux'] = $calificacion_aux->id;
 
-                for ($c = 1; $c < 16; $c++)
-                {
+                for ($c = 1; $c < 16; $c++) {
                     $key = "C" . $c;
                     $vec_estudiantes[$i][$key] = $calificacion_aux->$key;
                 }
@@ -329,21 +326,22 @@ class CalificacionController extends Controller
         }
 
         $pesos_encabezados = EncabezadoCalificacion::where([
-                [ 'periodo_id', '=', $request->id_periodo ],
-                [ 'curso_id', '=', $request->curso_id ],
-                [ 'asignatura_id', '=', $request->id_asignatura ],
-                [ 'peso', '>', 0 ]
-            ])
-        ->select('columna_calificacion','peso')
-        ->orderBy('columna_calificacion')
-        ->get();
+            ['periodo_id', '=', $request->id_periodo],
+            ['curso_id', '=', $request->curso_id],
+            ['asignatura_id', '=', $request->id_asignatura],
+            ['peso', '>', 0]
+        ])
+            ->select('columna_calificacion', 'peso')
+            ->orderBy('columna_calificacion')
+            ->get();
 
         $array_pesos = array_fill(0, 16, 0);
         $hay_pesos = false;
-        foreach ($pesos_encabezados as $peso_encabezado )
-        {
-            $array_pesos[ (int)str_replace('C', '', $peso_encabezado->columna_calificacion ) ] = $peso_encabezado->peso;
+        $suma_porcentajes = 0;
+        foreach ($pesos_encabezados as $peso_encabezado) {
+            $array_pesos[(int)str_replace('C', '', $peso_encabezado->columna_calificacion)] = $peso_encabezado->peso;
             $hay_pesos = true;
+            $suma_porcentajes += $peso_encabezado->peso;
         }
 
         return view('calificaciones.calificar2', [
@@ -358,10 +356,62 @@ class CalificacionController extends Controller
             'escala_min_max' => $escala_min_max,
             'array_pesos' => $array_pesos,
             'hay_pesos' => $hay_pesos,
+            'suma_porcentajes' => $suma_porcentajes,
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por,
             'id_colegio' => $this->colegio->id
         ]);
+    }
+
+    public function almacenar_linea_calificacion_estudiante($matricula_id, $json_fila)
+    {
+        $request = $this->built_ObjRequets(json_decode($json_fila));
+
+        $data = $this->almacenar_calificacion($request);
+
+        //return json_encode($data);
+        return response()->json( $data );
+    }
+
+    public function built_ObjRequets(object $json_fila)
+    {
+        $request = new Request;
+        $user = Auth::user();
+        $request["codigo_matricula"] = $user->empresa_id;
+
+        $request["codigo_matricula"] = $user->empresa_id;
+
+        $request["lineas_registros_calificaciones"] = '[' . json_encode($json_fila) . ']';
+
+        $request["id_colegio"] = $this->colegio->id;
+        $request["anio"] = $json_fila->anio;
+        $request["id_periodo"] = $json_fila->id_periodo;
+        $request["curso_id"] = $json_fila->curso_id;
+        $request["id_estudiante"] = $json_fila->id_estudiante;
+        $request["id_asignatura"] = $json_fila->asignatura_id;
+
+        //$request["calificacion"] = $bodega_default_id;
+        //$request["logros"] = $movimiento;
+        $request["creado_por"] = $user->email;
+        $request["modificado_por"] = "0";
+
+        $request["C1"] = $json_fila->C1;
+        $request["C2"] = $json_fila->C2;
+        $request["C3"] = $json_fila->C3;
+        $request["C4"] = $json_fila->C4;
+        $request["C5"] = $json_fila->C5;
+        $request["C6"] = $json_fila->C6;
+        $request["C7"] = $json_fila->C7;
+        $request["C8"] = $json_fila->C8;
+        $request["C9"] = $json_fila->C9;
+        $request["C10"] = $json_fila->C10;
+        $request["C11"] = $json_fila->C11;
+        $request["C12"] = $json_fila->C12;
+        $request["C13"] = $json_fila->C13;
+        $request["C14"] = $json_fila->C14;
+        $request["C15"] = $json_fila->C15;
+
+        return $request;
     }
 
     /**
@@ -398,64 +448,60 @@ class CalificacionController extends Controller
 
     public function almacenar_calificacion(Request $request)
     {
-        $lineas_registros_calificaciones = json_decode( $request->lineas_registros_calificaciones );
+        $lineas_registros_calificaciones = json_decode($request->lineas_registros_calificaciones);
 
         $resultados = [];
         $numero_fila = 1;
-        $cantidad_registros = count( $lineas_registros_calificaciones );
+        $cantidad_registros = count($lineas_registros_calificaciones);
 
-        for ($i=0; $i < $cantidad_registros; $i++) 
-        {
+        for ($i = 0; $i < $cantidad_registros; $i++) {
+
             $id_calificacion = (int)$lineas_registros_calificaciones[$i]->id_calificacion;
             $calificacion_texto = (float)$lineas_registros_calificaciones[$i]->calificacion;
             $id_calificacion_aux = (int)$lineas_registros_calificaciones[$i]->id_calificacion_aux;
 
-            $linea_datos = [ 'id_colegio' => (int)$request->id_colegio ] +
-                            [ 'anio' => (int)$request->anio ] +
-                            [ 'id_periodo' => (int)$request->id_periodo ] +
-                            [ 'curso_id' => (int)$request->curso_id ] +
-                            [ 'id_asignatura' => (int)$request->id_asignatura ] +
-                            [ 'codigo_matricula' => $lineas_registros_calificaciones[$i]->codigo_matricula ] +
-                            [ 'id_estudiante' => (int)$lineas_registros_calificaciones[$i]->id_estudiante ] +
-                            [ 'calificacion' => $calificacion_texto ] +
-                            [ 'logros' => $lineas_registros_calificaciones[$i]->logros ] +
-                            [ 'creado_por' => $request->creado_por ];
+            $linea_datos = ['id_colegio' => (int)$request->id_colegio] +
+                ['anio' => (int)$request->anio] +
+                ['id_periodo' => (int)$request->id_periodo] +
+                ['curso_id' => (int)$request->curso_id] +
+                ['id_asignatura' => (int)$request->id_asignatura] +
+                ['codigo_matricula' => $lineas_registros_calificaciones[$i]->codigo_matricula] +
+                ['id_estudiante' => (int)$lineas_registros_calificaciones[$i]->id_estudiante] +
+                ['calificacion' => $calificacion_texto] +
+                ['logros' => $lineas_registros_calificaciones[$i]->logros] +
+                ['creado_por' => $request->creado_por];
 
             $cantidad_calificaciones = 16;
             if ((int)$request->cantidad_calificaciones != 0) {
                 $cantidad_calificaciones = (int)$request->cantidad_calificaciones;
             }
-            for ($k=1; $k < $cantidad_calificaciones; $k++)
-            {
-                $variable_columna = 'C'.$k;
-                $linea_datos += [ $variable_columna => (float)$lineas_registros_calificaciones[$i]->$variable_columna ];
+            for ($k = 1; $k < $cantidad_calificaciones; $k++) {
+                $variable_columna = 'C' . $k;
+                $linea_datos += [$variable_columna => (float)$lineas_registros_calificaciones[$i]->$variable_columna];
             }
-            
+
             // Se verifica si la calificación y las calificaciones auxiliares ya existen
-            $calificacion = Calificacion::find( $id_calificacion );
+            $calificacion = Calificacion::find($id_calificacion);
 
-            if ( $calificacion == null )
-            {
+
+            if ($calificacion == null) {
                 // Crear nuevos registros
-                if ( $calificacion_texto != 0 || $linea_datos['logros'] != '')
-                {
-                    $calificacion_creada = Calificacion::create( $linea_datos );
+                if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
+                    $calificacion_creada = Calificacion::create($linea_datos);
 
-                    $calificacion_aux_creada = CalificacionAuxiliar::create( $linea_datos );
+                    $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
 
                     $id_calificacion = $calificacion_creada->id;
                     $calificacion_texto = $calificacion_creada->calificacion;
                     $id_calificacion_aux = $calificacion_aux_creada->id;
                 }
-
             } else {
 
                 // Actualizar registros existentes
-                $calificacion_aux = CalificacionAuxiliar::find( $id_calificacion_aux );
+                $calificacion_aux = CalificacionAuxiliar::find($id_calificacion_aux);
 
                 // Si la calificación ENVIADA es cero y no tiene logros se borran de la BD los registros almacenados
-                if ( $calificacion_texto == 0 &&  $linea_datos['logros'] == '')
-                {
+                if ($calificacion_texto == 0 &&  $linea_datos['logros'] == '') {
                     $calificacion->delete();
                     $calificacion_aux->delete();
 
@@ -464,40 +510,44 @@ class CalificacionController extends Controller
                     $id_calificacion_aux = 'no';
                 } else {
 
-                    if ( $calificacion_texto != 0 || $linea_datos['logros'] != '')
-                    {
+                    if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
                         // Si no, se actualizan la calificación y las auxiliares
-                        $calificacion->fill( $linea_datos );
+                        $calificacion->fill($linea_datos);
                         $calificacion->save();
 
-                        if ( $calificacion_aux == null ) {
-                                $calificacion_creada = Calificacion::create( $linea_datos );
+                        if ($calificacion_aux == null) {
+                            $calificacion_creada = Calificacion::create($linea_datos);
 
-                                $calificacion_aux_creada = CalificacionAuxiliar::create( $linea_datos );
+                            $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
 
-                                $id_calificacion = $calificacion_creada->id;
-                                $calificacion_texto = $calificacion_creada->calificacion;
-                                $id_calificacion_aux = $calificacion_aux_creada->id;
-
-                            $calificacion_aux_creada = CalificacionAuxiliar::create( $linea_datos );
+                            $id_calificacion = $calificacion_creada->id;
+                            $calificacion_texto = $calificacion_creada->calificacion;
                             $id_calificacion_aux = $calificacion_aux_creada->id;
-                        }else{
-                            $calificacion_aux->fill( $linea_datos );
+
+                            $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
+                            $id_calificacion_aux = $calificacion_aux_creada->id;
+                        } else {
+                            $calificacion_aux->fill($linea_datos);
                             $calificacion_aux->save();
                         }
                     }
                 }
             }
-            
-            $resultados[] = (object)[ 
+
+            if (gettype($lineas_registros_calificaciones[$i]->fila_id) == 'string') {
+                $numero_fila = $lineas_registros_calificaciones[$i]->fila_id;
+            }
+
+            $resultados[] = (object)[
                 'numero_fila' => $numero_fila,
                 'id_calificacion' => $id_calificacion,
                 'calificacion_texto' => $calificacion_texto,
-                'id_calificacion_aux' => $id_calificacion_aux 
+                'id_calificacion_aux' => $id_calificacion_aux
             ];
 
             $numero_fila++;
         }
+
         return $resultados;
     }
 
@@ -518,11 +568,10 @@ class CalificacionController extends Controller
     // LLenar select dependiente
     public function get_select_asignaturas($curso_id, $periodo_id = null)
     {
-        if ( $periodo_id == null or $periodo_id == 'null' )
-        {
+        if ($periodo_id == null or $periodo_id == 'null') {
             $periodo_lectivo = PeriodoLectivo::get_actual();
-        }else{
-            $periodo_lectivo = PeriodoLectivo::get_segun_periodo( $periodo_id );
+        } else {
+            $periodo_lectivo = PeriodoLectivo::get_segun_periodo($periodo_id);
         }
 
         $asignaturas = CursoTieneAsignatura::asignaturas_del_curso($curso_id, null, $periodo_lectivo->id);
@@ -570,13 +619,13 @@ class CalificacionController extends Controller
 
     public function get_peso($curso, $periodo, $asignatura, $celda)
     {
-        $ec = EncabezadoCalificacion::where( [
-                                                    ['curso_id', $curso],
-                                                    ['asignatura_id', $asignatura],
-                                                    ['periodo_id', $periodo],
-                                                    ['columna_calificacion', 'C' . $celda]
-                                            ])
-                                        ->first();
+        $ec = EncabezadoCalificacion::where([
+            ['curso_id', $curso],
+            ['asignatura_id', $asignatura],
+            ['periodo_id', $periodo],
+            ['columna_calificacion', 'C' . $celda]
+        ])
+            ->first();
         if ($ec != null) {
             return $ec->peso;
         }
@@ -587,6 +636,4 @@ class CalificacionController extends Controller
     {
         return Periodo::find($periodo_id)->periodo_lectivo_id;
     }
-
-    
 }

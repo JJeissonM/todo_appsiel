@@ -1,3 +1,48 @@
+
+function validar_requeridos_form_filtros()
+{
+    if ($("#curso_id").val() == "" || $("#curso_id").val() == null) {
+        $("#curso_id").focus();
+        var name_campo = $("#curso_id").attr('name');
+        var lbl_campo = $("#curso_id").parent().prev('label').text();
+        if( lbl_campo === '' )
+        {
+            lbl_campo = $("#curso_id").prev('label').text();
+        }
+        alert( 'Este campo es requerido: ' + lbl_campo + ' (' + name_campo + ')' );
+
+        return false;
+    }
+    
+    if ($("#id_asignatura").val() == "" || $("#id_asignatura").val() == null) {
+        $("#id_asignatura").focus();
+        var name_campo = $("#id_asignatura").attr('name');
+        var lbl_campo = $("#id_asignatura").parent().prev('label').text();
+        if( lbl_campo === '' )
+        {
+            lbl_campo = $("#id_asignatura").prev('label').text();
+        }
+        alert( 'Este campo es requerido: ' + lbl_campo + ' (' + name_campo + ')' );
+
+        return false;
+    }
+    
+    if ($("#id_periodo").val() == "" || $("#id_periodo").val() == null) {
+        $("#id_periodo").focus();
+        var name_campo = $("#id_periodo").attr('name');
+        var lbl_campo = $("#id_periodo").parent().prev('label').text();
+        if( lbl_campo === '' )
+        {
+            lbl_campo = $("#id_periodo").prev('label').text();
+        }
+        alert( 'Este campo es requerido: ' + lbl_campo + ' (' + name_campo + ')' );
+
+        return false;
+    }
+
+    return true;
+}
+
 $(document).ready(function(){
 
 	$("#curso_id").focus();
@@ -15,7 +60,7 @@ $(document).ready(function(){
     $("#btn_continuar").on('click',function(event){
         event.preventDefault();
 
-        if ( !validar_requeridos() )
+        if ( !validar_requeridos_form_filtros() )
         {
             return false;
         }			
