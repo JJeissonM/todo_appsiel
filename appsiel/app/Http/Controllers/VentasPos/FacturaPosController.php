@@ -1248,9 +1248,11 @@ class FacturaPosController extends TransaccionController
         {
             $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
 
+            /*
             if (!$grupo_inventario->mostrar_en_pagina_web) {
                 continue;
             }
+            */
 
             if ((int)config('ventas_pos.mostrar_solo_items_con_precios_en_lista_cliente_default')) {
                 if (!in_array($pr->id,$items_en_lista_precios)) {
