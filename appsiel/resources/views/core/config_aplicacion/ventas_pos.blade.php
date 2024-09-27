@@ -337,7 +337,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$bloquear_cierre_si_hay_pedidos_pendientes = '';
+								if( isset($parametros['bloquear_cierre_si_hay_pedidos_pendientes'] ) )
+								{
+									$bloquear_cierre_si_hay_pedidos_pendientes = $parametros['bloquear_cierre_si_hay_pedidos_pendientes'];
+								}
+							?>
+							{{ Form::bsSelect('bloquear_cierre_si_hay_pedidos_pendientes', $bloquear_cierre_si_hay_pedidos_pendientes, 'Bloquear CIERRE si hay pedidos en estado Pendiente', [ ''=>'', 'No','Sí'], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

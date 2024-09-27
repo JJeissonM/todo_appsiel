@@ -2,6 +2,7 @@
 
 namespace App\VentasPos;
 
+use App\Ventas\VtasPedido;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\DB;
@@ -87,6 +88,31 @@ class CierreEncabezado extends Model
 
     public static function get_campos_adicionales_create($lista_campos)
     {
+        if ( (int)config('ventas_pos.bloquear_cierre_si_hay_pedidos_pendientes') ) {
+            $cantidad_pedidos_pendientes = VtasPedido::where('estado','Pendiente')->count();
+
+            if($cantidad_pedidos_pendientes > 0)
+            {
+                return [
+                    [
+                        "id" => 999,
+                        "descripcion" => "Label no se puede cerrar si hay pedidos pendientes.",
+                        "tipo" => "personalizado",
+                        "name" => "lbl_no_cerrar_si_pedidos_pendientes",
+                        "opciones" => "",
+                        "value" => '<div class="form-group">                    
+                                                        <label class="control-label col-sm-3" style="color: red;" > <b> No puede hacer el CIERRE si tiene pedidos pendientes por facturar. </b> </label>      
+                                                    </div>',
+                        "atributos" => [],
+                        "definicion" => "",
+                        "requerido" => 0,
+                        "editable" => 1,
+                        "unico" => 0
+                    ]
+                ];
+            }
+        }
+
         $pdv = Pdv::find(Input::get('pdv_id'));
 
         $cajero = Cajero::find(Input::get('cajero_id'));
