@@ -13,7 +13,9 @@
 
         <br><br>
 
-        @include('tesoreria.arqueo_caja.seccion_movimientos_del_sistema')
+        @if( !auth()->user()->hasPermissionTo('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') )
+            @include('tesoreria.arqueo_caja.seccion_movimientos_del_sistema')
+        @endif
 
         <h4><i class="fa fa-money"></i> Conteo de efectivo y equivalentes</h4>
         <hr>

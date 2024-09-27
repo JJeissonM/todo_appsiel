@@ -8,7 +8,7 @@
             @endif
 
             @if( isset($url_edit) )
-                @if($url_edit!='')
+                @if( $url_edit!='' && !auth()->user()->hasPermissionTo('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') )
                     {{ Form::bsBtnEdit2(str_replace('id_fila', $registro->id, $url_edit),'Editar') }}
                 @endif
             @endif

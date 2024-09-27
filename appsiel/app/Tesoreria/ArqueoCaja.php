@@ -87,7 +87,16 @@ class ArqueoCaja extends Model
 
     public function store_adicional($datos, $arqueocaja)
     {
-        //dd([$datos], [$arqueocaja]);
+        if( !isset($datos['movimientos_entradas']) )
+        {
+            $datos['movimientos_entradas'] = $this->get_movimientos( 'entrada', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'] );
+        }
+        
+        if( !isset($datos['movimientos_salidas']) )
+        {
+            $datos['movimientos_salidas'] = $this->get_movimientos( 'salida', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'] );
+        }
+
         $arqueocaja->billetes_contados = json_encode($datos['billetes']);
         $arqueocaja->monedas_contadas = json_encode($datos['monedas']);
         $arqueocaja->detalles_mov_entradas = $datos['movimientos_entradas'];
@@ -101,8 +110,34 @@ class ArqueoCaja extends Model
         }
     }
 
-    public function update_adicional($datos, $doc_encabezado_id)
+    public function get_movimientos( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id )
     {
+        $movimientos = '[';
+
+        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo( $movimiento, $fecha_desde, $fecha_hasta, $teso_caja_id );
+
+        foreach($movimiento as $linea)
+        {
+            $movimientos .= '{"motivo":"' . $linea['motivo'] . '","movimiento":"entrada","codigo_referencia_tercero":"","valor_movimiento":' . abs($linea['valor_movimiento']) . '}';
+        }
+
+        $movimientos .= ']';
+
+        return $movimientos;
+    }
+
+    public function update_adicional($datos, $doc_encabezado_id)
+    {       
+        if( !isset($datos['movimientos_entradas']) )
+        {
+            $datos['movimientos_entradas'] = $this->get_movimientos( 'entrada', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'] );
+        }
+        
+        if( !isset($datos['movimientos_salidas']) )
+        {
+            $datos['movimientos_salidas'] = $this->get_movimientos( 'salida', $datos['fecha'], $datos['fecha'], $datos['teso_caja_id'] );
+        }
+
         $arqueocaja = ArqueoCaja::find($doc_encabezado_id);
 
         $arqueocaja->billetes_contados = json_encode($datos['billetes']);
@@ -110,7 +145,7 @@ class ArqueoCaja extends Model
         $arqueocaja->detalles_mov_entradas = $datos['movimientos_entradas'];
         $arqueocaja->detalles_mov_salidas = $datos['movimientos_salidas'];
         $arqueocaja->estado = 'ACTIVO';
-        $result = $arqueocaja->save();
+        $arqueocaja->save();
 
         return 'tesoreria/arqueo_caja/' . $arqueocaja->id . '?id=' . $datos['url_id'] . '&id_modelo=' . $datos['url_id_modelo'];
     }
