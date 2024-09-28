@@ -1306,7 +1306,7 @@ $(document).ready(function () {
     $(".btn_edit_modal").hide();
     $(".btn_edit_modal").hide();
     $("#myTable_filter").find("input").css("border", "3px double red");
-    $("#myTable_filter").find("input").select();
+    $("#myTable_filter").find("input").focus();
   });
 
   $(document).on("click", ".btn_registrar_ingresos_gastos", function (event) {

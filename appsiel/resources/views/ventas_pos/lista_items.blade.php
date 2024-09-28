@@ -14,7 +14,7 @@
 			<tbody>
 				@foreach( $productos as $item)
 					<?php 
-						if ( $item->mostrar_en_pagina_web == 0 || $item->estado != 'Activo' ) {
+						if ( $item->estado != 'Activo' ) {
 							continue;
 						}
 					?>

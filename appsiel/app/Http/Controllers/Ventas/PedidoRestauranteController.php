@@ -162,15 +162,11 @@ class PedidoRestauranteController extends TransaccionController
                 return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
             }
 
-            if ( !(int)$grupo_inventario->mostrar_en_pagina_web ) {
-                continue;
-            }
-
             $pr->categoria = $grupo_inventario->descripcion;
             $productosTemp[$pr->categoria][] = $pr;
         }
 
-        $vista_categorias_productos = View::make('ventas_pos.lista_items2', compact('productosTemp'))->render();
+        $vista_categorias_productos = View::make('ventas_pos.lista_items_pedidos_restaurantes', compact('productosTemp'))->render();
         
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
