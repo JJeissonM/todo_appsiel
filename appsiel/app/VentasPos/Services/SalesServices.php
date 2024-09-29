@@ -11,7 +11,7 @@ use App\VentasPos\Services\AccountingServices;
 use App\Inventarios\InvProducto;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoMotivo;
+
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\Cliente;
 

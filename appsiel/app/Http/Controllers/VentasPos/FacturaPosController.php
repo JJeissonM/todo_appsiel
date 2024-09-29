@@ -67,6 +67,7 @@ use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\DatafonoService;
 use App\VentasPos\Services\RecipeServices;
 use App\VentasPos\Services\TipService;
+use App\VentasPos\Services\FacturaPosService;
 
 class FacturaPosController extends TransaccionController
 {
@@ -76,6 +77,14 @@ class FacturaPosController extends TransaccionController
 
     public function create()
     {
+        $pdv = Pdv::find(Input::get('pdv_id'));
+
+        $validar = $this->verificar_datos_por_defecto( $pdv );
+        if ( $validar != 'ok' )
+        {
+            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
+        }
+
         $this->set_variables_globales();
 
         // Enviar valores predeterminados
@@ -93,28 +102,23 @@ class FacturaPosController extends TransaccionController
 
         $user = Auth::user();
 
-        $pdv = Pdv::find(Input::get('pdv_id'));
+        $factura_pos_service = new FacturaPosService();
 
-        $obj_msj_resolucion_facturacion = $this->get_msj_resolucion_facturacion( $pdv );
-        $msj_resolucion_facturacion = '';
-        if ( $obj_msj_resolucion_facturacion->status == 'error' )
+        /**
+         * Validar resolución de Facturación
+         */
+        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );        
+        if ( $msj_resolucion_facturacion->status == 'error' )
         {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $obj_msj_resolucion_facturacion->message );
+            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
         }
+        $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
 
-        if ( $obj_msj_resolucion_facturacion->status == 'warning' )
-        {
-            $msj_resolucion_facturacion = $obj_msj_resolucion_facturacion->message;
-        }
-
+        /**
+         * Asignar campos por defecto
+         */
         $cliente = $pdv->cliente;
         $vendedor = $cliente->vendedor;
-        
-        $validar = $this->verificar_datos_por_defecto( $pdv );
-        if ( $validar != 'ok' )
-        {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
-        }
         
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
 
@@ -341,17 +345,14 @@ class FacturaPosController extends TransaccionController
 
         $pdv = Pdv::find($factura->pdv_id);
 
-        $obj_msj_resolucion_facturacion = $this->get_msj_resolucion_facturacion( $pdv );
-        $msj_resolucion_facturacion = '';
-        if ( $obj_msj_resolucion_facturacion->status == 'error' )
-        {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $obj_msj_resolucion_facturacion->message );
-        }
+        $factura_pos_service = new FacturaPosService();
 
-        if ( $obj_msj_resolucion_facturacion->status == 'warning' )
+        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );        
+        if ( $msj_resolucion_facturacion->status == 'error' )
         {
-            $msj_resolucion_facturacion = $obj_msj_resolucion_facturacion->message;
+            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
         }
+        $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, $factura, 'edit');
 
@@ -750,8 +751,7 @@ class FacturaPosController extends TransaccionController
         $obj_acumm_serv->accumulate_one_invoice($factura_id);
 
         return 1;
-    }
-    
+    }   
 
     public function acumular_una_factura_individual($factura_id)
     {
@@ -827,7 +827,6 @@ class FacturaPosController extends TransaccionController
         }
         return 1;
     }
-
 
     public function store_registro_ingresos_gastos(Request $request)
     {
@@ -1337,11 +1336,6 @@ class FacturaPosController extends TransaccionController
         }
 
         return 'ok';
-    }
-
-    public function get_msj_resolucion_facturacion( $pdv )
-    {
-        return (new ResolucionFacturacionService())->validate_resolucion_facturacion($pdv->tipo_doc_app, $pdv->core_empresa_id);
     }
 
     public function get_resolucion_facturacion_electronica()

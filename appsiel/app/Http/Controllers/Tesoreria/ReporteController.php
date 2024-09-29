@@ -268,11 +268,11 @@ class ReporteController extends TesoreriaController
             $saldo_inicial = TesoMovimiento::get_suma_movimientos_menor_a_la_fecha($fecha_desde);
         }
 
-        $movimiento_entradas = TesoMovimiento::movimiento_por_tipo_motivo('entrada', $fecha_desde, $fecha_hasta);
+        $movimiento_entradas = TesoMovimiento::movimiento_por_tipo_motivo('entrada', $fecha_desde, $fecha_hasta)->toArray();
         
         //dd($movimiento_entradas);
         
-        $movimiento_salidas = TesoMovimiento::movimiento_por_tipo_motivo('salida', $fecha_desde, $fecha_hasta);
+        $movimiento_salidas = TesoMovimiento::movimiento_por_tipo_motivo('salida', $fecha_desde, $fecha_hasta)->toArray();
 
         // 
         $valor_movimiento = 0;
@@ -847,7 +847,7 @@ class ReporteController extends TesoreriaController
 
     public function get_tabla_movimiento()
     {
-        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo( Input::get('movimiento'), Input::get('fecha_desde'), Input::get('fecha_hasta'), Input::get('teso_caja_id') );
+        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo( Input::get('movimiento'), Input::get('fecha_desde'), Input::get('fecha_hasta'), Input::get('teso_caja_id') )->toArray();
 
         $total_valor_movimiento = 0;
         foreach ($movimiento as $linea)

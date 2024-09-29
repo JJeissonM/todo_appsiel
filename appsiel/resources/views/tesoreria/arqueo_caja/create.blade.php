@@ -259,6 +259,7 @@
                 }
 
                 var total_efectivo = parseFloat($('#total_billetes').val()) + parseFloat($('#total_monedas').val()) + otros_saldos;
+                
                 $('#total_efectivo').val(total_efectivo);
                 $('#lbl_total_efectivo').text('$' + new Intl.NumberFormat("de-DE").format(total_efectivo));
             }

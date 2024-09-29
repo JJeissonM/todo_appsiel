@@ -84,7 +84,6 @@ $.fn.checkCookie = function () {
 	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
 };
 
-
 $.fn.getCookie = function (cname) {
 	var name = cname + "=";
 	var ca = document.cookie.split(';');
@@ -317,7 +316,7 @@ function ventana_imprimir() {
 }
 
 function mandar_codigo2(item_id) {
-/*
+	
 	if ( $('#lbl_vendedor_mesero').text() == '') {
 		alert('Debe seleccionar un MESERO.');
 		return false;
@@ -327,7 +326,7 @@ function mandar_codigo2(item_id) {
 		alert('Debe seleccionar una MESA.');
 		return false;
 	}
-	*/
+		
 	var producto = productos.find(item => item.id === parseInt(item_id));
 
 	tasa_impuesto = producto.tasa_impuesto;
@@ -548,7 +547,6 @@ function validar_venta_menor_costo()
 
 	return ok;
 }
-
 
 // AL CARGAR EL DOCUMENTO
 $(document).ready(function () {

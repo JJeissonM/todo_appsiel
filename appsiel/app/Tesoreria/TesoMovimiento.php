@@ -268,8 +268,7 @@ class TesoMovimiento extends Model
                                             'teso_movimientos.codigo_referencia_tercero',
                                             DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
                                         )
-                                ->get()
-                                ->toArray();
+                                ->get();
     }
 
     public static function get_suma_movimientos_menor_a_la_fecha($fecha)
