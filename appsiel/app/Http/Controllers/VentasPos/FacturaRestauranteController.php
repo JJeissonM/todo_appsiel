@@ -7,6 +7,8 @@ use App\Http\Controllers\Tesoreria\RecaudoController;
 use App\Inventarios\InvProducto;
 use App\Sistema\Html\TablaIngresoLineaRegistros;
 use App\Sistema\Services\ModeloService;
+use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\Vendedor;
@@ -89,9 +91,13 @@ class FacturaRestauranteController extends TransaccionController
         $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ]; // RecaudoController::get_cajas();
+        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
+            $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
+        }else{
+            $cajas =  TesoCaja::opciones_campo_select();
+        }
         
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
 

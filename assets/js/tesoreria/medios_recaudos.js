@@ -35,8 +35,8 @@ $('#teso_medio_recaudo_id').change(function(){
 
     var texto_motivo = $( "#teso_motivo_id" ).html();//[ , $( "#teso_motivo_id option:selected" ).text() ];
 
-    $("#teso_caja_id option:first").removeAttr('selected');
-    $("#teso_cuenta_bancaria_id option:first").removeAttr('selected');
+    $("#teso_caja_id option").removeAttr('selected');
+    $("#teso_cuenta_bancaria_id option").removeAttr('selected');
 
     if (texto_motivo == '')
     {
@@ -47,8 +47,16 @@ $('#teso_medio_recaudo_id').change(function(){
         $('#div_cuenta_bancaria').hide();
         $('#div_caja').show();
 
-        $("#teso_caja_id option:first").attr('selected','selected');
-        $("#teso_cuenta_bancaria_id option:first").attr('selected','selected');
+        console.log('go', $("#teso_caja_id option:nth-child(2)").text() )
+
+        var position = 2;
+        if ( $('#teso_caja_id option').length == 1 ) {
+            position = 1;
+        }
+        $("#teso_caja_id option:nth-child(" + position + ")").prop('selected',true);
+
+
+        $("#teso_cuenta_bancaria_id option:nth-child(2)").prop('selected',true);
 
         if ( valor[1] == 'Tarjeta bancaria' )
         {

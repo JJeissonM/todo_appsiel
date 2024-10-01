@@ -152,7 +152,7 @@
 @section('scripts')
 
 	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
-	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
+	<script type="text/javascript" src="{{ asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid() ) }}"></script>
 
 	<script type="text/javascript">
 		var url_raiz = "{{ url('/') }}";

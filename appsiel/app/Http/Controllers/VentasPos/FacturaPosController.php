@@ -62,6 +62,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
 use App\Sistema\Services\ModeloService;
+use App\Tesoreria\TesoCuentaBancaria;
 use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
@@ -145,9 +146,13 @@ class FacturaPosController extends TransaccionController
         $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ]; // RecaudoController::get_cajas();
+        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
+            $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
+        }else{
+            $cajas =  TesoCaja::opciones_campo_select();
+        }
         
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
 
@@ -346,6 +351,7 @@ class FacturaPosController extends TransaccionController
         $factura = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
 
         $pdv = Pdv::find($factura->pdv_id);
+        $user = Auth::user();
 
         $factura_pos_service = new FacturaPosService();
 
@@ -394,8 +400,14 @@ class FacturaPosController extends TransaccionController
         $id_transaccion = 8; // 8 = Recaudo cartera
         $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
         $medios_recaudo = RecaudoController::get_medios_recaudo();
-        $cajas = RecaudoController::get_cajas();
-        $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+
+        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
+            $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
+        }else{
+            $cajas =  TesoCaja::opciones_campo_select();
+        }  
+
+        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
         $numero_linea = count($factura->lineas_registros) + 1;
 
