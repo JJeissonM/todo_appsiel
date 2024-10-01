@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('fe_consultar_documentos_emitidos/{doc_encabezado_id}/{tipo_operacion}', 'FacturacionElectronica\AplicacionController@consultar_documentos_emitidos');
+
 Route::resource('facturacion_electronica', 'FacturacionElectronica\AplicacionController');
 
 

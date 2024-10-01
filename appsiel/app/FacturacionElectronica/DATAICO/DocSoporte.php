@@ -143,8 +143,8 @@ class DocSoporte
          Dataico Account Id: a2532b03-a8bf-4514-a4e8-5fd7ec0499e9
          Dataico Auth Token: 088c164ef2ff8964cca84f76e8059f18
          $tokenPassword = '088c164ef2ff8964cca84f76e8059f18';
-         $prefijo_resolucion = 'APSI';
-         $consecutivo_doc_encabezado = 185;
+         $prefijo_resolucion = 'DS';
+         $consecutivo_doc_encabezado = 14;
       */
 
       $tokenPassword = config('facturacion_electronica.tokenPassword');
@@ -152,16 +152,22 @@ class DocSoporte
       $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
 
-      try {
-         $client = new Client(['base_uri' => $this->url_emision]);
+      $url_emision = $this->url_emision;
 
-         $response = $client->get( $this->url_emision . '?number=' . $prefijo_resolucion . $consecutivo_doc_encabezado, [
+      $url_emision = 'https://api.dataico.com/dataico_api/v2/support_docs';
+
+
+      try {
+         $client = new Client(['base_uri' => $url_emision ]);
+
+         $response = $client->get( $this->url_emision . '?prefix=' . $prefijo_resolucion . '&number=' . $consecutivo_doc_encabezado, [
              // un array con la data de los headers como tipo de peticion, etc.
              'headers' => [
                            'content-type' => 'application/json',
                            'auth-token' => $tokenPassword
                         ]
          ]);
+
       } catch (\GuzzleHttp\Exception\RequestException $e) {
           $response = $e->getResponse();
       }
