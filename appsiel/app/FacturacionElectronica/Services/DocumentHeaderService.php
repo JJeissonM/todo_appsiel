@@ -188,7 +188,7 @@ class DocumentHeaderService
 
         // 3ra. Crear Registro del documento de ventas
         $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->lineas_registros_medios_recaudo, $lineas_registros );
+        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->lineas_registros_medios_recaudo, $lineas_registros, 0, 'ventas' );
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         return $doc_encabezado;

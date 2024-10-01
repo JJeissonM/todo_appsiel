@@ -61,6 +61,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
+use App\Sistema\Services\ModeloService;
 use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
@@ -78,8 +79,9 @@ class FacturaPosController extends TransaccionController
     public function create()
     {
         $pdv = Pdv::find(Input::get('pdv_id'));
+        $factura_pos_service = new FacturaPosService();
 
-        $validar = $this->verificar_datos_por_defecto( $pdv );
+        $validar = $factura_pos_service->verificar_datos_por_defecto( $pdv );
         if ( $validar != 'ok' )
         {
             return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $validar );
@@ -102,8 +104,6 @@ class FacturaPosController extends TransaccionController
 
         $user = Auth::user();
 
-        $factura_pos_service = new FacturaPosService();
-
         /**
          * Validar resolución de Facturación
          */
@@ -119,10 +119,12 @@ class FacturaPosController extends TransaccionController
          */
         $cliente = $pdv->cliente;
         $vendedor = $cliente->vendedor;
-        
-        $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
 
-        $lista_campos = $this->ajustar_campos($lista_campos,$pdv,$vendedor);
+        $modelo_service = new ModeloService();
+        
+        $lista_campos = $modelo_service->get_campos_modelo($this->modelo, '', 'create');
+
+        $lista_campos = $factura_pos_service->ajustar_campos( $lista_campos, $pdv, $vendedor, $this->transaccion);
 
         $fecha = date('Y-m-d');
         if(config('ventas_pos.asignar_fecha_apertura_a_facturas'))
@@ -131,19 +133,19 @@ class FacturaPosController extends TransaccionController
         }
         $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago( $fecha );
 
-        $modelo_controller = new ModeloController;
-        $acciones = $modelo_controller->acciones_basicas_modelo($this->modelo, '');
+        //$modelo_controller = new ModeloController;
+        $acciones = $modelo_service->acciones_basicas_modelo($this->modelo, '');
         
         $form_create = [
-                            'url' => $acciones->store,
-                            'campos' => $lista_campos
-                        ];
+                        'url' => $acciones->store,
+                        'campos' => $lista_campos
+                    ];
 
         $id_transaccion = 8; // 8 = Recaudo cartera
         $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion]; // RecaudoController::get_cajas();
+        $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ]; // RecaudoController::get_cajas();
         
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
 
@@ -152,7 +154,7 @@ class FacturaPosController extends TransaccionController
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productos = $productos->sortBy('precio_venta');
         
-        $productosTemp = $this->get_productos($pdv,$productos);
+        $productosTemp = $factura_pos_service->get_productos($pdv,$productos);
         
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
@@ -162,7 +164,7 @@ class FacturaPosController extends TransaccionController
         // Para visualizar el listado de productos
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
-        $plantilla_factura = $this->generar_plantilla_factura($pdv);
+        $plantilla_factura = $factura_pos_service->generar_plantilla_factura($pdv, $this->empresa);
 
         $pedido_id = 0;
 
@@ -183,7 +185,7 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+        $params_JSPrintManager = $factura_pos_service->get_parametros_complemento_JSPrintManager($pdv);
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
         
@@ -192,7 +194,7 @@ class FacturaPosController extends TransaccionController
 
         $medios_pago = null;
 
-        $resolucion_facturacion_electronica = $this->get_resolucion_facturacion_electronica();
+        $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
 
         return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica'));
     }
@@ -408,7 +410,7 @@ class FacturaPosController extends TransaccionController
         //$total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productos = $productos->sortBy('precio_venta');
-        $productosTemp = $this->get_productos($pdv,$productos);
+        $productosTemp = $factura_pos_service->get_productos($pdv,$productos);
 
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
@@ -417,7 +419,7 @@ class FacturaPosController extends TransaccionController
         
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
-        $plantilla_factura = $this->generar_plantilla_factura($pdv);
+        $plantilla_factura = $factura_pos_service->generar_plantilla_factura($pdv, $this->empresa);
 
         $redondear_centena = config('ventas_pos.redondear_centena');
         
@@ -444,12 +446,12 @@ class FacturaPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+        $params_JSPrintManager = $factura_pos_service->get_parametros_complemento_JSPrintManager($pdv);
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
 
         $medios_pago = null;
 
-        $resolucion_facturacion_electronica = $this->get_resolucion_facturacion_electronica();
+        $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
         
         return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica'));
     }
@@ -950,42 +952,6 @@ class FacturaPosController extends TransaccionController
         return '<h4>Registro almacenado correctamente<br><span class="text-info">Documento: ' . $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo . '</span></h4><hr><a class="btn-gmail" href="' . url('/') . '/tesoreria/pagos_imprimir/' . $doc_encabezado->id . '?id=3&id_modelo=' . $request->id_modelo . '&id_transaccion=' . $request->id_transaccion . '&formato_impresion_id=pos' . '" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i></a>';
     }
 
-    public function get_etiquetas()
-    {
-        $parametros = config('ventas');
-
-        $encabezado = '';
-
-        if ($parametros['encabezado_linea_1'] != '') {
-            $encabezado .= $parametros['encabezado_linea_1'];
-        }
-
-        if ($parametros['encabezado_linea_2'] != '') {
-            $encabezado .= '<br>' . $parametros['encabezado_linea_2'];
-        }
-
-        if ($parametros['encabezado_linea_3'] != '') {
-            $encabezado .= '<br>' . $parametros['encabezado_linea_3'];
-        }
-
-
-        $pie_pagina = '';
-
-        if ($parametros['pie_pagina_linea_1'] != '') {
-            $pie_pagina .= $parametros['pie_pagina_linea_1'];
-        }
-
-        if ($parametros['pie_pagina_linea_2'] != '') {
-            $pie_pagina .= '<br>' . $parametros['pie_pagina_linea_2'];
-        }
-
-        if ($parametros['pie_pagina_linea_3'] != '') {
-            $pie_pagina .= '<br>' . $parametros['pie_pagina_linea_3'];
-        }
-
-        return ['encabezado' => $encabezado, 'pie_pagina' => $pie_pagina];
-    }
-
     public function unificar_lineas_registros_pedidos($pedido)
     {
         $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
@@ -1080,55 +1046,6 @@ class FacturaPosController extends TransaccionController
         return $cuerpo_tabla;
     }
 
-    public function generar_plantilla_factura($pdv)
-    {
-        $this->set_variables_globales();
-
-        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
-
-        $empresa = $this->empresa;
-        if ( $pdv->direccion != '' )
-        {
-            $empresa->direccion1 = $pdv->direccion;
-            $empresa->telefono1 = $pdv->telefono;
-            $empresa->email = $pdv->email;
-        }
-
-        $etiquetas = $this->get_etiquetas();
-
-        $plantilla_factura_pos_default = config('ventas_pos.plantilla_factura_pos_default');
-        if ($pdv->plantilla_factura_pos_default != null && $pdv->plantilla_factura_pos_default != '') {
-            $plantilla_factura_pos_default = $pdv->plantilla_factura_pos_default;
-        }
-
-        $datos_factura = (object)[
-            'core_tipo_transaccion_id' => '',
-            'lbl_consecutivo_doc_encabezado' => '',
-            'lbl_fecha' => '',
-            'lbl_hora' => '',
-            'lbl_condicion_pago' => '',
-            'lbl_fecha_vencimiento' => '',
-            'lbl_descripcion_doc_encabezado' => '',
-            'lbl_total_factura' => '',
-            'lbl_total_propina' => '',
-            'total_factura_mas_propina' => '',
-            'lbl_total_datafono' => '',
-            'total_factura_mas_datafono' => '',
-            'lbl_ajuste_al_peso' => '',
-            'lbl_total_recibido' => '0',
-            'lbl_total_cambio' => '',
-            'lbl_creado_por_fecha_y_hora' => '',
-            'lineas_registros' => '',
-            'lineas_impuesto' => ''
-        ];
-
-        $cliente = $pdv->cliente;
-        $tipo_doc_app = $pdv->tipo_doc_app;
-        $pdv_descripcion = $pdv->descripcion;
-
-        return View::make('ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default, compact('empresa', 'resolucion', 'etiquetas', 'pdv_descripcion', 'cliente', 'tipo_doc_app', 'plantilla_factura_pos_default','datos_factura'))->render();
-    }
-
     public function get_total_factura_from_arr_lineas_registros($lineas_registros)
     {
         $total_factura = 0;
@@ -1220,137 +1137,5 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado->save();
 
         return 0;
-    }
-
-    public function get_parametros_complemento_JSPrintManager($pdv)
-    {
-        $usar_complemento_JSPrintManager = 0;
-
-        if ($pdv->usar_complemento_JSPrintManager != null) {
-            $usar_complemento_JSPrintManager = $pdv->usar_complemento_JSPrintManager;
-        }
-
-        return (object)[
-            'usar_complemento_JSPrintManager' => $usar_complemento_JSPrintManager,
-            'enviar_impresion_directamente_a_la_impresora' => $pdv->enviar_impresion_directamente_a_la_impresora,
-            'impresora_principal_por_defecto' => $pdv->impresora_principal_por_defecto,
-            'impresora_cocina_por_defecto' => $pdv->impresora_cocina_por_defecto,
-        ];
-    }
-
-    public function get_productos($pdv,$productos)
-    {
-        $items_en_lista_precios = ListaPrecioDetalle::where('lista_precios_id',$pdv->cliente->lista_precios_id)->get()->pluck('inv_producto_id')->toArray();
-
-        $productosTemp = null;
-        foreach ($productos as $pr)
-        {
-            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
-
-            if ((int)config('ventas_pos.mostrar_solo_items_con_precios_en_lista_cliente_default')) {
-                if (!in_array($pr->id,$items_en_lista_precios)) {
-                    continue;
-                }
-            }            
-            
-            if ( is_null($grupo_inventario) )
-            {
-                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
-            }
-
-            $pr->categoria = $grupo_inventario->descripcion;
-            $productosTemp[$pr->categoria][] = $pr;
-        }
-
-        return $productosTemp;
-    }
-
-    public function ajustar_campos($lista_campos,$pdv,$vendedor)
-    {
-        $cantidad_campos = count($lista_campos);
-
-        $lista_campos = ModeloController::personalizar_campos($this->transaccion->id, $this->transaccion, $lista_campos, $cantidad_campos, 'create', null);
-
-        //Personalización de la lista de campos
-        for ($i = 0; $i < $cantidad_campos; $i++)
-        {
-            switch ($lista_campos[$i]['name']) {
-
-                case 'core_tipo_doc_app_id':
-                    $lista_campos[$i]['opciones'] = [$pdv->tipo_doc_app_default_id => $pdv->tipo_doc_app->prefijo . " - " . $pdv->tipo_doc_app->descripcion];
-                    break;
-
-                case 'cliente_input':
-                    $lista_campos[$i]['value'] = $pdv->cliente->tercero->descripcion;
-                    break;
-
-                case 'vendedor_id':
-                    $lista_campos[$i]['value'] = [$vendedor->id];
-                    break;
-
-                case 'forma_pago':
-                    $lista_campos[$i]['value'] = $pdv->cliente->forma_pago( date('Y-m-d') );
-                    break;
-
-                case 'fecha':
-                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
-                    break;
-
-                case 'fecha_vencimiento':
-                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
-                    break;
-
-                case 'inv_bodega_id':
-                    $lista_campos[$i]['value'] = $pdv->bodega_default_id;
-                    break;
-                            
-                default:
-                    # code...
-                    break;
-            }
-        }
-
-        return $lista_campos;
-    }
-
-    public function verificar_datos_por_defecto( $pdv )
-    {
-        if ( is_null( $pdv->cliente ) ) {
-            return 'El punto de ventas NO tiene asociado un Cliente por defecto.';
-        }
-
-        if ( is_null( $pdv->bodega ) ) {
-            return 'El punto de ventas NO tiene asociada una Bodega por defecto.';
-        }
-
-        if ( is_null( $pdv->caja ) ) {
-            return 'El punto de ventas NO tiene asociada una Caja por defecto.';
-        }
-
-        if ( is_null( $pdv->cajero ) ) {
-            return 'El punto de ventas NO tiene asociado un Cajero por defecto.';
-        }
-
-        if ( is_null( $pdv->tipo_doc_app ) ) {
-            return 'El punto de ventas NO tiene asociado un Tipo de documento por defecto.';
-        }
-
-        return 'ok';
-    }
-
-    public function get_resolucion_facturacion_electronica()
-    {
-        $resolucion_facturacion_electronica = null;
-        if ( (int)config('ventas_pos.modulo_fe_activo') )
-        {
-            $resolucion_facturacion_electronica = ResolucionFacturacion::where([
-                    ['tipo_doc_app_id', '=', config('facturacion_electronica.document_type_id_default')],
-                    ['estado', '=', 'Activo']
-                ])
-                                    ->get()
-                                    ->last();
-        }
-
-        return $resolucion_facturacion_electronica;
     }
 }

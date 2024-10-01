@@ -65,7 +65,7 @@ class TesoCaja extends Model
     {
         $opciones = self::get_cajas_permitidas();
 
-        //$vec[''] = '';
+        $vec[''] = '';
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;

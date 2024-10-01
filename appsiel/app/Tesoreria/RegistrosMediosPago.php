@@ -2,6 +2,7 @@
 
 namespace App\Tesoreria;
 
+use App\Inventarios\InvMotivo;
 use App\Ventas\Services\TreasuryServices;
 use Illuminate\Support\Facades\Input;
 
@@ -36,9 +37,9 @@ class RegistrosMediosPago
     }
 
     // lineas_recaudos is type JSON
-    public function get_datos_ids( $lineas_registros_medios_recaudo, $lineas_registros, $total_documento = null )
+    public function get_datos_ids( $lineas_registros_medios_recaudo, $lineas_registros, $total_documento, $tipo_transaccion )
     {
-        $lineas_recaudos = $this->get_lineas_recaudos($lineas_registros_medios_recaudo, $lineas_registros, $total_documento);
+        $lineas_recaudos = $this->get_lineas_recaudos($lineas_registros_medios_recaudo, $lineas_registros, $total_documento, $tipo_transaccion);
 
         $datos = [];
         foreach( $lineas_recaudos as $linea )
@@ -56,20 +57,25 @@ class RegistrosMediosPago
         return $datos;
     }
 
-    public function get_lineas_recaudos($lineas_registros_medios_recaudo, $lineas_registros_originales, $total_documento = null){
+    public function get_lineas_recaudos($lineas_registros_medios_recaudo, $lineas_registros_originales, $total_documento, $tipo_transaccion){
         
         $lineas_registros_medios_recaudos = json_decode( $lineas_registros_medios_recaudo, true );
 
-        if ( $total_documento == null) {
+        if ( $total_documento == null) {            
             $total_documento = $this->get_total_documento_desde_lineas_registros( $lineas_registros_originales );
         }
-
-        if ( count($lineas_registros_medios_recaudos) <= 1 )
+        
+        if ( count($lineas_registros_medios_recaudos) <= 1 ) // Cuando el usuario no agrega lineas de recaudos
         {
             $teso_motivo_id = '1-Recaudo clientes';
-            $teso_motivo = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_ventas_contado'));
 
-            //$teso_motivo = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_compras_contado'));
+            if ( $tipo_transaccion == 'compras' ) {
+                $teso_motivo = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_compras_contado'));
+            }
+
+            if ( $tipo_transaccion == 'ventas' ) {
+                $teso_motivo = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_ventas_contado'));
+            }
 
             if ($teso_motivo != null) {
                 $teso_motivo_id = $teso_motivo->id . '-' . $teso_motivo->descripcion;

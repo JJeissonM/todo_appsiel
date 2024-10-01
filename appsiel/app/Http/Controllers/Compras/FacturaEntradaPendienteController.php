@@ -35,7 +35,7 @@ class FacturaEntradaPendienteController extends CompraController
 
         $registros_medio_pago = new RegistrosMediosPago;
         
-        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ) );
+        $datos['registros_medio_pago'] = $registros_medio_pago->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], null, self::get_total_documento_desde_lineas_registros_desde_entrada( $doc_encabezado, $lineas_registros ), 'compras' );
         
         CompraController::crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros );
 

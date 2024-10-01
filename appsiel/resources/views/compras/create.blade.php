@@ -82,7 +82,9 @@
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">
 
 				<input type="hidden" name="saldo_original" id="saldo_original" value="0">
-  
+
+				<input type="hidden" name="valor_total_retefuente" id="valor_total_retefuente" value="0">
+				<input type="hidden" name="retencion_id" id="retencion_id" value="0">
 				
 				<div id="popup_alerta"> </div>
 
@@ -113,16 +115,63 @@
 					<div id="total_cantidad" style="display: none;"> 0 </div>
 	            	<table style="display: inline;">
 	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Subtotal: &nbsp; </td> <td> <div id="subtotal"> $ 0 </div> </td>
+	            			<td style="text-align: right; font-weight: bold;"> 
+								Subtotal: &nbsp; 
+							</td> 
+							<td>
+								&nbsp;
+							</td>
+							<td> 
+								<div id="subtotal"> $ 0 </div> 
+							</td>
+							<td>
+								&nbsp;
+							</td>
 	            		</tr>
 	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Descuento: &nbsp; </td> <td> <div id="descuento"> $ 0 </div> </td>
+	            			<td style="text-align: right; font-weight: bold;"> Descuento: &nbsp; </td> 
+							<td>
+								&nbsp;
+							</td>
+							 <td> <div id="descuento"> $ 0 </div> </td>
+							 <td>
+								 &nbsp;
+							 </td>
 	            		</tr>
 	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> <td> <div id="total_impuestos"> $ 0 </div> </td>
+	            			<td style="text-align: right; font-weight: bold;"> Impuestos: &nbsp; </td> 
+							<td>
+								&nbsp;
+							</td>
+							 <td> <div id="total_impuestos"> $ 0 </div> </td>
+							 <td>
+								 &nbsp;
+							 </td>
 	            		</tr>
 	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> <td> <div id="total_factura"> $ 0 </div> </td>
+	            			<td style="text-align: right; font-weight: bold;"> ReteFuente: &nbsp; </td> 
+							<td style="width: 120px;">
+								<span id="select_tasa_retefuente" style="display: none;">
+									{{ Form::bsSelect('tasa_retefuente', null, ' ', App\Contabilidad\Retencion::opciones_campo_select(), ['class'=>'form-control']) }}
+								</span>
+							</td>
+							 <td> 
+								<div id="lbl_total_retefuente"> $ 0 </div>
+							 </td>
+							 <td>
+								&nbsp;&nbsp;<button class="btn btn-xs btn-success" id="btn_add_retefuente"><i class="fa fa-plus"></i> </button>
+								&nbsp;&nbsp;<button class="btn btn-xs btn-default" id="btn_cancel_retefuente" style="display: none;"><i class="fa fa-close"></i> </button>
+							</td>
+	            		</tr>
+	            		<tr>
+	            			<td style="text-align: right; font-weight: bold;"> Total factura: &nbsp; </td> 
+							<td>
+								&nbsp;
+							</td>
+							<td> <div id="total_factura"> $ 0 </div> </td>
+							<td>
+								&nbsp;
+							</td>
 	            		</tr>
 	            	</table>
 				</div>
@@ -150,6 +199,38 @@
 		    }
 
 		};
+
+		function calcular_totales()
+		{	
+			var cantidad = 0.0;
+			var subtotal = 0.0;
+			var valor_total_descuento = 0.0;
+			var total_impuestos = 0.0;
+			var total_factura = 0.0;
+			$('.linea_registro').each(function()
+			{
+				cantidad += parseFloat( $(this).find('.cantidad').text() );
+				subtotal += parseFloat( $(this).find('.base_impuesto').text() );
+				valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
+				total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() );
+				total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+			});
+			$('#total_cantidad').text( new Intl.NumberFormat("de-DE").format( cantidad ) );
+
+			// Subtotal (Sumatoria de base_impuestos por cantidad)
+			//var valor = ;
+			$('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) )  );
+
+			$('#descuento').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_total_descuento.toFixed(2) )  );
+
+			// Total impuestos (Sumatoria de valor_impuesto por cantidad)
+			$('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_impuestos.toFixed(2) ) );
+
+			// Total factura  (Sumatoria de precio_total)
+			$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura.toFixed(2) ) );
+			
+		}
 
 		$(document).ready(function(){
 
@@ -654,7 +735,6 @@
                 $('#vendedor_id').val( item_sugerencia.attr('data-vendedor_id') );
                 $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
 
-
                 var forma_pago = 'contado';
                 dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
                 dias_plazo_original = parseInt( item_sugerencia.attr('data-dias_plazo') );
@@ -662,6 +742,7 @@
                 { 
                 	forma_pago = 'credito';
 					$('#fecha_vencimiento').removeAttr( 'readonly' );
+					$('#mostrar_medios_recaudos').attr('style','display:none');
                 }
                 $('#forma_pago').val( forma_pago );
 
@@ -843,6 +924,7 @@
 				
 				// Se calculan los totales
 				calcular_totales();
+				aplicar_retefuente( false );
 
 				hay_productos++;
 				$('#numero_lineas').text(hay_productos);
@@ -854,8 +936,6 @@
 
 				numero_linea++;
 			}
-
-
 
 			// Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 			// Debe ser complatible con las columnas de la tabla de ingreso de registros
@@ -975,6 +1055,7 @@
 				fila.remove();
 
 				calcular_totales();
+				aplicar_retefuente( false );
 
 				hay_productos--;
 				$('#numero_lineas').text(hay_productos);
@@ -1161,39 +1242,6 @@
 				}
 			}
 
-			function calcular_totales()
-			{	
-				var cantidad = 0.0;
-				var subtotal = 0.0;
-				var valor_total_descuento = 0.0;
-				var total_impuestos = 0.0;
-				var total_factura = 0.0;
-				$('.linea_registro').each(function()
-				{
-				    cantidad += parseFloat( $(this).find('.cantidad').text() );
-				    subtotal += parseFloat( $(this).find('.base_impuesto').text() );
-				    valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
-				    total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() );
-				    total_factura += parseFloat( $(this).find('.precio_total').text() );
-
-				});
-				$('#total_cantidad').text( new Intl.NumberFormat("de-DE").format( cantidad ) );
-
-				// Subtotal (Sumatoria de base_impuestos por cantidad)
-				//var valor = ;
-				$('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) )  );
-
-				$('#descuento').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_total_descuento.toFixed(2) )  );
-
-				// Total impuestos (Sumatoria de valor_impuesto por cantidad)
-				$('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_impuestos.toFixed(2) ) );
-
-				// Total factura  (Sumatoria de precio_total)
-				$('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura.toFixed(2) ) );
-				
-			}
-
-
 			function setCookie(cname, cvalue, exdays) {
 			  var d = new Date();
 			  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
@@ -1357,5 +1405,6 @@
 
 		});
 	</script>
-	<script type="text/javascript" src="{{asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
+	<script type="text/javascript" src="{{ asset('assets/js/tesoreria/medios_recaudos.js')}}"></script>
+	<script type="text/javascript" src="{{ asset('assets/js/compras/retefuente.js?aux=' . uniqid() ) }}"></script>
 @endsection

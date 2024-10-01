@@ -165,6 +165,7 @@ class DocSoporte extends ComprasDocEncabezado
 
         $tercero = $this->proveedor->tercero;
 
+        /*
         if ($tercero->descripcion == '') {
             $error = true;
             $message .= '<li>El NOMBRE DE ESTABLECIMIENTO está vacío.</li>';
@@ -189,6 +190,7 @@ class DocSoporte extends ComprasDocEncabezado
             $error = true;
             $message .= '<li>El TELÉFONO no es válido. Debe ser un valor numérico.: ' . $tercero->telefono1 . '</li>';
         }
+        */
 
         if (!filter_var($tercero->email, FILTER_VALIDATE_EMAIL)) {
             $error = true;

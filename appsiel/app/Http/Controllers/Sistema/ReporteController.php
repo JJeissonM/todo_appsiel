@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers\Sistema;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-
-use Input;
-use Form;
-use View;
-use Cache;
 
 use App\Sistema\Reporte;
 use App\Sistema\Aplicacion;
+use App\Sistema\Services\ModeloService;
+use Illuminate\Support\Facades\Input;
 
 class ReporteController extends Controller
 {
@@ -33,12 +27,14 @@ class ReporteController extends Controller
     	// Se obtienen los campos asociados a ese reporte
         $lista_campos = $reporte->campos()->orderBy('orden')->get()->toArray();
 
-        $lista_campos = ModeloController::ajustar_valores_lista_campos( $lista_campos );
+        $modelo_service = new ModeloService();
+
+        $lista_campos = $modelo_service->ajustar_valores_lista_campos( $lista_campos );
         
         $registro = 'NA';
 
         // Ajustar los valores según la acción
-        $lista_campos = ModeloController::ajustar_valores_lista_campos_segun_accion( $lista_campos, $registro, '', $accion );
+        $lista_campos = $modelo_service->ajustar_valores_lista_campos_segun_accion( $lista_campos, $registro, '', $accion );
 
         $miga_pan = [
         				[ 'url' => $app->app.'?id='.Input::get('id')  ,'etiqueta' => $app->descripcion ],

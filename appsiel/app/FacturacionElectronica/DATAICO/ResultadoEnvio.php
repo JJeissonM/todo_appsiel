@@ -4,6 +4,7 @@ namespace App\FacturacionElectronica\DATAICO;
 
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 
+// Factura Electronica
 class ResultadoEnvio
 {
 	public function almacenar_resultado( $resultado_original, $obj_documento_enviado, $encabezado_factura_id )
@@ -28,7 +29,6 @@ class ResultadoEnvio
 
         return $this->get_mensaje( $resultado_original );
 	}
-
 
     public function formatear_resultado( $resultado, $obj_documento_enviado, $encabezado_factura_id )
     {

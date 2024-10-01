@@ -63,7 +63,6 @@ class ProcesoController extends Controller
         CompraController::contabilizar_movimiento_credito( $documento->forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );
     }
 
-
     /*
      * RECONTABILIZACION FACTURAS DE COMPRAS
      */
@@ -94,7 +93,6 @@ class ProcesoController extends Controller
 
         echo '<br>Se Recontabilizaron '.($i-1).' documentos de compras con sus repectivas entradas de almacén.';
     }
-
 
     // Recontabilizar una nota_credito dada su ID
     public static function recontabilizar_nota_credito( $documento_id )
@@ -132,8 +130,6 @@ class ProcesoController extends Controller
         NotaCreditoController::contabilizar_movimiento_debito( $forma_pago, $documento->toArray(), $total_documento, $detalle_operacion );
     }
 
-
-
     // PROCESOS
     public function actualizar_valor_total_compras_encabezados_doc()
     {
@@ -151,7 +147,6 @@ class ProcesoController extends Controller
 
         echo '<br>Se actualizaron '.($i-1).' documentos.';
     }
-
 
     /*
         Reparar Entradas de Almacén descuadradas por Procesos de recontabilización
@@ -267,4 +262,6 @@ class ProcesoController extends Controller
         
         return redirect( 'compras/'.$documento->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', 'Documento Recontabilizado.' );
     }
+
+
 }

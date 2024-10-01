@@ -30,6 +30,7 @@ use App\Compras\ComprasDocRegistro;
 use App\Compras\ComprasMovimiento;
 use App\Compras\NotaCredito;
 use App\Compras\Proveedor;
+use App\Compras\Services\ContabilidadService;
 use App\Compras\Services\TesoreriaService;
 use App\Ventas\ResolucionFacturacion;
 
@@ -82,7 +83,7 @@ class CompraController extends TransaccionController
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {        
+    {
         $lineas_registros_originales = json_decode( $request->all()['lineas_registros'] );
 
         // 1ro. Crear documento de ENTRADA de inventarios (REMISIÓN)
@@ -94,10 +95,36 @@ class CompraController extends TransaccionController
 
         // 3ro. Crear líneas de registros del documento
         $request['creado_por'] = Auth::user()->email;
-        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales );
+
+        $total_documento = $this->get_total_documento_desde_lineas_registros( $lineas_registros_originales );
+
+        if ( (float)$request->valor_total_retefuente != 0 ) {
+            $total_documento -= (float)$request->valor_total_retefuente;
+        }
+
+        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras' );
+
         CompraController::crear_registros_documento( $request, $doc_encabezado );
 
+        if ( (float)$request->valor_total_retefuente != 0 ) {
+            (new ContabilidadService())->aplicar_retencion_factura_compras( $doc_encabezado, $request->all() );
+        }
+
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
+    }
+    
+    
+    public function get_total_documento_desde_lineas_registros( array $lineas_registros )
+    {
+        $total_documento = 0;
+
+        $cantidad_registros = count($lineas_registros);
+        for ($i=0; $i < $cantidad_registros; $i++) 
+        {
+            $total_documento += (float)$lineas_registros[$i]->precio_total;
+        } // Fin por cada registro
+
+        return $total_documento;        
     }
 
     /*
@@ -288,6 +315,11 @@ class CompraController extends TransaccionController
 
         // Un solo registro de la cuenta por pagar (CR)
         $forma_pago = $datos['forma_pago']; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
+        
+        if( (float)$datos['valor_total_retefuente'] != 0 )
+        {
+            $total_documento -= (float)$datos['valor_total_retefuente'];
+        }
 
         CompraController::contabilizar_movimiento_credito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
 
@@ -458,7 +490,9 @@ class CompraController extends TransaccionController
             $vista = Input::get('vista');
         }
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear','medios_pago') );
+        $valor_retenciones = (new ContabilidadService())->get_valor_retenciones( $doc_encabezado );
+
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear','medios_pago', 'valor_retenciones') );
     }
 
     /*

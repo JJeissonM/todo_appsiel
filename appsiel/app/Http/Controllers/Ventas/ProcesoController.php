@@ -123,7 +123,7 @@ class ProcesoController extends Controller
         $lineas_registros = 'pendiente';
         $total_documento = 'pendiente';
         //$campo_lineas_recaudos
-        return $registros_medio_pago->get_datos_ids( $lineas_registros_medios_recaudo, $lineas_registros, $total_documento );
+        return $registros_medio_pago->get_datos_ids( $lineas_registros_medios_recaudo, $lineas_registros, $total_documento, 'ventas' );
     }
 
 
@@ -419,7 +419,7 @@ class ProcesoController extends Controller
 
         $datos = $nueva_factura->toArray();
         
-        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $lineas_registros_medios_recaudo, $nueva_factura->lineas_registros->toArray(), $nueva_factura->valor_total );
+        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $lineas_registros_medios_recaudo, $nueva_factura->lineas_registros->toArray(), $nueva_factura->valor_total, 'ventas' );
 
         $vtas_doc_header_serv->crear_registro_pago( $nueva_factura->forma_pago, $datos, $nueva_factura->valor_total );
 

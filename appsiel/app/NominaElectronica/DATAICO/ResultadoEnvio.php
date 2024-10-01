@@ -4,6 +4,7 @@ namespace App\FacturacionElectronica;
 
 use App\FacturacionElectronica\ResultadoEnvioDocumento;
 
+// Nomina Electronica
 class ResultadoEnvio
 {
 	public function almacenar_resultado( $resultado_original, $obj_documento_enviado, $encabezado_factura_id )
@@ -16,7 +17,6 @@ class ResultadoEnvio
 
         return $this->get_mensaje( $resultado_original );
 	}
-
 
     public function formatear_resultado( $resultado )
     {
@@ -70,8 +70,6 @@ class ResultadoEnvio
 
 		return $resultado;
     }
-
-
 
     public function get_mensaje( $resultado )
     {

@@ -142,7 +142,7 @@ class VentaController extends TransaccionController
         // 3ra. Crear Registro del documento de ventas
         $request['creado_por'] = Auth::user()->email;
 
-        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros );
+        $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros, null, 'ventas' );
         VentaController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
         $modelo = Modelo::find( $request->url_id_modelo );
@@ -1294,7 +1294,7 @@ class VentaController extends TransaccionController
         $doc_encabezado = $encabezado_documento->crear_nuevo( $request->all() );
 
         $lineas_registros = json_decode( $request->lineas_registros );
-        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros,self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ) );
+        $datos['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros,self::get_total_documento_desde_lineas_registros_desde_remision( $datos ,$lineas_registros ), 'ventas' );
 
         VentaController::crear_lineas_registros( $datos, $doc_encabezado, $lineas_registros );
 

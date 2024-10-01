@@ -272,6 +272,31 @@
 
 				</div>
 
+				<br>
+				<h5> Liquidación de Retenciones </h5>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tercero_dian_id = 0;
+								if( isset($parametros['tercero_dian_id'] ) )
+								{
+									$tercero_dian_id = $parametros['tercero_dian_id'];
+								}
+							?>
+							{{ Form::bsSelect('tercero_dian_id', $tercero_dian_id, 'Tercero DIAN', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">

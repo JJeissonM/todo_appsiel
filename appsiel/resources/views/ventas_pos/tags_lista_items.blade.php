@@ -1,5 +1,4 @@
 <div class="row">
-	<!-- <h4 style="text-align: center;">Selecciona la categoría luego indica el producto dando clic en COMPRAR</h4> -->
 	<div class="col-md-12">
 
         <ul class="nav nav-tabs">

@@ -91,9 +91,10 @@
     <table class="table table-bordered">
         <tr>
             <td> <span style="text-align: right; font-weight: bold;"> Subtotal: </span> $ {{ number_format($subtotal, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Descuentos: </span> $ {{ number_format($total_descuentos, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
-            <td> <span style="text-align: right; font-weight: bold;"> Total factura: </span> $ {{ number_format($total_factura, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> (-) Descuentos: </span> $ {{ number_format($total_descuentos, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> (+) Impuestos: </span> $ {{ number_format($total_impuestos, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> (-) Retenciones: </span> $ {{ number_format($valor_retenciones, 0, ',', '.') }}</td>
+            <td> <span style="text-align: right; font-weight: bold;"> Total a pagar: </span> $ {{ number_format($total_factura - $valor_retenciones, 0, ',', '.') }}</td>
         </tr>
     </table>
 </div>

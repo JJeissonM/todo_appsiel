@@ -4,18 +4,17 @@ namespace App\Http\Controllers\PaginaWeb;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\ImagenController;
 
-use Input;
-use Storage;
-
 use App\Sistema\Modelo;
 use App\PaginaWeb\TipoModulo;
 use App\PaginaWeb\Modulo;
+use App\Sistema\Services\ModeloService;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
 
 class ModuloController extends Controller
 {
@@ -69,8 +68,10 @@ class ModuloController extends Controller
 
         $modelo = Modelo::find($request->url_id_modelo);
 
+        $modelo_service = new ModeloService();
+
         // Se obtienen los campos que tiene ese modelo (Model Modulo)
-        $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
+        $lista_campos = $modelo_service->get_campos_modelo($modelo, '', 'create');
         
         // Obtener campos adicionales (parámetros) según el Tipo Modulo
         $parametros = [];
@@ -78,9 +79,8 @@ class ModuloController extends Controller
         {
             $obj = new $tipo_modulo->modelo;
             
-            $parametros = ModeloController::ajustar_valores_lista_campos( json_decode( $obj->parametros, true ) );
+            $parametros = $modelo_service->ajustar_valores_lista_campos( json_decode( $obj->parametros, true ) );
         }
-
 
         $form_create = [
                         'url' => $modelo->url_form_create,
@@ -189,8 +189,10 @@ class ModuloController extends Controller
 
         $modelo = Modelo::find( Input::get('id_modelo') );
 
+        $modelo_service = new ModeloService();
+
         // Se obtienen los campos que tiene ese modelo (Model Modulo)
-        $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
+        $lista_campos = $modelo_service->get_campos_modelo($modelo,'','create');
         
         // Obtener campos adicionales (parámetros) según el Tipo Modulo
         $parametros_vacios = [];
@@ -199,7 +201,7 @@ class ModuloController extends Controller
             $obj = new $tipo_modulo->modelo;
             $parametros_vacios = json_decode( $obj->parametros, true );
             
-            $parametros_vacios = ModeloController::ajustar_valores_lista_campos( $parametros_vacios );
+            $parametros_vacios = $modelo_service->ajustar_valores_lista_campos( $parametros_vacios );
         
         }
 

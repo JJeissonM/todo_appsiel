@@ -3,10 +3,8 @@
 namespace App\Contabilidad;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-use Schema;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Retencion extends Model
 {

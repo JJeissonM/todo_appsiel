@@ -2,6 +2,7 @@
 
 namespace App\FacturacionElectronica\DATAICO;
 
+use App\Compras\Services\ContabilidadService;
 use GuzzleHttp\Client;
 
 // declaramos factura
@@ -35,7 +36,7 @@ class DocSoporte
       $this->env = config('facturacion_electronica.fe_ambiente'); //'PRUEBAS' || 'PRODUCCION'
    }
 
-   public function procesar_envio_factura( $factura_doc_encabezado = null )
+   public function procesar_envio_factura()
    {
       switch ( $this->tipo_transaccion )
       {
@@ -48,6 +49,14 @@ class DocSoporte
             break;
       }
 
+      $tokenPassword = config('facturacion_electronica.tokenPassword');
+
+      return $this->enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $this->doc_encabezado->get_label_documento() );
+      
+   }
+
+   public function enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $label_documento, $testing = false )
+   {
       try {
          $client = new Client(['base_uri' => $this->url_emision]);
 
@@ -55,7 +64,7 @@ class DocSoporte
              // un array con la data de los headers como tipo de peticion, etc.
              'headers' => [
                            'content-type' => 'application/json',
-                           'auth-token' => config('facturacion_electronica.tokenPassword')
+                           'auth-token' => $tokenPassword
                         ],
              // array de datos del formulario
              'json' => json_decode( $json_doc_electronico_enviado )
@@ -65,12 +74,16 @@ class DocSoporte
           $response = $e->getResponse();
       }
 
-      $array_respuesta = [];
-      $array_respuesta['codigo'] = '500';
-      $array_respuesta['errors'] = 'Interno. Error de conexión con el servidor.';
-      if ($response != null) {
-         $array_respuesta = json_decode( (string) $response->getBody(), true );
-         $array_respuesta['codigo'] = $response->getStatusCode();
+      $array_respuesta = json_decode( (string) $response->getBody(), true );
+
+      $array_respuesta['codigo'] = $response->getStatusCode();
+
+      if ( !isset( $array_respuesta['number'] ) ) {
+         $array_respuesta['number'] = $label_documento;
+      }
+
+      if ( $testing ) {
+         dd( $array_respuesta );
       }      
       
       $obj_resultado = new ResultadoEnvioDocSoporte;
@@ -112,7 +125,7 @@ class DocSoporte
 
       $flexible = 'true';
 
-      return '"send_dian": "' . $send_dian . '","send_email": ' . $send_email . ',"email": "' . $lista_emails . '","env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente().',"items": ' . $this->get_lineas_registros();
+      return '"send_dian": "' . $send_dian . '","send_email": ' . $send_email . ',"email": "' . $lista_emails . '","env": "' . $this->env . '","dataico_account_id": "' . config('facturacion_electronica.tokenEmpresa') . '","number":'.$this->doc_encabezado->consecutivo.',"issue_date": "' . date_format( date_create( $this->doc_encabezado->fecha ),'d/m/Y') . '","payment_date": "' . date_format( date_create( $this->doc_encabezado->fecha_vencimiento ),'d/m/Y') . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","numbering":{"resolution_number":"' . $resolucion->numero_resolucion . '","prefix":"' . $resolucion->prefijo . '","flexible":' . $flexible . '}, "customer": ' . $this->get_datos_cliente().',"items": ' . $this->get_lineas_registros() . ',"retentions": ' . $this->get_document_retentions();
       // . ',"charges": []'
    }
 
@@ -122,17 +135,35 @@ class DocSoporte
 
       $party_identification_type = 'NIT';
 
+      $company_name = $cliente->tercero->descripcion;
+
       $party_type = 'PERSONA_JURIDICA';
       $tax_level_code = 'COMUN';
+      $first_name = '';
+      $family_name = '';
 
       if ( $cliente->tercero->tipo == 'Persona natural' )
       {
          $party_type = 'PERSONA_NATURAL';
          $tax_level_code = 'SIMPLIFICADO';
+
+         $first_name = explode(" ", $cliente->tercero->descripcion)[0];
+         $family_name = substr($cliente->tercero->descripcion, strlen($first_name) + 1);
+
+         if ( $cliente->tercero->nombre1 != '' && $cliente->tercero->apellido1 != '') {
+            $first_name = $cliente->tercero->nombre1;
+            $family_name = $cliente->tercero->apellido1;
+         }
       }
+
       $regimen = 'ORDINARIO';
 
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . (int)$cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $cliente->tercero->descripcion . '","first_name":"' . $cliente->tercero->nombre1 . '","family_name":"' . $cliente->tercero->apellido1 . '","party_identification_type": "' . $party_identification_type . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ) . '","city": "' . strtoupper( $cliente->tercero->ciudad->descripcion ) . '","address_line": "' . $cliente->tercero->direccion1 . '"}';
+      $address_line = $cliente->tercero->ciudad->descripcion;
+      if ( $cliente->tercero->direccion1 != '') {
+         $address_line = $cliente->tercero->direccion1;
+      }
+
+      return '{"email": "' . $cliente->tercero->email . '","phone": "' . (int)$cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification_type": "' . $party_identification_type . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . strtoupper( $cliente->tercero->ciudad->departamento->descripcion ) . '","city": "' . strtoupper( $cliente->tercero->ciudad->descripcion ) . '","address_line": "' . $address_line . '"}';
    }
 
    public function get_lineas_registros()
@@ -154,15 +185,37 @@ class DocSoporte
          if ( $linea->tasa_descuento != 0 )
          {
             $string_items .= ',"discount_rate": ' . $linea->tasa_descuento;
-         } 
+         }
 
-         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "IVA"}]}';
+         $tax_category = config('ventas.etiqueta_impuesto_principal');
+         if ( $linea->item->impuesto->tax_category != null && $linea->item->impuesto->tax_category != '' ) {
+            $tax_category = $linea->item->impuesto->tax_category;
+         }
+
+         $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "' . $tax_category . '"}]}';
+
+
+
          $es_primera_linea = false;
       }
 
       $string_items .= ']';
 
       return $string_items;
+   }
+
+   public function get_document_retentions()
+   {
+      $registro_retencion = (new ContabilidadService())->get_retenciones( $this->doc_encabezado )->first();
+
+      if( $registro_retencion == null )
+      {
+         return '[]';
+      }
+
+      $categoria_retencion = $registro_retencion->retencion->categoria_retencion;
+
+      return '[{"tax_category": "' . $categoria_retencion->nombre_corto . '","tax_rate": ' . $registro_retencion->tasa_retencion . '}]';
    }
 
    public function consultar_documento()

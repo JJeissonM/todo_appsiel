@@ -60,7 +60,7 @@ class TreasuryServices
             "lineas_registros_medios_recaudo" => "[{"teso_medio_recaudo_id":"4-Banco (Consignación)","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"0-","teso_cuenta_bancaria_id":"10-Banco Davivienda SA - 3534453","valor":"$2300"},{"teso_medio_recaudo_id":"","teso_motivo_id":"$2300.00","teso_caja_id":"","teso_cuenta_bancaria_id":""}]"
         */
 
-        $registros_medio_pago = (new RegistrosMediosPago())->get_datos_ids( $payment_methods_lines, null, $payment );
+        $registros_medio_pago = (new RegistrosMediosPago())->get_datos_ids( $payment_methods_lines, null, $payment, 'ventas' );
         
         // Estos deberian enviarse desde el request
         //$registros_medio_pago['valor'] = $registros_medio_pago['valor_recaudo'];
