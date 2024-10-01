@@ -142,16 +142,16 @@ class DocSoporte
                DATOS APPSIEL SAS - Para Pruebas      
          Dataico Account Id: a2532b03-a8bf-4514-a4e8-5fd7ec0499e9
          Dataico Auth Token: 088c164ef2ff8964cca84f76e8059f18
-      */
          $tokenPassword = '088c164ef2ff8964cca84f76e8059f18';
          $prefijo_resolucion = 'DS';
          $consecutivo_doc_encabezado = 14;
+      */
 /*
+*/
       $tokenPassword = config('facturacion_electronica.tokenPassword');
 
       $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
-*/
       $url_emision = $this->url_emision;
 
       $url_emision = 'https://api.dataico.com/dataico_api/v2/support_docs';
