@@ -9,6 +9,7 @@ use App\FacturacionElectronica\Factura;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\FacturacionElectronica\DocSoporte;
+use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 
 class AplicacionController extends Controller
@@ -40,10 +41,15 @@ class AplicacionController extends Controller
         
         // Representacion Grafica (PDF)
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
-        $pdf_url = '#';
+        $pdf_url = url('/compras/3?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
+
         if ( isset($json_dataico->invoice) ) {
             $pdf_url = $json_dataico->invoice->pdf_url;
-        }       
+        }   
+        
+        if ( isset($json_dataico->support_doc) ) {
+            $pdf_url = $json_dataico->support_doc->pdf_url;
+        }
     	
         return Redirect::away( $pdf_url );
     }
