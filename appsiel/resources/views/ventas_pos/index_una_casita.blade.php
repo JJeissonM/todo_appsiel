@@ -92,14 +92,15 @@
                                 <b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $pdv->estado }} <small> | desde {{ $fecha_desde }} </small>
                             </div>
                         
-                        
-                            <div>
-                                <b> # facturas: </b>
-                                <span class="badge">{{ count($num_facturas) }}</span>
-                                @if( !empty($num_facturas) )
-                                    <button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" class="btn_consultar_facturas" href="#" data-pdv_id="{{$pdv->id}}" data-lbl_ventana="Facturas de ventas" data-fecha_primera_factura="{{$fecha_primera_factura}}" data-fecha_hoy="{{$fecha_hoy}}" data-view="index"> Consultar </button>
-                                @endif
-                            </div>
+                            @can('vtas_pos_ver_valor_documento_en_consultar_facturas_pdv')
+                                <div>
+                                    <b> # facturas: </b>
+                                    <span class="badge">{{ count($num_facturas) }}</span>
+                                    @if( !empty($num_facturas) )
+                                        <button style="background: transparent; border: 0px; text-decoration: underline; color: #069;" class="btn_consultar_facturas" href="#" data-pdv_id="{{$pdv->id}}" data-lbl_ventana="Facturas de ventas" data-fecha_primera_factura="{{$fecha_primera_factura}}" data-fecha_hoy="{{$fecha_hoy}}" data-view="index"> Consultar </button>
+                                    @endif
+                                </div>
+                            @endcan
                         
                     </div>
 

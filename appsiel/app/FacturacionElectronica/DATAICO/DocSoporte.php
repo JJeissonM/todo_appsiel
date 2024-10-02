@@ -145,6 +145,7 @@ class DocSoporte
          $tokenPassword = '088c164ef2ff8964cca84f76e8059f18';
          $prefijo_resolucion = 'DS';
          $consecutivo_doc_encabezado = 14;
+         $url_emision = 'https://api.dataico.com/dataico_api/v2/support_docs';
       */
 /*
 */
@@ -153,9 +154,6 @@ class DocSoporte
       $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
       $url_emision = $this->url_emision;
-
-      $url_emision = 'https://api.dataico.com/dataico_api/v2/support_docs';
-
 
       try {
          $client = new Client(['base_uri' => $url_emision ]);
