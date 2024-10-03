@@ -545,12 +545,12 @@ class CompraController extends TransaccionController
 
         $proveedores = Proveedor::leftJoin('core_terceros','core_terceros.id','=','compras_proveedores.core_tercero_id')
                     ->leftJoin('compras_condiciones_pago','compras_condiciones_pago.id','=','compras_proveedores.condicion_pago_id')
-                    ->where('compras_proveedores.estado','Activo')
                     ->where('core_terceros.'.$campo_busqueda,$operador,$texto_busqueda)
                     ->orWhere( 'core_terceros.razon_social', 'LIKE', $texto_busqueda)
                     ->select(
                             'compras_proveedores.id AS proveedor_id',
                             'compras_proveedores.liquida_impuestos',
+                            'compras_proveedores.estado',
                             'compras_proveedores.clase_proveedor_id',
                             'core_terceros.id AS core_tercero_id',
                             'core_terceros.descripcion AS nombre_proveedor',
@@ -568,6 +568,10 @@ class CompraController extends TransaccionController
         $cantidad_proveedores = count( $proveedores->toArray() );
         foreach ($proveedores as $linea) 
         {
+            if ($linea->estado == 'Inactivo' ) {
+                continue;
+            }
+
             $primer_item = 0;
             $clase = '';
             if ($es_el_primero) {

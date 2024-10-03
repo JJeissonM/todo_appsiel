@@ -177,20 +177,20 @@
 
 			<br/><br/>
 
-			{{ Form::open(array('url'=>'inv_agregar_ingrediente_a_receta')) }}
+			{{ Form::open( ['url'=> 'inv_agregar_ingrediente_a_receta', 'id'=>'form_create', 'files' => true]) }}
 				<div class="row">
 					<div class="col-md-8 col-md-offset-2" style="vertical-align: center; border: 1px solid gray;">
 						<h3>Agregar Insumo</h3>
 						<div class="row">
 							<div class="col-md-6">
-								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$vec,['class'=>'combobox','required'=>'required']) }}
+								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$vec,['class'=>'combobox']) }}
 							</div>
 							<div class="col-md-6">
 								{{ Form::bsText('cantidad_porcion',null,'Cant. porción',['required'=>'required']) }}
 							</div>
 
 							{{ Form::hidden( 'registro_id', $registro->id ) }}
-							{{ Form::hidden( 'item_platillo_id', $registro->item_platillo_id ) }}
+							{{ Form::hidden( 'item_platillo_id', $registro->item_platillo_id, ['id' => 'item_platillo_id'] ) }}
 
 							{{ Form::hidden('url_id',Input::get('id'))}}
 							{{ Form::hidden('url_id_modelo',Input::get('id_modelo'))}}
@@ -198,7 +198,7 @@
 						</div>
 						<div align="center">
 							<br/>
-							{{ Form::submit('Guardar', array('class' => 'btn btn-primary btn-sm')) }}
+							<button class="btn btn-primary btn-sm" id="bs_boton_guardar"><i class="fa fa-save"></i> Guardar</button>
 						</div>
 						<br/><br/>
 					</div>
@@ -214,6 +214,71 @@
 	<script type="text/javascript">
 
 		$(document).ready(function(){
+
+			$('#bs_boton_guardar').on('click',function(event){
+				event.preventDefault();
+
+				if ( $('#item_ingrediente_id').val() == '' || $('#item_ingrediente_id').val() == 0 ) {
+					Swal.fire({
+						icon: "error",
+						title: "Alerta!",
+						text: "Debe ingresar un Insumo.",
+					});
+					$('.ui-autocomplete-input').focus();					
+					return false;
+				}
+
+				if ( $('#cantidad_porcion').val() == '' || $('#cantidad_porcion').val() == 0 ) {
+					Swal.fire({
+						icon: "error",
+						title: "Alerta!",
+						text: "Debe ingresar una Cantidad.",
+					});
+					$('#cantidad_porcion').focus();
+					return false;
+				}
+
+				if ( !$.isNumeric( $('#cantidad_porcion').val() ) ) {
+					$('#cantidad_porcion').attr('style','background: #d17676;');
+					Swal.fire({
+						icon: "error",
+						title: "Alerta!",
+						text: "Debe ingresar una Cantidad numérica.",
+					});
+					return false;
+				}
+
+				var data = $('#form_create').serializeArray().map(function(x){this[x.name] = x.value; return this;}.bind({}))[0];
+
+				if ( data.item_platillo_id == data.item_ingrediente_id ) {
+					Swal.fire({
+						icon: "error",
+						title: "Alerta!",
+						text: "El ítem de Insumo No puede ser igual al Ítem de Proucto terminado.",
+					});
+					$('.ui-autocomplete-input').focus();
+					return false;
+				}
+
+				// Desactivar el click del botón
+				$( this ).attr( 'disabled', 'disabled' );
+				$( this ).off( event );
+
+				$('#form_create').submit();
+			});
+
+			$("#cantidad_porcion").on("keyup", function (event) {
+				event.preventDefault();
+
+				$('#cantidad_porcion').attr('style','background: white;');
+
+				var codigo_tecla_presionada = event.which || event.keyCode;
+
+				if ( codigo_tecla_presionada == 13 ) {
+					$('#bs_boton_guardar').focus();
+				}
+
+			});
 
 			$(".eliminarElement").click(function(event){
                 event.preventDefault();
@@ -232,7 +297,6 @@
 				var url = "{{url('')}}" + "/" + "web/" + $('#item_platillo_id').val() + "?id=8&id_modelo=321&id_transaccion=";
 				location.href = url;
 			});
-
 			
 			var valor_actual, elemento_modificar, elemento_padre;
 					

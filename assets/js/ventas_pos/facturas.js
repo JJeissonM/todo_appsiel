@@ -347,8 +347,16 @@ $.fn.generar_string_celdas = function (fila) {
   return string_celdas;
 };
 
-function reset_campos_formulario() {
-  $("#descripcion").val("");
+function set_cliente_default()
+{
+  if ( $("#lista_precios_id").val() != cliente_default.lista_precios_id && hay_productos > 0) {
+    Swal.fire({
+      icon: "error",
+      title: "Alerta!",
+      text: "No puede cambiar a Consumidor Final. El cliente cliente seleccionado tiene una Lista de precios DIFERENTE para los productos ingresados. Debe retirar los productos ingresados.",
+    });
+    return false;
+  }
 
   $("#cliente_id").val(cliente_default.id);
   $("#cliente_input").val(cliente_default.descripcion);
@@ -368,6 +376,14 @@ function reset_campos_formulario() {
   $("#numero_identificacion").val(cliente_default.numero_identificacion);
   $("#direccion1").val(cliente_default.direccion1);
   $("#telefono1").val(cliente_default.telefono1);
+  
+  set_lista_precios();
+}
+
+function reset_campos_formulario() {
+  $("#descripcion").val("");
+
+  set_cliente_default()
 
   $("#lineas_registros").val(0); // Input que recoge el listado de productos
 
@@ -380,6 +396,8 @@ function reset_campos_formulario() {
   if ($("#manejar_datafono").val() == 1) {
     $.fn.reset_datafono();
   }
+
+  set_lista_precios();
 }
 
 function get_precio(producto_id) {

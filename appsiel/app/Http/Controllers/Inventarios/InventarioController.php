@@ -918,6 +918,8 @@ class InventarioController extends TransaccionController
     {
         $campo_busqueda = Input::get('campo_busqueda');
 
+        $cantidad_a_mostrar = 15;
+
         switch ($campo_busqueda) {
             case 'codigo_barras':
                 $operador = '=';
@@ -933,7 +935,7 @@ class InventarioController extends TransaccionController
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
-                                    ->take(7);
+                                    ->take($cantidad_a_mostrar);
                                     
                 break;
             case 'descripcion':
@@ -950,7 +952,7 @@ class InventarioController extends TransaccionController
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                 ->get()
-                                ->take(7);
+                                ->take($cantidad_a_mostrar);
                 break;
             case 'id':
                 $operador = 'LIKE';
@@ -966,7 +968,7 @@ class InventarioController extends TransaccionController
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                     ->get()
-                                    ->take(7);
+                                    ->take($cantidad_a_mostrar);
                 break;
 
             default:
@@ -1030,7 +1032,7 @@ class InventarioController extends TransaccionController
             $texto_busqueda = Input::get('texto_busqueda').'%';
         }
 
-        $texto_busqueda_descripcion = '%'.Input::get('texto_busqueda').'%';
+        $cantidad_a_mostrar = 15;
 
         $datos = InvProducto::where('estado', 'Activo')
                             ->where('core_empresa_id', Auth::user()->empresa_id)
@@ -1044,7 +1046,7 @@ class InventarioController extends TransaccionController
                                         'unidad_medida1',
                                         'unidad_medida2')
                             ->get()
-                            ->take(12);
+                            ->take($cantidad_a_mostrar);
                 
 
         $html = '<div class="list-group">';

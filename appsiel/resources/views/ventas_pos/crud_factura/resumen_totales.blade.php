@@ -11,6 +11,8 @@
 
     <div id="total_cantidad" style="display: none;"> 0</div>
 
+    <a href="javascript: void(0)" onclick="set_cliente_default()"> <i class="fa fa-refresh"></i> Cambiar a Consumidor Final </a>
+        
     <table class="table table-bordered table-striped">
         <tr>
             <td colspan="2">
