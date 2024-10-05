@@ -77,9 +77,8 @@ class VentaController extends TransaccionController
         $tabla = new TablaIngresoLineaRegistros( VtasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
 
         $item_sugerencia_cliente = '';
-        if ( !is_null( Input::get('cliente_id') ) )
+        if ( Input::get('cliente_id') != null )
         {
-            //$cliente = Cliente::find( (int)Input::get('cliente_id') );
             $cliente = Cliente::leftJoin('core_terceros','core_terceros.id','=','vtas_clientes.core_tercero_id')
                                 ->leftJoin('vtas_vendedores','vtas_vendedores.id','=','vtas_clientes.vendedor_id')
                                 ->leftJoin('vtas_condiciones_pago','vtas_condiciones_pago.id','=','vtas_clientes.condicion_pago_id')

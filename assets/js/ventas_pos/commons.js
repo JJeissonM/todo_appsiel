@@ -381,9 +381,10 @@ function reset_linea_ingreso_default() {
   $("#tasa_impuesto").val("");
   $("#precio_total").val("");
 
-  $("#inv_producto_id").focus();
+  //$("#inv_producto_id").focus();
+  mostrar_mensaje_item_agregado();
 
-  $("#popup_alerta").hide();
+  //$("#popup_alerta").hide();
 
   inv_producto_id = 0;
   precio_total = 0;
@@ -433,6 +434,9 @@ function get_horario(i) {
   return "am";
 }
 
+/**
+ * 
+ */
 function set_lista_precios()
 {
   $.get(
@@ -443,9 +447,15 @@ function set_lista_precios()
   ).done(function (data) {
     precios = data[0];
     descuentos = data[1];
+    set_precios_lbl_items();    
   });
 }
 
+/**
+ * 
+ * @param {*} item_sugerencia 
+ * @returns boolean
+ */
 function seleccionar_cliente(item_sugerencia) {
 
   if ( $("#lista_precios_id").val() != item_sugerencia.attr("data-lista_precios_id") && hay_productos > 0) {
@@ -531,8 +541,7 @@ function seleccionar_cliente(item_sugerencia) {
 
   //reset_tabla_ingreso_items();
   //reset_resumen_de_totales();
-  reset_linea_ingreso_default();
-
+  //reset_linea_ingreso_default();
 
   set_lista_precios();
 
@@ -878,15 +887,6 @@ $(document).ready(function () {
     }
   });
 
-  // Valores unitarios
-  function calcular_impuestos() {
-    var precio_venta = precio_unitario - valor_unitario_descuento;
-
-    base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
-
-    valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
-  }
-
   $("#tasa_descuento").keyup(function () {
     if (validar_input_numerico($(this))) {
       tasa_descuento = parseFloat($(this).val());
@@ -911,12 +911,6 @@ $(document).ready(function () {
     }
   });
 
-  function calcular_valor_descuento() {
-    // El descuento se calcula cuando el precio tiene el IVA incluido
-    valor_unitario_descuento = (precio_unitario * tasa_descuento) / 100;
-    valor_total_descuento = valor_unitario_descuento * cantidad;
-  }
-
   function reset_descuento() {
     $("#tasa_descuento").val(0);
     calcular_valor_descuento();
@@ -931,66 +925,6 @@ $(document).ready(function () {
     }
 
     agregar_la_linea();
-  }
-
-  function agregar_la_linea() {
-    if (!validar_venta_menor_costo()) {
-      return false;
-    }
-
-    $("#popup_alerta").hide();
-    $("#existencia_actual").html("");
-    $("#existencia_actual").hide();
-
-    if (!$.isNumeric(parseInt($("#core_tercero_id").val()))) {
-      Swal.fire({
-        icon: "error",
-        title: "Alerta!",
-        text: "Error al seleccionar el cliente. Ingrese un cliente correcto.",
-      });
-
-      return false;
-    }
-
-    var string_fila = $.fn.generar_string_celdas();
-
-    if (string_fila == false) {
-      $("#popup_alerta").show();
-      $("#popup_alerta").css("background-color", "red");
-      $("#popup_alerta").text("Producto no encontrado.");
-      return false;
-    }
-
-    // agregar nueva fila a la tabla
-    $("#ingreso_registros")
-      .find("tbody:last")
-      .append(
-        '<tr class="linea_registro" data-numero_linea="' +
-          numero_linea +
-          '">' +
-          string_fila +
-          "</tr>"
-      );
-
-    // Se calculan los totales
-    calcular_totales();
-
-    hay_productos++;
-    $("#btn_nuevo").show();
-    $("#numero_lineas").text(hay_productos);
-    //deshabilitar_campos_encabezado();
-
-    reset_linea_ingreso_default();
-    reset_efectivo_recibido();
-
-    $("#total_valor_total").actualizar_medio_recaudo();
-
-    numero_linea++;
-    $("#efectivo_recibido").removeAttr("readonly");
-
-    if ($("#manejar_platillos_con_contorno").val() == 1) {
-      reset_component_items_contorno();
-    }
   }
 
   /*
@@ -1131,198 +1065,13 @@ $(document).ready(function () {
     });
   });
 
-  function calcular_precio_total() {
-    if (cantidad <= 0 || cantidad == undefined) {
-      $("#popup_alerta").show();
-      $("#popup_alerta").css("background-color", "red");
-      $("#popup_alerta").text("No ha ingresado Cantidad.");
-      return false;
-    }
-
-    // Descuento del 100%
-    if (precio_unitario == valor_unitario_descuento) {
-      precio_total = 0;
-      $("#precio_total").val(precio_total);
-      $("#popup_alerta").hide();
-      return true;
-    }
-
-    precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
-
-    $("#precio_total").val(0);
-
-    if ($.isNumeric(precio_total) && precio_total >= 0) {
-      $("#precio_total").val(precio_total);
-      return true;
-    } else {
-      $("#popup_alerta").hide();
-      precio_total = 0;
-      return false;
-    }
-  }
-
-  function calcular_totales() {
-    var total_cantidad = 0.0;
-    var subtotal = 0.0;
-    var valor_total_descuento = 0.0;
-    var total_impuestos = 0.0;
-    total_factura = 0.0;
-
-    $(".linea_registro").each(function () {
-      var cantidad_linea = parseFloat(
-        $(this).find(".elemento_modificar").eq(0).text()
-      );
-      total_cantidad += cantidad_linea;
-
-      subtotal +=
-        parseFloat($(this).find(".base_impuesto").text()) * cantidad_linea;
-      valor_total_descuento += parseFloat(
-        $(this).find(".valor_total_descuento").text()
-      );
-      total_impuestos +=
-        parseFloat($(this).find(".valor_impuesto").text()) * cantidad_linea;
-      total_factura += parseFloat($(this).find(".precio_total").text());
-    });
-
-    $("#total_cantidad").text(
-      new Intl.NumberFormat("de-DE").format(total_cantidad)
-    );
-
-    // Subtotal (Sumatoria de base_impuestos por cantidad)
-    //var valor = ;
-    $("#subtotal").text(
-      "$ " +
-        new Intl.NumberFormat("de-DE").format(
-          (subtotal + valor_total_descuento).toFixed(2)
-        )
-    );
-
-    $("#descuento").text(
-      "$ " +
-        new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2))
-    );
-
-    // Total impuestos (Sumatoria de valor_impuesto por cantidad)
-    $("#total_impuestos").text(
-      "$ " + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2))
-    );
-
-    // label Total factura  (Sumatoria de precio_total)
-    var valor_redondeado = $.fn.redondear_a_centena(total_factura);
-
-    $("#total_factura").text(
-      "$ " + new Intl.NumberFormat("de-DE").format(valor_redondeado)
-    );
-
-    // input hidden
-    $("#valor_total_factura").val(total_factura);
-
-    valor_ajuste_al_peso = valor_redondeado - total_factura;
-
-    $("#lbl_ajuste_al_peso").text(
-      "$ " + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso)
-    );
-
-    if ($("#manejar_propinas").val() == 1) {
-      $.fn.calcular_valor_a_pagar_propina(total_factura);
-
-      $.fn.calcular_totales_propina();
-    }
-
-    if (
-      $("#manejar_datafono").val() == 1 &&
-      $("#calcular_comision_datafono").is(":checked")
-    ) {
-      $.fn.calcular_valor_a_pagar_datafono(total_factura);
-
-      $.fn.calcular_totales_datafono();
-    }
-
-    $("#valor_sub_total_factura").val(total_factura);
-    $("#lbl_sub_total_factura").text(
-      "$ " + new Intl.NumberFormat("de-DE").format(total_factura)
-    );
-  }
-
-  var valor_actual, elemento_modificar, elemento_padre;
-
-  // Al hacer Doble Click en el elemento a modificar ( en este caso la celda de una tabla <td>)
-  $(document).on("dblclick", ".elemento_modificar", function () {
-    if (
-      $("#bloqueo_cambiar_precio_unitario").val() == 1 &&
-      $(this).attr("id") == "elemento_modificar_precio_unitario"
-    ) {
-      var fila = $(this).closest("tr");
-
-      var producto = productos.find(
-        (item) => item.id === parseInt(fila.find(".inv_producto_id").text())
-      );
-
-      if (
-        producto.inv_grupo_id !=
-        $("#categoria_id_paquetes_con_materiales_ocultos").val()
-      ) {
-        $("#popup_alerta").show();
-        $("#popup_alerta").css("background-color", "red");
-        $("#popup_alerta").text("No tiene permiso para modificar precios.");
-        return false;
-      }
-    }
-
-    $("#popup_alerta").hide();
-
-    elemento_modificar = $(this);
-
-    elemento_padre = elemento_modificar.parent();
-
-    valor_actual = $(this).html();
-
-    elemento_modificar.hide();
-
-    elemento_modificar.after(
-      '<input type="text" name="valor_nuevo" id="valor_nuevo" style="display:inline;"> '
-    );
-
-    document.getElementById("valor_nuevo").value = valor_actual;
-    document.getElementById("valor_nuevo").select();
-  });
-
-  // Si la caja de texto pierde el foco
-  $(document).on("blur", "#valor_nuevo", function (event) {
-    var x = event.which || event.keyCode; // Capturar la tecla presionada
-    if (x != 13) {
-      // 13 = Tecla Enter
-      elemento_padre.find("#valor_nuevo").remove();
-      elemento_modificar.show();
-    }
-  });
-
-  // Al presiona teclas en la caja de texto
-  $(document).on("keyup", "#valor_nuevo", function (event) {
-    var x = event.which || event.keyCode; // Capturar la tecla presionada
-
-    // Abortar la edición
-    if (x == 27) {
-      // 27 = ESC
-      elemento_padre.find("#valor_nuevo").remove();
-      elemento_modificar.show();
-      return false;
-    }
-
-    // Guardar
-    if (x == 13) {
-      // 13 = ENTER
-      var fila = $(this).closest("tr");
-      guardar_valor_nuevo(fila);
-    }
-  });
-
   $("#btn_listar_items").click(function (event) {
     $("#myModal").modal({ keyboard: true });
     $(".btn_edit_modal").hide();
     $(".btn_edit_modal").hide();
     $("#myTable_filter").find("input").css("border", "3px double red");
     $("#myTable_filter").find("input").focus();
+    set_precios_lbl_items();
   });
 
   $(document).on("click", ".btn_registrar_ingresos_gastos", function (event) {
@@ -1550,79 +1299,6 @@ $(document).ready(function () {
       return false;
     }
   });
-
-  function guardar_valor_nuevo(fila) {
-    var valor_nuevo = document.getElementById("valor_nuevo").value;
-
-    // Si no cambió el valor_nuevo, no pasa nada
-    if (valor_nuevo == valor_actual) {
-      return false;
-    }
-
-    elemento_modificar.html(valor_nuevo);
-    elemento_modificar.show();
-
-    var producto = productos.find(
-      (item) => item.id === parseInt(fila.find(".inv_producto_id").text())
-    );
-    costo_unitario = producto.costo_promedio;
-
-    calcular_precio_total_lbl(fila);
-
-    if (!validar_venta_menor_costo()) {
-      elemento_modificar.html(valor_actual);
-    }
-
-    $("#inv_producto_id").focus();
-
-    calcular_precio_total_lbl(fila);
-    calcular_totales();
-
-    reset_efectivo_recibido();
-    $("#total_valor_total").actualizar_medio_recaudo();
-
-    elemento_padre.find("#valor_nuevo").remove();
-  }
-
-  function calcular_precio_total_lbl(fila) {
-    tasa_descuento = parseFloat(fila.find(".tasa_descuento").text());
-    cantidad = parseFloat(fila.find(".elemento_modificar").eq(0).text());
-    precio_unitario = parseFloat(fila.find(".elemento_modificar").eq(1).text());
-
-    var tasa_impuesto = parseFloat(fila.find(".lbl_tasa_impuesto").text());
-
-    valor_unitario_descuento = (precio_unitario * tasa_descuento) / 100;
-    valor_total_descuento = valor_unitario_descuento * cantidad;
-
-    var precio_venta = precio_unitario - valor_unitario_descuento;
-    base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
-
-    precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
-
-    fila.find(".precio_unitario").text(precio_unitario);
-
-    fila.find(".base_impuesto").text(base_impuesto_unitario);
-
-    fila.find(".valor_impuesto").text(precio_venta - base_impuesto_unitario);
-
-    fila.find(".cantidad").text(cantidad);
-
-    fila.find(".precio_total").text(precio_total);
-
-    fila.find(".base_impuesto_total").text(base_impuesto_unitario * cantidad);
-
-    fila.find(".valor_total_descuento").text(valor_total_descuento);
-
-    fila
-      .find(".lbl_valor_total_descuento")
-      .text(
-        new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2))
-      );
-
-    fila
-      .find(".lbl_precio_total")
-      .text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
-  }
 
   $("#btn_cargar_plano").on("click", function (event) {
     event.preventDefault();

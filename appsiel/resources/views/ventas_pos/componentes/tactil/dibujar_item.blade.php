@@ -12,5 +12,5 @@
     @else
         <img style="width: 100px; height: 100px;" src="{{url('/')}}/assets/img/box.png">
     @endif
-    <p style="text-align: center; white-space: nowrap; overflow: hidden; white-space: initial;"> {{ $item->descripcion . $referencia }} <b> ${{ number_format($item->precio_venta,0,',','.') }} </b></p>
+    <p style="text-align: center; white-space: nowrap; overflow: hidden; white-space: initial;"> {{ $item->descripcion . $referencia }} <b> <span class="lbl_precio_item" data-item_id="{{ $item->id }}"> ${{ number_format($item->precio_venta,0,',','.') }}  <span> </b></p>
 </button>

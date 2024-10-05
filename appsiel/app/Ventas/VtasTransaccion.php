@@ -2,9 +2,7 @@
 
 namespace App\Ventas;
 
-use DB;
-use Input;
-use Form;
+use Collective\Html\FormFacade as Form;
 
 class VtasTransaccion
 {
@@ -86,7 +84,7 @@ class VtasTransaccion
                         <td> '. Form::text('valor_unitario_descuento', '0', [ 'id'=>'valor_unitario_descuento']) . Form::text('valor_total_descuento', '0', [ 'id'=>'valor_total_descuento' ]) .' </td>
                         <td> '. Form::text('tasa_impuesto', null, ['disabled'=>'disabled','id'=>'tasa_impuesto','width'=>'15px']) .' </td>
                         <td> '. Form::text('precio_total', null, ['disabled'=>'disabled','id'=>'precio_total']) . Form::hidden('costo_total', null, ['id'=>'costo_total']) .' </td>
-                        <td></td>
+                        <td><button class="btn btn-xs btn-success" onclick="agregar_nueva_linea()" id="btn_agregar_nueva_linea"><i class="fa fa-check"></i></button></td>
                     </tr>';
 
         return $fila_controles_formulario;

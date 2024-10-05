@@ -192,7 +192,7 @@
 
 @section('scripts')
 	
-	<script src="{{ asset( 'assets/js/ventas/create.js' ) }}"></script>
+	<script src="{{ asset( 'assets/js/ventas/create.js?aux=' . uniqid() )}}"></script>
 
 	<script type="text/javascript">
 

@@ -59,6 +59,11 @@ class InvDocEncabezado extends Model
         return VtasDocEncabezado::find( $this->vtas_doc_encabezado_origen_id );
     }
 
+    public function proveedor()
+    {
+        return Proveedor::where( 'core_tercero_id', $this->core_tercero_id )->get()->first();
+    }
+
     public function cliente()
     {
         return Cliente::where( 'core_tercero_id', $this->core_tercero_id )->get()->first();

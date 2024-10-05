@@ -34,7 +34,14 @@
         @endif
         
         @if( $doc_encabezado->estado == 'Pendiente' && Input::get('id_transaccion') == 35 )
-            <a class="btn-gmail" href="{{ url('compras/create') . '?id=9&id_modelo=159&id_transaccion=25' }}" title="Crear Factura de Compras"><i class="fa fa-btn fa-file-text"></i></a>
+            <?php 
+                $proveedor_id = 0;
+                if ( !is_null( $doc_encabezado->proveedor() ) )
+                {
+                    $proveedor_id = $doc_encabezado->proveedor()->id;
+                }
+            ?>
+            <a class="btn-gmail" href="{{ url('compras/create') . '?id=9&id_modelo=159&id_transaccion=25&proveedor_id=' . $proveedor_id }}" title="Crear Factura de Compras"><i class="fa fa-btn fa-file-text"></i></a>
         @endif
         
         @if( $doc_encabezado->estado == 'Pendiente' && Input::get('id_transaccion') == 24 )

@@ -27,8 +27,8 @@ function filterItems(query) {
         $.each(items_filtered,function(key,item)
         {   
             var label = item.referencia + ' ' + item.descripcion;
-            if (label.toLowerCase().indexOf(element) === -1) { // No existe
-                
+            if (label.toLowerCase().indexOf(element) === -1) { 
+                // No existe                
             } else if ( label.toLowerCase().indexOf(element) > -1) {
                 items_to_draw.push(item);
             }        

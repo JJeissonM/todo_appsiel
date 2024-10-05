@@ -31,6 +31,7 @@ use App\Compras\ComprasMovimiento;
 use App\Compras\NotaCredito;
 use App\Compras\Proveedor;
 use App\Compras\Services\ContabilidadService;
+use App\Compras\Services\SupplierService;
 use App\Compras\Services\TesoreriaService;
 use App\Ventas\ResolucionFacturacion;
 
@@ -73,7 +74,32 @@ class CompraController extends TransaccionController
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( ComprasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
 
-        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'compras.create', $tabla );
+        $item_sugerencia_proveedor = '';
+        if ( Input::get('proveedor_id') != null )
+        {
+            $proveedor = Proveedor::leftJoin('core_terceros','core_terceros.id','=','compras_proveedores.core_tercero_id')
+            ->leftJoin('compras_condiciones_pago','compras_condiciones_pago.id','=','compras_proveedores.condicion_pago_id')
+            ->where('compras_proveedores.estado','Activo')
+            ->where( 'compras_proveedores.id', (int)Input::get('proveedor_id') )
+            ->select(
+                    'compras_proveedores.id AS proveedor_id',
+                    'compras_proveedores.liquida_impuestos',
+                    'compras_proveedores.estado',
+                    'compras_proveedores.clase_proveedor_id',
+                    'core_terceros.id AS core_tercero_id',
+                    'core_terceros.descripcion AS nombre_proveedor',
+                    'core_terceros.razon_social',
+                    'core_terceros.numero_identificacion',
+                    'compras_proveedores.inv_bodega_id',
+                    'compras_condiciones_pago.dias_plazo'
+                )
+                ->get()
+                ->first();
+
+            $item_sugerencia_proveedor = (new SupplierService())->get_linea_item_sugerencia( $proveedor, 'active', 1, 0 );
+        }
+
+        return $this->crear( $this->app, $this->modelo, $this->transaccion, 'compras.create', $tabla, $item_sugerencia_proveedor );
     }
 
     /**
@@ -566,6 +592,9 @@ class CompraController extends TransaccionController
         $ultimo_item = 0;
         $num_item = 1;
         $cantidad_proveedores = count( $proveedores->toArray() );
+
+        
+        $supplier_serv = new SupplierService();
         foreach ($proveedores as $linea) 
         {
             if ($linea->estado == 'Inactivo' ) {
@@ -585,22 +614,8 @@ class CompraController extends TransaccionController
                 $ultimo_item = 1;
             }
             
-            $descripcion = $linea->nombre_proveedor;
-            if ( $linea->razon_social != '' ) {
-                $descripcion .=  ' ('. $linea->razon_social . ')';
-            }
+            $html .= $supplier_serv->get_linea_item_sugerencia( $linea, $clase, $primer_item, $ultimo_item );
 
-            $html .= '<a class="list-group-item list-group-item-proveedor '.$clase.'" data-proveedor_id="'.$linea->proveedor_id.
-                                '" data-primer_item="'.$primer_item.
-                                '" data-ultimo_item="'.$ultimo_item.
-                                '" data-nombre_proveedor="'.$linea->nombre_proveedor.
-                                '" data-clase_proveedor_id="'.$linea->clase_proveedor_id.
-                                '" data-liquida_impuestos="'.$linea->liquida_impuestos.
-                                '" data-core_tercero_id="'.$linea->core_tercero_id.
-                                '" data-numero_identificacion="'.$linea->numero_identificacion.
-                                '" data-inv_bodega_id="'.$linea->inv_bodega_id.
-                                '" data-dias_plazo="'.$linea->dias_plazo.
-                                '" > ' . $descripcion . ' ('.number_format($linea->numero_identificacion,0,',','.').') </a>';
             $num_item++;
         }
 

@@ -160,8 +160,6 @@
 @endsection
 
 @section('scripts')
-	
-	<!-- <script src="{ { asset( 'assets/js/ventas/create.js' ) }}"></script> -->
 
 	<script type="text/javascript">
 

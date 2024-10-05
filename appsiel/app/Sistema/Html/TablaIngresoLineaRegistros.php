@@ -2,8 +2,7 @@
 
 namespace App\Sistema\Html;
 
-use View;
-use DB;
+use Illuminate\Support\Facades\View;
 
 class TablaIngresoLineaRegistros
 {

@@ -108,7 +108,7 @@ class FacturaRestauranteController extends TransaccionController
         
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
-            $vista_categorias_productos = View::make('ventas_pos.tags_lista_items', compact('productosTemp'))->render();
+            $vista_categorias_productos = View::make('ventas_pos.componentes.tactil.lista_items', compact('productosTemp'))->render();
         }
         
         // Para visualizar el listado de productos

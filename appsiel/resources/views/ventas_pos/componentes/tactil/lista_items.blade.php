@@ -32,7 +32,7 @@
                             @if(count($productos)>0)
                                 @foreach($productos as $item)
                                     <div id="btn_{{ $item->id }}">
-                                        @include('ventas_pos.tags_lista_items_dibujar_item')
+                                        @include('ventas_pos.componentes.tactil.dibujar_item')
                                         <br>
                                     </div>
                                 @endforeach
@@ -50,7 +50,7 @@
                             @if(count($productos)>0)
                                 @foreach($productos as $item)
                                     <div id="btn_{{ $item->id }}">
-                                        @include('ventas_pos.tags_lista_items_dibujar_item')
+                                        @include('ventas_pos.componentes.tactil.dibujar_item')
                                         <br>
                                     </div>
                                 @endforeach

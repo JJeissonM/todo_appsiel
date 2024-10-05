@@ -32,7 +32,13 @@
 						</td>
 						<td class="table-text"><div>{{ $item->referencia }}</div></td>
 						<td class="table-text"><div>{{ $item->descripcion }}</div></td>
-						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->precio_venta, 0, ',', '.' ) }}</div></td>
+						<td class="table-text" style="text-align: right;">
+							<div>
+								<span class="lbl_precio_item" data-item_id="{{ $item->id }}">
+									${{ number_format( $item->precio_venta, 0, ',', '.' ) }}
+								</span>
+							</div>
+						</td>
 						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio, 0, ',', '.' ) }}</div></td>
 						<td class="table-text" style="text-align: right;"><div>${{ number_format( $item->costo_promedio_mas_iva, 0, ',', '.' ) }}</div></td>
 					</tr>
