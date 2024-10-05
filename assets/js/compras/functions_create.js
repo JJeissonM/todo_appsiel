@@ -143,7 +143,13 @@ function seleccionar_proveedor(item_sugerencia)
 
     // Asignar resto de campos
     $('#vendedor_id').val( item_sugerencia.attr('data-vendedor_id') );
-    $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
+
+    var bodega_id = item_sugerencia.attr('data-inv_bodega_id');
+    if ( bodega_id == 0 ) {
+        bodega_id = $('#inv_bodega_default_id').val();
+    }
+
+    $('#inv_bodega_id').val( bodega_id );
 
     var forma_pago = 'contado';
     dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );

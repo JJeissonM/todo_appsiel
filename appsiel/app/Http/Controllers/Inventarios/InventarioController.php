@@ -169,8 +169,10 @@ class InventarioController extends TransaccionController
         $tabla = ''; //new TablaIngresoLineaRegistros( InvTransaccion::get_datos_tabla_ingreso_lineas_registros( $tipo_transaccion, $motivos ) );
 
         $cantidad_filas = 0;
+        
+        $descripcion_tercero = '';
 
-        return view('inventarios.create', compact('form_create', 'id_transaccion', 'productos', 'servicios', 'motivos', 'miga_pan', 'tabla', 'cantidad_filas'));
+        return view('inventarios.create', compact('form_create', 'id_transaccion', 'productos', 'servicios', 'motivos', 'miga_pan', 'tabla', 'cantidad_filas', 'descripcion_tercero'));
     }
 
     public function store( Request $request )
@@ -859,17 +861,21 @@ class InventarioController extends TransaccionController
                             'modo' => 'edit'
                         ];
         $registro_id = $id;
-        return view( 'inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas', 'registro_id'));
+
+        $descripcion_tercero = $doc_encabezado->tercero->get_label_to_show();
+
+        return view( 'inventarios.create', compact('form_create','id_transaccion','productos','servicios','motivos','miga_pan','tabla','filas_tabla','cantidad_filas', 'registro_id', 'descripcion_tercero'));
     }
 
     public function update(Request $request, $id)
     {
         // Actualizar datos del encabezado
         $doc_encabezado = InvDocEncabezado::find($id);
+
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->documento_soporte = $request->documento_soporte;
-        $doc_encabezado->core_tercero_id = $request->core_tercero_id;
+        //$doc_encabezado->core_tercero_id = $request->core_tercero_id;
         $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();
 
@@ -894,6 +900,7 @@ class InventarioController extends TransaccionController
         $lineas_registros = self::preparar_array_lineas_registros( $request->movimiento, null );
 
         $request['creado_por'] = $doc_encabezado->creado_por;
+        $request['core_tercero_id'] = $doc_encabezado->core_tercero_id;
         $request['modificado_por'] = Auth::user()->email;
         self::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
 
@@ -999,7 +1006,7 @@ class InventarioController extends TransaccionController
 
             $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
-                                '" data-ultimo_item="'.$ultimo_item;// . '">' . $linea->id . ' ' . $linea->nueva_cadena  . '</a>';
+                                '" data-ultimo_item="'.$ultimo_item;
 
             $descripcion_item = $linea->get_value_to_show();
 
@@ -1433,8 +1440,9 @@ class InventarioController extends TransaccionController
 
         // $saldo_original_a_la_fecha: es el saldo a la fecha como si no hubiese existido la cantidad de la línea que se está validando.
         $linea_saldo_negativo = InvMovimiento::validar_saldo_movimientos_posteriores($bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $movimiento);
-
-        if (!is_null($linea_saldo_negativo[0])) {
+        
+        if ( $linea_saldo_negativo[0] != null) 
+        {
             if ($linea_saldo_negativo[0]->id == 0) {
                 return 'Saldo negativo a la fecha.' . ' Producto: ' . InvProducto::find($producto_id)->descripcion . ', Saldo: ' . end($linea_saldo_negativo[1]);
             }

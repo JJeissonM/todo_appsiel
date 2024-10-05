@@ -141,7 +141,7 @@ class TransaccionController extends Controller
 
     // FORMULARIO PARA CREAR UN NUEVO REGISTRO
     public function crear( $app, $modelo, $transaccion, $vista, $tabla = null, $item_sugerencia_cliente = null )
-    {   
+    {
         if ( is_null($tabla) )
         {
             $tabla = '';

@@ -42,6 +42,8 @@
 
         		<input id="permitir_inventarios_negativos" name="permitir_inventarios_negativos" type="hidden" value="{{ config('ventas.permitir_inventarios_negativos') }}">
 
+        		<input id="descripcion_tercero" name="descripcion_tercero" type="hidden" value="{{ $descripcion_tercero }}">
+
 				@if( !is_null( Input::get('ruta_redirect') ))
 					{{ Form::bsHidden( 'ruta_redirect', Input::get('ruta_redirect') ) }}
 				@endif
@@ -83,8 +85,14 @@
 
 	<script type="text/javascript">	
 
+		if( direccion.search("edit") >= 0 )
+		{
+			$('#core_tercero_id').val( $('#descripcion_tercero').val() );
+			$('#core_tercero_id').attr( 'title', $('#descripcion_tercero').val() );
+		}
+
 		function ejecutar_funcion_guardar_nuevo_valor_doble_click( campo_modificado, nuevo_valor )
-	    {
+	    {			
 	    	recalcular_totales();
 	    }
 

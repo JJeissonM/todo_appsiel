@@ -65,7 +65,7 @@
                     <td> <input id="valor_unitario_descuento" name="valor_unitario_descuento" type="text" value="0"><input id="valor_total_descuento" name="valor_total_descuento" type="text" value="0"> </td>
                     <td> <input disabled="disabled" id="tasa_impuesto" width="15px" name="tasa_impuesto" type="text" style="background-color:#ECECE5;"> </td>
                     <td> <input id="precio_total" name="precio_total" type="text"><input id="costo_total" name="costo_total" type="hidden"> </td>
-                    <td></td>
+                    <td><button class="btn btn-xs btn-success" id="btn_agregar_nueva_linea"><i class="fa fa-check"></i></button></td>
                 </tr>
             </tfoot>
         </table>

@@ -85,6 +85,8 @@
 
 				<input type="hidden" name="valor_total_retefuente" id="valor_total_retefuente" value="0">
 				<input type="hidden" name="retencion_id" id="retencion_id" value="0">
+
+				<input type="hidden" name="inv_bodega_default_id" id="inv_bodega_default_id" value="{{ config('inventarios.item_bodega_principal_id') }}">				
 				
 				<div id="popup_alerta"> </div>
 

@@ -396,6 +396,9 @@ function reset_linea_ingreso_default()
 function agregar_nueva_linea()
 {
 	var message = calcular_precio_total()
+
+	$("#btn_agregar_nueva_linea").prop('disabled',false)
+
 	if ( message != '' )
 	{
 		Swal.fire({
@@ -1112,6 +1115,16 @@ $(document).ready(function(){
 			$(this).select();
 			return false;
 		}
+	});
+
+	$('#btn_agregar_nueva_linea').on('click', function(event){
+		event.preventDefault;
+
+		//$( "body" ).off( "click", "#btn_agregar_nueva_linea" );
+		
+		$('#btn_agregar_nueva_linea').prop('disabled',true)
+
+		agregar_nueva_linea();
 	});
 
     // Al modificar el precio total
