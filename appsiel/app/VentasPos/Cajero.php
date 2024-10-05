@@ -2,15 +2,16 @@
 
 namespace App\VentasPos;
 
-use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 use App\UserHasRole;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Cajero extends Model
+class Cajero extends User
 {
     protected $table = 'users';
+    
     protected $fillable = ['empresa_id', 'name', 'email'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","store":"core/usuarios","update":"core/usuarios/id_fila"}';

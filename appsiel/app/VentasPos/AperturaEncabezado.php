@@ -3,6 +3,7 @@
 namespace App\VentasPos;
 
 use App\Tesoreria\Services\CashBalanceServices;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 use App\VentasPos\Pdv;
@@ -96,7 +97,7 @@ class AperturaEncabezado extends Model
     {
         $pdv = Pdv::find(Input::get('pdv_id'));
 
-        $cajero = Cajero::find(Input::get('cajero_id'));
+        $cajero = User::find(Input::get('cajero_id'));
 
         // Agregar al comienzo del documento
         array_unshift($lista_campos, [
@@ -150,7 +151,11 @@ class AperturaEncabezado extends Model
                 $lista_campos[$i]['value'] = 0;
                 $pdv = Pdv::find(Input::get('pdv_id'));
                 if ($pdv != null) {
-                    $lista_campos[$i]['value'] = (new CashBalanceServices())->cash_balance_amount($pdv->caja_default_id, date('Y-m-d'));
+                    $lista_campos[$i]['value'] = round( (new CashBalanceServices())->cash_balance_amount( $pdv->caja_default_id, date('Y-m-d') ), 0);
+
+                    if ( $cajero->can('vtas_pos_bloqueado_para_editar_base') ) {
+                        $lista_campos[$i]['atributos']['readonly'] = 'readonly';
+                    }
                 }
             }
         }

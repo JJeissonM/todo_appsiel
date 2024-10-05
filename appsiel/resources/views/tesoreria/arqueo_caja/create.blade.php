@@ -7,16 +7,23 @@
             $pdv = \App\VentasPos\Pdv::find(Input::get('pdv_id'));
             $valor_base = $pdv->get_valor_base_ultima_apertura();
         }
+
+        $user = auth()->user();
+
+        $read_only = '';
+        if ( $user->can('vtas_pos_bloqueado_para_editar_base') ) {
+            $read_only = 'readonly = "readonly"';
+        }
     ?>
     <br>
     <div class="container-fluid">
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
-        <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
+        <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" {{ $read_only }} style="width: 200px; text-align: right;">
 
         <br><br>
 
-        @if( !auth()->user()->hasPermissionTo('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') )
+        @if( !$user->hasPermissionTo('vtas_pos_bloqueo_ver_movimientos_sistema_en_arqueo_caja') )
             @include('tesoreria.arqueo_caja.seccion_movimientos_del_sistema')
         @endif
 
