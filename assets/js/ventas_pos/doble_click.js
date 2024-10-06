@@ -29,6 +29,7 @@ function guardar_valor_nuevo(fila) {
       elemento_modificar.html(valor_actual);
     }
 
+    /*
     if ( precio_unitario == 0 ) {
         elemento_modificar.html(valor_actual);
         Swal.fire({
@@ -37,6 +38,7 @@ function guardar_valor_nuevo(fila) {
         text: "Precio Unitario no puede ser cero (0).",
         });
     }
+        */
 
     $("#inv_producto_id").focus();
 

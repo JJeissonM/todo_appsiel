@@ -524,55 +524,25 @@ function agregar_la_linea_ini() {
 	//$('#inv_producto_id').focus();
 }
 
-function validar_venta_menor_costo()
+/**
+ * 
+ */
+function bloquear_mesas_pedidos_otros_meseros()
 {
-	if ( $("#permitir_venta_menor_costo").val() == 0 )
-	{
-		var ok = true;
+	var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_disponibles_mesero" + "/" + $('#vendedor_id').val();
 
-		if ( base_impuesto_unitario < costo_unitario )
-		{
-			$('#popup_alerta').show();
-			$('#popup_alerta').css('background-color','red');
-			$('#popup_alerta').text( 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA' );
-			ok = false;
-		}else{
-			$('#popup_alerta').hide();
-			ok = true;
-		}
-	}else{
-		$('#popup_alerta').hide();
-		ok = true;
-	}
-
-	return ok;
+	$.get(url, function (disponibles) {
+		var arr_disponibles = [];
+		var i = 0;
+		disponibles.forEach(disponible => {
+			arr_disponibles[i] = parseInt(disponible.mesa_id);
+			i++;
+		});
+		
+		$('.btn_mesa').each(function () {
+			if ( !arr_disponibles.includes( parseInt($(this).attr('data-mesa_id') ) ) ) {
+				$(this).attr('disabled','disabled');
+			}			
+		});
+	});
 }
-
-// AL CARGAR EL DOCUMENTO
-$(document).ready(function () {
-
-	$('#btn_guardar').hide();
-
-	agregar_la_linea_ini();
-
-	function bloquear_mesas_pedidos_otros_meseros()
-	{
-		var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_disponibles_mesero" + "/" + $('#vendedor_id').val();
-
-        $.get(url, function (disponibles) {
-			var arr_disponibles = [];
-			var i = 0;
-			disponibles.forEach(disponible => {
-				arr_disponibles[i] = parseInt(disponible.mesa_id);
-				i++;
-			});
-			
-            $('.btn_mesa').each(function () {
-				if ( !arr_disponibles.includes( parseInt($(this).attr('data-mesa_id') ) ) ) {
-					$(this).attr('disabled','disabled');
-				}			
-			});
-        });
-	}        
-	
-});

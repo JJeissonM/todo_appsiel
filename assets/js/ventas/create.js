@@ -441,9 +441,11 @@ function calcular_precio_total() {
 		return 'No ha ingresado Cantidad.';
 	}
 
+	/*
 	if ( precio_unitario == 0 ) {
 		return "Precio Unitario no puede ser cero (0).";
 	}
+		*/
 
 	// Descuento del 100%
 	if (precio_unitario == valor_unitario_descuento) {
@@ -457,10 +459,11 @@ function calcular_precio_total() {
 
 	$("#precio_total").val(0);
 
-	if ($.isNumeric(precio_total) && precio_total >= 0) {
+	if ( $.isNumeric(precio_total) ) { //&& precio_total >= 0) {
 		$("#precio_total").val(precio_total);
 		return '';
 	} else {
+		console.log('entra')
 		precio_total = 0;
 		return 'Error en Precio total';
 	}

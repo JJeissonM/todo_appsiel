@@ -51,7 +51,7 @@ function calcular_precio_total() {
 
     $("#precio_total").val(0);
 
-    if ($.isNumeric(precio_total) && precio_total >= 0) {
+    if ($.isNumeric(precio_total) ) {//&& precio_total >= 0) {
         $("#precio_total").val(precio_total);
         return true;
     } else {

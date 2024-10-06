@@ -61,6 +61,36 @@ function calcular_totales()
     $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
 }
 
+/**
+ * 
+ * @returns 
+ */
+function validar_venta_menor_costo()
+{
+    if ($("#permitir_venta_menor_costo").val() == 0) {
+        var ok = true;
+
+        if (base_impuesto_unitario < costo_unitario) {
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Advertencia!',
+                text: 'El precio está por debajo del costo de venta del producto.' + ' $' + new Intl.NumberFormat("de-DE").format(costo_unitario.toFixed(2)) + ' + IVA'
+            });
+            
+            ok = false;
+        } else {
+            $('#popup_alerta').hide();
+            ok = true;
+        }
+    } else {
+        $('#popup_alerta').hide();
+        ok = true;
+    }
+
+    return ok;
+}
+
 $(document).ready(function () {
 
     if ( $('#action').val() != 'create' )
@@ -264,28 +294,6 @@ $(document).ready(function () {
             return false;
         }
     });
-
-    function validar_venta_menor_costo()
-    {
-        if ($("#permitir_venta_menor_costo").val() == 0) {
-            var ok = true;
-
-            if (base_impuesto_unitario < costo_unitario) {
-                $('#popup_alerta').show();
-                $('#popup_alerta').css('background-color', 'red');
-                $('#popup_alerta').text('El precio está por debajo del costo de venta del producto.' + ' $' + new Intl.NumberFormat("de-DE").format(costo_unitario.toFixed(2)) + ' + IVA');
-                ok = false;
-            } else {
-                $('#popup_alerta').hide();
-                ok = true;
-            }
-        } else {
-            $('#popup_alerta').hide();
-            ok = true;
-        }
-
-        return ok;
-    }
 
     // Al modificar el precio de venta
     $('#precio_unitario').keyup(function (event) {
