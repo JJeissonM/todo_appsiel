@@ -341,6 +341,7 @@ function reset_tabla_ingreso_items() {
   hay_productos = 0;
   numero_lineas = 0;
   $("#numero_lineas").text("0");
+  set_cantidades_ingresadas();
 }
 
 function reset_resumen_de_totales() {
@@ -381,10 +382,7 @@ function reset_linea_ingreso_default() {
   $("#tasa_impuesto").val("");
   $("#precio_total").val("");
 
-  //$("#inv_producto_id").focus();
-  mostrar_mensaje_item_agregado();
-
-  //$("#popup_alerta").hide();
+  $("#popup_alerta").hide();
 
   inv_producto_id = 0;
   precio_total = 0;
@@ -730,6 +728,7 @@ $(document).ready(function () {
       calcular_impuestos();
       calcular_precio_total();
       agregar_nueva_linea(); // Solo cuando es por Codigo de barras
+      $("#inv_producto_id").focus();
     }
   }
 
@@ -816,6 +815,7 @@ $(document).ready(function () {
       if (codigo_tecla_presionada == 13) {
         // ENTER
         agregar_nueva_linea();
+        $("#inv_producto_id").focus();
       }
 
       if ($(this).val() != "") {
@@ -894,6 +894,7 @@ $(document).ready(function () {
       var codigo_tecla_presionada = event.which || event.keyCode;
       if (codigo_tecla_presionada == 13) {
         agregar_nueva_linea();
+        $("#inv_producto_id").focus();
         return true;
       }
 
@@ -917,7 +918,9 @@ $(document).ready(function () {
   }
 
   function agregar_nueva_linea() {
+
     if (!calcular_precio_total()) {
+
       $("#popup_alerta").show();
       $("#popup_alerta").css("background-color", "red");
       $("#popup_alerta").text("Error en precio total. Por favor verifique");
@@ -940,7 +943,8 @@ $(document).ready(function () {
 
     hay_productos--;
     numero_linea--;
-    $("#numero_lineas").text(hay_productos);
+    $("#numero_lineas").text(hay_productos);    
+    set_cantidades_ingresadas();
 
     $("#total_valor_total").actualizar_medio_recaudo();
     reset_linea_ingreso_default();
@@ -1065,7 +1069,11 @@ $(document).ready(function () {
     });
   });
 
+  // Lupa
   $("#btn_listar_items").click(function (event) {
+
+    $("#popup_alerta").hide();
+
     $("#myModal").modal({ keyboard: true });
     $(".btn_edit_modal").hide();
     $(".btn_edit_modal").hide();
@@ -1333,6 +1341,7 @@ $(document).ready(function () {
 
       hay_productos = $("#ingreso_registros tr").length - 2;
       $("#numero_lineas").html(hay_productos);
+      set_cantidades_ingresadas();
 
       $("#inv_producto_id").focus();
     });

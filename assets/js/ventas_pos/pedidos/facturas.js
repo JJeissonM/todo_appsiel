@@ -386,8 +386,6 @@ function reset_linea_ingreso_default2() {
 	$('#tasa_impuesto').val('');
 	$('#precio_total').val('');
 
-	mostrar_mensaje_item_agregado();
-
 	producto_id = 0;
 	precio_total = 0;
 	costo_total = 0;

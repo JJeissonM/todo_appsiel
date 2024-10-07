@@ -27,38 +27,16 @@
             ?>	
             @foreach($productosTemp as $categoria => $productos)
                 @if($es_el_primero)
-                    <div id="{{str_slug($categoria)}}" class="tab-pane fade in active">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit,minmax(auto,150px)); gap:10px;">
-                            @if(count($productos)>0)
-                                @foreach($productos as $item)
-                                    <div id="btn_{{ $item->id }}">
-                                        @include('ventas_pos.componentes.tactil.dibujar_item')
-                                        <br>
-                                    </div>
-                                @endforeach
-                            @else
-                                <h5>No hay productos en esta categoría</h5>
-                            @endif
-                        </div>                        
-                    </div>
                     <?php 
                         $es_el_primero = false;
+                        $active = 'active';
                     ?>	
+                    @include('ventas_pos.componentes.tactil.lista_items_content_tab', compact('active') )
                 @else
-                    <div id="{{str_slug($categoria)}}" class="tab-pane fade in">
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit,minmax(auto,150px)); gap:10px;">
-                            @if(count($productos)>0)
-                                @foreach($productos as $item)
-                                    <div id="btn_{{ $item->id }}">
-                                        @include('ventas_pos.componentes.tactil.dibujar_item')
-                                        <br>
-                                    </div>
-                                @endforeach
-                            @else
-                                <h5>No hay productos en esta categoría</h5>
-                            @endif
-                        </div>                        
-                    </div>
+                    <?php 
+                        $active = '';
+                    ?>	
+                    @include('ventas_pos.componentes.tactil.lista_items_content_tab', compact('active') )
                 @endif
             @endforeach
         </div>

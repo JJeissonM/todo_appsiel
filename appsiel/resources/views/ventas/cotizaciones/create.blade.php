@@ -70,8 +70,7 @@
 
 		    {!! $tabla->dibujar() !!}
 
-
-			Productos ingresados: <span id="numero_lineas"> 0 </span>
+			@include('core.componentes.productos_y_cantidades_ingresadas')
 			
 			<div style="text-align: right;">
 				<div id="total_cantidad" style="display: none;"> 0 </div>
@@ -807,6 +806,8 @@
 
 				hay_productos++;
 				$('#numero_lineas').text(hay_productos);
+				set_cantidades_ingresadas();
+
 				deshabilitar_campos_encabezado();
 
 				// Bajar el Scroll hasta el final de la página
@@ -949,6 +950,7 @@
 				hay_productos--;
 				numero_linea--;
 				$('#numero_lineas').text(hay_productos);
+				set_cantidades_ingresadas();
 
 				if ( hay_productos == 0)
 				{
@@ -1236,7 +1238,7 @@
 				calcular_totales();
 
 				elemento_padre.find('#valor_nuevo').remove();
-				
+				set_cantidades_ingresadas();
 			}
 
 			function recalcular_linea_editada( fila )

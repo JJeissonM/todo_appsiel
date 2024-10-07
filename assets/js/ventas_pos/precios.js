@@ -51,7 +51,21 @@ function calcular_precio_total() {
 
     $("#precio_total").val(0);
 
-    if ($.isNumeric(precio_total) ) {//&& precio_total >= 0) {
+    if ( $('#permitir_precio_unitario_negativo').val() == 0) {
+        if ( precio_total < 0) {            
+
+            Swal.fire({
+                icon: "error",
+                title: "Alerta!",
+                text: "Precio Unitario no puede ser Negativo.",
+                });
+
+            precio_total = 0;
+            return false;
+        }
+    }
+    
+    if ( $.isNumeric(precio_total) ) {
         $("#precio_total").val(precio_total);
         return true;
     } else {

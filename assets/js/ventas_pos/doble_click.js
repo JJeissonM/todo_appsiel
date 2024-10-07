@@ -29,22 +29,16 @@ function guardar_valor_nuevo(fila) {
       elemento_modificar.html(valor_actual);
     }
 
-    /*
-    if ( precio_unitario == 0 ) {
-        elemento_modificar.html(valor_actual);
-        Swal.fire({
-        icon: "error",
-        title: "Alerta!",
-        text: "Precio Unitario no puede ser cero (0).",
-        });
+    if (!calcular_precio_total()) {
+      elemento_modificar.html(valor_actual);
     }
-        */
 
     $("#inv_producto_id").focus();
 
     // Nuevamente
     calcular_precio_total_lbl(fila);
     calcular_totales();
+    set_cantidades_ingresadas();
 
     reset_efectivo_recibido();
     $("#total_valor_total").actualizar_medio_recaudo();

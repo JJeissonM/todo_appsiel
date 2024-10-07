@@ -79,30 +79,30 @@
 			$i = $cant_cols;
 			?>
 			@foreach($aplicaciones as $fila)
-			@if($i % $cant_cols == 0)
-			<div class="row">
+				@if($i % $cant_cols == 0)
+					<div class="row">
 				@endif
 				<?php
-				$url = $fila['app'] . '?id=' . $fila['id'];
+					$url = $fila['app'] . '?id=' . $fila['id'];
 				?>
 				@can($fila['descripcion'])
-				<div class="col-sm-{{12/$cant_cols}} col-xs-{{12/$cant_cols}}" style="padding: 5px; text-align: center;">
-					<a href="{{url($url)}}">
-						<img class="img-responsive" src="https://appsiel.com/el_software/assets/iconos_2021/{{$fila['nombre_imagen'] . '?random=123' }}" width="{{$tam_iconos}}" title="{{$fila['descripcion']}}" style="display: inline;" />
-						<p style="color: #000;">
-							{{$fila['descripcion']}}
-						</p>
+					<div class="col-sm-{{12/$cant_cols}} col-xs-{{12/$cant_cols}}" style="padding: 5px; text-align: center;">
+						<a href="{{url($url)}}">
+							<img class="img-responsive" src="https://appsiel.com/el_software/assets/iconos_2021/{{$fila['nombre_imagen'] . '?random=123' }}" width="{{$tam_iconos}}" title="{{$fila['descripcion']}}" style="display: inline;" />
+							<p style="color: #000;">
+								{{$fila['descripcion']}}
+							</p>
 
-					</a>
-				</div>
+						</a>
+					</div>
 				@endcan
 				<?php
-				$i++;
+					$i++;
 				?>
 				@if($i % $cant_cols == 0)
-			</div>
-			<br />
-			@endif
+					</div>
+					<br />
+				@endif
 			@endforeach
 		</div>
 	</div>

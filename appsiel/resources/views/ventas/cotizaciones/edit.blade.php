@@ -112,7 +112,11 @@
 			    </div>
 			</div>
 
-			Productos ingresados: <span id="numero_lineas"> {{ $linea_num }} </span>
+			<?php 
+				$numero_lineas = $linea_num;
+			?>
+
+			@include('core.componentes.productos_y_cantidades_ingresadas', compact('numero_lineas'))
 			
 			<div style="text-align: right;">
 				<div id="total_cantidad" style="display: none;"> 0 </div>
@@ -153,6 +157,7 @@
 		var valor_unitario_descuento = 0;
 
 		var hay_productos = {{ $linea_num }};
+		set_cantidades_ingresadas();
 
 		//$('#ingreso_registros').find('tbody:last').append( { !! $lineas_documento !!} );
 
@@ -164,6 +169,7 @@
 		{
 			var fila = campo_modificado.closest('tr');
 			recalcular_linea_editada( fila )
+			set_cantidades_ingresadas();
 		}
 		
 		function recalcular_linea_editada( fila )
@@ -779,6 +785,7 @@
 
 				hay_productos++;
 				$('#numero_lineas').text(hay_productos);
+				set_cantidades_ingresadas();
 				deshabilitar_campos_encabezado();
 
 				// Bajar el Scroll hasta el final de la página
@@ -921,6 +928,7 @@
 				hay_productos--;
 				numero_linea--;
 				$('#numero_lineas').text(hay_productos);
+				set_cantidades_ingresadas();
 
 				if ( hay_productos == 0)
 				{

@@ -175,7 +175,7 @@ $.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
 
 // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 // Debe ser complatible con las columnas de la tabla de ingreso de registros
-$.fn.generar_string_celdas = function () {
+function generar_string_celdas() {
   if (inv_producto_id === undefined) {
     return false;
   }
@@ -410,18 +410,6 @@ function ventana_imprimir() {
   ventana_factura.document.write($("#div_plantilla_factura").html());
 
   ventana_factura.print();
-}
-
-/**
- * 
- */
-function mostrar_mensaje_item_agregado() {
-  $("#popup_alerta").hide(200);
-  $("#popup_alerta").css("background-color", "#00b998");
-  $("#popup_alerta").css("color", "black");
-  $("#popup_alerta").css("opacity", "revert");
-  $("#popup_alerta").text("Producto agregado.");
-  $("#popup_alerta").show(200);
 }
 
 // AL CARGAR EL DOCUMENTO

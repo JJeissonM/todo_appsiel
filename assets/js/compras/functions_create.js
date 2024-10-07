@@ -344,6 +344,7 @@ function agregar_la_linea()
 
     hay_productos++;
     $('#numero_lineas').text(hay_productos);
+    set_cantidades_ingresadas();
 
     // Bajar el Scroll hasta el final de la página
     $("html, body").animate( { scrollTop: $(document).height()+"px"} );

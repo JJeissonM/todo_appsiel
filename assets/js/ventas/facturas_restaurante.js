@@ -137,7 +137,8 @@ $.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
 
 // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 // Debe ser complatible con las columnas de la tabla de ingreso de registros
-$.fn.generar_string_celdas = function () {
+function generar_string_celdas()
+{
 	if (inv_producto_id === undefined) {
 		return false;
 	}
@@ -370,7 +371,7 @@ function agregar_la_linea2()
 	// Se escogen los campos de la fila ingresada
 	var fila = $('#linea_ingreso_default');
 
-	var string_fila = $.fn.generar_string_celdas(fila);
+	var string_fila = generar_string_celdas(fila);
 
 	if (string_fila == false) {
 		$('#popup_alerta').show();
@@ -546,3 +547,35 @@ function bloquear_mesas_pedidos_otros_meseros()
 		});
 	});
 }
+
+
+/**
+ * 
+ */
+function mostrar_mensaje_item_agregado() {
+	$("#popup_alerta").hide(200);
+	$("#popup_alerta").css("background-color", "#00b998");
+	$("#popup_alerta").css("color", "black");
+	$("#popup_alerta").css("opacity", "revert");
+	$("#popup_alerta").text("Producto agregado.");
+	$("#popup_alerta").show(200);
+  }
+  
+
+  
+$(document).ready(function () {
+
+	$(document).on('click', '.minus', function(event) {
+		event.preventDefault();
+		var fila = $(this).closest("tr");
+		calcular_precio_total_lbl(fila);
+		calcular_totales();
+	});
+
+	$(document).on('click', '.plus', function(event) {
+		event.preventDefault();
+		var fila = $(this).closest("tr");
+		calcular_precio_total_lbl(fila);
+		calcular_totales();
+	});
+});

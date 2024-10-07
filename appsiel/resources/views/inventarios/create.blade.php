@@ -42,7 +42,11 @@
 
         		<input id="permitir_inventarios_negativos" name="permitir_inventarios_negativos" type="hidden" value="{{ config('ventas.permitir_inventarios_negativos') }}">
 
-        		<input id="descripcion_tercero" name="descripcion_tercero" type="hidden" value="{{ $descripcion_tercero }}">
+				@if( isset( $descripcion_tercero ) )
+					<input id="descripcion_tercero" name="descripcion_tercero" type="hidden" value="{{ $descripcion_tercero }}">
+				@else
+					<input id="descripcion_tercero" name="descripcion_tercero" type="hidden" value="">
+				@endif
 
 				@if( !is_null( Input::get('ruta_redirect') ))
 					{{ Form::bsHidden( 'ruta_redirect', Input::get('ruta_redirect') ) }}

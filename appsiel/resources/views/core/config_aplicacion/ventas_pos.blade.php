@@ -131,7 +131,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$permitir_precio_unitario_negativo = '0';
+								if( isset($parametros['permitir_precio_unitario_negativo'] ) )
+								{
+									$permitir_precio_unitario_negativo = $parametros['permitir_precio_unitario_negativo'];
+								}
+							?>
+							{{ Form::bsSelect('permitir_precio_unitario_negativo', $permitir_precio_unitario_negativo, 'Permitir Precio unitario negativo', ['No','Sí'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

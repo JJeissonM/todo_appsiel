@@ -113,7 +113,7 @@
 
 			    {!! $tabla->dibujar() !!}
 
-			    Productos ingresados: <span id="numero_lineas"> 0 </span>
+				@include('core.componentes.productos_y_cantidades_ingresadas')
 
 			</div>
 				
@@ -631,6 +631,7 @@
 
 				hay_productos--;
 				$('#numero_lineas').text(hay_productos);
+				set_cantidades_ingresadas();
 
 				if ( hay_productos == 0)
 				{

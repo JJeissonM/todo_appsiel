@@ -48,6 +48,9 @@
 
             @include('ventas_pos.crud_factura_campos_ocultos')
 
+            <span id="lbl_mesa_seleccionada" style="color: white;">{{$cliente->tercero->descripcion}}</span>
+            <span id="lbl_vendedor_mesero" style="color: white;">{{$vendedor->tercero->descripcion}}</span>
+
             <div id="popup_alerta"></div>         
 
             {{ Form::close() }}
@@ -69,13 +72,6 @@
                         </div>
                     @endif
 
-                    <!-- Cinta Filtro Items -->
-                    @include('ventas_pos.crud_factura_cinta_filtro_items')
-                    
-                    <div class="container">
-                        @include('ventas_pos.crud_factura_btn_revisar_pedidos')
-                    </div>
-
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->
                     <div class="col-md-8"><div class="container-fluid">
 
@@ -84,8 +80,8 @@
                 
             </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
 
-                    @include('core.componentes.productos_y_cantidades_ingresadas')
-                    <br/><br/>
+                        Productos ingresados: <span id="numero_lineas"> 0 </span>
+                        <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
                         
                         <div class="container" style="display:none; color:red; font-size:1.1em;" id="msj_fecha_diferente"> 
@@ -111,11 +107,6 @@
                 </div>
             </div>
 
-            <br>
-
-            @if( config('ventas_pos.permite_facturacion_con_archivo_plano') )
-                @include('ventas_pos.form_cargue_archivo_plano')
-            @endif
         </div>
     </div>
     <br/>
@@ -163,7 +154,9 @@
         <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
     @endif
 
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
+
+    <!-- <script type="text/javascript" src="{ {asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script> -->
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/cargar_para_facturar.js?aux=' . uniqid() )}}"></script>
 
@@ -183,9 +176,7 @@
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?aux=' . uniqid())}}"></script>
     @endif
 
-    @if ( (int)config('inventarios.manejar_platillos_con_contorno'))
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
-    @endif
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas/restaurante/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
 
     <script type="text/javascript">
         
@@ -196,8 +187,6 @@
         var fecha = "{{$fecha}}";
         var fecha_vencimiento = "{{$fecha_vencimiento}}";
 
-        $('#numero_lineas').text( {{ $numero_linea - 1 }} );
-
         $('#efectivo_recibido').val( {{ $total_efectivo_recibido }} );
 
         $('#total_efectivo_recibido').val( {{ $total_efectivo_recibido }} );
@@ -206,11 +195,6 @@
         $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
 
         $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
-
-        if ($("#action").val() == "edit") {
-            set_cantidades_ingresadas();
-            set_lista_precios();
-        }
 
         $.fn.set_catalogos( $('#pdv_id').val() );
 

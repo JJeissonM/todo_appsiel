@@ -17,66 +17,67 @@ function agregar_la_linea_ini() {
  * @returns boolean
  */
 function agregar_la_linea() {
-if (!validar_venta_menor_costo()) {
-    return false;
-}
+    if (!validar_venta_menor_costo()) {
+        return false;
+    }
 
-$("#popup_alerta").hide();
-$("#existencia_actual").html("");
-$("#existencia_actual").hide();
+    $("#popup_alerta").hide();
+    $("#existencia_actual").html("");
+    $("#existencia_actual").hide();
 
-if (!$.isNumeric(parseInt($("#core_tercero_id").val()))) {
-    Swal.fire({
-    icon: "error",
-    title: "Alerta!",
-    text: "Error al seleccionar el cliente. Ingrese un cliente correcto.",
-    });
+    if (!$.isNumeric(parseInt($("#core_tercero_id").val()))) {
+        Swal.fire({
+        icon: "error",
+        title: "Alerta!",
+        text: "Error al seleccionar el cliente. Ingrese un cliente correcto.",
+        });
 
-    return false;
-}
+        return false;
+    }
 
-var string_fila = $.fn.generar_string_celdas();
+    var string_fila = generar_string_celdas();
 
-if (string_fila == false) {
-    $("#popup_alerta").show();
-    $("#popup_alerta").css("background-color", "red");
-    $("#popup_alerta").text("Producto no encontrado.");
-    return false;
-}
+    if (string_fila == false) {
+        $("#popup_alerta").show();
+        $("#popup_alerta").css("background-color", "red");
+        $("#popup_alerta").text("Producto no encontrado.");
+        return false;
+    }
 
-// agregar nueva fila a la tabla
-$("#ingreso_registros")
-    .find("tbody:last")
-    .append(
-    '<tr class="linea_registro" data-numero_linea="' +
-        numero_linea +
-        '">' +
-        string_fila +
-        "</tr>"
-    );
+    // agregar nueva fila a la tabla
+    $("#ingreso_registros")
+        .find("tbody:last")
+        .append(
+        '<tr class="linea_registro" data-numero_linea="' +
+            numero_linea +
+            '">' +
+            string_fila +
+            "</tr>"
+        );
 
-// Se calculan los totales
-calcular_totales();
+    // Se calculan los totales
+    calcular_totales();
 
-hay_productos++;
-$("#btn_nuevo").show();
-$("#numero_lineas").text(hay_productos);
-//deshabilitar_campos_encabezado();
+    hay_productos++;
+    $("#btn_nuevo").show();
+    $("#numero_lineas").text(hay_productos);
+    set_cantidades_ingresadas();
+    //deshabilitar_campos_encabezado();
 
-// Bajar el Scroll hasta el final de la página
-//$("html, body").animate({ scrollTop: $(document).height() + "px" });
+    // Bajar el Scroll hasta el final de la página
+    //$("html, body").animate({ scrollTop: $(document).height() + "px" });
 
-reset_linea_ingreso_default();
-reset_efectivo_recibido();
+    reset_linea_ingreso_default();
+    reset_efectivo_recibido();
 
-$("#total_valor_total").actualizar_medio_recaudo();
+    $("#total_valor_total").actualizar_medio_recaudo();
 
-numero_linea++;
-$("#efectivo_recibido").removeAttr("readonly");
+    numero_linea++;
+    $("#efectivo_recibido").removeAttr("readonly");
 
-if ($("#manejar_platillos_con_contorno").val() == 1) {
-    reset_component_items_contorno();
-}
+    if ($("#manejar_platillos_con_contorno").val() == 1) {
+        reset_component_items_contorno();
+    }
 }
 
 /**
@@ -108,8 +109,11 @@ function mandar_codigo(item_id) {
 
     calcular_valor_descuento();
     calcular_impuestos();
-    calcular_precio_total();
-    agregar_la_linea();
+    
+    if (calcular_precio_total()) {
+        agregar_la_linea();
+    }
+    
 }
 
 /**
@@ -134,6 +138,8 @@ function mandar_codigo2(item_id) {
     $("#cantidad").val(cantidad);
     calcular_valor_descuento();
     calcular_impuestos();
+
+
     if (!calcular_precio_total()) {
         $("#popup_alerta").show();
         $("#popup_alerta").css("background-color", "red");
@@ -142,6 +148,7 @@ function mandar_codigo2(item_id) {
     }
     numero_linea = 1;
     agregar_la_linea();
+    mostrar_mensaje_item_agregado()
 }
 
 /**
@@ -195,6 +202,8 @@ function mandar_codigo4(item_id) {
     $("#cantidad").val(cantidad);
     calcular_valor_descuento();
     calcular_impuestos();
+
+
     if (!calcular_precio_total()) {
         $("#popup_alerta").show();
         $("#popup_alerta").css("background-color", "red");
@@ -204,4 +213,18 @@ function mandar_codigo4(item_id) {
     numero_linea = 1;
     agregar_la_linea();
     $("#quantity").val("");
+    mostrar_mensaje_item_agregado()
+}
+
+/**
+ * 
+ */
+function mostrar_mensaje_item_agregado() 
+{
+    $("#popup_alerta").hide(200);
+    $("#popup_alerta").css("background-color", "#00b998");
+    $("#popup_alerta").css("color", "black");
+    $("#popup_alerta").css("opacity", "revert");
+    $("#popup_alerta").text("Producto agregado.");
+    $("#popup_alerta").show(200);
 }

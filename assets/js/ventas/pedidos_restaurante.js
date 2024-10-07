@@ -479,20 +479,6 @@ $(document).ready(function () {
 
     });
 
-    $(document).on('click', '.minus', function(event) {
-        event.preventDefault();
-        var fila = $(this).closest("tr");
-        calcular_precio_total_lbl(fila);
-        calcular_totales();
-    });
-
-    $(document).on('click', '.plus', function(event) {
-        event.preventDefault();
-        var fila = $(this).closest("tr");
-        calcular_precio_total_lbl(fila);
-        calcular_totales();
-    });
-
     //$(document).on('dblclick', '#btn_guardar_factura', function(event) {
     $('#btn_guardar_factura').dblclick(function (event){
         event.preventDefault();

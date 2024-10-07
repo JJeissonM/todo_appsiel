@@ -82,9 +82,12 @@ function validar_venta_menor_costo()
 
 		if ( base_impuesto_unitario < costo_unitario)
 		{
-			$('#popup_alerta_danger').show();
-			$('#popup_alerta_danger').css('background-color','red');
-			$('#popup_alerta_danger').text( 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA' );
+			Swal.fire({
+				icon: "error",
+				title: "Alerta!",
+				text: 'El precio está por debajo del costo de venta del producto.' + ' $'+ new Intl.NumberFormat("de-DE").format( costo_unitario.toFixed(2) ) + ' + IVA',
+			});
+			
 			ok = false;
 		}else{
 			$('#popup_alerta_danger').hide();
@@ -200,6 +203,7 @@ function agregar_la_linea()
 
 	hay_productos++;
 	$('#numero_lineas').text(hay_productos);
+	set_cantidades_ingresadas();
 	deshabilitar_campos_encabezado();
 
 	// Bajar el Scroll hasta el final de la página
@@ -1273,6 +1277,7 @@ $(document).ready(function(){
 		hay_productos--;
 		numero_linea--;
 		$('#numero_lineas').text(hay_productos);
+		set_cantidades_ingresadas();
 
 		if ( hay_productos == 0)
 		{

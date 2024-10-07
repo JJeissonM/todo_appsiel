@@ -70,12 +70,14 @@
 				
 			{{ Form::close() }}
 
-			<br/>
-				
+			<br/>				
 
 		    {!! $tabla->dibujar() !!}
 
-			Productos ingresados: <span id="numero_lineas"> {{ count( $registros->toArray() ) }} </span>
+			<?php 
+				$numero_lineas = count( $registros->toArray() );
+			?>
+			@include('core.componentes.productos_y_cantidades_ingresadas', compact('numero_lineas') )
 			
 			<div style="text-align: right;">
 				<div id="total_cantidad" style="display: none;"> 0 </div>
@@ -105,6 +107,8 @@
 		hay_productos = $('.linea_registro').length
 
 		numero_linea = $('.linea_registro').length
+
+		set_cantidades_ingresadas();
 
 		$('#cliente_input').val("{{ $registro->tercero->numero_identificacion . ' ' . $registro->tercero->descripcion }}");
 	</script>
