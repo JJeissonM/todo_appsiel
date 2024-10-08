@@ -434,23 +434,6 @@ function get_horario(i) {
 
 /**
  * 
- */
-function set_lista_precios()
-{
-  $.get(
-    url_raiz +
-      "/vtas_get_lista_precios_cliente" +
-      "/" +
-      $("#cliente_id").val()
-  ).done(function (data) {
-    precios = data[0];
-    descuentos = data[1];
-    set_precios_lbl_items();    
-  });
-}
-
-/**
- * 
  * @param {*} item_sugerencia 
  * @returns boolean
  */
@@ -1379,6 +1362,10 @@ $.fn.set_catalogos = function (pdv_id) {
     cliente_default = datos.cliente_default;
     forma_pago_default = datos.forma_pago_default;
     fecha_vencimiento_default = datos.fecha_vencimiento_default;
+
+    if ($("#action").val() == "edit") {
+      set_lista_precios();
+    }
 
     $("#myModal2 .modal-content").removeAttr("style");
     $("#contenido_modal2").removeAttr("style");

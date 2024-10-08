@@ -2,13 +2,9 @@
 
 namespace App\Inventarios;
 
-use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EntradaCompras extends InvDocEncabezado
 {
@@ -29,7 +25,7 @@ class EntradaCompras extends InvDocEncabezado
                                     'inv_doc_encabezados.fecha AS campo1',
                                     DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2' ),
                                     'inv_bodegas.descripcion AS campo3',
-                                    DB::raw( 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4' ),
+                                    DB::raw( 'CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo4' ),
                                     'inv_doc_encabezados.descripcion AS campo5',
                                     'inv_doc_encabezados.estado AS campo6',
                                     'inv_doc_encabezados.id AS campo7'
@@ -104,7 +100,7 @@ class EntradaCompras extends InvDocEncabezado
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS DOCUMENTO';
 
-        $select_raw2 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO';
+        $select_raw2 = 'CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS TERCERO';
 
         $core_tipo_transaccion_id = 35; // Entrada de almacén (por compras)
         $string = EntradaCompras::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
@@ -123,7 +119,7 @@ class EntradaCompras extends InvDocEncabezado
             ->orWhere("inv_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('inv_doc_encabezados.created_at', 'DESC')

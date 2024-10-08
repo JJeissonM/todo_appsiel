@@ -101,7 +101,7 @@ class InvDocEncabezado extends Model
                 DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                 'inv_bodegas.descripcion AS campo3',
-                DB::raw('core_terceros.descripcion AS campo4'),
+                DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo4'),
                 'inv_doc_encabezados.descripcion AS campo5',
                 'inv_doc_encabezados.estado AS campo6',
                 'inv_doc_encabezados.id AS campo7'
@@ -109,7 +109,7 @@ class InvDocEncabezado extends Model
             ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('inv_doc_encabezados.created_at', 'DESC')
@@ -128,7 +128,7 @@ class InvDocEncabezado extends Model
                 DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                 'inv_bodegas.descripcion AS campo3',
-                DB::raw('core_terceros.descripcion AS campo4'),
+                DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo4'),
                 'inv_doc_encabezados.descripcion AS campo5',
                 'inv_doc_encabezados.estado AS campo6',
                 'inv_doc_encabezados.id AS campo7'
@@ -136,7 +136,7 @@ class InvDocEncabezado extends Model
             ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('inv_doc_encabezados.created_at', 'DESC')
@@ -354,7 +354,7 @@ class InvDocEncabezado extends Model
                                 'inv_doc_encabezados.hora_finalizacion',
                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
-                                DB::raw( 'core_terceros.descripcion AS tercero_nombre_completo' ),
+                                DB::raw( 'CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS tercero_nombre_completo' ),
                                 'core_terceros.numero_identificacion',
                                 'core_terceros.digito_verificacion',
                                 'core_terceros.direccion1',
@@ -394,7 +394,7 @@ class InvDocEncabezado extends Model
                                                 'inv_doc_encabezados.hora_finalizacion',
                                                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
                                                 DB::raw( 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS documento_transaccion_prefijo_consecutivo' ),
-                                                'core_terceros.descripcion AS tercero_nombre_completo',
+                                                'CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS tercero_nombre_completo',
                                                 'core_terceros.numero_identificacion',
                                                 'core_terceros.direccion1',
                                                 'core_terceros.telefono1'

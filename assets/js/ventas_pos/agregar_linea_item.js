@@ -84,7 +84,7 @@ function agregar_la_linea() {
  * 
  * @param {*} item_id 
  * Se llama desde el listado de productos (boton de la lupa)
- * No agrega la linea de Registro. El foco queda ubicado en Cantidad.
+ * SI agrega la linea de Registro. No cierra la Ventana modal.
  */
 function mandar_codigo(item_id) {
     var producto = productos.find((item) => item.id === parseInt(item_id));
@@ -154,7 +154,8 @@ function mandar_codigo2(item_id) {
 /**
  * 
  * @param {*} item_id 
- * Se llama desde el listado de productos (boton de la lupa). NO agrega la lìnea de registro
+ * Se llama desde el listado de productos (boton de la lupa). 
+ * NO agrega la lìnea de registro. El focus queda ubicado en Cantidad
  */
 function mandar_codigo3(item_id) {
     $("#myModal").modal("hide");

@@ -2,10 +2,8 @@
 
 namespace App\Inventarios;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DevolucionCompras extends InvDocEncabezado
 {
@@ -18,7 +16,7 @@ class DevolucionCompras extends InvDocEncabezado
         $core_tipo_transaccion_id = 37; // Devolución Compras
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2';
 
-        $select_raw2 = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo4';
+        $select_raw2 = 'CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo4';
 
         $registros = InvDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')

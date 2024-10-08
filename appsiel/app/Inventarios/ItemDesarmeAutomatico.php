@@ -9,14 +9,7 @@ use Illuminate\Database\Eloquent\Model;
     CORREGIR PARA LOS CLIENTES NO LOGUEADOS EN LA WEB
     SE COMENTÓ LA LÍNEA DE PEDIR AUTENCIACIÓN
 */
-use Auth;
 
-
-use App\Inventarios\InvGrupo;
-
-use App\Contabilidad\Impuesto;
-use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\ListaDctoDetalle;
 use Illuminate\Support\Facades\DB;
 
 class ItemDesarmeAutomatico extends Model

@@ -2,13 +2,9 @@
 
 namespace App\Inventarios;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EntradaAlmacen extends InvDocEncabezado
 {
@@ -29,7 +25,7 @@ class EntradaAlmacen extends InvDocEncabezado
                                     DB::raw('DATE_FORMAT(inv_doc_encabezados.fecha,"%d-%m-%Y") AS campo1'),
                                     DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                                     'inv_bodegas.descripcion AS campo3',
-                                    'core_terceros.descripcion AS campo4',
+                                    'CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo4',
                                     'inv_doc_encabezados.estado AS campo5',
                                     'inv_doc_encabezados.id AS campo6'
                                 )

@@ -319,3 +319,20 @@ function set_precios_lbl_items()
         $(this).text( '$' + new Intl.NumberFormat("de-DE").format( get_precio(item_id).toFixed(0) ) );    
     });
 }
+
+/**
+ * 
+ */
+function set_lista_precios()
+{
+  $.get(
+    url_raiz +
+      "/vtas_get_lista_precios_cliente" +
+      "/" +
+      $("#cliente_id").val()
+  ).done(function (data) {
+    precios = data[0];
+    descuentos = data[1];
+    set_precios_lbl_items();
+  });
+}

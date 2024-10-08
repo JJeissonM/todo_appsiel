@@ -10,6 +10,13 @@
     }
 ?>
 
-<b>Productos ingresados &nbsp;:</b> <span id="numero_lineas"> {{ $numero_lineas }} </span>
-<br/>
-<b>Cantidades ingresadas:</b> <span id="cantidades_ingresadas"> {{ $cantidades_ingresadas }} </span>
+<table>
+    <tr>
+        <td style="text-align: right; font-weight:700;">Productos ingresados:</td>
+        <td style="text-align: left; padding-left:5px;"><span id="numero_lineas"> {{ $numero_lineas }} </span></td>
+    </tr>
+    <tr>
+        <td style="text-align: right; font-weight:700;">Cantidades ingresadas:</td>
+        <td style="text-align: left; padding-left:5px;"><span id="cantidades_ingresadas"> {{ $cantidades_ingresadas }} </span></td>
+    </tr>
+</table>

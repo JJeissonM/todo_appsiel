@@ -207,12 +207,11 @@
 
         $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
 
+        $.fn.set_catalogos( $('#pdv_id').val() );
+
         if ($("#action").val() == "edit") {
             set_cantidades_ingresadas();
-            set_lista_precios();
         }
-
-        $.fn.set_catalogos( $('#pdv_id').val() );
 
         function mySearchInputFunction() {
             // Solo busca en la primera columna de la tabla

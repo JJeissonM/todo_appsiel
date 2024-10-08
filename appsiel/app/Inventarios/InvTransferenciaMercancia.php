@@ -32,7 +32,7 @@ class InvTransferenciaMercancia extends InvDocEncabezado
                                             DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                                             'bodega_origen.descripcion AS campo3',
                                             'bodega_destino.descripcion AS campo4',
-                                            DB::raw('core_terceros.descripcion AS campo5'),
+                                            DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo5'),
                                             'inv_doc_encabezados.descripcion AS campo6',
                                             'inv_doc_encabezados.documento_soporte AS campo7',
                                             'inv_doc_encabezados.estado AS campo8',
@@ -53,7 +53,7 @@ class InvTransferenciaMercancia extends InvDocEncabezado
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS campo2'),
                 'bodega_origen.descripcion AS campo3',
                 'bodega_destino.descripcion AS campo4',
-                DB::raw('core_terceros.descripcion AS campo5'),
+                DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo5'),
                 'inv_doc_encabezados.descripcion AS campo6',
                 'inv_doc_encabezados.documento_soporte AS campo7',
                 'inv_doc_encabezados.estado AS campo8',
@@ -63,7 +63,7 @@ class InvTransferenciaMercancia extends InvDocEncabezado
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere("bodega_origen.descripcion", "LIKE", "%$search%")
             ->orWhere("bodega_destino.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.documento_soporte", "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
@@ -83,14 +83,14 @@ class InvTransferenciaMercancia extends InvDocEncabezado
                 'inv_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 'inv_bodegas.descripcion AS BODEGA',
-                DB::raw('core_terceros.descripcion AS TERCERO'),
+                DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS TERCERO'),
                 'inv_doc_encabezados.descripcion AS DETALLE',
                 'inv_doc_encabezados.estado AS ESTADO'
             )
             ->where("inv_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",inv_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
             ->orWhere("inv_bodegas.descripcion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('inv_doc_encabezados.created_at', 'DESC')

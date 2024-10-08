@@ -43,7 +43,7 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
                                     ->select(
                                         'teso_doc_encabezados.fecha AS campo1',
                                         DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS campo2'),
-                                        DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                                        DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS campo3'),
                                         'teso_doc_encabezados.descripcion AS campo4',
                                         'teso_doc_encabezados.valor_total AS campo5',
                                         'teso_doc_encabezados.estado AS campo6',
@@ -140,14 +140,14 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
             ->select(
                 'teso_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo) AS DOCUMENTO'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
+                DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")") AS TERCERO'),
                 'teso_doc_encabezados.descripcion AS DETALLE',
                 'teso_doc_encabezados.valor_total AS VALOR_DOCUMENTO',
                 'teso_doc_encabezados.estado AS ESTADO'
             )
             ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
             ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
