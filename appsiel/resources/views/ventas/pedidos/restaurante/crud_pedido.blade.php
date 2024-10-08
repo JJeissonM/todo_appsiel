@@ -270,18 +270,23 @@ input[type=number]::-webkit-outer-spin-button {
 
 @section('scripts')
 
+    @if ( (int)config('inventarios.manejar_platillos_con_contorno'))
+        <script src="{{asset( 'assets/js/ventas/restaurante/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
+    @endif
+    
+    <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
+
     <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas/restaurante/componentes/meseros.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas/restaurante/componentes/mesas.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas/restaurante/componentes/pedidos_un_mesero.js?aux=' . uniqid() )}}"></script>
 
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
+    <script src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
     
-    <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante_ventanas_modales.js?aux=' . uniqid() )}}"></script>    
+    <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante_ventanas_modales.js?aux=' . uniqid() )}}"></script>
 
-    @if ( (int)config('inventarios.manejar_platillos_con_contorno'))
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas/restaurante/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
-    @endif
+    <script src="{{ asset( 'assets/js/ventas/restaurante/printing.js?aux=' . uniqid() )}}"></script>
+
 
     <script type="text/javascript">
     
@@ -315,7 +320,7 @@ input[type=number]::-webkit-outer-spin-button {
 
         $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
 
-        $.fn.set_catalogos( $('#pdv_id').val() );
+        set_catalogos( $('#pdv_id').val() );
 
     </script>
 @endsection

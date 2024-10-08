@@ -121,6 +121,16 @@ function llenar_select_mesas_permitidas_para_cambiar()
     });
 }
 
+/**
+ * 
+ */
+function reset_componente_mesas()
+{
+    $('.btn_mesa').removeAttr('disabled');
+    $('.btn_mesa').attr('class','btn btn-default btn_mesa');
+    $('#lbl_mesa_seleccionada').text( '' );
+}
+
 $(document).ready(function () {
 
     $('.btn_mesa').on('click', function (e) {

@@ -80,6 +80,12 @@ function activar_mesas_disponibles_mesero()
     });
 }
 
+function reset_componente_meseros()
+{
+    $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+    $('#lbl_vendedor_mesero').text( '' );
+}
+
 $(document).ready(function () {
 	
     $('.btn_vendedor').on('click', function (e) {

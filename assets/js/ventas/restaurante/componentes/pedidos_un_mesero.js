@@ -81,6 +81,12 @@ function generar_string_celdas_edit(linea){
     return string_celdas;
 };
 
+
+function reset_pedidos_mesero_para_una_mesa()
+{
+    $('#div_pedidos_mesero_para_una_mesa').text( '' );
+}
+
 $(document).ready(function () {
 
     $(document).on('click', '.btn_pedido_mesero_para_una_mesa', function () {

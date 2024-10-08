@@ -15,31 +15,47 @@ $('#teso_caja_id').val($('#caja_pdv_default_id').val());
 
 // Se debe llamar desde el DIV con ID total_valor_total
 $.fn.actualizar_medio_recaudo = function () {
-
-	var texto_total_recaudos = this.html().substring(1);
-
-	if (parseFloat(texto_total_recaudos) == 0) {
-		return false;
+	var texto_total_recaudos = parseFloat(this.html().substring(1));
+  
+	calcular_total_cambio(texto_total_recaudos);
+  
+	$("#efectivo_recibido").val(texto_total_recaudos);
+	$("#total_efectivo_recibido").val(texto_total_recaudos);
+  
+	set_label_efectivo_recibido(texto_total_recaudos);
+  
+	cambiar_estilo_div_total_cambio();
+  
+	activar_boton_guardar_factura();
+  
+	if (texto_total_recaudos == 0) {
+	  $("#efectivo_recibido").val("");
+	  $("#efectivo_recibido").removeAttr("readonly");
+	} else {
+	  $("#efectivo_recibido").attr("readonly", "readonly");
 	}
+  
+	set_valor_pendiente_ingresar_medios_recaudos();
+  };
 
-	$.fn.calcular_total_cambio(texto_total_recaudos);
 
-	$('#efectivo_recibido').val(parseFloat(texto_total_recaudos));
-	$('#total_efectivo_recibido').val(parseFloat(texto_total_recaudos));
-	$('#efectivo_recibido').removeAttr('readonly');
-
-	$.fn.set_label_efectivo_recibido(texto_total_recaudos);
-
-	$.fn.cambiar_estilo_div_total_cambio();
-
-	$.fn.activar_boton_guardar_factura();
-
-};
+  function set_valor_pendiente_ingresar_medios_recaudos() {
+	var valor_total_factura = parseFloat($("#valor_total_factura").val());
+  
+	var valor_total_lineas_medios_recaudos = parseFloat(
+	  $("#total_valor_total").html().substring(1)
+	);
+  
+	$("#lbl_vlr_pendiente_ingresar").html(
+	  "$ " + (valor_total_factura - valor_total_lineas_medios_recaudos).toFixed(2)
+	);
+  };
 
 // 
-$.fn.calcular_total_cambio = function (efectivo_recibido) {
+function calcular_total_cambio(efectivo_recibido)
+{
 
-	total_cambio = ( $.fn.redondear_a_centena( parseFloat( $('#valor_total_factura').val() ) ) - parseFloat(efectivo_recibido) ) * -1;
+	total_cambio = ( redondear_a_centena( parseFloat( $('#valor_total_factura').val() ) ) - parseFloat(efectivo_recibido) ) * -1;
 
 	// Label
 	$('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0)));
@@ -47,11 +63,11 @@ $.fn.calcular_total_cambio = function (efectivo_recibido) {
 	$('#valor_total_cambio').val(total_cambio);
 };
 
-$.fn.set_label_efectivo_recibido = function (efectivo_recibido) {
+function set_label_efectivo_recibido(efectivo_recibido) {
 	$('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(parseFloat(efectivo_recibido).toFixed(2)));
 };
 
-$.fn.cambiar_estilo_div_total_cambio = function () {
+function cambiar_estilo_div_total_cambio() {
 
 	$('#div_total_cambio').attr('class', 'danger');
 
@@ -59,7 +75,7 @@ $.fn.cambiar_estilo_div_total_cambio = function () {
 		$('#div_total_cambio').attr('class', 'success');
 };
 
-$.fn.activar_boton_guardar_factura = function () {
+function activar_boton_guardar_factura() {
 
 	$('#btn_guardar_factura').attr('disabled', 'disabled');
 
@@ -68,14 +84,14 @@ $.fn.activar_boton_guardar_factura = function () {
 
 };
 
-$.fn.checkCookie = function () {
-	var ultimo_valor_total_factura = parseFloat($.fn.getCookie("ultimo_valor_total_factura"));
-	var ultimo_valor_efectivo_recibido = parseFloat($.fn.getCookie("ultimo_valor_efectivo_recibido"));
-	var ultimo_valor_total_cambio = parseFloat($.fn.getCookie("ultimo_valor_total_cambio"));
-	var ultimo_valor_ajuste_al_peso = parseFloat($.fn.getCookie("ultimo_valor_ajuste_al_peso"));
+function checkCookie() {
+	var ultimo_valor_total_factura = parseFloat(getCookie("ultimo_valor_total_factura"));
+	var ultimo_valor_efectivo_recibido = parseFloat(getCookie("ultimo_valor_efectivo_recibido"));
+	var ultimo_valor_total_cambio = parseFloat(getCookie("ultimo_valor_total_cambio"));
+	var ultimo_valor_ajuste_al_peso = parseFloat(getCookie("ultimo_valor_ajuste_al_peso"));
 
 	if (ultimo_valor_total_factura > 0) {
-		$('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format($.fn.redondear_a_centena(ultimo_valor_total_factura)));
+		$('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(redondear_a_centena(ultimo_valor_total_factura)));
 		$('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
 		$('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
 		$('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
@@ -84,7 +100,7 @@ $.fn.checkCookie = function () {
 	//$("html, body").animate({ scrollTop: $(document).height() + "px" });
 };
 
-$.fn.getCookie = function (cname) {
+function getCookie(cname) {
 	var name = cname + "=";
 	var ca = document.cookie.split(';');
 	for (var i = 0; i < ca.length; i++) {
@@ -97,42 +113,6 @@ $.fn.getCookie = function (cname) {
 		}
 	}
 	return "";
-};
-
-$.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
-	if ( redondear_centena == 0 )
-	{
-		return numero.toFixed(0);
-	}
-
-	var millones = 0;
-	var millares = 0;
-	var centenas = 0;
-
-	var saldo1, saldo2, saldo3;
-
-	if (numero > 999999.99999) {
-		// se obtiene solo la parte entera
-		millones = Math.trunc(numero / 1000000) * 1000000;
-	}
-
-	saldo1 = numero - millones;
-
-	if (saldo1 > 999.99999) {
-		// se obtiene solo la parte entera
-		millares = Math.trunc(saldo1 / 1000) * 1000;
-	}
-
-	saldo2 = saldo1 - millares;
-
-	if (saldo2 > 99.99999) {
-		// se obtiene solo la parte entera
-		//centenas = Math.trunc( saldo2 / 100 ) * 100;
-		centenas = (saldo2 / 100).toFixed(0) * 100;
-	}
-
-	return (millones + millares + centenas);
-
 };
 
 // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
@@ -474,7 +454,7 @@ function calcular_totales2() {
 	$('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
 
 	// label Total factura  (Sumatoria de precio_total)
-	var valor_redondeado = $.fn.redondear_a_centena(total_factura);
+	var valor_redondeado = redondear_a_centena(total_factura);
 	$('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
 
 	// input hidden
@@ -548,7 +528,6 @@ function bloquear_mesas_pedidos_otros_meseros()
 	});
 }
 
-
 /**
  * 
  */
@@ -568,14 +547,14 @@ $(document).ready(function () {
 	$(document).on('click', '.minus', function(event) {
 		event.preventDefault();
 		var fila = $(this).closest("tr");
-		calcular_precio_total_lbl(fila);
+		calcular_precio_total_lbl_quantity(fila);
 		calcular_totales();
 	});
 
 	$(document).on('click', '.plus', function(event) {
 		event.preventDefault();
 		var fila = $(this).closest("tr");
-		calcular_precio_total_lbl(fila);
+		calcular_precio_total_lbl_quantity(fila);
 		calcular_totales();
 	});
 });

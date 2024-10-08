@@ -86,6 +86,21 @@ function show_form_add_contorno(object_button)
     reset_select_items_contorno();
 }
 
+
+function validar_producto_con_contorno()
+{        
+    var is_ok = true;
+    $('.linea_registro').each(function(){
+        if( $(this).find('.btn_add_contorno').length == 1 )
+        {
+            is_ok = false;
+            return false
+        }
+    });
+    
+    return is_ok
+}
+
 $(document).ready(function () {
 
     $('#manejar_platillos_con_contorno').after( '<input type="hidden" name="items_contorno" id="items_contorno" value="">' );

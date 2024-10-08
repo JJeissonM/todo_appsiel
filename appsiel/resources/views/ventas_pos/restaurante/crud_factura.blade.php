@@ -155,6 +155,8 @@
     @endif
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
+    
+    <script src="{{ asset( 'assets/js/ventas/restaurante/printing.js?aux=' . uniqid() )}}"></script>
 
     <!-- <script type="text/javascript" src="{ {asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script> -->
 

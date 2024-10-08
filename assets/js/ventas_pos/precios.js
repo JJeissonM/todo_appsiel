@@ -147,7 +147,7 @@ function calcular_totales() {
     );
 
     // label Total factura  (Sumatoria de precio_total)
-    var valor_redondeado = $.fn.redondear_a_centena(total_factura);
+    var valor_redondeado = redondear_a_centena(total_factura);
 
     $("#total_factura").text(
         "$ " + new Intl.NumberFormat("de-DE").format(valor_redondeado)
@@ -202,6 +202,8 @@ function calcular_precio_total_lbl(fila)
     base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
 
     precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+
+    console.log( precio_unitario, valor_unitario_descuento, precio_total ) 
 
     fila.find(".precio_unitario").text(precio_unitario);
 
@@ -336,3 +338,115 @@ function set_lista_precios()
     set_precios_lbl_items();
   });
 }
+
+
+function calcular_totales_quantity() 
+{
+    var total_cantidad = 0.0;
+    var subtotal = 0.0;
+    var valor_total_descuento = 0.0;
+    var total_impuestos = 0.0;
+    total_factura = 0.0;
+
+    $('.linea_registro').each(function() {
+        var cantidad_linea = parseFloat( $(this).find('.quantity').val() );
+        
+        total_cantidad += cantidad_linea;
+        //precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
+        //cantidad += parseFloat( $(this).find('.cantidad').text() );
+        subtotal += parseFloat( $(this).find('.base_impuesto').text() ) * cantidad_linea;
+        valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
+        total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
+        total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+    });
+
+    $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(total_cantidad));
+
+    // Subtotal (Sumatoria de base_impuestos por cantidad)
+    //var valor = ;
+    $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) ) );
+
+    $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+
+    // Total impuestos (Sumatoria de valor_impuesto por cantidad)
+    $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
+
+    // label Total factura  (Sumatoria de precio_total)
+    var valor_redondeado = redondear_a_centena(total_factura);
+    $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
+
+    // input hidden
+    $('#valor_total_factura').val(total_factura);
+
+    valor_ajuste_al_peso = valor_redondeado - total_factura;
+
+    $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+}
+
+function calcular_precio_total_lbl_quantity(fila) 
+{
+    precio_unitario = parseFloat(fila.find('.precio_unitario').text());
+    //base_impuesto_unitario = parseFloat(fila.find('.base_impuesto').text());
+    tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
+    cantidad = parseFloat( fila.find('.quantity').val() );
+    //precio_unitario = parseFloat( fila.find('.elemento_modificar').eq(1).text() );
+
+    var tasa_impuesto = parseFloat( fila.find('.lbl_tasa_impuesto').text() );
+
+    valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
+    valor_total_descuento = valor_unitario_descuento * cantidad;
+
+    var precio_venta = precio_unitario - valor_unitario_descuento;
+    base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
+
+    precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+
+    fila.find('.cantidad').text(cantidad);
+
+    fila.find('.precio_total').text(precio_total);
+
+    fila.find('.base_impuesto_total').text(base_impuesto_unitario * cantidad);
+
+    fila.find('.valor_total_descuento').text(valor_total_descuento);
+
+    fila.find('.lbl_valor_total_descuento').text(new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+
+    fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
+}
+
+function redondear_a_centena(numero, aproximacion_superior = false) {
+	if ( redondear_centena == 0 )
+	{
+		return numero.toFixed(0);
+	}
+
+	var millones = 0;
+	var millares = 0;
+	var centenas = 0;
+
+	var saldo1, saldo2, saldo3;
+
+	if (numero > 999999.99999) {
+		// se obtiene solo la parte entera
+		millones = Math.trunc(numero / 1000000) * 1000000;
+	}
+
+	saldo1 = numero - millones;
+
+	if (saldo1 > 999.99999) {
+		// se obtiene solo la parte entera
+		millares = Math.trunc(saldo1 / 1000) * 1000;
+	}
+
+	saldo2 = saldo1 - millares;
+
+	if (saldo2 > 99.99999) {
+		// se obtiene solo la parte entera
+		//centenas = Math.trunc( saldo2 / 100 ) * 100;
+		centenas = (saldo2 / 100).toFixed(0) * 100;
+	}
+
+	return (millones + millares + centenas);
+
+};
