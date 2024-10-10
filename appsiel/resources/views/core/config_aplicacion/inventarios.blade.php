@@ -295,13 +295,39 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$categoria_id_platillos_con_contornos = 0;
+								$categoria_id_platillos_con_contornos = '';
 								if( isset($parametros['categoria_id_platillos_con_contornos'] ) )
 								{
 									$categoria_id_platillos_con_contornos = $parametros['categoria_id_platillos_con_contornos'];
 								}
+
+								$valores = '';
+								if ( is_array($categoria_id_platillos_con_contornos) ) 
+								{
+									$es_el_primero = true;
+									foreach( $categoria_id_platillos_con_contornos AS $key => $value )
+									{
+										global $valores;
+
+										if ($es_el_primero) {
+											$valores = $value;
+											$es_el_primero = false;
+										}else{
+											$valores .=  ',' . $value;
+										}
+									    
+									}
+								}
+
+								$opciones = App\Inventarios\InvGrupo::where('estado','Activo')->get();
+
+						        $grupos_inventario = [];
+						        foreach ($opciones as $opcion)
+						        {
+						            $grupos_inventario[$opcion->id] = $opcion->descripcion;
+						        }
 							?>
-							{{ Form::bsSelect('categoria_id_platillos_con_contornos', $categoria_id_platillos_con_contornos, 'Grupo de Inventarios para Platillos que manejan contornos', App\Inventarios\InvGrupo::opciones_campo_select(), []) }}
+							{{ Form::bsCheckBox('categoria_id_platillos_con_contornos', $valores, 'Grupo de Inventarios para Platillos que manejan contornos', $grupos_inventario, ['class'=>'form-control']) }}
 						</div>
 					</div>
 

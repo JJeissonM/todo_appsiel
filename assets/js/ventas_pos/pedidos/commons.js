@@ -459,9 +459,7 @@ $(document).ready(function () {
 
             if ( $('#usar_complemento_JSPrintManager').val() == 1 )
             {
-                $('#div_formato_impresion_cocina').show();
                 print_comanda();
-                $('#div_formato_impresion_cocina').hide();
             }
 
             ventana_imprimir();

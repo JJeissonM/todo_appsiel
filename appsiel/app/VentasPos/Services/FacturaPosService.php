@@ -208,8 +208,9 @@ class FacturaPosService
         return (object)[
             'usar_complemento_JSPrintManager' => $usar_complemento_JSPrintManager,
             'enviar_impresion_directamente_a_la_impresora' => $pdv->enviar_impresion_directamente_a_la_impresora,
-            'impresora_principal_por_defecto' => $pdv->impresora_principal_por_defecto,
             'impresora_cocina_por_defecto' => $pdv->impresora_cocina_por_defecto,
+            'impresora_principal_por_defecto' => $pdv->impresora_principal_por_defecto,
+            'imprimir_factura_automaticamente' => $pdv->imprimir_factura_automaticamente,
         ];
     }
 

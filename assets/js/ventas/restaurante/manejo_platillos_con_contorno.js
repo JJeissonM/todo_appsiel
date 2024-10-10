@@ -81,11 +81,10 @@ function show_form_add_contorno(object_button)
 {
     var fila = object_button.closest("tr");
     
-	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="form_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select><br><br></div><button type="button" class="btn btn-success btn-xs" id="btn_confirm_contornos"><i class="fa fa-btn fa-check"></i>Confirmar</button><button type="button" class="btn btn-default btn-xs" id="btn_cancelar_add_contornos"><i class="fa fa-btn fa-cancel"></i>Cancelar</button></div>' );
+	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="form_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select><br><br></div><button class="btn btn-success btn-xs" id="btn_confirm_contornos"><i class="fa fa-btn fa-check"></i>Confirmar</button><button class="btn btn-default btn-xs" id="btn_cancelar_add_contornos"><i class="fa fa-btn fa-cancel"></i>Cancelar</button></div>' );
     
     reset_select_items_contorno();
 }
-
 
 function validar_producto_con_contorno()
 {        
@@ -132,12 +131,12 @@ $(document).ready(function () {
         return false;
     });
 
-    $(document).on('click', '#btn_cancelar_add_contornos', function () {
+    $(document).on('click', '#btn_cancelar_add_contornos', function (event) {
 
-        var fila = $(this).closest("tr");
+        event.preventDefault();
 
-        fila.find('.btn_eliminar').after("<button type='button' class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>");
-        
+        fila.find('.btn_eliminar').after("<button class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>");
+
         document.getElementById('form_lista_contornos').remove();
         
         return false;

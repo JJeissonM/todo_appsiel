@@ -47,8 +47,6 @@ $('#teso_medio_recaudo_id').change(function(){
         $('#div_cuenta_bancaria').hide();
         $('#div_caja').show();
 
-        console.log('go', $("#teso_caja_id option:nth-child(2)").text() )
-
         var position = 2;
         if ( $('#teso_caja_id option').length == 1 ) {
             position = 1;

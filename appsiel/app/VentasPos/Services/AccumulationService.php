@@ -86,15 +86,18 @@ class AccumulationService
             $cliente = $invoice->cliente;
         }
 
+        $bodega_default_id = $invoice->pdv->bodega_default_id;
+
         if ($invoice->remision_doc_encabezado_id == 0) {
             $obj_inv_serv = new InventoriesServices();
-            $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $invoice->pdv->bodega_default_id );
+            $doc_remision = $obj_inv_serv->create_delivery_note_from_invoice( $invoice, $bodega_default_id );
             
             $invoice->remision_doc_encabezado_id = $doc_remision->id;
             $invoice->save();
         }
 
         $datos = $invoice->toArray();
+
         unset($datos['id']);
         
         $array_wheres = [
@@ -107,6 +110,7 @@ class AccumulationService
         $datos['clase_cliente_id'] = $cliente->clase_cliente_id;
         $datos['equipo_ventas_id'] = $invoice->vendedor->equipo_ventas_id;
         $datos['estado'] = 'Activo';
+        $datos['inv_bodega_id'] = $bodega_default_id;
 
         //if ($this->is_pending_accounting($array_wheres)) {
             $lineas_registros = $invoice->lineas_registros;

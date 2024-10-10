@@ -1,7 +1,8 @@
 {{ Form::hidden('url_id',Input::get('id')) }}
 {{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
 
-<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}" required="required">
+<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}"
+        required="required">
 
 {{ Form::hidden( 'pdv_id', Input::get('pdv_id'), ['id'=>'pdv_id'] ) }}
 {{ Form::hidden('cajero_id', Auth::user()->id, ['id'=>'cajero_id'] ) }}
@@ -15,31 +16,36 @@
 <input type="hidden" name="aux_cliente_input" id="aux_cliente_input">
 
 <input type="hidden" name="zona_id" id="zona_id" value="{{$cliente->zona_id}}" required="required">
-<input type="hidden" name="clase_cliente_id" id="clase_cliente_id"
-        value="{{$cliente->clase_cliente_id}}" required="required">
+<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="{{$cliente->clase_cliente_id}}"
+        required="required">
 
-<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}" required="required">
+<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{$cliente->core_tercero_id}}"
+        required="required">
 
 <input type="hidden" name="caja_pdv_default_id" id="caja_pdv_default_id" value="{{$pdv->caja_default_id}}">
 
 @if ($pdv->caja != null)
-        <input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="{{$pdv->caja->descripcion}}">
+<input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="{{$pdv->caja->descripcion}}">
 @else
-        <input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="">
+<input type="hidden" name="caja_pdv_default_label" id="caja_pdv_default_label" value="">
 @endif
 
 
-<input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}" value="{{$vendedor->id}}">
+<input type="hidden" name="vendedor_id" id="vendedor_id" data-vendedor_descripcion="{{$vendedor->tercero->descripcion}}"
+        value="{{$vendedor->id}}">
 
-<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$vendedor->equipo_ventas_id}}" required="required">
+<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="{{$vendedor->equipo_ventas_id}}"
+        required="required">
 
-<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$cliente->tercero->descripcion}}" required="required">
+<input type="hidden" name="cliente_descripcion" id="cliente_descripcion" value="{{$cliente->tercero->descripcion}}"
+        required="required">
 
-<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$cliente->lista_precios_id}}" required="required">
-<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id"
-        value="{{$cliente->lista_descuentos_id}}" required="required">
-<input type="hidden" name="liquida_impuestos" id="liquida_impuestos"
-        value="{{$cliente->liquida_impuestos}}" required="required">
+<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="{{$cliente->lista_precios_id}}"
+        required="required">
+<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="{{$cliente->lista_descuentos_id}}"
+        required="required">
+<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="{{$cliente->liquida_impuestos}}"
+        required="required">
 
 <input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">
 
@@ -64,11 +70,14 @@
 
 <input type="hidden" name="action" id="action" value="{{ Input::get('action') }}">
 
-<input type="hidden" name="permitir_venta_menor_costo" id="permitir_venta_menor_costo" value="{{ config('ventas.permitir_venta_menor_costo') }}">
+<input type="hidden" name="permitir_venta_menor_costo" id="permitir_venta_menor_costo"
+        value="{{ config('ventas.permitir_venta_menor_costo') }}">
 
-<input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras" value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}"> 
+<input type="hidden" name="forma_lectura_codigo_barras" id="forma_lectura_codigo_barras"
+        value="{{ config('codigos_barras.forma_lectura_codigo_barras') }}">
 
-<input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion" value="{{ $msj_resolucion_facturacion }}">
+<input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion"
+        value="{{ $msj_resolucion_facturacion }}">
 
 <input type="hidden" name="creado_por" id="creado_por" value="{{ \Illuminate\Support\Facades\Auth::user()->email }}">
 
@@ -77,25 +86,31 @@
 <input type="hidden" name="manejar_datafono" id="manejar_datafono" value="{{ config('ventas_pos.manejar_datafono') }}">
 
 @can('bloqueo_cambiar_precio_unitario')
-        <input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="1">
+<input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="1">
 @else
-        <input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="0">
+<input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="0">
 @endcan
 
 @can('bloqueo_cambiar_tasa_descuento')
-        <input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="1">
+<input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="1">
 @else
-        <input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="0">
+<input type="hidden" name="bloqueo_cambiar_tasa_descuento" id="bloqueo_cambiar_tasa_descuento" value="0">
 @endcan
 
-<input type="hidden" name="plantilla_factura_pos_default" id="plantilla_factura_pos_default" value="{{ $pdv->plantilla_factura_pos_default }}">
+<input type="hidden" name="plantilla_factura_pos_default" id="plantilla_factura_pos_default"
+        value="{{ $pdv->plantilla_factura_pos_default }}">
 
-<input type="hidden" name="ocultar_boton_guardar_factura_pos" id="ocultar_boton_guardar_factura_pos" value="{{ (int)config('ventas_pos.ocultar_boton_guardar_factura_pos') }}">
+<input type="hidden" name="ocultar_boton_guardar_factura_pos" id="ocultar_boton_guardar_factura_pos"
+        value="{{ (int)config('ventas_pos.ocultar_boton_guardar_factura_pos') }}">
 
-<input type="hidden" name="categoria_id_paquetes_con_materiales_ocultos" id="categoria_id_paquetes_con_materiales_ocultos" value="{{ (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos') }}">
+<input type="hidden" name="categoria_id_paquetes_con_materiales_ocultos"
+        id="categoria_id_paquetes_con_materiales_ocultos"
+        value="{{ (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos') }}">
 
-<input type="hidden" name="manejar_platillos_con_contorno" id="manejar_platillos_con_contorno" value="{{ (int)config('inventarios.manejar_platillos_con_contorno') }}">
+<input type="hidden" name="manejar_platillos_con_contorno" id="manejar_platillos_con_contorno"
+        value="{{ (int)config('inventarios.manejar_platillos_con_contorno') }}">
 
-<input type="hidden" name="categoria_id_platillos_con_contornos" id="categoria_id_platillos_con_contornos" value="{{ (int)config('inventarios.categoria_id_platillos_con_contornos') }}">
+@include('ventas_pos.campos.categoria_id_platillos_con_contornos')
 
-<input type="hidden" name="permitir_precio_unitario_negativo" id="permitir_precio_unitario_negativo" value="{{ (int)config('ventas_pos.permitir_precio_unitario_negativo') }}">
+<input type="hidden" name="permitir_precio_unitario_negativo" id="permitir_precio_unitario_negativo"
+        value="{{ (int)config('ventas_pos.permitir_precio_unitario_negativo') }}">

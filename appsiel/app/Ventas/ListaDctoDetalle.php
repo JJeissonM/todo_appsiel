@@ -8,7 +8,7 @@ class ListaDctoDetalle extends Model
 {
 	protected $table = 'vtas_listas_dctos_detalles';
 	protected $fillable = ['lista_descuentos_id', 'inv_producto_id', 'fecha_activacion', 'descuento1', 'descuento2'];
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Lista de descuentos', 'Producto', 'Fecha activación', 'Dcto. 1', 'Dcto. 2'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Lista de descuentos', 'Producto', 'Fecha activación', '% Dcto.'];
 	public static function consultar_registros($nro_registros, $search)
 	{
 		return ListaDctoDetalle::leftJoin('vtas_listas_dctos_encabezados', 'vtas_listas_dctos_encabezados.id', '=', 'vtas_listas_dctos_detalles.lista_descuentos_id')
@@ -17,15 +17,12 @@ class ListaDctoDetalle extends Model
 				'vtas_listas_dctos_encabezados.descripcion AS campo1',
 				'inv_productos.descripcion AS campo2',
 				'vtas_listas_dctos_detalles.fecha_activacion AS campo3',
-				'vtas_listas_dctos_detalles.descuento1 AS campo4',
-				'vtas_listas_dctos_detalles.descuento2 AS campo5',
-				'vtas_listas_dctos_detalles.id AS campo6'
+				'vtas_listas_dctos_detalles.descuento1 AS campo4',				'vtas_listas_dctos_detalles.id AS campo5'
 			)
 			->where("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
 			->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
 			->orWhere("vtas_listas_dctos_detalles.fecha_activacion", "LIKE", "%$search%")
 			->orWhere("vtas_listas_dctos_detalles.descuento1", "LIKE", "%$search%")
-			->orWhere("vtas_listas_dctos_detalles.descuento2", "LIKE", "%$search%")
 			->orderBy('vtas_listas_dctos_detalles.created_at', 'DESC')
 			->paginate($nro_registros);
 	}
@@ -38,14 +35,12 @@ class ListaDctoDetalle extends Model
 				'vtas_listas_dctos_encabezados.descripcion AS LISTA_DE_DESCUENTOS',
 				'inv_productos.descripcion AS PRODUCTO',
 				'vtas_listas_dctos_detalles.fecha_activacion AS FECHA_ACTIVACIÓN',
-				'vtas_listas_dctos_detalles.descuento1 AS DCTO_1',
-				'vtas_listas_dctos_detalles.descuento2 AS DCTO_2'
+				'vtas_listas_dctos_detalles.descuento1 AS DCTO_1'
 			)
 			->where("vtas_listas_dctos_encabezados.descripcion", "LIKE", "%$search%")
 			->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
 			->orWhere("vtas_listas_dctos_detalles.fecha_activacion", "LIKE", "%$search%")
 			->orWhere("vtas_listas_dctos_detalles.descuento1", "LIKE", "%$search%")
-			->orWhere("vtas_listas_dctos_detalles.descuento2", "LIKE", "%$search%")
 			->orderBy('vtas_listas_dctos_detalles.created_at', 'DESC')
 			->toSql();
 		return str_replace('?', '"%' . $search . '%"', $string);

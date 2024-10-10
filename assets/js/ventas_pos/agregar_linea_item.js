@@ -139,13 +139,13 @@ function mandar_codigo2(item_id) {
     calcular_valor_descuento();
     calcular_impuestos();
 
-
     if (!calcular_precio_total()) {
         $("#popup_alerta").show();
         $("#popup_alerta").css("background-color", "red");
         $("#popup_alerta").text("Error en precio total. Por favor verifique");
         return false;
     }
+
     numero_linea = 1;
     agregar_la_linea();
     mostrar_mensaje_item_agregado()

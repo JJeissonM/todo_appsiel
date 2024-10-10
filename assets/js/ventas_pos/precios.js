@@ -21,7 +21,7 @@ var precio_unitario = 0;
  * 
  * @returns boolean
  */
-function calcular_precio_total() {
+function calcular_precio_total( cantidad_unitaria = false ) {
 
     if (cantidad <= 0 || cantidad == undefined) {
         $("#popup_alerta").show();
@@ -45,6 +45,10 @@ function calcular_precio_total() {
         $("#precio_total").val(precio_total);
         $("#popup_alerta").hide();
         return true;
+    }
+
+    if ( cantidad_unitaria ) {
+        cantidad = 1;
     }
 
     precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
@@ -108,9 +112,13 @@ function calcular_totales() {
     total_factura = 0.0;
 
     $(".linea_registro").each(function () {
-        var cantidad_linea = parseFloat(
-        $(this).find(".elemento_modificar").eq(0).text()
-        );
+
+        if ( $(this).find(".elemento_modificar").eq(0).text() != '' ) {
+            var cantidad_linea = parseFloat( $(this).find(".elemento_modificar").eq(0).text() );
+        }else{
+            var cantidad_linea = parseFloat( $(this).find('.cantidad').text() );
+        }
+        
         total_cantidad += cantidad_linea;
 
         subtotal +=
@@ -126,7 +134,7 @@ function calcular_totales() {
     $("#total_cantidad").text(
         new Intl.NumberFormat("de-DE").format(total_cantidad)
     );
-
+    
     // Subtotal (Sumatoria de base_impuestos por cantidad)
     //var valor = ;
     $("#subtotal").text(
@@ -181,6 +189,7 @@ function calcular_totales() {
     $("#lbl_sub_total_factura").text(
         "$ " + new Intl.NumberFormat("de-DE").format(total_factura)
     );
+	set_cantidades_ingresadas();
 }
 
 /**

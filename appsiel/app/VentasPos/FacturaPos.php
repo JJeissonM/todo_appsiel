@@ -35,6 +35,12 @@ class FacturaPos extends Model
         return $this->belongsTo('App\Core\TipoDocApp', 'core_tipo_doc_app_id');
     }
 
+
+    public function empresa()
+    {
+        return $this->belongsTo('App\Core\Empresa', 'core_empresa_id');
+    }
+
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero', 'core_tercero_id');

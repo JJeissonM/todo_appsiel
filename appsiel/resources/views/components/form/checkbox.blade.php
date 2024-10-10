@@ -1,7 +1,7 @@
 {{ Form::label($name, $lbl, ['class' => 'col-md-3']) }}
 <?php
 	$lista_valores = explode(",",$value);
-	//dd($opciones);
+	//dd($lista_valores, $opciones);
 	//$opciones = json_decode($opciones,true);
 ?>
 <div class="col-md-9">

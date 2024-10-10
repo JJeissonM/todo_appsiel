@@ -21,11 +21,14 @@ class PrintingServerController extends Controller
             $response = $client->request( 'GET', $url, ['query' => $data] );
 
         } catch (\GuzzleHttp\Exception\RequestException $e) {
-
-            //dd( $e->getMessage());
             $response = $e->getResponse();
         }
 
-        return json_decode( (string) $response->getBody(), true );
+        $message = 'Servidor de impresion no encontrado: ' . $url;
+        if ( $response != null) {
+            $message = json_decode( (string) $response->getBody(), true );
+        }
+
+        return $message;
     }
 }

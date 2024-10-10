@@ -33,7 +33,7 @@
 <div class="table-responsive">
     <table id="myContentTable">
         <tr class="header">
-            <td style="width:20%;">Mesa</td>
+            <td style="width:20%;">Mesa/Cliente</td>
             <td style="width:10%;">Fecha</td>
             <td style="width:20%;">Documento</td>
             <td style="width:20%;">Vendedor</td>

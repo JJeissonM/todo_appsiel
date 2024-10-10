@@ -9,13 +9,13 @@ use App\Inventarios\InvBodega;
 use App\Tesoreria\TesoCaja;
 use App\Ventas\Cliente;
 use App\Core\TipoDocApp;
-use App\Inventarios\InvGrupo;
+
 use Illuminate\Support\Facades\DB;
 
 class Pdv extends Model
 {
     protected $table = 'vtas_pos_puntos_de_ventas';		
-	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'impresora_principal_por_defecto', 'impresora_cocina_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado'];
+	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'impresora_principal_por_defecto', 'imprimir_factura_automaticamente', 'impresora_cocina_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado'];
 
     public function empresa()
     {

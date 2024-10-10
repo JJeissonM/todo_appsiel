@@ -252,6 +252,27 @@ class FacturaPosController extends TransaccionController
 
     public function build_json_doc_encabezado($doc_encabezado)
     {
+        $empresa = $doc_encabezado->empresa;
+        $pdv = $doc_encabezado->pdv;
+
+        $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
+
+        $arr_resolucion = [];
+        if ( $resolucion != null ) {
+            $arr_resolucion = $resolucion->toArray();
+        }
+
+        if ( $pdv->direccion != '' )
+        {
+            $empresa->direccion1 = $pdv->direccion;
+            $empresa->telefono1 = $pdv->telefono;
+            $empresa->email = $pdv->email;
+        }
+
+        $empresa->url_logo = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/' . $empresa->imagen;
+
+        $etiquetas = (new FacturaPosService())->get_etiquetas();
+
         return [
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
             'consecutivo' => $doc_encabezado->consecutivo,
@@ -260,7 +281,10 @@ class FacturaPosController extends TransaccionController
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
-            'doc_encabezado_descripcion' => $doc_encabezado->descripcion
+            'doc_encabezado_descripcion' => $doc_encabezado->descripcion,
+            'empresa' => $empresa->toArray(),
+            'etiquetas' => $etiquetas,
+            'resolucion' => $arr_resolucion
         ];        
     }
 

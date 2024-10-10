@@ -150,7 +150,9 @@
 
 @section('scripts')
 
-    <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
+<script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
+<script src="{{ asset( 'assets/js/ventas_pos/clientes.js?aux=' . uniqid() )}}"></script>
+
     <script src="{{ asset( 'assets/js/ventas_pos/doble_click.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
@@ -160,9 +162,10 @@
         <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
     @endif
 
+    <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+    
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/cargar_para_facturar.js?aux=' . uniqid() )}}"></script>
@@ -205,46 +208,5 @@
 
         $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
 
-        $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
-
-        $.fn.set_catalogos( $('#pdv_id').val() );
-
-        if ($("#action").val() == "edit") {
-            set_cantidades_ingresadas();
-        }
-
-        function mySearchInputFunction() {
-            // Solo busca en la primera columna de la tabla
-            // Declare variables
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("mySearchInput");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("myContentTable");
-            tr = table.getElementsByTagName("tr");
-        
-            // Loop through all table rows, and hide those who don't match the search query
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
-
-        $('#total_valor_total').actualizar_medio_recaudo();
-        
-        // Nuevo
-        if ( $('#msj_resolucion_facturacion').val() != '') {
-            Swal.fire({
-					icon: 'error',
-					title: 'Alerta!',
-					text: $('#msj_resolucion_facturacion').val()
-				});
-        }
     </script>
 @endsection

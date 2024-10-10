@@ -113,7 +113,6 @@ function crear_string_json_para_envio_servidor_impresion( doc_encabezado )
     return json
 }
 
-
 function restablecer_btn_guardar_factura()
 {
     $('#btn_guardar_factura_no').children('.fa-spinner').attr('class','fa fa-save');

@@ -80,7 +80,7 @@
                 
             </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
 
-                        Productos ingresados: <span id="numero_lineas"> 0 </span>
+                        @include('core.componentes.productos_y_cantidades_ingresadas')
                         <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
                         
@@ -129,9 +129,7 @@
     
     <input type="hidden" id="usar_complemento_JSPrintManager" name="usar_complemento_JSPrintManager" value="{{ $params_JSPrintManager->usar_complemento_JSPrintManager }}">
 
-    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2 )
-        @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
-    @endif
+    @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
 
     <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
         @include('ventas_pos.componente_vendedores')
@@ -142,7 +140,8 @@
 @section('scripts')
 
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/doble_click.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?aux=' . uniqid() )}}"></script>
+        
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
 
@@ -151,18 +150,15 @@
         <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
     @endif
+    
+    <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas/facturas_restaurante.js?aux=' . uniqid() )}}"></script>
     
-    <script src="{{ asset( 'assets/js/ventas/restaurante/printing.js?aux=' . uniqid() )}}"></script>
-
-    <!-- <script type="text/javascript" src="{ {asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script> -->
+    <script src="{{asset( 'assets/js/ventas/restaurante/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/cargar_para_facturar.js?aux=' . uniqid() )}}"></script>
-
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/cinta_filtro_items.js?aux=' . uniqid())}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
 
@@ -181,13 +177,15 @@
     <script type="text/javascript" src="{{asset( 'assets/js/ventas/restaurante/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
 
     <script type="text/javascript">
-        
+
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};
         numero_linea = {{ $numero_linea }};
         
         var fecha = "{{$fecha}}";
         var fecha_vencimiento = "{{$fecha_vencimiento}}";
+
+        $('#numero_lineas').text( {{ $numero_linea - 1 }} );
 
         $('#efectivo_recibido').val( {{ $total_efectivo_recibido }} );
 
@@ -196,42 +194,5 @@
 
         $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
 
-        $(document).prop('title', $('#vendedor_id').attr('data-vendedor_descripcion').toUpperCase() );
-
-        $.fn.set_catalogos( $('#pdv_id').val() );
-
-        function mySearchInputFunction() {
-            // Solo busca en la primera columna de la tabla
-            // Declare variables
-            var input, filter, table, tr, td, i, txtValue;
-            input = document.getElementById("mySearchInput");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("myContentTable");
-            tr = table.getElementsByTagName("tr");
-        
-            // Loop through all table rows, and hide those who don't match the search query
-            for (i = 0; i < tr.length; i++) {
-                td = tr[i].getElementsByTagName("td")[0];
-                if (td) {
-                    txtValue = td.textContent || td.innerText;
-                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                        tr[i].style.display = "";
-                    } else {
-                        tr[i].style.display = "none";
-                    }
-                }
-            }
-        }
-
-        $('#total_valor_total').actualizar_medio_recaudo();
-        
-        // Nuevo
-        if ( $('#msj_resolucion_facturacion').val() != '') {
-            Swal.fire({
-					icon: 'error',
-					title: 'Alerta!',
-					text: $('#msj_resolucion_facturacion').val()
-				});
-        }
     </script>
 @endsection

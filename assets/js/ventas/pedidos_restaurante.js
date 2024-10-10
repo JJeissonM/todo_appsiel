@@ -195,6 +195,56 @@ function reset_efectivo_recibido()
     $('#btn_guardar_factura').attr('disabled', 'disabled');
 }
 
+function activar_boton_guardar_factura() {
+
+	$('#btn_guardar_factura').attr('disabled', 'disabled');
+
+	if (total_cambio.toFixed(0) >= 0)
+		$('#btn_guardar_factura').removeAttr('disabled');
+
+};
+
+function mandar_codigo2(item_id) {
+	
+	if ( $('#lbl_vendedor_mesero').text() == '') {
+		alert('Debe seleccionar un MESERO.');
+		return false;
+	}
+
+	if ( $('#lbl_mesa_seleccionada').text() == '') {
+		alert('Debe seleccionar una MESA.');
+		return false;
+	}
+		
+	var producto = productos.find(item => item.id === parseInt(item_id));
+
+	tasa_impuesto = producto.tasa_impuesto;
+	inv_producto_id = producto.id;
+	unidad_medida = producto.unidad_medida1;
+	costo_unitario = producto.costo_promedio;
+
+	$('#inv_producto_id').val(producto.descripcion);
+	$('#precio_unitario').val(get_precio(producto.id));
+	$('#tasa_descuento').val(get_descuento(producto.id));
+	cantidad = 1;
+	$('#cantidad').val(cantidad);
+	calcular_valor_descuento();
+	calcular_impuestos();
+	if ( !calcular_precio_total(true) )
+	{
+		return false;
+	}
+	numero_linea = 1;
+
+	if ($('#manejar_platillos_con_contorno').val() == 0) {
+		$("#btn_"+item_id).hide();
+	}
+    
+    $('#btn_guardar_factura').removeAttr('disabled');
+    
+	agregar_la_linea2();
+}
+
 $(document).ready(function () {
 
     if ( $('#action').val() != 'create' )
@@ -203,17 +253,11 @@ $(document).ready(function () {
         $('#efectivo_recibido').attr( 'readonly', 'readonly');
     }
 
-    if ( $('#action').val() != 'edit' )
-    {
-        //$('#fecha').val( get_fecha_hoy() );
-    }
-
     //Al hacer click en alguna de las sugerencias (escoger un producto)
     $(document).on('click', '.list-group-item-cliente', function () {
         seleccionar_cliente($(this));
         return false;
     });
-
 
     // Al Activar/Inactivar modo de ingreso
     $('#modo_ingreso').on('click', function () {
