@@ -44,9 +44,17 @@
 	@include('layouts.mensajes')
 	
 	<div class="marco_formulario">
+		<?php  
+			//dd($registro);
+		?>
 		@include('inventarios.items.tabla_datos_basicos')
 
-		@include('inventarios.items.tabla_items_relacionados')
+		@if( Input::get('id_modelo') == 331)
+			@include('inventarios.items.mandatarios.tabla_items_relacionados_proveedor')
+		@else
+			@include('inventarios.items.tabla_items_relacionados')
+		@endif
+		
 		
 	</div>
 

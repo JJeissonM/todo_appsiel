@@ -5,9 +5,9 @@
 <br>
 <div id="tabla_items_relacionados">
 	<h5 style="width: 100%; text-align: center;">
-		Registros de tallas
+		Items relacionados
 		<br>
-		<small>Haga Doble clic en el recuadro de la Talla para cambiarla.</small>
+		<!-- <small>Haga Doble clic en el recuadro de la Talla para cambiarla.</small> -->
 	</h5>
 	
 	<div class="row" style="padding:5px;">
@@ -109,7 +109,11 @@
 
 		        $("#div_cargando").show();
 		        
-		        var modelo_id = 317;
+				var mandatario_model_id = {{ Input::get('id_modelo') }}
+		        var modelo_id = 317; // MandatarioTieneItem
+				if ( mandatario_model_id == 331 ) {
+					modelo_id = 332; // MandatarioProveedorTieneItem
+				}
 
 		        var url = "{{ url('inv_item_mandatario/create') }}" + "?id_modelo=" + modelo_id + "&mandatario_id=" + mandatario_id;
 
@@ -125,7 +129,9 @@
 			$(document).on("click",".btn_save_modal_item_relacionado",function(event){
 
 		    	event.preventDefault();
-		        
+
+				console.log( ';aja')
+
 		        if ( !validar_datos() )
 		        {
 		        	return false;
@@ -140,7 +146,7 @@
 		        var data = formulario.serialize();
 
 		        $.post(url, data, function (respuesta) {
-		        	location.reload(true);
+		        	//location.reload(true);
 		        });/**/
 		    });
 
@@ -165,13 +171,29 @@
 		    function validar_datos()
 		    {
 		    	validado = true;
-		    	/*if ( $('#referencia').val() == '' )
+
+				if ( $('#categoria_id').val() == '' )
 				{
-					$('#referencia').focus();
-					alert('Debe ingresar una Referencia.');
-					validado = false;
+					$('#categoria_id').focus();
+					alert('Debe seleccionar Proveedor.');
+					return false;
 				}
 
+				if ( !$.isNumeric( $('#precio_compra').val() ) )
+				{
+					$('#precio_compra').focus();
+					alert('Debe ingresar un precio de compras válido.');
+					return false;
+				}
+
+				if ( !$.isNumeric( $('#precio_venta').val() ) )
+				{
+					$('#precio_venta').focus();
+					alert('Debe ingresar un precio de ventas válido.');
+					return false;
+				}
+
+		    	/*
 				if ( !$.isNumeric( $('#referencia').val() ) )
 				{
 					$('#referencia').focus();
@@ -187,6 +209,7 @@
 				}
 
 				*/
+
 		    	if ( $('#unidad_medida2').val() == '' )
 				{
 					$('#unidad_medida2').focus();

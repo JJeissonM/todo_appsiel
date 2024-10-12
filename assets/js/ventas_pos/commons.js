@@ -914,7 +914,7 @@ $(document).ready(function () {
       Swal.fire({
           icon: 'warning',
           title: 'Advertencia!',
-          text: 'Ha ingresado productos que requieren Contorno, pero NO ha agregado el Contorno.'
+          text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
       });
       
       return false;

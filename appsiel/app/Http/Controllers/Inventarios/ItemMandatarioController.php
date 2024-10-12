@@ -45,6 +45,20 @@ class ItemMandatarioController extends ModeloController
             }
         }
 
+        array_push($lista_campos, [
+            "id" => 999,
+            "descripcion" => "Modelo ID",
+            "tipo" => "hidden",
+            "name" => "model_id",
+            "opciones" => "",
+            "value" => $this->modelo->id,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ]);
+
         $form_create = [
                             'url' => 'inv_item_mandatario',
                             'campos' => $lista_campos
@@ -57,12 +71,11 @@ class ItemMandatarioController extends ModeloController
 
     public function store(Request $request)
     {
-        $modelo_id = 317; // Item relacionado a mandatario (MandatarioTieneItem)
-        $modelo = Modelo::find( $modelo_id );
+        $modelo = Modelo::find( $request->model_id );
 
         // Crear Item relacionado
         $mandatario = ItemMandatario::find( $request->mandatario_id );
-        $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $mandatario->referencia, $request->unidad_medida2 ); // InvProducto        
+        $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $mandatario->referencia, $request ); // InvProducto        
         
         if (config('ventas.agregar_precio_a_lista_desde_create_item'))
         {
@@ -95,6 +108,52 @@ class ItemMandatarioController extends ModeloController
         return response()->json( $json );
     }
 
+    public function edit( $id )
+    {
+        $lista_campos = ModeloController::get_campos_modelo( $this->modelo, '', 'edit' );
+
+        array_push($lista_campos, [
+            "id" => 999,
+            "descripcion" => "Modelo ID",
+            "tipo" => "hidden",
+            "name" => "model_id",
+            "opciones" => "",
+            "value" => $this->modelo->id,
+            "atributos" => [],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ]);
+
+        $form_create = [
+                            'url' => 'inv_item_mandatario/' . $id,
+                            'campos' => $lista_campos
+                        ];
+
+        $datos_columnas = true;
+
+        $registro = app($this->modelo->name_space)->find($id)->item_relacionado;
+
+        return View::make( 'layouts.modelo_form_edit_sin_botones', compact('form_create','datos_columnas', 'registro') )->render();
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Se obtiene el modelo según la variable modelo_id de la url
+        $modelo = Modelo::find($request->model_id);
+
+        // Se obtinene el registro a modificar del modelo
+        $registro = app($modelo->name_space)->find($id)->item_relacionado;
+
+        $registro->fill( $request->all() );
+        $registro->save();
+
+        $json = json_decode('{"talla":"' . $request->unidad_medida2 . '","referencia":"' . $request->referencia . '","cantidad":"' . $request->cantidad . '"}');
+        
+        return response()->json( $json );
+    }
+
     public function preparar_datos_entrada_almacen( $item_relacionado_id, $costo_unitario, $cantidad )
     {
         $parametros = config('inventarios');
@@ -112,27 +171,44 @@ class ItemMandatarioController extends ModeloController
             ];
     }
 
-    public function almacenar_item_relacionado( $item_mandatario, $referencia, $talla_id )
+    public function almacenar_item_relacionado( $item_mandatario, $mandatario_referencia, $request )
     {
         $item_relacionado = new InvProducto();
         $item_relacionado->core_empresa_id = $item_mandatario->core_empresa_id;
         $item_relacionado->descripcion = $item_mandatario->descripcion;
         $item_relacionado->tipo = 'producto';
-        $item_relacionado->unidad_medida1 = 'UND';
+        $item_relacionado->unidad_medida1 = $item_mandatario->unidad_medida1;
         $item_relacionado->inv_grupo_id = $item_mandatario->inv_grupo_id;
-        $item_relacionado->impuesto_id = (int)config('inventarios.item_impuesto_id');
-        $item_relacionado->precio_compra = 1;
-        $item_relacionado->precio_venta = 1;
+        $item_relacionado->impuesto_id = $item_mandatario->impuesto_id;
+
+        $item_relacionado->precio_compra = 100;
+        if ( $request->precio_compra != null ) {
+            $item_relacionado->precio_compra = $request->precio_compra;
+        }
+
+        $item_relacionado->precio_venta = 200;
+        if ( $request->precio_venta != null ) {
+            $item_relacionado->precio_venta = $request->precio_venta;
+        }
+        
+        if ( $request->categoria_id != null ) {
+            $item_relacionado->categoria_id = $request->categoria_id;
+        }
+        
         $item_relacionado->estado = 'Activo';
         $item_relacionado->creado_por = $item_mandatario->creado_por;
+        $item_relacionado->save(); // Para obtener el ID
+        
+        $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
 
-        $item_relacionado->referencia = $referencia . '-' . $talla_id;
+        if ( $request->unidad_medida2 != null ) {
+            // $request->unidad_medida2 almacena la Talla
+            $item_relacionado->referencia = $mandatario_referencia . '-' . $request->unidad_medida2;
 
-        $talla = new TallaItem( $talla_id );
-        $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
-        $item_relacionado->save();
-
-        $item_relacionado->codigo_barras = 99;//$this->get_barcode( $item_relacionado->id, '000', $talla_id, $referencia );
+            $talla = new TallaItem( $request->unidad_medida2 );
+            $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
+            $item_relacionado->codigo_barras = $this->get_barcode( $item_relacionado->id, '000', $request->unidad_medida2, $mandatario_referencia );
+        }
 
         $item_relacionado->save();
 
@@ -148,7 +224,7 @@ class ItemMandatarioController extends ModeloController
     public function show($id)
     {
         $modelo = Modelo::find( Input::get('id_modelo') );
-        $registro = ItemMandatario::find( $id );
+        $registro = app($modelo->name_space)->find( $id );
 
         $reg_anterior = app( $modelo->name_space )->where('id', '<', $registro->id)->max('id');
         $reg_siguiente = app( $modelo->name_space )->where('id', '>', $registro->id)->min('id');

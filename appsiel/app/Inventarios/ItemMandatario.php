@@ -2,12 +2,14 @@
 
 namespace App\Inventarios;
 
+use App\Contabilidad\Impuesto;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\Indumentaria\PaletaColores;
 use App\Inventarios\Indumentaria\PrefijoReferencia;
 use App\Inventarios\Indumentaria\TipoMaterial;
 use App\Inventarios\Indumentaria\TipoPrenda;
+use App\Inventarios\Services\ItemsMandatariosSerices;
 use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +19,7 @@ class ItemMandatario extends Model
 {
     protected $table = 'inv_items_mandatarios';
 
-    protected $fillable = [ 'core_empresa_id', 'descripcion', 'referencia', 'inv_grupo_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
+    protected $fillable = [ 'core_empresa_id', 'descripcion', 'unidad_medida1', 'referencia', 'inv_grupo_id', 'impuesto_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Tipo', 'Material', 'Color', 'Estado'];
 
@@ -48,9 +50,23 @@ class ItemMandatario extends Model
         return $this->belongsTo(TipoPrenda::class, 'tipo_prenda_id');
     }
 
+    public function impuesto()
+    {
+        return $this->belongsTo(Impuesto::class, 'impuesto_id');
+    }
+
     public function items_relacionados()
     {
         return $this->belongsToMany( InvProducto::class, 'inv_mandatario_tiene_items', 'mandatario_id', 'item_id');
+    }
+
+    public function get_impuesto_label()
+    {
+        if ( $this->impuesto == null ) {
+            return '';
+        }
+
+        return $this->impuesto->tasa_impuesto . '%';
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -135,7 +151,7 @@ class ItemMandatario extends Model
 
     public function store_adicional( $datos, $registro )
     {
-        $referencia = $registro->prefijo_referencia->codigo . $registro->tipo_prenda->codigo . $registro->paleta_color->codigo . $registro->tipo_material->codigo;
+        $referencia = (new ItemsMandatariosSerices())->build_reference($datos, $registro);
 
         $user = Auth::user();
         $registro->referencia = $referencia;
@@ -148,7 +164,7 @@ class ItemMandatario extends Model
     {
         $prenda = ItemMandatario::find( $id );
         
-        $referencia = $prenda->prefijo_referencia->codigo . $prenda->tipo_prenda->codigo . $prenda->paleta_color->codigo . $prenda->tipo_material->codigo;
+        $referencia = (new ItemsMandatariosSerices())->build_reference($datos, $prenda);
 
         $prenda->referencia = $referencia;
         $prenda->save();

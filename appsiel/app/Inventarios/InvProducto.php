@@ -17,7 +17,7 @@ use App\Contabilidad\Impuesto;
 use App\Inventarios\Services\CodigoBarras;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
-
+use App\Ventas\Services\PricesServices;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -563,12 +563,13 @@ class InvProducto extends Model
         
         if (config('ventas.agregar_precio_a_lista_desde_create_item'))
         {
-            ListaPrecioDetalle::create([
+            $data = [
                 'lista_precios_id' => (int)config('ventas.lista_precios_id'),
                 'inv_producto_id' => $registro->id,
                 'fecha_activacion' => date('Y-m-d'),
                 'precio' => $registro->precio_venta
-            ]);
+            ];
+            (new PricesServices())->create_item_price( $data );
         }
     }
 
@@ -576,31 +577,11 @@ class InvProducto extends Model
     {
         if (config('ventas.agregar_precio_a_lista_desde_create_item'))
         {
-            $nuevo_precio_venta = 0;
-            if (isset($datos['precio_venta'])) {
-                $nuevo_precio_venta = $datos['precio_venta'];
-            }
+            $datos['fecha_activacion'] = date('Y-m-d');
+            $datos['inv_producto_id'] = $id;
+            $datos['lista_precios_id'] = (int)config('ventas.lista_precios_id');
 
-            $reg_precio_actual = ListaPrecioDetalle::where([
-                ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
-                ['inv_producto_id', '=', $id]
-            ])
-            ->get()
-            ->last();
-
-            if ($reg_precio_actual == null) {
-                ListaPrecioDetalle::create([
-                    'lista_precios_id' => (int)config('ventas.lista_precios_id'),
-                    'inv_producto_id' => $id,
-                    'fecha_activacion' => date('Y-m-d'),
-                    'precio' => $nuevo_precio_venta
-                ]);
-            }else{
-                if ($nuevo_precio_venta != $reg_precio_actual->precio) {
-                    $reg_precio_actual->precio = $nuevo_precio_venta;
-                    $reg_precio_actual->save();
-                }
-            }
+            (new PricesServices())->create_or_update_item_price( $datos );
         }
     }
 
