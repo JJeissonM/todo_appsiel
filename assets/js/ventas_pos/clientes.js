@@ -138,7 +138,7 @@ function seleccionar_cliente(item_sugerencia) {
       });
     }
   
-    $.fn.activar_boton_guardar_factura();
+    activar_boton_guardar_factura();
   
     // Bajar el Scroll hasta el final de la página
     //$("html, body").animate({scrollTop: $(document).height() + "px"});

@@ -42,8 +42,7 @@
 		</thead>
 		<tbody>
 			@foreach( $items_relacionados AS $item )
-				<?php 
-                    //dd( $item, $item->proveedor() );
+				<?php
 					//$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 
 					$url_redirect = '[inv_item_mandatario/' . $registro->id . '?id=8&id_modelo=315&id_transaccion=]';

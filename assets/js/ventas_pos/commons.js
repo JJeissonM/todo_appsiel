@@ -7,7 +7,8 @@ var productos,
   cliente_default,
   forma_pago_default,
   fecha_vencimiento_default,
-  inv_producto_id;
+  inv_producto_id,
+  recetas;
 
 $("#btn_nuevo").hide();
 $("#btnPaula").hide();
@@ -299,6 +300,7 @@ function resetear_ventana() {
   reset_tabla_ingreso_medios_pago();
   reset_efectivo_recibido();
   reset_campos_formulario();
+  set_lista_precios();
 
   $("#btn_cancelar").show();
   $("#btn_cancelar_pedido").hide();
@@ -1274,6 +1276,7 @@ $.fn.set_catalogos = function (pdv_id) {
     cliente_default = datos.cliente_default;
     forma_pago_default = datos.forma_pago_default;
     fecha_vencimiento_default = datos.fecha_vencimiento_default;
+    recetas = datos.recetas;
 
     if ($("#action").val() == "edit") {
       set_lista_precios();

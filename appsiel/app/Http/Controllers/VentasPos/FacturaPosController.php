@@ -61,6 +61,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
+use App\Inventarios\RecetaCocina;
 use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Ventas\Services\PrintServices;
@@ -1015,7 +1016,8 @@ class FacturaPosController extends TransaccionController
                     'clientes' => Cliente::where( 'estado', 'Activo' )->get(),
                     'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray(), ['vendedor_descripcion'=> $pdv->cliente->vendedor->tercero->descripcion] ) ,
                     'forma_pago_default' => $pdv->cliente->forma_pago(),
-                    'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') )
+                    'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') ),
+                    'recetas' => RecetaCocina::get()
                 ];
         
         return response()->json( $datos );

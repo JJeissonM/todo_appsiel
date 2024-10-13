@@ -43,7 +43,7 @@
 
       <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
         
-        @if (app()->environment() != 'demo')
+        @if (app()->environment() == 'demo')
           <h6 class="info">.: Escoja el perfil con el que desea ingresar :.</h6>
         @endif
 

@@ -31,7 +31,7 @@ $(document).ready(function () {
                 $("#btn_nuevo").show();                
                 
                 // Se calculan los totales
-                calcular_totales2();
+                calcular_totales();
 
                 $("#efectivo_recibido").focus();
             });

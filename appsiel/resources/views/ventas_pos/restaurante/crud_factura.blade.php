@@ -63,6 +63,10 @@
             <div class="container-fluid">
                 <div class="row">
 
+                    <div class="container">
+                        @include('ventas_pos.crud_factura_btn_revisar_pedidos')
+                    </div>
+
                     <!-- Vista Tactil -->
                     @if($vista_categorias_productos != '')
                         <div class="col-md-12 well">

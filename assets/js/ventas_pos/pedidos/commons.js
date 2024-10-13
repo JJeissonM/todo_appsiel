@@ -484,6 +484,8 @@ $(document).ready(function () {
 
         $("#btn_cancelar").show();
         $("#btn_cancelar_pedido").hide();
+
+        set_lista_precios();
     }    
 
     function seleccionar_cliente(item_sugerencia) {        
