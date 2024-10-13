@@ -17,6 +17,7 @@ use App\Inventarios\Services\TallaItem;
 use App\Inventarios\EntradaAlmacen;
 
 use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\Services\PricesServices;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -84,12 +85,13 @@ class ItemMandatarioController extends ModeloController
                 $nuevo_precio_venta = $request->precio_venta;
             }
 
-            ListaPrecioDetalle::create([
+            $data = [
                 'lista_precios_id' => (int)config('ventas.lista_precios_id'),
                 'inv_producto_id' => $item_relacionado_id,
                 'fecha_activacion' => date('Y-m-d'),
                 'precio' => $nuevo_precio_venta
-            ]);
+            ];
+            (new PricesServices())->create_item_price( $data );
         }
 
         // Crear Relacion: Mandatario tiene Item
@@ -146,8 +148,18 @@ class ItemMandatarioController extends ModeloController
         // Se obtinene el registro a modificar del modelo
         $registro = app($modelo->name_space)->find($id)->item_relacionado;
 
-        $registro->fill( $request->all() );
+        $datos = $request->all();
+        $registro->fill( $datos );
         $registro->save();
+
+        if (config('ventas.agregar_precio_a_lista_desde_create_item'))
+        {
+            $datos['fecha_activacion'] = date('Y-m-d');
+            $datos['inv_producto_id'] = $registro->id;
+            $datos['lista_precios_id'] = (int)config('ventas.lista_precios_id');
+            
+            (new PricesServices())->create_or_update_item_price( $datos );
+        }
 
         $json = json_decode('{"talla":"' . $request->unidad_medida2 . '","referencia":"' . $request->referencia . '","cantidad":"' . $request->cantidad . '"}');
         

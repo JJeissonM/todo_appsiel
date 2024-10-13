@@ -25,7 +25,7 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger btn_close_modal" data-dismiss="modal"> <i class="fa fa-close"></i> Cerrar </button>        
-        <button class="btn btn-primary {{$class_btn_save}}">
+        <button class="btn btn-primary btn_save_modal {{$class_btn_save}}">
           <i class="fa fa-save"></i> Guardar
           <span data-mandatario_id="{{ $mandatario_id }}"></span>
         </button>

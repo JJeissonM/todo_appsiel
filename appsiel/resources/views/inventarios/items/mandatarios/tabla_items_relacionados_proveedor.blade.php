@@ -50,8 +50,8 @@
 				?>
 				<tr>
                     <td align="center"> {{ $item->proveedor()->tercero->descripcion }} </td>
-					<td align="right"> ${{ number_format($item->item_relacionado->precio_compra,0,',','.') }} </td>
-					<td align="right"> ${{ number_format($item->item_relacionado->precio_venta,0,',','.') }} </td>
+					<td align="right"> ${{ number_format($item->item_relacionado->get_costo_promedio(),0,',','.') }} </td>
+					<td align="right"> ${{ number_format($item->item_relacionado->get_precio_venta(),0,',','.') }} </td>
 					<td align="center"> {{ $item->item_relacionado->codigo_barras }} </td>
 					<td align="center"> {{ $item->item_relacionado->referencia }} </td>
 					<td>
@@ -94,6 +94,8 @@
 		        $( '#modal_item_relacionado' ).modal({backdrop: "static"});
 
 		        $("#div_cargando").show();
+				
+				$('.btn_save_modal').attr('class','class="btn btn-lg btn-primary btn_save_modal btn_save_modal_item_relacionado');
 		        
 				modelo_id = 332; // MandatarioProveedorTieneItem
 
@@ -137,6 +139,8 @@
                 $( '#modal_item_relacionado' ).modal({backdrop: "static"});
 
                 $("#div_cargando").show();
+
+				$('.btn_save_modal').attr('class','class="btn btn-lg btn-primary btn_save_modal btn_edit_modal_item_relacionado');
 
                 modelo_id = 332; // MandatarioProveedorTieneItem
 
