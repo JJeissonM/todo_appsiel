@@ -49,7 +49,7 @@
 
         <div class="input-group">
           <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-          @if (app()->environment() == 'demo')
+          @if (app()->environment() != 'demo')
             <input id="email" type="text" class="form-control2" name="email" placeholder="Usuario" value="{{ $email }}" required="required">
           @else 
             <select id="email" class="form-control form-control" name="email">
