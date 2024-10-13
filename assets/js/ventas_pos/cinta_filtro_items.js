@@ -3,6 +3,11 @@ function draw_items(lista_items)
     $('.filtros').html('');
     $.each(lista_items,function(key,item)
     {
+        if( !item.mostrar_grupo_en_pagina_web )
+        {
+            return;
+        }
+
         if ( item.estado == 'Activo') {
             var label = item.referencia + ' ' + item.descripcion + ' (' + item.id + ')';
             $('.filtros').append('<button onclick="mandar_codigo4(' + item.id + ')" class="icono_item" data-label_item="' + label.toLowerCase() + '">' + label  + '<b> $' + new Intl.NumberFormat("de-DE").format( get_precio(item.id).toFixed(2)) + '</b> </button>');

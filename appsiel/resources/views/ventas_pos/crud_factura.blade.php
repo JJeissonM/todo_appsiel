@@ -186,10 +186,6 @@
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?aux=' . uniqid())}}"></script>
     @endif
 
-    @if ( (int)config('inventarios.manejar_platillos_con_contorno'))
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
-    @endif
-
     <script type="text/javascript">
         
         var url_raiz = "{{ url('/') }}";

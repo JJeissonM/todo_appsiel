@@ -75,9 +75,9 @@ function agregar_la_linea() {
     numero_linea++;
     $("#efectivo_recibido").removeAttr("readonly");
 
-    if ($("#manejar_platillos_con_contorno").val() == 1) {
-        reset_component_items_contorno();
-    }
+    //if ($("#manejar_platillos_con_contorno").val() == 1) {
+    //    reset_component_items_contorno();
+    //}
 }
 
 /**

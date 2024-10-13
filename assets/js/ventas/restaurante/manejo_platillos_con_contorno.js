@@ -5,11 +5,6 @@ function reset_select_items_contorno() {
 
 	$.each(items_contorno,function(key,item)
     {
-        
-    //var lista_platillos = recetas.find( (item) => item.item_ingrediente_id === producto_id);
-
-        console.log( 'producto_id', producto_id, item.id )
-
         if ( item.estado == 'Activo') {
             var label = item.descripcion;
             $('#item_contorno_id').append('<option value="' + item.id + '" >' + label + '</option>');

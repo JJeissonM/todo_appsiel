@@ -336,6 +336,7 @@ class InvProducto extends Model
                                             'inv_productos.descripcion',
                                             'inv_productos.unidad_medida1',
                                             'inv_grupos.descripcion AS grupo_descripcion',
+                                            'inv_grupos.mostrar_en_pagina_web AS mostrar_grupo_en_pagina_web',
                                             'inv_productos.precio_compra',
                                             'inv_productos.precio_venta',
                                             'inv_productos.tipo',

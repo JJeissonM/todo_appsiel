@@ -220,9 +220,9 @@ function generar_string_celdas() {
   num_celda++;
 
   var descripcion_item = $("#inv_producto_id").val();
-  if ($("#manejar_platillos_con_contorno").val() == 1) {
-    descripcion_item = cambiar_descripcion_item_ingresado(descripcion_item);
-  }
+  //if ($("#manejar_platillos_con_contorno").val() == 1) {
+  //  descripcion_item = cambiar_descripcion_item_ingresado(descripcion_item);
+  //}
 
   celdas[num_celda] =
     '<td> <span style="background-color:#F7B2A3;">' +
