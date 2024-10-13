@@ -26,11 +26,12 @@
         $contrasenia = 'demo123*'; // $2y$10$b0biqss8VcS1RN7/nBKv5e4.CByVrx9Q1WMg664IYFavA803uLOxC
         $options = [ 
           'administrador@appsiel.com.co' => 'Administrador Negocio',
-          'demo@appsiel.com.co' => 'Admin. Empresa Transporte Especial',
+          'demo@appsiel.com.co' => 'Admin. Empresa Transporte Especial (FUEC)',
           'rector@appsiel.com.co' => 'Rector Colegio',
           'docente@appsiel.com.co' => 'Docente Colegio',
           'mesero@appsiel.com.co' => 'Mesero',
           'cajero@appsiel.com.co' => 'Cajero',
+          'repuestos@appsiel.com.co' => 'Admin. Tienda Repuestos',
           'administrator@appsiel.com.co' => 'Super Admin (contraseña requerida)'
         ];
       }
@@ -42,22 +43,19 @@
 
       <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
         
-        @if (app()->environment() == 'demo')
+        @if (app()->environment() != 'demo')
           <h6 class="info">.: Escoja el perfil con el que desea ingresar :.</h6>
         @endif
+
         <div class="input-group">
           <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-          @if (app()->environment() != 'demo')
+          @if (app()->environment() == 'demo')
             <input id="email" type="text" class="form-control2" name="email" placeholder="Usuario" value="{{ $email }}" required="required">
           @else 
             <select id="email" class="form-control form-control" name="email">
-              <option value="administrador@appsiel.com.co">Administrador Negocio</option>
-              <option value="demo@appsiel.com.co">Admin. Empresa Transporte Especial</option>
-              <option value="rector@appsiel.com.co">Rector Colegio</option>
-              <option value="docente@appsiel.com.co">Docente Colegio</option>
-              <option value="mesero@appsiel.com.co">Mesero</option>
-              <option value="cajero@appsiel.com.co">Cajero</option>
-              <option value="administrator@appsiel.com.co">Super Admin (contraseña requerida)</option>
+              @foreach($options as $email => $label)
+                <option value="{{$email}}">{{$label}}</option>
+              @endforeach
             </select>
           @endif 
         </div>

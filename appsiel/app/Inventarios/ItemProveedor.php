@@ -16,6 +16,8 @@ class ItemProveedor extends InvProducto
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Proveedor', 'Grupo inventario', 'IVA', 'Cod. Barras', 'Estado'];
 
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"inventarios/eliminar_producto/id_fila"}';
+
     public function proveedor()
     {
         return $this->belongsTo(Proveedor::class, 'categoria_id');
