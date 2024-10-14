@@ -23,6 +23,7 @@ function add_item_contorno_id(object_select)
     $('#lista_contornos').append('<li data-label_item_contorno="' + label + '">' + label + ' <button class="btn btn-danger btn-xs remove_item_contorno" data-item_contorno_id="' + object_select.val() + '"><i class="fa fa-trash"></i></button></li>');
 
     $('#item_contorno_id option:selected').remove();
+    $('#btn_confirm_contornos').fadeIn(500);
 }
 
 function remove_item_contorno_id(object_button)
@@ -53,6 +54,8 @@ function update_lista_items_contorno_ids(object_button)
     var fila = object_button.closest("tr");
 
     fila.find('.lista_oculta_items_contorno_ids').text(lista);
+
+    return lista;
 }
 
 function cambiar_descripcion_item_ingresado(object_button)
@@ -81,7 +84,7 @@ function show_form_add_contorno(object_button)
 {
     var fila = object_button.closest("tr");
     
-	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="form_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select><br><br></div><button class="btn btn-success btn-xs" id="btn_confirm_contornos"><i class="fa fa-btn fa-check"></i>Confirmar</button><button class="btn btn-default btn-xs" id="btn_cancelar_add_contornos"><i class="fa fa-btn fa-cancel"></i>Cancelar</button></div>' );
+	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="form_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select><br><br></div><button class="btn btn-success btn-xs" id="btn_confirm_contornos" style="display:none;"><i class="fa fa-btn fa-check"></i>Confirmar</button><button class="btn btn-default btn-xs" id="btn_cancelar_add_contornos"><i class="fa fa-btn fa-cancel"></i>Cancelar</button></div>' );
     
     reset_select_items_contorno();
 }
@@ -91,6 +94,18 @@ function validar_producto_con_contorno()
     var is_ok = true;
     $('.linea_registro').each(function(){
         if( $(this).find('.btn_add_contorno').length == 1 )
+        {
+            is_ok = false;
+            return false
+        }
+        
+        if( $(this).find('#btn_confirm_contornos').length == 1 )
+        {
+            is_ok = false;
+            return false
+        }
+        
+        if( $(this).find('#btn_cancelar_add_contornos').length == 1 )
         {
             is_ok = false;
             return false
@@ -135,6 +150,8 @@ $(document).ready(function () {
 
         event.preventDefault();
 
+        var fila = $(this).closest("tr");
+
         fila.find('.btn_eliminar').after("<button class='btn btn-primary btn-xs btn_add_contorno'><i class='fa fa-btn fa-plus'></i></button>");
 
         document.getElementById('form_lista_contornos').remove();
@@ -144,7 +161,7 @@ $(document).ready(function () {
 
     $(document).on('click', '#btn_confirm_contornos', function () {
         cambiar_descripcion_item_ingresado($(this));
-
+        
         update_lista_items_contorno_ids($(this));
 
         var fila = $(this).closest("tr");

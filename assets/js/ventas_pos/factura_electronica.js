@@ -78,6 +78,16 @@ $(document).ready(function () {
             return false;
         }
 
+        if ( !validar_producto_con_contorno() ) {
+          Swal.fire({
+              icon: 'warning',
+              title: 'Advertencia!',
+              text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
+          });
+          
+          return false;
+        }
+
         if( $('#manejar_propinas').val() == 1 )
         {
             if( $('#valor_propina').val() != 0 )

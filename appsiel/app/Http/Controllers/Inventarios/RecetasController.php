@@ -26,7 +26,8 @@ class RecetasController extends ModeloController
     {
         return response()->json(
             InvProducto::where([
-                ['inv_grupo_id', '=', (int)config('inventarios.categoria_id_items_contorno')]
+                ['inv_grupo_id', '=', (int)config('inventarios.categoria_id_items_contorno')],
+                ['estado', '=', 'Activo']
             ])->get()
             ->toArray()
         );
