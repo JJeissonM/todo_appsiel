@@ -178,12 +178,11 @@ class RecipeServices
                                         ->get()
                                         ->groupBy('item_ingrediente_id');
 
-        $items_manejan_contorno = collect();
+        $items_manejan_contorno = [];
         foreach ($ingredientes_manejan_contornos_agrupados as $item_maneja_contorno_id => $lista_platillos_a_los_que_pertenece) {
             
             $lista_contornos = [];
 
-            //dd( $lista_platillos_a_los_que_pertenece );
             foreach ($lista_platillos_a_los_que_pertenece as $linea) {
                 $ingredientes_tipo_contorno_del_platillo = RecetaCocina::leftJoin( 'inv_productos', 'inv_productos.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
                                             ->where([
@@ -197,12 +196,12 @@ class RecipeServices
                 $lista_contornos = array_merge($lista_contornos, $ingredientes_tipo_contorno_del_platillo);
             }
 
-            $items_manejan_contorno->push( [
+            $items_manejan_contorno[] = [
                 'item_maneja_contorno_id' => $item_maneja_contorno_id,
                 'ids_lista_contornos_permitidos' => array_unique($lista_contornos)
-            ]);
+            ];
         }
-        
+
         return $items_manejan_contorno;
     }
 

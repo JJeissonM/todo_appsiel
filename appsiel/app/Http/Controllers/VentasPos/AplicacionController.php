@@ -17,7 +17,8 @@ class AplicacionController extends TransaccionController
         
         $obj_acumm_serv = new RecipeServices();
 
-        $obj_acumm_serv->get_recetas_items_manejan_contornos();
+        
+        return response()->json( $obj_acumm_serv->get_recetas_items_manejan_contornos(), 200);
 
     }
 
