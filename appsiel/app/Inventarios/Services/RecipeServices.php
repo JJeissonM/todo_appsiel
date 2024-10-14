@@ -193,12 +193,16 @@ class RecipeServices
                                                 ->pluck('item_ingrediente_id')
                                                 ->toArray();
 
-                $lista_contornos = array_merge($lista_contornos, $ingredientes_tipo_contorno_del_platillo);
+                foreach ($ingredientes_tipo_contorno_del_platillo as $key => $value) {
+                    if (!in_array($value,$lista_contornos)) {
+                        $lista_contornos[] = $value;
+                    }
+                }
             }
 
             $items_manejan_contorno[] = [
                 'item_maneja_contorno_id' => $item_maneja_contorno_id,
-                'ids_lista_contornos_permitidos' => array_unique($lista_contornos)
+                'ids_lista_contornos_permitidos' => $lista_contornos
             ];
         }
 
