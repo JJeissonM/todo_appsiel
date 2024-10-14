@@ -64,9 +64,6 @@ function agregar_la_linea() {
     set_cantidades_ingresadas();
     //deshabilitar_campos_encabezado();
 
-    // Bajar el Scroll hasta el final de la página
-    //$("html, body").animate({ scrollTop: $(document).height() + "px" });
-
     reset_linea_ingreso_default();
     reset_efectivo_recibido();
 

@@ -190,6 +190,9 @@
         var url_raiz = "{{ url('/') }}";
         hay_productos = {{ $numero_linea - 1 }};
         numero_linea = {{ $numero_linea }};
+
+        // Bajar el Scroll hasta el final de la página
+        $("html, body").animate({ scrollTop: ( $(document).height() / 2 - 150 ) + "px" });
         
         var fecha = "{{$fecha}}";
         var fecha_vencimiento = "{{$fecha_vencimiento}}";
