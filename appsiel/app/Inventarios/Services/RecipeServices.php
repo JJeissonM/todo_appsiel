@@ -166,6 +166,66 @@ class RecipeServices
         return $obj_inv_docum_serv->create_doc_delivery_note( self::INV_DOC_HEADER_MODEL_NAME, $datos_remision, $bodega_default_id, 'Facturada' );
     }
 
+    public function get_recetas_items_manejan_contornos()
+    {
+        $string_categorias_con_contornos = explode(',', $this->get_string_categoria_id_platillos_con_contornos());
+
+        $categoria_id_items_contorno = (int)config('inventarios.categoria_id_items_contorno');
+
+        $ingredientes_manejan_contornos_agrupados = RecetaCocina::leftJoin( 'inv_productos', 'inv_productos.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
+                                        ->whereIn('inv_productos.inv_grupo_id', $string_categorias_con_contornos)
+                                        //->where('inv_recetas_cocina.item_ingrediente_id',129)
+                                        ->get()
+                                        ->groupBy('item_ingrediente_id');
+
+        $items_manejan_contorno = collect();
+        foreach ($ingredientes_manejan_contornos_agrupados as $item_maneja_contorno_id => $lista_platillos_a_los_que_pertenece) {
+            
+            $lista_contornos = [];
+
+            //dd( $lista_platillos_a_los_que_pertenece );
+            foreach ($lista_platillos_a_los_que_pertenece as $linea) {
+                $ingredientes_tipo_contorno_del_platillo = RecetaCocina::leftJoin( 'inv_productos', 'inv_productos.id', '=', 'inv_recetas_cocina.item_ingrediente_id')
+                                            ->where([
+                                                    ['item_platillo_id','=', $linea->item_platillo_id],
+                                                    ['item_ingrediente_id','<>', $item_maneja_contorno_id],
+                                                    ['inv_productos.inv_grupo_id','=', $categoria_id_items_contorno]
+                                                ])->get()
+                                                ->pluck('item_ingrediente_id')
+                                                ->toArray();
+
+                $lista_contornos = array_merge($lista_contornos, $ingredientes_tipo_contorno_del_platillo);
+            }
+
+            $items_manejan_contorno->push( [
+                'item_maneja_contorno_id' => $item_maneja_contorno_id,
+                'ids_lista_contornos_permitidos' => array_unique($lista_contornos)
+            ]);
+        }
+        
+        return $items_manejan_contorno;
+    }
+
+    public function get_string_categoria_id_platillos_con_contornos()
+    {
+        $string_categorias = '';
+        $categoria_id_platillos_con_contornos = config('inventarios.categoria_id_platillos_con_contornos');
+        if( is_array( $categoria_id_platillos_con_contornos ) )
+        {
+            $es_el_primero = true;
+            foreach( $categoria_id_platillos_con_contornos AS $key => $value )
+            {
+                if ($es_el_primero) {
+                    $string_categorias = $value;
+                    $es_el_primero = false;
+                }else{
+                    $string_categorias .=  ',' . $value;
+                }
+            }
+        }
+
+        return $string_categorias;
+    }
     
         
 }

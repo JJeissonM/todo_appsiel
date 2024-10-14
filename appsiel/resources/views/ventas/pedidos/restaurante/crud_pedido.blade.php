@@ -274,6 +274,7 @@ input[type=number]::-webkit-outer-spin-button {
         <script src="{{asset( 'assets/js/ventas/restaurante/manejo_platillos_con_contorno.js?aux=' . uniqid())}}"></script>
     @endif
     
+    <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
 
     <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante.js?aux=' . uniqid() )}}"></script>

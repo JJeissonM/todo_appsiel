@@ -30,6 +30,7 @@ use App\Tesoreria\TesoMotivo;
 
 use App\Inventarios\InvGrupo;
 use App\Ventas\Services\PedidosRestauranteServices;
+use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\RecipeServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -435,19 +436,7 @@ class PedidoRestauranteController extends TransaccionController
 
     public function set_catalogos( $pdv_id )
     {
-        $pdv = Pdv::find( $pdv_id );
-        $datos = [
-                    'redondear_centena' => config('ventas_pos.redondear_centena'),
-                    'productos' => InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id),
-                    'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
-                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),
-                    'clientes' => Cliente::where( 'estado', 'Activo' )->get(),
-                    'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray() ) ,
-                    'forma_pago_default' => $pdv->cliente->forma_pago(),
-                    'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') )
-                ];
-        
-        return response()->json( $datos );
+        return (new CrudService())->set_catalogos( $pdv_id );
     }
 
     // mesero_id = vendedor_id

@@ -263,6 +263,7 @@
 
 @section('scripts')
 
+    <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/commons.js?aux=' . uniqid() )}}"></script>
 
     @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2)
@@ -293,7 +294,7 @@
 
         $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
 
-        $.fn.set_catalogos( $('#pdv_id').val() );
+        set_catalogos( $('#pdv_id').val() );
 
         function mySearchInputFunction() {
             // Solo busca en la primera columna de la tabla

@@ -2,6 +2,12 @@
 
 namespace App\VentasPos\Services;
 
+use App\Inventarios\InvProducto;
+use App\Inventarios\Services\RecipeServices;
+use App\Ventas\Cliente;
+use App\Ventas\ListaDctoDetalle;
+use App\Ventas\ListaPrecioDetalle;
+use App\VentasPos\Pdv;
 use \View;
 
 class CrudService
@@ -85,5 +91,24 @@ class CrudService
         }
 
         return $lista_campos;
+    }
+
+    public function set_catalogos( $pdv_id )
+    {
+        // El costo promedio del item se llama desde inv_productos
+        $pdv = Pdv::find( $pdv_id );
+        $datos = [
+                    'redondear_centena' => config('ventas_pos.redondear_centena'),
+                    'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
+                    'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
+                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( null ),
+                    'clientes' => Cliente::where( 'estado', 'Activo' )->get(),
+                    'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray(), ['vendedor_descripcion'=> $pdv->cliente->vendedor->tercero->descripcion] ) ,
+                    'forma_pago_default' => $pdv->cliente->forma_pago(),
+                    'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') ),
+                    'contornos_permitidos' => (new RecipeServices())->get_recetas_items_manejan_contornos()
+                ];
+        
+        return response()->json( $datos );
     }
 }

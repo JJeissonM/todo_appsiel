@@ -177,16 +177,16 @@ class RecipeServices
                 continue;
             }
 
-            $arr_items_contorno_ids = explode(',',$lineas_registros[$i]->lista_oculta_items_contorno_ids);
+            $arr_ids_ingredientes_seleccionados = explode(',',$lineas_registros[$i]->lista_oculta_items_contorno_ids);
             
-            if ( $arr_items_contorno_ids[0] == '' )
+            if ( $arr_ids_ingredientes_seleccionados[0] == '' )
             {
                 continue;
             }
 
-            array_push( $arr_items_contorno_ids, $lineas_registros[$i]->inv_producto_id);
+            array_push( $arr_ids_ingredientes_seleccionados, $lineas_registros[$i]->inv_producto_id);
 
-            $nuevo_item_id = $this->get_nuevo_item_id( $lineas_registros[$i]->inv_producto_id,$arr_items_contorno_ids);
+            $nuevo_item_id = $this->get_nuevo_item_id( $lineas_registros[$i]->inv_producto_id,$arr_ids_ingredientes_seleccionados);
 
             if ( $nuevo_item_id == null )
             {
@@ -199,10 +199,11 @@ class RecipeServices
         return $lineas_registros;
     }
 
-    public function get_nuevo_item_id( int $platillo_principal_id, array $arr_items_contorno_ids)
+    public function get_nuevo_item_id( int $ingrediente_principal_id, array $arr_ids_ingredientes_seleccionados)
     {
+        // ids de platillos que continene el ingrediente principal.
         $matched_ids = RecetaCocina::where([
-            ['item_ingrediente_id', '=', $platillo_principal_id]
+            ['item_ingrediente_id', '=', $ingrediente_principal_id]
         ])->get()
             ->pluck('item_platillo_id')
             ->toArray();
@@ -211,16 +212,18 @@ class RecipeServices
             return null;
         }
 
-        $grupos_platillos = RecetaCocina::whereIn('item_platillo_id', $matched_ids)->get()->groupBy('item_platillo_id');
+        $platillos_agrupados = RecetaCocina::whereIn('item_platillo_id', $matched_ids)
+                                        ->get()
+                                        ->groupBy('item_platillo_id');
         
         $keys_auxiliary_array = [];
-        foreach ($grupos_platillos as $item_platillo_id => $grupo) {
+        foreach ($platillos_agrupados as $item_platillo_id => $lista_ingredientes) {
             $key_array = (object)[
                 'item_platillo_id' => $item_platillo_id,
                 'arr_ids_items_ingredientes' => []
             ];
             
-            foreach ($grupo as $linea) {
+            foreach ($lista_ingredientes as $linea) {
                 $key_array->arr_ids_items_ingredientes[] =  $linea->item_ingrediente_id;
             }
 
@@ -229,7 +232,7 @@ class RecipeServices
 
         foreach ($keys_auxiliary_array as $linea) {            
 
-            if ($this->sameElements($linea->arr_ids_items_ingredientes,$arr_items_contorno_ids)) {
+            if ($this->sameElements($linea->arr_ids_items_ingredientes, $arr_ids_ingredientes_seleccionados)) {
                 return $linea->item_platillo_id;
             }
         }

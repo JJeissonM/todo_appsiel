@@ -3,8 +3,17 @@ function reset_select_items_contorno() {
     $('#item_contorno_id').html('<option value="0">+ Contorno</option>');
     var items_contorno = JSON.parse( document.getElementById('items_contorno').value );
 
+    // contornos_permitidos se llena en los Catalogos
+    var producto = contornos_permitidos.find(item => item.item_maneja_contorno_id === inv_producto_id );
+    
+    var items_contornos_permitidos = producto.ids_lista_contornos_permitidos
+    
 	$.each(items_contorno,function(key,item)
     {
+        if ( !items_contornos_permitidos.includes(item.id) ) {
+            return;
+        }
+
         if ( item.estado == 'Activo') {
             var label = item.descripcion;
             $('#item_contorno_id').append('<option value="' + item.id + '" >' + label + '</option>');
@@ -20,7 +29,7 @@ function add_item_contorno_id(object_select)
 
     var label = $('#item_contorno_id option:selected').text();
 
-    $('#lista_contornos').append('<li data-label_item_contorno="' + label + '">' + label + ' <button class="btn btn-danger btn-xs remove_item_contorno" data-item_contorno_id="' + object_select.val() + '"><i class="fa fa-trash"></i></button></li>');
+    $('#lista_contornos').append('<li data-label_item_contorno="' + label + '">' + label + ' <button class="btn btn-danger btn-xs remove_item_contorno" data-item_contorno_id="' + object_select.val() + '" onclick="remove_item_contorno_id(this)"><i class="fa fa-trash"></i></button></li>');
 
     $('#item_contorno_id option:selected').remove();
 
@@ -32,7 +41,7 @@ function remove_item_contorno_id(object_button)
 {
     var linea = object_button.closest("li");
 
-    $('#item_contorno_id').append('<option value="' + object_button.attr('data-item_contorno_id') + '">' + linea.attr('data-label_item_contorno') + ' </option>')
+    $('#item_contorno_id').append('<option value="' + object_button.dataset.item_contorno_id + '">' + linea.dataset.label_item_contorno + ' </option>')
 
     linea.remove();
 }
@@ -88,6 +97,8 @@ function show_form_add_contorno(object_button)
     
 	fila.find('.lbl_producto_descripcion').after( '<div class="well" id="form_lista_contornos"><div><ul id="lista_contornos"></ul></div><div><select id="item_contorno_id" style="width:100%;"><option value="0">+ Contorno</option></select><br><br></div><button class="btn btn-success btn-xs btn_confirm_contornos" style="display:none;"><i class="fa fa-btn fa-check"></i>Confirmar</button><button class="btn btn-default btn-xs btn_cancelar_add_contornos"><i class="fa fa-btn fa-cancel"></i>Cancelar</button></div>' );
     
+    inv_producto_id = parseInt( fila.find('.inv_producto_id').text() );
+
     reset_select_items_contorno();
 }
 
@@ -134,11 +145,13 @@ $(document).ready(function () {
         return false;
     });
 
+    /*
     $(document).on('click', '.remove_item_contorno', function () {
         remove_item_contorno_id($(this));
         
         return false;
     });
+    */
 
     $(document).on('click', '.btn_add_contorno', function () {
         
