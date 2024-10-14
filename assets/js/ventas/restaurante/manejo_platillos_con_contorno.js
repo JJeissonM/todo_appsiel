@@ -8,6 +8,8 @@ function reset_select_items_contorno() {
     
     var items_contornos_permitidos = producto.ids_lista_contornos_permitidos
     
+    console.log(items_contornos_permitidos);
+
 	$.each(items_contorno,function(key,item)
     {
         if ( !items_contornos_permitidos.includes(item.id) ) {
