@@ -3,8 +3,7 @@
     <div id="total_cantidad" style="display: none;"> 0</div>
 
     
-    <strong> Productos ingresados: </strong>
-    <span id="numero_lineas"> 0 </span>
+    @include('core.componentes.productos_y_cantidades_ingresadas')
 
     <br><br>
     <strong> Total factura </strong>

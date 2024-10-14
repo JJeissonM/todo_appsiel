@@ -292,7 +292,7 @@ input[type=number]::-webkit-outer-spin-button {
     
 	    $('#btn_guardar').hide();
 
-        agregar_la_linea_ini();
+        //agregar_la_linea_ini();
         
         $("#mitad_focus").focus();
         $("#linea_ingreso_default_aux").hide();
