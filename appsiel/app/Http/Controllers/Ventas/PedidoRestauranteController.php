@@ -157,6 +157,11 @@ class PedidoRestauranteController extends TransaccionController
             }
             
             $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+
+            if (!$grupo_inventario->mostrar_en_pagina_web) {
+                continue;
+            }
+
             if ( $grupo_inventario == null )
             {
                 return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
