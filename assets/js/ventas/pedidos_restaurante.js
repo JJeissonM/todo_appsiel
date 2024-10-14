@@ -174,6 +174,7 @@ function reset_linea_ingreso_default()
 function resetear_ventana()
 {
     $('#tabla_productos_facturados').find('tbody').html('');
+    set_cantidades_ingresadas();
     reset_campos_formulario();
     reset_tabla_ingreso_items();
     reset_resumen_de_totales();
@@ -596,6 +597,7 @@ $(document).ready(function () {
 
         var inv_producto_id = parseInt(fila.find('.inv_producto_id').text());
         $("#btn_"+inv_producto_id).show();
+        set_cantidades_ingresadas();
 
     });
 
@@ -657,7 +659,7 @@ $(document).ready(function () {
         var data = $("#form_create").serialize() + "&descripcion=" + $('#descripcion').val();
         
         $.post(url, data , function (doc_encabezado) {// Almacenar el pedido
-
+            
             enviar_impresion( doc_encabezado )
 
         });

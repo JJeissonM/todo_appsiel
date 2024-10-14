@@ -880,7 +880,7 @@ $(document).ready(function () {
 
     hay_productos--;
     numero_linea--;
-    $("#numero_lineas").text(hay_productos);    
+    $("#numero_lineas").text(hay_productos);
     set_cantidades_ingresadas();
 
     $("#total_valor_total").actualizar_medio_recaudo();
