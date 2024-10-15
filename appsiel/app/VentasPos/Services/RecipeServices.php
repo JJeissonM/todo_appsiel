@@ -50,7 +50,7 @@ class RecipeServices
             if ($cantidad_a_ingresar_platillo_facturado <= 0) {
                 continue;
             }
-
+            
             //$ingredientes = $receta_platillo->ingredientes();
             $costo_total_ingredientes = 0;
             foreach ($lineas_receta_platillo as $linea_receta) {
@@ -83,6 +83,7 @@ class RecipeServices
             return 99; // Type integer
         }
 
+        // Lineas auxiliares que se eliminan en el store() de la transaccion
         $lineas_desarme .= ',{"inv_producto_id":"","Producto":"00.00","motivo":"$00.00","costo_unitario":""},{"inv_producto_id":"Agregar productos","Producto":"Agregar productos","motivo":"Agregar productos","costo_unitario":"Agregar productos","cantidad":"Agregar productos","costo_total":"Calcular costos"}]';
 
         return $lineas_desarme; // Type string

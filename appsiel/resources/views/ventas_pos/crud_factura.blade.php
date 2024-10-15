@@ -137,10 +137,8 @@
     </div>
     
     <input type="hidden" id="usar_complemento_JSPrintManager" name="usar_complemento_JSPrintManager" value="{{ $params_JSPrintManager->usar_complemento_JSPrintManager }}">
-
-    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2 )
-        @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
-    @endif
+    
+    @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
 
     <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
         @include('ventas_pos.componente_vendedores')

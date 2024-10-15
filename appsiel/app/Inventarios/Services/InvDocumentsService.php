@@ -81,8 +81,8 @@ class InvDocumentsService
                                     
                 if ($motivo->movimiento == 'entrada')
                 {
-                    $costo_prom = $average_cost_serv->calculate_average_cost((int)$lineas_registros[$i]->inv_bodega_id, (int)$lineas_registros[$i]->inv_producto_id, (float)$lineas_registros[$i]->costo_unitario, $datos['fecha'], $cantidad);
-
+                    $costo_prom = $average_cost_serv->calculate_average_cost( (int)$lineas_registros[$i]->inv_bodega_id, (int)$lineas_registros[$i]->inv_producto_id, (float)$lineas_registros[$i]->costo_unitario, $datos['fecha'], $cantidad );
+                    
                     // Actualizo/Almaceno el costo promedio
                     $average_cost_serv->set_costo_promedio( (int)$lineas_registros[$i]->inv_bodega_id, (int)$lineas_registros[$i]->inv_producto_id, $costo_prom);
                 }

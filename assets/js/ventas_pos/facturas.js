@@ -320,6 +320,7 @@ function reset_campos_formulario() {
  * 
  */
 function ventana_imprimir() {
+  console.log('funct ventana imprimir')
   ventana_factura = window.open(
     "",
     "Impresión de factura POS",

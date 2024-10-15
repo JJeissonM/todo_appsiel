@@ -63,7 +63,7 @@ class AccumulationService
         $obj_inv_doc_serv = new RecipeServices();
         
         $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id);
-
+        
         return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios );
     }
 

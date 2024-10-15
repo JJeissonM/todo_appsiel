@@ -791,9 +791,18 @@ class FacturaPosController extends TransaccionController
         return 1;
     }   
 
+    // Llamado desde la vista Show (Boton de accion)
     public function acumular_una_factura_individual($factura_id)
     {
         $obj_acumm_serv = new AccumulationService( 0 );
+
+        $invoice = FacturaPos::find($factura_id);
+
+        $validation = $this->validar_existencias( $invoice->pdv_id );
+        if( $validation != 1 )
+        {
+            return redirect('pos_factura/' . $factura_id . '?id=20&id_modelo=230&id_transaccion=47' )->with('mensaje_error', $validation);
+        }
 
         $obj_acumm_serv->accumulate_one_invoice($factura_id);
 

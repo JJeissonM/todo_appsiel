@@ -212,8 +212,6 @@ function calcular_precio_total_lbl(fila)
 
     precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
 
-    console.log( precio_unitario, valor_unitario_descuento, precio_total ) 
-
     fila.find(".precio_unitario").text(precio_unitario);
 
     fila.find(".base_impuesto").text(base_impuesto_unitario);

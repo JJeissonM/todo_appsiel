@@ -79,7 +79,7 @@ function llenar_tabla_productos_facturados() {
       " " +
       $(this).find(".lbl_producto_unidad_medida").text() +
       " ($" +
-      $(this).find(".elemento_modificar").eq(1).text() +
+      $(this).find(".precio_unitario").text() +
       ") </td> <td> " +
       $(this).find(".lbl_tasa_impuesto").text() +
       "</td> <td> " +
@@ -98,7 +98,7 @@ function llenar_tabla_productos_facturados() {
         " </td> <td> " +
         $(this).find(".cantidad").text() +
         " ($" +
-        $(this).find(".elemento_modificar").eq(1).text() +
+        $(this).find(".precio_unitario").text() +
         ") </td> <td> " +
         $(this).find(".lbl_precio_total").text() +
         "  </td></tr>";
