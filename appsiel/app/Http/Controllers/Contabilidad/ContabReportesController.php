@@ -879,7 +879,7 @@ class ContabReportesController extends Controller
                                 }
 
                                 if ($linea_movim->cuenta->clase_cuenta == null) {
-                                    dd('La cuenta ' . $linea_movim->cuenta->descripcion . ', con ID=' . $linea_movim['contab_cuenta_id'] . ' No tiena asignada una Clase de Cuentas valida. Por favor, modifique la cuenta y asigne su Clase de cuentas nuevamente.');
+                                    dd('La cuenta &#171;' . $linea_movim->cuenta->descripcion . '&#187;, con ID=' . $linea_movim['contab_cuenta_id'] . ' No tiena asignada una Clase de Cuentas valida. Por favor, modifique la cuenta y asigne su Clase de cuentas nuevamente.');
                                 }
 
                                 return [
