@@ -800,7 +800,13 @@ $(document).ready(function () {
                         
                         $("#modal_usuario_supervisor").modal("hide");
 
-                        $('#div_pedidos_mesero_para_una_mesa').html('<div class="alert alert-danger"><strong>'+pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo+'!</strong> Pedido anulado correctamente.</div>');
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Pedido anulado correctamente!',
+                            text: pedido.doc_encabezado_documento_transaccion_prefijo_consecutivo
+                        });
+
+                        $('#div_pedidos_mesero_para_una_mesa').html('');
 
                         
                     });
