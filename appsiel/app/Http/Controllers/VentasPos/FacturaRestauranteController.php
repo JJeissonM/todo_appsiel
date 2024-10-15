@@ -49,7 +49,6 @@ class FacturaRestauranteController extends TransaccionController
 
         $user = Auth::user();
 
-
         /**
          * Validar resolución de Facturación
          */
@@ -88,7 +87,7 @@ class FacturaRestauranteController extends TransaccionController
                     ];
 
         $id_transaccion = 8; // 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
+        $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
         if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {

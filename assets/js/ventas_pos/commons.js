@@ -30,13 +30,49 @@ function validar_fecha_diferente() {
   }
 };
 
+/**
+ * 
+ */
+document.getElementById("btn_pruebas").addEventListener("click", function(event){
+  event.preventDefault()
+});
+
+/**
+ * 
+ * @param {*} value 
+ * @returns texto_motivo
+ */
+function get_text_from_select_for_value( value )
+{
+  let texto_motivo = '';
+  let a = document.getElementById("teso_motivo_id");
+  for (let i = 0; i < a.length; i++) {
+      let option = a.options[i];
+      if (option.value == value) {
+        texto_motivo = option.text;
+      }
+  }
+
+  return texto_motivo;
+}
+
+/**
+ * 
+ * @returns json_table2
+ */
 function get_json_registros_medios_recaudo() {
+
   var table2 = $("#ingreso_registros_medios_recaudo").tableToJSON();
+
   var json_table2 = "";
   if (table2.length == 1) {
-    // Solo tiene la linea de totales
+    // Solo tiene la linea de totales, se ingresan datos por defecto
+     
+    let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
+    let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
+
     var json_table2 =
-      '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' +
+      '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' +
       $("#caja_pdv_default_id").val() +
       "-" +
       $("#caja_pdv_default_label").val() +
@@ -58,7 +94,6 @@ function get_json_registros_medios_recaudo() {
     });
     json_table2 += "]";
   }
-
   return json_table2;
 }
 

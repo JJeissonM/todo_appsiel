@@ -40,10 +40,7 @@ use App\Ventas\Vendedor;
 
 use App\VentasPos\Pdv;
 
-use App\Ventas\Cliente;
 use App\Ventas\ResolucionFacturacion;
-use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\ListaDctoDetalle;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\NotaCredito;
 
@@ -59,8 +56,6 @@ use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Inventarios\Services\RecipeServices as ServicesRecipeServices;
-use App\Inventarios\Services\RecipeServices\RecipeServices as InvRecipeServices;
 use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Ventas\Services\PrintServices;
@@ -143,7 +138,7 @@ class FacturaPosController extends TransaccionController
                     ];
 
         $id_transaccion = 8; // 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
+        $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
         if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
@@ -422,7 +417,7 @@ class FacturaPosController extends TransaccionController
         }
 
         $id_transaccion = 8; // 8 = Recaudo cartera
-        $motivos = TesoMotivo::opciones_campo_select_tipo_transaccion('Recaudo cartera');
+        $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
         if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {

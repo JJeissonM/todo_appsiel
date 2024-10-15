@@ -5,6 +5,7 @@ namespace App\VentasPos\Services;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Inventarios\InvGrupo;
 use App\Sistema\Services\ModeloService;
+use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ResolucionFacturacion;
 use Illuminate\Support\Facades\Input;
@@ -253,5 +254,28 @@ class FacturaPosService
         }
 
         return 'ok';
+    }
+
+    public function get_motivos_tesoreria()
+    {
+        $vec['']='';
+
+        $motivo = TesoMotivo::find((int)config('tesoreria.motivo_tesoreria_ventas_contado'));
+        if ( $motivo != null ) {
+            $vec[$motivo->id] = $motivo->descripcion;
+        }
+
+        $motivo = TesoMotivo::find((int)config('ventas_pos.motivo_tesoreria_propinas'));
+        if ( $motivo != null ) {
+            $vec[$motivo->id] = $motivo->descripcion;
+        }
+
+        $motivo = TesoMotivo::find((int)config('ventas_pos.motivo_tesoreria_datafono'));
+        if ( $motivo != null ) {
+            $vec[$motivo->id] = $motivo->descripcion;
+        }
+
+        return $vec;
+        
     }
 }

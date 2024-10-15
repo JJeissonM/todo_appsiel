@@ -13,12 +13,7 @@ function enviar_impresion( doc_encabezado )
         }
     }
 
-    switch ( $("#imprimir_factura_automaticamente").val() ) {
-        case '0':
-            $("#msj_ventana_impresion_abierta").show();
-            ventana_imprimir();
-            break;
-    
+    switch ( $("#imprimir_factura_automaticamente").val() ) {    
         case '1':
             print_factura(doc_encabezado);
             break;
@@ -28,6 +23,10 @@ function enviar_impresion( doc_encabezado )
             }
             break;
         default:
+            // Case 0 o null
+            $("#msj_ventana_impresion_abierta").show();
+            ventana_imprimir();
+            break;
             break;
     }
 

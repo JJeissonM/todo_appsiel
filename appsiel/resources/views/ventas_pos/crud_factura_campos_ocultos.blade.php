@@ -48,6 +48,7 @@
         required="required">
 
 <input type="hidden" name="inv_motivo_id" id="inv_motivo_id" value="{{$inv_motivo_id}}">
+<input type="hidden" name="teso_motivo_default_id" id="teso_motivo_default_id" value="{{(int)config('tesoreria.motivo_tesoreria_ventas_contado')}}">
 
 <input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 <input type="hidden" name="lineas_registros_medios_recaudos" id="lineas_registros_medios_recaudos" value="0">
@@ -114,3 +115,6 @@
 
 <input type="hidden" name="permitir_precio_unitario_negativo" id="permitir_precio_unitario_negativo"
         value="{{ (int)config('ventas_pos.permitir_precio_unitario_negativo') }}">
+
+<!-- Boton para hacer pruebas -->
+<button onclick="get_json_registros_medios_recaudo();" style="display: none;" id="btn_pruebas">get_json_registros_medios_recaudo</button>

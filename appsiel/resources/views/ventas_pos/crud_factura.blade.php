@@ -54,9 +54,6 @@
 
             <hr>
 
-            <!-- Boton para hacer pruebas -->
-            <button onclick="ventana_imprimir();" style="display: none;">Mostrar plantilla</button>
-
             <div class="container-fluid">
                 <div class="row">
 
