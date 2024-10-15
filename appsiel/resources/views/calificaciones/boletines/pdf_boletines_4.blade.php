@@ -9,7 +9,16 @@
 		}else{
 
 			$lbl_asigatura = 'Asignaturas';
-		}		
+		}
+		
+		
+
+		$mostrar_proyectado = true;
+
+		$label_columna = 'Prom.';
+		if ( $mostrar_proyectado ) {
+			$label_columna = 'Proy.';
+		}
 	?>
 
 	@foreach($datos as $registro)
@@ -41,7 +50,7 @@
 				            <th style="text-align: center; width: 28px;"> P{{$periodo_lista->numero}} </th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
-				        <th style="text-align: center; width: 28px;"> Prom. </th>
+				        <th style="text-align: center; width: 28px;"> {{ $label_columna }} </th>
 						<?php $cant_columnas++; ?>
 					@endif
 

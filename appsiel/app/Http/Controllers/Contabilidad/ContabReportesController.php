@@ -878,6 +878,10 @@ class ContabReportesController extends Controller
                                     dd('La cuenta con ID=' . $linea_movim['contab_cuenta_id'] . ' No existe en el catalogo de Cuentas.', $linea_movim);
                                 }
 
+                                if ($linea_movim->cuenta->clase_cuenta == null) {
+                                    dd('La cuenta ' . $linea_movim->cuenta->descripcion . ', con ID=' . $linea_movim['contab_cuenta_id'] . ' No asignada de manera la Clase de Cuentas a la que pertenece. Por favor, modifique la cuenta y asigne su Clase de cuentas nuevamente.');
+                                }
+
                                 return [
                                     'cuenta_id' => $linea_movim['contab_cuenta_id'],
                                     'cuenta_descripcion' => $linea_movim->cuenta->descripcion,
