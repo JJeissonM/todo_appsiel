@@ -15,6 +15,12 @@ class Empresa extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Establecimiento', 'Identificación', 'Dirección', 'Teléfono', 'Estado'];
 
+
+    public function tipo_doc_identidad()
+    {
+        return $this->belongsTo('App\Core\TipoDocumentoId', 'id_tipo_documento_id');
+    }
+    
     public function colegio()
     {
         return $this->hasOne('App\Core\Colegio');

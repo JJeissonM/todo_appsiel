@@ -277,9 +277,16 @@ class FacturaPosController extends TransaccionController
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
             'doc_encabezado_descripcion' => $doc_encabezado->descripcion,
-            'empresa' => $empresa->toArray(),
+            'empresa' => array_merge($empresa->toArray(),[
+                'descripcion_tipo_documento_identidad' => $empresa->tipo_doc_identidad->abreviatura,
+                'descripcion_ciudad' => $empresa->ciudad->descripcion,
+            ]),
             'etiquetas' => $etiquetas,
-            'resolucion' => $arr_resolucion
+            'resolucion' => $arr_resolucion,
+            'cliente_info' => array_merge( $doc_encabezado->cliente->tercero->toArray(), [
+                'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente->tercero->tipo_doc_identidad->abreviatura,
+                'descripcion_ciudad' => $doc_encabezado->cliente->tercero->ciudad->descripcion,
+            ])
         ];        
     }
 

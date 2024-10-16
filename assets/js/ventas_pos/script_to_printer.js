@@ -179,6 +179,7 @@ function crear_string_json_para_envio_servidor_impresion_factura( doc_encabezado
                     items_quantity: doc_encabezado.cantidad_total_productos,
                     'detail': doc_encabezado.doc_encabezado_descripcion,
                     'empresa': doc_encabezado.empresa,
+                    'cliente_info': doc_encabezado.cliente_info,
                     'etiquetas': doc_encabezado.etiquetas,
                     'resolucion': doc_encabezado.resolucion
                 }
@@ -190,7 +191,9 @@ function crear_string_json_para_envio_servidor_impresion_factura( doc_encabezado
         
         lines[i] = {
                     'item': $(this).find('.lbl_producto_descripcion').text(),
-                    'quantity': $(this).find('.cantidad').text()
+                    'quantity': $(this).find('.cantidad').text(),
+                    'unit_price': $(this).find('.precio_unitario').text(),
+                    'total_amount': $(this).find('.precio_total').text()
                 }
         i++
     });
