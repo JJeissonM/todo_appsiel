@@ -15,7 +15,7 @@
 
 		$label_columna = 'Prom.';
 		if ( $mostrar_calificacion_requerida ) {
-			$label_columna = 'Requerida';
+			$label_columna = 'Nota <br> Mínima <br> Requerida';
 		}
 	?>
 
@@ -48,7 +48,7 @@
 				            <th style="text-align: center; width: 28px;"> P{{$periodo_lista->numero}} </th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
-				        <th style="text-align: center; width: 28px;"> {{ $label_columna }} </th>
+				        <th style="text-align: center; width: 28px;"> {!! $label_columna !!} </th>
 						<?php $cant_columnas++; ?>
 					@endif
 
