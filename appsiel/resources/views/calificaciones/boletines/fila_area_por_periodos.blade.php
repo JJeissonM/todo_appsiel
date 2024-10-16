@@ -88,14 +88,32 @@
                     $prom_area = $total_poderadas / $n;
                 }
 
-                $escala_valoracion_prom_area = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion_media_ponderada, $periodo->periodo_lectivo_id );$lbl_escala_valoracion_prom_area = '';
+                $lbl_calificacion_area = number_format( $prom_area, $decimales, ',', '.' );
+                /*
+                $escala_valoracion_prom_area = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion_media_ponderada, $periodo->periodo_lectivo_id );
+                
+                $lbl_escala_valoracion_prom_area = '';
                 if ( $escala_valoracion_prom_area )
                 {
                     $lbl_escala_valoracion_prom_area = $escala_valoracion_prom_area->nombre_escala;
+                } 
+                */               
+	
+                if( $mostrar_calificacion_requerida )
+                {
+                    $tope_escala_valoracion_minima = App\Calificaciones\EscalaValoracion::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
+
+                    $cali_faltante = 4 * $tope_escala_valoracion_minima - $total_poderadas;
+
+                    if ( $cali_faltante > 5) {
+                        $lbl_calificacion_area = 'Perdida';
+                    }else{
+                        $lbl_calificacion_area = number_format( $cali_faltante, $decimales, ',', '.' );
+                    }
                 }
             ?>
             
-            <td style="text-align: center; width: 50px; padding: 1px;"> {{ number_format( $prom_area, $decimales, ',', '.' ) }} </td>
+            <td style="text-align: center; width: 50px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
 
             @if($mostrar_logros)
                 <td>&nbsp;</td>

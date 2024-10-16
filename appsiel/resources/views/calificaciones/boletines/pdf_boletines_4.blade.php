@@ -9,15 +9,13 @@
 		}else{
 
 			$lbl_asigatura = 'Asignaturas';
-		}
-		
-		
+		}		
 
-		$mostrar_proyectado = true;
+		$mostrar_calificacion_requerida = true;
 
 		$label_columna = 'Prom.';
-		if ( $mostrar_proyectado ) {
-			$label_columna = 'Proy.';
+		if ( $mostrar_calificacion_requerida ) {
+			$label_columna = 'Requerida';
 		}
 	?>
 

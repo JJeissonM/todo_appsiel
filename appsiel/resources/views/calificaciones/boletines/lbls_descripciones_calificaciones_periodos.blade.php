@@ -8,7 +8,7 @@
 
 	$decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
 
-	$prom = 0;
+	$sumatoria_calificaciones_peridos = 0;
 	$n = 0;
 	foreach($periodos as $periodo_lista)
 	{
@@ -28,7 +28,7 @@
 				$lbl_cali_periodo = number_format( $cali_periodo, $decimales, ',', '.' ) . '<sup>n</sup>';
 			}
 
-			$prom += $cali_periodo;
+			$sumatoria_calificaciones_peridos += $cali_periodo;
 			$n++;
 		}
 
@@ -39,7 +39,7 @@
 	$lbl_cali_prom = '&nbsp;';
 	if( $n != 0 )
 	{
-		$lbl_cali_prom = number_format( $prom / $n, $decimales, ',', '.' );
+		$lbl_cali_prom = number_format( $sumatoria_calificaciones_peridos / $n, $decimales, ',', '.' );
 	}
 
 	$lbl_calificacion = $lbl_cali_prom;
@@ -68,7 +68,20 @@
 		$lbl_calificacion = '&nbsp;';
 	}
 	
-	echo '<td style="text-align: center; width: 28px;"> ' . $lbl_calificacion . ' </td>';
+	if( $mostrar_calificacion_requerida )
+	{
+		$tope_escala_valoracion_minima = App\Calificaciones\EscalaValoracion::where( 'periodo_lectivo_id', $periodo->periodo_lectivo_id )->orderBy('calificacion_minima','ASC')->first()->calificacion_maxima;
+
+		$cali_faltante = 4 * $tope_escala_valoracion_minima - $sumatoria_calificaciones_peridos;
+
+		if ( $cali_faltante > 5) {
+			$lbl_calificacion = 'Perdida';
+		}else{
+			$lbl_calificacion = number_format( $cali_faltante, $decimales, ',', '.' );
+		}
+	}
+
+	echo '<td style="text-align: center; width: 28px;"> ' . $lbl_calificacion. ' </td>';
 
 ?>
 
