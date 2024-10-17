@@ -11,7 +11,7 @@
 			$lbl_asigatura = 'Asignaturas';
 		}		
 
-		$mostrar_calificacion_requerida = true;
+		$mostrar_calificacion_requerida = false; // Este se debe enviar desde el formulario de generacion de boletines.
 
 		$label_columna = 'Prom.';
 		if ( $mostrar_calificacion_requerida ) {

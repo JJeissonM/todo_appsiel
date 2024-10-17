@@ -307,8 +307,6 @@
 				var formData = new FormData(document.getElementById('formulario'));
 				formData.append('estudiante_id', estudiante_id);
 
-				console.log(estudiante_id, formData)
-
 				$.ajax({
 					url: url,
 					type: "post",

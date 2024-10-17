@@ -33,6 +33,11 @@
 		}
 
 		$lbl_calificacion = $lbl_cali_periodo;
+
+		if ( $linea->asignatura_id == 146 && $periodo_lista->id == 3) { // Italiano
+			//$lbl_cali_periodo = '-';
+		}
+
 		echo '<td style="text-align: center; width: 28px;"> ' . $lbl_cali_periodo . ' </td>';
 	}
 
@@ -76,6 +81,9 @@
 
 		if ( $cali_faltante > 5) {
 			$lbl_calificacion = 'Perdida';
+			if ( $linea->asignatura_id == 146 ) { // Italiano
+				//$lbl_calificacion = '-';
+			}
 		}else{
 			$lbl_calificacion = number_format( $cali_faltante, $decimales, ',', '.' );
 		}

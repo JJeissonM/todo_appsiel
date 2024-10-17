@@ -39,6 +39,11 @@
                     $advertencia = '';
                     foreach ( $lineas_cuerpo_boletin as $datos_linea )
                     {
+                        if($datos_linea->asignatura_id == 146) // Italiano
+                        {
+                            //continue;
+                        }
+
                         if ( $datos_linea->area_id == $linea->area_id )
                         {
                             $calificacion_nota_original = $datos_linea->calificaciones_todos_los_periodos_asignatura_estudiante->where('id_periodo', $periodo_lista->id)->first();
@@ -58,7 +63,11 @@
                                 }
                             }
 
-                            $calificacion_media_ponderada += ($cali_periodo * $datos_linea->peso_asignatura / 100 );
+                            $peso_asignatura = $datos_linea->peso_asignatura;
+                            if (in_array( $datos_linea->asignatura_id, [127,128] )) { // Las acompañantes de Italiano
+                                //$peso_asignatura += 16.667;
+                            }
+                            $calificacion_media_ponderada += ($cali_periodo * $peso_asignatura / 100 );
                             if ( $datos_linea->peso_asignatura == 0 )
                             {
                                 $advertencia = 'Una o mas asignaturas no tienen peso para el cálculo de la media ponderada. Sus valores en la poderación son cero.';
@@ -107,6 +116,9 @@
 
                     if ( $cali_faltante > 5) {
                         $lbl_calificacion_area = 'Perdida';
+                        if ( $linea->asignatura_id == 146 ) { // Italiano
+                            //$lbl_calificacion_area = '-';
+                        }
                     }else{
                         $lbl_calificacion_area = number_format( $cali_faltante, $decimales, ',', '.' );
                     }
