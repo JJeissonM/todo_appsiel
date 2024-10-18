@@ -1197,7 +1197,7 @@ $(document).ready(function(){
 		console.log('fecha',fecha)
 		fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 		
-		console.log('fecha2',fecha)
+		console.log('fecha2',fecha, fecha.getDate(), dias_plazo, fecha.getDate() + (dias_plazo + 1) )
 		
 		var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
 		var dia = fecha.getDate();// + 1; // Se le suma 1,
