@@ -113,6 +113,14 @@ class FacturaController extends TransaccionController
 
     public function store( Request $request )
     {
+        if ( (int)$request->inv_bodega_id == 0 ) {
+            $request['inv_bodega_id'] = (int)config('ventas.inv_bodega_id');
+        }
+
+        if ( (int)$request->vendedor_id == 0 ) {
+            $request['vendedor_id'] = (int)config('ventas.vendedor_id');
+        }
+        
         // 1ra. Crear documento de salida de inventarios (REMISIÓN)
         $remision = new RemisionVentas();
         $documento_remision = $remision->crear_nueva( $request->all() );

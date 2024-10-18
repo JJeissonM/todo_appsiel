@@ -131,8 +131,6 @@ class VentaController extends TransaccionController
             $request['vendedor_id'] = (int)config('ventas.vendedor_id');
         }
 
-        //dd($request->all());
-
         $datos = $request->all(); // Datos originales
         
         $lineas_registros = json_decode($request->lineas_registros);
