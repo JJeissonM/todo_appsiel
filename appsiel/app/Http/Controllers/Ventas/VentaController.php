@@ -794,10 +794,6 @@ class VentaController extends TransaccionController
         if (Auth::user()->hasRole('Vendedor')) {
             $modelo_id = 216;
         }
-        
-        if ( Input::get('url_id') == 14 ) { // Contabilidad
-            $modelo_id = 7; // Terceros
-        }
 
         if (Aplicacion::find(13)->estado == 'Inactivo') { // 13 = Aplicacion Ventas
             $modelo_id = 7; // Terceros

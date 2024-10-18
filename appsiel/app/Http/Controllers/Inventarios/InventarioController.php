@@ -51,6 +51,7 @@ use App\Inventarios\Services\AverageCost;
 use App\Inventarios\Services\InvDocumentsLinesService;
 use App\Inventarios\Services\RecipeServices;
 use App\Nomina\OrdenDeTrabajo;
+use App\Sistema\Aplicacion;
 use App\Ventas\ListaPrecioDetalle;
 use App\VentasPos\FacturaPos;
 
@@ -1017,9 +1018,11 @@ class InventarioController extends TransaccionController
         
         // Linea crear nuevo registro
         $modelo_id = 22; // Items
-        if ( Input::get('url_id') == 14 ) { // Contabilidad
+
+        if (Aplicacion::find(8)->estado == 'Inactivo') { // 8 = Aplicacion Inventarios
             $modelo_id = 220; // Servicios
         }
+
         $href =  url( 'web/create?id=' . Input::get('url_id') . '&id_modelo=' . $modelo_id . '&id_transaccion' );
         $html .= '<a href="'. $href . '" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
 
