@@ -3,9 +3,8 @@
 namespace App\Contabilidad;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ContabDocEncabezado extends Model
 {
@@ -48,10 +47,12 @@ class ContabDocEncabezado extends Model
     
     public function get_movimiento_contable()
     {
-        return ContabMovimiento::where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
-                            ->where('contab_movimientos.core_tipo_transaccion_id', $this->core_tipo_transaccion_id)
-                            ->where('contab_movimientos.consecutivo', $this->consecutivo)
-                            ->get();
+        return ContabMovimiento::where([
+                                        ['core_tipo_transaccion_id', '=', $this->core_tipo_transaccion_id],
+                                        ['core_tipo_doc_app_id', '=', $this->core_tipo_doc_app_id],
+                                        ['consecutivo', '=', $this->consecutivo]
+                                    ])
+                                ->get();
     }
 
     public static function consultar_registros($nro_registros, $search)
