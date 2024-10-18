@@ -15,7 +15,7 @@ class Servicio extends Model
 
     protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Referencia', 'Descripción', 'UM-1', 'Grupo inventario', 'Precio compra', 'Precio venta', 'IVA', 'Tipo', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Referencia', 'Descripción', 'UM-1', 'Grupo', '% Rentabilidad', 'Precio venta', 'IVA', 'Tipo', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
