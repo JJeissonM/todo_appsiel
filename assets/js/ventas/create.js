@@ -1190,7 +1190,10 @@ $(document).ready(function(){
         $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
 
         var forma_pago = 'contado';
-        var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
+		var dias_plazo = 0;
+		if ( item_sugerencia.attr('data-dias_plazo') != '' ) {
+			dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
+		}
 
 		console.log( 'dias_plazo', item_sugerencia.attr('data-dias_plazo'), dias_plazo )
 
