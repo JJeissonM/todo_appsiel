@@ -40,6 +40,7 @@
             ?>                    
                     
                 @if($movimiento[$i]['id'] != 0)
+
                     <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}">
                         <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
                         <td> {{ $movimiento[$i]['tercero'] }} </td>
@@ -48,9 +49,9 @@
                         <td> {{ $movimiento[$i]['doc_proveedor_prefijo'] }} - {{ $movimiento[$i]['doc_proveedor_consecutivo'] }} </td>
                         <td> {{ $movimiento[$i]['fecha'] }} </td>
                         <td> {{ $movimiento[$i]['fecha_vencimiento'] }} </td>
-                        <td> ${{ number_format($movimiento[$i]['valor_documento'], 2, ',', '.') }} </td>
-                        <td> ${{ number_format($movimiento[$i]['valor_pagado'], 2, ',', '.') }} </td>
-                        <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['saldo_pendiente']}}"> ${{ number_format($movimiento[$i]['saldo_pendiente'], 2, ',', '.') }} </td>
+                        <td style="text-align: right;"> ${{ number_format($movimiento[$i]['valor_documento'], 2, ',', '.') }} </td>
+                        <td style="text-align: right;"> ${{ number_format($movimiento[$i]['valor_pagado'], 2, ',', '.') }} </td>
+                        <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['saldo_pendiente']}}" style="text-align: right;"> ${{ number_format($movimiento[$i]['saldo_pendiente'], 2, ',', '.') }} </td>
 
                         <td style="display: none;" class="td_boton"> 
                             {{ Form::text('text_aplicar_'.$movimiento[$i]['id'], $movimiento[$i]['saldo_pendiente'], [ 'id' => 'text_aplicar_'.$movimiento[$i]['id'], 'class' => 'text_aplicar' ] ) }} 
@@ -60,15 +61,15 @@
                 @else
                     <?php 
                         if ( $movimiento[$i]['sub_total'] > -0.1 && $movimiento[$i]['sub_total'] < 0.1 ) {
-                            continue;
+                            //continue;
                         }
                     ?>
-                    <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}" style="background: #4a4a4a; color: white;">
+                    <tr class="fila-{{$j}}" id="{{ $movimiento[$i]['id'] }}" style="background: #afaeae; color: black;"> <!-- Celda Totales -->
                         <td style="display: none;"> {{ $movimiento[$i]['id'] }} </td>
                         <td colspan="5"></td>
                         <td><strong>Sub Total</strong></td>
                         <td colspan="2"></td>
-                        <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['sub_total']}}"><strong> ${{ number_format($movimiento[$i]['sub_total'], 2, ',', '.') }} </strong></td>
+                        <td class="col_saldo_pendiente" data-saldo_pendiente="{{$movimiento[$i]['sub_total']}}" style="text-align: right;"><strong> ${{ number_format($movimiento[$i]['sub_total'], 2, ',', '.') }} </strong></td>
                     </tr>
                 @endif
 
@@ -83,12 +84,13 @@
             } // END FOR
             ?>
 
-            <tr  class="fila-{{$j}}" >
+            <tr  class="fila-{{$j}}" style="text-weight:bold;">
                 <td style="display: none;"> &nbsp; </td>
-                <td colspan="6"> &nbsp; </td>
-                <td> ${{ number_format($total_valor_documento, 2, ',', '.') }} </td>
-                <td> ${{ number_format($total_valor_pagado, 2, ',', '.') }} </td>
-                <td> ${{ number_format($total_saldo_pendiente, 2, ',', '.') }} </td>
+                <td colspan="5"> &nbsp; </td>
+                <td> Saldos Totales </td>
+                <td style="text-align: right;"> ${{ number_format($total_valor_documento, 2, ',', '.') }} </td>
+                <td style="text-align: right;"> ${{ number_format($total_valor_pagado, 2, ',', '.') }} </td>
+                <td style="text-align: right;"> ${{ number_format($total_saldo_pendiente, 2, ',', '.') }} </td>
                 <td style="display: none;" class="td_boton"> &nbsp; </td>
             </tr>
         </tbody>

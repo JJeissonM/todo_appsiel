@@ -36,14 +36,17 @@ class ReportesController extends Controller
         $operador = '=';
         $cadena = $request->core_tercero_id;
         $clase_proveedor_id = (int)$request->clase_proveedor_id;
+        $movimiento_a_mostrar = $request->movimiento_a_mostrar;
 
         if ( $request->core_tercero_id == '' )
         {
             $operador = 'LIKE';
             $cadena = '%'.$request->core_tercero_id.'%';
         }
+
+        
     
-        $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena );
+        $movimiento = CxpMovimiento::get_documentos_referencia_tercero( $operador, $cadena );
 
         if (count($movimiento) > 0) {
             $movimiento = collect($movimiento);
@@ -52,7 +55,6 @@ class ReportesController extends Controller
             $collection = collect($collection);
             foreach ($group as $key => $item) {
                 $aux = $item->pluck('saldo_pendiente');
-                $sum = $aux->sum();
                 
                 // Filtrar clase de proveedor
                 if ($clase_proveedor_id != '') {
@@ -68,11 +70,23 @@ class ReportesController extends Controller
                     }                    
                 }
                 
-                foreach ($item as $value){
+                $sum = 0;
+                foreach ($item as $value)
+                {
+                    if ( $movimiento_a_mostrar == 'cartera' && $value['valor_documento'] < 0 ) {
+                        continue;
+                    }
+                
+                    if ( $movimiento_a_mostrar == 'anticipos' && $value['valor_documento'] > 0 ) {
+                        continue;
+                    }
 
+                    $sum += $value['saldo_pendiente'];
 
                     $collection[] = $value;
+
                 }
+
                 $obj = ["id" => 0,
                     "core_tipo_transaccion_id" => '',
                     "core_tipo_doc_app_id" => '',
@@ -91,10 +105,11 @@ class ReportesController extends Controller
                 ];
                 $collection[]=$obj;
             }
+
             $movimiento = $collection;
         }
 
-        $vista = View::make( 'compras.incluir.ctas_por_pagar', compact('movimiento') )->render();
+        $vista = View::make( 'compras.incluir.ctas_por_pagar', compact('movimiento', 'movimiento_a_mostrar') )->render();
 
         Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
    

@@ -196,4 +196,34 @@ class CxpMovimiento extends Model
       );
     }
   }
+
+  public static function get_documentos_referencia_tercero( $operador, $cadena)
+  {
+    $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxp_movimientos.consecutivo) AS documento';
+
+    return DocumentosPendientes::leftJoin('core_terceros','core_terceros.id','=','cxp_movimientos.core_tercero_id')
+                  ->leftJoin('core_tipos_docs_apps','core_tipos_docs_apps.id','=','cxp_movimientos.core_tipo_doc_app_id')
+                  ->where('cxp_movimientos.core_empresa_id',Auth::user()->empresa_id)
+                  ->where('cxp_movimientos.core_tercero_id', $operador, $cadena)
+                              ->where('cxp_movimientos.saldo_pendiente', '<>', 0)
+                  ->select(
+                                          'cxp_movimientos.id',
+                                          'cxp_movimientos.core_tipo_transaccion_id',
+                                          'cxp_movimientos.core_tipo_doc_app_id',
+                                          'cxp_movimientos.consecutivo',
+                                          'core_terceros.descripcion AS tercero',
+                                          'core_terceros.numero_identificacion',
+                                          DB::raw($select_raw),
+                                          'cxp_movimientos.fecha',
+                                          'cxp_movimientos.fecha_vencimiento',
+                                          'cxp_movimientos.doc_proveedor_prefijo',
+                                          'cxp_movimientos.doc_proveedor_consecutivo',
+                                          'cxp_movimientos.valor_documento',
+                                          'cxp_movimientos.valor_pagado',
+                                          'cxp_movimientos.saldo_pendiente',
+                                          'cxp_movimientos.core_tercero_id',
+                                          'cxp_movimientos.estado')
+                              ->orderBy('cxp_movimientos.fecha')
+                  ->get()->toArray(); 
+  }
 }
