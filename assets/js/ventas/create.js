@@ -1189,12 +1189,19 @@ $(document).ready(function(){
 
         var forma_pago = 'contado';
         var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
+
+		console.log( 'dias_plazo', item_sugerencia.attr('data-dias_plazo'), dias_plazo )
+
         if ( dias_plazo > 0 ) { forma_pago = 'credito'; }
         $('#forma_pago').val( forma_pago );
 
         // Para llenar la fecha de vencimiento
         var fecha = new Date( $('#fecha').val() );
-		console.log('fecha',fecha, fecha.getDate(), dias_plazo, fecha.getDate() + (dias_plazo + 1))
+		
+		console.log('fecha',fecha)
+		
+		console.log('fecha par actualizar',fecha, fecha.getDate(), dias_plazo, fecha.getDate() + (dias_plazo + 1))
+
 		fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 		
 		console.log('fecha2', fecha )
