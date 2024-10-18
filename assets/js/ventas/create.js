@@ -1194,10 +1194,10 @@ $(document).ready(function(){
 
         // Para llenar la fecha de vencimiento
         var fecha = new Date( $('#fecha').val() );
-		console.log('fecha',fecha)
+		console.log('fecha',fecha, fecha.getDate(), dias_plazo, fecha.getDate() + (dias_plazo + 1))
 		fecha.setDate( fecha.getDate() + (dias_plazo + 1) );
 		
-		console.log('fecha2',fecha, fecha.getDate(), dias_plazo, fecha.getDate() + (dias_plazo + 1) )
+		console.log('fecha2', fecha )
 		
 		var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
 		var dia = fecha.getDate();// + 1; // Se le suma 1,
