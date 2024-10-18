@@ -318,7 +318,9 @@
 
 			    	var url = '../compras_consultar_proveedores';
 
-					$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+					var url_id = $('#url_id').val();
+
+					$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
 						.done(function( data ) {
 							// Se llena el DIV con las sugerencias que arooja la consulta
 			                $('#div_list_suggestions').show().html(data);
@@ -402,8 +404,6 @@
 			    	var url = '../inv_consultar_productos';
 
 					var url_id = $('#url_id').val();
-
-					console.log(url_id)
 
 					$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
 						.done(function( data ) {
