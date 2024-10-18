@@ -50,6 +50,7 @@ use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
 
 use App\Matriculas\FacturaAuxEstudiante;
+use App\Sistema\Aplicacion;
 use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentHeaderService;
 use App\Ventas\Services\PrintServices;
@@ -795,6 +796,10 @@ class VentaController extends TransaccionController
         }
         
         if ( Input::get('url_id') == 14 ) { // Contabilidad
+            $modelo_id = 7; // Terceros
+        }
+
+        if (Aplicacion::find(13)->estado == 'Inactivo') { // 13 = Aplicacion Ventas
             $modelo_id = 7; // Terceros
         }
 
