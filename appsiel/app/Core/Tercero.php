@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Sistema\Modelo;
 use App\Core\Departamento;
+use App\Core\Services\TerceroService;
 use App\Matriculas\Responsableestudiante;
 use App\Nomina\NomContrato;
 use App\Ventas\Cliente;
@@ -252,20 +253,15 @@ class Tercero extends Model
 
     public function store_adicional($datos, $registro)
     {
-    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+    	if ( Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
         {
-            return null;
+            (new TerceroService())->asignar_representante_legal($datos, $registro->id);
         }
 
-        if (isset($datos['representante_legal_id'])) {
-            if( (int)$datos['representante_legal_id'] != 0 )
-            {
-                DB::table('core_tercero_tiene_representante_legal')->insert([
-                                                'tercero_id' => $registro->id,
-                                                'representante_legal_id' => (int)$datos['representante_legal_id']
-                                            ]);
-            }
+        if ((int)config('contabilidad.crear_cliente_y_proveedor_al_crear_tercero')) {
+            (new TerceroService())->crear_tercero_como_cliente_y_proveedor($registro->id);
         }
+        
     }
 
     public static function get_campos_adicionales_edit($lista_campos, $registro)
@@ -292,50 +288,14 @@ class Tercero extends Model
 
     public function update_adicional($datos, $id)
     {
-    	if ( !Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
+    	if ( Schema::hasTable( 'core_tercero_tiene_representante_legal' ) )
         {
-            return null;
+            (new TerceroService())->actualizar_representante_legal($datos, $id);
         }
 
-        $tercero = Tercero::find( $id );
-
-        $representante_legal_actual = DB::table('core_tercero_tiene_representante_legal')->where('tercero_id', '=', $tercero->id)->get();
-
-        // Ya tiene rep. legal asociado
-        if( !empty( $representante_legal_actual ) )
-        {
-            $representante_legal_actual_id = $representante_legal_actual[0]->representante_legal_id;
-
-            // Cambió el rep. legal
-            if ( $representante_legal_actual_id != (int)$datos['representante_legal_id'] )
-            {
-                // Cambió por uno vacío
-                if ( (int)$datos['representante_legal_id'] == 0 )
-                {
-                    // Se elimina
-                    DB::table( 'core_tercero_tiene_representante_legal' )->where( 'tercero_id', '=', $id)->delete();
-                }else{
-                    // Se actualiza
-                    DB::table( 'core_tercero_tiene_representante_legal' )->where( 'tercero_id', '=', $id)
-                                                                    ->update( [ 
-                                                                                'representante_legal_id' => (int)$datos['representante_legal_id'] 
-                                                                            ] );
-                }
-                    
-            }
-        }else{
-            // Si no tiene rep. legal
-
-            if (isset($datos['representante_legal_id'])) {
-                if( (int)$datos['representante_legal_id'] != 0 )
-                {
-                    DB::table('core_tercero_tiene_representante_legal')->insert([
-                                                    'tercero_id' => $tercero->id,
-                                                    'representante_legal_id' => (int)$datos['representante_legal_id']
-                                                ]);
-                }
-            }
-        }
+        if ((int)config('contabilidad.crear_cliente_y_proveedor_al_crear_tercero')) {
+            (new TerceroService())->crear_tercero_como_cliente_y_proveedor( $id );
+        }        
     }
 
     public function show_adicional($lista_campos, $registro)

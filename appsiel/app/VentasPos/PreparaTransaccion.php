@@ -37,10 +37,6 @@ class PreparaTransaccion
         }
 
         // Controles (Inputs)
-
-        /*
-                            Form::text( 'inv_producto_id_aux_2', '', [ 'class' => 'form-control text_input_sugerencias', 'id' => 'inv_producto_id_aux', 'data-url_busqueda' => url('inv_consultar_productos_v2'), 'autocomplete'  => 'off' ] ) . Form::hidden( 'inv_producto_id', null, [ 'id' => 'inv_producto_id' ] )
-        */
         
         $fila_controles_formulario .= '</tr>';
 

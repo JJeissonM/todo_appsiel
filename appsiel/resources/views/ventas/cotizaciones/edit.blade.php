@@ -44,9 +44,9 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-				{{ Form::hidden('url_id',Input::get('id')) }}
-				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
-				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+				{{ Form::hidden('url_id', Input::get('id'), ['id'=>'url_id']) }}
+				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
+				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion']) }}
 
 				{{ Form::hidden('inv_bodega_id_aux',1,['id'=>'inv_bodega_id_aux']) }}
 
@@ -464,7 +464,9 @@
 		    	// Realizar consulta y mostar sugerencias
 		    	var url = "{{ url('inv_consultar_productos') }}";
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+				var url_id = $('#url_id').val();
+
+				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
 					.done(function( data ) {
 						//Escribimos las sugerencias que nos manda la consulta
 		                $('#suggestions').show().html(data);

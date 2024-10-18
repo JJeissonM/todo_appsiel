@@ -1017,7 +1017,10 @@ class InventarioController extends TransaccionController
         
         // Linea crear nuevo registro
         $modelo_id = 22; // Items
-        $href =  url( 'web/create?id=8&id_modelo=' . $modelo_id . '&id_transaccion' );
+        if ( Input::get('url_id') == 14 ) { // Contabilidad
+            $modelo_id = 220; // Servicios
+        }
+        $href =  url( 'web/create?id=' . Input::get('url_id') . '&id_modelo=' . $modelo_id . '&id_transaccion' );
         $html .= '<a href="'. $href . '" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
 
         $html .= '</div>';

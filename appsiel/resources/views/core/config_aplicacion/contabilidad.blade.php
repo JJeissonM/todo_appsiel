@@ -73,7 +73,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$crear_cliente_y_proveedor_al_crear_tercero = 1;
+
+								if( isset($parametros['crear_cliente_y_proveedor_al_crear_tercero'] ) )
+								{
+									$crear_cliente_y_proveedor_al_crear_tercero = $parametros['crear_cliente_y_proveedor_al_crear_tercero'];
+								}
+							?>
+							{{ Form::bsSelect('crear_cliente_y_proveedor_al_crear_tercero', $crear_cliente_y_proveedor_al_crear_tercero, 'Crear Cliente y Proveedor al crear un Tercero', ['No','Si'], []) }}
 						</div>
 					</div>
 

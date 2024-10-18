@@ -122,23 +122,6 @@
 	</div>
 
 	<?php 
-		/* ESTA PRUEBA FALLÓ - - MEJORAR 
-		$modelo = App\Sistema\Modelo::find( 129 ); // Detalles de listas de precios 
-
-		$lista_campos = App\Http\Controllers\Sistema\ModeloController::get_campos_modelo($modelo, '', 'create');
-		$url_form_create = 'web';
-        if ( $modelo->url_form_create != '')
-        {
-            $url_form_create = $modelo->url_form_create;
-        }
-
-        $form_create = [
-            'url' => $url_form_create,
-            'campos' => $lista_campos
-        ];
-
-		$contenido_modal = \View::make( 'layouts.form_create', compact('form_create') )->render();
-		*/
 
 		$contenido_modal = Form::open(['url'=>'vtas_agregar_precio_lista','id'=>'form_create','files' => true]).Form::bsInputListaSugerencias( 'inv_producto_id', [null,''], 'Producto', ['required'=>'required','class'=>'form-control text_input_sugerencias','data-url_busqueda'=>url('inv_consultar_productos_v2'),'data-clase_modelo'=>'App\\Inventarios\\InvProducto'] ).'<br><br><br>'.Form::bsFecha('fecha_activacion',null,'Fecha activación',[],['required'=>'required']).'<br><br>'.Form::bsText('precio',null, 'Precio', ['required'=>'required'] ).Form::hidden('lista_precios_id', $registro->id).Form::hidden('url_id',Input::get('id')).Form::hidden('url_id_modelo', Input::get('id_modelo')).Form::hidden('url_id_transaccion', Input::get('id_transaccion')).'<br><br><br>'.Form::close();
 

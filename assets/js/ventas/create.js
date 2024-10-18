@@ -986,7 +986,9 @@ $(document).ready(function(){
 					var url = '../../inv_consultar_productos';
 				}
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+				var url_id = $('#url_id').val();
+
+				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
 					.done(function( data ) {
 						//Escribimos las sugerencias que nos manda la consulta
 		                $('#suggestions').show().html(data);

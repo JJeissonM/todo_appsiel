@@ -44,9 +44,9 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-				{{ Form::hidden('url_id',Input::get('id')) }}
-				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
-				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+				{{ Form::hidden('url_id', Input::get('id'), ['id'=>'url_id']) }}
+				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
+				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion']) }}
 
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux']) }}
 
@@ -238,107 +238,6 @@
 
 		    $('[data-toggle="tooltip"]').tooltip();
 		    var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botón guardar
-		    // Al ingresar código, descripción o código de barras del producto
-		    /*$('#inv_producto_id').on('keyup',function(event){
-
-		    	$("[data-toggle='tooltip']").tooltip('hide');
-
-		    	if ( validar_requeridos() == false )
-				{
-					return false;
-				}
-
-				var x = event.which || event.keyCode; // Capturar la tecla presionada
-
-				if( x == 27 ) // 27 = ESC
-				{
-					terminar++;
-					$('#suggestions').html('');
-                	$('#suggestions').hide();
-
-                	if ( terminar == 2 ){ 
-                		terminar = 0;
-                		$('#btn_guardar').focus(); 
-                	}
-                	return false;
-				}
-
-
-				/*
-					Al presionar las teclas "flecha hacia abajo" o "flecha hacia arriba"
-			    
-				if ( x == 40) // Flecha hacia abajo
-				{
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.next().attr('class','list-group-item list-group-item-productos active');
-					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#inv_producto_id').val( item_activo.html() );
-					return false;
-
-				}
-	 			if ( x == 38) // Flecha hacia arriba
-				{
-					$(".flecha_mover:focus").prev().focus();
-					var item_activo = $("a.list-group-item.active");					
-					item_activo.prev().attr('class','list-group-item list-group-item-productos active');
-					item_activo.attr('class','list-group-item list-group-item-productos');
-					$('#inv_producto_id').val( item_activo.html() );
-					return false;
-				}
-
-				
-		    	if( $('#modo_ingreso').is(':checked') )
-		    	{
-		    		// Manejo códigos de barra
-		    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
-		    	}else{
-
-		    		// Se determina el campo de busqueda
-		    		
-		    		
-		    		if( $.isNumeric( $(this).val() ) ){
-			    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
-			    	}else{
-			    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
-
-			    		// Si la longitud es menor a tres, todavía no busca
-			    		if ( $(this).val().length < 2 ) { return false; }
-			    	}
-
-		    		// Si el campo_busqueda es ID y el texto_busqueda coincide con el ID exacto del producto, en el listado de sugerencias ya viene marcado como Active el producto de la lista 
-		    		
-		    		// Cuando se ingresa el ID, se selecciona el item activo cuando se presiona Enter 
-			    	
-					if( x == 13 ) // && $.isNumeric( $(this).val() )
-					{
-						var item = $('a.list-group-item.active');
-						
-						if( item.attr('data-producto_id') === undefined )
-						{
-							alert('El producto ingresado no existe.');
-							reset_linea_ingreso_default();
-						}else{
-							seleccionar_producto( item );
-		                	consultar_existencia( $('#inv_bodega_id').val(), item.attr('data-producto_id') );
-		                	return false;
-						}
-					}
-		    	}
-
-		    	terminar = 0;
-
-		    	// Realizar consulta y mostar sugerencias
-		    	var url = '../inv_consultar_productos';
-
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
-					.done(function( data ) {
-						//Escribimos las sugerencias que nos manda la consulta
-		                $('#suggestions').show().html(data);
-		                $('.list-group-item-productos:first').focus();
-					});
-
-		    });
-		    */
 
 		    $('#inv_producto_id').on('keyup',function(event){
 
@@ -442,7 +341,9 @@
 				    	// Realizar consulta y mostar sugerencias
 				    	var url = '../inv_consultar_productos';
 
-						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+						var url_id = $('#url_id').val();
+
+						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
 							.done(function( data ) {
 								//Escribimos las sugerencias que nos manda la consulta
 				                $('#suggestions').show().html(data);
