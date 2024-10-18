@@ -832,7 +832,9 @@ $(document).ready(function(){
 
 		    	var url = '../vtas_consultar_clientes';
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda } )
+				var url_id = $('#url_id').val();
+
+				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
 					.done(function( data ) {
 						// Se llena el DIV con las sugerencias que arooja la consulta
 		                $('#clientes_suggestions').show().html(data);
