@@ -131,6 +131,8 @@ class VentaController extends TransaccionController
             $request['vendedor_id'] = (int)config('ventas.vendedor_id');
         }
 
+        //dd($request->all());
+
         $datos = $request->all(); // Datos originales
         
         $lineas_registros = json_decode($request->lineas_registros);
@@ -793,8 +795,12 @@ class VentaController extends TransaccionController
         if (Auth::user()->hasRole('Vendedor')) {
             $modelo_id = 216;
         }
+        
+        if ( Input::get('url_id') == 14 ) { // Contabilidad
+            $modelo_id = 7; // Terceros
+        }
 
-        $html .= '<a href="'.url('vtas_clientes/create?id=13&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        $html .= '<a href="'.url('vtas_clientes/create?id=' . Input::get('url_id') . '&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
 
         $html .= '</div>';
 
