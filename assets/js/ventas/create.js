@@ -721,6 +721,7 @@ $(document).ready(function(){
 	checkCookie();
 
 	$('#fecha').val( get_fecha_hoy() );
+	$('#fecha_vencimiento').val( get_fecha_hoy() );
 
 	$('#cliente_input').focus();
 
@@ -1185,7 +1186,6 @@ $(document).ready(function(){
         // Asignar resto de campos
         $('#vendedor_id').val( item_sugerencia.attr('data-vendedor_id') );
         $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
-
 
         var forma_pago = 'contado';
         var dias_plazo = parseInt( item_sugerencia.attr('data-dias_plazo') );
