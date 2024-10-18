@@ -63,9 +63,9 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-				{{ Form::hidden('url_id',Input::get('id')) }}
-				{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
-				<input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}" required="required">
+				{{ Form::hidden('url_id', Input::get('id'), ['id'=>'url_id']) }}
+				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
+				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion'] ) }}
 
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux']) }}
 
