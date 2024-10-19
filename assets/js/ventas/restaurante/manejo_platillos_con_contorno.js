@@ -6,7 +6,10 @@ function reset_select_items_contorno() {
     // contornos_permitidos se llena en los Catalogos
     var producto = contornos_permitidos.find(item => item.item_maneja_contorno_id === inv_producto_id );
     
-    var items_contornos_permitidos = producto.ids_lista_contornos_permitidos
+    var items_contornos_permitidos = []
+    if ( typeof producto == 'object' ) {
+        items_contornos_permitidos = producto.ids_lista_contornos_permitidos
+    }    
 
 	$.each(items_contorno,function(key,item)
     {

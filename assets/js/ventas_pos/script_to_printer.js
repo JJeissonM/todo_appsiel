@@ -109,7 +109,9 @@ function crear_string_json_para_envio_servidor_impresion_comanda( doc_encabezado
         
         lines[i] = {
                     'item': $(this).find('.lbl_producto_descripcion').text(),
-                    'quantity': $(this).find('.cantidad').text()
+                    'quantity': $(this).find('.cantidad').text(),
+                    'unit_price': $(this).find('.precio_unitario').text(),
+                    'total_amount': $(this).find('.precio_total').text()
                 }
         i++
     });
