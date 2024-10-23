@@ -1,6 +1,5 @@
 <?php
 	$items_relacionados = App\Inventarios\MandatarioProveedorTieneItem::where('mandatario_id',$registro->id)->get();
-	$altura_en_pulgadas = 0;
 ?>
 <br>
 <div id="tabla_items_relacionados">
@@ -42,12 +41,11 @@
 			</tr>
 		</thead>
 		<tbody>
+			<?php 
+				$lista_ids_proveedores = '';
+				$es_el_primero = true;
+			?>
 			@foreach( $items_relacionados AS $item )
-				<?php
-					//$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
-
-					$url_redirect = '[inv_item_mandatario/' . $registro->id . '?id=8&id_modelo=315&id_transaccion=]';
-				?>
 				<tr>
                     <td align="center"> {{ $item->proveedor()->tercero->descripcion }} </td>
 					<td align="right"> ${{ number_format($item->item_relacionado->get_costo_promedio(),0,',','.') }} </td>
@@ -60,7 +58,12 @@
 					</td>
 				</tr>
 				<?php 
-					$altura_en_pulgadas++;
+					if ( $es_el_primero ) {
+						$lista_ids_proveedores =  $item->item_relacionado->categoria_id;
+						$es_el_primero = false;
+					}else{
+						$lista_ids_proveedores .=  ',' . $item->item_relacionado->categoria_id;
+					}					
 				?>
 			@endforeach
 		</tbody>
@@ -71,6 +74,7 @@
                     	<i class="fa fa-btn fa-plus"></i> Agregar registro
                     	<span data-mandatario_id="{{ $registro->id }}"></span>
                     </button>
+					<input type="hidden" name="lista_ids_proveedores" id="lista_ids_proveedores" value="{{$lista_ids_proveedores}}">
                 </td>
             </tr>
         </tfoot>
@@ -89,7 +93,7 @@
 			$(".btn_nuevo_item_relacionado").click(function(event){
 
 				event.preventDefault();
-		        
+
 		        var mandatario_id = $(this).children('span').attr('data-mandatario_id');
 				
 		        $( '#modal_item_relacionado' ).modal({backdrop: "static"});
@@ -119,6 +123,20 @@
 		        {
 		        	return false;
 		        }
+
+				var lista_ids_proveedores = $('#lista_ids_proveedores').val();
+
+				var arr_lista_ids_proveedores = lista_ids_proveedores.split(',');
+
+				if ( arr_lista_ids_proveedores.includes(document.getElementById("categoria_id").value) ) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Alerta!',
+						text: 'El proveedor seleccionado YA esta asignado al Item. Por favor, escoja otro proveedor.'
+					});
+
+					return false;
+				}
 		        
 		        $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
 
