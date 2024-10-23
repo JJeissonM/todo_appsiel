@@ -220,7 +220,7 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->creado_por = $item_mandatario->creado_por;
         $item_relacionado->save(); // Para obtener el ID
         
-        if ( $item_mandatario->codigo_barras == null || $item_mandatario->codigo_barras == '' ) {
+        if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
             $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
         }
 
