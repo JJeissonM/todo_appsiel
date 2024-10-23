@@ -25,7 +25,7 @@
                 @if( $productos[$i]['id'] != 0 )
     	            <tr>
     	                <td>{{ $productos[$i]['id'] }}</td>
-    	                <td>{{ $productos[$i]['descripcion'] }} ({{ $productos[$i]['unidad_medida1'] }})</td>
+    	                <td>{{ $productos[$i]['descripcion'] }}</td>
                         <td> {{ $productos[$i]['bodega'] }} </td>
     	                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
                         <td>${{ number_format( $productos[$i]['CostoPromedio'], 2, ',', '.') }}</td>

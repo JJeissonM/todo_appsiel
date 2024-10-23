@@ -2,7 +2,6 @@
 
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
-	//dd($reporte->url_form_action);
 ?>
 
 @section('sidebar')
@@ -27,7 +26,7 @@
 		@endforeach
 
 		{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
-		{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio'],null,['id'=>'tam_hoja']) }}
+		{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],null,['id'=>'tam_hoja']) }}
 
 		<br>
 		{{ Form::label( 'orientacion', 'Orientación' ) }}
@@ -47,22 +46,26 @@
 
 
 @section('contenido')
-		<div class="col-md-12 marco_formulario">
-			
-			
-			<div style="display: flex; justify-content: justify-content-center"><span>{{ Form::bsBtnPdf( $reporte->descripcion ) }}{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}</span>
-			</div> 
-			{{ Form::Spin( 42 ) }}
-			{{ Form::hidden( 'reporte_id', $reporte->id, ['id'=>'reporte_id'] ) }}
-			<div class="table-responsive" id="table_content" >
-				<div id="resultado_consulta" style="position: relative">
+	<div class="col-md-12 marco_formulario">
+		
+		
+		<div style="display: flex; justify-content: justify-content-center">
+			<span>
+				{{ Form::bsBtnPdf( $reporte->descripcion ) }}
+				{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
+			</span>
+		</div> 
+		{{ Form::Spin( 42 ) }}
+		{{ Form::hidden( 'reporte_id', $reporte->id, ['id'=>'reporte_id'] ) }}
+		<div class="table-responsive" id="table_content" >
+			<div id="resultado_consulta" style="position: relative">
 
-				</div>
-			</div>	
-			  
-			<br/>			
+			</div>
+		</div>	
 			
-		</div>
+		<br/>			
+		
+	</div>
 @endsection
 
 @section('scripts')

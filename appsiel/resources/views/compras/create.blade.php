@@ -92,6 +92,10 @@
 
 				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 
+				<input type="hidden" name="items_mandatarios_por_proveedor" id="items_mandatarios_por_proveedor" value="{{config('inventarios.items_mandatarios_por_proveedor')}}">
+
+				
+
 				<p style="display: none;">
 					<input type="hidden" name="item_sugerencia_cliente" id="item_sugerencia_cliente" value="{{$item_sugerencia_cliente}}">
 				</p>
@@ -209,7 +213,6 @@
 
 			if ( $('#item_sugerencia_cliente').val() != '' && $('#item_sugerencia_cliente').val() != '0' && $('#item_sugerencia_cliente').val() != undefined )
 			{
-				console.log('go')
 				$('#item_sugerencia_cliente').after( $('#item_sugerencia_cliente').val() );
 				seleccionar_proveedor( $('#item_sugerencia_cliente').next() );
 			}
@@ -496,7 +499,13 @@
 
 						var url_id = $('#url_id').val();
 
-						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
+						var params = { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id  };
+
+						if ( $('#items_mandatarios_por_proveedor').val() == 1) {
+							params.proveedor_id = $('#proveedor_id').val()
+						}
+
+						$.get( url, params )
 							.done(function( data ) {
 								//Escribimos las sugerencias que nos manda la consulta
 				                $('#suggestions').show().html(data);

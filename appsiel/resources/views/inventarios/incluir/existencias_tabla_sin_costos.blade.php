@@ -19,7 +19,7 @@
             @if( $productos[$i]['id'] != 0 )
 	            <tr>
                     <td>{{ $productos[$i]['id'] }}</td>
-	                <td>{{ $productos[$i]['descripcion'] }} ({{ $productos[$i]['unidad_medida1'] }})</td>
+	                <td>{{ $productos[$i]['descripcion'] }}</td>
                     <td> {{ $productos[$i]['bodega'] }} </td>
 
                     <td> &nbsp; </td>

@@ -196,15 +196,14 @@ class InvMovimiento extends Model
     }
 
     public static function get_movimiento_corte( $fecha_corte, $operador1, $mov_bodega_id, $operador2, $grupo_inventario_id)
-    {
-        
+    {        
         if ( $mov_bodega_id != '' ) {
             $orden = 'inv_movimientos.inv_producto_id';
         }else{
             $orden = 'inv_bodegas.descripcion';
         }
 
-        $productos = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
                                 ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
                                 ->leftJoin('inv_grupos','inv_grupos.id','=','inv_productos.inv_grupo_id')
                                 ->leftJoin('inv_bodegas','inv_bodegas.id','=','inv_doc_encabezados.inv_bodega_id')
@@ -214,7 +213,7 @@ class InvMovimiento extends Model
                                 ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
                                 ->where('inv_productos.estado', 'Activo')
                                 ->select(
-                                            'inv_productos.id',
+                                            'inv_movimientos.inv_producto_id',
                                             'inv_productos.descripcion',
                                             'inv_productos.unidad_medida1',
                                             'inv_productos.unidad_medida2',
@@ -224,9 +223,7 @@ class InvMovimiento extends Model
                                             DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
                                             DB::raw('sum(inv_movimientos.costo_total) as Costo') )
                                 ->groupBy($orden)
-                                ->get()
-                                ->toArray();//,'inv_costo_prom_productos.costo_promedio as costo_promedio_ponderado'
-        return $productos;
+                                ->get();
     }
 
     public static function get_existencia_corte( $array_wheres )
@@ -409,11 +406,24 @@ class InvMovimiento extends Model
     {
         $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
 
-        return InvMovimiento::where('inv_movimientos.inv_bodega_id',$bodega_id)
-                    ->where('inv_movimientos.inv_producto_id',$producto_id)
-                    ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                    ->where('inv_movimientos.fecha','<=',$fecha_corte)
-                    ->select( DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),DB::raw('sum(inv_movimientos.costo_total) as Costo'))
+        $array_wheres = [
+            ['inv_movimientos.fecha', '<=', $fecha_corte],
+            ['inv_movimientos.core_empresa_id', '=', Auth::user()->empresa_id],
+            ['inv_movimientos.inv_producto_id', '=', $producto_id]
+        ]; // Todos
+
+        if((int)$bodega_id != 0)
+        {
+            $array_wheres = array_merge( $array_wheres, [
+                ['inv_movimientos.inv_bodega_id', '=', $bodega_id]
+            ]);
+        }
+
+        return InvMovimiento::where( $array_wheres )
+                    ->select( 
+                            DB::raw('sum(inv_movimientos.cantidad) as Cantidad'),
+                            DB::raw('sum(inv_movimientos.costo_total) as Costo')
+                        )
                     ->get()[0];
     }
 

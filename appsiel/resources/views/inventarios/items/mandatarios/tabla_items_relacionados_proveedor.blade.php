@@ -37,6 +37,7 @@
 				<th>P. ventas</th>
 				<th>Cód. barras</th>
 				<th>Referencia</th>
+				<th>Estado</th>
 				<th>Acción</th>
 			</tr>
 		</thead>
@@ -53,6 +54,7 @@
 					<td align="right"> ${{ number_format($item->item_relacionado->get_precio_venta(),0,',','.') }} </td>
 					<td align="center"> {{ $item->item_relacionado->codigo_barras }} </td>
 					<td align="center"> {{ $item->item_relacionado->referencia }} </td>
+					<td align="center"> {{ $item->item_relacionado->estado }} </td>
 					<td>
                         <button class="btn btn-warning btn-sm btn_edit_item_relacionado" data-item_relacionado_id="{{ $item->id }}" title="Modificar"> <i class="fa fa-edit"></i></button>
 					</td>

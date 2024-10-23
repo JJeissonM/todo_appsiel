@@ -33,52 +33,50 @@
 				    {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Costo Prom.','Costo Total']) }}
 				    <tbody>
 				        <?php 
-				        $total_cantidad=0;
-				        $total_costo_total=0;
-				        for($i=0;$i<count($productos);$i++){ 
-							$item = App\Inventarios\InvProducto::find((int)$productos[$i]['id']);
-				        	$productos[$i]['Cantidad'] = round($productos[$i]['Cantidad'],2);
-				        	
-							$costo_unitario = 0;
-							$referencia = '';
-							if($productos[$i]['referencia'] != '')
-							{
-								$referencia = ' - ' . $productos[$i]['referencia'];
-							}
-							
-				        		if( $productos[$i]['Cantidad'] != 0)
-				        		{
-				        			$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
-				        		}else{
-				        			$productos[$i]['Costo'] = 0;	
-				        		}
+							$total_cantidad=0;
+							$total_costo_total=0;
+						?>
+
+						@foreach ( $movimientos as $movimiento)
+							<?php 
+								$item = $movimiento->producto;
+								
+								$costo_unitario = 0;
+								
+								if( $movimiento->Cantidad != 0)
+								{
+									$costo_unitario = $movimiento->Costo / $movimiento->Cantidad;
+								}else{
+									$movimiento->Costo = 0;	
+								}
 
 								if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
 								{
-									$productos[$i]['Costo'] = $item->get_costo_promedio( 0 ) * $productos[$i]['Cantidad'];
-									if( $productos[$i]['Cantidad'] != 0)
+									$movimiento->Costo = $item->get_costo_promedio( 0 ) * $movimiento->Cantidad;
+									if( $movimiento->Cantidad != 0)
 									{
-										$costo_unitario = $productos[$i]['Costo'] / $productos[$i]['Cantidad'];
+										$costo_unitario = $movimiento->Costo / $movimiento->Cantidad;
 									}
 								}
-
-				        		$unidad_medida = $productos[$i]['unidad_medida1'];
-				        		if( $productos[$i]['unidad_medida2'] != '' )
-				        		{
-				        			$unidad_medida = $productos[$i]['unidad_medida1'] . ' - Talla: ' . $productos[$i]['unidad_medida2'];
-				        		}
-				        	?>
-					            <tr>
-					                <td class="text-center">{{ $productos[$i]['id'] }}</td>
-					                <td>{{ $productos[$i]['descripcion'] }} {{ $referencia }} ({{ $unidad_medida }})</td>
-					                <td class="text-center">{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }}</td>
-					                <td class="text-right">{{ '$'.number_format($costo_unitario, 2, ',', '.') }}</td>
-					                <td class="text-right">{{ '$'.number_format($productos[$i]['Costo'], 2, ',', '.') }}</td>
-					            </tr>
-				        <?php 
-				            $total_cantidad+= $productos[$i]['Cantidad'];
-				            $total_costo_total+= $productos[$i]['Costo'];
-				        } ?>
+							?>
+							<tr>
+								<td class="text-center">{{$item->id}}</td>
+								<td>{{ $item->get_value_to_show( true ) }}</td>
+								<td class="text-center">
+									{{ number_format($movimiento->Cantidad, 2, ',', '.') }}
+								</td>
+								<td class="text-right">
+									{{ '$'.number_format($costo_unitario, 2, ',', '.') }}
+								</td>
+								<td class="text-right">
+									{{ '$'.number_format($movimiento->Costo, 2, ',', '.') }}
+								</td>
+							</tr>
+							<?php 
+								$total_cantidad+= $movimiento->Cantidad;
+								$total_costo_total+= $movimiento->Costo;
+							?>
+						@endforeach
 				    </tbody>
 				    <tfoot>
 				        <tr>

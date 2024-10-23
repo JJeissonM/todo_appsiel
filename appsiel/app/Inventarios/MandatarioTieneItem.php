@@ -59,14 +59,11 @@ class MandatarioTieneItem extends Model
         
         if (config('ventas.agregar_precio_a_lista_desde_create_item'))
         {
-            if (config('ventas.agregar_precio_a_lista_desde_create_item'))
-        {
             $datos['fecha_activacion'] = date('Y-m-d');
             $datos['inv_producto_id'] = $id;
             $datos['lista_precios_id'] = (int)config('ventas.lista_precios_id');
 
             (new PricesServices())->create_or_update_item_price( $datos );
-        }
         }
     }
 }

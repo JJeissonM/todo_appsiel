@@ -928,11 +928,19 @@ class InventarioController extends TransaccionController
 
         $cantidad_a_mostrar = 15;
 
+        $array_wheres = [
+            ['estado', '=', 'Activo']
+        ];
+
+        if ( Input::get('proveedor_id') != null ) {
+            $array_wheres = array_merge( $array_wheres, [['categoria_id', '=', Input::get('proveedor_id')]]);
+        }
+
         switch ($campo_busqueda) {
             case 'codigo_barras':
                 $operador = '=';
                 $texto_busqueda = Input::get('texto_busqueda');
-                $producto = InvProducto::where('estado', 'Activo')
+                $producto = InvProducto::where( $array_wheres )
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
@@ -949,7 +957,8 @@ class InventarioController extends TransaccionController
             case 'descripcion':
                 $operador = 'LIKE';
                 $texto_busqueda = '%' . str_replace( " ", "%", Input::get('texto_busqueda') ) . '%';
-                $producto = InvProducto::where('estado', 'Activo')
+
+                $producto = InvProducto::where( $array_wheres )
                                 ->having('nueva_cadena', $operador, $texto_busqueda)
                                 ->select( 
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
@@ -965,7 +974,8 @@ class InventarioController extends TransaccionController
             case 'id':
                 $operador = 'LIKE';
                 $texto_busqueda = Input::get('texto_busqueda') . '%';
-                $producto = InvProducto::where('estado', 'Activo')
+
+                $producto = InvProducto::where( $array_wheres )
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
                                             DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
@@ -1054,6 +1064,7 @@ class InventarioController extends TransaccionController
                             ->select(
                                         'id',
                                         'descripcion',
+                                        'categoria_id',
                                         DB::raw('CONCAT(referencia," ",descripcion) AS haystack'),
                                         'referencia',
                                         'unidad_medida1',

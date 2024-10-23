@@ -166,8 +166,7 @@ function seleccionar_proveedor(item_sugerencia)
     var fecha = new Date( $('#fecha').val() );
     
     $('#fecha_vencimiento').val( actualizar_fecha_vencimiento( fecha) );
-
-
+    
     //Hacemos desaparecer el resto de sugerencias
     $('#div_list_suggestions').html('');
     $('#div_list_suggestions').hide();

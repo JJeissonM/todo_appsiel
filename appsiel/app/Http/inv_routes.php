@@ -78,7 +78,8 @@ Route::get('inv_consultar_existencias/{bodega_id}', 'Inventarios\ReporteControll
 
 Route::post('ajax_existencias', 'Inventarios\ReporteController@ajax_existencias');
 
-Route::get('inv_stock_minimo', 'Inventarios\ReporteController@inv_stock_minimo');
+Route::get('inv_stock_minimo', 'Inventarios\ReporteController@form_stock_minimo');
+Route::post('ajax_stock_minimo', 'Inventarios\ReporteController@ajax_stock_minimo');
 
 
 Route::get('inv_actualizar_costo_promedio_platilllo/{item_platillo_id}/{costo_promedio}', 'Inventarios\ProcesoController@actualizar_costo_promedio_platilllo');

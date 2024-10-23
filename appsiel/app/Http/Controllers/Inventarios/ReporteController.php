@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Inventarios;
 
 use App\Compras\ComprasMovimiento;
+use App\Compras\Proveedor;
 use App\Core\Tercero;
 use Illuminate\Http\Request;
 
@@ -41,7 +42,7 @@ class ReporteController extends Controller
     {
         $fecha_corte = Input::get('fecha_corte');
 
-        $productos = InvMovimiento::get_movimiento_corte( $fecha_corte, '=', $id, 'LIKE', '%%');
+        $movimientos = InvMovimiento::get_movimiento_corte( $fecha_corte, '=', $id, 'LIKE', '%%');
       
         $bodega = InvBodega::find($id);
 
@@ -50,7 +51,7 @@ class ReporteController extends Controller
                 ['url'=>'NO','etiqueta'=>'Existencias']
             ];
         
-        return view('inventarios.existencias_una_bodega',compact('productos','bodega','miga_pan','fecha_corte'));
+        return view('inventarios.existencias_una_bodega',compact('movimientos','bodega','miga_pan','fecha_corte'));
     }
 
 
@@ -105,7 +106,7 @@ class ReporteController extends Controller
             foreach ( $lista_bodegas as $key2 => $bodega_id )
             {
                 $productos[$i]['id'] = $item_id;
-                $productos[$i]['descripcion'] = $item->descripcion;
+                $productos[$i]['descripcion'] = $item->get_value_to_show(true);
                 $productos[$i]['unidad_medida1'] = $item->unidad_medida1;
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
 
@@ -136,7 +137,6 @@ class ReporteController extends Controller
                 $cantidad_bodegas++;
             }
 
-            //dd($productos, $i,$cantidad_bodegas);
             $costo_promedio = 0;
             if ($total_cantidad_item != 0) {
                 $costo_promedio = $total_costo_item / $total_cantidad_item;
@@ -334,30 +334,138 @@ class ReporteController extends Controller
 
         return $view;
     }
-    
-    // REPORTE STOCK MINIMO
-    public function inv_stock_minimo()
-    {
-        $fecha_corte = date('Y-m-d');
-        $bodega_id = 1;
 
+    
+
+    // FORMULARIO STOCK MINIMO
+    public function form_stock_minimo()
+    {
         $bodegas = InvBodega::opciones_campo_select();
 
-        $productos = MinStock::leftJoin('inv_productos','inv_productos.id','=','inv_min_stocks.inv_producto_id')->where('inv_bodega_id', $bodega_id)->select('inv_productos.id','inv_productos.descripcion','inv_productos.unidad_medida1','inv_min_stocks.inv_bodega_id','inv_min_stocks.stock_minimo')->orderBy('inv_productos.descripcion')->get();
+        $productos = InvProducto::opciones_campo_select();
 
-        foreach ($productos as $producto) 
-        {
-            $producto->cantidad = InvMovimiento::get_existencia_producto($producto->id, $producto->inv_bodega_id, $fecha_corte )->Cantidad;
-        }
-
-        $tabla = View::make('inventarios.incluir.stock_minimo_tabla',compact( 'productos'));
+        $proveedores = Proveedor::opciones_campo_select();
 
         $miga_pan = [
-                ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
-                ['url'=>'NO','etiqueta'=>'Reporte de Stock Mínimo']
+            ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
+            ['url'=>'NO','etiqueta'=>'Reporte de Stock Mínimo']
+        ];
+
+        $tabla = '';
+
+        if ( Input::get('show_table') == 'true' ) {
+            $tabla = $this->get_tabla_stock_minimo();
+        }
+
+        return view('inventarios.reportes.stock_minimo.form',compact('bodegas', 'proveedores', 'miga_pan', 'tabla'));
+    }
+    
+    // REPORTE STOCK MINIMO
+    public function get_tabla_stock_minimo()
+    {
+        $fecha_corte = date('Y-m-d');
+
+        $bodega_id = Input::get('bodega_id');
+        $proveedor_id = Input::get('proveedor_id');
+        $detalla_proveedor = Input::get('detalla_proveedor');
+
+        $array_wheres = [
+            ['inv_min_stocks.id', '>', 0]
+        ]; // Todos
+
+        $bodega = 'Todas';
+        if ( $bodega_id != null || $bodega_id != '' && !$detalla_proveedor) {
+
+            $bodega = InvBodega::find( $bodega_id )->descripcion;
+
+            $array_wheres = array_merge( $array_wheres, [
+                ['inv_min_stocks.inv_bodega_id', '=', $bodega_id]
+            ]);
+        }
+
+        if ( $proveedor_id != null || $proveedor_id != '') {
+            $array_wheres = array_merge( $array_wheres, [
+                ['inv_productos.categoria_id', '=', $proveedor_id]
+            ]);
+        }
+
+        if ($detalla_proveedor) {
+            $productos = $this->get_productos_proveedor_detallado($array_wheres, $bodega_id, $fecha_corte);
+        }else{
+            $productos = $this->get_productos_agrupados($array_wheres, $fecha_corte);
+        }
+
+        return View::make('inventarios.reportes.stock_minimo.content', compact( 'productos', 'bodega', 'fecha_corte') );
+    }
+
+    public function get_productos_agrupados($array_wheres, $fecha_corte)
+    {
+        $registros_min_stock = MinStock::leftJoin('inv_productos','inv_productos.id','=','inv_min_stocks.inv_producto_id')
+                            ->where($array_wheres)
+                            ->get()
+                            ->groupBy('descripcion');
+
+        $productos = [];
+        foreach ($registros_min_stock as $item_descripcion => $grupo) 
+        {
+
+            $aux = [
+                'item_id' => '',
+                'item_descripcion' => $item_descripcion,
+                'bodega_descripcion' => ''
             ];
 
-        return view('inventarios.repo_stock_minimo',compact('bodegas','tabla','miga_pan'));
+            $stock_minimo = 0;
+            $cantidad = 0;
+            $arr_inv_producto_id_contados = [];
+            foreach ($grupo as $linea) {
+                
+                if (in_array( $linea->inv_producto_id, $arr_inv_producto_id_contados)) {
+                    continue;
+                }
+
+                $stock_minimo += $linea->stock_minimo;
+
+                $cantidad += InvMovimiento::get_existencia_producto($linea->inv_producto_id, '', $fecha_corte )->Cantidad;
+
+                $arr_inv_producto_id_contados[] = $linea->inv_producto_id;
+            }
+            
+            $aux['stock_minimo'] = $stock_minimo;
+            $aux['cantidad'] = $cantidad;
+
+            $productos[] = (object)$aux;
+        }
+
+        return $productos;
+    }
+
+    public function get_productos_proveedor_detallado($array_wheres, $bodega_id, $fecha_corte)
+    {
+        $registros_min_stock = MinStock::leftJoin('inv_productos','inv_productos.id','=','inv_min_stocks.inv_producto_id')
+                            ->where($array_wheres)
+                            ->get();
+
+        $productos = [];
+        foreach ($registros_min_stock as $registro) 
+        {
+            $bodega = $registro->bodega;
+            $bodega_descripcion = '';
+            if ( $bodega != null ) {
+                $bodega_descripcion = $bodega->descripcion;
+                $bodega_id = $bodega->id;
+            }
+
+            $productos[] = (object)[
+                'item_id' => $registro->inv_producto_id,
+                'item_descripcion' => $registro->item->get_value_to_show( true ),
+                'bodega_descripcion' => $bodega_descripcion,
+                'stock_minimo' => $registro->stock_minimo,
+                'cantidad' => InvMovimiento::get_existencia_producto($registro->inv_producto_id, $bodega_id, $fecha_corte )->Cantidad
+            ];
+        }
+
+        return $productos;
     }
 
     public function inv_etiquetas_codigos_barra(Request $request)
@@ -375,7 +483,12 @@ class ReporteController extends Controller
                 
         $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item );
 
-        $vista = View::make( 'inventarios.reportes.etiquetas_codigos_barra', compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto', 'tamanio_letra') )->render();
+        $route = 'inventarios.reportes.etiquetas_codigos_barra';
+        if ( $request->tam_hoja == 'pos_80mm' ) {
+            $route = 'inventarios.reportes.pos_80mm.etiquetas_codigos_barra';
+        }
+
+        $vista = View::make( $route, compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto', 'tamanio_letra') )->render();
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    

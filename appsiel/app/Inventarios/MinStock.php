@@ -3,6 +3,7 @@
 namespace App\Inventarios;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class MinStock extends Model
 {
@@ -10,12 +11,22 @@ class MinStock extends Model
 	protected $fillable = ['inv_bodega_id', 'inv_producto_id', 'stock_minimo'];
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Bodega', 'Producto', 'Stock Mínimo'];
 
+    public function item()
+    {
+        return $this->belongsTo(InvProducto::class, 'inv_producto_id');
+    }
+	
+    public function bodega()
+    {
+        return $this->belongsTo(InvBodega::class, 'inv_bodega_id');
+    }
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 		$registros = MinStock::leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_min_stocks.inv_bodega_id')->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_min_stocks.inv_producto_id')
 			->select(
 				'inv_bodegas.descripcion AS campo1',
-				'inv_productos.descripcion AS campo2',
+				DB::raw('CONCAT(inv_productos.id, " ", inv_productos.descripcion) AS campo2'),
 				'inv_min_stocks.stock_minimo AS campo3',
 				'inv_min_stocks.id AS campo4'
 			)
@@ -24,6 +35,8 @@ class MinStock extends Model
 			->orWhere("inv_min_stocks.stock_minimo", "LIKE", "%$search%")
 			->orderBy('inv_min_stocks.created_at', 'DESC')
 			->paginate($nro_registros);
+
+		
 		return $registros;
 	}
 

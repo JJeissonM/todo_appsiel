@@ -10,7 +10,7 @@ class Proveedor extends Model
 {
     protected $table = 'compras_proveedores';
 
-    protected $fillable = ['core_tercero_id', 'clase_proveedor_id', 'inv_bodega_id', 'liquida_impuestos', 'condicion_pago_id', 'estado'];
+    protected $fillable = ['core_tercero_id', 'clase_proveedor_id', 'inv_bodega_id', 'liquida_impuestos', 'condicion_pago_id', 'codigo', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de proveedor', 'Liquida impuestos', 'Condición de pago', 'Estado'];
 
@@ -80,13 +80,21 @@ class Proveedor extends Model
     public static function opciones_campo_select()
     {
         $opciones = Proveedor::leftJoin('core_terceros', 'core_terceros.id', '=', 'compras_proveedores.core_tercero_id')->where('compras_proveedores.estado', 'Activo')
-            ->select('compras_proveedores.id', 'core_terceros.descripcion')
+            ->select(
+                'compras_proveedores.id',
+                'compras_proveedores.codigo',
+                'core_terceros.descripcion')
             ->orderby('core_terceros.descripcion')
             ->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->descripcion;
+
+            $codigo = '';
+            if ( $opcion->codigo != null && $opcion->codigo!= '' ) {
+                $codigo = ' (' . $opcion->codigo . ')';
+            }
+            $vec[$opcion->id] = $opcion->descripcion . $codigo;
         }
 
         return $vec;

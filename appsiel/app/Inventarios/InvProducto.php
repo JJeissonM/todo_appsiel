@@ -2,6 +2,7 @@
 
 namespace App\Inventarios;
 
+use App\Compras\Proveedor;
 use Illuminate\Database\Eloquent\Model;
 
 /*
@@ -66,7 +67,7 @@ class InvProducto extends Model
         return $data;
     }
 
-    public function get_value_to_show()
+    public function get_value_to_show( $ocultar_id = false )
     {
         $descripcion_item = $this->descripcion . ' (' . $this->unidad_medida1 . ')';
 
@@ -81,15 +82,29 @@ class InvProducto extends Model
         {
             $referencia = ' - ' . $this->referencia;
         }
-
-        $descripcion_item .= $talla . $referencia;
-
-        $prefijo = $this->id;
-        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia') {
-            $prefijo = $this->referencia;
+        
+        $codigo_proveedor = '';
+        if( (int)config('inventarios.items_mandatarios_por_proveedor') )
+        {
+            $proveedor = Proveedor::find($this->categoria_id);
+            if ( $proveedor != null ) {
+                $codigo_proveedor = ' - ' . $proveedor->codigo;
+            }            
         }
 
-        return $prefijo . ' ' . $descripcion_item;
+        $descripcion_item .= $talla . $referencia . $codigo_proveedor;
+
+        $prefijo = $this->id . ' ';
+
+        if ( $ocultar_id ) {
+            $prefijo = '';
+        }
+
+        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia') {
+            $prefijo = $this->referencia . ' ';
+        }
+
+        return $prefijo . $descripcion_item;
     }
 
     public function tasa_impuesto()
@@ -543,12 +558,7 @@ class InvProducto extends Model
                             ->get();
         $vec['']='';
         foreach ($opciones as $opcion){
-            $referencia = '';
-            if($opcion->referencia != '')
-            {
-                $referencia = ' - ' . $opcion->referencia;
-            }
-            $vec[$opcion->id]=$opcion->id.' '.$opcion->descripcion . $referencia;
+            $vec[$opcion->id] = $opcion->get_value_to_show();
         }
 
         return $vec;

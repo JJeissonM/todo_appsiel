@@ -529,20 +529,20 @@
 
 				
 
-				<h4> Parámetros para manejo de prendas  </h4>
+				<h4> Parámetros para manejo de ítems Mandatarios </h4>
 				<hr>
 				<div class="row">
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$manejo_items_mandatarios_activo = '0';
-								if( isset($parametros['manejo_items_mandatarios_activo'] ) )
+								$items_mandatarios_por_proveedor = '0';
+								if( isset($parametros['items_mandatarios_por_proveedor'] ) )
 								{
-									$manejo_items_mandatarios_activo = $parametros['manejo_items_mandatarios_activo'];
+									$items_mandatarios_por_proveedor = $parametros['items_mandatarios_por_proveedor'];
 								}
 							?>
-							{{ Form::bsSelect('manejo_items_mandatarios_activo', $manejo_items_mandatarios_activo, 'Manejo Ítems mandatarios Activo', ['No','Si'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('items_mandatarios_por_proveedor', $items_mandatarios_por_proveedor, 'Manejo de Ítems mandatarios por Proveedor', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

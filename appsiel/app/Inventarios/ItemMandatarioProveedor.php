@@ -9,7 +9,7 @@ class ItemMandatarioProveedor extends ItemMandatario
 {
     protected $table = 'inv_items_mandatarios';
 
-    protected $fillable = [ 'core_empresa_id', 'descripcion', 'unidad_medida1', 'referencia', 'inv_grupo_id', 'impuesto_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
+    protected $fillable = [ 'core_empresa_id', 'descripcion', 'unidad_medida1', 'referencia', 'inv_grupo_id', 'impuesto_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'codigo_barras', 'estado', 'creado_por', 'modificado_por' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Grupo', 'IVA %', 'Estado'];
 
@@ -91,10 +91,7 @@ class ItemMandatarioProveedor extends ItemMandatario
 
     public function store_adicional( $datos, $registro )
     {
-        $referencia = $this->build_reference($datos, $registro);
-
         $user = Auth::user();
-        $registro->referencia = $referencia;
         $registro->estado = 'Activo';
         $registro->core_empresa_id = $user->empresa_id;
         $registro->save();
@@ -103,49 +100,16 @@ class ItemMandatarioProveedor extends ItemMandatario
     public function update_adicional($datos, $id)
     {
         $prenda = ItemMandatarioProveedor::find( $id );
-        
-        $referencia = $this->build_reference($datos, $prenda);
-
-        $prenda->referencia = $referencia;
-        $prenda->save();
 
         $registros_relacionados = $prenda->items_relacionados;
-        
+
         foreach ($registros_relacionados as $item_relacionado )
         {
             $item_relacionado->descripcion = $prenda->descripcion;
-            $item_relacionado->referencia = $referencia . '-' . $item_relacionado->unidad_medida2;
+            $item_relacionado->unidad_medida1 = $prenda->unidad_medida1;
+            $item_relacionado->inv_grupo_id = $prenda->inv_grupo_id;
+            $item_relacionado->impuesto_id = $prenda->impuesto_id;
             $item_relacionado->save();
         }
-    }
-
-    public function build_reference( $datos, $registro )
-    {
-        if (isset($dato['referencia'])) {
-            return $dato['referencia'];
-        }
-
-        $reference = '';
-
-        if ( $registro->prefijo_referencia != null ) {
-            $reference .= $registro->prefijo_referencia->codigo;
-        }
-        
-
-        if ( $registro->tipo_prenda != null ) {
-            $reference .= $registro->tipo_prenda->codigo;
-        }
-        
-
-        if ( $registro->paleta_color != null ) {
-            $reference .= $registro->paleta_color->codigo;
-        }
-        
-
-        if ( $registro->tipo_material != null ) {
-            $reference .= $registro->tipo_material->codigo;
-        }
-        
-        return $reference;
     }
 }

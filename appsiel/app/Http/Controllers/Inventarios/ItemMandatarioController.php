@@ -70,11 +70,11 @@ class ItemMandatarioController extends ModeloController
         return View::make( 'layouts.modelo_form_create_sin_botones', compact('form_create','datos_columnas') )->render();
     }
 
+    // Crear Item relacionado
     public function store(Request $request)
     {
         $modelo = Modelo::find( $request->model_id );
 
-        // Crear Item relacionado
         $mandatario = ItemMandatario::find( $request->mandatario_id );
         $item_relacionado_id = $this->almacenar_item_relacionado( $mandatario, $mandatario->referencia, $request ); // InvProducto        
         
@@ -140,6 +140,9 @@ class ItemMandatarioController extends ModeloController
         return View::make( 'layouts.modelo_form_edit_sin_botones', compact('form_create','datos_columnas', 'registro') )->render();
     }
 
+    /**
+     * Para los items relacionados
+     */
     public function update(Request $request, $id)
     {
         // Se obtiene el modelo según la variable modelo_id de la url
@@ -149,6 +152,11 @@ class ItemMandatarioController extends ModeloController
         $registro = app($modelo->name_space)->find($id)->item_relacionado;
 
         $datos = $request->all();
+        
+        if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
+            $datos['codigo_barras'] = (new CodigoBarras($registro->id, 0, 0, 0))->barcode;
+        }
+
         $registro->fill( $datos );
         $registro->save();
 
@@ -192,6 +200,7 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->unidad_medida1 = $item_mandatario->unidad_medida1;
         $item_relacionado->inv_grupo_id = $item_mandatario->inv_grupo_id;
         $item_relacionado->impuesto_id = $item_mandatario->impuesto_id;
+        $item_relacionado->codigo_barras = $item_mandatario->codigo_barras;
 
         $item_relacionado->precio_compra = 100;
         if ( $request->precio_compra != null ) {
@@ -211,7 +220,9 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->creado_por = $item_mandatario->creado_por;
         $item_relacionado->save(); // Para obtener el ID
         
-        $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
+        if ( $item_mandatario->codigo_barras == null || $item_mandatario->codigo_barras == '' ) {
+            $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
+        }
 
         if ( $request->unidad_medida2 != null ) {
             // $request->unidad_medida2 almacena la Talla
