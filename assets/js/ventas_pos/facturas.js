@@ -131,8 +131,16 @@ function redondear_a_centena(numero, aproximacion_superior = false) {
 // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 // Debe ser complatible con las columnas de la tabla de ingreso de registros
 function generar_string_celdas() {
+
   if (inv_producto_id === undefined) {
     return false;
+  }
+
+  var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
+
+  var talla = ''
+  if ( producto.unidad_medida2 != '') {
+    talla = " - " + producto.unidad_medida2
   }
 
   var celdas = [];
@@ -219,7 +227,7 @@ function generar_string_celdas() {
 
   num_celda++;
 
-  var descripcion_item = $("#inv_producto_id").val();
+  var descripcion_item = $("#inv_producto_id").val() + talla;
   //if ($("#manejar_platillos_con_contorno").val() == 1) {
   //  descripcion_item = cambiar_descripcion_item_ingresado(descripcion_item);
   //}
