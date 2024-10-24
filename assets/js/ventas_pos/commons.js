@@ -472,66 +472,62 @@ function get_horario(i) {
   return "am";
 }
 
+// Al presionar Enter en el ingreso del producto sea por ID, Referencia o Codigo de barras
+function agregar_linea_producto_ingresado(
+  producto,
+  barcode,
+  barcode_precio_unitario,
+  campo_busqueda
+) {
+  tasa_impuesto = producto.tasa_impuesto;
+  inv_producto_id = producto.id;
+  unidad_medida = producto.unidad_medida1;
+  costo_unitario = producto.costo_promedio;
 
+  $("#inv_producto_id").val(producto.descripcion);
 
-  // Al presionar Enter en el ingreso del producto sea por ID, Referencia o Codigo de barras
-  function agregar_linea_producto_ingresado(
-    producto,
-    barcode,
-    barcode_precio_unitario,
-    campo_busqueda
-  ) {
-    tasa_impuesto = producto.tasa_impuesto;
-    inv_producto_id = producto.id;
-    unidad_medida = producto.unidad_medida1;
-    costo_unitario = producto.costo_promedio;
+  $("#existencia_actual").html(
+    "Stock: " + producto.existencia_actual.toFixed(2)
+  );
+  //$('#existencia_actual').show();
 
-    $("#inv_producto_id").val(producto.descripcion);
+  $("#precio_unitario").val(get_precio(producto.id));
+  $("#tasa_descuento").val(get_descuento(producto.id));
 
-    $("#existencia_actual").html(
-      "Stock: " + producto.existencia_actual.toFixed(2)
-    );
-    //$('#existencia_actual').show();
+  if (campo_busqueda == "id" || campo_busqueda == "referencia") 
+  {
+    $("#cantidad").select();
+  } else {
+    // Por código de barras, se agrega la línea con un unidad de producto
+    $("#cantidad").val(1);
+    cantidad = 1;
 
-    $("#precio_unitario").val(get_precio(producto.id));
-    $("#tasa_descuento").val(get_descuento(producto.id));
-
-    if (campo_busqueda == "id" || campo_busqueda == "referencia") {
-      $("#cantidad").select();
-    } else {
-      // Por código de barras, se agrega la línea con un unidad de producto
-      $("#cantidad").val(1);
-      cantidad = 1;
-
-      // Para balazas Dibal, obtener la cantidad del mismo codigo de barras
-      if (
-        $("#forma_lectura_codigo_barras").val() == "codigo_cantidad" &&
-        barcode.substr(0, 1) == 0
-      ) {
-        $("#cantidad").val(get_quantity_from_barcode(barcode));
-        cantidad = parseFloat(get_quantity_from_barcode(barcode));
-        if (barcode_precio_unitario != "") {
-          $("#precio_unitario").val(barcode_precio_unitario);
-        }
+    // Para balazas Dibal, obtener la cantidad del mismo codigo de barras
+    if ( $("#forma_lectura_codigo_barras").val() == "codigo_cantidad" && barcode.substr(0, 1) == 0 )
+    {
+      $("#cantidad").val(get_quantity_from_barcode(barcode));
+      cantidad = parseFloat(get_quantity_from_barcode(barcode));
+      if (barcode_precio_unitario != "") 
+      {
+        $("#precio_unitario").val(barcode_precio_unitario);
       }
-
-      calcular_valor_descuento();
-      calcular_impuestos();
-      calcular_precio_total();
-      agregar_nueva_linea(); // Solo cuando es por Codigo de barras
-      $("#inv_producto_id").focus();
     }
-  }
 
-  function get_item_id_from_barcode(barcode) {
-    return parseInt(barcode.substr(0, 6));
-  }
+    calcular_valor_descuento();
+    calcular_impuestos();    
 
-  function get_quantity_from_barcode(barcode) {
-    return barcode.substr(6, 2) + "." + barcode.substr(8, 3);
+    agregar_nueva_linea(); // Cuando es por Codigo de barras
+    $("#inv_producto_id").focus();
   }
+}
 
-  
+function get_item_id_from_barcode(barcode) {
+  return parseInt(barcode.substr(0, 6));
+}
+
+function get_quantity_from_barcode(barcode) {
+  return barcode.substr(6, 2) + "." + barcode.substr(8, 3);
+}  
 
 function activar_boton_guardar_factura() {
   $("#btn_guardar_factura").attr("disabled", "disabled");
@@ -574,7 +570,20 @@ function activar_boton_guardar_factura() {
       $("#msj_medios_pago_diferentes_total_factura").show();
     }
   }
-};
+}
+
+function agregar_nueva_linea() {
+
+  if (!calcular_precio_total()) {
+
+    $("#popup_alerta").show();
+    $("#popup_alerta").css("background-color", "red");
+    $("#popup_alerta").text("Error en precio total. Por favor verifique");
+    return false;
+  }
+
+  agregar_la_linea();
+}
 
 $(document).ready(function () {
 
@@ -760,10 +769,12 @@ $(document).ready(function () {
     if (validar_input_numerico($(this)) && $(this).val() > 0) {
       cantidad = parseFloat($(this).val());
 
-      if (codigo_tecla_presionada == 13) {
+      if (codigo_tecla_presionada == 13) 
+      {
         // ENTER
         agregar_nueva_linea();
         $("#inv_producto_id").focus();
+        return true;
       }
 
       if ($(this).val() != "") {
@@ -831,19 +842,6 @@ $(document).ready(function () {
   function reset_descuento() {
     $("#tasa_descuento").val(0);
     calcular_valor_descuento();
-  }
-
-  function agregar_nueva_linea() {
-
-    if (!calcular_precio_total()) {
-
-      $("#popup_alerta").show();
-      $("#popup_alerta").css("background-color", "red");
-      $("#popup_alerta").text("Error en precio total. Por favor verifique");
-      return false;
-    }
-
-    agregar_la_linea();
   }
 
   /**

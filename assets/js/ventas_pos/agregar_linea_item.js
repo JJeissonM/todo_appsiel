@@ -17,6 +17,7 @@ function agregar_la_linea_ini() {
  * @returns boolean
  */
 function agregar_la_linea() {
+
     if (!validar_venta_menor_costo()) {
         return false;
     }
@@ -105,12 +106,16 @@ function mandar_codigo(item_id) {
     cantidad = 1;
 
     calcular_valor_descuento();
-    calcular_impuestos();
-    
-    if (calcular_precio_total()) {
-        agregar_la_linea();
+    calcular_impuestos();    
+
+    if (!calcular_precio_total()) {
+        $("#popup_alerta").show();
+        $("#popup_alerta").css("background-color", "red");
+        $("#popup_alerta").text("Error en precio total. Por favor verifique");
+        return false;
     }
     
+    agregar_la_linea();
 }
 
 /**
@@ -208,6 +213,7 @@ function mandar_codigo4(item_id) {
         $("#popup_alerta").text("Error en precio total. Por favor verifique");
         return false;
     }
+    
     numero_linea = 1;
     agregar_la_linea();
     $("#quantity").val("");
