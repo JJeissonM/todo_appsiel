@@ -54,8 +54,6 @@
 		@else
 			@include('inventarios.items.tabla_items_relacionados')
 		@endif
-		
-		
 	</div>
 
 @endsection

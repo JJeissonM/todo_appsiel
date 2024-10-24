@@ -197,9 +197,21 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->core_empresa_id = $item_mandatario->core_empresa_id;
         $item_relacionado->descripcion = $item_mandatario->descripcion;
         $item_relacionado->tipo = 'producto';
-        $item_relacionado->unidad_medida1 = $item_mandatario->unidad_medida1;
+
+        $unidad_medida1 = 'UND';
+        if ( $item_mandatario->unidad_medida1 != null) {
+            $unidad_medida1 = $item_mandatario->unidad_medida1;
+        }
+        $item_relacionado->unidad_medida1 = $unidad_medida1;
+
         $item_relacionado->inv_grupo_id = $item_mandatario->inv_grupo_id;
-        $item_relacionado->impuesto_id = $item_mandatario->impuesto_id;
+        
+        $impuesto_id = 1;
+        if ( $item_mandatario->impuesto_id != null) {
+            $impuesto_id = $item_mandatario->impuesto_id;
+        }
+        $item_relacionado->impuesto_id = $impuesto_id;
+        
         $item_relacionado->codigo_barras = $item_mandatario->codigo_barras;
 
         $item_relacionado->precio_compra = 100;

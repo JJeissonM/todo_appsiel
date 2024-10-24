@@ -117,10 +117,14 @@
 
 		        var url = "{{ url('inv_item_mandatario/create') }}" + "?id_modelo=" + modelo_id + "&mandatario_id=" + mandatario_id;
 
+				console.log( 'referencia',  ) 
+
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
 		            $('#contenido_modal_item_relacionado').html(data);
-		            document.getElementById("referencia").focus();
+					if ( document.getElementById("referencia") != null ) {
+						document.getElementById("referencia").focus();
+					}		            
 				});		        
 		    });
 
@@ -129,8 +133,6 @@
 			$(document).on("click",".btn_save_modal_item_relacionado",function(event){
 
 		    	event.preventDefault();
-
-				console.log( ';aja')
 
 		        if ( !validar_datos() )
 		        {
@@ -146,10 +148,9 @@
 		        var data = formulario.serialize();
 
 		        $.post(url, data, function (respuesta) {
-		        	//location.reload(true);
-		        });/**/
+		        	location.reload(true);
+		        });
 		    });
-
 
 			$(document).on( "change", ".cantidad_etiquetas",function(event){
 
@@ -172,43 +173,23 @@
 		    {
 		    	validado = true;
 
-				if ( $('#categoria_id').val() == '' )
-				{
-					$('#categoria_id').focus();
-					alert('Debe seleccionar Proveedor.');
-					return false;
+				if ( $('#precio_compra').val() != undefined ) {
+					if ( !$.isNumeric( $('#precio_compra').val() ) )
+					{
+						$('#precio_compra').focus();
+						alert('Debe ingresar un precio de compras válido.');
+						return false;
+					}
 				}
-
-				if ( !$.isNumeric( $('#precio_compra').val() ) )
-				{
-					$('#precio_compra').focus();
-					alert('Debe ingresar un precio de compras válido.');
-					return false;
+				
+				if ( $('#precio_venta').val() != undefined ) {
+					if ( !$.isNumeric( $('#precio_venta').val() ) )
+					{
+						$('#precio_venta').focus();
+						alert('Debe ingresar un precio de ventas válido.');
+						return false;
+					}
 				}
-
-				if ( !$.isNumeric( $('#precio_venta').val() ) )
-				{
-					$('#precio_venta').focus();
-					alert('Debe ingresar un precio de ventas válido.');
-					return false;
-				}
-
-		    	/*
-				if ( !$.isNumeric( $('#referencia').val() ) )
-				{
-					$('#referencia').focus();
-					alert('Debe ingresar una Referencia numérica. NO se permiten letras.');
-					validado = false;
-				}
-
-				if ( $('#referencia').val().length > 5 )
-				{
-					$('#referencia').focus();
-					alert('La Referencia debe tener máximo cinco (5) dígitos.');
-					validado = false;
-				}
-
-				*/
 
 		    	if ( $('#unidad_medida2').val() == '' )
 				{
