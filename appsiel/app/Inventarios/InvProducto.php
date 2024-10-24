@@ -291,6 +291,7 @@ class InvProducto extends Model
                 'inv_productos.id AS CÓDIGO',
                 'inv_productos.descripcion AS DESCRIPCIÓN',
                 'inv_productos.unidad_medida1 AS UM-1',
+                'inv_productos.unidad_medida2 AS TALLA',
                 'inv_grupos.descripcion AS GRUPO_INVENTARIO',
                 'inv_productos.precio_compra AS PRECIO_COMPRA',
                 'inv_productos.precio_venta AS PRECIO_VENTA',
@@ -303,6 +304,7 @@ class InvProducto extends Model
             ->where("inv_productos.id", "LIKE", "%$search%")
             ->orWhere("inv_productos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_productos.unidad_medida1", "LIKE", "%$search%")
+            ->orWhere("inv_productos.unidad_medida2", "LIKE", "%$search%")
             ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_productos.precio_compra", "LIKE", "%$search%")
             ->orWhere("inv_productos.precio_venta", "LIKE", "%$search%")
@@ -350,6 +352,7 @@ class InvProducto extends Model
                                             'inv_productos.id',
                                             'inv_productos.descripcion',
                                             'inv_productos.unidad_medida1',
+                                            'inv_productos.unidad_medida2',
                                             'inv_grupos.descripcion AS grupo_descripcion',
                                             'inv_grupos.mostrar_en_pagina_web AS mostrar_grupo_en_pagina_web',
                                             'inv_productos.precio_compra',
@@ -419,6 +422,7 @@ class InvProducto extends Model
                                             'inv_productos.id',
                                             'inv_productos.descripcion',
                                             'inv_productos.unidad_medida1',
+                                            'inv_productos.unidad_medida2',
                                             'inv_grupos.descripcion AS grupo_descripcion',
                                             'inv_productos.precio_compra',
                                             'inv_productos.precio_venta',
@@ -473,6 +477,7 @@ class InvProducto extends Model
                                 'inv_productos.id',
                                 'inv_productos.descripcion',
                                 'inv_productos.unidad_medida1',
+                                'inv_productos.unidad_medida2',
                                 'inv_grupos.descripcion AS grupo_descripcion',
                                 'inv_grupos.imagen AS grupo_imagen',
                                 'inv_productos.precio_compra',
@@ -523,6 +528,7 @@ class InvProducto extends Model
                                 'inv_productos.id',
                                 'inv_productos.descripcion',
                                 'inv_productos.unidad_medida1',
+                                'inv_productos.unidad_medida2',
                                 'inv_grupos.descripcion AS grupo_descripcion',
                                 'inv_grupos.imagen AS grupo_imagen',
                                 'inv_productos.precio_compra',

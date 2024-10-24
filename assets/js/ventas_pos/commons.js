@@ -106,9 +106,17 @@ function llenar_tabla_productos_facturados() {
   var cantidad_total_productos = 0;
 
   $(".linea_registro").each(function () {
+
+    var producto = productos.find((item) => item.id === parseInt( $(this).find(".inv_producto_id").text() ));
+
+    var talla = ''
+    if ( producto.unidad_medida2 != '') {
+      talla = " - " +producto.unidad_medida2
+    }
+
     linea_factura =
       "<tr> <td> " +
-      $(this).find(".lbl_producto_descripcion").text() +
+      $(this).find(".lbl_producto_descripcion").text() + talla +
       " </td> <td> " +
       $(this).find(".cantidad").text() +
       " " +
