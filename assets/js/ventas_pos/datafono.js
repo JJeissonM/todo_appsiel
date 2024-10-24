@@ -1,5 +1,5 @@
 
-$.fn.calcular_totales_datafono = function () {
+function calcular_totales_datafono () {
     
     var valor_datafono = Math.round( parseFloat( $('#valor_datafono').val() ) );
 
@@ -13,7 +13,7 @@ $.fn.calcular_totales_datafono = function () {
     $('#valor_total_factura').val( valor_total_factura );
 }
 
-$.fn.calcular_valor_a_pagar_datafono = function (total_factura) {
+function calcular_valor_a_pagar_datafono (total_factura) {
     
     var valor_a_pagar_datafono = Math.round( total_factura * $('#porcentaje_datafono').val() / 100 );
 
@@ -22,7 +22,7 @@ $.fn.calcular_valor_a_pagar_datafono = function (total_factura) {
     $('#aux_datafono').val(valor_a_pagar_datafono);
 }
 
-$.fn.reset_datafono = function () {
+function reset_datafono () {
     $('#lbl_datafono').text('$ 0');
     $('#valor_datafono').val(0);
     $('#aux_datafono').val(0);
@@ -33,7 +33,7 @@ $.fn.reset_datafono = function () {
 
 var motivos_registrados_lineas_medios_recaudos, cantidad_lineas_medios_recaudos;
 
-$.fn.permitir_guardar_factura_con_datafono = function () {
+function permitir_guardar_factura_con_datafono () {
     
     var valor_total_lineas_medios_recaudos = parseFloat($('#total_valor_total').html().substring(1));
 
@@ -66,7 +66,7 @@ $.fn.permitir_guardar_factura_con_datafono = function () {
             return false;
         }else{
 
-            if( $.fn.existe_motivo_tesoreria_datafono() ){
+            if( existe_motivo_tesoreria_datafono() ){
                 return true;
             }
 
@@ -75,7 +75,7 @@ $.fn.permitir_guardar_factura_con_datafono = function () {
 
     }else{ // Pago solo en efectivo
         
-        if( $.fn.existe_motivo_tesoreria_datafono() ){
+        if( existe_motivo_tesoreria_datafono() ){
             return true;
         }
         
@@ -84,7 +84,7 @@ $.fn.permitir_guardar_factura_con_datafono = function () {
     }
 }
 
-$.fn.existe_motivo_tesoreria_datafono = function() {
+function existe_motivo_tesoreria_datafono() {
     if ( $('#motivo_tesoreria_datafono').val() == '' || $('#motivo_tesoreria_datafono').val() == null || $('#motivo_tesoreria_datafono').val() == 0) {
         Swal.fire({
                 icon: 'error',
@@ -98,7 +98,7 @@ $.fn.existe_motivo_tesoreria_datafono = function() {
     return true;
 }
 
-$.fn.separar_json_linea_medios_recaudo = function(json_table2){
+function separar_json_linea_medios_recaudo(json_table2){
 
     var valor_datafono = Math.round( $('#valor_datafono').val() );
 
@@ -137,20 +137,20 @@ $(document).ready(function () {
 
         if( this.checked) {
             
-            $.fn.calcular_valor_a_pagar_datafono(total_factura);
+            calcular_valor_a_pagar_datafono(total_factura);
             
         }else{
-            $.fn.reset_datafono();
+            reset_datafono();
         }
         
         $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_sub_total_factura').val() ));
         $('#valor_total_factura').val( $('#valor_sub_total_factura').val() );
 
-        $.fn.calcular_totales_datafono();
+        calcular_totales_datafono();
         $('#total_valor_total').actualizar_medio_recaudo();
         $('#efectivo_recibido').select();
 
     });
 
-    $.fn.existe_motivo_tesoreria_datafono();
+    existe_motivo_tesoreria_datafono();
 });

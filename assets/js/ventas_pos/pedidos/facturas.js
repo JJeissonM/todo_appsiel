@@ -15,7 +15,7 @@ $('#teso_caja_id').val($('#caja_pdv_default_id').val());
 
 // Crea la cadena de la celdas que se agregarán a la línea de ingreso de productos
 // Debe ser complatible con las columnas de la tabla de ingreso de registros
-$.fn.generar_string_celdas = function (fila) {
+function generar_string_celdas(fila) {
 	if (inv_producto_id === undefined) {
 		return false;
 	}
@@ -104,7 +104,7 @@ $.fn.generar_string_celdas = function (fila) {
 	return string_celdas;
 };
 
-$.fn.redondear_a_centena = function (numero, aproximacion_superior = false) {
+function redondear_a_centena(numero, aproximacion_superior = false) {
 	if ( redondear_centena == 0 )
 	{
 		return numero.toFixed(0);
@@ -352,7 +352,7 @@ function agregar_la_linea2()
 	// Se escogen los campos de la fila ingresada
 	var fila = $('#linea_ingreso_default');
 
-	var string_fila = $.fn.generar_string_celdas(fila);
+	var string_fila = generar_string_celdas(fila);
 
 	if (string_fila == false) {
 		$('#popup_alerta').show();
@@ -446,7 +446,7 @@ function calcular_totales2() {
 	$('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
 
 	// label Total factura  (Sumatoria de precio_total)
-	var valor_redondeado = $.fn.redondear_a_centena(total_factura);
+	var valor_redondeado = redondear_a_centena(total_factura);
 	$('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
 
 	// input hidden
@@ -540,7 +540,7 @@ $(document).ready(function () {
 	// Al mostrar la ventana modal
 	$("#recaudoModal").on('shown.bs.modal', function () {
 		$('#form_registro').before('<div id="div_pendiente_ingresar_medio_recaudo" style="color: red;">Pendiente por registrar: <span id="lbl_vlr_pendiente_ingresar">$ 0</span><div>');
-		$.fn.set_valor_pendiente_ingresar_medios_recaudos();
+		set_valor_pendiente_ingresar_medios_recaudos();
 	});
 	// Al OCULTAR la ventana modal
 	$("#recaudoModal").on('hidden.bs.modal', function () {

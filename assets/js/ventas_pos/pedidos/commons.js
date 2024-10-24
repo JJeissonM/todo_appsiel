@@ -319,7 +319,7 @@ $(document).ready(function () {
         // Se escogen los campos de la fila ingresada
         var fila = $('#linea_ingreso_default');
 
-        var string_fila = $.fn.generar_string_celdas( fila );
+        var string_fila = generar_string_celdas( fila );
 
         if (string_fila == false) 
         {
@@ -599,11 +599,11 @@ $(document).ready(function () {
 
         });
 
-        $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_total_factura)));
+        $('.lbl_total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena(lbl_total_factura)));
         
-        $('.lbl_base_impuesto_total').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_base_impuesto_total)));
+        $('.lbl_base_impuesto_total').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena(lbl_base_impuesto_total)));
         
-        $('.lbl_valor_impuesto').text( '$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(lbl_valor_impuesto)));
+        $('.lbl_valor_impuesto').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena(lbl_valor_impuesto)));
 
         $('.lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_ajuste_al_peso));
 
@@ -766,7 +766,7 @@ $(document).ready(function () {
         $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
 
         // label Total factura  (Sumatoria de precio_total)
-        var valor_redondeado = $.fn.redondear_a_centena(total_factura);
+        var valor_redondeado = redondear_a_centena(total_factura);
         $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_redondeado));
 
         // input hidden

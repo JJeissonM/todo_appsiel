@@ -171,18 +171,18 @@ function calcular_totales() {
     );
 
     if ($("#manejar_propinas").val() == 1) {
-        $.fn.calcular_valor_a_pagar_propina(total_factura);
+        calcular_valor_a_pagar_propina(total_factura);
 
-        $.fn.calcular_totales_propina();
+        calcular_totales_propina();
     }
 
     if (
         $("#manejar_datafono").val() == 1 &&
         $("#calcular_comision_datafono").is(":checked")
     ) {
-        $.fn.calcular_valor_a_pagar_datafono(total_factura);
+        calcular_valor_a_pagar_datafono(total_factura);
 
-        $.fn.calcular_totales_datafono();
+        calcular_totales_datafono();
     }
 
     $("#valor_sub_total_factura").val(total_factura);

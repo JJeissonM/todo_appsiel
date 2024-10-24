@@ -92,7 +92,7 @@ $(document).ready(function () {
         {
             if( $('#valor_propina').val() != 0 )
             {
-                if ( !$.fn.permitir_guardar_factura_con_propina() ) 
+                if ( !permitir_guardar_factura_con_propina() ) 
                 {
                     return false;    
                 }
@@ -103,7 +103,7 @@ $(document).ready(function () {
         {
             if( $('#valor_datafono').val() != 0 )
             {
-                if ( !$.fn.permitir_guardar_factura_con_datafono() ) 
+                if ( !permitir_guardar_factura_con_datafono() ) 
                 {
                     return false;    
                 }
@@ -124,13 +124,13 @@ $(document).ready(function () {
         if( $('#manejar_propinas').val() == 1 )
         {
             // Si hay propina, siempre va a venir una sola linea de medio de pago
-            json_table2 = $.fn.separar_json_linea_medios_recaudo( json_table2 );
+            json_table2 = separar_json_linea_medios_recaudo( json_table2 );
         }
 
         if( $('#manejar_datafono').val() == 1 )
         {
             // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-            json_table2 = $.fn.separar_json_linea_medios_recaudo( json_table2 );
+            json_table2 = separar_json_linea_medios_recaudo( json_table2 );
         }
 
         // Se asigna el objeto JSON a un campo oculto del formulario
