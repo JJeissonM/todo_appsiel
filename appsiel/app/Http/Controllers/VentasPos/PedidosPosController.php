@@ -33,6 +33,7 @@ use App\Sistema\TipoTransaccion;
 use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentsLinesServices;
 use App\Ventas\VtasDocRegistro;
+use App\VentasPos\Services\FacturaPosService;
 
 class PedidosPosController extends TransaccionController
 {
@@ -43,6 +44,7 @@ class PedidosPosController extends TransaccionController
     public function create()
     {
         $this->set_variables_globales();
+        $factura_pos_service = new FacturaPosService();
 
         // Enviar valores predeterminados
         // WARNING!!!! Este motivo es de INVENTARIOS
@@ -95,7 +97,7 @@ class PedidosPosController extends TransaccionController
         
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
-            $vista_categorias_productos = View::make('ventas_pos.tags_lista_items', compact('productosTemp'))->render();
+            $vista_categorias_productos = View::make('ventas_pos.componentes.tactil.lista_items', compact('productosTemp'))->render();
         }
         
         // Para visualizar el listado de productos
@@ -117,7 +119,7 @@ class PedidosPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+        $params_JSPrintManager = $factura_pos_service->get_parametros_complemento_JSPrintManager($pdv);
         
         $pdv_descripcion = $pdv->descripcion;
 
@@ -175,6 +177,7 @@ class PedidosPosController extends TransaccionController
     public function edit($id)
     {
         $this->set_variables_globales();
+        $factura_pos_service = new FacturaPosService();
 
         // Se obtiene el registro a modificar del modelo
         $registro = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
@@ -300,7 +303,7 @@ class PedidosPosController extends TransaccionController
 
         $vista_categorias_productos = '';
         if (config('ventas_pos.activar_ingreso_tactil_productos') == 1) {
-            $vista_categorias_productos = View::make('ventas_pos.tags_lista_items', compact('productosTemp'))->render();
+            $vista_categorias_productos = View::make('ventas_pos.componentes.tactil.lista_items', compact('productosTemp'))->render();
         }
         
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
@@ -324,7 +327,7 @@ class PedidosPosController extends TransaccionController
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
-        $params_JSPrintManager = $this->get_parametros_complemento_JSPrintManager($pdv);
+        $params_JSPrintManager = $factura_pos_service->get_parametros_complemento_JSPrintManager($pdv);
 
         $msj_resolucion_facturacion = '';
 
@@ -659,21 +662,5 @@ class PedidosPosController extends TransaccionController
             'lineas_registros' => $lineas_registros,
             'url_cancelar' => url('/').  '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' . Input::get('pdv_id') . '&action=create'
         ]);
-    }
-
-    public function get_parametros_complemento_JSPrintManager($pdv)
-    {
-        $usar_complemento_JSPrintManager = 0;
-
-        if ($pdv->usar_complemento_JSPrintManager != null) {
-            $usar_complemento_JSPrintManager = $pdv->usar_complemento_JSPrintManager;
-        }
-
-        return (object)[
-            'usar_complemento_JSPrintManager' => $usar_complemento_JSPrintManager,
-            'enviar_impresion_directamente_a_la_impresora' => $pdv->enviar_impresion_directamente_a_la_impresora,
-            'impresora_principal_por_defecto' => $pdv->impresora_principal_por_defecto,
-            'impresora_cocina_por_defecto' => $pdv->impresora_cocina_por_defecto,
-        ];
     }
 }
