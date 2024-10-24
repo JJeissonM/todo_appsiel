@@ -211,7 +211,7 @@ class ItemMandatarioController extends ModeloController
             $impuesto_id = $item_mandatario->impuesto_id;
         }
         $item_relacionado->impuesto_id = $impuesto_id;
-        
+
         $item_relacionado->codigo_barras = $item_mandatario->codigo_barras;
 
         $item_relacionado->precio_compra = 100;
@@ -242,7 +242,7 @@ class ItemMandatarioController extends ModeloController
 
             $talla = new TallaItem( $request->unidad_medida2 );
             $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
-            $item_relacionado->codigo_barras = $this->get_barcode( $item_relacionado->id, '000', $request->unidad_medida2, $mandatario_referencia );
+            $item_relacionado->codigo_barras = 99;//$this->get_barcode( $item_relacionado->id, '000', $request->unidad_medida2, $mandatario_referencia );
         }
 
         $item_relacionado->save();
@@ -253,6 +253,7 @@ class ItemMandatarioController extends ModeloController
     public function get_barcode( $item_relacionado_id, $color_id, $talla_id, $referencia )
     {
         $codigo_barras = new CodigoBarras( $item_relacionado_id, $color_id, $talla_id, $referencia );
+
         return $codigo_barras->get_barcode( $item_relacionado_id );
     } 
 
