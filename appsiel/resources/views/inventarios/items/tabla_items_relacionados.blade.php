@@ -32,25 +32,21 @@
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th>Cód. barras</th>
 				<th>Referencia</th>
 				<th>Talla</th>
-				<th>Cantidad</th>
 				<th>Acción</th>
 			</tr>
 		</thead>
 		<tbody>
 			@foreach( $items_relacionados AS $item )
 				<?php 
-					$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
+					//$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 
 					$url_redirect = '[inv_item_mandatario/' . $registro->id . '?id=8&id_modelo=315&id_transaccion=]';
 				?>
 				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
-					<td> {{ $item->codigo_barras }} </td>
 					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
-					<td align="center"> {{ $existencia_actual }} </td>
 					<td>
 						<!-- 
 						<a class="btn btn-danger btn-sm" href="{ { url('web_delete_record/8/22/' . $item->id . '/' . $url_redirect) }}" title="Eliminar talla"> <i class="fa fa-trash"></i></a>
