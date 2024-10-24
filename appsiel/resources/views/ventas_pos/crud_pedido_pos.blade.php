@@ -264,7 +264,6 @@
     <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
     
-    <script src="{{ asset( 'assets/js/ventas_pos/doble_click.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?aux=' . uniqid() )}}"></script>
 
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/commons.js?aux=' . uniqid() )}}"></script>
