@@ -100,9 +100,6 @@ function redondear_a_centena(numero, aproximacion_superior = false) {
     // se obtiene solo la parte entera
     //centenas = Math.trunc( saldo2 / 100 ) * 100;
     centenas = (saldo2 / 100).toFixed(0) * 100;
-    
-    console.log(saldo2, saldo2 / 100,  (saldo2 / 100).toFixed(0), centenas)
-    
   }
 
   return millones + millares + centenas;

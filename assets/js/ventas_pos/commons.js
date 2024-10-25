@@ -233,9 +233,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true ) {
   var lbl_total_cambio = 0;
   if ( con_medios_recaudos ) {
     lbl_total_cambio = total_cambio;
-  } 
-
-  console.log( 'lbl_total_cambio', lbl_total_cambio )
+  }
 
   $(".lbl_total_cambio").text(
     "$ " +
