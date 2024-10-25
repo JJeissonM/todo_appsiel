@@ -307,13 +307,22 @@ class FacturaGeneral
           $response = $e->getResponse();
       }
 
+      if( $response->getStatusCode() == 401)
+      {
+         return json_decode(
+                              json_encode([
+                                 "errors" => "Codigo 401. Cuenta no autorizada."
+                              ])
+                           );
+      }
+
       return json_decode( (string) $response->getBody() );
    }
 
    public function get_errores( $json_dataico )
    {
       $errors_list = '';
-      
+
       if (isset($json_dataico->errors)) {
 
          if (gettype($json_dataico->errors) == 'string') {
