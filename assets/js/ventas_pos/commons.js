@@ -187,6 +187,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true ) {
       "$ " + new Intl.NumberFormat("de-DE").format(valor_propina)
     );
   }
+
   if ($("#manejar_datafono").val() == 1) {
     valor_datafono = parseFloat($("#valor_datafono").val());
     $(".lbl_total_datafono").text(
@@ -233,6 +234,9 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true ) {
   if ( con_medios_recaudos ) {
     lbl_total_cambio = total_cambio;
   } 
+
+  console.log( 'lbl_total_cambio', lbl_total_cambio )
+
   $(".lbl_total_cambio").text(
     "$ " +
       new Intl.NumberFormat("de-DE").format(

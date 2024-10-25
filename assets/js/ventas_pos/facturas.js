@@ -34,21 +34,6 @@ $.fn.actualizar_medio_recaudo = function () {
   set_valor_pendiente_ingresar_medios_recaudos();
 };
 
-//
-function calcular_total_cambio(efectivo_recibido) {
-  total_cambio =
-    (redondear_a_centena(parseFloat($("#valor_total_factura").val())) -
-      parseFloat(efectivo_recibido)) *
-    -1;
-
-  // Label
-  $("#total_cambio").text(
-    "$ " + new Intl.NumberFormat("de-DE").format(total_cambio.toFixed(0))
-  );
-  // Input hidden
-  $("#valor_total_cambio").val(total_cambio);
-};
-
 function set_label_efectivo_recibido(efectivo_recibido) {
   $("#lbl_efectivo_recibido").text(
     "$ " +
@@ -56,15 +41,6 @@ function set_label_efectivo_recibido(efectivo_recibido) {
         parseFloat(efectivo_recibido).toFixed(2)
       )
   );
-};
-
-function cambiar_estilo_div_total_cambio() {
-  $("#efectivo_recibido").css("background-color", "white");
-
-  $("#div_total_cambio").attr("class", "danger");
-
-  if (total_cambio.toFixed(0) >= 0)
-    $("#div_total_cambio").attr("class", "success");
 };
 
 function set_valor_pendiente_ingresar_medios_recaudos() {
@@ -95,6 +71,7 @@ function getCookie(cname) {
 };
 
 function redondear_a_centena(numero, aproximacion_superior = false) {
+
   if (redondear_centena == 0) {
     return numero.toFixed(0);
   }
@@ -123,6 +100,9 @@ function redondear_a_centena(numero, aproximacion_superior = false) {
     // se obtiene solo la parte entera
     //centenas = Math.trunc( saldo2 / 100 ) * 100;
     centenas = (saldo2 / 100).toFixed(0) * 100;
+    
+    console.log(saldo2, saldo2 / 100,  (saldo2 / 100).toFixed(0), centenas)
+    
   }
 
   return millones + millares + centenas;

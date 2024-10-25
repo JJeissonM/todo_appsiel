@@ -1,20 +1,22 @@
 
 function calcular_totales_propina() {
 
-    var valor_total_factura = parseFloat( $('#valor_total_factura').val()) + parseFloat( $('#valor_propina').val());
+    var valor_total_factura = redondear_a_centena( parseFloat( $('#valor_total_factura').val()) + parseFloat( $('#valor_propina').val()) );
 
-    $('#lbl_propina').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_propina').val() ));
+    var valor_propina = redondear_a_centena( $('#valor_propina').val() ) 
+
+    $('#lbl_propina').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_propina ));
     
     $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_total_factura ));
 
     // input hidden
-    $('#aux_propina').val( $('#valor_propina').val() );
+    $('#aux_propina').val( valor_propina );
     $('#valor_total_factura').val( valor_total_factura );
 }
 
 function calcular_valor_a_pagar_propina (total_factura) {
     
-    var valor_a_pagar_propina = total_factura * $('#porcentaje_propina').val() / 100;
+    var valor_a_pagar_propina = redondear_a_centena( total_factura * $('#porcentaje_propina').val() / 100 );
 
     $('#lbl_propina').text('$ ' + valor_a_pagar_propina);
     $('#valor_propina').val(valor_a_pagar_propina);
@@ -161,8 +163,10 @@ $(document).ready(function () {
 				break;
 		}
         
-        $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $('#valor_sub_total_factura').val() ));
-        $('#valor_total_factura').val( $('#valor_sub_total_factura').val() );
+        var valor_sub_total_factura = redondear_a_centena( $('#valor_sub_total_factura').val() )
+
+        $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( valor_sub_total_factura ));
+        $('#valor_total_factura').val( valor_sub_total_factura );
 
         calcular_totales_propina();
         $('#total_valor_total').actualizar_medio_recaudo();
