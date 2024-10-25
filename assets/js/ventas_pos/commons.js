@@ -71,7 +71,7 @@ function get_json_registros_medios_recaudo() {
     let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
     let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
 
-    var json_table2 =
+    json_table2 =
       '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' +
       $("#caja_pdv_default_id").val() +
       "-" +
