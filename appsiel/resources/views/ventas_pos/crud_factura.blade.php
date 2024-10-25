@@ -153,13 +153,6 @@
     <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
 
-    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2)
-        <script src="{{ asset( 'assets/js/ventas_pos/cptable.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
-    @endif
-
     <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
     
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
@@ -181,6 +174,16 @@
     @if ( (int)config('ventas_pos.modulo_fe_activo'))
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?aux=' . uniqid())}}"></script>
     @endif
+
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 3)
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/cptable.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/cputils.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/JSESCPOSBuilder.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/JSPrintManager.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/script_to_printer.js?aux=' . uniqid() )}}"></script>
+    @endif
+
+    <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript">
         

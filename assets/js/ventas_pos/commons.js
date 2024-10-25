@@ -97,7 +97,7 @@ function get_json_registros_medios_recaudo() {
   return json_table2;
 }
 
-function llenar_tabla_productos_facturados() {
+function llenar_tabla_productos_facturados( con_medios_recaudos = true ) {
   var linea_factura, linea_factura2;
   var lbl_total_factura = 0;
   var lbl_base_impuesto_total = 0;
@@ -218,16 +218,25 @@ function llenar_tabla_productos_facturados() {
   $(".lbl_ajuste_al_peso").text(
     "$ " + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso)
   );
+
+  var efectivo_recibido = 0;
+  if ( con_medios_recaudos ) {
+    efectivo_recibido = parseFloat($("#efectivo_recibido").val());
+  }  
   $(".lbl_total_recibido").text(
     "$ " +
-      new Intl.NumberFormat("de-DE").format(
-        parseFloat($("#efectivo_recibido").val())
-      )
+      new Intl.NumberFormat("de-DE").format( efectivo_recibido )
   );
+
+
+  var lbl_total_cambio = 0;
+  if ( con_medios_recaudos ) {
+    lbl_total_cambio = total_cambio;
+  } 
   $(".lbl_total_cambio").text(
     "$ " +
       new Intl.NumberFormat("de-DE").format(
-        redondear_a_centena(total_cambio)
+        redondear_a_centena( lbl_total_cambio )
       )
   );
 
@@ -264,7 +273,9 @@ function llenar_tabla_productos_facturados() {
 
   $(".lbl_descripcion_doc_encabezado").text($("#descripcion").val());
 
-  llenar_resumen_medios_recaudo();
+  if ( con_medios_recaudos ) {
+    llenar_resumen_medios_recaudo();
+  }
 }
 
 function llenar_resumen_medios_recaudo() {

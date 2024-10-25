@@ -268,11 +268,11 @@
 
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/commons.js?aux=' . uniqid() )}}"></script>
 
-    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 1 || $params_JSPrintManager->usar_complemento_JSPrintManager == 2)
-        <script src="{{ asset( 'assets/js/ventas_pos/cptable.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/cputils.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/JSESCPOSBuilder.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
+    @if( $params_JSPrintManager->usar_complemento_JSPrintManager == 3)
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/cptable.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/cputils.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/JSESCPOSBuilder.js' )}}"></script>
+        <script src="{{ asset( 'assets/js/ventas_pos/external_print/JSPrintManager.js' )}}"></script>
         <script src="{{ asset( 'assets/js/ventas_pos/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
     @endif
 

@@ -2,7 +2,7 @@
 function enviar_impresion( doc_encabezado )
 {
     // Imprimir siempre en cocina
-    if ($("#usar_complemento_JSPrintManager").val() == 1) {        
+    if ( $("#usar_complemento_JSPrintManager").val() == 1 || $("#usar_complemento_JSPrintManager").val() == 3) {
         print_comanda(doc_encabezado);        
     }
 
@@ -30,7 +30,9 @@ function enviar_impresion( doc_encabezado )
             break;
     }
 
-    resetear_ventana();
+    if ( doc_encabezado != 'prefactura' ) {
+        resetear_ventana();
+    }    
 
     if ($("#action").val() != "create") {
         location.href =

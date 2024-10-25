@@ -457,7 +457,7 @@ $(document).ready(function () {
 
             llenar_tabla_productos_facturados();
 
-            if ( $('#usar_complemento_JSPrintManager').val() == 1 )
+            if ( $('#usar_complemento_JSPrintManager').val() == 3 )
             {
                 print_comanda();
             }
