@@ -2,6 +2,7 @@
 
 namespace App\Ventas\Services;
 
+use App\Inventarios\InvProducto;
 use App\Ventas\ListaPrecioDetalle;
 
 class PricesServices
@@ -9,6 +10,10 @@ class PricesServices
     public function create_item_price( $data )
     {
         ListaPrecioDetalle::create( $data );
+
+        $item = InvProducto::find( (int)$data['inv_producto_id'] );
+        $item->precio_venta = $data['precio'];
+        $item->save();
     }
 
     public function create_or_update_item_price( $data )
@@ -33,5 +38,10 @@ class PricesServices
                 $reg_precio_actual->save();
             }
         }
+
+        
+        $item = InvProducto::find( (int)$data['inv_producto_id'] );
+        $item->precio_venta = $data['precio'];
+        $item->save();
     }
 }
