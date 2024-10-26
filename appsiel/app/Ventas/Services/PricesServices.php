@@ -12,7 +12,7 @@ class PricesServices
         ListaPrecioDetalle::create( $data );
 
         $item = InvProducto::find( (int)$data['inv_producto_id'] );
-        $item->precio_venta = $data['precio'];
+        $item->precio_venta = $data['precio_venta'];
         $item->save();
     }
 
@@ -41,7 +41,7 @@ class PricesServices
 
         
         $item = InvProducto::find( (int)$data['inv_producto_id'] );
-        $item->precio_venta = $data['precio'];
+        $item->precio_venta = $nuevo_precio_venta;
         $item->save();
     }
 }
