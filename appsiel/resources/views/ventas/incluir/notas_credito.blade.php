@@ -5,11 +5,7 @@
             {{ Form::bsTableHeader(['Documento','Fecha','Detalle','Valor total']) }}
             <tbody>
                 <?php 
-                
-                $total_valor_total = 0;
-
-                dd($notas_credito);
-
+                    $total_valor_total = 0;
                 ?>
                 @foreach($notas_credito as $doc_encabezado )
                     <tr>
