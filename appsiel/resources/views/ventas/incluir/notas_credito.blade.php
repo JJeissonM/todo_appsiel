@@ -8,6 +8,8 @@
                 
                 $total_valor_total = 0;
 
+                dd($notas_credito);
+
                 ?>
                 @foreach($notas_credito as $doc_encabezado )
                     <tr>

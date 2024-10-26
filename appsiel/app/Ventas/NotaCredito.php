@@ -147,9 +147,14 @@ class NotaCredito extends Model
     */
     public static function get_notas_aplicadas_factura($doc_encabezado_factura_id)
     {
-        return NotaCredito::where('vtas_doc_encabezados.ventas_doc_relacionado_id', $doc_encabezado_factura_id)
-            ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+        $core_tipo_transaccion_id = 38; // Nota crédito
+
+        return NotaCredito::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
+            ->where([
+                ['vtas_doc_encabezados.ventas_doc_relacionado_id','=', $doc_encabezado_factura_id],
+                ['vtas_doc_encabezados.core_tipo_transaccion_id','=', $core_tipo_transaccion_id]
+            ])
             ->select(
                 'vtas_doc_encabezados.id',
                 'vtas_doc_encabezados.core_empresa_id',
