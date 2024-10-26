@@ -155,9 +155,19 @@ class ItemMandatarioController extends ModeloController
         
         if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
             $datos['codigo_barras'] = (new CodigoBarras($registro->id, 0, 0, 0))->barcode;
-        }
+        }        
 
         $registro->fill( $datos );
+
+        if ( $request->unidad_medida2 != null ) {
+            // $request->unidad_medida2 almacena la Talla
+            $registro->referencia = $registro->referencia . '-' . $request->unidad_medida2;
+
+            $talla = new TallaItem( $request->unidad_medida2 );
+            $registro->unidad_medida2 = $talla->convertir_mayusculas();
+            $registro->codigo_barras = 99;
+        }
+        
         $registro->save();
 
         if (config('ventas.agregar_precio_a_lista_desde_create_item'))
@@ -242,7 +252,7 @@ class ItemMandatarioController extends ModeloController
 
             $talla = new TallaItem( $request->unidad_medida2 );
             $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
-            $item_relacionado->codigo_barras = 99;//$this->get_barcode( $item_relacionado->id, '000', $request->unidad_medida2, $mandatario_referencia );
+            $item_relacionado->codigo_barras = 99;
         }
 
         $item_relacionado->save();
