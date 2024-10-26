@@ -36,12 +36,13 @@ class PricesServices
             if ($nuevo_precio_venta != $reg_precio_actual->precio) {
                 $reg_precio_actual->precio = $nuevo_precio_venta;
                 $reg_precio_actual->save();
+                
+                $item = InvProducto::find( (int)$data['inv_producto_id'] );
+                $item->precio_venta = $nuevo_precio_venta;
+                $item->save();
             }
         }
 
         
-        $item = InvProducto::find( (int)$data['inv_producto_id'] );
-        $item->precio_venta = $nuevo_precio_venta;
-        $item->save();
     }
 }

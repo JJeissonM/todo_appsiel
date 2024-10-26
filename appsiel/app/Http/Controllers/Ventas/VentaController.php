@@ -237,7 +237,7 @@ class VentaController extends TransaccionController
         $cantidad_registros = count($lineas_registros);
         for ($i=0; $i < $cantidad_registros; $i++) 
         {
-            if ( (int)$lineas_registros[$i]->cantidad == 0 ) {
+            if ( (float)$lineas_registros[$i]->cantidad == 0 ) {
                 continue;
             }
 
