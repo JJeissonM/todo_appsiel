@@ -11,6 +11,10 @@ class PricesServices
     {
         ListaPrecioDetalle::create( $data );
 
+        if (!isset($data['precio_venta'])) {
+            $data['precio_venta'] = $data['precio'];
+        }
+
         $item = InvProducto::find( (int)$data['inv_producto_id'] );
         $item->precio_venta = $data['precio_venta'];
         $item->save();

@@ -362,7 +362,7 @@ class FacturaPosController extends TransaccionController
     public function imprimir($id)
     {
         $print_service = new PrintServices();
-
+        
         return $print_service->generar_documento_vista( $id, 'ventas.formatos_impresion.pos' );
     }
 

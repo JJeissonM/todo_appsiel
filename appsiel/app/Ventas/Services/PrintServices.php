@@ -75,10 +75,21 @@ class PrintServices
         $tipo_doc_app = '';
         $pdv_descripcion = '';
         if ( $ruta_vista == 'ventas.formatos_impresion.pos') {
+
             $ruta_vista = 'ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default;
             
             $valor_propina = ( new TipService() )->get_tip_amount($doc_encabezado);
+            $total_factura_mas_propina = 0;
+            if ( $valor_propina != 0) {
+                $total_factura_mas_propina = $doc_encabezado->valor_total + $valor_propina;
+            }
+
             $valor_datafono = ( new DatafonoService() )->get_datafono_amount($doc_encabezado);
+            $total_factura_mas_datafono = 0;
+            if ( $valor_datafono != 0) {
+                $total_factura_mas_datafono = $doc_encabezado->valor_total + $valor_datafono;
+            }
+
             $datos_factura = (object)[
                 'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
@@ -89,9 +100,9 @@ class PrintServices
                 'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
                 'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
                 'lbl_total_propina' => '$' . number_format( $valor_propina, 2, ',' , '.'),
-                'total_factura_mas_propina' => '$' . number_format( $doc_encabezado->valor_total + $valor_propina, 2, ',' , '.'),
+                'total_factura_mas_propina' => '$' . number_format( $total_factura_mas_propina, 2, ',' , '.'),
                 'lbl_total_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
-                'total_factura_mas_datafono' => '$' . number_format( $doc_encabezado->valor_total + $valor_datafono, 2, ',' , '.'),
+                'total_factura_mas_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
                 'lbl_ajuste_al_peso' => '',
                 'lbl_total_recibido' => '',
                 'lbl_total_cambio' => '',

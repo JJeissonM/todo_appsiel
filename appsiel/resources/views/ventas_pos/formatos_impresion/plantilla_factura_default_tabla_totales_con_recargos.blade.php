@@ -1,6 +1,9 @@
 <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_totales">
-    <?php 
-        $total_factura_mas_recargos = (float)$datos_factura->total_factura_mas_propina + (float)$datos_factura->total_factura_mas_datafono;
+    <?php
+        $total_factura_mas_recargos = $datos_factura->total_factura_mas_propina;
+        if ( $datos_factura->total_factura_mas_datafono != '$0,00') {
+            $total_factura_mas_recargos = $datos_factura->total_factura_mas_datafono;
+        }
     ?>
     <tbody>
         <tr style="font-weight: bold;">
