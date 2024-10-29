@@ -120,6 +120,11 @@ function generar_string_celdas() {
     talla = " - " + producto.unidad_medida2
   }
 
+  var codigo_proveedor = ''
+  if ( producto.codigo_proveedor != '') {
+    codigo_proveedor = " - " + producto.codigo_proveedor
+  }
+
   var celdas = [];
   var num_celda = 0;
 
@@ -204,7 +209,7 @@ function generar_string_celdas() {
 
   num_celda++;
 
-  var descripcion_item = $("#inv_producto_id").val() + talla;
+  var descripcion_item = $("#inv_producto_id").val() + talla + codigo_proveedor;
   //if ($("#manejar_platillos_con_contorno").val() == 1) {
   //  descripcion_item = cambiar_descripcion_item_ingresado(descripcion_item);
   //}

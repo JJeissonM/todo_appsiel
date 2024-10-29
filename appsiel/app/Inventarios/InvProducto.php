@@ -359,6 +359,7 @@ class InvProducto extends Model
                                             'inv_productos.precio_venta',
                                             'inv_productos.tipo',
                                             'inv_productos.impuesto_id',
+                                            'inv_productos.categoria_id',
                                             'inv_productos.estado',
                                             'inv_productos.imagen',
                                             'inv_productos.mostrar_en_pagina_web',
@@ -389,6 +390,14 @@ class InvProducto extends Model
             $item->existencia_actual = $existencia_actual;
 
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('ventas.lista_precios_id'), date('Y-m-d'), $item->id );
+
+            $item->codigo_proveedor = '';
+            if ( (int)$item->categoria_id != 0) {
+                $proveedor = Proveedor::find( (int)$item->categoria_id );
+                if ($proveedor != null) {
+                    $item->codigo_proveedor = $proveedor->codigo;
+                }
+            }
         }
 
         return $registros;

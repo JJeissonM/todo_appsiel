@@ -3,13 +3,6 @@
 namespace App\Http\Controllers\Inventarios;
 
 use Illuminate\Http\Request;
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -32,6 +25,11 @@ use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\RecetaCocina;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class InvFisicoController extends TransaccionController
 {
@@ -239,7 +237,7 @@ class InvFisicoController extends TransaccionController
         $orientacion='portrait';
         $tam_hoja = 'Letter';//array(0,0,50,800);//'A4';
 
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
