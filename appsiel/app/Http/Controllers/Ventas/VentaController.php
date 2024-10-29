@@ -871,8 +871,7 @@ class VentaController extends TransaccionController
             
             $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
             $valor_impuesto = $precio_unitario - $base_impuesto;
-
-
+            
             // Obtener existencia actual
             $existencia_actual = InvMovimiento::get_existencia_actual( $producto['id'], $bodega_id, $fecha );
 

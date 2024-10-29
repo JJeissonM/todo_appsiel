@@ -668,6 +668,7 @@ class CompraController extends TransaccionController
             $costo_promedio = InvCostoPromProducto::where('inv_bodega_id','=',$bodega_id)
                                     ->where('inv_producto_id','=',$producto_id)
                                     ->value('costo_promedio');
+
             if ( ! ($costo_promedio>0) ) 
             {
                 $costo_promedio = 0;
@@ -677,10 +678,6 @@ class CompraController extends TransaccionController
             /*
                 Falta el manejo de los descuentos.
             */
-
-            // Precios traido del movimiento de compras. El último precio liquidado al proveedor para ese producto.
-            $precio_unitario = ComprasMovimiento::get_ultimo_precio_producto( $proveedor_id, $producto_id )->precio_unitario;
-
             // Los impuestos en compras se obtinen del precio_compra
 
             $tasa_impuesto = Impuesto::get_tasa( $producto_id, $proveedor_id, 0 );
@@ -694,7 +691,16 @@ class CompraController extends TransaccionController
                 $base_impuesto = 0;
                 $valor_impuesto = 0;
             }
-            
+
+            // Precios traido del movimiento de compras. El último precio liquidado al proveedor para ese producto.
+            $obj_precio_unitario = ComprasMovimiento::get_ultimo_precio_producto( $proveedor_id, $producto_id );
+            if ( $obj_precio_unitario->core_tipo_transaccion_id == null ) 
+            { 
+                // El costo viene del campo precio_compra del item, luego se le debe sumar impuesto.
+                $precio_unitario = $obj_precio_unitario->precio_unitario * (1 + $tasa_impuesto / 100);
+            }else{
+                $precio_unitario = $obj_precio_unitario->precio_unitario;
+            }            
 
             /*
                 PENDIENTE: VALIDACIONES DE FECHA
