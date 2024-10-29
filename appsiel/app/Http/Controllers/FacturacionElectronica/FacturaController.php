@@ -191,7 +191,6 @@ class FacturaController extends TransaccionController
             return redirect( $ruta_show )->with( 'mensaje_error', 'Documento no pudo ser enviado. <br> Presenta inconsistencias: ' . $errores_einvoice);
         }
         
-
         if (isset($json_dataico->invoice)) {
             if ($json_dataico->invoice->dian_status != 'DIAN_RECHAZADO') {
                 // La factura ya está en DATAICO, pero no se reflejó en Appsiel

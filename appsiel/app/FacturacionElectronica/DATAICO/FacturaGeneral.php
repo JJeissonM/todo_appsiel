@@ -272,12 +272,17 @@ class FacturaGeneral
    
    public function get_einvoice_in_dataico()
    {
-      if ( $this->env == 'PRODUCCION' )
-      {
-         $resolucion = $this->doc_encabezado->resolucion_facturacion();
-      }else{
-         $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
-      }      
+      $prefijo_resolucion = $this->doc_encabezado->tipo_documento_app->prefijo;
+
+      if ( $this->tipo_transaccion == 'factura') {
+         if ( $this->env == 'PRODUCCION' )
+         {
+            $resolucion = $this->doc_encabezado->resolucion_facturacion();
+         }else{
+            $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
+         }
+         $prefijo_resolucion = $resolucion->prefijo;
+      }
         
       /*
                DATOS APPSIEL SAS - Para Pruebas      
@@ -290,7 +295,6 @@ class FacturaGeneral
 
       $tokenPassword = config('facturacion_electronica.tokenPassword');
 
-      $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
 
       try {

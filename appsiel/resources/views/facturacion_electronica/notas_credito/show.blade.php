@@ -13,6 +13,13 @@
 
 @section('botones_acciones')
 
+	@if( $doc_encabezado->estado == 'Sin enviar' || $doc_encabezado->estado == 'Contabilizado - Sin enviar' || $doc_encabezado->estado == 'Activo' )
+
+		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+
+	@endif
+
+
     @if( $doc_encabezado->estado == 'Sin enviar' )
 		<?php 
 			$color = 'red';
@@ -23,8 +30,10 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'ventas_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
+	<!-- 
+		Formato: { { Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS'],null, [ 'id' =>'formato_impresion_id' ]) }}
+		{ { Form::bsBtnPrint( 'ventas_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
+	-->
 @endsection
 
 @section('botones_anterior_siguiente')

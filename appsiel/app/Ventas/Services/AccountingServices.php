@@ -5,7 +5,8 @@ namespace App\Ventas\Services;
 use App\Contabilidad\ContabMovimiento;
 
 class AccountingServices
-{    
+{
+    // Este metodo es identico a ContabilidadController::contabilizar_registro2()
     public function contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cta_bancaria_id = 0 )
     {
         ContabMovimiento::create( $datos + 

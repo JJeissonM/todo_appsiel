@@ -514,6 +514,10 @@ class InvMovimiento extends Model
     // WARNING!!!! Falta la validación cuando se vaya a cambiar de fecha
     public static function validar_saldo_movimientos_posteriores_todas_lineas( $inv_doc_encabezado, $nueva_fecha, $operacion, $tipo_movimiento )
     {
+        if ((int)config('ventas.permitir_inventarios_negativos')) {
+            return 0;
+        }
+
         // Para anulación, todos los registros, se asume: NUEVA CANTIDAD = 0
         $lineas_documento = InvDocRegistro::where('inv_doc_encabezado_id', $inv_doc_encabezado->id)->get();
         $conta = 1;

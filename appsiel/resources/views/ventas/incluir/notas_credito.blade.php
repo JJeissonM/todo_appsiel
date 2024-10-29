@@ -18,6 +18,7 @@
                             {
                                 continue;
                             }
+
                             $el_documento = app( $transaccion->modelo_encabezados_documentos )->where('core_tipo_transaccion_id',$doc_encabezado->core_tipo_transaccion_id)
                                                 ->where('core_tipo_doc_app_id',$doc_encabezado->core_tipo_doc_app_id)
                                                 ->where('consecutivo',$doc_encabezado->consecutivo)
@@ -29,6 +30,9 @@
                                 continue;
                             }
                             $modelo = App\Sistema\Modelo::find( $transaccion->core_modelo_id );
+                            if ($modelo->modelo == 'NotaCreditoElectronicaVentas') {
+                                $modelo->url_ver = 'fe_nota_credito/' . $el_documento->id;
+                            }
                             $url_ver = str_replace('id_fila', $el_documento->id, $modelo->url_ver)
 
                         ?>

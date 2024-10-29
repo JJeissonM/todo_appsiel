@@ -37,6 +37,7 @@ use App\FacturacionElectronica\NotaCredito;
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
+use App\Ventas\Services\NotaCreditoServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -323,6 +324,8 @@ class NotaCreditoController extends TransaccionController
     */
     public static function crear_registros_nota_credito( Request $request, $nota_credito, $factura )
     {
+        $nota_credito_service = new NotaCreditoServices();
+
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
         $datos = $request->all();
 
@@ -345,6 +348,8 @@ class NotaCreditoController extends TransaccionController
     public static function crear_lineas_registros_con_base_en_factura( $datos, $nota_credito, $factura )
     {
         $total_documento = 0;
+
+        $nota_credito_service = new NotaCreditoServices();
         
         $lineas_registros = $factura->lineas_registros;
         foreach ($lineas_registros as $linea_factura)
@@ -392,7 +397,7 @@ class NotaCreditoController extends TransaccionController
             $detalle_operacion = $datos['descripcion'];
 
             // Reversar ingresos e impuestos
-            NotaCreditoController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
+            $nota_credito_service->contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
 
             $total_documento += $precio_total_con_descuento;
 
@@ -411,9 +416,9 @@ class NotaCreditoController extends TransaccionController
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         if ($factura->forma_pago == 'credito') {
-            NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' );
+            $nota_credito_service->actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' );
         }else {
-            NotaCreditoController::actualizar_movimiento_tesoreria( $total_documento, $factura, $nota_credito, 'crear' ); 
+            $nota_credito_service->actualizar_movimiento_tesoreria( $total_documento, $factura, $nota_credito, 'crear' );
         }
 
         return true;
@@ -422,6 +427,8 @@ class NotaCreditoController extends TransaccionController
     // Se crean los registros con base en los registros de la devolución
     public static function crear_lineas_registros_ventas( $datos, $nota_credito, $lineas_registros, $factura )
     {
+        $nota_credito_service = new NotaCreditoServices();
+
         $total_documento = 0;
         // Por cada remisión pendiente
         $cantidad_registros = count( $lineas_registros );
@@ -484,8 +491,8 @@ class NotaCreditoController extends TransaccionController
                 // Contabilizar
                 $detalle_operacion = $datos['descripcion'];
 
-                // Reversar ingresos e impuestos
-                NotaCreditoController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
+                // Reversar ingresos e impuestos                
+                $nota_credito_service->contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
 
                 $total_documento += $precio_total_con_descuento;
 
@@ -519,27 +526,12 @@ class NotaCreditoController extends TransaccionController
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         if ($factura->forma_pago == 'credito') {
-            NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' );
+            $nota_credito_service->actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' );
         }else {
-            NotaCreditoController::actualizar_movimiento_tesoreria( $total_documento, $factura, $nota_credito, 'crear' ); 
+            $nota_credito_service->actualizar_movimiento_tesoreria( $total_documento, $factura, $nota_credito, 'crear' ); 
         } 
 
         return true;
-    }
-
-    public static function contabilizar_movimiento_debito( $datos, $detalle_operacion )
-    {
-        // IVA descontable (DB)
-        // Si se ha liquidado impuestos en la transacción
-        if ( isset( $datos['tasa_impuesto'] ) && $datos['tasa_impuesto'] > 0 )
-        {
-            $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_devolucion_ventas( $datos['inv_producto_id'] );
-            ContabilidadController::contabilizar_registro2( $datos, $cta_impuesto_ventas_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
-        }
-
-        // La cuenta de ingresos se toma del grupo de inventarios
-        $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $datos['inv_producto_id'] );
-        ContabilidadController::contabilizar_registro2( $datos, $cta_ingresos_id, $detalle_operacion, $datos['base_impuesto_total'], 0);
     }
 
     public static function contabilizar_movimiento_credito( $datos, $total_documento, $detalle_operacion, $factura = null )
@@ -598,124 +590,46 @@ class NotaCreditoController extends TransaccionController
         ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, abs($total_documento) );
     }
 
-    public static function actualizar_registro_pago( $total_nota, $factura, $nota, $accion )
-    {
-        /*
-            Al crear la nota: Se disminuye el saldo pendiente y se aumenta el valor pagado
-            A anular la nota: Se aumenta el saldo pendiente y se disminuye el valor pagado
-        */
-
-        // total_nota es negativo cuando se hace la nota y positivo cuando se anula
-
-        $movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                                ->where('consecutivo', $factura->consecutivo)
-                                ->get()
-                                ->first();
-
-        $nuevo_total_pendiente = $movimiento_cxc->saldo_pendiente + $total_nota; 
-        $nuevo_total_pagado = $movimiento_cxc->valor_pagado - $total_nota;
-
-        $estado = 'Pendiente';
-        if ( $nuevo_total_pendiente == 0)
-        {
-            $estado = 'Pagado';
-        }
-
-        $movimiento_cxc->update( [ 
-                                    'valor_pagado' => $nuevo_total_pagado,
-                                    'saldo_pendiente' => $nuevo_total_pendiente,
-                                    'estado' => $estado
-                                ] );
-
-        $datos = ['core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id]+
-                  ['core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id]+
-                  ['consecutivo' => $nota->consecutivo]+
-                  ['fecha' => $nota->fecha]+
-                  ['core_empresa_id' => $nota->core_empresa_id]+
-                  ['core_tercero_id' => $nota->core_tercero_id]+
-                  ['modelo_referencia_tercero_index' => 'App\Ventas\Cliente']+
-                  ['referencia_tercero_id' => $factura->cliente_id]+
-                  ['doc_cxc_transacc_id' => $factura->core_tipo_transaccion_id]+
-                  ['doc_cxc_tipo_doc_id' => $factura->core_tipo_doc_app_id]+
-                  ['doc_cxc_consecutivo' => $factura->consecutivo]+
-                  ['doc_cruce_transacc_id' => 0]+
-                  ['doc_cruce_tipo_doc_id' => 0]+
-                  ['doc_cruce_consecutivo' => 0]+
-                  ['abono' => abs($total_nota)]+
-                  ['creado_por' => $nota->creado_por];
-
-        if ( $accion == 'crear')
-        {
-            // Almacenar registro de abono
-            CxcAbono::create( $datos );
-        }else{
-            // Eliminar registro de abono
-            CxcAbono::where( $datos )->delete();
-        }
-    }
-
-    public static function actualizar_movimiento_tesoreria( $total_nota, $factura, $nota, $accion )
-    {
-        /*
-            Al crear la nota: Se crea un nuevo registro de tesorería
-            A anular la nota: Se elimina el movimiento de tesorería relacionado
-        */
-
-        $datos = ['core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id]+
-                  ['core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id]+
-                  ['consecutivo' => $nota->consecutivo]+
-                  ['fecha' => $nota->fecha]+
-                  ['core_empresa_id' => $nota->core_empresa_id]+
-                  ['core_tercero_id' => $nota->core_tercero_id]+
-                  ['creado_por' => $nota->creado_por];
-
-        if ( $accion == 'crear')
-        {
-            $movimiento_teso = TesoMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                                ->where('consecutivo', $factura->consecutivo)
-                                ->get()
-                                ->first();
-
-            if ($movimiento_teso == null) {
-                $registros_medio_pago['teso_caja_id'] = 1;
-                $registros_medio_pago['teso_cuenta_bancaria_id'] = 0;
-                $registros_medio_pago['teso_medio_recaudo_id'] = 1;
-            }else{
-                $registros_medio_pago['teso_caja_id'] = $movimiento_teso->teso_caja_id;
-                $registros_medio_pago['teso_cuenta_bancaria_id'] = $movimiento_teso->teso_cuenta_bancaria_id;
-                $registros_medio_pago['teso_medio_recaudo_id'] = $movimiento_teso->teso_medio_recaudo_id;
-            }
-            $registros_medio_pago['teso_motivo_id'] = (int)config('tesoreria.motivo_devolucion_ventas_id');
-            $registros_medio_pago['valor_recaudo'] = abs($total_nota);
-            
-
-            $obj_teso_movim = new TesoMovimiento();
-            $obj_teso_movim->almacenar_registro_pago_contado( $datos, $registros_medio_pago, 'salida', abs($total_nota) );
-
-            //$obj_teso_movim->almacenar_registro_pago_contado(array('core_tipo_transaccion_id' => '53', 'core_tipo_doc_app_id' => '45', 'consecutivo' => '10', 'fecha' => '2024-07-04', 'core_empresa_id' => '1', 'core_tercero_id' => '242', 'creado_por' => 'administrator@appsiel.com.co', 'teso_motivo_id' => null, 'teso_caja_id' => null, 'teso_cuenta_bancaria_id' => null, 'teso_medio_recaudo_id' => null, 'valor_movimiento' => '0'), array('teso_caja_id' => '6', 'teso_cuenta_bancaria_id' => '0', 'teso_medio_recaudo_id' => '1', 'teso_motivo_id' => '75', 'valor_recaudo' => '20390330'), 'salida', '20390330')
-
-        }else{
-
-            $movimiento_teso = TesoMovimiento::where('core_tipo_transaccion_id', $nota->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $nota->core_tipo_doc_app_id)
-                                ->where('consecutivo', $nota->consecutivo)
-                                ->get()
-                                ->first();
-                                
-            $movimiento_teso->delete();
-        }
-    }
-
     public function enviar( $id )
     {
+        $ruta_show = 'fe_nota_credito/'.$id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
 
         $encabezado_nota_credito = NotaCredito::find( $id );
         $factura = Factura::find( $encabezado_nota_credito->ventas_doc_relacionado_id );
 
         $mensaje = $this->enviar_nota_credito_electronica( $id, $factura );
 
-    	return redirect( 'fe_nota_credito/'.$encabezado_nota_credito->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion') )->with( $mensaje->tipo, $mensaje->contenido);
+        $documento_electronico = new FacturaGeneral( $encabezado_nota_credito, 'nota_credito' );
+
+        $json_dataico = $documento_electronico->get_einvoice_in_dataico();
+        
+        $errores_einvoice =  $documento_electronico->get_errores($json_dataico);
+
+        if ( $errores_einvoice != '' ) {
+            return redirect( $ruta_show )->with( 'mensaje_error', 'Documento no pudo ser enviado. <br> Presenta inconsistencias: ' . $errores_einvoice);
+        }     
+        
+        if (isset($json_dataico->credit_note)) {
+            if ($json_dataico->credit_note->dian_status != 'DIAN_RECHAZADO') {
+                // La factura ya está en DATAICO, pero no se reflejó en Appsiel
+                
+                $msj_primera_parte = 'Documento ya fue enviado correctamente hacia el proveedor tecnológico.';
+                $mensaje = (object)[
+                    'tipo'=>'flash_message',
+                    'contenido' => '<h3>' . $msj_primera_parte . '</h3>'
+                ];
+
+                if ($json_dataico->credit_note->dian_status == 'DIAN_NO_ENVIADO') {
+                    $mensaje = (object)[
+                        'tipo'=>'mensaje_error',
+                        'contenido' => '<h3>' . $msj_primera_parte . '<br> Sin embargo NO fue enviado hacia la DIAN.</h3>'
+                    ];
+                }
+    
+                return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
+            }
+        }
+
+    	return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
     }
 }

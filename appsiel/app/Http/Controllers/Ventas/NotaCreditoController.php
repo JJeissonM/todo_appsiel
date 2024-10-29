@@ -27,6 +27,7 @@ use App\Contabilidad\ContabMovimiento;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
+use App\Ventas\Services\NotaCreditoServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -185,6 +186,8 @@ class NotaCreditoController extends TransaccionController
     // Se crean los registros con base en los registros de la devolución
     public static function crear_lineas_registros_ventas( $datos, $nota_credito, $lineas_registros, $factura )
     {
+        $nota_credito_service = new NotaCreditoServices();
+
         $total_documento = 0;
         // Por cada remisión pendiente
         $cantidad_registros = count( $lineas_registros );
@@ -283,7 +286,11 @@ class NotaCreditoController extends TransaccionController
         NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
-        NotaCreditoController::actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' ); 
+        if ($factura->forma_pago == 'credito') {
+            $nota_credito_service->actualizar_registro_pago( $total_documento, $factura, $nota_credito, 'crear' );
+        }else {
+            $nota_credito_service->actualizar_movimiento_tesoreria( $total_documento, $factura, $nota_credito, 'crear' );
+        }
 
         return true;
     }
@@ -327,63 +334,6 @@ class NotaCreditoController extends TransaccionController
         ContabilidadController::contabilizar_registro2( $datos, $cxc_id, $detalle_operacion, 0, abs($total_documento) );
     }
 
-    public static function actualizar_registro_pago( $total_nota, $factura, $nota, $accion )
-    {
-        /*
-            Al crear la nota: Se disminuye el saldo pendiente y se aumenta el valor pagado
-            A anular la nota: Se aumenta el saldo pendiente y se disminuye el valor pagado
-        */
-
-        // total_nota es negativo cuando se hace la nota y positivo cuando se anula
-
-        $movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                                ->where('consecutivo', $factura->consecutivo)
-                                ->get()
-                                ->first();
-
-        $nuevo_total_pendiente = $movimiento_cxc->saldo_pendiente + $total_nota; 
-        $nuevo_total_pagado = $movimiento_cxc->valor_pagado - $total_nota;
-
-        $estado = 'Pendiente';
-        if ( $nuevo_total_pendiente == 0)
-        {
-            $estado = 'Pagado';
-        }
-
-        $movimiento_cxc->update( [ 
-                                    'valor_pagado' => $nuevo_total_pagado,
-                                    'saldo_pendiente' => $nuevo_total_pendiente,
-                                    'estado' => $estado
-                                ] );
-
-        $datos = ['core_tipo_transaccion_id' => $nota->core_tipo_transaccion_id]+
-                  ['core_tipo_doc_app_id' => $nota->core_tipo_doc_app_id]+
-                  ['consecutivo' => $nota->consecutivo]+
-                  ['fecha' => $nota->fecha]+
-                  ['core_empresa_id' => $nota->core_empresa_id]+
-                  ['core_tercero_id' => $nota->core_tercero_id]+
-                  ['modelo_referencia_tercero_index' => 'App\Ventas\Cliente']+
-                  ['referencia_tercero_id' => $factura->cliente_id]+
-                  ['doc_cxc_transacc_id' => $factura->core_tipo_transaccion_id]+
-                  ['doc_cxc_tipo_doc_id' => $factura->core_tipo_doc_app_id]+
-                  ['doc_cxc_consecutivo' => $factura->consecutivo]+
-                  ['doc_cruce_transacc_id' => 0]+
-                  ['doc_cruce_tipo_doc_id' => 0]+
-                  ['doc_cruce_consecutivo' => 0]+
-                  ['abono' => abs($total_nota)]+
-                  ['creado_por' => $nota->creado_por];
-
-        if ( $accion == 'crear')
-        {
-            // Almacenar registro de abono
-            CxcAbono::create( $datos );
-        }else{
-            // Eliminar registro de abono
-            CxcAbono::where( $datos )->delete();
-        }
-    }
-
     public function show($id)
     {
         $this->set_variables_globales();
@@ -395,6 +345,8 @@ class NotaCreditoController extends TransaccionController
     // La nota crédito realiza una salida del inventario
     public function anular( $id )
     {
+        $nota_credito_service = new NotaCreditoServices();
+
         $this->set_variables_globales();
 
         $nota = VtasDocEncabezado::find( $id );
@@ -435,7 +387,11 @@ class NotaCreditoController extends TransaccionController
 
         // 4to. Se actualiza el registro de la factura a la que afecto la nota en el movimimeto de cuentas por cobrar
         // Se envía el valor en positivo para que sume al saldo pendiente y reste al valor abonado
-        NotaCreditoController::actualizar_registro_pago( $nota->valor_total * -1, $factura, $nota, 'anular' );
+        if ($factura->forma_pago == 'credito') {
+            $nota_credito_service->actualizar_registro_pago( $nota->valor_total * -1, $factura, $nota, 'anular' );
+        }else {
+            $nota_credito_service->actualizar_movimiento_tesoreria( $nota->valor_total * -1, $factura, $nota, 'anular' );
+        }
 
         // 5to. Se elimina el movimiento de ventas
         VtasMovimiento::where($array_wheres)->delete();
