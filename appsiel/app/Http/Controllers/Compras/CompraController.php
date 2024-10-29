@@ -716,7 +716,7 @@ class CompraController extends TransaccionController
             $producto = array_merge($producto, [ 'existencia_actual' => $existencia_actual ],
                                                 [ 'tipo' => $producto['tipo'] ],
                                                 [ 'costo_promedio' => $costo_promedio ],
-                                                [ 'precio_compra' => $precio_unitario ],
+                                                [ 'precio_compra' => round( $precio_unitario, 2) ],
                                                 [ 'base_impuesto' => $base_impuesto ],
                                                 [ 'tasa_impuesto' => $tasa_impuesto ],
                                                 [ 'valor_impuesto' => $valor_impuesto ]
