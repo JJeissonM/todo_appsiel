@@ -24,31 +24,34 @@ class AplicacionController extends Controller
     {
         switch ( $tipo_operacion )
         {
-            case 'factura':
-                $encabezado_doc = Factura::find( $doc_encabezado_id );
-                $documento_electronico = new FacturaGeneral( $encabezado_doc, $tipo_operacion );
-                break;
-
             case 'support_doc':
                 $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
                 $documento_electronico = new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
                 break;
             
             default:
-                // code...
+                $encabezado_doc = Factura::find( $doc_encabezado_id );
+                $documento_electronico = new FacturaGeneral( $encabezado_doc, $tipo_operacion );
                 break;
         }
         
         // Representacion Grafica (PDF)
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
-        $pdf_url = url('/compras/3?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') );
 
         if ( isset($json_dataico->invoice) ) {
             $pdf_url = $json_dataico->invoice->pdf_url;
-        }   
+        }  
+
+        if ( isset($json_dataico->credit_note) ) {
+            $pdf_url = $json_dataico->credit_note->pdf_url;
+        }
         
         if ( isset($json_dataico->support_doc) ) {
             $pdf_url = $json_dataico->support_doc->pdf_url;
+        }
+
+        if ( !isset($pdf_url) ) {
+            return redirect( 'inicio' )->with( 'mensaje_error', '<h5>Documento no encontrado</h5>' . json_encode($json_dataico) );
         }
     	
         return Redirect::away( $pdf_url );

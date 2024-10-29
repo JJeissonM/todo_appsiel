@@ -1,12 +1,13 @@
 <?php  
     $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
+	$tipo_operacion = 'nota_credito';
 ?>
 
 @extends('transaccion.show')
 
 @section('informacion_antes_encabezado')
 	<div style="width: 100%; text-align: center;">
-		<code>Nota: La visualización de este documento es diferente al documento enviado al cliente por el proveedor tecnológico.</code>	
+		<code>Nota: La visualización de este documento es diferente al documento enviado al cliente por el proveedor tecnológico.</code>
 	</div>
 	<br>
 @endsection
@@ -27,6 +28,12 @@
 		<a class="btn-gmail" href="{{ url( 'fe_nota_credito_enviar/' . $doc_encabezado->id . $variables_url ) }}" title="Enviar" id="btn_email"><i class="fa fa-send"></i></a>
         <i class="fa fa-circle" style="color: orange;"> Sin enviar </i>		
 	@endif
+
+	@if( !$docs_relacionados[1] && $doc_encabezado->estado == 'Enviada' )
+    	<a class="btn-gmail" href="{{ url( 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url ) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+	@endif
+
+
 @endsection
 
 @section('botones_imprimir_email')

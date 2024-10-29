@@ -23,7 +23,9 @@
 	@if( !$docs_relacionados[1] && $doc_encabezado->estado == 'Enviada' )
     	<a class="btn-gmail" href="{{ url( 'fe_nota_credito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=245&id_transaccion=53') }}" title="Nota crédito"><i class="fa fa-file"></i></a>
 
-    	<a class="btn-gmail" href="{{ url( 'fe_nota_debito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=246&id_transaccion=54') }}" title="Nota Débito"><i class="fa fa-file-o"></i></a>
+    	<!-- 
+			<a class="btn-gmail" href="{ { url( 'fe_nota_debito/create?factura_id='.$doc_encabezado->id . '&id='.Input::get('id').'&id_modelo=246&id_transaccion=54') }}" title="Nota Débito"><i class="fa fa-file-o"></i></a>
+		-->
 
     	<a class="btn-gmail" href="{{ url( 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url ) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
 	@endif
