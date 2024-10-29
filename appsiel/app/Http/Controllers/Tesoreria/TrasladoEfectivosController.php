@@ -6,12 +6,9 @@ use App\Contabilidad\ContabMovimiento;
 use App\Core\Empresa;
 use App\Core\Tercero;
 use App\Http\Controllers\Core\TransaccionController;
-use App\Http\Controllers\Sistema\ModeloController;
-use App\Http\Controllers\TrasladoEfectivoController;
-use App\Sistema\Html\Boton;
+
 use App\Sistema\Html\BotonesAnteriorSiguiente;
-use App\Sistema\TipoTransaccion;
-use App\Tesoreria\ArqueoCaja;
+
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoDocEncabezado;
@@ -21,33 +18,41 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoDocEncabezadoTraslado;
 use App\User;
-use Input;
+use Collective\Html\FormFacade as Form;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-use Form;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class TrasladoEfectivosController extends TransaccionController
 {
     public function show($id)
     {
         $this->set_variables_globales();
+        
         $botones_anterior_siguiente = new BotonesAnteriorSiguiente($this->transaccion, $id);
+        
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion($id);
+        
         $doc_registros = TesoDocRegistro::get_registros_impresion($doc_encabezado->id);
+        
         $registros_contabilidad = TransaccionController::get_registros_contabilidad($doc_encabezado);
+        
         $empresa = $this->empresa;
+        
         $id_transaccion = $this->transaccion->id;
-         $documento_vista = '';
-        $miga_pan = [
+        
+        $documento_vista = '';
+        
+         $miga_pan = [
             ['url' => $this->app->app . '?id=' . Input::get('id'), 'etiqueta' => $this->app->descripcion],
             ['url' => 'web' . $this->variables_url, 'etiqueta' => $this->modelo->descripcion],
             ['url' => 'NO', 'etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
-        $nombre = true;
-        return view('tesoreria.recaudos.show', compact('empresa', 'botones_anterior_siguiente', 'nombre', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista'));
+        
+        //$nombre = true;
+        
+        return view('tesoreria.recaudos.show', compact('empresa', 'botones_anterior_siguiente', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista'));
     }
 
     public function vista_preliminar($id)
@@ -59,7 +64,7 @@ class TrasladoEfectivosController extends TransaccionController
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion($id);
         $doc_registros = TesoDocRegistro::get_registros_impresion($doc_encabezado->id);
        // dd($doc_registros);
-        $view = \View::make('tesoreria.traslados_efectivo.print', compact('registro', 'empresa', 'doc_encabezado', 'user', 'doc_registros'))->render();
+        $view = View::make('tesoreria.traslados_efectivo.print', compact('registro', 'empresa', 'doc_encabezado', 'user', 'doc_registros'))->render();
 
         return $view;
     }
@@ -70,7 +75,7 @@ class TrasladoEfectivosController extends TransaccionController
         // Se prepara el PDF
         $orientacion = 'portrait';
         $tam_hoja = 'Letter';
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
         return $pdf->download('traslado_efectivo.pdf');
     }

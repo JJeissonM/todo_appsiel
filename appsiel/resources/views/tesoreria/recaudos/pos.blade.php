@@ -16,7 +16,7 @@
 @section('tabla_registros_1')   
 
     <div class="row" align="center" style="text-align: center; font-style: oblique;">
-        <b><u>Conceptos recibidos</u></b>
+        <b><u>Motivos registrados</u></b>
     </div>
 
     <?php
@@ -24,14 +24,33 @@
         $nit_tercero_anterior = $doc_encabezado->numero_identificacion;
     ?>
     @foreach($doc_registros as $linea )
-        <?php 
+        <?php
+            $detalle = '--';
+            if ( $linea->detalle_operacion != 0 ) {
+                $detalle = $linea->detalle_operacion;
+            }
+
+            $caja_o_banco = '';
+            $lbl_caja_o_banco = '';
+            if($linea->caja != null)
+            {
+                $caja_o_banco = $linea->caja;
+                $lbl_caja_o_banco = 'Caja';
+            }
+            if($linea->cuenta_bancaria != null)
+            {
+                $caja_o_banco = $linea->cuenta_bancaria;
+                $lbl_caja_o_banco = 'Banco';
+            }
         ?>
         <div class="row">
+            <b>{{ $lbl_caja_o_banco }}: </b> {{ $caja_o_banco }}
+            <br>
             @if( $nit_tercero_anterior != $linea->numero_identificacion )
                 <b> Tercero: </b> {{ $linea->tercero_nombre_completo }}
                 <br>                
             @endif
-            <b>Motivo / Detalle: </b> {{ $linea->motivo }} / {{ $linea->detalle_operacion }}
+            <b>Motivo / Detalle: </b> {{ $linea->motivo }} / {{ $detalle }}
             <br>
             <b>Valor: </b>$ {{ number_format( $linea->valor, 0, ',', '.') }}
         </div>
@@ -42,7 +61,7 @@
         ?>
     @endforeach
     <div class="row" align="center">
-        <b>Total recaudo: </b> $ {{ number_format($total_abono, 0, ',', '.') }}
+        <b>Total documento: </b> $ {{ number_format($total_abono, 0, ',', '.') }}
     </div>
 @endsection
 
