@@ -37,7 +37,13 @@
             <b>Teléfono: &nbsp;&nbsp;</b> {{ $doc_encabezado->telefono1 }}
         </td>
         <td style="border: solid 1px #ddd;">
-            <b>Vendedor: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
+			<?php 
+				$descripcion_vendedor = '';
+				if ( $doc_encabezado->vendedor != null ) {
+					$descripcion_vendedor = $doc_encabezado->vendedor->tercero->descripcion;
+				}
+			?>
+            <b>Vendedor: &nbsp;&nbsp;</b> {{ $descripcion_vendedor }}
             <br/>
             <b>Condición de pago: &nbsp;&nbsp;</b> {{ ucfirst($doc_encabezado->condicion_pago) }}
             <br/>
