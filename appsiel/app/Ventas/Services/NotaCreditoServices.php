@@ -129,8 +129,10 @@ class NotaCreditoServices
                                 ->where('consecutivo', $nota->consecutivo)
                                 ->get()
                                 ->first();
-                                
-            $movimiento_teso->delete();
+
+            if ( $movimiento_teso != null ) {
+                $movimiento_teso->delete();
+            }
         }
     }
         
