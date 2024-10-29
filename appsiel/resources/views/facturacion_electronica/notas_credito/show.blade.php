@@ -21,7 +21,7 @@
 	@endif
 
 
-    @if( $doc_encabezado->estado == 'Sin enviar' )
+    @if( $doc_encabezado->estado == 'Sin enviar' || $doc_encabezado->estado == 'Activo' )
 		<?php 
 			$color = 'red';
 		?>
