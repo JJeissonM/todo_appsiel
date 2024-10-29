@@ -52,7 +52,7 @@ class TrasladoEfectivosController extends TransaccionController
         
         //$nombre = true;
         
-        return view('tesoreria.recaudos.show', compact('empresa', 'botones_anterior_siguiente', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista'));
+        return view('tesoreria.traslados_efectivo.show', compact('empresa', 'botones_anterior_siguiente', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista'));
     }
 
     public function vista_preliminar($id)
