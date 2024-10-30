@@ -24,21 +24,21 @@
         
             @foreach($items as $fila)
               
-            @if($i % $numero_columnas == 0)
-                <tr>
-            @endif
+                @if($i % $numero_columnas == 0)
+                    <tr>
+                @endif
 
-            <td colspan="{{ $minimo_comun_multiplo_columnas / $numero_columnas }}">
-                @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras')                        
-            </td>
+                <td colspan="{{ $minimo_comun_multiplo_columnas / $numero_columnas }}">
+                    @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras')                        
+                </td>
 
-            <?php
-                $i++;
-            ?>
+                <?php
+                    $i++;
+                ?>
 
-            @if($i % $numero_columnas == 0)
-                </tr>
-            @endif
+                @if($i % $numero_columnas == 0)
+                    </tr>
+                @endif
 
             @endforeach
         </tbody>
