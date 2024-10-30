@@ -2,7 +2,7 @@
 <style type="text/css">
 
     @page {
-      margin: 15px;
+      margin: 5px;
       size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 38.5in;
     }
     
