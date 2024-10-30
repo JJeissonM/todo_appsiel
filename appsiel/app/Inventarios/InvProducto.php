@@ -107,6 +107,20 @@ class InvProducto extends Model
         return $prefijo . $descripcion_item;
     }
 
+    public function get_codigo_proveedor()
+    {        
+        $codigo_proveedor = '';
+        if( (int)config('inventarios.items_mandatarios_por_proveedor') )
+        {
+            $proveedor = Proveedor::find($this->categoria_id);
+            if ( $proveedor != null ) {
+                $codigo_proveedor = ' - ' . $proveedor->codigo;
+            }            
+        }
+
+        return $codigo_proveedor;
+    }
+
     public function tasa_impuesto()
     {
         $impuesto = $this->impuesto;

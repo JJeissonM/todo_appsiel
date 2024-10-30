@@ -7,7 +7,7 @@
 
     @if($mostrar_descripcion)
         <p style="margin-bottom: -7px; width:100%;">
-            <b>{{ $fila->descripcion }}</b>
+            <b>{{ substr($fila->descripcion,0,34) }}</b>
         </p>
     @endif
     
@@ -40,7 +40,7 @@
         <!-- Solo se envian los 12 primeros digitos, la function getBarcodePNG dibuja el codigo de barras con el digito de control al final -->
         <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( substr($codigo_barras,0,12), "EAN13", $ancho_codigo, $alto_codigo) }}" alt="barcode"  style="display:inline;"/>
     </p>
-    {{ $codigo_barras }}
+    {{ $codigo_barras . $fila->get_codigo_proveedor() }}
 </div>
 
 
