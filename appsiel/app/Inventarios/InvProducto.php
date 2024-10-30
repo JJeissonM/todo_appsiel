@@ -403,25 +403,30 @@ class InvProducto extends Model
         return $registros;
     }
 
-    public static function get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar, $bodega_id, $ordenar_por )
+    public static function get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar, $bodega_id, $ordenar_por, $inv_producto_id )
     {
         $array_wheres = [ 
                             ['inv_productos.core_empresa_id' ,'=', Auth::user()->empresa_id],
                             ['inv_productos.estado' ,'=', $estado ]
                         ];
 
-        if ( $grupo_inventario_id != '')
-        {
-          $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
-        }
-
-        if ( $items_a_mostrar != null && $items_a_mostrar != '')
-        {
-            if ( $items_a_mostrar == 'sin_codigo_barras' )
+        if ( (int)$inv_producto_id != 0 ) {
+            $array_wheres = array_merge( $array_wheres, ['inv_productos.id' => (int)$inv_producto_id ] );
+        }else{
+            
+            if ( $grupo_inventario_id != '')
             {
-                $array_wheres = array_merge( $array_wheres, ['inv_productos.codigo_barras' => '' ] );
-            }else{
-                $array_wheres = array_merge( $array_wheres, [['inv_productos.codigo_barras', '<>', '' ]] );
+                $array_wheres = array_merge( $array_wheres, ['inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+            }
+
+            if ( $items_a_mostrar != null && $items_a_mostrar != '')
+            {
+                if ( $items_a_mostrar == 'sin_codigo_barras' )
+                {
+                    $array_wheres = array_merge( $array_wheres, ['inv_productos.codigo_barras' => '' ] );
+                }else{
+                    $array_wheres = array_merge( $array_wheres, [['inv_productos.codigo_barras', '<>', '' ]] );
+                }
             }
         }
 
@@ -437,6 +442,7 @@ class InvProducto extends Model
                                             'inv_productos.precio_venta',
                                             'inv_productos.tipo',
                                             'inv_productos.impuesto_id',
+                                            'inv_productos.categoria_id',
                                             'inv_productos.estado',
                                             'inv_productos.imagen',
                                             'inv_productos.mostrar_en_pagina_web',
@@ -466,6 +472,8 @@ class InvProducto extends Model
             $item->existencia_actual = $existencia_actual;
 
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('ventas.lista_precios_id'), date('Y-m-d'), $item->id );
+
+            $item->descripcion = $item->get_value_to_show(true);
         }
 
         return $registros;

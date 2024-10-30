@@ -471,17 +471,19 @@ class ReporteController extends Controller
     public function inv_etiquetas_codigos_barra(Request $request)
     {
         $grupo_inventario_id = $request->grupo_inventario_id;
+        $inv_producto_id = $request->inv_producto_id;
         $mostrar_descripcion = $request->mostrar_descripcion;
         $numero_columnas = $request->numero_columnas;
         $estado = $request->estado;
         $etiqueta = $request->etiqueta;
         $items_a_mostrar = $request->items_a_mostrar;
         $cantidad_etiquetas_x_item = $request->cantidad_etiquetas_x_item;
+        $cantidad_etiquetas_fijas = $request->cantidad_etiquetas_fijas;
         $ancho = $request->ancho;
         $alto = $request->alto;
         $tamanio_letra = $request->tamanio_letra;
                 
-        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item );
+        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id );
 
         $route = 'inventarios.reportes.etiquetas_codigos_barra';
         if ( $request->tam_hoja == 'pos_80mm' ) {
@@ -496,9 +498,9 @@ class ReporteController extends Controller
 
     }
 
-    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item)
+    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id)
     {
-        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id');
+        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id);
 
         $listado = collect([]);
         foreach ($items as $item) {
@@ -529,6 +531,10 @@ class ReporteController extends Controller
                         $cantidad_etiquetas = $ultima_compra->cantidad;
                     }
                     
+                    break;
+            
+                case 'cantidad_fija':
+                    $cantidad_etiquetas = $cantidad_etiquetas_fijas;                    
                     break;
                             
                 default:

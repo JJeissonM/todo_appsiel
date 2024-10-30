@@ -18,6 +18,10 @@
             $codigo_barras = $fila->id;
         }
 
+        if ( !is_numeric($codigo_barras) ) {
+            dd('El ítem ' .  $fila->descripcion . ' NO tiene un código de barras válido: ' . $fila->codigo_barras . '. Debe contener solo números.');
+        }
+
         $ancho_codigo = 2;
         $alto_codigo = 100;
 
