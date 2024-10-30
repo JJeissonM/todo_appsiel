@@ -15,7 +15,7 @@
         $i=$numero_columnas;
         $minimo_comun_multiplo_columnas = 12;
         if ($tamanio_letra == null) {
-            $tamanio_letra = 12;
+            $tamanio_letra = 11;
         }
     ?>
 
