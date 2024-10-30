@@ -32,7 +32,7 @@
 		<thead>
 			<tr>
 				<th>Proveedor</th>
-				<th>P. compras</th>
+				<th>Costo prom.</th>
 				<th>P. ventas</th>
 				<th>Cód. barras</th>
 				<th>Referencia</th>
@@ -46,7 +46,7 @@
 				$es_el_primero = true;
 			?>
 			@foreach( $items_relacionados AS $item )
-				<?php 
+				<?php
 					$descripcion_proveedor = '';
 					if ( $item->proveedor() != null ) {
 						$descripcion_proveedor = $item->proveedor()->tercero->descripcion;

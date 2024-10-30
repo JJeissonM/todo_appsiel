@@ -21,6 +21,11 @@ class MandatarioTieneItem extends Model
         return $this->belongsTo(InvProducto::class, 'item_id');
     }
 
+    public function item_mandatario()
+    {
+        return $this->belongsTo(ItemMandatario::class, 'mandatario_id');
+    }
+
     public function get_fields_to_show()
     {
         $fields_list = new FieldsList( $this->crud_model_id, $this );

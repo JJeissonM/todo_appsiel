@@ -47,6 +47,9 @@
 		<?php  
 			//dd($registro);
 		?>
+		
+		<input type="hidden" name="referencia" id="referencia" value="{{$registro->referencia}}">
+
 		@include('inventarios.items.tabla_datos_basicos')
 
 		@if( Input::get('id_modelo') == 331)

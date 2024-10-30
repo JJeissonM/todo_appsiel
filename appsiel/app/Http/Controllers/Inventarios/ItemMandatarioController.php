@@ -15,7 +15,7 @@ use App\Inventarios\InvProducto;
 use App\Inventarios\Services\CodigoBarras;
 use App\Inventarios\Services\TallaItem;
 use App\Inventarios\EntradaAlmacen;
-
+use App\Inventarios\MandatarioTieneItem;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\Services\PricesServices;
 use Illuminate\Support\Facades\App;
@@ -141,7 +141,7 @@ class ItemMandatarioController extends ModeloController
     }
 
     /**
-     * Para los items relacionados
+     * Para los items relacionados (InvProducto)
      */
     public function update(Request $request, $id)
     {
@@ -149,31 +149,37 @@ class ItemMandatarioController extends ModeloController
         $modelo = Modelo::find($request->model_id);
 
         // Se obtinene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id)->item_relacionado;
+        
+        
+        // $registro es una instacia de MandatarioTieneItem
+        $registro = app($modelo->name_space)->find($id);
+        
+        $item_relacionado = $registro->item_relacionado;
 
         $datos = $request->all();
         
         if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
-            $datos['codigo_barras'] = (new CodigoBarras($registro->id, 0, 0, 0))->barcode;
+            $datos['codigo_barras'] = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
         }        
 
-        $registro->fill( $datos );
+        $item_relacionado->fill( $datos );
 
         if ( $request->unidad_medida2 != null ) {
+
             // $request->unidad_medida2 almacena la Talla
-            $registro->referencia = $registro->referencia . '-' . $request->unidad_medida2;
+            $item_relacionado->referencia = $registro->item_mandatario->referencia . '-' . strtoupper($request->unidad_medida2);
 
             $talla = new TallaItem( $request->unidad_medida2 );
-            $registro->unidad_medida2 = $talla->convertir_mayusculas();
-            $registro->codigo_barras = 99;
+            $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
+            $item_relacionado->codigo_barras = 99;
         }
         
-        $registro->save();
+        $item_relacionado->save();
 
         if (config('ventas.agregar_precio_a_lista_desde_create_item'))
         {
             $datos['fecha_activacion'] = date('Y-m-d');
-            $datos['inv_producto_id'] = $registro->id;
+            $datos['inv_producto_id'] = $item_relacionado->id;
             $datos['lista_precios_id'] = (int)config('ventas.lista_precios_id');
             
             (new PricesServices())->create_or_update_item_price( $datos );

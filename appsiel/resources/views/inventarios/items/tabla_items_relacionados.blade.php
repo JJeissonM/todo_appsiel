@@ -1,5 +1,6 @@
 <?php
-	$items_relacionados = $registro->items_relacionados->where('estado','Activo')->all();
+	//$items_relacionados = $registro->items_relacionados->where('estado','Activo')->all();
+	$items_relacionados = App\Inventarios\MandatarioProveedorTieneItem::where('mandatario_id',$registro->id)->get();
 	$altura_en_pulgadas = 0;
 ?>
 <br>
@@ -34,12 +35,16 @@
 			<tr>
 				<th>Referencia</th>
 				<th>Talla</th>
+				<th>Costo prom.</th>
+				<th>P. ventas</th>
 				<th>Acción</th>
 			</tr>
 		</thead>
 		<tbody>
-			@foreach( $items_relacionados AS $item )
-				<?php 
+			@foreach( $items_relacionados AS $item_hijo )
+				<?php
+					$item = $item_hijo->item_relacionado;
+
 					//$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 
 					$url_redirect = '[inv_item_mandatario/' . $registro->id . '?id=8&id_modelo=315&id_transaccion=]';
@@ -47,7 +52,10 @@
 				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
 					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
-					<td>
+					<td align="right"> ${{ number_format($item->get_costo_promedio(),0,',','.') }} </td>
+					<td align="right"> ${{ number_format($item->get_precio_venta(),0,',','.') }} </td>
+					<td align="right">
+                        <button class="btn btn-warning btn-sm btn_edit_item_relacionado" data-item_relacionado_id="{{ $item_hijo->id }}" title="Modificar"> <i class="fa fa-edit"></i></button>
 						<!-- 
 						<a class="btn btn-danger btn-sm" href="{ { url('web_delete_record/8/22/' . $item->id . '/' . $url_redirect) }}" title="Eliminar talla"> <i class="fa fa-trash"></i></a>
 						
@@ -113,8 +121,6 @@
 
 		        var url = "{{ url('inv_item_mandatario/create') }}" + "?id_modelo=" + modelo_id + "&mandatario_id=" + mandatario_id;
 
-				console.log( 'referencia',  ) 
-
 				$.get( url, function( data ) {
 			        $('#div_cargando').hide();
 		            $('#contenido_modal_item_relacionado').html(data);
@@ -163,6 +169,55 @@
 		    	btn_imprimir.attr( 'href', nueva_url );
 		    });
 
+
+			$(".btn_edit_item_relacionado").click(function(event){
+                event.preventDefault();
+
+                $( '#modal_item_relacionado' ).modal({backdrop: "static"});
+
+                $("#div_cargando").show();
+
+				$('.btn_save_modal').attr('class','class="btn btn-lg btn-primary btn_save_modal btn_edit_modal_item_relacionado');
+
+                modelo_id = 317; // MandatarioTieneItem
+
+                var url = url_raiz + "/inv_item_mandatario" + "/" + $(this).attr('data-item_relacionado_id') + "/edit" + "?id_modelo=" + modelo_id;
+
+                $.get( url, function( data ) {
+                    $('#div_cargando').hide();
+                    $('#contenido_modal_item_relacionado').html(data);
+                    document.getElementById("unidad_medida2").select();
+                });		        
+            });
+
+            // MODIFICAR 
+			$(document).on("click",".btn_edit_modal_item_relacionado",function(event){
+
+                event.preventDefault();
+
+                if ( !validar_datos() )
+                {
+                    return false;
+                }
+
+                $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
+
+                var mandatario_id = $(this).children('span').attr('data-mandatario_id');
+                formulario = $('#modal_item_relacionado').find('form');
+
+                var url = formulario.attr('action');
+                var data = formulario.serialize();
+
+                $.ajax({
+                    url: url,
+                    type: 'PUT',
+                    data: data,
+                    success: function(data) {
+                        location.reload(true);
+                    }
+                });
+            });
+
 			var validado;
 
 		    function validar_datos()
@@ -196,10 +251,16 @@
 
 		    	$(".referencia_talla").each(function() {
 					valor_referencia_talla = $(this).attr('data-codigo_referencia_talla');
-						
+						console.log( valor_referencia_talla, )
 					if ( valor_referencia_talla == $('#referencia').val() + $('#unidad_medida2').val().toUpperCase() )
 					{
-						alert('Ya se ingresó Esa Referencia y Talla para este Producto.');
+						Swal.fire({
+							icon: 'error',
+							title: 'Alerta!',
+							text: 'Ya se ingresó Esa Talla para este Producto.'
+						});
+
+						alert('');
 						validado = false;
 						return false;
 					}
