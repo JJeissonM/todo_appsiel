@@ -2,9 +2,7 @@
 
 namespace App\Inventarios;
 
-use Illuminate\Database\Eloquent\Model;
-
-use Auth;
+use Illuminate\Support\Facades\Auth;
 
 class ItemSinEnsambleAutomatico extends InvProducto
 {

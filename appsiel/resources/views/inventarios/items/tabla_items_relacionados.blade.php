@@ -1,6 +1,6 @@
 <?php
 	//$items_relacionados = $registro->items_relacionados->where('estado','Activo')->all();
-	$items_relacionados = App\Inventarios\MandatarioProveedorTieneItem::where('mandatario_id',$registro->id)->get();
+	$items_relacionados = App\Inventarios\MandatarioTieneItem::where('mandatario_id',$registro->id)->get();
 	$altura_en_pulgadas = 0;
 ?>
 <br>
@@ -37,6 +37,7 @@
 				<th>Talla</th>
 				<th>Costo prom.</th>
 				<th>P. ventas</th>
+				<th>Estado</th>
 				<th>Acción</th>
 			</tr>
 		</thead>
@@ -54,10 +55,11 @@
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
 					<td align="right"> ${{ number_format($item->get_costo_promedio(),0,',','.') }} </td>
 					<td align="right"> ${{ number_format($item->get_precio_venta(),0,',','.') }} </td>
-					<td align="right">
+					<td align="center"> {{ $item->estado }} </td>
+					<td align="center">
                         <button class="btn btn-warning btn-sm btn_edit_item_relacionado" data-item_relacionado_id="{{ $item_hijo->id }}" title="Modificar"> <i class="fa fa-edit"></i></button>
+						<a class="btn btn-danger btn-sm btn_delete" data-registro_mandatario_tiene_item_id="{{ $item_hijo->id }}" title="Eliminar"> <i class="fa fa-trash"></i></a>
 						<!-- 
-						<a class="btn btn-danger btn-sm" href="{ { url('web_delete_record/8/22/' . $item->id . '/' . $url_redirect) }}" title="Eliminar talla"> <i class="fa fa-trash"></i></a>
 						
 						<a class="btn btn-success" href="{ { url('inventarios/create?id=8&id_modelo=248&id_transaccion=1') }}" title="Registrar entrada" target="_blank"> <i class="fa fa-arrow-up"></i></a>
 						&nbsp;&nbsp;
@@ -169,9 +171,12 @@
 		    	btn_imprimir.attr( 'href', nueva_url );
 		    });
 
-
+			// FORM MODIFICAR
 			$(".btn_edit_item_relacionado").click(function(event){
                 event.preventDefault();
+
+				// Se cambia de la fila la referencia que se esta editando.
+				$(this).closest('tr').attr('data-codigo_referencia_talla','999999')
 
                 $( '#modal_item_relacionado' ).modal({backdrop: "static"});
 
@@ -190,7 +195,7 @@
                 });		        
             });
 
-            // MODIFICAR 
+            // AJAX MODIFICAR 
 			$(document).on("click",".btn_edit_modal_item_relacionado",function(event){
 
                 event.preventDefault();
@@ -262,6 +267,8 @@
 		    	$(".referencia_talla").each(function() {
 					valor_referencia_talla = $(this).attr('data-codigo_referencia_talla');
 
+					validado = true;
+
 					if ( valor_referencia_talla == $('#referencia').val() + '-' + $('#unidad_medida2').val().toUpperCase() )
 					{
 						Swal.fire({
@@ -275,7 +282,52 @@
 				});			    	
 
 				return validado;
-		    }
+		    } 
+
+			$(document).on("click",".btn_delete",function(event){
+
+                event.preventDefault();
+
+				var fila = $(this).closest('tr');
+
+				valor_referencia_talla = fila.attr('data-codigo_referencia_talla');
+
+                if ( !confirm('¿Realmente desea eliminar este registro (Referencia ' + valor_referencia_talla + ') ?') )
+                {
+                    return false;
+                }
+
+                $(this).children('.fa-save').attr('class','fa fa-spinner fa-spin');
+
+                var mandatario_id = $(this).children('span').attr('data-mandatario_id');
+
+                var url = url_raiz + '/inv_item_mandatario_delete_item_relacionado/' + $(this).attr('data-registro_mandatario_tiene_item_id');
+                var data = {};
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: data,
+                    success: function(data) {
+						if(data == 'ok')
+						{
+							Swal.fire({
+								icon: 'info',
+								title: 'Muy bien!',
+								text: 'Ítem eliminado correctamente.'
+							});
+                        	//location.reload(true);
+							fila.remove()
+						}else{
+							Swal.fire({
+								icon: 'error',
+								title: 'No se puede eliminar!',
+								text: data
+							});
+						}
+                    }
+                });
+            });
 
 		    $(document).on('keyup','#referencia',function(event){
 		    	var codigo_tecla_presionada = event.which || event.keyCode;

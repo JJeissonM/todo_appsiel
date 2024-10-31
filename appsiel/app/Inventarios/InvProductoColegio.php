@@ -18,7 +18,6 @@ class InvProductoColegio extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'REF.', 'Grado', 'Asignatura', 'Descripción', 'Editorial', 'Código barras', 'Categoría', 'Cantidad', 'Estado'];
 
-
     // unidad_medida1 = consecutivo manual, como una referencia
     // unidad_medida2 = Editorial
     // categoria_id = Grado

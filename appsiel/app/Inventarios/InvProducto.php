@@ -74,11 +74,7 @@ class InvProducto extends Model
     {
         $descripcion_item = $this->descripcion . ' (' . $this->unidad_medida1 . ')';
 
-        $talla = '';
-        if( (int)config('inventarios.mostrar_talla_en_descripcion_items') && $this->unidad_medida2 != '' )
-        {
-            $talla = ' - Talla: ' . $this->unidad_medida2;
-        }
+        $talla = $this->get_talla();
         
         $referencia = '';
         if( (int)config('inventarios.mostrar_referencia_en_descripcion_items') && $this->referencia != '')
@@ -86,14 +82,7 @@ class InvProducto extends Model
             $referencia = ' - ' . $this->referencia;
         }
         
-        $codigo_proveedor = '';
-        if( (int)config('inventarios.items_mandatarios_por_proveedor') )
-        {
-            $proveedor = Proveedor::find($this->categoria_id);
-            if ( $proveedor != null ) {
-                $codigo_proveedor = ' - ' . $proveedor->codigo;
-            }            
-        }
+        $codigo_proveedor = $this->get_codigo_proveedor();
 
         $descripcion_item .= $talla . $referencia . $codigo_proveedor;
 
@@ -108,6 +97,17 @@ class InvProducto extends Model
         }
 
         return $prefijo . $descripcion_item;
+    }
+
+    public function get_talla()
+    {        
+        $talla = '';
+        if( $this->unidad_medida2 != '' )
+        {
+            $talla = ' - Talla: ' . $this->unidad_medida2;
+        }
+
+        return $talla;
     }
 
     public function get_codigo_proveedor()
@@ -704,17 +704,19 @@ class InvProducto extends Model
         return $detalle_lista_precios->precio;
     }
 
-    public function validar_eliminacion($id)
+    public function validar_eliminacion($id, $eliminar_precios = true )
     {
-        $reg_precios_actuales = ListaPrecioDetalle::where([
-            ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
-            ['inv_producto_id', '=', $id]
-        ])
-        ->get();
+        if ($eliminar_precios) {
+            $reg_precios_actuales = ListaPrecioDetalle::where([
+                ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+                ['inv_producto_id', '=', $id]
+            ])
+            ->get();
 
-        foreach ($reg_precios_actuales as $reg_detalle_precio)
-        {
-            $reg_detalle_precio->delete();
+            foreach ($reg_precios_actuales as $reg_detalle_precio)
+            {
+                $reg_detalle_precio->delete();
+            }
         }
 
         $tablas_relacionadas = '{
@@ -764,9 +766,9 @@ class InvProducto extends Model
                                     "mensaje":"Ítem tiene registros de Descuentos relacionados."
                                 },
                             "9":{
-                                    "tabla":"vtas_listas_precios_detalles",
-                                    "llave_foranea":"inv_producto_id",
-                                    "mensaje":"Ítem tiene registros de Precios relacionados."
+                                    "tabla":"inv_items_desarmes_automaticos",
+                                    "llave_foranea":"item_producir_id",
+                                    "mensaje":"Ítem como Producto terminado en Ensambles automáticos."
                                 },
                             "10":{
                                     "tabla":"vtas_movimientos",
@@ -784,9 +786,9 @@ class InvProducto extends Model
                                     "mensaje":"Ítem tiene movimientos de Ventas POS relacionados."
                                 },
                             "13":{
-                                    "tabla":"inv_mandatario_tiene_items",
-                                    "llave_foranea":"item_id",
-                                    "mensaje":"Ítem tiene ítems mandatarios relacionados."
+                                    "tabla":"teso_cartera_estudiantes",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene registros en Cartera de estudiantes relacionados."
                                 },
                             "14":{
                                     "tabla":"inv_recetas_cocina",
@@ -809,14 +811,14 @@ class InvProducto extends Model
                                     "mensaje":"Ítem como Insumo en Ensambles automáticos."
                                 },
                             "18":{
-                                    "tabla":"inv_items_desarmes_automaticos",
-                                    "llave_foranea":"item_producir_id",
-                                    "mensaje":"Ítem como Producto terminado en Ensambles automáticos."
+                                    "tabla":"vtas_listas_precios_detalles",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene registros de Precios relacionados."
                                 },
                             "19":{
-                                    "tabla":"teso_cartera_estudiantes",
-                                    "llave_foranea":"inv_producto_id",
-                                    "mensaje":"Ítem tiene registros en Cartera de estudiantes relacionados."
+                                    "tabla":"inv_mandatario_tiene_items",
+                                    "llave_foranea":"item_id",
+                                    "mensaje":"Ítem tiene ítems mandatarios relacionados."
                                 }
                         }';
 

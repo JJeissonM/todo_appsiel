@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('inv_item_mandatario_delete_item_relacionado/{id}', 'Inventarios\ItemMandatarioController@delete_item_relacionado');
 Route::get('inv_item_mandatario_update_item_relacionado/{campo}/{item_id}/{nuevo_valor}', 'Inventarios\ItemMandatarioController@update_item_relacionado');
 Route::get('inv_item_mandatario_etiquetas_codigos_barra/{mandatario_id}/{item_id}/{cantidad}', 'Inventarios\ItemMandatarioController@etiquetas_codigos_barra');
 Route::resource('inv_item_mandatario', 'Inventarios\ItemMandatarioController');

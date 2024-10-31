@@ -15,6 +15,7 @@ use App\Inventarios\InvProducto;
 use App\Inventarios\Services\CodigoBarras;
 use App\Inventarios\Services\TallaItem;
 use App\Inventarios\EntradaAlmacen;
+use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\MandatarioTieneItem;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\Services\PricesServices;
@@ -127,6 +128,26 @@ class ItemMandatarioController extends ModeloController
             "editable" => 1,
             "unico" => 0
         ]);
+        
+
+        $registro = app($this->modelo->name_space)->find($id)->item_relacionado;
+
+        
+        $cantida_campos = count($lista_campos);
+        for ($i = 0; $i <  $cantida_campos; $i++)
+        {
+            if($lista_campos[$i]['name'] == 'precio_compra')
+            {
+                $costo_prom = InvCostoPromProducto::where([
+                    ['inv_producto_id', '=', $registro->id]
+                ])->count();
+
+                if($costo_prom > 0)
+                {
+                    $lista_campos[$i]['atributos'] = ["disabled" => "disabled","style" => "background-color:#FBFBFB;"];
+                }
+            }
+        }
 
         $form_create = [
                             'url' => 'inv_item_mandatario/' . $id,
@@ -134,8 +155,6 @@ class ItemMandatarioController extends ModeloController
                         ];
 
         $datos_columnas = true;
-
-        $registro = app($this->modelo->name_space)->find($id)->item_relacionado;
 
         return View::make( 'layouts.modelo_form_edit_sin_botones', compact('form_create','datos_columnas', 'registro') )->render();
     }
@@ -396,5 +415,47 @@ class ItemMandatarioController extends ModeloController
         $pdf->loadHTML( $vista )->setPaper( $tam_hoja, $orientacion );
         return $pdf->stream();
         
+    }
+
+    public function delete_item_relacionado( $registro_mandatario_tiene_item_id )
+    {
+        $registro_mandatario_tiene_item = MandatarioTieneItem::find( $registro_mandatario_tiene_item_id );
+        
+        $item_relacionado = $registro_mandatario_tiene_item->item_relacionado;
+
+        $inv_producto = new InvProducto();
+
+        $validacion = $inv_producto->validar_eliminacion( $registro_mandatario_tiene_item->item_id, false );
+
+        if ( $validacion == 'Ítem tiene registros de Precios relacionados.' ) {
+            // Paso todas las validaciones
+            $reg_precios_actuales = ListaPrecioDetalle::where([
+                ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+                ['inv_producto_id', '=', $registro_mandatario_tiene_item->item_id]
+            ])
+            ->get();
+
+            foreach ($reg_precios_actuales as $reg_detalle_precio)
+            {
+                $reg_detalle_precio->delete();
+            }
+
+            $registro_mandatario_tiene_item->delete();
+
+            $item_relacionado->delete();
+
+            $validacion = 'ok';
+        }
+
+        if ( $validacion == 'Ítem tiene ítems mandatarios relacionados.') {
+            
+            $registro_mandatario_tiene_item->delete();
+
+            $item_relacionado->delete();
+
+            $validacion = 'ok';
+        }        
+
+        return $validacion;
     }
 }
