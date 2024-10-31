@@ -27,6 +27,13 @@
 <h3> Lista de pedidos pendientes</h3>
 <hr>
 
+<!-- 
+<p>
+  <label class="checkbox-inline"><input type="checkbox" value="">Agrupar todos los pedidos de la misma Mesa/Cliente para facturar</label>
+</p>
+
+-->
+
 <input id="mySearchInput" onkeyup="mySearchInputFunction()" type="text" placeholder="Buscar..." style="border: none; border-color: transparent; background-color: transparent; border: 1px solid rgb(100, 98, 202); width: 100%;font-size: 16px; height: 50px; margin: 1px; border-radius: 4px;">
 <br/>
 

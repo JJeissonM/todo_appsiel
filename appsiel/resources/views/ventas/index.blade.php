@@ -76,7 +76,7 @@
 	@else
 	
 		@if( !$user->hasRole('SupervisorCajas') )
-			{!! $select_crear !!}
+			<!-- { !! $select_crear !!} -->
 		@endif
 
 	@endcan
