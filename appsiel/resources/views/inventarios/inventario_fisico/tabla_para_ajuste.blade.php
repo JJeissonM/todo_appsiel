@@ -24,12 +24,7 @@
 
         if ( $ajustar ) {
 
-            $etiqueta_producto = $linea->producto_descripcion . ' (' . $linea->item->unidad_medida1 . ')';
-
-            if ( $linea->item->unidad_medida2 != '')
-            {
-                $etiqueta_producto = $linea->producto_descripcion . ' (' . $linea->item->unidad_medida1 . ')' . ' - Talla: ' . $linea->item->unidad_medida2 . ')';
-            }
+            $etiqueta_producto = $linea->item->get_value_to_show(true);
 
             $filas_tabla .= '<tr id="'.$linea->producto_id.'">
                         <td style="display:none;">0</td>

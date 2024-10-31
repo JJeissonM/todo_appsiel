@@ -131,7 +131,7 @@ use App\Core\Tercero;
 
 
 <table class="contenido">
-    {{ Form::bsTableHeader(['Item','Producto','Cantidad']) }}
+    {{ Form::bsTableHeader(['No.','Ítem','Cantidad']) }}
         <tbody>
             <?php 
             $i = 1;
@@ -144,7 +144,7 @@ use App\Core\Tercero;
             @foreach($doc_registros as $linea )
                 <tr>
                     <td width="15%" class="text-center"> {{ $i }} </td>
-                    <td width="70%" class="text-left"> {{ $linea->producto_descripcion }} </td>
+                    <td width="70%" class="text-left"> {{ $linea->item->get_value_to_show() }} </td>
                     <td width="15%" class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                 </tr>
                 <?php

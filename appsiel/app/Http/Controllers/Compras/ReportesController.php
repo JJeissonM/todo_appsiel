@@ -371,10 +371,14 @@ class ReportesController extends Controller
     public static function prepara_datos($o)
     {
         $p = Proveedor::find($o->proveedor_id);
-        $tercero = Tercero::find($p->core_tercero_id);
-        $proveedor = $tercero->descripcion;
-        if ($proveedor == "") {
-            $proveedor = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
+        $proveedor = '';
+        if ( $p != null ) 
+        {
+            $tercero = Tercero::find($p->core_tercero_id);
+            $proveedor = $tercero->descripcion;
+            if ($proveedor == "") {
+                $proveedor = $tercero->nombre1 . " " . $tercero->otros_nombres . " " . $tercero->apellido1 . " " . $tercero->apellido2;
+            }
         }
         $orden = [
             'id' => $o->id,

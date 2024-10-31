@@ -35,7 +35,7 @@
     <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Productos comprados </div>
 
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','Cantidad','Precio','Dcto.','IVA','Total']) }}
+        {{ Form::bsTableHeader(['Cód.','Ítem','Cant.','Precio','Dcto.','IVA','Total']) }}
         <tbody>
             <?php 
             
@@ -52,15 +52,10 @@
                     $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
 
                     $unidad_medida = $linea->unidad_medida1;
-                    if( $linea->item->unidad_medida2 != '' )
-                    {
-                        $unidad_medida = $linea->item->unidad_medida1 . ' (Talla: ' . $linea->item->unidad_medida2 . ')';
-                    }
-
                 ?>
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
-                    <td> {{ $linea->producto_descripcion }} </td>
+                    <td> {{ $linea->item->get_value_to_show(true) }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $unidad_medida }} </td>
                     <td style="text-align: right;"> {{ '$ '.number_format( $precio_original, 0, ',', '.') }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->tasa_descuento, 0, ',', '.').'%' }} </td>

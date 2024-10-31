@@ -83,10 +83,11 @@
                     $resultado = '<span style="color:black;"><i class="fa fa-check"></i></span>';
                     $diferencia_costo = 0;
                 }
+
             ?>
             <tr>
                 <td class="text-center"> {{ $linea->producto_id }} </td>
-                <td> {{ $linea->producto_descripcion }} ({{ $linea->unidad_medida1 }}) </td>
+                <td> {{ $linea->item->get_value_to_show(true)}} </td> 
 
                 <!-- Datos del conteo físico -->
                 <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }}  </td>

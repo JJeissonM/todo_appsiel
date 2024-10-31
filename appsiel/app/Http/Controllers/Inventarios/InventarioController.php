@@ -723,7 +723,7 @@ class InventarioController extends TransaccionController
         $sql_datos_encabezado_doc = InvDocEncabezado::get_registro($id);
         $datos_encabezado_doc =  $sql_datos_encabezado_doc[0];
         $elaboro = $encabezado_doc->creado_por;
-        
+
         switch ( Input::get('formato_impresion_id') )
         {
             case '2':
@@ -752,14 +752,13 @@ class InventarioController extends TransaccionController
                 break;
         }
 
-
         // Se prepara el PDF
         $orientacion = 'portrait';
         $tam_hoja = 'Letter';
 
         $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
-
+        
         return $pdf->stream($descripcion_transaccion . '_' . $encabezado_doc->consecutivo . '.pdf');
         //return $view;
     }

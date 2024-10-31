@@ -13,14 +13,7 @@
             ?>
             @foreach($doc_registros as $linea )
                 <?php
-                
-                    $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
-
-                    $talla = '';
-                    if( $linea->unidad_medida2 != '' )
-                    {
-                        $talla = ' - Talla: ' . $linea->unidad_medida2;
-                    }
+                    $descripcion_item = $linea->item->get_value_to_show();
                     
                     $referencia = '';
                     if($linea->referencia != '')
@@ -28,7 +21,7 @@
                         $referencia = ' - ' . $linea->referencia;
                     }
 
-                    $descripcion_item .= $talla . $referencia;
+                    $descripcion_item .= $referencia;
                 ?>
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>

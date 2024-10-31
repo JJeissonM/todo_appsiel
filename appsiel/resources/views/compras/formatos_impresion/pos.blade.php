@@ -25,7 +25,7 @@
     <div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Productos compados </div>
 
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total']) }}
+        {{ Form::bsTableHeader(['Cód.','Ítem','Precio','IVA','Cant.','Total']) }}
         <tbody>
             <?php 
             
@@ -45,7 +45,7 @@
 
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
-                    <td> {{ $linea->producto_descripcion }} </td>
+                    <td> {{ $linea->item->get_value_to_show(true) }} </td>
                     <td class="text-right"> ${{ number_format( $precio_original, 0, ',', '.') }} </td>
                     <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
                     <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>

@@ -1,7 +1,7 @@
 <?php
-use App\Inventarios\InvBodega;
-use App\Core\Tercero;
-use App\Compras\ComprasDocEncabezado;
+    use App\Inventarios\InvBodega;
+    use App\Core\Tercero;
+    use App\Compras\ComprasDocEncabezado;
 
     $url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen; 	 
 
@@ -138,7 +138,7 @@ use App\Compras\ComprasDocEncabezado;
         @foreach($doc_registros as $linea )
         <tr>
             <td style="text-align: center;"> {{ $numero }} </td>
-            <td> {{ $linea->producto_descripcion }} </td>
+            <td> {{ $linea->item->get_value_to_show(true) }} </td>
             <td>{{ $linea->bodega_descripcion }}</td>
             <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
             <td style="text-align: right;">$ {{ number_format($linea->costo_unitario, 2, ',', '.') }} </td>
@@ -150,11 +150,13 @@ use App\Compras\ComprasDocEncabezado;
                     $numero++;
                 ?>
         @endforeach
+
         <tr>
             <td colspan="3">&nbsp;</td>
             <td style="text-align: center;"> {{ number_format( abs($total_cantidad), 2, ',', '.') }} </td>
             <td colspan="2"></td>
         </tr>
+
     </table>
 
     <br><br><br><br>

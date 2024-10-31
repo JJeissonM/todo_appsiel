@@ -106,10 +106,11 @@
 		        $total_costo_total=0;
 		        $cantidad = count($productos);
 		        for($i=0; $i < $cantidad; $i++)
-		        { ?>
+		        {
+					?>
 		            <tr>
 		                <td>{{ $productos[$i]['producto']->id}}</td>
-		                <td>{{ $productos[$i]['producto']->descripcion}}</td>
+		                <td>{{ $productos[$i]['producto']->get_value_to_show(true)}}</td>
 		                <td>{{ $productos[$i]['bodega']}}</td>
 		                <td>{{ '$'.number_format($productos[$i]['costo_unitario'], 2, ',', '.') }}</td>
 		                <td>{{ number_format($productos[$i]['cantidad'], 2, ',', '.') }} {{ $productos[$i]['producto']->unidad_medida1 }}</td>

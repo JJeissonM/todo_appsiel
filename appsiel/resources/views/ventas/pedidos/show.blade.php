@@ -139,7 +139,7 @@
 	</p>
 	<div class="table-responsive">
 		<table class="table table-bordered table-striped">
-			{{ Form::bsTableHeader(['Item','Producto','Cant.','Cant. Pend.','Vr. unitario','IVA','Total Bruto','Total Dcto.','Total','']) }}
+			{{ Form::bsTableHeader(['No.','Ítem','Cant.','Cant. Pend.','Vr. unitario','IVA','Total Bruto','Total Dcto.','Total','']) }}
 			<tbody>
 				<?php
 				$i = 1;
@@ -155,7 +155,7 @@
 				@foreach($doc_registros as $linea )
 					<tr class="linea_registro">
 						<td class="text-center"> {{ $i }} </td>
-						<td width="250px" class="lbl_producto_descripcion"> {{ $linea->producto_descripcion }} </td>
+						<td width="250px" class="lbl_producto_descripcion"> {{ $linea->item->get_value_to_show() }} </td>
 						<td class="text-center">
 							{{ number_format( $linea->cantidad, 0, ',', '.') }}
 							<span class="cantidad" style="display: none;">{{$linea->cantidad}}</span>

@@ -81,7 +81,7 @@
             @foreach($doc_registros as $linea )
                 <tr>
                     <td style="text-align: center;"> {{ $numero }} </td>
-                    <td> {{ $linea->producto_descripcion }} ({{ $linea->unidad_medida1 }}) </td>
+                    <td> {{ $linea->item->get_value_to_show(true) }} </td>
                     <td style="text-align: center;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
                 </tr>
                 <?php 

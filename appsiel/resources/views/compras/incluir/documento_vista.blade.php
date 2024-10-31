@@ -20,13 +20,7 @@
                     $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
                     $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
 
-                    $unidad_medida = $linea->unidad_medida1;
-                    if( $linea->item->unidad_medida2 != '' )
-                    {
-                        $unidad_medida = $linea->item->unidad_medida1 . ' - Talla: ' . $linea->item->unidad_medida2;
-                    }
-
-                    $producto_descripcion = $linea->producto_descripcion;
+                    $producto_descripcion = $linea->item->get_value_to_show(true);
                     
                     $referencia = '';
                     if($linea->referencia != '')
@@ -40,7 +34,7 @@
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $producto_descripcion }} </td>
-                    <td style="text-align: center;"> {{ $unidad_medida }} </td>
+                    <td style="text-align: center;"> {{ $linea->unidad_medida1 }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $precio_original, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $precio_original, 0, ',', '.') }} </td>

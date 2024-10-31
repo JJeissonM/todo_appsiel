@@ -50,7 +50,7 @@
         </td> 
         <td> &nbsp; </td>
         <td> 
-            <span style="background-color:#F7B2A3;">{{ $linea->producto_id }}</span> {{ $linea->producto_id }} {{ $linea->producto_descripcion }}
+            <span style="background-color:#F7B2A3;">{{ $linea->producto_id }}</span> {{ $linea->item->get_value_to_show(true) }}
         </td> 
         <td> {{ $linea->inv_motivo_descripcion }} </td>
         <td> - </td>

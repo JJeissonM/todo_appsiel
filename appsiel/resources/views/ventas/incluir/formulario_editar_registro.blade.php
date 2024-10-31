@@ -1,5 +1,5 @@
 {{ Form::open(['url'=>'vtas_doc_registro_guardar?id='.$id.'&id_modelo='.$id_modelo.'&id_transaccion='.$id_transaccion,'id'=>'form_edit']) }}
-  <h4>{{ $linea_factura->producto_descripcion }}</h4>
+  <h4>{{ $linea_factura->item->get_value_to_show() }}</h4>
   <hr>
 
   @if($remision->fecha != '0000-00-00')

@@ -1,6 +1,6 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Item','Producto','Cantidad','Vr. unitario','IVA','Total Bruto','Total']) }}
+        {{ Form::bsTableHeader(['No.','Ítem','Cant.','Vr. unitario','IVA','Total Bruto','Total']) }}
         <tbody>
             <?php 
             $i = 1;
@@ -15,7 +15,7 @@
             @foreach($doc_registros as $linea )
                 <tr>
                     <td class="text-center"> {{ $i }} </td>
-                    <td width="250px"> {{ $linea->producto_descripcion }} </td>
+                    <td width="250px"> {{ $linea->item->get_value_to_show() }} </td>
                     <td class="text-center"> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                     <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) , 0, ',', '.') }} </td>
                     <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>

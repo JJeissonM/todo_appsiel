@@ -19,7 +19,6 @@
         	<a class="btn-gmail" href="{{ url( 'compras_recontabilizar_un_documento/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
         @endcan
     @endif
-
 	@include('compras.doc_soporte.acciones_doc_soporte_electronico')
 @endsection
 

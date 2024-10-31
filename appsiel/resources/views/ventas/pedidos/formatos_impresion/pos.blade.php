@@ -85,7 +85,7 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td> {{ $linea->producto_descripcion }} </td>
+                    <td> {{ $linea->item->get_value_to_show() }} </td>
                     <td> 
                         {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }}
                     </td>

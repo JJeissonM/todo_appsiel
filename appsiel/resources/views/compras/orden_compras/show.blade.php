@@ -1,5 +1,10 @@
 <?php
-$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
+	$variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . $id_transaccion;
+
+	$inv_bodega_id = 1;
+	if ( $proveedor != null ) {
+		$inv_bodega_id = $proveedor->inv_bodega_id;
+	}	
 ?>
 
 @extends('transaccion.show')
@@ -92,7 +97,7 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 		<input type="hidden" name="url_id" value="{{Input::get('id')}}" />
 		<input type="hidden" name="url_id_modelo" value="165" />
 		<input type="hidden" name="url_id_transaccion" value="35" />
-		<input type="hidden" name="inv_bodega_id" value="{{$proveedor->inv_bodega_id}}" />
+		<input type="hidden" name="inv_bodega_id" value="{{ $inv_bodega_id }}" />
 
 		<div class="table-responsive">
 			<table class="table table-bordered table-striped">
@@ -108,7 +113,7 @@ Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>
 					@foreach($doc_registros as $linea )
 					<tr>
 						<td class="text-center"> {{ $linea->producto_id }} </td>
-						<td> {{ $linea->producto_descripcion }} </td>
+						<td> {{ $linea->item->get_value_to_show(true) }} </td>
 						@if($doc_encabezado->estado=='Cumplida')
 							<td class="text-right"> $ {{$linea->precio_unitario}}</td>
 							<td class="text-center"> {{$linea->tasa_impuesto}} %</td>

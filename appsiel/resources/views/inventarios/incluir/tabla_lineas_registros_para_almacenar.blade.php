@@ -6,12 +6,7 @@
             continue;
         }
 
-        $etiqueta_producto = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
-
-        if ( $linea->item->unidad_medida2 != '')
-        {
-            $etiqueta_producto = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')' . ' - Talla: ' . $linea->item->unidad_medida2 . ')';
-        }
+        $etiqueta_producto = $linea->item->get_value_to_show(true);
 
         $color = 'green';
         if ($linea->motivo->movimiento == 'salida' )

@@ -98,11 +98,7 @@
                             </td>
                         </tr>
                     </table>
-                </div>
-
-
-
-                
+                </div>                
             </td>
         </tr>
         <div class="subhead">
@@ -144,17 +140,18 @@
                 $numero = 1;
             ?>
         @foreach($doc_registros as $linea )
-        <tr>
-            <td style="text-align: center;"> {{ $numero }} </td>
-            <td style="text-align: center;"> {{ $linea->producto_id }} </td>
-            <td> {{ $linea->producto_descripcion }} </td>
-            <td style="text-align: center;"> {{ $linea->unidad_medida1 }} </td>
-            <td style="text-align: right;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
-        </tr>
-        <?php 
-                    $total_cantidad += $linea->cantidad;
-                    $numero++;
-                ?>
+            <tr>
+                <td style="text-align: center;"> {{ $numero }} </td>
+                <td style="text-align: center;"> {{ $linea->producto_id }} </td>
+                <td> {{ $linea->item->get_value_to_show(true) }} </td>
+                <td style="text-align: center;"> {{ $linea->unidad_medida1 }} </td>
+                <td style="text-align: right;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
+            </tr>
+            <?php 
+                $total_cantidad += $linea->cantidad;
+                $numero++;
+            
+            ?>
         @endforeach
         <tr>
             <td colspan="4">&nbsp;</td>

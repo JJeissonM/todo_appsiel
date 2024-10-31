@@ -373,12 +373,7 @@ class InvFisicoController extends TransaccionController
         $i = 1;
         foreach ( $registro->lineas_registros as $linea )
         {
-            $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ')';
-
-            if( $linea->item->unidad_medida2 != '' )
-            {
-                $descripcion_item = $linea->item->descripcion . ' (' . $linea->item->unidad_medida1 . ') - Talla: ' . $linea->item->unidad_medida2;
-            }
+            $descripcion_item = $linea->item->get_value_to_show(true);
 
             $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' . 
                                                                 '<td class="text-center">' . $linea->inv_producto_id . '</td>' . 

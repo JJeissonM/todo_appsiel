@@ -20,12 +20,8 @@
                 <?php 
 
                     $unidad_medida = $linea->unidad_medida1;
-                    if( $linea->producto->unidad_medida2 != '' )
-                    {
-                        $unidad_medida = $linea->producto->unidad_medida1 . ' - Talla: ' . $linea->producto->unidad_medida2;
-                    }
 
-                    $producto_descripcion = $linea->producto_descripcion;
+                    $producto_descripcion = $linea->item->get_value_to_show(true);
                     
                     $referencia = '';
                     if($linea->referencia != '')
