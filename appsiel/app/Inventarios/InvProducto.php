@@ -16,6 +16,7 @@ use App\Inventarios\InvMovimiento;
 
 use App\Contabilidad\Impuesto;
 use App\Inventarios\Services\CodigoBarras;
+use App\Sistema\Services\CrudService;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\Services\PricesServices;
@@ -30,6 +31,8 @@ class InvProducto extends Model
     protected $fillable = ['core_empresa_id','descripcion','tipo','unidad_medida1','unidad_medida2','categoria_id','inv_grupo_id','impuesto_id','precio_compra','precio_venta','estado','referencia','codigo_barras','imagen','mostrar_en_pagina_web','creado_por','modificado_por', 'detalle'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Grupo inventario', 'IVA', 'Tipo', 'Mostrar en Página Web', 'Cod. Barras', 'Estado'];
+
+    public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
     public function grupo_inventario()
     {
@@ -699,6 +702,125 @@ class InvProducto extends Model
         }
 
         return $detalle_lista_precios->precio;
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $reg_precios_actuales = ListaPrecioDetalle::where([
+            ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+            ['inv_producto_id', '=', $id]
+        ])
+        ->get();
+
+        foreach ($reg_precios_actuales as $reg_detalle_precio)
+        {
+            $reg_detalle_precio->delete();
+        }
+
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"compras_doc_registros",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene documentos de Compras relacionados."
+                                },
+                            "1":{
+                                    "tabla":"compras_movimientos",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene movimientos de Compras relacionados."
+                                },
+                            "2":{
+                                    "tabla":"contab_movimientos",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene movimientos de Contabilidad relacionados."
+                                },
+                            "3":{
+                                    "tabla":"inv_costo_prom_productos",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene Costo Promedio relacionado."
+                                },
+                            "4":{
+                                    "tabla":"inv_doc_registros",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene Registros de Inventarios relacionados."
+                                },
+                            "5":{
+                                    "tabla":"inv_min_stocks",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene Registros de Stock mínimo relacionados."
+                                },
+                            "6":{
+                                    "tabla":"inv_movimientos",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene movimientos de Inventarios relacionados."
+                                },
+                            "7":{
+                                    "tabla":"vtas_doc_registros",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene Registros de Ventas relacionados."
+                                },
+                            "8":{
+                                    "tabla":"vtas_listas_dctos_detalles",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene registros de Descuentos relacionados."
+                                },
+                            "9":{
+                                    "tabla":"vtas_listas_precios_detalles",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene registros de Precios relacionados."
+                                },
+                            "10":{
+                                    "tabla":"vtas_movimientos",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene movimientos de Ventas relacionados."
+                                },
+                            "11":{
+                                    "tabla":"vtas_pos_doc_registros",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene registros de Ventas POS relacionados."
+                                },
+                            "12":{
+                                    "tabla":"vtas_pos_movimientos",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene movimientos de Ventas POS relacionados."
+                                },
+                            "13":{
+                                    "tabla":"inv_mandatario_tiene_items",
+                                    "llave_foranea":"item_id",
+                                    "mensaje":"Ítem tiene ítems mandatarios relacionados."
+                                },
+                            "14":{
+                                    "tabla":"inv_recetas_cocina",
+                                    "llave_foranea":"item_platillo_id",
+                                    "mensaje":"Ítem está relacionado como Producto terminado en Ensambles."
+                                },
+                            "15":{
+                                    "tabla":"inv_recetas_cocina",
+                                    "llave_foranea":"item_ingrediente_id",
+                                    "mensaje":"Ítem está relacionado como Insumo en Ensambles."
+                                },
+                            "16":{
+                                    "tabla":"inv_ficha_producto",
+                                    "llave_foranea":"producto_id",
+                                    "mensaje":"Ítem tiene registros de Ficha técnica relacionados."
+                                },
+                            "17":{
+                                    "tabla":"inv_items_desarmes_automaticos",
+                                    "llave_foranea":"item_consumir_id",
+                                    "mensaje":"Ítem como Insumo en Ensambles automáticos."
+                                },
+                            "18":{
+                                    "tabla":"inv_items_desarmes_automaticos",
+                                    "llave_foranea":"item_producir_id",
+                                    "mensaje":"Ítem como Producto terminado en Ensambles automáticos."
+                                },
+                            "19":{
+                                    "tabla":"teso_cartera_estudiantes",
+                                    "llave_foranea":"inv_producto_id",
+                                    "mensaje":"Ítem tiene registros en Cartera de estudiantes relacionados."
+                                }
+                        }';
+
+        return (new CrudService())->validar_eliminacion_un_registro( $id, $tablas_relacionadas);
     }
 
 }

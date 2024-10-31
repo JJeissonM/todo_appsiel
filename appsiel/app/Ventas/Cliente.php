@@ -9,7 +9,7 @@ use App\Ventas\Vendedor;
 use App\Ventas\ContactoCliente;
 use App\Ventas\DireccionEntrega;
 use App\Core\Tercero;
-
+use App\Sistema\Services\CrudService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -232,23 +232,8 @@ class Cliente extends Model
                                     "mensaje":"Cliente está asociado a un vendedor."
                                 }
                         }';
-        $tablas = json_decode( $tablas_relacionadas );
-        foreach($tablas AS $una_tabla)
-        { 
-            if ( !Schema::hasTable( $una_tabla->tabla ) )
-            {
-                continue;
-            }
-            
-            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
 
-            if ( !empty($registro) )
-            {
-                return $una_tabla->mensaje;
-            }
-        }
-
-        return 'ok';
+        return (new CrudService())->validar_eliminacion_un_registro( $id, $tablas_relacionadas);
     }
 
     public function sumar_dias_calendario_a_fecha( string $fecha, int $cantidad_dias )

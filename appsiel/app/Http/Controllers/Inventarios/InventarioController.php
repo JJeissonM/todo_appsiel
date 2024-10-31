@@ -1264,40 +1264,6 @@ class InventarioController extends TransaccionController
         return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Bodega ELIMINADA correctamente. Descripcion: ' . $registro->descripcion);
     }
 
-    // Proceso de eliminar un PRODUCTO
-    public static function eliminar_producto($inv_producto_id)
-    {
-        $registro = InvProducto::find($inv_producto_id);
-
-        // Verificación 1: Tiene movimientos
-        $cantidad = InvMovimiento::where('inv_producto_id', $inv_producto_id)
-                                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                                ->count();
-
-        // Verificación 2: Está en una factura de Ventas POS
-        $cantidad2 = DocRegistro::where('inv_producto_id', $inv_producto_id)->count();
-
-        if ($cantidad != 0 || $cantidad2 != 0) {
-            return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Item NO puede ser eliminado. Tiene movimientos.');
-        }
-
-        $reg_precios_actuales = ListaPrecioDetalle::where([
-            ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
-            ['inv_producto_id', '=', $inv_producto_id]
-        ])
-        ->get();
-
-        foreach ($reg_precios_actuales as $reg_detalle_precio)
-        {
-            $reg_detalle_precio->delete();
-        }
-
-        //Borrar Registro
-        $registro->delete();
-
-        return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('flash_message', 'Item ELIMINADO correctamente. Descripcion: ' . $registro->descripcion);
-    }
-
     // Anular documento de inventario
     public function anular_documento($documento_id)
     {
@@ -1327,7 +1293,6 @@ class InventarioController extends TransaccionController
 
         return redirect('inventarios/' . $documento_id . $this->variables_url)->with('flash_message', 'Documento ANULADO correctamente.');
     }
-
 
     // Este método no hace validación de existencias
     // Dichas validaciones se debieron hacer antes.
@@ -1445,7 +1410,9 @@ class InventarioController extends TransaccionController
         return redirect('inventarios/' . $doc_encabezado->id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'El registro del documento fue MODIFICADO correctamente.');
     }
 
-
+    /**
+     * 
+     */
     public function get_validacion_saldo_movimientos_posteriores($bodega_id, $producto_id, $fecha, $cantidad_nueva, $saldo_a_la_fecha, $movimiento)
     {
         $producto = InvProducto::find( $producto_id );
@@ -1471,6 +1438,9 @@ class InventarioController extends TransaccionController
         return 0;
     }
 
+    /**
+     * 
+     */
     public function recosteo_form()
     {
         $this->set_variables_globales();
@@ -1483,7 +1453,9 @@ class InventarioController extends TransaccionController
         return view('inventarios.recosteo_form', compact('miga_pan', 'productos'));
     }
 
-
+    /**
+     * 
+     */
     public static function contabilizar_registro_inv( $datos, $contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito )
     {
         ContabMovimiento::create( $datos + 
@@ -1495,6 +1467,9 @@ class InventarioController extends TransaccionController
                         );
     }
 
+    /**
+     * 
+     */
     public static function contabilizar_documento_inventario( $documento_id, $detalle_operacion )
     {
         $documento = InvDocEncabezado::find( $documento_id );

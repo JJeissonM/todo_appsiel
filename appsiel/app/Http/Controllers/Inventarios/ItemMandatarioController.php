@@ -252,9 +252,9 @@ class ItemMandatarioController extends ModeloController
             $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
         }
 
+        // $request->unidad_medida2 almacena la Talla
         if ( $request->unidad_medida2 != null ) {
-            // $request->unidad_medida2 almacena la Talla
-            $item_relacionado->referencia = $mandatario_referencia . '-' . $request->unidad_medida2;
+            $item_relacionado->referencia = $mandatario_referencia . '-' . strtoupper( $request->unidad_medida2 );
 
             $talla = new TallaItem( $request->unidad_medida2 );
             $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();

@@ -1189,7 +1189,11 @@ $(document).ready(function(){
 
         // Asignar resto de campos
         $('#vendedor_id').val( item_sugerencia.attr('data-vendedor_id') );
-        $('#inv_bodega_id').val( item_sugerencia.attr('data-inv_bodega_id') );
+		var inv_bodega_id = 1;
+		if ( item_sugerencia.attr('data-inv_bodega_id') != '') {
+			inv_bodega_id = item_sugerencia.attr('data-inv_bodega_id');
+		}
+        $('#inv_bodega_id').val( inv_bodega_id );
 
         var forma_pago = 'contado';
 		var dias_plazo = 0;

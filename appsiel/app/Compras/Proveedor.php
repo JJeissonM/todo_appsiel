@@ -5,6 +5,7 @@ namespace App\Compras;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Compras\ClaseProveedor;
+use App\Sistema\Services\CrudService;
 
 class Proveedor extends Model
 {
@@ -13,6 +14,8 @@ class Proveedor extends Model
     protected $fillable = ['core_tercero_id', 'clase_proveedor_id', 'inv_bodega_id', 'liquida_impuestos', 'condicion_pago_id', 'codigo', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero', 'Dirección', 'Teléfono', 'Clase de proveedor', 'Liquida impuestos', 'Condición de pago', 'Estado'];
+
+    public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 
     public function tercero()
     {
@@ -111,5 +114,23 @@ class Proveedor extends Model
         }
 
         return $cta_x_pagar_id;
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"compras_doc_encabezados",
+                                    "llave_foranea":"proveedor_id",
+                                    "mensaje":"Proveedor tiene documentos de Compras asociados."
+                                },
+                            "1":{
+                                    "tabla":"compras_movimientos",
+                                    "llave_foranea":"proveedor_id",
+                                    "mensaje":"Proveedor tiene movimientos de Compras asociados."
+                                }
+                        }';
+
+        return (new CrudService())->validar_eliminacion_un_registro( $id, $tablas_relacionadas);
     }
 }

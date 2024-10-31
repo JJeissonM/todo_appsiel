@@ -12,6 +12,7 @@ use App\Core\Departamento;
 use App\Core\Services\TerceroService;
 use App\Matriculas\Responsableestudiante;
 use App\Nomina\NomContrato;
+use App\Sistema\Services\CrudService;
 use App\Ventas\Cliente;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -544,22 +545,7 @@ class Tercero extends Model
                                     "mensaje":"Tiene un Representante Legal asociado."
                                 }
                         }';
-        $tablas = json_decode($tablas_relacionadas);
-        foreach ($tablas as $una_tabla)
-        {
-            if ( !Schema::hasTable( $una_tabla->tabla ) )
-            {
-                continue;
-            }
-            
-            $registro = DB::table($una_tabla->tabla)->where($una_tabla->llave_foranea, $id)->get();
 
-            if (!empty($registro))
-            {
-                return $una_tabla->mensaje;
-            }
-        }
-
-        return 'ok';
+        return (new CrudService())->validar_eliminacion_un_registro( $id, $tablas_relacionadas);
     }
 }

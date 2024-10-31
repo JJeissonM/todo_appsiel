@@ -43,13 +43,13 @@
 		<tbody>
 			@foreach( $items_relacionados AS $item_hijo )
 				<?php
-					$item = $item_hijo->item_relacionado;
+					$item = $item_hijo->item_relacionado; // $item es una instancia de InvProducto
 
 					//$existencia_actual = $item->get_existencia_actual( $item_bodega_principal_id, date('Y-m-d') );
 
 					$url_redirect = '[inv_item_mandatario/' . $registro->id . '?id=8&id_modelo=315&id_transaccion=]';
 				?>
-				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia.$item->unidad_medida2}}">
+				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia}}">
 					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
 					<td align="right"> ${{ number_format($item->get_costo_promedio(),0,',','.') }} </td>
@@ -218,17 +218,30 @@
                 });
             });
 
-			var validado;
-
+			var validado = true;
 		    function validar_datos()
 		    {
-		    	validado = true;
+
+		    	if ( $('#unidad_medida2').val() == '' )
+				{
+					$('#unidad_medida2').focus();
+					Swal.fire({
+							icon: 'error',
+							title: 'Alerta!',
+							text: 'Debe ingresar una Talla.'
+						});
+					return false;
+				}
 
 				if ( $('#precio_compra').val() != undefined ) {
 					if ( !$.isNumeric( $('#precio_compra').val() ) )
 					{
 						$('#precio_compra').focus();
-						alert('Debe ingresar un precio de compras válido.');
+						Swal.fire({
+								icon: 'error',
+								title: 'Alerta!',
+								text: 'Debe ingresar un precio de compras válido.'
+							});
 						return false;
 					}
 				}
@@ -237,30 +250,25 @@
 					if ( !$.isNumeric( $('#precio_venta').val() ) )
 					{
 						$('#precio_venta').focus();
-						alert('Debe ingresar un precio de ventas válido.');
+						Swal.fire({
+								icon: 'error',
+								title: 'Alerta!',
+								text: 'Debe ingresar un precio de ventas válido.'
+							});
 						return false;
 					}
 				}
 
-		    	if ( $('#unidad_medida2').val() == '' )
-				{
-					$('#unidad_medida2').focus();
-					alert('Debe ingresar una Talla.');
-					validado = false;
-				}
-
 		    	$(".referencia_talla").each(function() {
 					valor_referencia_talla = $(this).attr('data-codigo_referencia_talla');
-						console.log( valor_referencia_talla, )
-					if ( valor_referencia_talla == $('#referencia').val() + $('#unidad_medida2').val().toUpperCase() )
+
+					if ( valor_referencia_talla == $('#referencia').val() + '-' + $('#unidad_medida2').val().toUpperCase() )
 					{
 						Swal.fire({
 							icon: 'error',
 							title: 'Alerta!',
-							text: 'Ya se ingresó Esa Talla para este Producto.'
+							text: 'Ya se ingresó la Talla << ' + $('#unidad_medida2').val().toUpperCase() + ' >> para este Ítem.'
 						});
-
-						alert('');
 						validado = false;
 						return false;
 					}

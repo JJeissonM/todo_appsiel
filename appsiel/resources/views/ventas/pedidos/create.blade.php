@@ -61,7 +61,7 @@
 
 				<input type="hidden" name="forma_pago" id="forma_pago" value="" required="required">
 				<input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="" required="required">
-				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="" required="required">
+				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="1" required="required">
 
 				<input type="hidden" name="cliente_id" id="cliente_id" value="" required="required">
 				<input type="hidden" name="zona_id" id="zona_id" value="" required="required">
