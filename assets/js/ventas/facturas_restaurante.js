@@ -389,8 +389,7 @@ function mostrar_mensaje_item_agregado() {
 	$("#popup_alerta").css("opacity", "revert");
 	$("#popup_alerta").text("Producto agregado.");
 	$("#popup_alerta").show(200);
-  }
-  
+  }  
 
   
 $(document).ready(function () {

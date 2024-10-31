@@ -199,7 +199,7 @@ function mandar_codigo2(item_id) {
 	numero_linea = 1;
 
 	if ($('#manejar_platillos_con_contorno').val() == 0) {
-		$("#btn_"+item_id).hide();
+		//$("#btn_"+item_id).hide();
 	}
     
     $('#btn_guardar_factura').removeAttr('disabled');
