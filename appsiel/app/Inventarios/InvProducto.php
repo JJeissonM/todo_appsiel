@@ -72,7 +72,7 @@ class InvProducto extends Model
 
     public function get_value_to_show( $ocultar_id = false )
     {
-        $descripcion_item = $this->descripcion . ' (' . $this->unidad_medida1 . ')';
+        $descripcion_item = $this->descripcion;
 
         $talla = $this->get_talla();
         
@@ -84,7 +84,7 @@ class InvProducto extends Model
         
         $codigo_proveedor = $this->get_codigo_proveedor();
 
-        $descripcion_item .= $talla . $referencia . $codigo_proveedor;
+        $descripcion_item .= $talla . $referencia . $codigo_proveedor . ' (' . $this->unidad_medida1 . ')';
 
         $prefijo = $this->id . ' ';
 
