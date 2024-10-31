@@ -44,8 +44,7 @@
             opacity: 0.7;
         }
 
-
-        @media only screen and (min-width: 993px) {
+/*        @media only screen and (min-width: 993px) { */
             .elemento_fondo {
                 position: fixed;
                 z-index: 9999;
@@ -53,7 +52,7 @@
                 margin-bottom: 0;
                 float: left;
             }
-        }
+        /*}*/
 
         .vendedor_activo{
             background-color: #574696;
