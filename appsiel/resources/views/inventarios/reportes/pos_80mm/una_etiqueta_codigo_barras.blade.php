@@ -17,7 +17,7 @@
         
         if( $fila->codigo_barras == '' )
         {
-            $codigo_barras = (new \App\Inventarios\Services\CodigoBarras($fila->id, 0, 0, 0))->barcode;
+            $codigo_barras = $fila->id;
         }
 
         if ( !is_numeric($codigo_barras) ) {
