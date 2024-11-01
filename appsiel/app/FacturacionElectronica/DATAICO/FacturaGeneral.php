@@ -248,8 +248,20 @@ class FacturaGeneral
           * Se envia el precio unitario sin haber quitado el decuento. DATAICO hace el calculo de descuento en su plataforma con base en discount_rate.
           */
          $price = $linea->precio_unitario / (1 + $linea->tasa_impuesto / 100);
+         $original_price = 0;
+         if ($price == 0) { // Obsequio o Precio cero
+            $price = $linea->item->get_costo_promedio() * (1 + 10 / 100);
+
+            $original_price = $price;
+
+            $linea->tasa_descuento = 100;
+         }
 
          $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . str_replace('"', '\"', $linea->item->descripcion) . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format( $price, $this->cantidadDecimales, '.', '') );
+         
+         if ( $original_price != 0 ) {
+            $string_items .= ',"original_price": ' . $original_price;
+         }
 
          if ( $linea->tasa_descuento != 0 )
          {
