@@ -5,6 +5,11 @@
       margin: 5px;
       size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 38.5in;
     }
+
+    
+    .page-break {
+        page-break-after: always;
+    }
     
     /*p { margin: -2px; }*/
 </style>
@@ -17,6 +22,9 @@
         if ($tamanio_letra == null) {
             $tamanio_letra = 11;
         }
+
+        $numero_x_pagina = 6;
+        $contador_paginas = 0;
     ?>
 
     <table class="table" style="width: 100%; font-size: {{$tamanio_letra}}px;">
@@ -34,10 +42,15 @@
 
                 <?php
                     $i++;
+                    $contador_paginas++;
                 ?>
 
                 @if($i % $numero_columnas == 0)
                     </tr>
+                @endif
+
+                @if( $contador_paginas ==  $numero_x_pagina)
+                    <div class="page-break"></div>
                 @endif
 
             @endforeach
