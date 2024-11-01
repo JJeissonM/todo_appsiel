@@ -115,23 +115,25 @@
 				@include('tesoreria.incluir.medios_recaudos')
 			</div>
 
-			<hr>
-			<h4>Parámetros</h4>
-			<div class="row">
+			<span style="display: none;">
+				<hr>
+				<h4>Parámetros</h4>
+				<div class="row">
 
-				<div class="col-md-6">
-					<div class="row" style="padding:5px;">
-						{{ Form::bsSelect( 'permitir_venta_menor_costo', config('ventas.permitir_venta_menor_costo'), 'Permitir ventas menor que el costo', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_venta_menor_costo','disabled'=>'disabled'] ) }}
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect( 'permitir_venta_menor_costo', config('ventas.permitir_venta_menor_costo'), 'Permitir ventas menor que el costo', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_venta_menor_costo','disabled'=>'disabled'] ) }}
+						</div>
 					</div>
-				</div>
 
-				<div class="col-md-6">
-					<div class="row" style="padding:5px;">
-						{{ Form::bsSelect( 'permitir_inventarios_negativos', config('ventas.permitir_inventarios_negativos'), 'Permitir inventarios negativos', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_inventarios_negativos','disabled'=>'disabled'] ) }}
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							{{ Form::bsSelect( 'permitir_inventarios_negativos', config('ventas.permitir_inventarios_negativos'), 'Permitir inventarios negativos', ['0'=>'No','1'=>'Si'], ['class'=>'permitir_inventarios_negativos','disabled'=>'disabled'] ) }}
+						</div>
 					</div>
-				</div>
 
-			</div>
+				</div>
+			</span>
 			
 			<br><br>
 		</div>
