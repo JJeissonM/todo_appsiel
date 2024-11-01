@@ -104,7 +104,7 @@ class InvProducto extends Model
         $talla = '';
         if( $this->unidad_medida2 != '' )
         {
-            $talla = ' - Talla: ' . $this->unidad_medida2;
+            $talla = ' - ' . $this->unidad_medida2;
         }
 
         return $talla;
