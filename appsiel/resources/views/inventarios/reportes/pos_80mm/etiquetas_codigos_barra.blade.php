@@ -23,7 +23,7 @@
             $tamanio_letra = 11;
         }
 
-        $numero_x_pagina = 6;
+        $cantidad_x_pagina = 6;
         $contador_paginas = 0;
     ?>
 
@@ -49,7 +49,7 @@
                     </tr>
                 @endif
 
-                @if( $contador_paginas ==  $numero_x_pagina)
+                @if( $contador_paginas ==  $cantidad_x_pagina)
                     <div class="page-break"></div>
                     <?php
                         $contador_paginas = 0;
