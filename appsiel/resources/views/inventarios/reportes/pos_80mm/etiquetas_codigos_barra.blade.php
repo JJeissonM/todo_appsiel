@@ -51,6 +51,9 @@
 
                 @if( $contador_paginas ==  $numero_x_pagina)
                     <div class="page-break"></div>
+                    <?php
+                        $contador_paginas = 0;
+                    ?>
                 @endif
 
             @endforeach
