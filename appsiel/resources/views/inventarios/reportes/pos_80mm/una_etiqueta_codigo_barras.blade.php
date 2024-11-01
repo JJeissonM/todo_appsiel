@@ -25,7 +25,7 @@
         }
 
         $ancho_codigo = 2;
-        $alto_codigo = 94;
+        $alto_codigo = 93;
 
         if ($ancho != '') {
             $ancho_codigo = $ancho / 100;
