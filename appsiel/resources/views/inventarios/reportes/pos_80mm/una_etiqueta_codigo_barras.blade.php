@@ -1,4 +1,4 @@
-<div style="border: solid 1px #ddd; border-radius: 4px; margin: 10px 10px 4px 10px; text-align: center; width:100%; font-size:{{$tamanio_letra}}px; height:124px;">
+<div style="border: solid 1.2px black; border-radius: 4px; margin: 10px 10px 4px 10px; text-align: center; width:100%; font-size:{{$tamanio_letra}}px; height:124px;">
 
     @if($mostrar_descripcion)
 
