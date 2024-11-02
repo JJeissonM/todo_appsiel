@@ -64,7 +64,7 @@ class ContabDocEncabezado extends Model
             ->select(
                 'contab_doc_encabezados.fecha AS campo1',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_doc_encabezados.consecutivo) AS campo2'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                'core_terceros.descripcion AS campo3',
                 'contab_doc_encabezados.descripcion AS campo4',
                 'contab_doc_encabezados.valor_total AS campo5',
                 'contab_doc_encabezados.estado AS campo6',
@@ -72,7 +72,7 @@ class ContabDocEncabezado extends Model
             )
             ->where("contab_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
             ->orWhere("contab_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("contab_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("contab_doc_encabezados.estado", "LIKE", "%$search%")
@@ -89,14 +89,14 @@ class ContabDocEncabezado extends Model
             ->select(
                 'contab_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_doc_encabezados.consecutivo) AS DOCUMENTO'),
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS TERCERO'),
+                'core_terceros.descripcion AS TERCERO',
                 'contab_doc_encabezados.descripcion AS DETALLE',
                 'contab_doc_encabezados.valor_total AS VALOR_DOCUMENTO',
                 'contab_doc_encabezados.estado AS ESTADO'
             )
             ->where("contab_doc_encabezados.fecha", "LIKE", "%$search%")
             ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
             ->orWhere("contab_doc_encabezados.descripcion", "LIKE", "%$search%")
             ->orWhere("contab_doc_encabezados.valor_total", "LIKE", "%$search%")
             ->orWhere("contab_doc_encabezados.estado", "LIKE", "%$search%")
