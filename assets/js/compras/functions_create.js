@@ -449,6 +449,7 @@ function generar_string_celdas( fila )
     num_celda++;
 
     var btn_borrar = "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+
     celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( precio_total.toFixed(2) ) + ' </td><td>' + btn_borrar + '</td>';
 
     var cantidad_celdas = celdas.length;
@@ -595,12 +596,14 @@ function reset_linea_ingreso_default()
     $('#linea_ingreso_default input[type="text"]').attr('style','background-color:#ECECE5;');
     $('#linea_ingreso_default input[type="text"]').attr('disabled','disabled');
 
-
     $('#inv_motivo_id').attr('style','background-color:#ECECE5;');
     $('#inv_motivo_id').attr('disabled','disabled');
 
     $('#precio_unitario').removeAttr('style');
     $('#precio_unitario').removeAttr('disabled');
+
+    $('#precio_total').removeAttr('style');
+    $('#precio_total').removeAttr('disabled');
 
     $('#tasa_descuento').removeAttr('style');
     $('#tasa_descuento').removeAttr('disabled');
