@@ -29,7 +29,7 @@
      
 @foreach($items as $fila)       
     @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras')
-    <?php 
+    <?php
         if ( $contador_paginas == $cantidad_stickers_x_pagina && $cantidad_impresos != $cantidad_total) {
             echo '<div class="page-break"></div>';
             $contador_paginas = 0;
