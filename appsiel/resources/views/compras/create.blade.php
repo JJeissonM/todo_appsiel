@@ -368,7 +368,6 @@
 			});
 
 
-
 		    $('[data-toggle="tooltip"]').tooltip();
 		    var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botón guardar
 		    
@@ -599,9 +598,9 @@
 			});
 
 
-            $('#tasa_descuento').keyup(function(){
+			$('#tasa_descuento').keyup(function(){
 
-            	if( validar_input_numerico( $(this) ) )
+				if( validar_input_numerico( $(this) ) )
 				{	
 					tasa_descuento = parseFloat( $(this).val() );
 
@@ -631,6 +630,13 @@
 				}
 			});
 
+			$('#precio_total').keyup(function(){
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
+				{	
+					$('#btn_agregar_nueva_linea').focus();
+				}
+			});
 
 			/*
 			** Al eliminar una fila

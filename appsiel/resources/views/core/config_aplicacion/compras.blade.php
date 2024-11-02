@@ -36,6 +36,9 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+				<h4> Parámetros para transacciones </h4>
+				<hr>
+
 				<h5> Para entradas de Almacén </h5>
 				<div class="row">
 
@@ -84,7 +87,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$mostrar_solo_productos_relacionados_con_el_proveedor = 0;
+								if( isset($parametros['mostrar_solo_productos_relacionados_con_el_proveedor'] ) )
+								{
+									$mostrar_solo_productos_relacionados_con_el_proveedor = $parametros['mostrar_solo_productos_relacionados_con_el_proveedor'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_solo_productos_relacionados_con_el_proveedor', $mostrar_solo_productos_relacionados_con_el_proveedor, 'Mostrar solo productos relacionados con el Proveedor', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

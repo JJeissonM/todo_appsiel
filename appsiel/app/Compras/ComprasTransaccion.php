@@ -47,7 +47,7 @@ class ComprasTransaccion
                         <td> '. Form::text('tasa_descuento', null, [ 'id'=>'tasa_descuento','width'=>'30px']) .' </td>
                         <td> '. Form::text('valor_unitario_descuento', null, [ 'id'=>'valor_unitario_descuento']) . Form::text('valor_total_descuento', null, [ 'id'=>'valor_total_descuento' ]) .' </td>
                         <td> '. Form::text('tasa_impuesto', null, ['disabled'=>'disabled','id'=>'tasa_impuesto','width'=>'15px']) .' </td>
-                        <td> '. Form::text('precio_total', null, ['disabled'=>'disabled','id'=>'precio_total']) . Form::hidden('costo_total', null, ['disabled'=>'disabled','id'=>'costo_total']) .' </td>
+                        <td> '. Form::text('precio_total', null, ['readonly'=>'readonly','id'=>'precio_total']) . Form::hidden('costo_total', null, ['disabled'=>'disabled','id'=>'costo_total']) .' </td>
                         <td><button class="btn btn-xs btn-success" onclick="agregar_nueva_linea()" id="btn_agregar_nueva_linea"><i class="fa fa-check"></i></button></td>
                     </tr>';
 

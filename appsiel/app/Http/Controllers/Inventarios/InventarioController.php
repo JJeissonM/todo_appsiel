@@ -931,7 +931,7 @@ class InventarioController extends TransaccionController
             ['estado', '=', 'Activo']
         ];
 
-        if ( Input::get('proveedor_id') != null ) {
+        if ( Input::get('proveedor_id') != null && (int)config('compras.mostrar_solo_productos_relacionados_con_el_proveedor') ) {
             $array_wheres = array_merge( $array_wheres, [['categoria_id', '=', Input::get('proveedor_id')]]);
         }
 

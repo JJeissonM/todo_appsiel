@@ -73,7 +73,7 @@ class CompraController extends TransaccionController
 
         // Dependiendo de la transaccion se genera la tabla de ingreso de lineas de registros
         $tabla = new TablaIngresoLineaRegistros( ComprasTransaccion::get_datos_tabla_ingreso_lineas_registros( $this->transaccion, $motivos ) );
-
+        
         $item_sugerencia_proveedor = '';
         if ( Input::get('proveedor_id') != null )
         {

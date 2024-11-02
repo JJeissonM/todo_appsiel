@@ -599,7 +599,6 @@ function reset_linea_ingreso_default()
     $('#inv_motivo_id').attr('style','background-color:#ECECE5;');
     $('#inv_motivo_id').attr('disabled','disabled');
 
-
     $('#precio_unitario').removeAttr('style');
     $('#precio_unitario').removeAttr('disabled');
 
