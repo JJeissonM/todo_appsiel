@@ -630,6 +630,22 @@
 				}
 			});
 
+			$('#valor_unitario_descuento').keyup(function(){
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
+				{	
+					$('#btn_agregar_nueva_linea').focus();
+				}
+			});
+
+			$('#valor_total_descuento').keyup(function(){
+				var codigo_tecla_presionada = event.which || event.keyCode;
+				if( codigo_tecla_presionada == 13 )
+				{	
+					$('#btn_agregar_nueva_linea').focus();
+				}
+			});
+
 			$('#precio_total').keyup(function(){
 				var codigo_tecla_presionada = event.which || event.keyCode;
 				if( codigo_tecla_presionada == 13 )
