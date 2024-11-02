@@ -219,12 +219,13 @@ class ProcesoController extends Controller
     
     public function asignar_codigos_barras_desde_id()
     {
-        $items = InvProducto::get_datos_basicos( '', 'Activo', 'sin_codigo_barras');
+        $items = InvProducto::where( [
+                                    ['codigo_barras', '=', ''],
+                                    ['estado', '=', 'Activo']
+                                ])->get();
         $i = 0;
         foreach ($items as $item) {
-            unset($item->costo_promedio);
-            unset($item->existencia_actual);
-            unset($item->tasa_impuesto);
+            
             $item->codigo_barras = (new CodigoBarras($item->id, 0, 0, 0))->barcode;
             $item->save();
 

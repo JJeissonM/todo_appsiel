@@ -13,40 +13,28 @@
     /*p { margin: -2px; }*/
 </style>
 
-<div class="container-fluid">
-    
-    <?php
-        $i=$numero_columnas;
-        $minimo_comun_multiplo_columnas = 12;
-        if ($tamanio_letra == null) {
-            $tamanio_letra = 11;
+<?php
+    $i=$numero_columnas;
+    $minimo_comun_multiplo_columnas = 12;
+    if ($tamanio_letra == null) {
+        $tamanio_letra = 11;
+    }
+
+    $cantidad_stickers_x_pagina = 6;
+    $contador_paginas = 1;
+
+    $cantidad_total = count($items);
+    $cantidad_impresos = 1;
+?>
+     
+@foreach($items as $fila)       
+    @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras')
+    <?php 
+        if ( $contador_paginas == $cantidad_stickers_x_pagina && $cantidad_impresos != $cantidad_total) {
+            echo '<div class="page-break"></div>';
+            $contador_paginas = 0;
         }
-
-        $cantidad_x_pagina = 6;
-        $contador_paginas = 1;
+        $contador_paginas++;
+        $cantidad_impresos++;
     ?>
-
-    <table class="table" style="width: 100%; font-size: {{$tamanio_letra}}px;">
-        <tbody>
-        
-            @foreach($items as $fila)
-              
-                @if($i % $numero_columnas == 0)
-                    <tr>
-                @endif
-
-                <td colspan="{{ $minimo_comun_multiplo_columnas / $numero_columnas }}">
-                    @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras')                        
-                </td>
-
-                <?php
-                    $i++;
-                ?>
-
-                @if($i % $numero_columnas == 0)
-                    </tr>
-                @endif
-            @endforeach
-        </tbody>
-    </table>
-</div>
+@endforeach

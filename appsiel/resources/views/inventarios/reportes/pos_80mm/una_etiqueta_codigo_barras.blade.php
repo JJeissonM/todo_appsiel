@@ -1,12 +1,7 @@
-<div style="border: solid 1px #ddd; border-radius: 4px; padding: 1px; text-align: center; width:100%;">
-    @if($etiqueta != '')
-        <p style="margin-bottom: -5px; width:100%;">
-            <b>{{ $etiqueta }}</b>
-        </p>
-    @endif
+<div style="border: solid 1px #ddd; border-radius: 4px; margin: 10px 10px 4px 10px; text-align: center; width:100%;">
 
     @if($mostrar_descripcion)
-        <p style="margin-bottom: -7px; width:100%;">
+        <p style="margin: 1px 0px -15px; width:100%;">
             <b>{{ substr($fila->descripcion,0,34) }}</b>
         </p>
     @endif
@@ -17,7 +12,7 @@
         
         if( $fila->codigo_barras == '' )
         {
-            $codigo_barras = $fila->id;
+            $codigo_barras = (new \App\Inventarios\Services\CodigoBarras($fila->id, 0, 0, 0))->barcode;
         }
 
         if ( !is_numeric($codigo_barras) ) {
@@ -25,16 +20,7 @@
         }
 
         $ancho_codigo = 2;
-        $alto_codigo = 91;
-
-        if ($ancho != '') {
-            $ancho_codigo = $ancho / 100;
-        }
-        if ($alto != '') {
-            $alto_codigo = $alto;
-        }
-
-        
+        $alto_codigo = 86;        
     ?>
     <p style="margin-bottom: -1px; margin-left: -25px; width:100%; text-align: center;">
         <!-- Solo se envian los 12 primeros digitos, la function getBarcodePNG dibuja el codigo de barras con el digito de control al final -->
