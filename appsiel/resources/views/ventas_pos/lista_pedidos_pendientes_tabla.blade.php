@@ -17,7 +17,25 @@
   border-bottom: 1px solid #ddd;
 }
 
-#myContentTable tr.header, #myContentTable tr:hover {
+#myContentTable tr:hover {
+  /* Add a grey background color to the table header and on hover */
+  background-color: #50B794;
+  text-align: center;
+}
+
+#myContentTable1 {
+  border-collapse: collapse; /* Collapse borders */
+  width: 100%; /* Full-width */
+  border: 1px solid #ddd; /* Add a grey border */
+  font-size: 18px; /* Increase font-size */
+}
+
+#myContentTable1 th, #myContentTable1 td {
+  text-align: left; /* Left-align text */
+  padding: 12px; /* Add padding */
+}
+
+#myContentTable1 tr.header {
   /* Add a grey background color to the table header and on hover */
   background-color: #50B794;
   text-align: center;
@@ -38,15 +56,17 @@
 <br/>
 
 <div class="table-responsive">
+    <table id="myContentTable1">
+      <tr class="header">
+        <td style="width:20%;">Mesa/Cliente</td>
+        <td style="width:10%;">Fecha</td>
+        <td style="width:20%;">Documento</td>
+        <td style="width:20%;">Vendedor</td>
+        <td style="width:10%;">Total</td>
+        <td style="width:20%;">Acción</td>
+      </tr>
+    </table>
     <table id="myContentTable">
-        <tr class="header">
-            <td style="width:20%;">Mesa/Cliente</td>
-            <td style="width:10%;">Fecha</td>
-            <td style="width:20%;">Documento</td>
-            <td style="width:20%;">Vendedor</td>
-            <td style="width:10%;">Total</td>
-            <td style="width:20%;">Acción</td>
-        </tr>
         @foreach ($pedidos as $pedido)
             <tr>
                 <td> {{ $pedido->tercero->descripcion }} </td>

@@ -598,6 +598,39 @@ function agregar_nueva_linea() {
   agregar_la_linea();
 }
 
+
+
+  // Buscar mesas en pedidos
+  function mySearchInputFunction() {
+    // Solo busca en la primera columna de la tabla
+    // Declare variables
+    var input, filter, table, tr, td, i, txtValue, haystack;
+    input = document.getElementById("mySearchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myContentTable");
+    tr = table.getElementsByTagName("tr");
+
+    // Loop through all table rows, and hide those who don't match the search query
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td");
+        haystack = ''
+
+        for (let index = 0; index < td.length; index++) {
+          haystack += td[index].textContent || td[index].innerText;          
+        }
+        console.log(haystack)
+        //if (td) {
+          //  txtValue = td.textContent || td.innerText;
+            //console.log(td,txtValue)
+            if (haystack.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        //}
+    }
+}  
+
 $(document).ready(function () {
 
   $("#btn_guardar").hide();
@@ -861,30 +894,6 @@ $(document).ready(function () {
    * SET CATALOGOS
    */
   set_catalogos( $('#pdv_id').val() );
-
-  // Buscar mesas en pedidos
-  function mySearchInputFunction() {
-      // Solo busca en la primera columna de la tabla
-      // Declare variables
-      var input, filter, table, tr, td, i, txtValue;
-      input = document.getElementById("mySearchInput");
-      filter = input.value.toUpperCase();
-      table = document.getElementById("myContentTable");
-      tr = table.getElementsByTagName("tr");
-  
-      // Loop through all table rows, and hide those who don't match the search query
-      for (i = 0; i < tr.length; i++) {
-          td = tr[i].getElementsByTagName("td")[0];
-          if (td) {
-              txtValue = td.textContent || td.innerText;
-              if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                  tr[i].style.display = "";
-              } else {
-                  tr[i].style.display = "none";
-              }
-          }
-      }
-  }  
   
   // Nuevo
   if ( $('#msj_resolucion_facturacion').val() != '') {
@@ -1140,6 +1149,8 @@ $(document).ready(function () {
     $.get(url, function (respuesta) {
       $("#div_spin2").hide();
       $("#contenido_modal2").html(respuesta);
+      document.getElementById("mySearchInput").focus();
+      
     }); /**/
   });
 

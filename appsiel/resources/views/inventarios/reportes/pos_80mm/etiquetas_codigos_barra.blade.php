@@ -3,9 +3,8 @@
 
     @page {
       margin: 5px;
-      size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 38.5in;
+      size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 230mm;
     }
-
     
     .page-break {
         page-break-after: always;
@@ -24,7 +23,7 @@
         }
 
         $cantidad_x_pagina = 6;
-        $contador_paginas = 0;
+        $contador_paginas = 1;
     ?>
 
     <table class="table" style="width: 100%; font-size: {{$tamanio_letra}}px;">
@@ -42,20 +41,11 @@
 
                 <?php
                     $i++;
-                    $contador_paginas++;
                 ?>
 
                 @if($i % $numero_columnas == 0)
                     </tr>
                 @endif
-
-                @if( $contador_paginas ==  $cantidad_x_pagina)
-                    <div class="page-break"></div>
-                    <?php
-                        $contador_paginas = 0;
-                    ?>
-                @endif
-
             @endforeach
         </tbody>
     </table>

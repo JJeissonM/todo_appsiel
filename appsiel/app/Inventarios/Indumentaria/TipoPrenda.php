@@ -119,16 +119,5 @@ class TipoPrenda extends Model
         }
 
         return $vec;
-    }    
-
-    /*
-    public static function store_adicional($datos, $registro)
-    {
-        if ( $registro->codigo_barras == '' )
-        {
-            $registro->codigo_barras = (new CodigoBarras($registro->id, 0, 0, 0))->barcode;
-            $registro->save();
-        }
     }
-    */
 }

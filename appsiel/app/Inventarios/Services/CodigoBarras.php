@@ -56,7 +56,6 @@ class CodigoBarras
 
 	public function get_barcode( $item_id )
 	{
-		//dd($this->barcode);
 		// Validar codigo de barras Unico
 		$item = InvProducto::where([
 									['id','<>', $item_id ],

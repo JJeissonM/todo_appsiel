@@ -177,9 +177,11 @@ class ItemMandatarioController extends ModeloController
 
         $datos = $request->all();
         
-        if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
-            $datos['codigo_barras'] = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
-        }        
+        /*
+            if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
+                $datos['codigo_barras'] = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
+            }        
+        */
 
         $item_relacionado->fill( $datos );
 
@@ -267,9 +269,11 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->creado_por = $item_mandatario->creado_por;
         $item_relacionado->save(); // Para obtener el ID
         
-        if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
-            $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
-        }
+        /*
+            if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
+                $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
+            }
+        */
 
         // $request->unidad_medida2 almacena la Talla
         if ( $request->unidad_medida2 != null ) {
@@ -283,14 +287,7 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->save();
 
         return $item_relacionado->id;
-    } 
-
-    public function get_barcode( $item_relacionado_id, $color_id, $talla_id, $referencia )
-    {
-        $codigo_barras = new CodigoBarras( $item_relacionado_id, $color_id, $talla_id, $referencia );
-
-        return $codigo_barras->get_barcode( $item_relacionado_id );
-    } 
+    }
 
     public function show($id)
     {
@@ -358,7 +355,6 @@ class ItemMandatarioController extends ModeloController
                 break;
         }
 
-        $item->codigo_barras = 99;//$this->get_barcode( $item_id, '000', $talla_id, $referencia );
         $item->save();
     }
 
