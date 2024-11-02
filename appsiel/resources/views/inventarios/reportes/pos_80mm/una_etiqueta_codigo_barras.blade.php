@@ -1,4 +1,4 @@
-<div style="border: solid 1px #ddd; border-radius: 4px; margin: 10px 10px 4px 10px; text-align: center; width:100%;">
+<div style="border: solid 1px #ddd; border-radius: 4px; margin: 10px 10px 4px 10px; text-align: center; width:100%; font-size:{{$tamanio_letra}}px; height:124px;">
 
     @if($mostrar_descripcion)
 
@@ -7,9 +7,11 @@
             $findme   = '(';
             $pos = strpos($mystring, $findme);
             $descripcion = substr($mystring,0,$pos);
+
+            //dd($mystring, $findme, $pos,  $descripcion, strtoupper(substr( $descripcion, 0, 30)));
         ?>
         <p style="margin: 1px 0px -15px; width:100%;">
-            <b>{{ strtoupper(substr( $descripcion, 0, 30)) }}</b>
+            <b>{{ strtoupper(substr( $descripcion, 0, 34)) }}</b>
         </p>
     @endif
     

@@ -16,7 +16,7 @@
 <?php
     $i=$numero_columnas;
     $minimo_comun_multiplo_columnas = 12;
-    $tamanio_letra = 10;
+    $tamanio_letra = 13;
 
     $cantidad_stickers_x_pagina = 6;
     $contador_paginas = 1;
