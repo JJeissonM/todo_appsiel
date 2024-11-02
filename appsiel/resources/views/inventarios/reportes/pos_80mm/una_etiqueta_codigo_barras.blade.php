@@ -9,7 +9,7 @@
             $descripcion = substr($mystring,0,$pos);
         ?>
         <p style="margin: 1px 0px -15px; width:100%;">
-            <b>{{ substr( $descripcion, 0, 34) }}</b>
+            <b>{{ strtoupper(substr( $descripcion, 0, 34)) }}</b>
         </p>
     @endif
     
