@@ -23,10 +23,21 @@
 
     $cantidad_total = count($items);
     $cantidad_impresos = 1;
+
+    $top_margin = 10;
 ?>
      
-@foreach($items as $fila)       
-    @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras')
+@foreach($items as $fila)
+
+    <?php 
+       /* if ( $cantidad_impresos % 18 == 0 ) {
+            $top_margin = 5;
+        }else{
+            $top_margin = 10;
+        }*/
+    ?>
+
+    @include('inventarios.reportes.pos_80mm.una_etiqueta_codigo_barras',['top_margin' => $top_margin])
     <?php
         if ( $contador_paginas == $cantidad_stickers_x_pagina && $cantidad_impresos != $cantidad_total) {
             echo '<div class="page-break"></div>';
