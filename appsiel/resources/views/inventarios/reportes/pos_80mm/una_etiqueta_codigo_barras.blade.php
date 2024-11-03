@@ -1,5 +1,5 @@
 <div style="width: 100%; text-align:center;">
-    <div style="border: solid 1.2px black; border-radius: 4px; margin: {{$top_margin}}px 10px 4px 30px; text-align: center; font-size:{{$tamanio_letra}}px; height:120px; width:235px;">
+    <div style="border: solid 1.2px black; border-radius: 4px; margin: {{$top_margin}}px 10px 4px 25px; text-align: center; font-size:{{$tamanio_letra}}px; height:118px; width:235px;">
 
         @if($mostrar_descripcion)
 

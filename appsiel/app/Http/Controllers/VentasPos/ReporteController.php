@@ -162,6 +162,10 @@ class ReporteController extends Controller
 
         foreach ($movimientos as $movimiento) {
 
+            if ( $lista_por_medios_recaudos->where( 'documento', $movimiento->documento_transaccion_prefijo_consecutivo)->count() > 0 ) {
+                continue;
+            }
+
             $entrada = 0;
             $salida = 0;
             if ($movimiento->valor_movimiento >= 0) {
