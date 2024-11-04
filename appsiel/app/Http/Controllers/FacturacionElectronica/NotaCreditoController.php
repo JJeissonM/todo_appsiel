@@ -15,7 +15,6 @@ use App\Sistema\Html\BotonesAnteriorSiguiente;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\DevolucionVentas;
-use App\Inventarios\InvProducto;
 
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
@@ -35,8 +34,7 @@ use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\NotaCredito;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
-use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
+
 use App\Ventas\Services\NotaCreditoServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -221,6 +219,7 @@ class NotaCreditoController extends TransaccionController
         $encabezado_nota_credito = $encabezado_documento->crear_nuevo( $datos );
 
         // Paso 3 ( este falta refactorizar: separar la creación de lineas de registros de la contabilización y de otras transacciones )
+        $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
         NotaCreditoController::crear_registros_nota_credito( $request, $encabezado_nota_credito, $factura );
 
         // Paso 4 (Se está haciendo en el Paso 3)
