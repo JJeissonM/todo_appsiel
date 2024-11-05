@@ -1,5 +1,5 @@
-{{ Form::hidden('url_id',Input::get('id')) }}
-{{ Form::hidden('url_id_modelo',Input::get('id_modelo')) }}
+{{ Form::hidden('url_id', Input::get('id'), ['id' => 'url_id']) }}
+{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id' => 'url_id_modelo' ]) }}
 
 <input type="hidden" name="url_id_transaccion" id="url_id_transaccion" value="{{Input::get('id_transaccion')}}"
         required="required">
@@ -117,4 +117,4 @@
         value="{{ (int)config('ventas_pos.permitir_precio_unitario_negativo') }}">
 
 <!-- Boton para hacer pruebas -->
-<button onclick="get_json_registros_medios_recaudo();" style="display: none;" id="btn_pruebas">get_json_registros_medios_recaudo</button>
+<button onclick="testing_print_jspm();" style="display: block;" id="btn_pruebas">testing_print_jspm</button>

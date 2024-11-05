@@ -225,6 +225,7 @@ $(document).ready(function () {
           $.get(url, {
             texto_busqueda: $(this).val(),
             campo_busqueda: campo_busqueda,
+            url_id: $('#url_id').val()
           }).done(function (data) {
             // Se llena el DIV con las sugerencias que arooja la consulta
             $("#clientes_suggestions").show().html(data);

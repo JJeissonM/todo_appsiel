@@ -16,6 +16,7 @@
 
     //Check JSPM WebSocket status
     function jspmWSStatus() {
+        
         if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Open)
             return true;
         else if (JSPM.JSPrintManager.websocket_status == JSPM.WSStatus.Closed) {
@@ -128,4 +129,66 @@
         }
 
         return cadena;
-    }   
+    } 
+    
+    var arr;
+    function testing_print_jspm()
+    {
+        if (jspmWSStatus()) {
+
+            /*  IMPRIMIR CON COMANDOS ESC/POS */
+            
+            //Create a ClientPrintJob
+            var cpj = new JSPM.ClientPrintJob();
+
+            var printer = 'USB POS PRINTER';
+
+            //Set Printer type (Refer to the help, there many of them!)
+            cpj.clientPrinter = new JSPM.InstalledPrinter( printer );
+
+            var escpos = Neodynamic.JSESCPOSBuilder;
+            var doc = new escpos.Document();
+
+            var newLine = '\n';
+
+            var cmds = newLine;
+            cmds += newLine;
+            cmds += '______________________________';
+            cmds += newLine;
+
+            //codigo_barras_item = '123';
+            //cmds += '\x1b@\x1bE\x01ESC POS Printed from JSPrintManager\x1bd\x01\x1dk\x04' + codigo_barras_item + '\x00\x1bd\x01' + codigo_barras_item + '\x1dV\x41\x03';
+            arr = [1,7,6];
+
+            for (let index = 0; index < 3; index++) {
+                var nombre_item = 'JEANS CABALLERO COMPANY - ' + (28 + index * 2) + ' (UND)';
+                
+                var codigo_barras_item = 7000000230001;//parseInt('7000000' + (19 + index) + '000' + arr[index]);
+
+                cmds += '\x1b@\x1bE\x01' + nombre_item +'\x1bd\x01\x1dk\x04' + codigo_barras_item + '\x00\x1bd\x01' + codigo_barras_item + '\x1dV\x41\x03';
+                
+                cmds += newLine;
+            }
+
+            var escposCommands = doc
+                            //.image(logo, escpos.BitmapDensity.D24)
+                            //.setPrintWidth(720)
+                            .font(escpos.FontFamily.A)
+                            .align(escpos.TextAlignment.Center)
+                            .style([escpos.FontStyle.Bold])
+                            .size(0, 1)
+                            .text('Prueba')
+                            .font(escpos.FontFamily.B)
+                            .size(1, 0)
+                            .text( cmds )
+                            .feed(5)
+                            .cut()
+                            .generateUInt8Array();
+
+            //Set content to print...
+            cpj.binaryPrinterCommands = escposCommands;
+
+            //Send print job to printer!
+            cpj.sendToClient();
+        }
+    }

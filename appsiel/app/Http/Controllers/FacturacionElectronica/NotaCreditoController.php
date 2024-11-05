@@ -208,6 +208,7 @@ class NotaCreditoController extends TransaccionController
             $devolucion = new DevolucionVentas;
             $documento_devolucion = $devolucion->crear_nueva( $datos, $factura->remision_doc_encabezado_id );
             $datos['remision_doc_encabezado_id'] = $documento_devolucion->id;
+            $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
         }
 
     	// Paso 2
@@ -219,7 +220,6 @@ class NotaCreditoController extends TransaccionController
         $encabezado_nota_credito = $encabezado_documento->crear_nuevo( $datos );
 
         // Paso 3 ( este falta refactorizar: separar la creación de lineas de registros de la contabilización y de otras transacciones )
-        $request['remision_doc_encabezado_id'] = $documento_devolucion->id;
         NotaCreditoController::crear_registros_nota_credito( $request, $encabezado_nota_credito, $factura );
 
         // Paso 4 (Se está haciendo en el Paso 3)
