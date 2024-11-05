@@ -41,6 +41,10 @@ class NotaCreditoServices
                                 ->get()
                                 ->first();
 
+        if ( $movimiento_cxc == null ) {
+            return null;
+        }
+        
         $nuevo_total_pendiente = $movimiento_cxc->saldo_pendiente + $total_nota; 
         $nuevo_total_pagado = $movimiento_cxc->valor_pagado - $total_nota;
 

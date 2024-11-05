@@ -597,7 +597,7 @@ class NotaCreditoController extends TransaccionController
         $factura = Factura::find( $encabezado_nota_credito->ventas_doc_relacionado_id );
 
         $mensaje = $this->enviar_nota_credito_electronica( $id, $factura );
-
+        
         $documento_electronico = new FacturaGeneral( $encabezado_nota_credito, 'nota_credito' );
 
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
@@ -623,6 +623,9 @@ class NotaCreditoController extends TransaccionController
                         'tipo'=>'mensaje_error',
                         'contenido' => '<h3>' . $msj_primera_parte . '<br> Sin embargo NO fue enviado hacia la DIAN.</h3>'
                     ];
+                }else{
+                    $encabezado_nota_credito->estado = 'Enviada';
+                    $encabezado_nota_credito->save();
                 }
     
                 return redirect( $ruta_show )->with( $mensaje->tipo, $mensaje->contenido);
