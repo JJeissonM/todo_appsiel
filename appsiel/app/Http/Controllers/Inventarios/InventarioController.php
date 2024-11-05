@@ -942,10 +942,11 @@ class InventarioController extends TransaccionController
                 $producto = InvProducto::where( $array_wheres )
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", referencia ) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
                                             'referencia',
+                                            'codigo_barras',
                                             'descripcion',
                                             'unidad_medida1',
                                             'unidad_medida2' )
@@ -960,11 +961,12 @@ class InventarioController extends TransaccionController
                 $producto = InvProducto::where( $array_wheres )
                                 ->having('nueva_cadena', $operador, $texto_busqueda)
                                 ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", referencia ) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
                                             'referencia',
                                             'descripcion',
+                                            'codigo_barras',
                                             'unidad_medida1',
                                             'unidad_medida2' )
                                 ->get()
@@ -977,9 +979,10 @@ class InventarioController extends TransaccionController
                 $producto = InvProducto::where( $array_wheres )
                                     ->where($campo_busqueda, $operador, $texto_busqueda)
                                     ->select( 
-                                            DB::raw('CONCAT( descripcion, " ", categoria_id, " ", referencia, " ", codigo_barras) AS nueva_cadena'),
+                                            DB::raw('CONCAT( descripcion, " ", referencia ) AS nueva_cadena'),
                                             'id',
                                             'categoria_id',
+                                            'codigo_barras',
                                             'referencia',
                                             'descripcion',
                                             'unidad_medida1',
