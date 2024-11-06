@@ -1,5 +1,5 @@
 <div style="width: 100%; text-align:left;">
-    <div style="border: solid 1.2px black; border-radius: 4px; margin: {{$top_margin}}px 10px 4px 10px; text-align: left; font-size:{{$tamanio_letra}}px; height:118px; width:228px;">
+    <div style="border: solid 1.2px black; border-radius: 4px; margin: {{$top_margin}}px 10px 4px 10px; text-align: left; font-size:{{$tamanio_letra}}px; height:118px; width:228px; font-family: Lucida Console, Courier New, monospace;">
 
         @if($mostrar_descripcion)
 
@@ -9,10 +9,12 @@
                 $pos = strpos($mystring, $findme);
                 $descripcion = substr($mystring,0,$pos);
 
+                $max_characters = 30;
+
                 //dd($mystring, $findme, $pos,  $descripcion, strtoupper(substr( $descripcion, 0, 30)));
             ?>
             <p style="margin: 4px 0px -12px; width:100%; padding-left: 6px;">
-                <b>{{ strtoupper(substr( $descripcion, 0, 34)) }}</b>
+                <b>{{ strtoupper(substr( $descripcion, 0, $max_characters)) }}</b>
             </p>
         @endif
         
