@@ -36,7 +36,7 @@
             <!-- Solo se envian los 12 primeros digitos, la function getBarcodePNG dibuja el codigo de barras con el digito de control al final -->
             <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( substr($codigo_barras,0,12), "EAN13", $ancho_codigo, $alto_codigo) }}" alt="barcode"  style="display:inline;"/>
         </p>
-        <span style="padding-left: 45px;">
+        <span style="padding-left: 45px; font-weight:bold;">
             {{ $codigo_barras . $fila->get_codigo_proveedor() . $fila->get_talla() }}
         </span>
     </div>
