@@ -452,6 +452,7 @@ class InvProducto extends Model
                                 ->select(
                                             'inv_productos.id',
                                             'inv_productos.descripcion',
+                                            'inv_productos.descripcion as label',
                                             'inv_productos.unidad_medida1',
                                             'inv_productos.unidad_medida2',
                                             'inv_grupos.descripcion AS grupo_descripcion',

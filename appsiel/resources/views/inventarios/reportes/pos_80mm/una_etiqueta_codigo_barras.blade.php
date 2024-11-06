@@ -4,17 +4,18 @@
         @if($mostrar_descripcion)
 
             <?php 
+                /*
                 $mystring = $fila->descripcion;
                 $findme   = '(';
                 $pos = strpos($mystring, $findme);
                 $descripcion = substr($mystring,0,$pos);
-
+                */
                 $max_characters = 30;
 
                 //dd($mystring, $findme, $pos,  $descripcion, strtoupper(substr( $descripcion, 0, 30)));
             ?>
-            <p style="margin: 4px 0px -12px; width:100%; padding-left: 6px;">
-                <b>{{ strtoupper(substr( $descripcion, 0, $max_characters)) }}</b>
+            <p style="margin: 6px 0px -12px; width:100%; padding-left: 6px;">
+                <b>{{ strtoupper(substr( $fila->label, 0, $max_characters)) }}</b>
             </p>
         @endif
         
