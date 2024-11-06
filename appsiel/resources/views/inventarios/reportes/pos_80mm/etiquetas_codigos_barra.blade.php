@@ -3,7 +3,7 @@
 
     @page {
       margin: 5px;
-      size: {{ config('ventas_pos.ancho_formato_impresion') . 'in' }} 297mm;
+      size: 67mm 330mm;
     }
     
     .page-break {
@@ -16,9 +16,9 @@
 <?php
     $i=$numero_columnas;
     $minimo_comun_multiplo_columnas = 12;
-    $tamanio_letra = 13;
+    $tamanio_letra = 12;
 
-    $cantidad_stickers_x_pagina = 8;
+    $cantidad_stickers_x_pagina = 9;
     $contador_paginas = 1;
 
     $cantidad_total = count($items);

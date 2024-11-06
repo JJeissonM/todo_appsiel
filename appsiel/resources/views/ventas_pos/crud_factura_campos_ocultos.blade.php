@@ -117,4 +117,4 @@
         value="{{ (int)config('ventas_pos.permitir_precio_unitario_negativo') }}">
 
 <!-- Boton para hacer pruebas -->
-<button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>
+<button onclick="testing_print_jspm();" style="display: block;" id="btn_pruebas">testing_print_jspm</button>

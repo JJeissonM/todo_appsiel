@@ -151,44 +151,77 @@
 
             var newLine = '\n';
 
-            var cmds = newLine;
-            cmds += newLine;
-            cmds += '______________________________';
-            cmds += newLine;
+            var cmds;
 
             //codigo_barras_item = '123';
             //cmds += '\x1b@\x1bE\x01ESC POS Printed from JSPrintManager\x1bd\x01\x1dk\x04' + codigo_barras_item + '\x00\x1bd\x01' + codigo_barras_item + '\x1dV\x41\x03';
-            arr = [1,7,6];
+            arr = [1,1,1,7,7,7,6,6,6,5,5,5,4,4,4];
 
-            for (let index = 0; index < 3; index++) {
+            var ean13 = '\x02';
+
+            var limite_para_ajuste = 5;
+
+            for (let index = 0; index < 6; index++) {
                 var nombre_item = 'JEANS CABALLERO COMPANY - ' + (28 + index * 2) + ' (UND)';
                 
-                var codigo_barras_item = 7000000230001;//parseInt('7000000' + (19 + index) + '000' + arr[index]);
+                var codigo_barras_item = '7000000' + (19 + index) + '000' + arr[index];
 
-                cmds += '\x1b@\x1bE\x01' + nombre_item +'\x1bd\x01\x1dk\x04' + codigo_barras_item + '\x00\x1bd\x01' + codigo_barras_item + '\x1dV\x41\x03';
+                cmds += '\x1b@\x1bE\x01' + nombre_item +'\x1bd\x01\x1dk' + ean13 + codigo_barras_item + codigo_barras_item + '\x1dV\x41\x03';
                 
                 cmds += newLine;
-            }
+                cmds += newLine;
 
+                //cmds += '\x1b32'; // Set Line Spacing to Default
+
+                if ( (index + 1) % limite_para_ajuste == 0) {
+                  //cmds += newLine;
+                  cmds += '\x1b33\x10'; // Set Line Spacing to Default
+
+                }
+            }            
+            
             var escposCommands = doc
                             //.image(logo, escpos.BitmapDensity.D24)
                             //.setPrintWidth(720)
-                            .font(escpos.FontFamily.A)
-                            .align(escpos.TextAlignment.Center)
-                            .style([escpos.FontStyle.Bold])
-                            .size(0, 1)
-                            .text('Prueba')
-                            .font(escpos.FontFamily.B)
+                            //.font(escpos.FontFamily.A)
+                            .align(escpos.TextAlignment.LeftJustification)
+                            //.style([escpos.FontStyle.Bold])
+                            //.size(0, 1)
+                            //.text('Prueba')
+                            //.font(escpos.FontFamily.B)
                             .size(1, 0)
+                            //.align(escpos.TextAlignment.Center)
                             .text( cmds )
-                            .feed(5)
+                            //.feed(5)
                             .cut()
                             .generateUInt8Array();
-
+                            
             //Set content to print...
             cpj.binaryPrinterCommands = escposCommands;
 
             //Send print job to printer!
             cpj.sendToClient();
         }
+    }
+
+    function get_escposCommands_2( doc )
+    {
+        var escposCommands = [];
+
+        for (let index = 0; index < 3; index++) {
+            
+            var codigo_barras_item = '7000000' + (19 + index) + '000' + arr[index];
+
+            escposCommands.push( doc
+                                .align(escpos.TextAlignment.LeftJustification)
+                                .text( 'JEANS CABALLERO COMPANY - ' + (28 + index * 2) )
+                                .linearBarcode(codigo_barras_item,2,{width:2})
+                                .text(codigo_barras_item + '\n')
+                                .generateUInt8Array()
+                            );
+                        
+            console.log(escposCommands)
+        }
+
+        return escposCommands;
     }
