@@ -192,7 +192,7 @@ class ItemMandatarioController extends ModeloController
 
             $talla = new TallaItem( $request->unidad_medida2 );
             $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
-            $item_relacionado->codigo_barras = 99;
+            //$item_relacionado->codigo_barras = 99;
         }
         
         $item_relacionado->save();
@@ -270,10 +270,10 @@ class ItemMandatarioController extends ModeloController
         $item_relacionado->save(); // Para obtener el ID
         
         /*
-            if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
-                $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
-            }
         */
+        if ( $request->codigo_barras == null || $request->codigo_barras == '' ) {
+            $item_relacionado->codigo_barras = (new CodigoBarras($item_relacionado->id, 0, 0, 0))->barcode;
+        }
 
         // $request->unidad_medida2 almacena la Talla
         if ( $request->unidad_medida2 != null ) {
@@ -281,7 +281,7 @@ class ItemMandatarioController extends ModeloController
 
             $talla = new TallaItem( $request->unidad_medida2 );
             $item_relacionado->unidad_medida2 = $talla->convertir_mayusculas();
-            $item_relacionado->codigo_barras = 99;
+            //$item_relacionado->codigo_barras = 99;
         }
 
         $item_relacionado->save();

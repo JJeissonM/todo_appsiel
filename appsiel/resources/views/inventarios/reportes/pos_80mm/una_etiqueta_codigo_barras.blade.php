@@ -21,7 +21,9 @@
             $codigo_barras = $fila->codigo_barras;
 
             if ( !is_numeric($codigo_barras) ) {
-                dd('El ítem ' .  $fila->descripcion . ' NO tiene un código de barras válido: ' . $fila->codigo_barras . '. Debe contener solo números.');
+                //dd('El ítem ' .  $fila->descripcion . ' NO tiene un código de barras válido: ' . $fila->codigo_barras . '. Debe contener solo números.');
+                
+                $codigo_barras = $fila->id;
             }
 
             $ancho_codigo = 1.9;

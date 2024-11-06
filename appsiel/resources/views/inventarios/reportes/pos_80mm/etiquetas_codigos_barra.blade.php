@@ -4,6 +4,7 @@
     @page {
       margin: 5px;
       size: 67mm 330mm;
+      font-family: "Lucida Console", "Courier New", monospace;
     }
     
     .page-break {
@@ -16,7 +17,7 @@
 <?php
     $i=$numero_columnas;
     $minimo_comun_multiplo_columnas = 12;
-    $tamanio_letra = 12;
+    $tamanio_letra = 11;
 
     $cantidad_stickers_x_pagina = 9;
     $contador_paginas = 1;
