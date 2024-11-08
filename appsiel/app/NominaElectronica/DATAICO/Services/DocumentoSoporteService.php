@@ -45,6 +45,8 @@ class DocumentoSoporteService
 
       return [ 
          'env' => config('nomina.nom_elec_ambiente'),
+         'send_dian' => true,
+         'send_email' => true,
          'prefix' => $core_tipo_doc_app->prefijo,
          'number' => $consecutivo,
          'salary' =>  $empleado->sueldo,
@@ -64,11 +66,11 @@ class DocumentoSoporteService
    {
       $registros = $empleado->get_registros_documentos_nomina_entre_fechas($lapso->fecha_inicial, $lapso->fecha_final);
 
-      $registros_por_conceptos = $registros->groupBy('nom_concepto_id');
+      $registros_agrupados_por_concepto = $registros->groupBy('nom_concepto_id');
       
       $line_accruals = [];
       $line_deductions = [];
-      foreach ($registros_por_conceptos as $concepto_id => $registro_concepto) {         
+      foreach ($registros_agrupados_por_concepto as $concepto_id => $registro_concepto) {         
          
          $concepto = $registro_concepto->all()[0]->concepto;
 
@@ -224,7 +226,11 @@ class DocumentoSoporteService
          'city' => $city_id,
          'line' => $direccion1,
          'department' => $department_id
-      ];
+      ];      
+
+      if ( $empleado->tercero->email != '' && gettype( filter_var($empleado->tercero->email, FILTER_VALIDATE_EMAIL) ) == 'string') {
+         $data['email'] = $empleado->tercero->email;
+      }
 
       return [
          'employee' => $data
