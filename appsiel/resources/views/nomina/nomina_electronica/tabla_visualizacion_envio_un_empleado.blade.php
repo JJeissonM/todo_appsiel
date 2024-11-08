@@ -10,7 +10,7 @@
         <thead>
             <tr>
                 <th style="border: 1px solid; text-align:center;"> Conceptos </th>
-                <th style="border: 1px solid; text-align:center;"> Horas </th>
+                <th style="border: 1px solid; text-align:center;"> Días </th>
                 <th style="border: 1px solid; text-align:center;"> Devengo </th>
                 <th style="border: 1px solid; text-align:center;"> Deducción </th>
             </tr>
@@ -25,7 +25,7 @@
             ?>
             @foreach ($registros as $registro )
                 <?php
-                    $cantidad_horas = 0;
+                    $cantidad_dias = 0;
                     $deduccion = '';
 
                     $amount = 0;
@@ -40,9 +40,9 @@
 
                     $descripcion_concepto = $registro['code'];
 
-                    if ( isset($registro['hours']))
+                    if ( isset($registro['days']))
                     {
-                        $cantidad_horas = number_format( $registro['hours'],2,',','.');
+                        $cantidad_dias = number_format( $registro['days'],2,',','.');
                     }
 
                     $class_tr = '';
@@ -58,7 +58,7 @@
 
                 <tr class="{{$class_tr}}">
                     <td> {{ $descripcion_concepto }} </td>
-                    <td style="text-align: center;"> {{ $cantidad_horas }} </td>
+                    <td style="text-align: center;"> {{ $cantidad_dias }} </td>
                     <td> {{ $devengo }} </td>
                     <td> {{ $deduccion }} </td>
                 </tr>
@@ -86,15 +86,15 @@
                         $amount = $registro['amount-ns'];
                     } 
 
-                    $cantidad_horas = 0;
+                    $cantidad_dias = 0;
                     $devengo = '';
                     $deduccion = Form::TextoMoneda( $amount );
 
                     $descripcion_concepto = $registro['code'];
 
-                    if ( isset($registro['hours']))
+                    if ( isset($registro['days']))
                     {
-                        $cantidad_horas = number_format( $registro['hours'],2,',','.');
+                        $cantidad_dias = number_format( $registro['days'],2,',','.');
                     }
 
                     $class_tr = '';
@@ -109,7 +109,7 @@
 
                 <tr class="{{$class_tr}}">
                     <td> {{ $descripcion_concepto }} </td>
-                    <td style="text-align: center;"> {{ $cantidad_horas }} </td>
+                    <td style="text-align: center;"> {{ $cantidad_dias }} </td>
                     <td> {{ $devengo }} </td>
                     <td> {{ $deduccion }} </td>
                 </tr>
