@@ -131,7 +131,7 @@ class DocumentoSoporteService
       $one_line['code'] = $codigo_cpto_dian;
       
       if ($concepto->cpto_dian->liquida_dias) {
-         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (double)config('nomina.horas_dia_laboral') , 0 );
       }
       
       if ($concepto->cpto_dian->liquida_horas) {
@@ -158,7 +158,7 @@ class DocumentoSoporteService
       
       if($concepto->cpto_dian->id == 32) // INCAPACIDAD
       {
-         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (double)config('nomina.horas_dia_laboral') , 0 );
          if ($registro_concepto->first()->novedad_tnl != null) {
             $one_line['medical-leave-type'] = strtoupper($registro_concepto->first()->novedad_tnl->origen_incapacidad);
          }
