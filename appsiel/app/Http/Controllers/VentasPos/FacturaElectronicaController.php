@@ -133,6 +133,10 @@ class FacturaElectronicaController extends TransaccionController
     {
         $factura_pos_encabezado = FacturaPos::find($factura_pos_encabezado_id);
 
+        if ( $factura_pos_encabezado->cliente->tercero->tipo == 'Interno') {
+            return url('/') . '/vtas_imprimir/' . $factura_pos_encabezado_id . '?id=20&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';
+        }
+
         $doc_header_serv = new DocumentHeaderService();
         $result = $doc_header_serv->convert_to_electronic_invoice( $factura_pos_encabezado->id );
 
