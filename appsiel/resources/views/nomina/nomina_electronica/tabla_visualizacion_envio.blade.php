@@ -41,7 +41,7 @@
             <thead>
                 <tr>
                     <th style="border: 1px solid; text-align:center;"> Conceptos </th>
-                    <th style="border: 1px solid; text-align:center;"> Horas </th>
+                    <th style="border: 1px solid; text-align:center;"> Días </th>
                     <th style="border: 1px solid; text-align:center;"> Devengo </th>
                     <th style="border: 1px solid; text-align:center;"> Deducción </th>
                 </tr>
@@ -52,7 +52,7 @@
                     $registros = $comprobante['accruals'];
                     $total_devengos = 0;
                     $total_deducciones = 0;
-                    $total_horas = 0;
+                    $total_dias = 0;
                 ?>
                 @foreach ($registros as $registro )
                     <?php
@@ -71,9 +71,9 @@
 
                         $descripcion_concepto = $registro['code'];
 
-                        if ( isset($registro['hours']))
+                        if ( isset($registro['days']))
                         {
-                            $cantidad_horas = number_format( $registro['hours'],2,',','.');
+                            $cantidad_horas = number_format( $registro['days'],2,',','.');
                         }
 
                         $class_tr = '';
@@ -120,9 +120,9 @@
 
                         $descripcion_concepto = $registro['code'];
 
-                        if ( isset($registro['hours']))
+                        if ( isset($registro['days']))
                         {
-                            $cantidad_horas = number_format( $registro['hours'],2,',','.');
+                            $cantidad_horas = number_format( $registro['days'],2,',','.');
                         }
 
                         $class_tr = '';
@@ -151,7 +151,7 @@
 
                 <tr>
                     <td>Totales</td>
-                    <td style="text-align: center;"><hr> {{ $total_horas }} </td>
+                    <td style="text-align: center;"><hr> {{ $total_dias }} </td>
                     <td><hr> {{ Form::TextoMoneda($total_devengos) }} </td>
                     <td><hr> {{ Form::TextoMoneda($total_deducciones) }} </td>
                 </tr>
