@@ -216,7 +216,7 @@
                 
             </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
 
-                        Productos ingresados: <span id="numero_lineas"> 0 </span>
+                        @include('core.componentes.productos_y_cantidades_ingresadas')
                         <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
                     </div>
