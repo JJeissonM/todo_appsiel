@@ -62,7 +62,7 @@
                 <td> {!! $documento->get_label_documento() !!} </td>
                 <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
                 <td> {{ $documento->cliente->tercero->descripcion }} </td>
-                <td> {{ $linea->producto->get_value_to_show() . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
+                <td> {{ $linea->item->get_value_to_show() }} </td>
                 <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                 <td> ${{ number_format( $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
                 <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
@@ -126,7 +126,7 @@
                 <td> {!! $documento->get_label_documento() !!} </td>
                 <td> {{ $documento->cliente->tercero->numero_identificacion }} </td>
                 <td> {{ $documento->cliente->tercero->descripcion }} </td>
-                <td> {{ $linea->producto->get_value_to_show() . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
+                <td> {{ $linea->producto->get_value_to_show() }} </td>
                 <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                 <td> ${{ number_format( $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
                 <td> ${{ number_format( $linea->precio_total - $linea->base_impuesto_total * $signo, 0, ',', '.') }} </td>
