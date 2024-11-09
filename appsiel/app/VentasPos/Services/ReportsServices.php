@@ -121,7 +121,14 @@ class ReportsServices
 
     public function get_ventas_por_medios_pago_con_iva($pdv_id, $fecha_desde, $fecha_hasta)
     {
-        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($pdv_id, $fecha_desde, $fecha_hasta);
+        $documentos_pdv = FacturaPos::where([
+                                            ['pdv_id','=',$pdv_id],
+                                            ['estado', '<>', 'Anulado']
+                                        ])
+                                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                    ->get();
+
+        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha_desde, $fecha_hasta);
     
         $movin_por_medio_recaudo = $movimiento_tesoreria_pdv->groupBy('teso_medio_recaudo_id');
 
