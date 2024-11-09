@@ -40,7 +40,7 @@
                         <td> {{ $documento->cliente->tercero->descripcion }} </td>
                         <td> {{ $documento->vendedor->tercero->descripcion }} </td>
                         <td> {{ $documento->estado }} </td>
-                        <td> {{ $linea->producto->id . ' ' . $linea->producto->descripcion . ' (' . $linea->producto->unidad_medida1 . ')' }} </td>
+                        <td> {{ $linea->producto->get_value_to_show() }} </td>
                         <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                         <td> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
                         <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>

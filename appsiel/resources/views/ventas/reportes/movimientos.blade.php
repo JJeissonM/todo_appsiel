@@ -50,7 +50,7 @@
                         }
                     ?>
                     <td> {{ $motivo }} </td>
-                    <td> {{ $linea_movimiento->producto->id }} {{ $linea_movimiento->producto->descripcion }} </td>
+                    <td> {{ $linea_movimiento->producto->get_value_to_show() }} </td>
                     <td> {{ number_format( $linea_movimiento->cantidad, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $linea_movimiento->precio_unitario, 2, ',', '.') }} </td>
                     <td> ${{ number_format( $linea_movimiento->precio_total, 2, ',', '.') }} </td>

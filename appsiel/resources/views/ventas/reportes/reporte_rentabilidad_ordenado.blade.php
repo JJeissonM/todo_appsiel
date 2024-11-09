@@ -89,7 +89,11 @@
                         }
                     }
 
-                    $array_lista[$i]['descripcion'] = $campo_agrupado . $superindice;
+                    $label = $campo_agrupado;
+                    if ($agrupar_por == 'inv_producto_id') {
+                        $label = $coleccion_movimiento->first()->item->get_value_to_show();
+                    }
+                    $array_lista[$i]['descripcion'] = $label . $superindice;
                     
                     if ( $agrupar_por == 'core_tercero_id' )
                     {

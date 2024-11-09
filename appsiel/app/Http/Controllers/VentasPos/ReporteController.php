@@ -219,6 +219,9 @@ class ReporteController extends Controller
         return View::make('ventas_pos.lista_pedidos_pendientes_tabla', compact('pedidos', 'pdv_id'))->render();
     }
 
+    /**
+     * Resumen de ventas
+     */
     public function movimientos_ventas(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -290,19 +293,26 @@ class ReporteController extends Controller
                 $base_impuesto_total = $coleccion_movimiento->where('creado_por', $user_cajero_pdv)->sum('base_impuesto_total');
             }
 
-            $array_lista[$i]['descripcion'] = $campo_agrupado;
+            $label = $campo_agrupado;
+
             if ($app_movimiento == 'Estandar_FE') {
-                $array_lista[$i]['descripcion'] = 'Ventas Estándar/Electrónica/Notas';
+                $label = 'Ventas Estándar/Electrónica/Notas';
             } else {
                 if ($agrupar_por == 'pdv_id') {
-                    $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->pdv->descripcion;
+                    $label = $coleccion_movimiento->first()->pdv->descripcion;
                 }
                 if ($agrupar_por == 'inv_grupo_id') {
                     if ($coleccion_movimiento->first()->categoria_item() != null) {
-                        $array_lista[$i]['descripcion'] = $coleccion_movimiento->first()->categoria_item()->descripcion;
+                        $label = $coleccion_movimiento->first()->categoria_item()->descripcion;
                     }
                 }
             }
+
+            if ($agrupar_por == 'inv_producto_id') {
+                $label = $coleccion_movimiento->first()->item->get_value_to_show();
+            }
+            
+            $array_lista[$i]['descripcion'] = $label;
 
             $array_lista[$i]['cantidad'] = $cantidad;
 
@@ -346,7 +356,7 @@ class ReporteController extends Controller
                 foreach ($ordered  as $item_movim) {
                     $cantidad_item = $item_movim['cantidad'];
 
-                    $array_detalle_productos[$p]['descripcion'] = $item_movim['item']->descripcion;
+                    $array_detalle_productos[$p]['descripcion'] = $item_movim['item']->get_value_to_show();
                     $array_detalle_productos[$p]['cantidad_item'] = $cantidad_item;
 
                     if ($iva_incluido) {
@@ -374,7 +384,12 @@ class ReporteController extends Controller
     }
 
     public function resumen_existencias(Request $request)
-    {
+    {        
+        $title = '';
+        $message = 'Reporte Inactivo.';
+        $vista = View::make('common.error_message', compact('title', 'message'))->render();
+        return $vista;    
+    
         $fecha_corte = $request->fecha;
         $grupo_inventario_id = $request->grupo_inventario_id;
         $talla = $request->unidad_medida2;

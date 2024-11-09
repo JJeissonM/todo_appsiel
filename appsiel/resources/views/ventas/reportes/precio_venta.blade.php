@@ -22,7 +22,7 @@
             ?>
             @foreach( $movimiento as $linea)
                 <?php
-                    $nombre_producto = $linea->producto;
+                    $nombre_producto = $linea->item->get_value_to_show();
                     $nombre_cliente = $linea->cliente;
                 ?>
 

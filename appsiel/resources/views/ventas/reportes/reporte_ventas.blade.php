@@ -54,10 +54,15 @@
                     $cantidad = $coleccion_movimiento->sum('cantidad');
                     $precio_total = $coleccion_movimiento->sum('precio_total');
                     $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
+
+                    $label = $campo_agrupado;
+                    if ($agrupar_por == 'inv_producto_id') {
+                        $label = $coleccion_movimiento->first()->item->get_value_to_show();
+                    }
                 ?>
 
                 <tr class="fila-{{$j}}">
-                    <td> {{ $campo_agrupado }} </td>
+                    <td> {{ $label }} </td>
                     <td> {{ number_format( $cantidad, 2, ',', '.') }} </td>
                     @php
 

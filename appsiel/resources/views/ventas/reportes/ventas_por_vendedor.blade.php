@@ -99,7 +99,7 @@
                         {
                             $cantidad_item = $item->sum('cantidad');
 
-                            $array_detalle_productos[$p]['descripcion'] = $item->first()->producto;
+                            $array_detalle_productos[$p]['descripcion'] = $item->first()->item->get_value_to_show();
                             $array_detalle_productos[$p]['cantidad_item'] = $cantidad_item;
 
                             if ( $iva_incluido )

@@ -572,7 +572,6 @@ class VtasMovimiento extends Model
         {
             $fila->base_impuesto_total = (float) $fila->precio_total / (1 + (float)$fila->tasa_impuesto / 100 );
 
-
             $fila->tasa_impuesto = (string)$fila->tasa_impuesto; // para poder agrupar
         }
 

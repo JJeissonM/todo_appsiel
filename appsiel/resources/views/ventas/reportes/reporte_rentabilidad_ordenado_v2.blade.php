@@ -70,7 +70,11 @@
                     
                     /**/
 
-                    $array_lista[$i]['descripcion'] = $campo_agrupado;
+                    $label = $campo_agrupado;
+                    if ($agrupar_por == 'inv_producto_id') {
+                        $label = $coleccion_movimiento->first()->item->get_value_to_show();
+                    }
+                    $array_lista[$i]['descripcion'] = $label;
 
                     $array_lista[$i]['cantidad'] = $cantidad;
 

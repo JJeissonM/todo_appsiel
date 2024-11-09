@@ -54,11 +54,16 @@
 
                 foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
                 {
+                    $label = $campo_agrupado;
+                    if ($agrupar_por == 'inv_producto_id') {
+                        $label = $coleccion_movimiento->first()->item->get_value_to_show();
+                    }
+
                     $cantidad = $coleccion_movimiento->sum('cantidad');
                     $precio_total = $coleccion_movimiento->sum('precio_total');
                     $base_impuesto_total = $coleccion_movimiento->sum('base_impuesto_total');
 
-                    $array_lista[$i]['descripcion'] = $campo_agrupado;
+                    $array_lista[$i]['descripcion'] = $label;
                     $array_lista[$i]['cantidad'] = $cantidad;
 
                     if ( $iva_incluido )
@@ -88,7 +93,7 @@
                         {
                             $cantidad_item = $item->sum('cantidad');
 
-                            $array_detalle_productos[$p]['descripcion'] = $item->first()->producto;
+                            $array_detalle_productos[$p]['descripcion'] = $item->first()->item->get_value_to_show();
                             $array_detalle_productos[$p]['cantidad_item'] = $cantidad_item;
 
                             if ( $iva_incluido )
