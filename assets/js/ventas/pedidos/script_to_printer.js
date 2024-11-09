@@ -74,6 +74,7 @@
         var lineas_registros = get_lineas();
         
         var escposCommands = doc
+                        .beep(3,2)
                         //.image(logo, escpos.BitmapDensity.D24)
                         //.setPrintWidth(720)
                         .font(escpos.FontFamily.A)
