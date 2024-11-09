@@ -157,10 +157,13 @@ class Vehiculo extends Model
 
     public function update_adicional($datos, $id)
     {
-        // Se actualiza al usuario asociado
-        $user = User::find($datos['user_id']);
+        $user = null;
+        if ( isset($datos['user_id']) ) {
+            // Se actualiza al usuario asociado
+            $user = User::find($datos['user_id']);
+        }        
 
-        if (!is_null($user)) {
+        if ( $user != null ) {
             $descripcion = 'Vehículo ' . $datos['marca'] . ' ' . $datos['modelo'] . ', placa: ' . $datos['placa'];
 
             //$placa = str_replace(" ", "", $datos['placa']);
