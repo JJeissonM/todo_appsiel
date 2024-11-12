@@ -299,6 +299,9 @@ class VtasMovimiento extends Model
             case 'forma_pago':
                 $agrupar_por = 'forma_pago';
                 break;
+            case 'lista_precios':
+                $agrupar_por = 'lista_precios_id';
+                break;
             
             default:
                 break;
@@ -319,6 +322,7 @@ class VtasMovimiento extends Model
         $movimiento = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_movimientos.core_tercero_id')
                             ->leftJoin('vtas_clases_clientes', 'vtas_clases_clientes.id', '=', 'vtas_movimientos.clase_cliente_id')
+                            ->leftJoin('vtas_clientes', 'vtas_clientes.id', '=', 'vtas_movimientos.cliente_id')
                             ->leftJoin('sys_tipos_transacciones', 'sys_tipos_transacciones.id', '=', 'vtas_movimientos.core_tipo_transaccion_id')
                             ->where($array_wheres)
                             ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
@@ -329,6 +333,7 @@ class VtasMovimiento extends Model
                                         'vtas_movimientos.cliente_id',
                                         'vtas_movimientos.core_tercero_id',
                                         'vtas_clases_clientes.descripcion AS clase_cliente',
+                                        'vtas_clientes.lista_precios_id AS lista_precios_id',
                                         'vtas_movimientos.tasa_impuesto AS tasa_impuesto',
                                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
                                         'vtas_movimientos.forma_pago',

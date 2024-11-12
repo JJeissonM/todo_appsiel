@@ -74,13 +74,11 @@ class NotaCreditoController extends TransaccionController
             return redirect( 'web?id=' . $fe_app_id . '&id_modelo=' . $fe_factura_modelo_id . '')->with('mensaje_error','No puede hacer notas crédito desde esta opción. Debe ir al Botón Crear Nota crédito directa');
         }
 
-
         $movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
                             ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
                             ->where('consecutivo', $factura->consecutivo)
                             ->get()
-                            ->first();
-        
+                            ->first();        
             
         $vec_saldos = [0, 0, 0];
         if ( $movimiento_cxc != null )
@@ -411,7 +409,7 @@ class NotaCreditoController extends TransaccionController
         $nota_credito->save();
         
         // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
+        $nota_credito_service->contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         if ($factura->forma_pago == 'credito') {
@@ -520,8 +518,8 @@ class NotaCreditoController extends TransaccionController
         $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
         $nota_credito->save();
         
-        // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
+        // Un solo registro (CR)
+        $nota_credito_service->contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         if ($factura->forma_pago == 'credito') {
@@ -531,62 +529,6 @@ class NotaCreditoController extends TransaccionController
         } 
 
         return true;
-    }
-
-    public static function contabilizar_movimiento_credito( $datos, $total_documento, $detalle_operacion, $factura = null )
-    {
-        $forma_pago = '';
-        if ($factura != null) {
-            $forma_pago = $factura->forma_pago;
-        }        
-
-        /*
-            Se crea un SOLO registro contable de la cuenta por cobrar (Crédito)
-        */
-            
-        // Se resetean estos campos del registro
-        $datos['inv_producto_id'] = 0;
-        $datos['cantidad '] = 0;
-        $datos['tasa_impuesto'] = 0;
-        $datos['base_impuesto'] = 0;
-        $datos['valor_impuesto'] = 0;
-        $datos['inv_bodega_id'] = 0;
-        
-        if ( $forma_pago == 'credito')
-        {
-            if ( is_null($factura) )
-            {
-                $contab_cuenta_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
-            }else{
-                $contab_cuenta_id = Cliente::get_cuenta_cartera( $factura->cliente_id );
-            }
-
-        }        
-        
-        // Agregar el movimiento a tesorería
-        if ( $forma_pago == 'contado')
-        {
-            $movimiento_teso = TesoMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
-                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
-                                ->where('consecutivo', $factura->consecutivo)
-                                ->get()
-                                ->first();
-
-            if ($movimiento_teso->caja != null)
-            {
-                $datos['teso_caja_id'] = $movimiento_teso->caja->id;
-                $contab_cuenta_id = $movimiento_teso->caja->contab_cuenta_id;
-            }
-            
-            if ($movimiento_teso->cuenta_bancaria != null)
-            {
-                $datos['teso_cuenta_bancaria_id'] = $movimiento_teso->cuenta_bancaria->id;
-                $contab_cuenta_id = $movimiento_teso->cuenta_bancaria->contab_cuenta_id;
-            }                  
-                
-        }
-        
-        ContabilidadController::contabilizar_registro2( $datos, $contab_cuenta_id, $detalle_operacion, 0, abs($total_documento) );
     }
 
     public function enviar( $id )

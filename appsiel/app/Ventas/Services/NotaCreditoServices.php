@@ -6,6 +6,7 @@ use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 use App\Inventarios\InvProducto;
 use App\Tesoreria\TesoMovimiento;
+use App\Ventas\Cliente;
 
 class NotaCreditoServices
 {    
@@ -26,6 +27,61 @@ class NotaCreditoServices
         $accounting_service->contabilizar_registro( $datos, $cta_ingresos_id, $detalle_operacion, $datos['base_impuesto_total'], 0);
     }
 
+    public function contabilizar_movimiento_credito( $datos, $total_documento, $detalle_operacion, $factura = null )
+    {
+        dd($datos);
+        $forma_pago = '';
+        if ($factura != null) {
+            $forma_pago = $factura->forma_pago;
+        }
+            
+        // Se resetean estos campos del registro
+        $datos['inv_producto_id'] = 0;
+        $datos['cantidad '] = 0;
+        $datos['tasa_impuesto'] = 0;
+        $datos['base_impuesto'] = 0;
+        $datos['valor_impuesto'] = 0;
+        $datos['inv_bodega_id'] = 0;
+        
+        if ( $forma_pago == 'credito')
+        {
+            if ( is_null($factura) )
+            {
+                $contab_cuenta_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
+            }else{
+                $contab_cuenta_id = Cliente::get_cuenta_cartera( $factura->cliente_id );
+            }
+
+        }        
+        
+        // Agregar el movimiento a tesorería
+        if ( $forma_pago == 'contado')
+        {
+            $movimiento_teso = TesoMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+                                ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
+                                ->where('consecutivo', $factura->consecutivo)
+                                ->get()
+                                ->first();
+
+            if ($movimiento_teso->caja != null)
+            {
+                $datos['teso_caja_id'] = $movimiento_teso->caja->id;
+                $contab_cuenta_id = $movimiento_teso->caja->contab_cuenta_id;
+            }
+            
+            if ($movimiento_teso->cuenta_bancaria != null)
+            {
+                $datos['teso_cuenta_bancaria_id'] = $movimiento_teso->cuenta_bancaria->id;
+                $contab_cuenta_id = $movimiento_teso->cuenta_bancaria->contab_cuenta_id;
+            }   
+        }
+        
+        (new AccountingServices())->contabilizar_registro( $datos, $contab_cuenta_id, $detalle_operacion, 0, abs($total_documento) );
+    }
+
+    /**
+     * Para factura credito
+     */
     public function actualizar_registro_pago( $total_nota, $factura, $nota, $accion )
     {
         /*
@@ -87,7 +143,7 @@ class NotaCreditoServices
         }
     }
 
-    public static function actualizar_movimiento_tesoreria( $total_nota, $factura, $nota, $accion )
+    public function actualizar_movimiento_tesoreria( $total_nota, $factura, $nota, $accion )
     {
         /*
             Al crear la nota: Se crea un nuevo registro de tesorería
@@ -120,8 +176,7 @@ class NotaCreditoServices
                 $registros_medio_pago['teso_medio_recaudo_id'] = $movimiento_teso->teso_medio_recaudo_id;
             }
             $registros_medio_pago['teso_motivo_id'] = (int)config('tesoreria.motivo_devolucion_ventas_id');
-            $registros_medio_pago['valor_recaudo'] = abs($total_nota);
-            
+            $registros_medio_pago['valor_recaudo'] = abs($total_nota);            
 
             $obj_teso_movim = new TesoMovimiento();
             $obj_teso_movim->almacenar_registro_pago_contado( $datos, $registros_medio_pago, 'salida', abs($total_nota) );

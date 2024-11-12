@@ -3,26 +3,11 @@
 namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Requests;
 
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-
-
-use Spatie\Permission\Models\Permission;
-
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Inventarios\InventarioController;
 use App\Http\Controllers\Core\TransaccionController;
 
 use App\Http\Controllers\Ventas\NotaCreditoController;
-
-use App\Http\Controllers\Contabilidad\ContabilidadController;
 
 // Objetos 
 use App\Sistema\Html\TablaIngresoLineaRegistros;
@@ -32,24 +17,21 @@ use App\Core\EncabezadoDocumentoTransaccion;
 // Modelos
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
-use App\Inventarios\InvMovimiento;
-use App\Inventarios\InvProducto;
-use App\Inventarios\InvMotivo;
-use App\Inventarios\InvCostoPromProducto;
 
 use App\Ventas\VtasTransaccion;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
 use App\Ventas\VtasMovimiento;
 use App\Ventas\ListaPrecioDetalle;
-use App\Ventas\Cliente;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\Impuesto;
 
 use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
-
+use App\Tesoreria\TesoMovimiento;
+use App\Ventas\Services\NotaCreditoServices;
+use Illuminate\Support\Facades\Auth;
 
 class NotaCreditoDirectaController extends TransaccionController
 {
@@ -232,17 +214,27 @@ class NotaCreditoDirectaController extends TransaccionController
         $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
         $nota_credito->save();
         
-        // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, null );
-
-        // Cargar a los registros de cuentas por pagar
-        $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
-        $datos['referencia_tercero_id'] = $datos['cliente_id'];
-        $datos['valor_documento'] = $total_documento;
-        $datos['valor_pagado'] = 0;
-        $datos['saldo_pendiente'] = $total_documento;
-        $datos['estado'] = 'Pendiente';
-        CxcMovimiento::create( $datos );
+        // Un solo CR
+        (new NotaCreditoServices())->contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, null );
+        
+        if ( $datos['forma_pago'] == 'contado')
+        {
+            if (!isset($datos['registros_medio_pago']) )
+            {
+                $datos['registros_medio_pago'] = [];
+            }
+            $teso_movimiento = new TesoMovimiento();
+            $teso_movimiento->almacenar_registro_pago_contado( $datos, $datos['registros_medio_pago'], 'salida', $total_documento );
+        }else{
+            // Cargar a los registros de cuentas por pagar
+            $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';
+            $datos['referencia_tercero_id'] = $datos['cliente_id'];
+            $datos['valor_documento'] = $total_documento;
+            $datos['valor_pagado'] = 0;
+            $datos['saldo_pendiente'] = $total_documento;
+            $datos['estado'] = 'Pendiente';
+            CxcMovimiento::create( $datos );
+        }
 
         return true;
     }
@@ -355,8 +347,8 @@ class NotaCreditoDirectaController extends TransaccionController
         $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
         $nota_credito->save();
         
-        // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, null );
+        // Un solo CR
+        (new NotaCreditoServices())->contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, null );
 
         // Cargar a los registros de cuentas por pagar
         $datos['modelo_referencia_tercero_index'] = 'App\Ventas\Cliente';

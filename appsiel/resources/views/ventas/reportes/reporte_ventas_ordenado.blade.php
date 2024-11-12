@@ -24,7 +24,10 @@
             break;
         case 'forma_pago':
             $primer_encabezado = 'Forma de pago';
-            break;
+            break;        
+        case 'lista_precios':
+            $primer_encabezado = 'Lista de precios';
+        break;
         
         default:
             $primer_encabezado = '';
@@ -51,12 +54,19 @@
 
                 $array_lista = [];
                 $i = 0;
-
+                
                 foreach( $movimiento as $campo_agrupado => $coleccion_movimiento)
                 {
                     $label = $campo_agrupado;
                     if ($agrupar_por == 'inv_producto_id') {
                         $label = $coleccion_movimiento->first()->item->get_value_to_show();
+                    }
+
+                    if ($agrupar_por == 'lista_precios') {
+                        $label = \App\Ventas\ListaPrecioEncabezado::find($campo_agrupado);
+                        if ($label != null) {
+                            $label = $label->descripcion;
+                        }
                     }
 
                     $cantidad = $coleccion_movimiento->sum('cantidad');

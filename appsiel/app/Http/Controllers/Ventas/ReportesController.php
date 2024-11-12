@@ -595,7 +595,7 @@ class ReportesController extends Controller
         $mensaje = '';
 
         $empresa = Empresa::find( Auth::user()->empresa_id );
-
+        
         $vista = View::make('ventas.reportes.documentos_de_facturacion', compact( 'documentos_ventas',  'mensaje','detalla_productos','empresa','documentos_ventas_pos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);

@@ -79,10 +79,11 @@ class ProcesoController extends Controller
 
         $total_documento = 0;
         $n = 1;
+        $vtas_doc_header_serv = new DocumentHeaderService();
         foreach ($registros_documento as $linea)
         {
             $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
-            VentaController::contabilizar_movimiento_credito($documento->toArray() + $linea->toArray(), $detalle_operacion);
+            $vtas_doc_header_serv->contabilizar_movimiento_credito($documento->toArray() + $linea->toArray(), $detalle_operacion);
             $total_documento += $linea->precio_total;
             $n++;
         }
@@ -210,6 +211,7 @@ class ProcesoController extends Controller
 
         $total_documento = 0;
         $n = 1;
+        $vtas_doc_header_serv = new DocumentHeaderService();
         foreach ($registros_documento as $linea) {
             $detalle_operacion = 'Recontabilizado. ' . $linea->descripcion;
             NotaCreditoController::contabilizar_movimiento_debito($documento->toArray() + $linea->toArray(), $detalle_operacion);
@@ -217,7 +219,7 @@ class ProcesoController extends Controller
             $n++;
         }
 
-        NotaCreditoController::contabilizar_movimiento_credito($documento->toArray(), $total_documento, $detalle_operacion);/**/
+        $vtas_doc_header_serv->contabilizar_movimiento_credito($documento->toArray(), $total_documento, $detalle_operacion);/**/
     }
 
     public function actualizar_valor_total_vtas_encabezados_doc()

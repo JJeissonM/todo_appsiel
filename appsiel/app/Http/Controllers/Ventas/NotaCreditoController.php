@@ -58,23 +58,22 @@ class NotaCreditoController extends TransaccionController
 
         $factura = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
 
-        $this->movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
+        $movimiento_cxc = CxcMovimiento::where('core_tipo_transaccion_id', $factura->core_tipo_transaccion_id)
                             ->where('core_tipo_doc_app_id', $factura->core_tipo_doc_app_id)
                             ->where('consecutivo', $factura->consecutivo)
                             ->get()
-                            ->first();
-
-        if ( is_null( $this->movimiento_cxc ) )
+                            ->first();        
+            
+        $vec_saldos = [0, 0, 0];
+        if ( $movimiento_cxc != null )
         {
-            return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene registros de cuentas por cobrar');
-        }
-
-        if ( $this->movimiento_cxc->saldo_pendiente == 0 )
-        {
-            return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
-        }
-
-        $vec_saldos = [$this->movimiento_cxc->valor_documento, $this->movimiento_cxc->valor_pagado, $this->movimiento_cxc->saldo_pendiente];
+            if ( $movimiento_cxc->saldo_pendiente == 0 && $factura->forma_pago == 'credito' )
+            {
+                return redirect('ventas/'.$factura->id.'?id=13&id_modelo=139&id_transaccion=23')->with('mensaje_error','La factura no tiene SALDO PENDIENTE por cobrar');
+            }
+            
+            $vec_saldos = [$movimiento_cxc->valor_documento, $movimiento_cxc->valor_pagado, $movimiento_cxc->saldo_pendiente];
+        }  
 
         // Información de la Factura de ventas
         $doc_encabezado = VtasDocEncabezado::get_registro_impresion( Input::get('factura_id') );
@@ -283,7 +282,7 @@ class NotaCreditoController extends TransaccionController
         $nota_credito->save();
         
         // Un solo registro para reversar la cuenta por cobrar (CR)
-        NotaCreditoController::contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
+        $nota_credito_service->contabilizar_movimiento_credito( $datos, $total_documento, $datos['descripcion'], $factura );
 
         // Actualizar registro del pago de la factura a la que afecta la nota
         if ($factura->forma_pago == 'credito') {
@@ -308,30 +307,6 @@ class NotaCreditoController extends TransaccionController
         // La cuenta de ingresos se toma del grupo de inventarios
         $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $datos['inv_producto_id'] );
         ContabilidadController::contabilizar_registro2( $datos, $cta_ingresos_id, $detalle_operacion, $datos['base_impuesto_total'], 0);
-    }
-
-    public static function contabilizar_movimiento_credito( $datos, $total_documento, $detalle_operacion, $factura = null )
-    {
-        /*
-            Se crea un SOLO registro contable de la cuenta por cobrar (Crédito)
-        */
-            
-        // Se resetean estos campos del registro
-        $datos['inv_producto_id'] = 0;
-        $datos['cantidad '] = 0;
-        $datos['tasa_impuesto'] = 0;
-        $datos['base_impuesto'] = 0;
-        $datos['valor_impuesto'] = 0;
-        $datos['inv_bodega_id'] = 0;
-
-        if ( is_null($factura) )
-        {
-            $cxc_id = Cliente::get_cuenta_cartera( $datos['cliente_id'] );
-        }else{
-            $cxc_id = Cliente::get_cuenta_cartera( $factura->cliente_id );
-        }
-        
-        ContabilidadController::contabilizar_registro2( $datos, $cxc_id, $detalle_operacion, 0, abs($total_documento) );
     }
 
     public function show($id)
