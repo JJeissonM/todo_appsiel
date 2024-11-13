@@ -53,6 +53,8 @@
             <?php
             $total_cant_in = 0;
             $total_cant_out = 0;
+            $total_costo_in = 0;
+            $total_costo_out = 0;
                 for($i=0;$i<count($productos);$i++){
 
                     $modelo_crud_id = 0;
@@ -81,6 +83,8 @@
             <?php 
             $total_cant_in += (float)$productos[$i]['cantidad_in'];
             $total_cant_out += (float)$productos[$i]['cantidad_out'];
+            $total_costo_in += (float)$productos[$i]['costo_total_in'];
+            $total_costo_out += (float)$productos[$i]['costo_total_out'];
         } ?>
         </tbody>
         <tfoot>
@@ -89,11 +93,18 @@
                 <td>
                     {{ formato_numero($total_cant_in,'cantidad') }}
                 </td>
-                <td colspan="2"></td>
+                <td></td>
+                <td>
+                    {{ formato_numero($total_costo_in,'valor') }}
+                </td>
                 <td>
                     {{ formato_numero($total_cant_out,'cantidad') }}
                 </td>
-                <td colspan="5"></td>
+                <td></td>
+                <td>
+                    {{ formato_numero($total_costo_out,'valor') }}
+                </td>
+                <td colspan="3"></td>
             </tr>
         </tfoot>
     </table>

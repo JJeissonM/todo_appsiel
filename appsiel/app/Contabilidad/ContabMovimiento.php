@@ -273,6 +273,7 @@ class ContabMovimiento extends Model
                             ->where($array_wheres)
                             ->whereIn('contab_cuenta_id',$arr_ids_cuentas_de_la_clase)
                             ->orderBy('fecha')
+                            ->orderBy('created_at')
                             ->get();
         }
 
