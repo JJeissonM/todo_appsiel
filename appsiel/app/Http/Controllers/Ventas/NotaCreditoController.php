@@ -219,7 +219,7 @@ class NotaCreditoController extends TransaccionController
 
                 $valor_total_descuento = ( $precio_unitario - $precio_unitario_con_descuento ) * $un_registro->cantidad;
 
-                $valor_impuesto = ( $precio_unitario_con_descuento - $base_impuesto ) * $cantidad;
+                $valor_impuesto = $precio_unitario_con_descuento - $base_impuesto;
 
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
@@ -301,7 +301,7 @@ class NotaCreditoController extends TransaccionController
         if ( isset( $datos['tasa_impuesto'] ) && $datos['tasa_impuesto'] > 0 )
         {
             $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_devolucion_ventas( $datos['inv_producto_id'] );
-            ContabilidadController::contabilizar_registro2( $datos, $cta_impuesto_ventas_id, $detalle_operacion, abs( $datos['valor_impuesto'] ), 0);
+            ContabilidadController::contabilizar_registro2( $datos, $cta_impuesto_ventas_id, $detalle_operacion, abs( $datos['valor_impuesto'] * $datos['cantidad'] ), 0);
         }
 
         // La cuenta de ingresos se toma del grupo de inventarios

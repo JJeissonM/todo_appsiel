@@ -560,7 +560,7 @@ class ReportesController extends Controller
         $detalla_productos = $request->detalla_productos;
 
         if ( $request->transacciones_a_mostrar == null) {
-            dd('Error. No se envio el parametro transacciones_a_mostrar.');
+            return '<h4>Error. No se envio el parametro transacciones_a_mostrar.</h4>';
         }
         
         /**

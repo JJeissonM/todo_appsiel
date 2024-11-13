@@ -31,6 +31,7 @@ use App\CxC\CxcMovimiento;
 use App\CxC\CxcAbono;
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\Services\NotaCreditoServices;
+use App\Ventas\Services\PricesServices;
 use Illuminate\Support\Facades\Auth;
 
 class NotaCreditoDirectaController extends TransaccionController
@@ -139,19 +140,22 @@ class NotaCreditoDirectaController extends TransaccionController
         $cantidad_registros = count( $lineas_registros );
         $remision_doc_encabezado_id = '';
         $primera = true;
+
+        $price_service = new PricesServices();
+        
         for ($i=0; $i < $cantidad_registros ; $i++)
         {
             $doc_devolucion_id = (int)$lineas_registros[$i]->id_doc;
 
             $registros_devolucion = InvDocRegistro::where( 'inv_doc_encabezado_id', $doc_devolucion_id )->get();
-
+            
             foreach ($registros_devolucion as $un_registro)
             {
                 // Nota: $un_registro contiene datos de inventarios 
-                $cantidad = $un_registro->cantidad * -1;
+                $cantidad = $un_registro->cantidad * -1; // DV es una entrada de invetarios, debe ser una salida de ventas
 
                 // Los precios se traen de la lista de precios del cliente
-                $precio_unitario = ListaPrecioDetalle::get_precio_producto( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id );
+                $precio_unitario = $price_service->get_item_price( $datos['lista_precios_id'], $datos['fecha'], $un_registro->inv_producto_id, $nota_credito->cliente_id );
 
                 $precio_total = $precio_unitario * $cantidad;
 
@@ -160,6 +164,8 @@ class NotaCreditoDirectaController extends TransaccionController
                 $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
 
                 $base_impuesto_total = abs($base_impuesto * $cantidad);
+                
+                $valor_impuesto = $precio_unitario - $base_impuesto;
 
                 $linea_datos = [ 'inv_bodega_id' => $un_registro->inv_bodega_id ] +
                                 [ 'inv_motivo_id' => $un_registro->inv_motivo_id ] +
@@ -169,7 +175,7 @@ class NotaCreditoDirectaController extends TransaccionController
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario - $base_impuesto ) ] +
+                                [ 'valor_impuesto' => $valor_impuesto ] +
                                 [ 'base_impuesto_total' => $base_impuesto_total ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
@@ -179,7 +185,7 @@ class NotaCreditoDirectaController extends TransaccionController
                                         [ 'vtas_doc_encabezado_id' => $nota_credito->id ] +
                                         $linea_datos
                                     );
-
+                                    
                 $datos['consecutivo'] = $nota_credito->consecutivo;
                 VtasMovimiento::create( 
                                         $datos +
@@ -212,10 +218,7 @@ class NotaCreditoDirectaController extends TransaccionController
 
         $nota_credito->valor_total = $total_documento;
         $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
-        $nota_credito->save();
-        
-        // Un solo CR
-        (new NotaCreditoServices())->contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, null );
+        $nota_credito->save();        
         
         if ( $datos['forma_pago'] == 'contado')
         {
@@ -235,6 +238,9 @@ class NotaCreditoDirectaController extends TransaccionController
             $datos['estado'] = 'Pendiente';
             CxcMovimiento::create( $datos );
         }
+
+        // Un solo CR
+        (new NotaCreditoServices())->contabilizar_movimiento_credito( $datos + $linea_datos, $total_documento, $detalle_operacion, $nota_credito );
 
         return true;
     }
@@ -297,6 +303,8 @@ class NotaCreditoDirectaController extends TransaccionController
                 $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
 
                 $base_impuesto_total = abs($base_impuesto * $cantidad);
+                
+                $valor_impuesto = ( $precio_unitario - $base_impuesto ) * $cantidad;
 
                 $linea_datos = [ 'vtas_motivo_id' => $un_registro->inv_motivo_id ] +
                                 [ 'inv_producto_id' => $un_registro->inv_producto_id ] +
@@ -305,7 +313,7 @@ class NotaCreditoDirectaController extends TransaccionController
                                 [ 'precio_total' => $precio_total ] +
                                 [ 'base_impuesto' =>  $base_impuesto ] +
                                 [ 'tasa_impuesto' => $tasa_impuesto ] +
-                                [ 'valor_impuesto' => ( $precio_unitario - $base_impuesto ) ] +
+                                [ 'valor_impuesto' => $valor_impuesto ] +
                                 [ 'base_impuesto_total' => $base_impuesto_total ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];

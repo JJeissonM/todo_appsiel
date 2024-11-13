@@ -4,6 +4,7 @@ namespace App\Ventas\Services;
 
 use App\Inventarios\InvProducto;
 use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\VtasMovimiento;
 
 class PricesServices
 {
@@ -48,5 +49,24 @@ class PricesServices
         }
 
         
+    }
+
+    public function get_item_price( $lista_precios_id, $fecha, $producto_id, $cliente_id )
+    {
+        $precio_unitario = ListaPrecioDetalle::get_precio_producto( $lista_precios_id, $fecha, $producto_id );
+        
+        if ( $precio_unitario != 0 ) {
+            return $precio_unitario;
+        }
+                    
+        // Precios traido del movimiento de ventas. El último precio liquidado al cliente para ese producto.
+        $precio_unitario = VtasMovimiento::get_ultimo_precio_producto( $cliente_id, $producto_id );
+        
+        if ( $precio_unitario != 0 ) {
+            return $precio_unitario;
+        }
+
+        $item = InvProducto::find( $producto_id );
+        return $item->precio_venta;
     }
 }

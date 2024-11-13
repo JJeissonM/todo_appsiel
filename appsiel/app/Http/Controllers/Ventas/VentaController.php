@@ -867,7 +867,6 @@ class VentaController extends TransaccionController
             }           
 
             $tasa_impuesto = Impuesto::get_tasa( $producto_id, 0, $cliente_id );
-
             
             $base_impuesto = $precio_unitario / ( 1 + $tasa_impuesto / 100 );
             $valor_impuesto = $precio_unitario - $base_impuesto;

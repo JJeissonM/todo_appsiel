@@ -88,7 +88,8 @@
 
 
 			@if( Input::get('id_transaccion') == 41 )
-				<h4 style="color: red;">¡¡¡Los precios serán almacenados con los precios de la lista de precios del cliente.!!!</h4>
+				<h4 style="color: red;">¡¡¡Los precios serán tomados directamente de la lista de precios del cliente.!!!</h4>
+				<h5 style="color: red;">¡¡¡Para esta transacción no se aplican los descuentos.!!!</h5>
 			@endif
 			{!! $tabla->dibujar() !!}
 

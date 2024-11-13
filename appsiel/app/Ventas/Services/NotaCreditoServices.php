@@ -29,7 +29,6 @@ class NotaCreditoServices
 
     public function contabilizar_movimiento_credito( $datos, $total_documento, $detalle_operacion, $factura = null )
     {
-        dd($datos);
         $forma_pago = '';
         if ($factura != null) {
             $forma_pago = $factura->forma_pago;
