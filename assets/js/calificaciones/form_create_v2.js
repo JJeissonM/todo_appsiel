@@ -3,7 +3,7 @@ function ventana(id, id_textbox, curso_id) {
     document.getElementById("caja_logro").value = id_textbox;
 
     window.open(
-        "{{ url('calificaciones_logros/consultar' )}}" + "/" + id + "/" + curso_id,
+        url_raiz + "/calificaciones_logros/consultar" + "/" + id + "/" + curso_id,
         "Consulta de logros",
         "width=800,height=600,menubar=no"
     );

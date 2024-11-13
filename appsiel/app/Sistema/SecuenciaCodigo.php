@@ -14,7 +14,7 @@ class SecuenciaCodigo extends Model
 
     protected $fillable = ['id_colegio', 'modulo', 'consecutivo', 'anio', 'estructura_secuencia', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Módulo', 'Consecutivo actual', 'Año (AA)', 'Estrucutura secuencia', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Módulo', 'Consecutivo actual', 'Año (AA)', 'Estructura secuencia', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
