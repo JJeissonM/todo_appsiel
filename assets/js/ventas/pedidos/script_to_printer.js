@@ -122,7 +122,7 @@
             while (length_pendiente > 0) {
                 end += 20;   
 
-                cmds += '     ' + item_name.substring(start, end);
+                cmds += ' ' + item_name.substring(start, end);
                 cmds += newLine;
 
                 length_pendiente = length_pendiente - start;

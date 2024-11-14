@@ -13,7 +13,7 @@
     <tr>
         <td>Dirección: {{ $empresa->direccion1 }}</td>
         <td colspan="">
-            <p>{{ config("configuracion.tipo_identificador") }}: {{ number_format( $empresa->numero_identificacion,0,',','.') }} - {{ $empresa->digito_verificacion }}</p>
+            <p>{{ config("configuracion.tipo_identificador") }}: {{ $empresa->numero_identificacion }} - {{ $empresa->digito_verificacion }}</p>
         </td>
     </tr>
     <tr>

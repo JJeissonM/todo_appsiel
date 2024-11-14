@@ -108,7 +108,7 @@ $(document).ready(function () {
             lineas_registros.forEach(linea => {				
                 var string_fila = generar_string_celdas_edit( linea );
                 $('#ingreso_registros').find('tbody:last').append('<tr class="linea_registro" data-numero_linea="' + linea.numero_linea + '">' + string_fila + '</tr>');
-                $("#btn_"+linea.inv_producto_id).hide();
+                //$("#btn_"+linea.inv_producto_id).hide();
 			});
 
             // Se calculan los totales
