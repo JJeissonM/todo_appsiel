@@ -116,9 +116,9 @@ class ResultadoEnvio
                             foreach ($arr_errors as $key => $arr_error) {
                                 $label_path = '';
                                 if (isset($arr_error['path'])) {
-                                    $label_path = 'path: ' . $arr_error['path'][0];
+                                    $label_path = 'path: ' . $arr_error['path'][0] . '. ';
                                 }
-                                $errores .= $label_path . '. ' . $arr_error['error'];
+                                $errores .= $label_path . $arr_error['error'];
                             }
                         }                        
                     }
