@@ -154,7 +154,7 @@ class ContratoTransporteController extends Controller
                     continue;
                 }
 
-                $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion;
+                $contratantes[$c->id] = "<b>" . $c->tercero->descripcion . "</b> identificado con cedula <b>N° " . $c->tercero->numero_identificacion . '</b>';
             }
         }
         $vehiculos_permitidos = null;
@@ -180,7 +180,7 @@ class ContratoTransporteController extends Controller
                     }
                     if (!$vencido) {
                         if ($un_vehiculo->bloqueado_cuatro_contratos == 'NO') {
-                            $vehiculos_permitidos[$un_vehiculo->id] = "<b>PLACA " . $un_vehiculo->placa . ", MOVIL INTERNO " . $un_vehiculo->int . ", CAPACIDAD " . $un_vehiculo->capacidad;
+                            $vehiculos_permitidos[$un_vehiculo->id] = "<b>PLACA " . $un_vehiculo->placa . ", MOVIL INTERNO " . $un_vehiculo->int . ", CAPACIDAD " . $un_vehiculo->capacidad . '</b>';
                         }
                     }
                 }
