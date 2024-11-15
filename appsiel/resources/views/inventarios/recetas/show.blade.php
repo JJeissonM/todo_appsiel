@@ -11,7 +11,7 @@
 		foreach ($ingredientes as $una_linea) {
 			$ids_items_ingredientes[] = $una_linea['ingrediente']->id;
 		}
-		$ingredientes_posibles = \App\Inventarios\InvProducto::whereNotIn('id',$ids_items_ingredientes)
+		$ingredientes_posibles = \App\Inventarios\InvProducto::where('estado','Activo')->whereNotIn('id',$ids_items_ingredientes)
 											->get();
     
         $vec['']='';
