@@ -431,8 +431,7 @@ class DocCruceController extends TransaccionController
       $transaccion = TipoTransaccion::find($transaccion_id);
       
       return app($transaccion->modelo_encabezados_documentos)->find($encabezado_documento_id);
-    }
-    
+    }    
 
     // AJAX Se obtiene la cartera positiva y negativa del tercero
     public function get_cartera_tercero($tercero_id, $fecha_doc)
@@ -448,6 +447,19 @@ class DocCruceController extends TransaccionController
       $resultado = $view_1.'a3p0'.$view_2;
 
       return $resultado;
+    }
+    
+    public function revisar_anticipos($tercero_id, $fecha_doc = null)
+    {
+      if ($fecha_doc == null) {
+        $fecha_doc = date('Y-m-d');
+      }
+
+      // 1ro. Buscar documentos de cartera
+      $movimiento_cxc = CxcMovimiento::get_documentos_tercero($tercero_id, $fecha_doc);
+      
+      $vista = 'show';
+      return View::make('cxc.incluir.docs_cruce_afavor', compact('movimiento_cxc','vista') );
     }
 
     function contabilizar_registro($contab_cuenta_id, $detalle_operacion, $valor_debito, $valor_credito, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)

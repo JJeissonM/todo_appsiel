@@ -34,6 +34,8 @@ Route::resource('cxc', 'CxC\CxCController');
 
 Route::get('cxc/get_cartera_tercero/{tercero_id}/{fecha_doc}', 'CxC\DocCruceController@get_cartera_tercero');
 
+Route::get('cxc/revisar_anticipos/{tercero_id}/{fecha_doc?}', 'CxC\DocCruceController@revisar_anticipos');
+
 Route::get('get_docs_cruce_tercero/{core_tercero_id}', 'CxC\DocCruceController@get_docs_cruce_tercero');
 
 Route::get('doc_cruce_imprimir/{id_fila}', 'CxC\DocCruceController@imprimir');

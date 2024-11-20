@@ -8,6 +8,9 @@
 
     @include('layouts.mensajes')
     
+    <?php  
+        //dd($user,$doc_encabezado, $registro->caja);
+    ?>
     <div class="col-md-12">
         <div class="container-fluid">
             <div class="marco_formulario">

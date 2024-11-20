@@ -125,7 +125,7 @@
     @include('components.design.ventana_modal',['titulo'=>'','texto_mensaje'=>''])
     
     <!-- 
-       Esta venta modal se usa el resgistro de Otros Ingreso y Gastos.
+       Esta venta modal se usa el resgistro de Otros Ingreso y Gastos. También para evisar Anticipos del cliente.
     -->
     @include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>'', 'clase_tamanio' => 'modal-lg'])
 
@@ -184,6 +184,8 @@
     @endif
 
     <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?aux=' . uniqid() )}}"></script>
+
+    <script src="{{ asset( 'assets/js/ventas_pos/revisar_anticipos.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript">
         

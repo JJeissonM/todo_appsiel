@@ -10,6 +10,12 @@
         &nbsp; &nbsp; &nbsp; 
 
         @include('ventas_pos.componentes.boton_prefactura')
+        
+        &nbsp; &nbsp; &nbsp;
+
+        <button class="btn btn-success btn-xs" id="btn_revisar_anticipos">
+            <i class="fa fa-money"></i> Revisar anticipos
+        </button>
 
 	</div>
 </div>

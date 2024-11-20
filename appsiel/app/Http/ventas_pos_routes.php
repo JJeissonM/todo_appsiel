@@ -28,7 +28,6 @@ Route::get('pos_contabilizar_una_factura/{factura_id}', 'VentasPos\FacturaPosCon
 Route::get('ventas_pos_form_registro_ingresos_gastos/{pdv_id}/{id_modelo}/{id_transaccion}', 'VentasPos\FacturaPosController@form_registro_ingresos_gastos');
 Route::post('ventas_pos_form_registro_ingresos_gastos', 'VentasPos\FacturaPosController@store_registro_ingresos_gastos');
 
-
 // 				CREAR DESDE PEDIDO DE VENTAS
 Route::get('pos_factura_crear_desde_pedido/{pedido_id}', 'VentasPos\FacturaPosController@crear_desde_pedido');
 Route::get('pos_revisar_pedidos_ventas/{pdv_id}', 'VentasPos\ReporteController@revisar_pedidos_ventas');
@@ -79,5 +78,4 @@ Route::resource('pos_factura_electronica', 'VentasPos\FacturaElectronicaControll
 Route::get('pos_acumulacion_convertir_en_factura_electronica/{vtas_doc_encabezado_id}', 'VentasPos\FacturaElectronicaController@convertir_en_factura_electronica');
 
 // RESTAURANTE
-
 Route::resource('pos_factura_restaurante', 'VentasPos\FacturaRestauranteController');
