@@ -243,15 +243,17 @@ $(document).ready(function () {
     });
 
     //Al hacer click en la sugerencia Crear nuevo
-    $(document).on("click", ".list-group-item-sugerencia", function () {
-        $("#cliente_input").val(cliente_default.descripcion);
+    $(document).on("click", ".list-group-item-sugerencia-crear-nuevo", function () {
+
         $("#cliente_input").css("background-color", "transparent");
 
         $("#clientes_suggestions").html("");
         $("#clientes_suggestions").hide();
 
+        set_cliente_default();
+
         if ($(this).attr("data-accion") == "crear_nuevo_registro") {
-        window.open($(this).attr("href"), "_blank");
+          window.open($(this).attr("href"), "_blank");
         }
 
         return false;

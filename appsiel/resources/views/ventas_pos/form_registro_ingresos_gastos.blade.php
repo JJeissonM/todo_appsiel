@@ -24,7 +24,7 @@
 		<br><br>
 
 		<div class="form-group">
-			<label class="control-label col-sm-3" for="cliente_proveedor_id">*Cliente/Proveedor:</label>
+			<label class="control-label col-sm-3">*Cliente/Proveedor:</label>
 			<div class="col-sm-9">
 				<input placeholder="*Cliente/Proveedor" autocomplete="off" class="form-control text_input_sugerencias" data-url_busqueda="{{url('/')}}/core_consultar_terceros_v2" data-clase_modelo="App\Core\Tercero" required="required" name="core_tercero_id_aux" type="text" value="">
 				<input type="hidden" name="cliente_proveedor_id" id="cliente_proveedor_id" required="required" value="">

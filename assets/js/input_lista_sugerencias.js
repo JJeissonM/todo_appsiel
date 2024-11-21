@@ -1,4 +1,3 @@
-//var item_activo;
 $(document).ready( function(){
 	
 
@@ -68,7 +67,6 @@ $(document).ready( function(){
 
     			if ( $(this).val() == '' )
 			    { 
-			    	//$('#lista_sugerencias').html('');
 			    	$('#lista_sugerencias').remove();
 			    	return false;
 			    }
@@ -104,8 +102,6 @@ $(document).ready( function(){
 
 	});
 
-
-
     function ejecutar_funcion_tecla_enter( item, obj_text_input )
     {
     	if( item.attr('data-registro_id') === undefined && obj_text_input.val() != '' )
@@ -130,7 +126,7 @@ $(document).ready( function(){
     {
 		// Asignar descripción e ID al TextInput
 		obj_text_input.attr( 'data-registro_id', item_sugerencia.attr( 'data-registro_id' ) );
-        obj_text_input.val( item_sugerencia.html() ); // 'la la la'
+        obj_text_input.val( item_sugerencia.html() );
         obj_text_input.css( 'background-color','white' );
 
         $('#lista_sugerencias').remove();

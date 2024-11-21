@@ -161,7 +161,7 @@ class FacturaPosController extends TransaccionController
             $vista_categorias_productos = View::make('ventas_pos.componentes.tactil.lista_items', compact('productosTemp'))->render();
         }
         
-        // Para visualizar el listado de productos
+        // Para visualizar el listado de productos (Lupa)
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
         $plantilla_factura = $factura_pos_service->generar_plantilla_factura($pdv, $this->empresa);
