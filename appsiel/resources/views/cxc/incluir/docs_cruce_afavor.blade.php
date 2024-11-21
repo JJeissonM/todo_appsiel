@@ -10,6 +10,7 @@
     
     <tbody>
         <?php
+        $total_saldo = 0;
         for($i=0;$i<count($movimiento_cxc);$i++)
         { 
             $id = $movimiento_cxc[$i]['id'];
@@ -39,8 +40,10 @@
                 <td class="col_saldo_pendiente text-right" >
                     <?php
                         $saldo_pendiente = $movimiento_cxc[$i]['saldo_pendiente'] * -1;
+
+                        $total_saldo += $saldo_pendiente;
                     ?> 
-                    {{ number_format($saldo_pendiente, 0, ',', '.') }} 
+                    $ {{ number_format($saldo_pendiente, 0, ',', '.') }} 
                 </td>
                 @if ($vista == 'formulario')
                     <td>
@@ -53,5 +56,15 @@
         @endif
         <?php 
         } ?>
+
+        @if ($vista == 'show')
+            <tr>
+                <td colspan="2"></td>
+                <td class="col_saldo_pendiente text-right" >
+                    $ {{ number_format($total_saldo, 0, ',', '.') }} 
+                </td>
+            </tr>
+        @endif
+
     </tbody>
 </table>
