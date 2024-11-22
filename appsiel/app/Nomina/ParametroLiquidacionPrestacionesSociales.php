@@ -189,7 +189,14 @@ class ParametroLiquidacionPrestacionesSociales extends Model
         $fecha_ultima_liquidacion = null;
         foreach ( $prestaciones_liquidadas_empleado as $registro )
         {
-            $prestacion_liquidada = json_decode( $registro->prestaciones_liquidadas )[0];
+            if( !is_array(json_decode( $registro->prestaciones_liquidadas ) ) )
+            {
+                $prestacion_liquidada = current(json_decode( $registro->prestaciones_liquidadas ) );
+            }else{
+                $prestacion_liquidada = json_decode( $registro->prestaciones_liquidadas )[0];
+            }
+            
+            
             if( $prestacion_liquidada->prestacion == $prestacion  )
             {
                 $tabla_resumen = (array)$prestacion_liquidada->tabla_resumen;
