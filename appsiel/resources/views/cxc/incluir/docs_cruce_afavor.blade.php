@@ -43,7 +43,7 @@
 
                         $total_saldo += $saldo_pendiente;
                     ?> 
-                    $ {{ number_format($saldo_pendiente, 0, ',', '.') }} 
+                    {{ number_format($saldo_pendiente, 0, ',', '.') }} 
                 </td>
                 @if ($vista == 'formulario')
                     <td>
