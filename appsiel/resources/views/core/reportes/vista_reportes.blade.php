@@ -218,7 +218,8 @@
 
 	    		$('#div_cargando').show();
 
-	    		if ( $(this).val() == 1 )
+				// NOTA: El valor teso_medio_recaudo_id está Constante !!!!!!
+	    		if ( $(this).val() == 1 ) 
 	    		{
 	    			//Efectivo
 	    			var url = "{{ url('tesoreria/get_cajas_to_select') }}";

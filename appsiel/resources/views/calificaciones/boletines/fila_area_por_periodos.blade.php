@@ -16,13 +16,13 @@
             $area_descripcion = strtoupper( $linea->area_descripcion );
         }
 	?>
-	<tr style="background: #ddd;">
+	<tr style="background-color: {{config('configuracion.color_principal_empresa')}}90;">
         <td colspan="{{ $cant_columnas_aux }}" style="text-align: center;">
             <b> {{ $area_descripcion }}</b>
         </td>
     </tr>
     @if( $mostrar_calificacion_media_areas )
-        <tr style="background: #ddd;">
+        <tr style="background-color: {{config('configuracion.color_principal_empresa')}}50;">
             <td style="text-align: right; font-size:0.7em;"><i>Promedio del área >></i></td>
 
             @if($mostrar_intensidad_horaria)
@@ -86,7 +86,7 @@
                     $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' );
                     
                     // Calificacion del periodo
-                    echo '<td style="text-align: center; width: 50px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
+                    echo '<td style="text-align: center; width: ' . $width_columnas . 'px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
 
                     $total_poderadas += $calificacion_media_ponderada;
                     $n++;
@@ -125,7 +125,7 @@
                 }
             ?>
             
-            <td style="text-align: center; width: 50px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
+            <td style="text-align: center; width: {{$width_columnas}}px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
 
             @if($mostrar_logros)
                 <td>&nbsp;</td>

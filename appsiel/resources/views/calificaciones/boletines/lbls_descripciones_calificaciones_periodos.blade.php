@@ -38,7 +38,7 @@
 			//$lbl_cali_periodo = '-';
 		}
 
-		echo '<td style="text-align: center; width: 28px;"> ' . $lbl_cali_periodo . ' </td>';
+		echo '<td style="text-align: center; width: ' . $width_columnas . 'px;"> ' . $lbl_cali_periodo . ' </td>';
 	}
 
 	$lbl_cali_prom = '&nbsp;';
@@ -88,8 +88,8 @@
 			$lbl_calificacion = number_format( $cali_faltante, $decimales, ',', '.' );
 		}
 	}
-
-	echo '<td style="text-align: center; width: 28px;"> ' . $lbl_calificacion. ' </td>';
+	
+	echo '<td style="text-align: center; width: ' . $width_columnas . 'px;"> ' . $lbl_calificacion. ' </td>';
 
 ?>
 

@@ -21,7 +21,11 @@
 
 	@foreach($datos as $registro)
 		
-	    @include('calificaciones.boletines.banner_2')
+		@if ( $registro->estudiante->tercero->imagen == '')
+	    	@include('calificaciones.boletines.banner_2')
+		@else 
+			@include('calificaciones.boletines.banner_2_con_foto')
+		@endif
 
 		<?php 
 
@@ -29,6 +33,9 @@
 
 			$area_anterior = '';
 			$cant_columnas = 1;
+
+			$decimales = (int)config('calificaciones.cantidad_decimales_mostrar_calificaciones');
+			$width_columnas = 16 + 5 * ($decimales + 1);// en px
 		?>
 		
 		@include('calificaciones.boletines.encabezado_2')
@@ -36,24 +43,24 @@
 		<table class="contenido table-bordered">
 			<thead>
 				<tr>
-					<th style="width:200px;">{{ $lbl_asigatura }}</th>
+					<th style="width:{{$ancho_columna_asignatura}}px;">{{ $lbl_asigatura }}</th>
                     
 					@if($mostrar_intensidad_horaria)
-						<th>I.H.</th>
+						<th style="text-align: center; width: {{$width_columnas}}px;">I.H.</th>
 						<?php $cant_columnas++;  ?>
 					@endif
 
 					@if($curso->maneja_calificacion==1)
 				        @foreach($periodos as $periodo_lista)
-				            <th style="text-align: center; width: 28px;"> P{{$periodo_lista->numero}} </th>
+				            <th style="text-align: center; width: {{$width_columnas}}px;"> P{{$periodo_lista->numero}} </th>
 							<?php $cant_columnas++;  ?>
 				        @endforeach
-				        <th style="text-align: center; width: 28px;"> {!! $label_columna !!} </th>
+				        <th style="text-align: center; width: {{$width_columnas}}px;"> {!! $label_columna !!} </th>
 						<?php $cant_columnas++; ?>
 					@endif
 
 					@if( $mostrar_fallas )
-						<th style="width:35px;">Fll.</th>
+						<th style="text-align: center; width: {{$width_columnas}}px;">Fll.</th>
 						<?php $cant_columnas++;  ?>
 					@endif
 					
@@ -80,7 +87,7 @@
 						</td>
 						
 						@if($mostrar_intensidad_horaria)
-							<td style="text-align: center; width: 28px;">
+							<td style="text-align: center; width: {{$width_columnas}}px;">
 								@if($linea->intensidad_horaria != 0) 
 									{{ $linea->intensidad_horaria }}
 								@endif
@@ -92,7 +99,7 @@
 						@endif
 
 						@if( $mostrar_fallas )
-							<td style="text-align: center; width: 28px;">
+							<td style="text-align: center; width: {{$width_columnas}}px;">
 								@include('calificaciones.boletines.lbl_fallas')
 							</td>
 						@endif
