@@ -433,7 +433,6 @@ class UserController extends ModeloController
             return 'ok';
         }
         
-        dd(is_null($usuario), Hash::make($password), $usuario->password);
         return 'no';
     }
 
