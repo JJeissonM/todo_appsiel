@@ -227,33 +227,33 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 
-CKEDITOR.replace('ma_encabezado', {
-	height: 200,
-	// By default, some basic text styles buttons are removed in the Standard preset.
-	// The code below resets the default config.removeButtons setting.
-	removeButtons: ''
-});
+			CKEDITOR.replace('ma_encabezado', {
+				height: 200,
+				// By default, some basic text styles buttons are removed in the Standard preset.
+				// The code below resets the default config.removeButtons setting.
+				removeButtons: ''
+			});
 
-CKEDITOR.replace('ma_introduccion', {
-	height: 200,
-	// By default, some basic text styles buttons are removed in the Standard preset.
-	// The code below resets the default config.removeButtons setting.
-	removeButtons: ''
-});
+			CKEDITOR.replace('ma_introduccion', {
+				height: 200,
+				// By default, some basic text styles buttons are removed in the Standard preset.
+				// The code below resets the default config.removeButtons setting.
+				removeButtons: ''
+			});
 
-CKEDITOR.replace('ma_contenido_inicial', {
-	height: 200,
-	// By default, some basic text styles buttons are removed in the Standard preset.
-	// The code below resets the default config.removeButtons setting.
-	removeButtons: ''
-});
+			CKEDITOR.replace('ma_contenido_inicial', {
+				height: 200,
+				// By default, some basic text styles buttons are removed in the Standard preset.
+				// The code below resets the default config.removeButtons setting.
+				removeButtons: ''
+			});
 
-CKEDITOR.replace('ma_contenido_pie_pagina', {
-	height: 200,
-	// By default, some basic text styles buttons are removed in the Standard preset.
-	// The code below resets the default config.removeButtons setting.
-	removeButtons: ''
-});
+			CKEDITOR.replace('ma_contenido_pie_pagina', {
+				height: 200,
+				// By default, some basic text styles buttons are removed in the Standard preset.
+				// The code below resets the default config.removeButtons setting.
+				removeButtons: ''
+			});
 
 			$('#bs_boton_guardar').on('click',function(event){
 				event.preventDefault();
