@@ -52,6 +52,9 @@ class FuecAdicionalController extends Controller
         } else {
             $lista_vehiculos = Vehiculo::all();
         }
+        
+        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+
         if (count($lista_vehiculos) > 0) {
             foreach ($lista_vehiculos as $un_vehiculo) {
                 //verificar documentos vencidos
@@ -60,7 +63,7 @@ class FuecAdicionalController extends Controller
                 if (count($docs) > 0) {
                     foreach ($docs as $d) {
                         if ($d->vigencia_fin != '0000-00-00') {
-                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                            if (strtotime($d->vigencia_fin) < $hoy ) {
                                 $vencido = true;
                             }
                         }

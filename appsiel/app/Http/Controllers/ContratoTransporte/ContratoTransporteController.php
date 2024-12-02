@@ -88,6 +88,7 @@ class ContratoTransporteController extends Controller
         }
 
         $documentos_vencidos = null;
+        $hoy = strtotime(date("d-m-Y H:i:00", time()));
         if (count($docs) > 0) {
             foreach ($docs as $d) {
 
@@ -95,7 +96,7 @@ class ContratoTransporteController extends Controller
                     continue;
                 }
                 
-                if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                if (strtotime($d->vigencia_fin) < $hoy ) {
                     $documentos_vencidos[] = $d;
                 }
             }
@@ -116,10 +117,12 @@ class ContratoTransporteController extends Controller
             $docs = Documentosvehiculo::all();
         }
 
+        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+
         $documentos_vencidos = null;
         if (count($docs) > 0) {
             foreach ($docs as $d) {
-                if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                if ( strtotime($d->vigencia_fin) < $hoy ) {
                     $documentos_vencidos[] = $d;
                 }
             }
@@ -165,6 +168,9 @@ class ContratoTransporteController extends Controller
         } else {
             $lista_vehiculos = Vehiculo::all();
         }
+        
+        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+
         if (count($lista_vehiculos) > 0) {
             foreach ($lista_vehiculos as $un_vehiculo) {
                 //verificar documentos vencidos
@@ -173,7 +179,7 @@ class ContratoTransporteController extends Controller
                 if (count($docs) > 0) {
                     foreach ($docs as $d) {
                         if ($d->vigencia_fin != '0000-00-00') {
-                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                            if ( strtotime($d->vigencia_fin) < $hoy) {
                                 $vencido = true;
                             }
                         }
@@ -705,6 +711,7 @@ class ContratoTransporteController extends Controller
         }
         $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $co->vehiculo_id)->get();
         $conductores = null;
+        $hoy = strtotime(date("d-m-Y H:i:00", time()));
         if (count($conductoresDelVehiculo) > 0) {
             foreach ($conductoresDelVehiculo as $c) {
                 $docs = $c->conductor->documentosconductors;
@@ -713,7 +720,7 @@ class ContratoTransporteController extends Controller
                     foreach ($docs as $d) {
                         if ($d->licencia == 'SI') {
                             //tiene licencia, se revisa si esta vencida
-                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                            if ( strtotime($d->vigencia_fin < $hoy )) {
                                 $vencido = true;
                             }
                         }
@@ -918,6 +925,7 @@ class ContratoTransporteController extends Controller
     {
         $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $id)->get();
         $conductores = null;
+        $hoy = strtotime(date("d-m-Y H:i:00", time()));
         if (count($conductoresDelVehiculo) > 0) {
             foreach ($conductoresDelVehiculo as $c) {
                 $docs = $c->conductor->documentosconductors;
@@ -926,7 +934,7 @@ class ContratoTransporteController extends Controller
                     foreach ($docs as $d) {
                         if ($d->licencia == 'SI') {
                             //tiene licencia, se revisa si esta vencida
-                            if (strtotime(date("d-m-Y H:i:00", time())) > strtotime($d->vigencia_fin)) {
+                            if ( strtotime($d->vigencia_fin) < $hoy ) {
                                 $vencido = true;
                             }
                         }
