@@ -445,10 +445,13 @@ class ReporteController extends Controller
         $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
         $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
 
-        $mostrar_intensidad_horaria = 0;
-        $mostrar_numero_identificacion_estudiante = 0;
-        $mostrar_imagen_firma_autorizada_1 = 1;
-        $mostrar_imagen_firma_autorizada_2 = 0;
+        
+        $parametros = config('gestion_documental');
+
+        $mostrar_intensidad_horaria = $parametros['mostrar_intensidad_horaria'];
+        $mostrar_numero_identificacion_estudiante = $parametros['mostrar_numero_identificacion_estudiante'];
+        $mostrar_imagen_firma_autorizada_1 = $parametros['mostrar_imagen_firma_autorizada_1'];
+        $mostrar_imagen_firma_autorizada_2 = $parametros['mostrar_imagen_firma_autorizada_2'];
 
         $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja', 'maxima_escala_valoracion', 'periodo', 'resultado_academico', 'mostrar_intensidad_horaria', 'mostrar_numero_identificacion_estudiante', 'mostrar_imagen_firma_autorizada_1', 'mostrar_imagen_firma_autorizada_2' )  )->render();
 

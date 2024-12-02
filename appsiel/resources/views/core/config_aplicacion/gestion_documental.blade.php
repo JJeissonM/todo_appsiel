@@ -20,90 +20,189 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
-				<h4> Parámetros de encabezado informes y listados gestión Académica  </h4>
+				
+				<h4> Parámetros generales </h4>
 				<hr>
 				<div class="row">
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-									$banner_colegio_mostrar_slogan = 1;
-								if( isset($parametros['banner_colegio_mostrar_slogan'] ) )
+								$mostrar_intensidad_horaria = '1';
+								if( isset($parametros['mostrar_intensidad_horaria'] ) )
 								{
-									$banner_colegio_mostrar_slogan = $parametros['banner_colegio_mostrar_slogan'];
+									$mostrar_intensidad_horaria = $parametros['mostrar_intensidad_horaria'];
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_slogan', $banner_colegio_mostrar_slogan, 'Mostrar Slogan', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('mostrar_intensidad_horaria', $mostrar_intensidad_horaria, 'Mostrar columna Intensidad Horaria', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$mostrar_numero_identificacion_estudiante = '1';
+								if( isset($parametros['mostrar_numero_identificacion_estudiante'] ) )
+								{
+									$mostrar_numero_identificacion_estudiante = $parametros['mostrar_numero_identificacion_estudiante'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_numero_identificacion_estudiante', $mostrar_numero_identificacion_estudiante, 'Mostrar Número de indetificación del estudiante', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_imagen_firma_autorizada_1 = '1';
+								if( isset($parametros['mostrar_imagen_firma_autorizada_1'] ) )
+								{
+									$mostrar_imagen_firma_autorizada_1 = $parametros['mostrar_imagen_firma_autorizada_1'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_imagen_firma_autorizada_1', $mostrar_imagen_firma_autorizada_1, 'Mostrar Firma Autorizada #1', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$banner_colegio_mostrar_direccion = '';
-								if( isset($parametros['banner_colegio_mostrar_direccion'] ) )
+								$mostrar_imagen_firma_autorizada_2 = '1';
+								if( isset($parametros['mostrar_imagen_firma_autorizada_2'] ) )
 								{
-									$banner_colegio_mostrar_direccion = $parametros['banner_colegio_mostrar_direccion'];
+									$mostrar_imagen_firma_autorizada_2 = $parametros['mostrar_imagen_firma_autorizada_2'];
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_direccion', $banner_colegio_mostrar_direccion, 'Mostrar Dirección', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('mostrar_imagen_firma_autorizada_2', $mostrar_imagen_firma_autorizada_2, 'Mostrar Firma Autorizada #2', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<br>
+
+				<h4> Parámetros para el formato Marca de agua  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$ma_porcentaje_ancho_escudo = 80;
+								if( isset($parametros['ma_porcentaje_ancho_escudo'] ) )
+								{
+									$ma_porcentaje_ancho_escudo = $parametros['ma_porcentaje_ancho_escudo'];
+								}
+							?>
+							{{ Form::bsText('ma_porcentaje_ancho_escudo', $ma_porcentaje_ancho_escudo, '% Ancho escudo de fondo', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$ma_opacidad_escudo = 40;
+								if( isset($parametros['ma_opacidad_escudo'] ) )
+								{
+									$ma_opacidad_escudo = $parametros['ma_opacidad_escudo'];
+								}
+							?>
+							{{ Form::bsText('ma_opacidad_escudo', $ma_opacidad_escudo, '% Opacidad escudo (0 = Invisible)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
 				</div>
 
 				<div class="row">
-
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$banner_colegio_mostrar_telefono = '';
-								if( isset($parametros['banner_colegio_mostrar_telefono'] ) )
+								$ma_encabezado = '';
+								if( isset($parametros['ma_encabezado'] ) )
 								{
-									$banner_colegio_mostrar_telefono = $parametros['banner_colegio_mostrar_telefono'];
+									$ma_encabezado = $parametros['ma_encabezado'];
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_telefono', $banner_colegio_mostrar_telefono, 'Mostrar Teléfono', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							<div class="form-group" style="padding-left: 10px;">
+								<label class="control-label" for="ma_encabezado" style="padding-left: 5px;"> Diseño Encabezado: </label>
+								<div class="col-sm-12">
+									<textarea id="ma_encabezado" rows="20" name="ma_encabezado" cols="150" style="width: 400px; height: 100px;">
+										{!! $ma_encabezado !!}
+									</textarea>
+								</div>
+							</div>
 						</div>
 					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$banner_colegio_mostrar_ciudad = '';
-								if( isset($parametros['banner_colegio_mostrar_ciudad'] ) )
-								{
-									$banner_colegio_mostrar_ciudad = $parametros['banner_colegio_mostrar_ciudad'];
-								}else{
-								}
-							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_ciudad', $banner_colegio_mostrar_ciudad, 'Mostrar Ciudad', [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
 				</div>
 
 				<div class="row">
-
-					<div class="col-md-6">
+					<div class="col-md-12">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$banner_colegio_mostrar_nit = '';
-								if( isset($parametros['banner_colegio_mostrar_nit'] ) )
+								$ma_introduccion = '';
+								if( isset($parametros['ma_introduccion'] ) )
 								{
-									$banner_colegio_mostrar_nit = $parametros['banner_colegio_mostrar_nit'];
+									$ma_introduccion = $parametros['ma_introduccion'];
 								}
 							?>
-							{{ Form::bsSelect('banner_colegio_mostrar_nit', $banner_colegio_mostrar_nit, 'Mostrar '.{{ config("configuracion.tipo_identificador") }} , [''=>'', '1'=>'Si','0'=>'No'], ['class'=>'form-control']) }}
+							<div class="form-group" style="padding-left: 10px;">
+								<label class="control-label" for="ma_introduccion" style="padding-left: 5px;"> Texto introducción: </label>
+								<div class="col-sm-12">
+									<textarea id="ma_introduccion" rows="20" name="ma_introduccion" cols="150" style="width: 400px; height: 100px;">
+										{!! $ma_introduccion !!}
+									</textarea>
+								</div>
+							</div>
 						</div>
 					</div>
+				</div>
 
-					<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-12">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$ma_contenido_inicial = '';
+								if( isset($parametros['ma_contenido_inicial'] ) )
+								{
+									$ma_contenido_inicial = $parametros['ma_contenido_inicial'];
+								}
+							?>
+							<div class="form-group" style="padding-left: 10px;">
+								<label class="control-label" for="ma_contenido_inicial" style="padding-left: 5px;"> Contenido Inicial: </label>
+								<div class="col-sm-12">
+									<textarea id="ma_contenido_inicial" rows="20" name="ma_contenido_inicial" cols="150" style="width: 400px; height: 100px;">
+										{!! $ma_contenido_inicial !!}
+									</textarea>
+								</div>
+							</div>
 						</div>
 					</div>
+				</div>
 
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ma_contenido_pie_pagina = '';
+								if( isset($parametros['ma_contenido_pie_pagina'] ) )
+								{
+									$ma_contenido_pie_pagina = $parametros['ma_contenido_pie_pagina'];
+								}
+							?>
+							<div class="form-group" style="padding-left: 10px;">
+								<label class="control-label" for="ma_contenido_pie_pagina" style="padding-left: 5px;">Contenido para el pie de página: </label>
+								<div class="col-sm-12">
+									<textarea id="ma_contenido_pie_pagina" rows="20" name="ma_contenido_pie_pagina" cols="150" style="width: 400px; height: 100px;">
+										{!! $ma_contenido_pie_pagina !!}
+									</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<br><br>
@@ -120,9 +219,6 @@
 	</div>
 	<br/><br/>
 
-
-
-
 	<div id="div_cargando">Cargando...</div>
 @endsection
 
@@ -130,6 +226,34 @@
 
 	<script type="text/javascript">
 		$(document).ready(function(){
+
+CKEDITOR.replace('ma_encabezado', {
+	height: 200,
+	// By default, some basic text styles buttons are removed in the Standard preset.
+	// The code below resets the default config.removeButtons setting.
+	removeButtons: ''
+});
+
+CKEDITOR.replace('ma_introduccion', {
+	height: 200,
+	// By default, some basic text styles buttons are removed in the Standard preset.
+	// The code below resets the default config.removeButtons setting.
+	removeButtons: ''
+});
+
+CKEDITOR.replace('ma_contenido_inicial', {
+	height: 200,
+	// By default, some basic text styles buttons are removed in the Standard preset.
+	// The code below resets the default config.removeButtons setting.
+	removeButtons: ''
+});
+
+CKEDITOR.replace('ma_contenido_pie_pagina', {
+	height: 200,
+	// By default, some basic text styles buttons are removed in the Standard preset.
+	// The code below resets the default config.removeButtons setting.
+	removeButtons: ''
+});
 
 			$('#bs_boton_guardar').on('click',function(event){
 				event.preventDefault();
