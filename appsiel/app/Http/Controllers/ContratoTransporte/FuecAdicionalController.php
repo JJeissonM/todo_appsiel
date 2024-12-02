@@ -53,7 +53,7 @@ class FuecAdicionalController extends Controller
             $lista_vehiculos = Vehiculo::all();
         }
         
-        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+        $hoy = strtotime( date( "d-m-Y" ) );
 
         if (count($lista_vehiculos) > 0) {
             foreach ($lista_vehiculos as $un_vehiculo) {

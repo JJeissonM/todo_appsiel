@@ -88,7 +88,7 @@ class ContratoTransporteController extends Controller
         }
 
         $documentos_vencidos = null;
-        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+        $hoy = strtotime( date( "d-m-Y" ) );
         if (count($docs) > 0) {
             foreach ($docs as $d) {
 
@@ -117,7 +117,7 @@ class ContratoTransporteController extends Controller
             $docs = Documentosvehiculo::all();
         }
 
-        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+        $hoy = strtotime( date( "d-m-Y" ) );
 
         $documentos_vencidos = null;
         if (count($docs) > 0) {
@@ -169,7 +169,7 @@ class ContratoTransporteController extends Controller
             $lista_vehiculos = Vehiculo::all();
         }
         
-        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+        $hoy = strtotime( date( "d-m-Y" ) );
 
         if (count($lista_vehiculos) > 0) {
             foreach ($lista_vehiculos as $un_vehiculo) {
@@ -711,7 +711,7 @@ class ContratoTransporteController extends Controller
         }
         $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $co->vehiculo_id)->get();
         $conductores = null;
-        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+        $hoy = strtotime( date( "d-m-Y" ) );
         if (count($conductoresDelVehiculo) > 0) {
             foreach ($conductoresDelVehiculo as $c) {
                 $docs = $c->conductor->documentosconductors;
@@ -925,7 +925,7 @@ class ContratoTransporteController extends Controller
     {
         $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $id)->get();
         $conductores = null;
-        $hoy = strtotime(date("d-m-Y H:i:00", time()));
+        $hoy = strtotime( date( "d-m-Y" ) );
         if (count($conductoresDelVehiculo) > 0) {
             foreach ($conductoresDelVehiculo as $c) {
                 $docs = $c->conductor->documentosconductors;
