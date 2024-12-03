@@ -82,6 +82,91 @@
 					</div>
 
 				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tabla_desing = '1';
+								if( isset($parametros['tabla_desing'] ) )
+								{
+									$tabla_desing = $parametros['tabla_desing'];
+								}
+							?>
+							{{ Form::bsSelect('tabla_desing', $tabla_desing, 'Diseño de la Tabla a Mostrar', [
+								'tabla_asignaturas_calificacion_2' => 'Normal con Asignaturas',
+								'tabla_areas_calificacion' => 'Por Áreas',
+								],
+								['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+				
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$columnas_encabezado = '1';
+								if( isset($parametros['columnas_encabezado'] ) )
+								{
+									$columnas_encabezado = $parametros['columnas_encabezado'];
+								}
+							?>
+							{{ Form::bsSelect('columnas_encabezado', $columnas_encabezado, 'Cantidad de columnas encabezado', [
+								'1' => '1',
+								'2' => '2',
+								'3' => '3',
+								],
+								['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$url_imagen_izquierda_encabezado = '';
+								if( isset($parametros['url_imagen_izquierda_encabezado'] ) )
+								{
+									$url_imagen_izquierda_encabezado = $parametros['url_imagen_izquierda_encabezado'];
+								}
+							?>
+							{{ Form::bsText('url_imagen_izquierda_encabezado', $url_imagen_izquierda_encabezado, 'Url imágen Izquierda Encabezado', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$url_imagen_derecha_encabezado = '';
+								if( isset($parametros['url_imagen_derecha_encabezado'] ) )
+								{
+									$url_imagen_derecha_encabezado = $parametros['url_imagen_derecha_encabezado'];
+								}
+							?>
+							{{ Form::bsText('url_imagen_derecha_encabezado', $url_imagen_derecha_encabezado, 'Url imágen Derecha Encabezado', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 
 				<br>
 
@@ -132,6 +217,50 @@
 								<div class="col-sm-12">
 									<textarea id="ma_encabezado" rows="20" name="ma_encabezado" cols="150" style="width: 400px; height: 100px;">
 										{!! $ma_encabezado !!}
+									</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ma_encabezado_2 = '';
+								if( isset($parametros['ma_encabezado_2'] ) )
+								{
+									$ma_encabezado_2 = $parametros['ma_encabezado_2'];
+								}
+							?>
+							<div class="form-group" style="padding-left: 10px;">
+								<label class="control-label" for="ma_encabezado_2" style="padding-left: 5px;"> Diseño Encabezado Linea #2: </label>
+								<div class="col-sm-12">
+									<textarea id="ma_encabezado_2" rows="20" name="ma_encabezado_2" cols="150" style="width: 400px; height: 100px;">
+										{!! $ma_encabezado_2 !!}
+									</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-md-12">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ma_preambulo = '';
+								if( isset($parametros['ma_preambulo'] ) )
+								{
+									$ma_preambulo = $parametros['ma_preambulo'];
+								}
+							?>
+							<div class="form-group" style="padding-left: 10px;">
+								<label class="control-label" for="ma_preambulo" style="padding-left: 5px;"> Texto Preambulo: </label>
+								<div class="col-sm-12">
+									<textarea id="ma_preambulo" rows="20" name="ma_preambulo" cols="150" style="width: 400px; height: 100px;">
+										{!! $ma_preambulo !!}
 									</textarea>
 								</div>
 							</div>
@@ -234,12 +363,26 @@
 				removeButtons: ''
 			});
 
+			/*CKEDITOR.replace('ma_encabezado_2', {
+				height: 200,
+				// By default, some basic text styles buttons are removed in the Standard preset.
+				// The code below resets the default config.removeButtons setting.
+				removeButtons: ''
+			});
+
+			CKEDITOR.replace('ma_preambulo', {
+				height: 200,
+				// By default, some basic text styles buttons are removed in the Standard preset.
+				// The code below resets the default config.removeButtons setting.
+				removeButtons: ''
+			});
 			CKEDITOR.replace('ma_introduccion', {
 				height: 200,
 				// By default, some basic text styles buttons are removed in the Standard preset.
 				// The code below resets the default config.removeButtons setting.
 				removeButtons: ''
 			});
+*/
 
 			CKEDITOR.replace('ma_contenido_inicial', {
 				height: 200,

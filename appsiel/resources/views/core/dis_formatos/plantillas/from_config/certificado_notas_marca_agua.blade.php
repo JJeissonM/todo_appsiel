@@ -28,7 +28,7 @@
 		}
 
 		@page {
-			margin: 40px 25px 100px;
+			margin: 40px 25px 0px;
 		}
 
 		header {
@@ -40,11 +40,7 @@
 		}
 
 		footer {
-			/*position: fixed;*/
-			left: 0;
-			bottom: 0;
-			width: 100%;
-			text-align: center;
+			
 		}
 
 		.watermark-letter {
@@ -118,6 +114,7 @@
         $ma_encabezado = str_replace('__field__colegio_ciudad', $colegio->ciudad, $ma_encabezado);
         // _____________________________________________
 
+		$consecutivo = 100;
 	?>
 
 	@foreach($estudiantes as $estudiante)
@@ -129,6 +126,15 @@
         $ma_contenido_inicial = str_replace('__field__estudiante_nombre_completo', ($estudiante->nombre_completo), $ma_contenido_inicial);
         $ma_contenido_inicial = str_replace('__field__estudiante_numero_identificacion', number_format( $estudiante->numero_identificacion, 0, ',', '.' ), $ma_contenido_inicial);
         $ma_contenido_inicial = str_replace('__field__estudiante_grado', $curso->grado->descripcion, $ma_contenido_inicial);
+		
+		
+        $ma_encabezado_2 = $parametros['ma_encabezado_2'];
+		$label_consecutivo = str_pad($consecutivo, 4 - strlen($consecutivo), '0', STR_PAD_LEFT);
+        $ma_encabezado_2 = str_replace('__field__consecutivo_cecrtificado', '24-' . $label_consecutivo, $ma_encabezado_2);
+		$consecutivo++;
+        $ma_encabezado_2 = str_replace('__field__mes', $array_fecha[1], $ma_encabezado_2);
+        $ma_encabezado_2 = str_replace('__field__dia', $array_fecha[0], $ma_encabezado_2);
+        $ma_encabezado_2 = str_replace('__field__anio', $array_fecha[2], $ma_encabezado_2);
     ?>
 	<div class="page-break">
 		<div class="watermark-{{$tam_hoja}} escudo">
@@ -138,22 +144,46 @@
 		<table width="100%">
             <tr>
                 <td colspan="6" style="text-align: center; font-size: 1em;">
-                    {!! $ma_encabezado !!}
+					@if($parametros['columnas_encabezado'] == 3)
+						<table style="width:99%; height: 60px;">
+							<tr>
+								<td style="width:15%; text-align: center;">
+									<img alt="foto.jpg" src="{{ $parametros['url_imagen_izquierda_encabezado']}}" style="width: 90px; max-height: 60px;" />
+								</td>
+								<td style="width:70%; text-align: center;">
+									{!! $ma_encabezado !!}
+								</td>
+								<td style="width:14%; text-align: center;">
+									<img alt="foto.jpg" src="{{ $parametros['url_imagen_derecha_encabezado']}}" style="width: 90px; max-height: 60px;" />
+								</td>
+							</tr>
+						</table>							
+					@else
+						{!! $ma_encabezado !!}
+					@endif
+					
+                    {!! $ma_encabezado_2 !!}
+
                 </td>
             </tr>
 			<tr>
-				<td colspan="6" style="text-align: center; font-size: 1em;">
+				<td colspan="6" style="text-align: justify; font-size: 0.9em;">
+                    {!! $parametros['ma_preambulo'] !!}
+				</td>
+			</tr>
+			<tr>
+				<td colspan="6" style="text-align: center; font-size: 0.9em;">
                     {!! $parametros['ma_introduccion'] !!}
 				</td>
 			</tr>
 			<tr>
-				<td colspan="6" style="text-align: justify; font-size: 0.8em;">
+				<td colspan="6" style="text-align: justify; font-size: 0.9em;">
                     {!! $ma_contenido_inicial !!}
 				</td>
 			</tr>
 			<tr>
 				<td colspan="6">
-					@include('core.dis_formatos.plantillas.tabla_asignaturas_calificacion_2')
+					@include('core.dis_formatos.plantillas.' . $parametros['tabla_desing'])					
 				</td>
 			</tr>
 			<tr>
@@ -167,7 +197,9 @@
 				</td>
 			</tr>
 		</table>
-		<footer style="border: none">
+
+		<br><br><br><br><br><br><br><br>
+		<div style="border: none; font-size: 0.8em;">
 			<?php
         		$ma_contenido_pie_pagina = $parametros['ma_contenido_pie_pagina'];
 				$ma_contenido_pie_pagina = str_replace('__field__colegio_direccion', $colegio->direccion, $ma_contenido_pie_pagina);
@@ -175,13 +207,14 @@
 				$ma_contenido_pie_pagina = str_replace('__field__empresa_email', $colegio->empresa->email, $ma_contenido_pie_pagina);
 				$ma_contenido_pie_pagina = str_replace('__field__empresa_ciudad', $colegio->empresa->ciudad->descripcion, $ma_contenido_pie_pagina);
 				$ma_contenido_pie_pagina = str_replace('__field__empresa_departamento', $colegio->empresa->ciudad->departamento->descripcion, $ma_contenido_pie_pagina);
+				$ma_contenido_pie_pagina = str_replace('__field__empresa_pagina_web', $colegio->empresa->pagina_web, $ma_contenido_pie_pagina);
 			?>
 
 			<hr>
-			<div style="text-align: center; margin-top: -7px; width: 100%;">
+			<div style="text-align: center; width: 100%;">
 				{!! $ma_contenido_pie_pagina !!}
 			</div>
-		</footer>
+		</div>
 		@if($cont > 0)
 			<div></div>
 		@endif
