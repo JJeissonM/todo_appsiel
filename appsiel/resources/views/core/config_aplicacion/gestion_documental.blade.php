@@ -133,7 +133,16 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<div class="row" style="padding:5px;">
+								<?php
+									$consecutivo_inicial = 100;
+									if( isset($parametros['consecutivo_inicial'] ) )
+									{
+										$consecutivo_inicial = $parametros['consecutivo_inicial'];
+									}
+								?>
+								{{ Form::bsText('consecutivo_inicial', $consecutivo_inicial, 'Consecutivo Inicial', ['class'=>'form-control']) }}
+							</div>
 						</div>
 					</div>
 

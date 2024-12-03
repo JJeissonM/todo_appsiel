@@ -114,7 +114,7 @@
         $ma_encabezado = str_replace('__field__colegio_ciudad', $colegio->ciudad, $ma_encabezado);
         // _____________________________________________
 
-		$consecutivo = 100;
+		$consecutivo = $parametros['consecutivo_inicial'];
 	?>
 
 	@foreach($estudiantes as $estudiante)
