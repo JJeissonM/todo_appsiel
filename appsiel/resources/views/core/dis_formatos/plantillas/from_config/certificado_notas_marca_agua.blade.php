@@ -55,10 +55,12 @@
 
 		.watermark-folio {
 			position: fixed;
-			top: 15%;
+			top: {{$top * 2.1}}%;
+			left: {{$top + 1}}%;
 			text-align: center;
 			opacity: {{$parametros['ma_opacidad_escudo']/100}};
 			z-index: -1000;
+			width: {{$parametros['ma_porcentaje_ancho_escudo']}}%;
 		}
 
 		.escudo img {
@@ -70,6 +72,7 @@
 
 		.table {
 			width: 100%;
+			border-collapse: collapse;
 		}
 
 

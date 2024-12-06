@@ -199,6 +199,11 @@ class VtasDocEncabezado extends Model
                 $url = 'ventas/';
                 break;
         }
+        
+        if( $this->tipo_documento_app == null )
+        {
+            dd('Error en Tipo de Documento (tipo_documento_app)', $this);
+        }            
 
         $enlace = '<a href="' . url( $url . $this->id . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
 

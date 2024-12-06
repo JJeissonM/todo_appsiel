@@ -24,8 +24,11 @@ use App\Calificaciones\Area;
 
 use App\Core\Colegio;
 use App\Core\FirmaAutorizada;
+use App\Matriculas\Estudiante;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\View;
 
 class ReporteController extends Controller
@@ -444,7 +447,6 @@ class ReporteController extends Controller
 
         $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
         $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
-
         
         $parametros = config('gestion_documental');
 
@@ -455,7 +457,24 @@ class ReporteController extends Controller
 
         $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja', 'maxima_escala_valoracion', 'periodo', 'resultado_academico', 'mostrar_intensidad_horaria', 'mostrar_numero_identificacion_estudiante', 'mostrar_imagen_firma_autorizada_1', 'mostrar_imagen_firma_autorizada_2' )  )->render();
 
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+        //Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+
+        $view = View::make('core.pdf_documento', [ 'contenido' => $vista ] );
+            
+        // Se prepara el PDF
+        $orientacion='portrait';
+        $tam_hoja = $request->tam_hoja;
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
+
+        $estudiante = Estudiante::find((int)$request->estudiante_id);
+
+        $nombrearchivo = uniqid() . '.pdf';
+        if ($estudiante != null) {
+            $nombrearchivo = str_slug( $estudiante->tercero->descripcion ) . '-' . uniqid() . '.pdf';
+        }
+
+        Storage::put( 'pdf_certificado_notas_curso_' . str_slug($curso->descripcion,'_') . '/' . $nombrearchivo, $pdf->output());
 
         return $vista;
     }
