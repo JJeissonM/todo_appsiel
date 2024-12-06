@@ -28,7 +28,7 @@ function validar_fecha_diferente() {
   } else {
     $("#msj_fecha_diferente").hide();
   }
-};
+}
 
 /**
  * 
