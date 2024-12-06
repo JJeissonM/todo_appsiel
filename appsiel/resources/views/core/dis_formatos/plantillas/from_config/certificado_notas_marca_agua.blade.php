@@ -213,7 +213,6 @@
 				$ma_contenido_pie_pagina = str_replace('__field__empresa_pagina_web', $colegio->empresa->pagina_web, $ma_contenido_pie_pagina);
 			?>
 
-			<hr>
 			<div style="text-align: center; width: 100%;">
 				{!! $ma_contenido_pie_pagina !!}
 			</div>
