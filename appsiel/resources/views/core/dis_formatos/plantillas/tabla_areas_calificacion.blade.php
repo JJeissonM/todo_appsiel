@@ -65,7 +65,7 @@
             <tr style="font-size: 14px;">
                 <td style="width:400px;">
                     {{ $asignaturas->first()->area }}
-                    @if($cantidad > 10)
+                    @if($cantidad > 0)
                         {!! $detalle !!}
                     @endif
                 </td>

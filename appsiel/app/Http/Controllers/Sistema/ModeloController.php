@@ -16,19 +16,12 @@ use App\Sistema\Aplicacion;
 use App\Sistema\TipoTransaccion;
 use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
-use App\Core\ModeloEavValor;
-use App\User;
-
-use App\Calificaciones\Logro;
 use App\Core\Tercero;
 use App\Matriculas\Curso;
-use App\Sistema\Services\AppModel;
 use App\Sistema\Services\ImagenService;
 use App\Sistema\Services\ModeloService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Storage;
 
 class ModeloController extends Controller
 {

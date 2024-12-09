@@ -20,7 +20,8 @@
         "milon/barcode": "^5.1",
         "doctrine/dbal": "^2.10",
         "cmgmyr/messenger": "^2.16",
-        "webklex/laravel-pdfmerger": "*"
+        "webklex/laravel-pdfmerger": "*",
+        "mike42/escpos-php": "*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

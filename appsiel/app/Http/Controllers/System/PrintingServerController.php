@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\System;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
+use App\Sistema\Services\PrintingServer\ExampleRawbt;
+use App\Sistema\Services\PrintingServer\PrintingJobService;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Input;
 
@@ -31,4 +31,14 @@ class PrintingServerController extends Controller
 
         return $message;
     }
+
+    public function test_printing_form()
+    {
+        return view('system.test_printing_form');
+    }
+
+    public function test_print_example_rawbt()
+    {
+        return (new ExampleRawbt())->print();
+    }    
 }
