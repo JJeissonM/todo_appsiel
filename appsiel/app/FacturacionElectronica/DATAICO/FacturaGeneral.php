@@ -145,11 +145,15 @@ class FacturaGeneral
 
       $payment_means = 'MUTUAL_AGREEMENT'; //  Medio de pago
 
+      $resolucion = (object)['prefijo'=>'FEE','numero_resolucion'=>18760000001];
       if ( $this->env == 'PRODUCCION' )
       {
          $resolucion = $this->doc_encabezado->resolucion_facturacion();
-      }else{
-         $resolucion = (object)['prefijo'=>'FEE','numero_resolucion'=>18760000001];
+      }
+
+      if ( $resolucion == null )
+      {
+         $resolucion = (object)['prefijo'=> $this->doc_encabezado->tipo_documento_app->prefijo,'numero_resolucion'=>18760000001];
       }
 
       $flexible = 'true';
@@ -299,13 +303,17 @@ class FacturaGeneral
       $prefijo_resolucion = $this->doc_encabezado->tipo_documento_app->prefijo;
 
       if ( $this->tipo_transaccion == 'factura') {
+         
+         $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
          if ( $this->env == 'PRODUCCION' )
          {
             $resolucion = $this->doc_encabezado->resolucion_facturacion();
-         }else{
-            $resolucion = (object)['prefijo'=>'SETT','numero_resolucion'=>18760000001];
          }
-         $prefijo_resolucion = $resolucion->prefijo;
+      
+         if ( $resolucion == null )
+         {
+            $prefijo_resolucion = $this->doc_encabezado->tipo_documento_app->prefijo;
+         }
       }
         
       /*
@@ -347,6 +355,9 @@ class FacturaGeneral
       return json_decode( (string) $response->getBody() );
    }
 
+   /**
+    * 
+    */
    public function get_errores( $json_dataico )
    {
       $errors_list = '';
@@ -366,8 +377,11 @@ class FacturaGeneral
          if ($json_dataico->invoice->dian_status == 'DIAN_RECHAZADO') {
 
                $errors_list = '';
-
-               foreach ($json_dataico->invoice->dian_messages as $key => $object) {
+               $dian_messages = [];
+               if ( isset($json_dataico->invoice->dian_messages) ) {
+                  $dian_messages = $json_dataico->invoice->dian_messages;
+               }
+               foreach ( $dian_messages as $key => $object) {
                   $errors_list .= ' - ' . $object;
                }
          }

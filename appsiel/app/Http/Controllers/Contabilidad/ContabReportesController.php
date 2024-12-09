@@ -1112,10 +1112,16 @@ class ContabReportesController extends Controller
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
 
+        $arr_trasacciones_ventas = [23,44,47,49,50,52];
+        $arr_trasacciones_devoluciones_ventas = [41,38,53,54];
+        if ((int)$request->mostrar_solo_facturacion_electronica) {
+            $arr_trasacciones_ventas = [50,52];
+            $arr_trasacciones_devoluciones_ventas = [53,54];
+        }
         $reports_list = [
             (object)[
                 'title' => 'Impuestos en ventas (generados)',
-                'arr_transactions_types' => [23,44,47,49,50,52],
+                'arr_transactions_types' => $arr_trasacciones_ventas,
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
                                             ->get()
                                             ->pluck('cta_ventas_id')
@@ -1123,7 +1129,7 @@ class ContabReportesController extends Controller
             ],
             (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
-                'arr_transactions_types' => [41,38,53,54],
+                'arr_transactions_types' => $arr_trasacciones_devoluciones_ventas,
                 'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
                                             ->get()
                                             ->pluck('cta_ventas_devol_id')
