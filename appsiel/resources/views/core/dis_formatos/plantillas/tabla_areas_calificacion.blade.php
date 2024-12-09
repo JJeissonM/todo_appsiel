@@ -1,7 +1,7 @@
 <table class="table table-bordered">
     <thead>
         <tr style="font-size: 15px;">
-            <th style="text-align: center;">AREAS</th>
+            <th style="text-align: center;">AREAS (ASIGNATURAS)</th>
             <th style="text-align: center">CALIFICACION CUANTITATIVA</th>
             <th style="text-align: center">CALIFICACION CUALITATIVA</th>
             @if($mostrar_intensidad_horaria)
