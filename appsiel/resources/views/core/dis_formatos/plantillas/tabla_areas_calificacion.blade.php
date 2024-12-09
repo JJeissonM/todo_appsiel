@@ -51,7 +51,7 @@
                     $prom = $valor_calificacion / $cantidad;
                 }
                 
-                $obj_escala_nacional = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion($prom, $periodo->periodo_lectivo_id);
+                $obj_escala_nacional = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion(round($prom,2), $periodo->periodo_lectivo_id);
                 
                 if ($obj_escala_nacional == null) {
                     dd('No hay Escala de Valoración para la esta Calificación.',$estudiante->nombre_completo, $asignatura->descripcion, $prom);
