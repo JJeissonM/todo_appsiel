@@ -48,34 +48,6 @@
 </body>
 
 <script>
-    function pc_print(data){
-        var socket = new WebSocket("ws://127.0.0.1:40213/");
-        socket.bufferType = "arraybuffer";
-        
-        socket.onerror = function(error) {
-            alert("Error");
-        };			
-        socket.onopen = function() {
-            socket.send(data);
-            socket.close(1000, "Work complete");
-        };
-    }
-
-    function android_print(data){
-        window.location.href = data;  
-    }
-
-    function ajax_print(url, btn) {
-        $.get(url, function (data) {
-            var ua = navigator.userAgent.toLowerCase();
-            var isAndroid = ua.indexOf("android") > -1; 
-            if(isAndroid) {
-                android_print(data);
-            }else{
-                pc_print(data);
-            }
-        });
-    }
 
   $(document).ready(function(){
       

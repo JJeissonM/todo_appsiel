@@ -5,7 +5,7 @@
 ?>
 
 @section('sidebar')
-	{{ Form::open(['url'=> $reporte->url_form_action . '?id=' . Input::get('id') ,'id'=>'form_consulta']) }}
+	{{ Form::open(['url'=> $reporte->url_form_action . '?id=' . Input::get('id') ,'id'=>'form_consulta', 'data-url_form_action' => $reporte->url_form_action]) }}
 
 		@foreach( $lista_campos as $campo)
 			<?php 
@@ -53,6 +53,17 @@
 			<span>
 				{{ Form::bsBtnPdf( $reporte->descripcion ) }}
 				{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
+
+				<!-- 
+				<a onclick="makeRequest('{ {url('/sys_test_print_example_rawbt')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Etiquetas de códigos de barra"><i class="fa fa-print"></i></a>
+				
+				<a onclick="makeRequest('{ {url('/sys_printing_feed_paper/5')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Alimentar papel"><i class="fa fa-arrow-up"></i></a>
+				
+				<a onclick="makeRequest('{ {url('/sys_printing_feed_reverse_paper')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Alimentar papel"><i class="fa fa-arrow-down"></i></a>
+
+				-->
+				
+
 			</span>
 		</div> 
 		{{ Form::Spin( 42 ) }}
@@ -69,6 +80,9 @@
 @endsection
 
 @section('scripts')
+
+	<script src="{{ asset( 'assets/js/inventarios/barcodes_printing.js?aux=' . uniqid() )}}"></script>
+
 	<script type="text/javascript">
 		$(document).ready(function(){
 
@@ -112,16 +126,24 @@
 					$('#resultado_consulta').html(respuesta);
 
 					$('.columna_oculta').show();
-					$('#btn_excel').show(500);
-					$('#btn_pdf').show(500);
 
-					var url_pdf = $('#btn_pdf').attr('href');
-					var n = url_pdf.search('a3p0');
-					if ( n > 0) {
-						var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/' + $("#reporte_id").val() + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
+					if (form_consulta.attr('data-url_form_action') != 'inv_etiquetas_codigos_barra' ) {
+						$('#btn_excel').show(500);
+						$('#btn_pdf').show(500);
+
+						var url_pdf = $('#btn_pdf').attr('href');
+						var n = url_pdf.search('a3p0');
+						if ( n > 0) {
+							var new_url = url_pdf.replace( 'a3p0', 'generar_pdf/' + $("#reporte_id").val() + '?tam_hoja=' + $("#tam_hoja").val() + '&orientacion=' + $("#orientacion").val() );
+						}
+						
+						$('#btn_pdf').attr('href', new_url);
+
+						return false;
 					}
+
+					$('#btn_print_barcodes').show(500);
 					
-					$('#btn_pdf').attr('href', new_url);
 				});
 			});
 
@@ -274,7 +296,9 @@
 				
 			});
 
-			
+			/**
+			 * 
+			*/
 			$('#btn_generar_pdfs').click(function(event){
         
 				event.preventDefault();

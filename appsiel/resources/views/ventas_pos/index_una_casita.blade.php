@@ -116,6 +116,7 @@
                         @can('vtas_pos_no_facturar_pdv')
 
                             @can('vtas_pos_btn_facturar_restaurante')
+                                hi baby
                                 {!! $btn_facturar_restaurante !!}
                             @endcan
 

@@ -304,6 +304,8 @@ function reset_campos_formulario() {
 
   $('.filtros').html('');
   $('#textinput_filter_item').val('');
+  
+  $('#inv_producto_id').focus();  
 }
 
 /**

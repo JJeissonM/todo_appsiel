@@ -39,6 +39,16 @@ class PrintingServerController extends Controller
 
     public function test_print_example_rawbt()
     {
-        return (new ExampleRawbt())->print();
-    }    
+        return (new ExampleRawbt())->print2();
+    }
+
+    public function feed_paper( $line_numbers = 1 )
+    {
+        return (new ExampleRawbt())->feed_paper( $line_numbers );
+    }
+
+    public function feed_reverse_paper( $line_numbers = 1 )
+    {
+        return (new ExampleRawbt())->feed_reverse_paper( $line_numbers );
+    }
 }

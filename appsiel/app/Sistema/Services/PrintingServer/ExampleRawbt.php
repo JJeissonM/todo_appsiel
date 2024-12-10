@@ -16,7 +16,48 @@ use Mike42\Escpos\CapabilityProfile;
 
 class ExampleRawbt
 {
-    public function print()
+    
+    public function feed_paper( $line_numbers )
+    {
+        try {
+            $profile = CapabilityProfile::load("POS-5890");
+        
+            /* Fill in your own connector here */
+            $connector = new RawbtPrintConnector();
+
+            $printer = new Printer($connector, $profile);
+        
+            $printer->feed( $line_numbers );
+        
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
+
+    }
+    public function feed_reverse_paper( $line_numbers )
+    {
+        try {
+            $profile = CapabilityProfile::load("POS-5890");
+        
+            /* Fill in your own connector here */
+            $connector = new RawbtPrintConnector();
+
+            $printer = new Printer($connector, $profile);
+        
+            $printer->feedReverse( $line_numbers * -1 );        
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
+
+    }
+
+    public function print2()
     {
         try {
             $profile = CapabilityProfile::load("POS-5890");
