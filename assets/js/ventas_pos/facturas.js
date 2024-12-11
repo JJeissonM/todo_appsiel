@@ -44,7 +44,7 @@ function set_label_efectivo_recibido(efectivo_recibido) {
 };
 
 function set_valor_pendiente_ingresar_medios_recaudos() {
-  var valor_total_factura = parseFloat($("#valor_total_factura").val());
+  var valor_total_factura = redondear_a_centena( parseFloat($("#valor_total_factura").val() ) );
 
   var valor_total_lineas_medios_recaudos = parseFloat(
     $("#total_valor_total").html().substring(1)

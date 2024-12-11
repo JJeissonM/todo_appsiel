@@ -534,54 +534,90 @@ function agregar_linea_producto_ingresado(
   }
 }
 
+/**
+ * 
+ * @param {*} barcode 
+ * @returns 
+ */
 function get_item_id_from_barcode(barcode) {
   return parseInt(barcode.substr(0, 6));
 }
 
+/**
+ * 
+ * @param {*} barcode 
+ * @returns 
+ */
 function get_quantity_from_barcode(barcode) {
   return barcode.substr(6, 2) + "." + barcode.substr(8, 3);
-}  
+}
 
-function activar_boton_guardar_factura() {
+/**
+ * 
+ */
+function enable_boton_guardar_factura()
+{
+  $("#btn_guardar_factura").removeAttr("disabled");
+  $("#btn_guardar_factura_electronica").removeAttr("disabled");
+}
+
+/**
+ * 
+ */
+function disable_boton_guardar_factura()
+{
   $("#btn_guardar_factura").attr("disabled", "disabled");
   $("#btn_guardar_factura_electronica").attr("disabled", "disabled");
+}
+
+/**
+ * 
+ * @returns 
+ */
+function activar_boton_guardar_factura() {
+  disable_boton_guardar_factura();
   $("#div_efectivo_recibido").show();
   $("#div_total_cambio").show();
 
-  var valor_total_lineas_medios_recaudos = parseFloat(
-    $("#total_valor_total").html().substring(1)
-  );
+  var valor_total_factura = redondear_a_centena( parseFloat( $("#valor_total_factura").val() ) );
 
-  if (total_cambio.toFixed(0) >= 0 && valor_total_lineas_medios_recaudos == 0) {
-    $("#btn_guardar_factura").removeAttr("disabled");
-    $("#btn_guardar_factura_electronica").removeAttr("disabled");
-    return true;
+  if ( valor_total_factura == 0 && hay_productos == 0 ) {
+    return false;
   }
 
   if ($("#forma_pago").val() == "credito") {
     $("#div_efectivo_recibido").hide();
     $("#div_total_cambio").hide();
-    $("#btn_guardar_factura").removeAttr("disabled");
-    $("#btn_guardar_factura_electronica").removeAttr("disabled");
+    enable_boton_guardar_factura();
+    return true;
+  }
+
+  // total_valor_total es el total de los Medios de Pago
+  var valor_total_lineas_medios_recaudos = parseFloat( $("#total_valor_total").html().substring(1) );
+
+  var vlr_efectivo_recibido = 0;
+  if ( validar_input_numerico($("#efectivo_recibido")) ) {
+    vlr_efectivo_recibido = parseFloat( $("#efectivo_recibido").val() );
+  }
+  
+  // No se ingresaron lineas de medios de Pago
+  if ( valor_total_lineas_medios_recaudos == 0 && vlr_efectivo_recibido >= valor_total_factura ) {
+    enable_boton_guardar_factura();
     return true;
   }
 
   // Cuando se ingresan lineas de medios de recaudo el valor total debe ser exacto al de la factura.
-  if (valor_total_lineas_medios_recaudos != 0) {
-    var ajuste_al_peso = 0;
+  var ajuste_al_peso = 0;
 
-    var diferencia =
-      parseFloat($("#valor_total_factura").val()) -
-      (valor_total_lineas_medios_recaudos + ajuste_al_peso);
+  var diferencia = valor_total_factura - (valor_total_lineas_medios_recaudos + ajuste_al_peso);
 
-    if (Math.abs(diferencia) < 1) {
-      $("#btn_guardar_factura").removeAttr("disabled");
-      $("#btn_guardar_factura_electronica").removeAttr("disabled");
-      $("#msj_medios_pago_diferentes_total_factura").hide();
-    } else {
-      $("#div_total_cambio").attr("class", "danger");
-      $("#msj_medios_pago_diferentes_total_factura").show();
-    }
+  if (Math.abs(diferencia) < 1) {
+    $("#btn_guardar_factura").removeAttr("disabled");
+    $("#btn_guardar_factura_electronica").removeAttr("disabled");
+    $("#msj_medios_pago_diferentes_total_factura").hide();
+  } else {
+    $("#div_total_cambio").attr("class", "danger");
+    $("#msj_medios_pago_diferentes_total_factura").show();
   }
 }
 
@@ -618,19 +654,35 @@ function agregar_nueva_linea() {
         for (let index = 0; index < td.length; index++) {
           haystack += td[index].textContent || td[index].innerText;          
         }
-        console.log(haystack)
-        //if (td) {
-          //  txtValue = td.textContent || td.innerText;
-            //console.log(td,txtValue)
-            if (haystack.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
-            }
-        //}
+        
+        if (haystack.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+        } else {
+            tr[i].style.display = "none";
+        }
     }
-}  
+}
 
+/**
+ * 
+ * @param {*} vlr_efectivo_recibido 
+ */
+function set_datos_efectivo_recibido( vlr_efectivo_recibido )
+{
+  $("#total_efectivo_recibido").val( vlr_efectivo_recibido );
+
+  set_label_efectivo_recibido( vlr_efectivo_recibido );
+
+  calcular_total_cambio( vlr_efectivo_recibido );
+
+  activar_boton_guardar_factura();
+
+  cambiar_estilo_div_total_cambio();
+}
+
+/**
+ * 
+ */
 $(document).ready(function () {
 
   $("#btn_guardar").hide();
@@ -744,60 +796,62 @@ $(document).ready(function () {
     }
   });
 
+  /**
+   * EFECTIVO RECIBIDO
+   */
   $("#efectivo_recibido").on("keyup", function (event) {
     $("#popup_alerta").hide();
     var codigo_tecla_presionada = event.which || event.keyCode;
 
-    if (codigo_tecla_presionada == 27) {
+    if (codigo_tecla_presionada == 27) { // 27:ESC
       $("#inv_producto_id").focus();
       return false;
     }
 
-    if (codigo_tecla_presionada == 113) {
-      // 113: F2
+    if (codigo_tecla_presionada == 113) { // 113: F2      
       $("#textinput_filter_item").select();
       return false;
     }
 
     if ($("#valor_total_factura").val() <= 0) {
+      
+      set_datos_efectivo_recibido( 0 )
+
       return false;
     }
 
-    if (validar_input_numerico($(this)) && $(this).val() > 0) {
-      switch (codigo_tecla_presionada) {
-        case 13: // Al presionar Enter
-          if (total_cambio.toFixed(0) >= 0) {
-            $("#btn_guardar_factura").focus();
+    if ( !validar_input_numerico($(this)) ) {
+      
+      set_datos_efectivo_recibido( 0 )
 
-            if ($("#ocultar_boton_guardar_factura_pos").val() == 1) {
-              $("#header_tab1").removeAttr("class");
-              $("#header_tab3").attr("class", "active");
-
-              $("#tab1").attr("class", "tab-pane fade");
-              $("#tab3").attr("class", "tab-pane fade active in");
-
-              $("#btn_guardar_factura_electronica").focus();
-            }
-          } else {
-            return false;
-          }
-
-          break;
-
-        default:
-          $("#total_efectivo_recibido").val($(this).val());
-          set_label_efectivo_recibido($(this).val());
-
-          calcular_total_cambio($(this).val());
-
-          activar_boton_guardar_factura();
-
-          cambiar_estilo_div_total_cambio();
-
-          break;
-      }
-    } else {
       return false;
+    }
+
+    switch (codigo_tecla_presionada) {
+      case 13: // Al presionar Enter
+        if (total_cambio.toFixed(0) >= 0) {
+          $("#btn_guardar_factura").focus();
+
+          if ($("#ocultar_boton_guardar_factura_pos").val() == 1) {
+            $("#header_tab1").removeAttr("class");
+            $("#header_tab3").attr("class", "active");
+
+            $("#tab1").attr("class", "tab-pane fade");
+            $("#tab3").attr("class", "tab-pane fade active in");
+
+            $("#btn_guardar_factura_electronica").focus();
+          }
+        } else {
+          return false;
+        }
+
+        break;
+
+      default:
+
+        set_datos_efectivo_recibido( $(this).val() )
+
+        break;
     }
   });
 
@@ -860,6 +914,9 @@ $(document).ready(function () {
     }
   });
 
+  /**
+   * 
+   */
   $("#tasa_descuento").keyup(function () {
     if (validar_input_numerico($(this))) {
       tasa_descuento = parseFloat($(this).val());
@@ -946,8 +1003,14 @@ $(document).ready(function () {
     if (hay_productos == 0) {
       reset_efectivo_recibido();
     }
+
+    $('#inv_producto_id').focus();
+
   });
 
+  /**
+   * 
+   */
   $("#btn_probar").click(function (event) {
     event.preventDefault();
     llenar_tabla_productos_facturados();

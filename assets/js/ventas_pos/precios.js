@@ -463,10 +463,15 @@ function redondear_a_centena(numero, aproximacion_superior = false) {
  * @param {*} efectivo_recibido 
  */
 function calcular_total_cambio(efectivo_recibido) {
-    total_cambio =
-      ((parseFloat($("#valor_total_factura").val())) -
-        parseFloat(efectivo_recibido)) *
-      -1;
+    
+    total_cambio = 0;
+    var efectivo_recibido = parseFloat(efectivo_recibido);
+
+    if ( efectivo_recibido > 0) {
+        var valor_total_factura = redondear_a_centena( parseFloat( $("#valor_total_factura").val() ) );
+
+        total_cambio = efectivo_recibido - valor_total_factura;
+    }
   
     // Label
     $("#total_cambio").text(
@@ -480,7 +485,7 @@ function calcular_total_cambio(efectivo_recibido) {
  * 
  */
 function cambiar_estilo_div_total_cambio() {
-  $("#efectivo_recibido").css("background-color", "white");
+  //$("#efectivo_recibido").css("background-color", "white");
 
   $("#div_total_cambio").attr("class", "danger");
 
