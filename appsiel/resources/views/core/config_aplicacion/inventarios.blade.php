@@ -551,7 +551,7 @@
 									$connector_type = $parametros['connector_type'];
 								}
 							?>
-							{{ Form::bsSelect('connector_type', $connector_type, 'Tipo de Conector para envio de impresion', ['rawbt' => 'WebSockect', 'network' => 'Imprespora de Red'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('connector_type', $connector_type, 'Tipo de Conector para envío de impresión', ['rawbt' => 'WebSockect', 'network' => 'Impresora de Red'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
