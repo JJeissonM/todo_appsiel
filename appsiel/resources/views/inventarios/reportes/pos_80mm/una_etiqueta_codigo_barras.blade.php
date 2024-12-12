@@ -10,25 +10,15 @@
                 $pos = strpos($mystring, $findme);
                 $descripcion = substr($mystring,0,$pos);
                 */
-                $max_characters = 30;
 
                 //dd($mystring, $findme, $pos,  $descripcion, strtoupper(substr( $descripcion, 0, 30)));
             ?>
             <p style="margin: 6px 0px -12px; width:100%; padding-left: 6px;">
-                <b>{{ strtoupper(substr( $fila->label, 0, $max_characters)) }}</b>
+                <b>{{ $label }}</b>
             </p>
         @endif
         
         <?php
-            
-            $codigo_barras = $fila->codigo_barras;
-
-            if ( !is_numeric($codigo_barras) ) {
-                //dd('El ítem ' .  $fila->descripcion . ' NO tiene un código de barras válido: ' . $fila->codigo_barras . '. Debe contener solo números.');
-                
-                $codigo_barras = $fila->id;
-            }
-
             $ancho_codigo = 1.9;
             $alto_codigo = 80;        
         ?>
@@ -37,7 +27,7 @@
             <img src="data:image/png;base64,{{ DNS1D::getBarcodePNG( substr($codigo_barras,0,12), "EAN13", $ancho_codigo, $alto_codigo) }}" alt="barcode"  style="display:inline;"/>
         </p>
         <span style="padding-left: 45px; font-weight:bold;">
-            {{ $codigo_barras . $fila->get_codigo_proveedor() . $fila->get_talla() }}
+            {{ $barcode_description }}
         </span>
     </div>
 </div>

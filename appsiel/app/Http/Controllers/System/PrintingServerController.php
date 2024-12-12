@@ -51,4 +51,9 @@ class PrintingServerController extends Controller
     {
         return (new ExampleRawbt())->feed_reverse_paper( $line_numbers );
     }
+
+    public function cut_paper()
+    {
+        return (new ExampleRawbt())->cut_paper();
+    }
 }

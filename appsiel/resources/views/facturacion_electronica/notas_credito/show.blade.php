@@ -122,8 +122,6 @@
 
 		        var url = '../vtas_get_formulario_edit_registro';
 
-		        console.log( $(this).attr('data-linea_registro_id') );
-
 				$.get( url, { linea_registro_id: $(this).attr('data-linea_registro_id'), id: getParameterByName('id'), id_modelo: getParameterByName('id_modelo'), id_transaccion: getParameterByName('id_transaccion') } )
 					.done(function( data ) {
 

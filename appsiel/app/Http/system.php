@@ -8,5 +8,6 @@ Route::get('sys_test_printing_form', 'System\PrintingServerController@test_print
 Route::get('sys_test_print_example_rawbt', 'System\PrintingServerController@test_print_example_rawbt');
 
 
+Route::get('sys_printing_cut_paper', 'System\PrintingServerController@cut_paper');
 Route::get('sys_printing_feed_paper/{line_numbers?}', 'System\PrintingServerController@feed_paper');
 Route::get('sys_printing_feed_reverse_paper/{line_numbers?}', 'System\PrintingServerController@feed_reverse_paper');

@@ -16,19 +16,42 @@ use Mike42\Escpos\CapabilityProfile;
 
 class ExampleRawbt
 {
-    
-    public function feed_paper( $line_numbers )
+    public function get_print_connector( $print_connector )
+    {
+        
+        $printer_IP = Input::get('printer_ip');
+
+        switch ($print_connector) {
+            case 'network':
+                $connector = new NetworkPrintConnector($printer_IP, 9100);
+                return new Printer($connector);
+                break;
+
+            case 'rawbt':
+                $profile = CapabilityProfile::load("POS-5890");
+        
+                /* Fill in your own connector here */
+                $connector = new RawbtPrintConnector();
+
+                return new Printer($connector, $profile);
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+    }
+
+    /**
+     * 
+     */
+    public function cut_paper()
     {
         try {
-            $profile = CapabilityProfile::load("POS-5890");
-        
-            /* Fill in your own connector here */
-            $connector = new RawbtPrintConnector();
+            
+            $printer = $this->get_print_connector( Input::get('print_connector_type') );
 
-            $printer = new Printer($connector, $profile);
-        
-            $printer->feed( $line_numbers );
-        
+            $printer->cut();        
 
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -37,17 +60,33 @@ class ExampleRawbt
         }
 
     }
+
+    /**
+     * 
+     */
+    public function feed_paper( $line_numbers )
+    {
+        try {
+            
+            $printer = $this->get_print_connector( Input::get('print_connector_type') );
+
+            $printer->feed( $line_numbers );
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        } finally {
+            $printer->close();
+        }
+
+    }
+
     public function feed_reverse_paper( $line_numbers )
     {
         try {
-            $profile = CapabilityProfile::load("POS-5890");
+            
+            $printer = $this->get_print_connector( Input::get('print_connector_type') );
         
-            /* Fill in your own connector here */
-            $connector = new RawbtPrintConnector();
-
-            $printer = new Printer($connector, $profile);
-        
-            $printer->feedReverse( $line_numbers * -1 );        
+            $printer->feedReverse( $line_numbers );        
 
         } catch (Exception $e) {
             echo $e->getMessage();
@@ -58,6 +97,69 @@ class ExampleRawbt
     }
 
     public function print2()
+    {
+        $barcodes =  json_decode( Input::get('data') );
+
+        try {
+            
+            $printer = $this->get_print_connector( Input::get('print_connector_type') );
+
+
+            // BEEP
+            //$printer -> getPrintConnector() -> write(PRINTER::ESC . "B" . chr(3) . chr(2));
+            
+            $number_sticker = 1;
+            $arr_dos_espacios = [2, 4, 5, 7, 8, 10, 11, 12, 13, 15, 16, 18, 19, 20, 22, 24, 25, 26, 28];
+            $arr_tres_espacios = [];
+            foreach ($barcodes as $n => $item) {
+
+                $printer->initialize();
+                $printer->setJustification(Printer::JUSTIFY_CENTER);
+                $printer->selectPrintMode();
+                $printer->setPrintWidth(456);
+                $printer->setBarcodeHeight(80);
+                
+                echo 'Sticker No. ' . $number_sticker . "\n";
+
+                $printer->text( "\n" );
+
+                $printer->text( substr( $item->label, 0, 37) . "\n" );
+                if ( strlen($item->label) > 38 ) {
+                    $printer->text( substr( $item->label, 37, 75) . "\n" );
+                }else{
+                    $printer->text( $number_sticker . "      \n" ); // ***** QUITAR EN PRODUCCION ***
+                }
+
+                $printer->barcode($item->barcode, Printer::BARCODE_JAN13);
+
+                $printer->text( $item->barcode_description . "\n" );
+
+                $espacios_al_final = 1;
+
+                if ( in_array( $number_sticker, $arr_dos_espacios) ) {
+                    $espacios_al_final = 2;
+                }
+
+                if ( in_array( $number_sticker, $arr_tres_espacios) ) {
+                    $espacios_al_final = 3;
+                }
+
+                $printer->feed( $espacios_al_final );
+
+                $number_sticker++;
+            }
+        
+            /* Cut the receipt and open the cash drawer */
+            $printer->cut();
+            //$printer->pulse();
+            $printer->close();
+
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function original_demo()
     {
         try {
             $profile = CapabilityProfile::load("POS-5890");

@@ -46,23 +46,27 @@
 
 
 @section('contenido')
-	<div class="col-md-12 marco_formulario">
-		
+	<div class="col-md-12 marco_formulario">		
 		
 		<div style="display: flex; justify-content: justify-content-center">
 			<span>
 				{{ Form::bsBtnPdf( $reporte->descripcion ) }}
 				{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
 
-				<!-- 
-				<a onclick="makeRequest('{ {url('/sys_test_print_example_rawbt')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Etiquetas de códigos de barra"><i class="fa fa-print"></i></a>
-				
-				<a onclick="makeRequest('{ {url('/sys_printing_feed_paper/5')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Alimentar papel"><i class="fa fa-arrow-up"></i></a>
-				
-				<a onclick="makeRequest('{ {url('/sys_printing_feed_reverse_paper')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Alimentar papel"><i class="fa fa-arrow-down"></i></a>
 
-				-->
+				<div id="div_btns_barcodes" >
+
+				</div>
+
+				<input type="hidden" name="ip_printer" id="ip_printer" value="{{ config('inventarios.ip_printer') }}">
+				<input type="hidden" name="connector_type" id="connector_type" value="{{ config('inventarios.connector_type') }}">
 				
+				<!--
+				<a onclick="makeRequest('{ {url('/sys_test_print_example_rawbt')}}')" class="btn-gmail" id="btn_print_barcodes" style="display: inline-block;" href="#" title="Etiquetas de códigos de barra"><i class="fa fa-print"></i></a>
+				<a class="btn-gmail" id="btn_feed_paper" style="display: inline-block;" href="#" title="Alimentar papel"><i class="fa fa-arrow-up"></i></a>
+				
+				<a class="btn-gmail" id="btn_feed_reverse_paper" style="display: inline-block;" href="#" title="Retroceder papel"><i class="fa fa-arrow-down"></i></a>	
+				--> 			
 
 			</span>
 		</div> 
@@ -74,7 +78,7 @@
 			</div>
 		</div>	
 			
-		<br/>			
+		<br/>
 		
 	</div>
 @endsection
@@ -142,7 +146,7 @@
 						return false;
 					}
 
-					$('#btn_print_barcodes').show(500);
+					create_btns_for_print_barcodes();
 					
 				});
 			});

@@ -527,6 +527,36 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$ip_printer = '192.168.20.100';
+								if( isset($parametros['ip_printer'] ) )
+								{
+									$ip_printer = $parametros['ip_printer'];
+								}
+							?>
+							{{ Form::bsText('ip_printer', $ip_printer, 'IP Impresora enviar Códigos de Barra', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$connector_type = 'rawbt';
+								if( isset($parametros['connector_type'] ) )
+								{
+									$connector_type = $parametros['connector_type'];
+								}
+							?>
+							{{ Form::bsSelect('connector_type', $connector_type, 'Tipo de Conector para envio de impresion', ['rawbt' => 'WebSockect', 'network' => 'Imprespora de Red'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				
 
 				<h4> Parámetros para manejo de ítems Mandatarios </h4>
