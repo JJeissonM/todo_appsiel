@@ -109,7 +109,7 @@ class ExampleRawbt
             //$printer -> getPrintConnector() -> write(PRINTER::ESC . "B" . chr(3) . chr(2));
             
             $number_sticker = 1;
-            $arr_dos_espacios = [2, 4, 5, 7, 8, 10, 11, 12, 13, 15, 16, 18, 19, 20, 22, 24, 25, 26, 28];
+            $arr_dos_espacios = [2, 4, 5, 6, 7, 8, 10, 11, 12, 13, 15, 16, 18, 19, 20, 22, 24, 25, 26, 28];
             $arr_tres_espacios = [];
             foreach ($barcodes as $n => $item) {
 
@@ -119,7 +119,7 @@ class ExampleRawbt
                 $printer->setPrintWidth(456);
                 $printer->setBarcodeHeight(80);
                 
-                echo 'Sticker No. ' . $number_sticker . "\n";
+                //echo 'Sticker No. ' . $number_sticker . "\n";
 
                 $printer->text( "\n" );
 
