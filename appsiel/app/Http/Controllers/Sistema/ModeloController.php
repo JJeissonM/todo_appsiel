@@ -703,6 +703,9 @@ class ModeloController extends Controller
         return redirect('web/' . $variables_url)->with('flash_message', 'Estado ACTUALIZADO correctamente.');
     }
 
+    /**
+     * 
+     */
     public function duplicar($id_registro)
     {
         $registro = app($this->modelo->name_space)->find($id_registro);

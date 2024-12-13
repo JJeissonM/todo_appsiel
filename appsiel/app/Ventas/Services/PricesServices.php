@@ -28,6 +28,10 @@ class PricesServices
             $nuevo_precio_venta = $data['precio_venta'];
         }
 
+        if (!isset($data['precio'])) {
+            $data['precio'] = $data['precio_venta'];
+        }
+
         $reg_precio_actual = ListaPrecioDetalle::where([
             ['lista_precios_id', '=', $data['lista_precios_id']],
             ['inv_producto_id', '=', $data['inv_producto_id']]
@@ -46,9 +50,7 @@ class PricesServices
                 $item->precio_venta = $nuevo_precio_venta;
                 $item->save();
             }
-        }
-
-        
+        }        
     }
 
     public function get_item_price( $lista_precios_id, $fecha, $producto_id, $cliente_id )
