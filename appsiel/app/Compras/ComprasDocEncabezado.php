@@ -87,7 +87,9 @@ class ComprasDocEncabezado extends Model
     public function enviado_electronicamente()
     {
         $procesado = false;
+        
         $resultados_envios_fe_doc_soporte = $this->resultados_envios_fe_doc_soporte();
+
         foreach ($resultados_envios_fe_doc_soporte as $resultado) {
             if($resultado->resultado == 'Procesado' || $resultado->resultado == 'Rechazado por la DIAN'){
                 $procesado = true;

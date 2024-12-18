@@ -1099,7 +1099,7 @@ $(document).ready(function () {
     $.post(url, data, function (doc_encabezado) {
       $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
       $("#btn_guardando").attr("id", "btn_guardar_factura");
-      $("title").append(doc_encabezado.consecutivo);
+      //$("title").append(doc_encabezado.consecutivo);
 
       $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
 
