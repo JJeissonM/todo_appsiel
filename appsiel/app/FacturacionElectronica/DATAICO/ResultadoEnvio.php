@@ -82,28 +82,6 @@ class ResultadoEnvio
             break;
             default:
                 
-                /*if( gettype($resultado['errors']) == 'string' )
-                {
-                    $mensaje = '<br>Notificaciones DIAN<br>' . $resultado['errors'];
-                }else{
-                    $mensaje = '<br>Notificaciones DIAN<br>';
-                    $errores = $resultado['errors'];
-                    foreach ( $errores as $linea_resultado )
-                    {
-                        $mensaje .= $linea_resultado['error'] . '\n';
-                        $detalles_error = $linea_resultado['path'];
-                        $mensaje .= ' Ruta: ';
-                        foreach ( $detalles_error as $key => $detalle )
-                        {
-                            $mensaje .= $detalle . ' ';
-                        }
-                    }
-                }
-                $resultado_almacenar["reglasNotificacionDIAN"] = $mensaje;
-
-                */
-                /////////////////////////////////////////////////
-
                 $errores = '';
                 if ( isset($resultado['errors']) ) {
                     if ( !empty($resultado['errors']) ) {
