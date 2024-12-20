@@ -222,11 +222,15 @@ class FacturaController extends TransaccionController
            $error_message = 'Documento no puede ser enviado. El prefijo ' . $vtas_doc_encabezado->tipo_documento_app->prefijo . ' no tiene una resolución asociada.';
         }
 
-        $result = (new DocumentHeaderService())->validar_datos_tercero($vtas_doc_encabezado->cliente->tercero);
+        $doc_header_service = new DocumentHeaderService();
+
+        $cliente = $doc_header_service->get_cliente( $vtas_doc_encabezado );
+
+        $result = $doc_header_service->validar_datos_tercero( $cliente->tercero );
 
         if ( $result->status == 'error' )
         {
-            $error_message = 'Documento no puede ser enviado. <br> El cliente presenta inconsistencia en sus datos básicos: ' . $result->message;
+            $error_message = 'Documento no puede ser enviado. <br> El cliente ' . $cliente->tercero->descripcion . ' presenta inconsistencia en sus datos básicos: ' . $result->message;
         }
 
         return $error_message;

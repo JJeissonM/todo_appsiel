@@ -13,6 +13,7 @@ use App\Http\Controllers\Ventas\VentaController;
 use App\Inventarios\RemisionVentas;
 use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoMovimiento;
+use App\Ventas\Cliente;
 use App\Ventas\Services\TreasuryServices;
 use App\Ventas\VtasDocEncabezado;
 use App\Ventas\VtasDocRegistro;
@@ -234,6 +235,20 @@ class DocumentHeaderService
             'status' => $status,
             'message' => $message
         ];
+    }
+
+    public function get_cliente( $vtas_doc_encabezado )
+    {
+        $cliente = $vtas_doc_encabezado->cliente;
+
+        if ( (int)config('facturacion_electronica.enviar_facturas_clientes_internos') && $cliente->tercero->tipo == 'Interno' ) {
+            $cliente_consumidor_final = Cliente::find( (int)config('facturacion_electronica.cliente_consumidor_final_id') );
+            if ( $cliente_consumidor_final != null ) {
+               $cliente = $cliente_consumidor_final;
+            }
+        }
+
+        return $cliente;
     }
         
 }

@@ -5,6 +5,7 @@ namespace App\FacturacionElectronica\DATAICO;
 use GuzzleHttp\Client;
 
 use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
+use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Ventas\Cliente;
 
 // declaramos factura
@@ -211,16 +212,7 @@ class FacturaGeneral
 
    public function get_datos_cliente()
    {
-      $cliente = $this->doc_encabezado->cliente;
-
-      if ( (int)config('facturacion_electronica.enviar_facturas_clientes_internos') && $cliente->tercero->tipo == 'Interno' ) {
-         $cliente_consumidor_final = Cliente::find( (int)config('facturacion_electronica.cliente_consumidor_final_id') );
-         if ( $cliente_consumidor_final != null ) {
-            $cliente = $cliente_consumidor_final;
-         }
-      }
-
-      //dd((int)config('facturacion_electronica.cliente_consumidor_final_id'), config('facturacion_electronica.enviar_facturas_clientes_internos'), $cliente->tercero->tipo == 'Interno', $cliente_consumidor_final, $cliente, $cliente->tercero);
+      $cliente = (new DocumentHeaderService())->get_cliente( $this->doc_encabezado );
 
       $party_type = 'PERSONA_JURIDICA';
       $tax_level_code = 'COMUN';
