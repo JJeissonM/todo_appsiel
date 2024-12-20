@@ -16,7 +16,7 @@
 
 	<table class="table table-bordered">
 		<tr>
-			<td rowspan="3" width="120px">
+			<td rowspan="4" width="120px">
 
 				<?php
 					if ( $registro->imagen == '') {
