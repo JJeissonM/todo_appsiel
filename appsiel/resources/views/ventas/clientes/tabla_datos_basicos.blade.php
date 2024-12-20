@@ -32,6 +32,11 @@
 			</td>
 		</tr>
 		<tr>
+			<td colspan="3">
+				<b>Tipo:</b> {{ $registro->tercero->tipo }}
+			</td>
+		</tr>
+		<tr>
 			<td>
 				<b>Cliente:</b> {{ $registro->tercero->descripcion }}
 			</td>

@@ -17,13 +17,13 @@ function validar_datos_tercero()
         message += ' - Revisar NIT/CC. No puede estar vacio. Debe tener mas de 6 caracteres.';
     }
 
+    /*
     if ( $('#direccion1').val() == '' || $('#direccion1').val().length < 2 )
     {
         status = 'error';
         message += ' - Revisar dirección. No puede estar vacia. Debe tener mas de 8 caracteres.';
     }
 
-    /*
     if ( $('#email').val() == '' )
     {
         status = 'error';

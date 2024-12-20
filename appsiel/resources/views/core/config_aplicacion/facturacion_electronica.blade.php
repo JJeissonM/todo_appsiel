@@ -321,6 +321,39 @@
 
 				</div>
 
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cliente_consumidor_final_id = 0;
+								if( isset($parametros['cliente_consumidor_final_id'] ) )
+								{
+									$cliente_consumidor_final_id = $parametros['cliente_consumidor_final_id'];
+								}
+							?>
+							{{ Form::bsSelect('cliente_consumidor_final_id', $cliente_consumidor_final_id, 'Cliente Consumidor Final', \App\Ventas\Cliente::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$enviar_facturas_clientes_internos = '0';
+
+								if( isset($parametros['enviar_facturas_clientes_internos'] ) )
+								{
+									$enviar_facturas_clientes_internos = $parametros['enviar_facturas_clientes_internos'];
+								}
+							?>
+							{{ Form::bsSelect('enviar_facturas_clientes_internos', $enviar_facturas_clientes_internos, 'Enviar facturas de Clientes Internos a nombre de Consumior Final', ['No', 'Si'], ['class'=>'form-control']) }}
+
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 
 				<div style="width: 100%; text-align: center;">
