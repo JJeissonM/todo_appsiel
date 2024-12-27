@@ -244,8 +244,10 @@ class FacturaGeneral
       if ( $cliente->tercero->direccion1 != '') {
          $address_line = $cliente->tercero->direccion1;
       }
+
+      $party_identification_type = $cliente->tercero->id_tipo_documento_id;
       
-      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $address_line . '"}';
+      return '{"email": "' . $cliente->tercero->email . '","phone": "' . $cliente->tercero->telefono1 . '","party_type": "' . $party_type . '","company_name": "' . $company_name . '","first_name":"' . $first_name . '","family_name":"' . $family_name . '","party_identification": "' . $cliente->tercero->numero_identificacion . '","party_identification_type": "' . $party_identification_type . '","tax_level_code": "' . $tax_level_code . '","regimen": "' . $regimen . '","department": "' . $department_id . '","city": "' . $city_id . '","address_line": "' . $address_line . '"}';
    }
 
    public function get_lineas_registros()

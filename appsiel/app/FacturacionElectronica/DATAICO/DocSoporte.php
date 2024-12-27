@@ -179,7 +179,7 @@ class DocSoporte
    {
       $cliente = $this->doc_encabezado->proveedor;
 
-      $party_identification_type = 'NIT';
+      $party_identification_type = $cliente->tercero->id_tipo_documento_id;
 
       $company_name = $cliente->tercero->descripcion;
 
