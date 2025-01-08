@@ -4,13 +4,12 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
-use Auth;
-
 use App\Core\Tercero;
 use App\Nomina\MovimientoIbcEmpleado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\CambioSalario;
 use App\Nomina\ParametrosRetefuenteEmpleado;
+use Illuminate\Support\Facades\Auth;
 
 class NomContrato extends Model
 {
@@ -142,9 +141,10 @@ class NomContrato extends Model
     public function dias_laborados_adicionales_docentes()
     {
         // Verificar si tiene movimiento en 10 meses del año
-        if( NomDocRegistro::where('nom_contrato_id',$this->id)->groupBy('fecha')->get()->count() >= 10 )
+        $cantidad_meses_laborados = NomDocRegistro::where('nom_contrato_id',$this->id)->groupBy('fecha')->get()->count();
+        if( $cantidad_meses_laborados >= 10 )
         {
-            return 60;
+            return (12 - $cantidad_meses_laborados ) * 30;
         }
 
         return 0;
