@@ -15,6 +15,8 @@ $("#btnPaula").hide();
 $("#teso_motivo_id").val(1);
 $("#teso_caja_id").val($("#caja_pdv_default_id").val());
 
+$("#inv_producto_id").select();
+
 function ejecutar_acciones_con_item_sugerencia(
   item_sugerencia,
   obj_text_input
@@ -248,6 +250,8 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true ) {
   $("#cantidad_total_productos").text(cantidad_total_productos);
 
   $("#tr_fecha_vencimiento").hide();
+  $("#tr_total_recibido").show();
+  $("#tr_total_cambio").show();
   if ($("#forma_pago").val() == "credito") {
     $("#tr_fecha_vencimiento").show();
     $("#tr_total_recibido").hide();
@@ -726,6 +730,7 @@ $(document).ready(function () {
       case 27: // 27 = ESC
         $("#efectivo_recibido").val("");
         $("#efectivo_recibido").select();
+        $("#efectivo_recibido").css("background-color", "white");
 
         break;
 
@@ -816,6 +821,7 @@ $(document).ready(function () {
     if ($("#valor_total_factura").val() <= 0) {
       
       set_datos_efectivo_recibido( 0 )
+      $("#efectivo_recibido").css("background-color", "white");
 
       return false;
     }

@@ -39,6 +39,8 @@ class PedidosPosController extends TransaccionController
 {
     protected $doc_encabezado;
 
+    protected $numero_lineas = 0;
+
     /* El método index() está en TransaccionController */
 
     public function create()
@@ -390,6 +392,7 @@ class PedidosPosController extends TransaccionController
             $lineas_registros = $pedido->lineas_registros;
             foreach ($lineas_registros as $linea) {
                 $todas_las_lineas_registros[] = $linea;
+                $this->numero_lineas++;
             }
         }
 
@@ -616,8 +619,6 @@ class PedidosPosController extends TransaccionController
 
         $pdv = Pdv::find( Input::get('pdv_id') );
 
-        $numero_lineas = count($pedido->lineas_registros);
-
         $cliente = $pedido->cliente;
         
         $inv_bodega_id = $cliente->inv_bodega_id;
@@ -656,7 +657,7 @@ class PedidosPosController extends TransaccionController
 
         return response()->json([
             'pedido' => $pedido,
-            'numero_lineas' => $numero_lineas,
+            'numero_lineas' => $this->numero_lineas,
             'cliente' => $html,
             'vendedor' => $vendedor,
             'lineas_registros' => $lineas_registros,

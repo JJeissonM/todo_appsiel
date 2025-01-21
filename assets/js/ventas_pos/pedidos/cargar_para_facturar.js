@@ -16,7 +16,7 @@ $(document).ready(function () {
                 agregar_lineas_pedido(data.lineas_registros);
 
                 hay_productos = data.numero_lineas;
-                $('#numero_lineas').text(hay_productos);                
+                $('#numero_lineas').text(hay_productos);
 
 				$("#myModal2").modal("hide");
 
@@ -28,7 +28,7 @@ $(document).ready(function () {
                 $("#btn_cancelar_pedido").show();
 
                 // Medios de pago
-                $("#btn_nuevo").show();                
+                $("#btn_nuevo").show();
                 
                 // Se calculan los totales
                 calcular_totales();

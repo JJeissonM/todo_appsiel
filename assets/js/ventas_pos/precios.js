@@ -485,8 +485,6 @@ function calcular_total_cambio(efectivo_recibido) {
  * 
  */
 function cambiar_estilo_div_total_cambio() {
-  //$("#efectivo_recibido").css("background-color", "white");
-
   $("#div_total_cambio").attr("class", "danger");
 
   if (total_cambio.toFixed(0) >= 0)

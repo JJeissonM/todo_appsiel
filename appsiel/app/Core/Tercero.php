@@ -27,7 +27,7 @@ class Tercero extends Model
      */
     protected $fillable = ['core_empresa_id', 'imagen', 'tipo', 'razon_social', 'nombre1', 'otros_nombres', 'apellido1', 'apellido2', 'descripcion', 'id_tipo_documento_id', 'numero_identificacion', 'digito_verificacion', 'ciudad_expedicion', 'direccion1', 'direccion2', 'barrio', 'codigo_ciudad', 'codigo_postal', 'telefono1', 'telefono2', 'email', 'pagina_web', 'estado', 'user_id', 'contab_anticipo_cta_id', 'contab_cartera_cta_id', 'contab_cxp_cta_id', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono', 'Estado'];
 
     public function ciudad()
     {
@@ -142,12 +142,14 @@ class Tercero extends Model
                 'core_terceros.descripcion AS campo3',
                 'core_terceros.direccion1 AS campo4',
                 'core_terceros.telefono1 AS campo5',
-                'core_terceros.id AS campo6'
+                'core_terceros.estado AS campo6',
+                'core_terceros.id AS campo7'
             )->where(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
             ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
             ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.estado", "LIKE", "%$search%")
             ->orderBy('core_terceros.created_at', 'DESC')
             ->paginate($nro_registros);
 

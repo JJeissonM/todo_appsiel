@@ -26,12 +26,12 @@
         $contrasenia = 'demo123*'; // $2y$10$b0biqss8VcS1RN7/nBKv5e4.CByVrx9Q1WMg664IYFavA803uLOxC
         $options = [ 
           'administrador@appsiel.com.co' => 'Administrador Negocio',
+          'cajero@appsiel.com.co' => 'Cajero',
           'demo@appsiel.com.co' => 'Admin. Empresa Transporte Especial (FUEC)',
+          'mesero@appsiel.com.co' => 'Mesero',
+          'repuestos@appsiel.com.co' => 'Admin. Tienda Repuestos',
           'rector@appsiel.com.co' => 'Rector Colegio',
           'docente@appsiel.com.co' => 'Docente Colegio',
-          'mesero@appsiel.com.co' => 'Mesero',
-          'cajero@appsiel.com.co' => 'Cajero',
-          'repuestos@appsiel.com.co' => 'Admin. Tienda Repuestos',
           'administrator@appsiel.com.co' => 'Super Admin (contraseña requerida)'
         ];
       }
