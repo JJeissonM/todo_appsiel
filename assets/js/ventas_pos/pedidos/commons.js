@@ -338,6 +338,7 @@ $(document).ready(function () {
         hay_productos++;
         $('#btn_nuevo').show();
         $('#numero_lineas').text(hay_productos);
+        set_cantidades_ingresadas();
         deshabilitar_campos_encabezado();
 
         reset_linea_ingreso_default();
@@ -389,6 +390,7 @@ $(document).ready(function () {
         hay_productos--;
         numero_linea--;
         $('#numero_lineas').text(hay_productos);
+        set_cantidades_ingresadas();
 
         reset_linea_ingreso_default();
 
@@ -668,6 +670,7 @@ $(document).ready(function () {
         hay_productos = 0;
         numero_lineas = 0;
         $('#numero_lineas').text('0');
+        set_cantidades_ingresadas();
     }
 
     function reset_resumen_de_totales()

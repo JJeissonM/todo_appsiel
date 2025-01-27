@@ -107,9 +107,22 @@
 			{{ Form::close() }}
 
 			<br/>
+			<div class="marco_formulario">
+				<br>
+				<table class="table table-bordered">
+					<tr>
+						<td style="width: 40%;">
+							{{ Form::bsText( 'descuento', null, '% Descuento', ['class'=>'descuento'] ) }}
+						</td>
+						<td>
+							<button type="button" class="btn btn-primary" id="btn_aplicar_descuento"> <i class="fa fa-check"></i> Aplicar </button>
+						</td>
+				</table>
+			</div>
+
+			<br/>
 
 			@include( 'ventas.incluir.tabla_lineas_registros')
-
 
 			Productos ingresados: <span id="numero_lineas"> 0 </span>
 			
@@ -163,7 +176,6 @@
 
 	<script type="text/javascript">
 
-
 		hay_productos = 1;
 
 		$(document).ready(function(){
@@ -171,6 +183,35 @@
 			$('#fecha_vencimiento').val( get_fecha_hoy() );
 			$('#fecha').val( get_fecha_hoy() );
 			$('#linea_ingreso_default').hide();
+
+			$('#btn_aplicar_descuento').click(function(){
+				var descuento = $('#descuento').val();
+				var total_factura = $('#total_factura').val();
+
+				if ( descuento == '' || descuento == 0 )
+				{
+					$('#descuento').val(0);
+					$('#total_factura').val( total_factura );
+					return false;
+				}
+
+				if ( descuento > 100 )
+				{
+					$('#descuento').val(0);
+					$('#total_factura').val( total_factura );
+					alert('El descuento no puede ser mayor al 100%');
+					return false;
+				}
+
+				var total_factura = $('#total_factura').val();
+				var descuento = $('#descuento').val();
+
+				var total_descuento = ( total_factura * descuento ) / 100;
+				var total_factura = total_factura - total_descuento;
+
+				$('#descuento').val( total_descuento );
+				$('#total_factura').val( total_factura );
+			});
 
 			// GUARDAR EL FORMULARIO
 			$('#btn_guardar').click(function(event){

@@ -392,7 +392,7 @@ class PedidosPosController extends TransaccionController
             $lineas_registros = $pedido->lineas_registros;
             foreach ($lineas_registros as $linea) {
                 $todas_las_lineas_registros[] = $linea;
-                $this->numero_lineas++;
+                //$this->numero_lineas++;
             }
         }
 
@@ -422,6 +422,7 @@ class PedidosPosController extends TransaccionController
             $cuerpo_tabla_lineas_registros .= '</td></tr>';
             
             $i++;
+            $this->numero_lineas++;
         }
 
         $cuerpo_tabla_lineas_registros .= '</tbody>';

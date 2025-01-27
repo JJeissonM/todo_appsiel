@@ -17,6 +17,8 @@ $(document).ready(function () {
 
                 hay_productos = data.numero_lineas;
                 $('#numero_lineas').text(hay_productos);
+                console.log('Hay productos: ' + hay_productos);
+                set_cantidades_ingresadas();
 
 				$("#myModal2").modal("hide");
 
