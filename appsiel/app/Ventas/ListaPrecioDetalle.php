@@ -60,6 +60,7 @@ class ListaPrecioDetalle extends Model
 	{
 		return "LISTADO DE DETALLES DE LISTAS DE PRECIOS";
 	}
+
 	public static function get_precio_producto($lista_precios_id, $fecha_activacion, $inv_producto_id)
 	{
 		$registro = ListaPrecioDetalle::where('lista_precios_id', $lista_precios_id)
@@ -96,6 +97,40 @@ class ListaPrecioDetalle extends Model
 			->orderBy('vtas_listas_precios_detalles.fecha_activacion', 'DESC')
 			->get();
 		//dd( $precios );
+
+		$productos = [];
+		$i = 0;
+		$precios2 = collect([]);
+		foreach ($precios as $value)
+		{
+			if (!in_array($value->producto_codigo, $productos)) {
+				$precios2[$i] = $value;
+				$productos[$i] = $value->producto_codigo;
+				$i++;
+			}
+		}
+
+		return $precios2;
+	}
+
+	public static function get_precios_para_catalogos_pos()
+	{
+		$precios = ListaPrecioDetalle::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_precios_detalles.inv_producto_id')
+			->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+			->select(
+				'vtas_listas_precios_detalles.id',
+				'vtas_listas_precios_detalles.lista_precios_id',
+				'vtas_listas_precios_detalles.precio',
+				'vtas_listas_precios_detalles.fecha_activacion',
+				'inv_productos.descripcion as producto_descripcion',
+				'inv_productos.id as producto_codigo',
+				'inv_productos.referencia',
+				'inv_productos.tipo',
+				'inv_productos.unidad_medida1',
+				'contab_impuestos.tasa_impuesto'
+			)
+			->orderBy('vtas_listas_precios_detalles.fecha_activacion', 'DESC')
+			->get();
 
 		$productos = [];
 		$i = 0;

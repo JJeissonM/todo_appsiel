@@ -171,4 +171,27 @@ class Vendedor extends Model
 
         return 'ok';
     }
+
+    
+    public static function get_lista_para_catalogos_pos()
+    {
+        $opciones = Vendedor::where( 'estado', 'Activo' )->get();
+
+        $vec = [];
+        foreach ($opciones as $opcion)
+        {
+            $aux = $opcion->toArray();
+
+            $aux['nombre1'] = $opcion->tercero->nombre1;
+            $aux['apellido1'] = $opcion->tercero->apellido1;
+            $aux['descripcion'] = $opcion->tercero->descripcion;
+            $aux['direccion1'] = $opcion->tercero->direccion1;
+            $aux['telefono1'] = $opcion->tercero->telefono1;
+            $aux['numero_identificacion'] = $opcion->tercero->numero_identificacion;
+
+            $vec[] = $aux;
+        }
+
+        return $vec;
+    }
 }

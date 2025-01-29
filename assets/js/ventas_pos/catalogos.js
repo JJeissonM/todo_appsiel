@@ -26,12 +26,15 @@ function set_catalogos(pdv_id) {
   
       productos = datos.productos;
       precios = datos.precios;
+      todos_los_precios = datos.todos_los_precios;
       descuentos = datos.descuentos;
+      todos_los_descuentos = datos.todos_los_descuentos;
       clientes = datos.clientes;
       cliente_default = datos.cliente_default;
       forma_pago_default = datos.forma_pago_default;
       fecha_vencimiento_default = datos.fecha_vencimiento_default;
       contornos_permitidos = datos.contornos_permitidos;
+      vendedores = datos.vendedores;
   
       if ($("#action").val() == "edit") {
         set_lista_precios();

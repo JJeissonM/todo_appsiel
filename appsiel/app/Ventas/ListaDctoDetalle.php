@@ -68,7 +68,7 @@ class ListaDctoDetalle extends Model
 	}
 
 	public static function get_descuentos_productos_de_la_lista($lista_descuentos_id)
-	{		
+	{
         $array_wheres = [
             ['vtas_listas_dctos_detalles.id','>', 0]
         ];
@@ -93,7 +93,38 @@ class ListaDctoDetalle extends Model
 			)
 			->orderBy('vtas_listas_dctos_detalles.fecha_activacion', 'DESC')
 			->get();
-		//dd( $precios );
+
+		$productos = [];
+		$i = 0;
+		$descuentos2 = collect([]);
+		foreach ($descuentos as $value) {
+			if (!in_array($value->producto_codigo, $productos)) {
+				$descuentos2[$i] = $value;
+				$productos[$i] = $value->producto_codigo;
+				$i++;
+			}
+		}
+
+		return $descuentos2;
+	}
+
+	public static function get_descuentos_para_catalogos_pos()
+	{
+		$descuentos = ListaDctoDetalle::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_dctos_detalles.inv_producto_id')
+			->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+			->select(
+				'vtas_listas_dctos_detalles.id',
+				'vtas_listas_dctos_detalles.lista_descuentos_id',
+				'vtas_listas_dctos_detalles.descuento1',
+				'vtas_listas_dctos_detalles.fecha_activacion',
+				'inv_productos.descripcion as producto_descripcion',
+				'inv_productos.id as producto_codigo',
+				'inv_productos.tipo',
+				'inv_productos.unidad_medida1',
+				'contab_impuestos.tasa_impuesto'
+			)
+			->orderBy('vtas_listas_dctos_detalles.fecha_activacion', 'DESC')
+			->get();
 
 		$productos = [];
 		$i = 0;

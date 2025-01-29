@@ -7,6 +7,7 @@ use App\Inventarios\Services\RecipeServices;
 use App\Ventas\Cliente;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\ListaPrecioDetalle;
+use App\Ventas\Vendedor;
 use App\VentasPos\Pdv;
 use \View;
 
@@ -101,12 +102,15 @@ class CrudService
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
                     'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
                     'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
+                    'todos_los_precios' => ListaPrecioDetalle::get_precios_para_catalogos_pos(),
                     'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( null ),
-                    'clientes' => Cliente::where( 'estado', 'Activo' )->get(),
+                    'todos_los_descuentos' => ListaDctoDetalle::get_descuentos_para_catalogos_pos(),
+                    'clientes' => Cliente::get_lista_para_catalogos_pos(),
                     'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray(), ['vendedor_descripcion'=> $pdv->cliente->vendedor->tercero->descripcion] ) ,
                     'forma_pago_default' => $pdv->cliente->forma_pago(),
                     'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') ),
-                    'contornos_permitidos' => (new RecipeServices())->get_recetas_items_manejan_contornos()
+                    'contornos_permitidos' => (new RecipeServices())->get_recetas_items_manejan_contornos(),
+                    'vendedores' => Vendedor::get_lista_para_catalogos_pos(),
                 ];
         
         return response()->json( $datos );

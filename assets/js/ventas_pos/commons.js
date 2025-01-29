@@ -352,7 +352,6 @@ function resetear_ventana() {
   reset_tabla_ingreso_medios_pago();
   reset_efectivo_recibido();
   reset_campos_formulario();
-  set_lista_precios();
 
   $("#btn_cancelar").show();
   $("#btn_cancelar_pedido").hide();
@@ -859,6 +858,10 @@ $(document).ready(function () {
 
         break;
     }
+  });
+  
+  $("#efectivo_recibido").on("focus", function (event) {
+    $("#efectivo_recibido").css("background-color", "white");
   });
 
   /**

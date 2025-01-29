@@ -182,6 +182,36 @@ class Cliente extends Model
         return "LISTADO DE CLIENTES";
     }
 
+
+    /**
+     * 
+     */
+
+    public static function get_lista_para_catalogos_pos()
+    {
+        $opciones = Cliente::where( 'estado', 'Activo' )->get();
+
+        $vec = [];
+        foreach ($opciones as $opcion)
+        {
+            $aux = $opcion->toArray();
+
+            $aux['descripcion'] = $opcion->tercero->descripcion;
+            $aux['nombre1'] = $opcion->tercero->nombre1;
+            $aux['apellido1'] = $opcion->tercero->apellido1;
+            $aux['razon_social'] = $opcion->tercero->razon_social;
+            $aux['direccion1'] = $opcion->tercero->direccion1;
+            $aux['telefono1'] = $opcion->tercero->telefono1;
+            $aux['numero_identificacion'] = $opcion->tercero->numero_identificacion;
+            $aux['email'] = $opcion->tercero->email;
+            //$aux[''] = $opcion->tercero->razon_social;           
+
+            $vec[] = $aux;
+        }
+
+        return $vec;
+    }
+
     public static function opciones_campo_select()
     {
         $opciones = Cliente::leftJoin('core_terceros','core_terceros.id','=','vtas_clientes.core_tercero_id')->where('vtas_clientes.estado','Activo')

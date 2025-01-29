@@ -332,7 +332,7 @@ function set_precios_lbl_items()
 /**
  * 
  */
-function set_lista_precios()
+function set_lista_precios_old()
 {
   $.get(
     url_raiz +
@@ -344,6 +344,37 @@ function set_lista_precios()
     descuentos = data[1];
     set_precios_lbl_items();
   });
+}
+
+function set_lista_precios()
+{
+    var cliente_id = $("#cliente_id").val();
+    
+    var cliente = clientes.find((item) => item.id === parseInt(cliente_id) );  
+
+    //var precios_list = todos_los_precios.find( (item) => item.id === cliente.lista_precios_id );
+    
+    var precios_list = [];
+    $.each(todos_los_precios,function(key,item_lista_precios)
+    {
+        if ( item_lista_precios.lista_precios_id === cliente.lista_precios_id) { 
+            precios_list.push(item_lista_precios);
+        }        
+    });
+
+    var descuentos_list = todos_los_descuentos.find( (item) => item.id === cliente.lista_descuentos_id );
+    
+    var descuentos_list = [];
+    $.each(todos_los_precios,function(key,item_lista_descuentos)
+    {
+        if ( item_lista_descuentos.lista_descuentos_id === cliente.lista_descuentos_id) { 
+            descuentos_list.push(item_lista_descuentos);
+        }        
+    });
+
+    precios = precios_list;
+    descuentos = descuentos_list;
+    set_precios_lbl_items();
 }
 
 
@@ -422,7 +453,8 @@ function calcular_precio_total_lbl_quantity(fila)
     fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
 }
 
-function redondear_a_centena(numero, aproximacion_superior = false) {
+function redondear_a_centena(numero, aproximacion_superior = false) 
+{
 	if ( redondear_centena == 0 )
 	{
 		return numero.toFixed(0);
