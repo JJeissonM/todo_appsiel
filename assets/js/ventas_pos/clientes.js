@@ -312,6 +312,7 @@ $(document).ready(function () {
       case 27: // 27 = ESC
         $("#clientes_suggestions").html("");
         $("#clientes_suggestions").hide();
+        $("#cliente_input").val($("#cliente_descripcion_aux").val());
         break;
 
       case 40: // Flecha hacia abajo
