@@ -313,6 +313,7 @@ $(document).ready(function () {
         $("#clientes_suggestions").html("");
         $("#clientes_suggestions").hide();
         $("#cliente_input").val($("#cliente_descripcion_aux").val());
+        $(this).select();
         break;
 
       case 40: // Flecha hacia abajo
