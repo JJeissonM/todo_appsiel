@@ -351,6 +351,7 @@ $(document).ready(function () {
       default:
         // Si la longitud es menor a dos, todavía no busca
         if ($(this).val().length < 2) {
+          $("#clientes_suggestions").hide();
           return false;
         }
 
