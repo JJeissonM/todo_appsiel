@@ -94,7 +94,7 @@
 									$ocultar_cinta_de_busqueda_items = $parametros['ocultar_cinta_de_busqueda_items'];
 								}
 							?>
-							{{ Form::bsSelect('ocultar_cinta_de_busqueda_items', $ocultar_cinta_de_busqueda_items, 'Ocultar Sección de Búsqueda de Ítems', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+							{{ Form::bsSelect('ocultar_cinta_de_busqueda_items', $ocultar_cinta_de_busqueda_items, 'Ocultar Sección de Búsqueda de Ítems (en Vista create de Faturas y Pedidos POS)', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

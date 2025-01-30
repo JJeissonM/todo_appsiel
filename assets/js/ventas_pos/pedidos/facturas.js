@@ -550,8 +550,6 @@ $(document).ready(function () {
 	// Al ingresar código, descripción o código de barras del producto
 	$('#cliente_input').on('keyup', function (event) {
 
-		event.preventDefault();
-		
 		var codigo_tecla_presionada = event.which || event.keyCode;
 
 		switch (codigo_tecla_presionada) {
@@ -577,16 +575,17 @@ $(document).ready(function () {
 
 			case 13:// Al presionar Enter
 
-				if ($(this).val() == '') {
+				event.preventDefault();
+				
+				if ($(this).val() == "") {
 					return false;
 				}
 
-				var item = $('a.list-group-item.active');
+				var item = $("a.list-group-item.active");
 
-				if (item.attr('data-cliente_id') === undefined)
-				{
-					alert('El cliente ingresado no existe.');
-					reset_campos_formulario();
+				if (item.attr("data-cliente_id") === undefined) {
+					alert("El cliente ingresado no existe.");
+					//reset_campos_formulario();
 				} else {
 					seleccionar_cliente(item);
 				}
