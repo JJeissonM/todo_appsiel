@@ -61,9 +61,11 @@
                     @if($vista_categorias_productos != '')
                         @include('ventas_pos.componentes.tactil.tabs_inv_grupos')
                     @endif
-
+                    
                     <!-- Cinta Filtro Items -->
-                    @include('ventas_pos.crud_factura_cinta_filtro_items')
+                    @if( !(int)config('ventas_pos.ocultar_cinta_de_busqueda_items') )
+                        @include('ventas_pos.crud_factura_cinta_filtro_items')
+                    @endif
                     
                     <div class="container">
                         @include('ventas_pos.crud_factura_btn_revisar_pedidos')

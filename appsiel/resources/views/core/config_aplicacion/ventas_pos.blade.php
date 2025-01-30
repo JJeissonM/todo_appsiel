@@ -88,6 +88,30 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$ocultar_cinta_de_busqueda_items = '0';
+								if( isset($parametros['ocultar_cinta_de_busqueda_items'] ) )
+								{
+									$ocultar_cinta_de_busqueda_items = $parametros['ocultar_cinta_de_busqueda_items'];
+								}
+							?>
+							{{ Form::bsSelect('ocultar_cinta_de_busqueda_items', $ocultar_cinta_de_busqueda_items, 'Ocultar Sección de Búsqueda de Ítems', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="row" style="padding:5px;">
+								&nbsp;
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$mostrar_resumen_ventas_pos_en_arqueo = '1';
 								if( isset($parametros['mostrar_resumen_ventas_pos_en_arqueo'] ) )
 								{
