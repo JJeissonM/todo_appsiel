@@ -202,7 +202,10 @@
                     @endif
 
                     <!-- Cinta Filtro Items -->
-                    @include('ventas_pos.crud_factura_cinta_filtro_items')
+                    @if( !(int)config('ventas_pos.ocultar_cinta_de_busqueda_items') )
+                        @include('ventas_pos.crud_factura_cinta_filtro_items')
+                    @endif
+
                     <h4 class="center" style="color: #574696">Registro de pedidos</h4>
                     
                         <!-- NO QUITAR LOS ESPACIOS NI TABULACIONES DESDE AQUI HASTA <INMODIFICABLE> -->

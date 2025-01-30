@@ -548,8 +548,10 @@ $(document).ready(function () {
 	});
 
 	// Al ingresar código, descripción o código de barras del producto
-	$('#cliente_input').on('keyup', function () {
+	$('#cliente_input').on('keyup', function (event) {
 
+		event.preventDefault();
+		
 		var codigo_tecla_presionada = event.which || event.keyCode;
 
 		switch (codigo_tecla_presionada) {
