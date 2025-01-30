@@ -172,14 +172,16 @@
 
             @include('ventas_pos.crud_factura_campos_ocultos')         
 
-            <div class="row well">
-                <div class="col-md-6">
-                    {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'class'=>'form-control'] ) }}
-                    {{ Form::bsText( 'direccion1', $cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
-                </div>
-                <div class="col-md-6">
-                    {{ Form::bsText( 'numero_identificacion', $cliente->tercero->numero_identificacion, config("configuracion.tipo_identificador").'/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
-                    {{ Form::bsText( 'telefono1', $cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+            <div class="container-fluid">
+                <div class="row well">
+                    <div class="col-md-6">
+                        {{ Form::bsText( 'cliente_descripcion_aux', $cliente->tercero->descripcion, 'Cliente', ['id'=>'cliente_descripcion_aux', 'required'=>'required', 'class'=>'form-control'] ) }}
+                        {{ Form::bsText( 'direccion1', $cliente->tercero->direccion1, 'Dirección de entrega', ['id'=>'direccion1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ Form::bsText( 'numero_identificacion', $cliente->tercero->numero_identificacion, config("configuracion.tipo_identificador").'/CC', ['id'=>'numero_identificacion', 'required'=>'required', 'class'=>'form-control'] ) }}
+                        {{ Form::bsText( 'telefono1', $cliente->tercero->telefono1, 'Teléfono', ['id'=>'telefono1', 'required'=>'required', 'class'=>'form-control'] ) }}
+                    </div>
                 </div>
             </div>
 
@@ -196,15 +198,10 @@
 
                     <!-- Vista Tactil -->
                     @if($vista_categorias_productos != '')
-                        <div class="col-md-12 well">
-                            <div class="container-fluid">
-                                {!! $vista_categorias_productos !!}
-                            </div>
-                        </div>
+                        @include('ventas_pos.componentes.tactil.tabs_inv_grupos')
                     @endif
 
                     <!-- Cinta Filtro Items -->
-                    F2: Buscar Ítems
                     @include('ventas_pos.crud_factura_cinta_filtro_items')
                     <h4 class="center" style="color: #574696">Registro de pedidos</h4>
                     
@@ -278,6 +275,8 @@
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/facturas.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/cinta_filtro_items.js?aux=' . uniqid())}}"></script>
+
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/componentes/tactil.js?aux=' . uniqid())}}"></script>
     
     <script type="text/javascript">
         
@@ -319,14 +318,6 @@
                 }
             }
         }
-        
-        // Nuevo
-        if ( $('#msj_resolucion_facturacion').val() != '') {
-            Swal.fire({
-					icon: 'error',
-					title: 'Alerta!',
-					text: $('#msj_resolucion_facturacion').val()
-				});
-        }
+
     </script>
 @endsection

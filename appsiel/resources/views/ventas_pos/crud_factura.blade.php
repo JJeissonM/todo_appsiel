@@ -59,11 +59,7 @@
 
                     <!-- Vista Tactil -->
                     @if($vista_categorias_productos != '')
-                        <div class="col-md-12 well">
-                            <div class="container-fluid">
-                                {!! $vista_categorias_productos !!}
-                            </div>
-                        </div>
+                        @include('ventas_pos.componentes.tactil.tabs_inv_grupos')
                     @endif
 
                     <!-- Cinta Filtro Items -->
@@ -186,6 +182,8 @@
     <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?aux=' . uniqid() )}}"></script>
 
     <script src="{{ asset( 'assets/js/ventas_pos/revisar_anticipos.js?aux=' . uniqid() )}}"></script>
+
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/componentes/tactil.js?aux=' . uniqid())}}"></script>
 
     <script type="text/javascript">
         
