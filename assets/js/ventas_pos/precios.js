@@ -272,7 +272,8 @@ function validar_venta_menor_costo()
  * @param {*} producto_id 
  * @returns precio
  */
-function get_precio(producto_id) {
+function get_precio(producto_id)
+{
 
   var precio = precios.find((item) => item.producto_codigo === producto_id);
 
@@ -292,7 +293,8 @@ function get_precio(producto_id) {
  * @param {*} producto_id 
  * @returns descuento
  */
-function get_descuento(producto_id) {
+function get_descuento(producto_id)
+{
   filter_descuento = {
     producto_codigo: producto_id,
     lista_descuentos_id: $("#lista_descuentos_id").val(),
@@ -362,10 +364,10 @@ function set_lista_precios()
         }        
     });
 
-    var descuentos_list = todos_los_descuentos.find( (item) => item.id === cliente.lista_descuentos_id );
+    //var descuentos_list = todos_los_descuentos.find( (item) => item.id === cliente.lista_descuentos_id );
     
     var descuentos_list = [];
-    $.each(todos_los_precios,function(key,item_lista_descuentos)
+    $.each(todos_los_descuentos,function(key,item_lista_descuentos)
     {
         if ( item_lista_descuentos.lista_descuentos_id === cliente.lista_descuentos_id) { 
             descuentos_list.push(item_lista_descuentos);

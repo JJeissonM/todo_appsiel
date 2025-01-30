@@ -103,7 +103,7 @@ class CrudService
                     'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
                     'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
                     'todos_los_precios' => ListaPrecioDetalle::get_precios_para_catalogos_pos(),
-                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( null ),
+                    'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),
                     'todos_los_descuentos' => ListaDctoDetalle::get_descuentos_para_catalogos_pos(),
                     'clientes' => Cliente::get_lista_para_catalogos_pos(),
                     'cliente_default' => array_merge( $pdv->cliente->tercero->toArray(), $pdv->cliente->toArray(), ['vendedor_descripcion'=> $pdv->cliente->vendedor->tercero->descripcion] ) ,
