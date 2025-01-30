@@ -96,7 +96,6 @@ class ListaPrecioDetalle extends Model
 			)
 			->orderBy('vtas_listas_precios_detalles.fecha_activacion', 'DESC')
 			->get();
-		//dd( $precios );
 
 		$productos = [];
 		$i = 0;
@@ -115,8 +114,15 @@ class ListaPrecioDetalle extends Model
 
 	public static function get_precios_para_catalogos_pos()
 	{
-		$precios = ListaPrecioDetalle::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_precios_detalles.inv_producto_id')
+		$listas_precios = ListaPrecioEncabezado::where('estado', 'Activo')->get();
+
+		$precios2 = collect([]);
+		$i = 0;
+		foreach ($listas_precios as $key => $lista_precios) {
+			
+			$precios = ListaPrecioDetalle::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_listas_precios_detalles.inv_producto_id')
 			->leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'inv_productos.impuesto_id')
+			->where('vtas_listas_precios_detalles.lista_precios_id', $lista_precios->id)
 			->select(
 				'vtas_listas_precios_detalles.id',
 				'vtas_listas_precios_detalles.lista_precios_id',
@@ -132,15 +138,14 @@ class ListaPrecioDetalle extends Model
 			->orderBy('vtas_listas_precios_detalles.fecha_activacion', 'DESC')
 			->get();
 
-		$productos = [];
-		$i = 0;
-		$precios2 = collect([]);
-		foreach ($precios as $value)
-		{
-			if (!in_array($value->producto_codigo, $productos)) {
-				$precios2[$i] = $value;
-				$productos[$i] = $value->producto_codigo;
-				$i++;
+			$productos = [];
+			foreach ($precios as $value)
+			{
+				if ( !in_array($value->producto_codigo, $productos) ) {
+					$precios2[$i] = $value;
+					$productos[] = $value->producto_codigo;
+					$i++;
+				}
 			}
 		}
 
