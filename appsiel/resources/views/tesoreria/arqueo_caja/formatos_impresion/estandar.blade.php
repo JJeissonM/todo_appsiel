@@ -167,6 +167,10 @@
                     @include('tesoreria.arqueo_caja.resumen_ventas_pos')
                 @endif
 
+                @if(config('ventas_pos.manejar_propinas'))
+                    @include('tesoreria.arqueo_caja.resumen_propinas')
+                @endif
+
                 <div class="row clearfix">
                     <div class="col-md-12">
                         <table class="table table-hover">

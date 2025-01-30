@@ -51,6 +51,10 @@
         @if(config('ventas_pos.mostrar_resumen_ventas_pos_en_arqueo'))
             @include('tesoreria.arqueo_caja.resumen_ventas_pos2')
         @endif
+
+        @if(config('ventas_pos.manejar_propinas'))
+            @include('tesoreria.arqueo_caja.resumen_propinas')
+        @endif
             
         <table class="table table-bordered">
             <thead>

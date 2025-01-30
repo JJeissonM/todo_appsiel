@@ -68,6 +68,10 @@
             @include('tesoreria.arqueo_caja.resumen_ventas_pos2')
         @endif
 
+        @if(config('ventas_pos.manejar_propinas'))
+            @include('tesoreria.arqueo_caja.resumen_propinas')
+        @endif
+
         <table class="table-bordered">
             <thead>
                 <tr>
