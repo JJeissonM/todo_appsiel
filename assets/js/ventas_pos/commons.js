@@ -99,7 +99,8 @@ function get_json_registros_medios_recaudo() {
   return json_table2;
 }
 
-function llenar_tabla_productos_facturados( con_medios_recaudos = true ) {
+function llenar_tabla_productos_facturados( con_medios_recaudos = true ) 
+{
   var linea_factura, linea_factura2;
   var lbl_total_factura = 0;
   var lbl_base_impuesto_total = 0;

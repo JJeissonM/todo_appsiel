@@ -115,7 +115,10 @@ function separar_json_linea_medios_recaudo(json_table2){
 
     var new_value =  Math.abs( parseFloat( linea.valor.substring(1) ) - valor_datafono ) ;
 
-    return '[{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + new_value + '"},{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + $('#motivo_tesoreria_datafono').val() + '-' + $('#motivo_tesoreria_datafono_label').val() + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + valor_datafono + '"}]';
+    let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
+    let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
+    
+    return '[{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + new_value + '"},{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + $('#motivo_tesoreria_datafono').val() + '-' + $('#motivo_tesoreria_datafono_label').val() + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + valor_datafono + '"}]';
 }
 
 $(document).ready(function () {

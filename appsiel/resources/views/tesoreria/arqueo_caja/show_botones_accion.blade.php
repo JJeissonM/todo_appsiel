@@ -29,8 +29,8 @@
         <div class="btn-group">
             <!--Imprimir
             {{ Form::bsBtnPrint( 'tesoreria/imprimir/'.$registro->id ) }}-->
-            Formato: {{ Form::select('formato_impresion_id',[ 'estandar' => 'Estándar', 'pos' => 'POS', 'pos58mm' => 'POS 58mm'], null, [ 'id' =>'formato_impresion_id' ]) }}
-            {{ Form::bsBtnPrint( 'tesoreria/imprimir/'.$registro->id.'?formato_impresion_id=0' ) }}
+            Formato: {{ Form::select('formato_impresion_id',[ 'pos' => 'POS', 'estandar' => 'Estándar', 'pos58mm' => 'POS 58mm'], null, [ 'id' =>'formato_impresion_id' ]) }}
+            {{ Form::bsBtnPrint( 'tesoreria/imprimir/'.$registro->id.'?formato_impresion_id=pos' ) }}
         </div>
     </div>
     <div class="col-md-4">

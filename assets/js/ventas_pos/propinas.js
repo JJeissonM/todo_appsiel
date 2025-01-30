@@ -33,7 +33,7 @@ function reset_propina () {
 
 }
 
-var motivos_registrados_lineas_medios_recaudos, cantidad_lineas_medios_recaudos;
+var motivos_registrados_lineas_medios_recaudos, cantidad_lineas_medios_recaudos, valor_total_propinas_en_lineas_de_pago;
 
 function permitir_guardar_factura_con_propina () {
     
@@ -42,6 +42,7 @@ function permitir_guardar_factura_con_propina () {
     if ( valor_total_lineas_medios_recaudos != 0) {
         
         cantidad_lineas_medios_recaudos = 0;
+        valor_total_propinas_en_lineas_de_pago = 0;
         motivos_registrados_lineas_medios_recaudos = [];
         $('#ingreso_registros_medios_recaudo > tbody > tr').each(function( ){
             var array_celdas =  $(this).find('td');
@@ -50,20 +51,36 @@ function permitir_guardar_factura_con_propina () {
             
             var motivo_tesoreria_id =  parseInt( text_motivo.split('-')[0] );
             motivos_registrados_lineas_medios_recaudos.push(motivo_tesoreria_id);
+
+            if ( parseInt( $('#motivo_tesoreria_propinas').val() ) == motivo_tesoreria_id )
+            {
+                var valor_linea = parseFloat( array_celdas.eq(4).text().substring(1) );
+                valor_total_propinas_en_lineas_de_pago += valor_linea;     
+            }
+            
             cantidad_lineas_medios_recaudos++;
         });
 
-        if ( cantidad_lineas_medios_recaudos > 1 ) { // Hay varias lineas medios de recaudo
+        if ( cantidad_lineas_medios_recaudos > 1 ) { // Hay varias lineas de medios de recaudo
             
-            if ( motivos_registrados_lineas_medios_recaudos.indexOf( parseInt( $('#motivo_tesoreria_propinas').val() ) ) > 0  ) {
-                // El motivo para propinas esta registrado en una linea de Pago.
+            if ( valor_total_propinas_en_lineas_de_pago != 0 && valor_total_propinas_en_lineas_de_pago != $('#valor_propina').val() ) {    
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Alerta!',
+                    text: 'El Valor Ingresado de Propinas Recibidas en las líneas de medios de pago ($ ' + new Intl.NumberFormat("de-DE").format( valor_total_propinas_en_lineas_de_pago ) + ') NO es igual al Valor total de la Propina ($ ' + new Intl.NumberFormat("de-DE").format( $('#valor_propina').val() ) + ').'
+                });
+                return false;
+            }
+
+            if ( motivos_registrados_lineas_medios_recaudos.indexOf( parseInt( $('#motivo_tesoreria_propinas').val() ) ) >= 0  ) {
+                // El motivo para propinas SI esta registrado en una linea de Pago.
                 return true;
             }
             
             Swal.fire({
                 icon: 'error',
                 title: 'Alerta!',
-                text: 'Cuando ingresa VARIAS líneas de medios de pago, debe ingresar AL MENOS una línea con el Motivo para Propinas.'
+                text: 'Cuando ingresa VARIAS líneas de medios de pago, debe ingresar AL MENOS una línea con el Motivo Propinas Recibidas.'
             });
             return false;
         }else{
@@ -114,7 +131,10 @@ function separar_json_linea_medios_recaudo(json_table2){
 
     var new_value =  Math.abs( parseFloat( linea.valor.substring(1) ) - $('#valor_propina').val() ) ;
 
-    return '[{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + new_value + '"},{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + $('#motivo_tesoreria_propinas').val() + '-' + $('#motivo_tesoreria_propinas_label').val() + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + $('#valor_propina').val() + '"}]';
+    let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
+    let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
+
+    return '[{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + new_value + '"},{"teso_medio_recaudo_id":"' + linea.teso_medio_recaudo_id + '","teso_motivo_id":"' + $('#motivo_tesoreria_propinas').val() + '-' + $('#motivo_tesoreria_propinas_label').val() + '","teso_caja_id":"' + linea.teso_caja_id + '","teso_cuenta_bancaria_id":"' + linea.teso_cuenta_bancaria_id + '","valor":"$' + $('#valor_propina').val() + '"}]';
 }
 
 $(document).ready(function () {

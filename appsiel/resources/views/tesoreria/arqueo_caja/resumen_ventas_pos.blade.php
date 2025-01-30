@@ -16,6 +16,12 @@
                 <tr>
                     <td colspan="3">
                         <center><strong>RESUMEN DE VENTAS POS</strong></center>
+                        @if((int)config('ventas_pos.manejar_propinas'))
+                            <center>(No incluye Propinas)</center>
+                        @endif
+                        @if((int)config('ventas_pos.manejar_datafono'))
+                            <center>(No incluye Comisión Datafono)</center>
+                        @endif
                     </td>
                 </tr>
                 <tr>

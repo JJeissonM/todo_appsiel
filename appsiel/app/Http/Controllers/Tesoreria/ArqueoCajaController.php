@@ -173,9 +173,10 @@ class ArqueoCajaController extends ModeloController
         ];
         $archivo_js = app($this->modelo->name_space)->archivo_js;
         $url_action = 'web/' . $id;
+
         $registro->billetes_contados = json_decode($registro->billetes_contados);
         $registro->monedas_contadas = json_decode($registro->monedas_contadas);
-        //dd($arqueocaja);
+        
         return view('tesoreria.arqueo_caja.edit', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action'));
     }
 

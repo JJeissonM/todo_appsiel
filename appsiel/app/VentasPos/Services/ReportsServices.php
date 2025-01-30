@@ -34,11 +34,13 @@ class ReportsServices
         $movimientos_tesoreria_para_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha, $fecha);
         
         $total_contado = 0;
+        $movimiento_propinas = collect([]);
         $motivo_tesoreria_propinas = (int)config('ventas_pos.motivo_tesoreria_propinas');
         $motivo_tesoreria_datafono = (int)config('ventas_pos.motivo_tesoreria_datafono');
-        foreach ($movimientos_tesoreria_para_pdv as $movimiento) {
-
+        foreach ($movimientos_tesoreria_para_pdv as $movimiento)
+        {
             if ($movimiento->teso_motivo_id == $motivo_tesoreria_propinas) {
+                $movimiento_propinas->push($movimiento);
                 continue;
             }
 
@@ -50,7 +52,7 @@ class ReportsServices
                 $total_contado += $movimiento->valor_movimiento;
             }
         }
-
+        
         $cuentas_bancarias = TesoCuentaBancaria::where('estado','Activo')->get();
 
         $totales_cuentas_bancarias = [];
@@ -76,6 +78,63 @@ class ReportsServices
             'status' => 'success',
             'total_contado' => $total_contado,
             'total_credito' => $total_credito,
+            'totales_cuentas_bancarias' => $totales_cuentas_bancarias
+        ];
+    }
+
+    /**
+     * 
+     */
+    public function resumen_propinas_arqueo_caja($fecha, $teso_caja_id)
+    {
+        $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
+
+        if ($pdv == null) {
+            return (object)[
+                'status' => 'error',
+                'message' => 'La caja no está asociada a ningún Punto de Ventas.',
+            ];
+        }
+
+        $documentos_pdv = FacturaPos::where([
+                                        ['pdv_id','=',$pdv->id],
+                                        ['estado', '<>', 'Anulado']
+                                    ])
+                                ->whereBetween('fecha', [$fecha, $fecha])
+                                ->get();
+                
+        $movimientos_tesoreria_propinas = $this->get_movimiento_tesoreria_propinas($documentos_pdv, $fecha, $fecha);
+        
+        $cuentas_bancarias = TesoCuentaBancaria::where('estado','Activo')->get();
+
+        $totales_cuentas_bancarias = [];
+        foreach ($cuentas_bancarias as $key => $cuenta_bancaria) {
+
+            if ($cuenta_bancaria->id == 0) {
+                continue;
+            }
+
+            $total_cuenta_bancaria = 0;
+            foreach ($movimientos_tesoreria_propinas as $movimiento)
+            {
+                if ($movimiento->teso_cuenta_bancaria_id == $cuenta_bancaria->id) {
+                    $total_cuenta_bancaria += $movimiento->valor_movimiento;
+                }
+            }
+
+            if ( $total_cuenta_bancaria == 0) {
+                continue;
+            }
+            
+            $totales_cuentas_bancarias[] = [
+                'label' => TesoEntidadFinanciera::find($cuenta_bancaria->entidad_financiera_id)->descripcion . " - Nro. " . $cuenta_bancaria->descripcion,
+                'total' => $total_cuenta_bancaria
+            ];
+        }
+        
+        return (object)[
+            'status' => 'success',
+            'total_caja' => $movimientos_tesoreria_propinas->where('teso_caja_id', $teso_caja_id)->sum('valor_movimiento'),
             'totales_cuentas_bancarias' => $totales_cuentas_bancarias
         ];
     }
@@ -112,6 +171,37 @@ class ReportsServices
         return TesoMovimiento::where([
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
                                     ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ]
+                                ])
+                                ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id', $arr_core_tipo_doc_app_id)
+                                ->whereIn('consecutivo', $arr_consecutivos)
+                                ->whereIn('fecha', $arr_fechas)
+                                ->get();
+    }
+
+    public function get_movimiento_tesoreria_propinas($documentos_pdv)
+    {
+        $arr_consecutivos = [];
+        $arr_core_tipo_transaccion_id = [];
+        $arr_core_tipo_doc_app_id = [];
+        $arr_fechas = [];
+        foreach ($documentos_pdv as $documento) {
+            $arr_consecutivos[] = $documento->consecutivo;
+
+            if ( !in_array($documento->core_tipo_transaccion_id, $arr_core_tipo_transaccion_id)) {
+                $arr_core_tipo_transaccion_id[] = $documento->core_tipo_transaccion_id;
+            }
+
+            if ( !in_array($documento->core_tipo_doc_app_id, $arr_core_tipo_doc_app_id)) {
+                $arr_core_tipo_doc_app_id[] = $documento->core_tipo_doc_app_id;
+            }
+
+            if ( !in_array($documento->fecha, $arr_fechas) ) {
+                $arr_fechas[] = $documento->fecha;
+            }
+        }
+
+        return TesoMovimiento::where([
+                                    ['teso_motivo_id', '=', (int)config('ventas_pos.motivo_tesoreria_propinas') ]
                                 ])
                                 ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)->whereIn('core_tipo_doc_app_id', $arr_core_tipo_doc_app_id)
                                 ->whereIn('consecutivo', $arr_consecutivos)
