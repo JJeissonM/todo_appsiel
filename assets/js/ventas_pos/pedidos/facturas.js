@@ -587,6 +587,7 @@ $(document).ready(function () {
 					alert("El cliente ingresado no existe.");
 					//reset_campos_formulario();
 				} else {
+					console.log('Cliente seleccionado: ' + item.attr("data-cliente_id"));
 					seleccionar_cliente(item);
 				}
 				break;

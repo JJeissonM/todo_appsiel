@@ -253,6 +253,12 @@
     @include('ventas_pos.formatos_impresion.campos_adicionales_usar_JSPrintManager')
 
     <div class="container-fluid elemento_fondo" style="left: 0; width: 99%; background: #bce0f1; height: 42px; z-index: 999; border-top-right-radius: 10px; border-top-left-radius: 10px; margin: 0px 10px;">
+        <div class="btn-group pull-left">
+            <label class="control-label col-sm-3 col-md-3" for="cliente_input">Cliente:</label>              
+            <div class="col-sm-9 col-md-9">
+                <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}"><div id="clientes_suggestions"> </div>
+            </div>
+        </div>
         @include('ventas_pos.componente_vendedores')
     </div>
 

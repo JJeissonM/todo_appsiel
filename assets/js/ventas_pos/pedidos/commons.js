@@ -10,6 +10,80 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
     $('.text_input_sugerencias').select();
 }
 
+function seleccionar_cliente(item_sugerencia)
+{
+    // Asignar descripción al TextInput
+    $('#cliente_input').val(item_sugerencia.html());
+    $('#cliente_input').css('background-color', 'transparent');
+
+    // Asignar Campos ocultos
+    $('#cliente_id').val(item_sugerencia.attr('data-cliente_id'));
+    $('#zona_id').val(item_sugerencia.attr('data-zona_id'));
+    $('#clase_cliente_id').val(item_sugerencia.attr('data-clase_cliente_id'));
+    $('#liquida_impuestos').val(item_sugerencia.attr('data-liquida_impuestos'));
+    $('#core_tercero_id').val(item_sugerencia.attr('data-core_tercero_id'));
+    $('#lista_precios_id').val(item_sugerencia.attr('data-lista_precios_id'));
+    $('#lista_descuentos_id').val(item_sugerencia.attr('data-lista_descuentos_id'));
+
+    // Asignar resto de campos
+    //$('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
+    //$('#vendedor_id').attr('data-vendedor_descripcion',item_sugerencia.attr('data-vendedor_descripcion'));
+    //$('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
+    //$("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
+    //$(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
+    
+    $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
+
+    $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
+    $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
+    $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
+    $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
+    $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
+
+
+    var forma_pago = 'contado';
+    var dias_plazo = parseInt(item_sugerencia.attr('data-dias_plazo'));
+    if (dias_plazo > 0) {
+        forma_pago = 'credito';
+    }
+    $('#forma_pago').val(forma_pago);
+
+    // Para llenar la fecha de vencimiento
+    var fecha = new Date($('#fecha').val());
+    fecha.setDate(fecha.getDate() + (dias_plazo + 1));
+
+    var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
+    var dia = fecha.getDate();// + 1; // Se le suma 1,
+
+    if (mes < 10) {
+        mes = '0' + mes;
+    }
+
+    if (dia < 10) {
+        dia = '0' + dia;
+    }
+    $('#fecha_vencimiento').val(fecha.getFullYear() + '-' + mes + '-' + dia);
+
+
+    //Hacemos desaparecer el resto de sugerencias
+    $('#clientes_suggestions').html('');
+    $('#clientes_suggestions').hide();
+
+    //reset_tabla_ingreso_items();
+    //reset_resumen_de_totales();
+    //reset_linea_ingreso_default();
+
+    $.get( url_raiz + '/vtas_get_lista_precios_cliente' + "/" + $('#cliente_id').val())
+        .done(function (data) {
+            precios = data[0];
+            descuentos = data[1];
+        });
+    
+    $('#inv_producto_id').select();
+    // Bajar el Scroll hasta el final de la página
+    //$("html, body").animate({scrollTop: $(document).height() + "px"});
+}
+
 $(document).ready(function () {
 
     if ( $('#action').val() != 'create' )
@@ -488,78 +562,6 @@ $(document).ready(function () {
         $("#btn_cancelar_pedido").hide();
 
         set_lista_precios();
-    }    
-
-    function seleccionar_cliente(item_sugerencia) {        
-        // Asignar descripción al TextInput
-        $('#cliente_input').val(item_sugerencia.html());
-        $('#cliente_input').css('background-color', 'transparent');
-
-        // Asignar Campos ocultos
-        $('#cliente_id').val(item_sugerencia.attr('data-cliente_id'));
-        $('#zona_id').val(item_sugerencia.attr('data-zona_id'));
-        $('#clase_cliente_id').val(item_sugerencia.attr('data-clase_cliente_id'));
-        $('#liquida_impuestos').val(item_sugerencia.attr('data-liquida_impuestos'));
-        $('#core_tercero_id').val(item_sugerencia.attr('data-core_tercero_id'));
-        $('#lista_precios_id').val(item_sugerencia.attr('data-lista_precios_id'));
-        $('#lista_descuentos_id').val(item_sugerencia.attr('data-lista_descuentos_id'));
-
-        // Asignar resto de campos
-        //$('#vendedor_id').val(item_sugerencia.attr('data-vendedor_id'));
-        //$('#vendedor_id').attr('data-vendedor_descripcion',item_sugerencia.attr('data-vendedor_descripcion'));
-        //$('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
-        //$("button[data-vendedor_id='" + item_sugerencia.attr('data-vendedor_id') +"']").attr('class','btn btn-default btn_vendedor vendedor_activo');
-        //$(document).prop('title', item_sugerencia.attr('data-vendedor_descripcion'));
-        
-        $('#inv_bodega_id').val(item_sugerencia.attr('data-inv_bodega_id'));
-
-        $('#cliente_descripcion').val(item_sugerencia.attr('data-nombre_cliente'));
-        $('#cliente_descripcion_aux').val(item_sugerencia.attr('data-nombre_cliente'));
-        $('#numero_identificacion').val(item_sugerencia.attr('data-numero_identificacion'));
-        $('#direccion1').val(item_sugerencia.attr('data-direccion1'));
-        $('#telefono1').val(item_sugerencia.attr('data-telefono1'));
-
-
-        var forma_pago = 'contado';
-        var dias_plazo = parseInt(item_sugerencia.attr('data-dias_plazo'));
-        if (dias_plazo > 0) {
-            forma_pago = 'credito';
-        }
-        $('#forma_pago').val(forma_pago);
-
-        // Para llenar la fecha de vencimiento
-        var fecha = new Date($('#fecha').val());
-        fecha.setDate(fecha.getDate() + (dias_plazo + 1));
-
-        var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
-        var dia = fecha.getDate();// + 1; // Se le suma 1,
-
-        if (mes < 10) {
-            mes = '0' + mes;
-        }
-
-        if (dia < 10) {
-            dia = '0' + dia;
-        }
-        $('#fecha_vencimiento').val(fecha.getFullYear() + '-' + mes + '-' + dia);
-
-
-        //Hacemos desaparecer el resto de sugerencias
-        $('#clientes_suggestions').html('');
-        $('#clientes_suggestions').hide();
-
-        reset_tabla_ingreso_items();
-        reset_resumen_de_totales();
-        reset_linea_ingreso_default();
-
-        $.get( url_raiz + '/vtas_get_lista_precios_cliente' + "/" + $('#cliente_id').val())
-            .done(function (data) {
-                precios = data[0];
-                descuentos = data[1];
-            });
-
-        // Bajar el Scroll hasta el final de la página
-        //$("html, body").animate({scrollTop: $(document).height() + "px"});
     }
 
     function llenar_tabla_productos_facturados()
