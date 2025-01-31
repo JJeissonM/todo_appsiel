@@ -176,7 +176,7 @@
                         <table class="table table-hover">
                             <tbody>
                             <tr>
-                                <td colspan="3">
+                                <td colspan="3" style="color: black;">
                                     <center><strong>ARQUEO DE CAJA</strong></center>
                                 </td>
                             </tr>

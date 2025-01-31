@@ -14,7 +14,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="3" style="color: black !important; background-color: #f2f2f2;">
                         <center><strong>RESUMEN DE VENTAS POS</strong></center>
                         @if((int)config('ventas_pos.manejar_propinas'))
                             <center>(No incluye Propinas)</center>
@@ -25,13 +25,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="color: black;text-align: center;">
+                    <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
                         Ventas en efectivo
                     </td>
-                    <td style="color: black;text-align: center;">
-                        Consignaciones
+                    <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
+                        QR/Transf.
                     </td>
-                    <td style="color: black;text-align: center;">
+                    <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
                         Ventas Crédito
                     </td>
                 </tr>     

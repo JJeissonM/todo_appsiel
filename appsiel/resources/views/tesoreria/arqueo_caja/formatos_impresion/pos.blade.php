@@ -75,7 +75,7 @@
         <table class="table-bordered">
             <thead>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="3" style="color: black!important;text-align: center; background-color: #f2f2f2;">
                         <center><strong>ARQUEO DE CAJA</strong></center>
                     </td>
                 </tr>       

@@ -14,7 +14,7 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <td>
+                    <td style="color: black !important; background-color: #f2f2f2;">
                         <center><strong>RESUMEN DE VENTAS POS</strong></center>
                         @if((int)config('ventas_pos.manejar_propinas'))
                             <center>(No incluye Propinas)</center>
@@ -27,21 +27,21 @@
             </thead>
             <tbody>
                 <tr>
-                    <td style="color: black;text-align: center; border-bottom: 1px #ddd solid;">
+                    <td style="color: black !important;text-align: center; border-bottom: 1px #ddd solid; background-color: #f2f2f2;">
                         <b>Ventas en efectivo</b>
                     </td>
                 </tr>
                 <tr>
-                    <td class="subject" style="color: black;">
+                    <td class="subject" style="color: black !important;">
                         {{ $registro->caja->descripcion }}: ${{ number_format($result->total_contado,0,',','.') }}
                     </td>
                 </tr>
                 <tr> 
-                    <td style="color: black;text-align: center;">
-                        <b>Consignaciones</b>
+                    <td style="color: black !important; text-align: center; background-color: #f2f2f2;">
+                        <b>QR/Transf.</b>
                     </td>
                 </tr> 
-                    <td class="subject" style="color: black;">
+                    <td class="subject">
                         <table class="table">
                             @foreach($result->totales_cuentas_bancarias as $linea_total)
                                 <tr>
@@ -63,7 +63,7 @@
                     </td>
                 <tr> 
                 <tr> 
-                    <td style="color: black;text-align: center;">
+                    <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
                         <b>Ventas Crédito</b>
                     </td>
                 </tr> 

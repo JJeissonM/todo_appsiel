@@ -14,15 +14,15 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                    <td colspan="2">
+                    <td colspan="2" style="color: black !important; background-color: #f2f2f2;">
                         <center><strong>RESUMEN DE PROPINAS</strong></center>
                     </td>
                 </tr>
                 <tr>
-                    <td style="color: black;text-align: center;">
+                    <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
                         Caja/Cta. Bancaria
                     </td>
-                    <td style="color: black;text-align: center;">
+                    <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
                         Valor
                     </td>
                 </tr>     
