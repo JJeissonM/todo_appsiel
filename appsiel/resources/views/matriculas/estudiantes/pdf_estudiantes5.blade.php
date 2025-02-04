@@ -51,11 +51,11 @@
 						}
 						
 						$libretas_pagos = $registro->libretas_pagos;
-						$ultima_libreta = $libretas_pagos->last();
+						$ultima_libreta = $registro->get_libreta_del_anio( $registro->matricula_id, $registro->periodo_lectivo->fecha_desde );
 
 						$valor_matricula = 0;
 						$valor_pension = 0;
-						if ( !is_null( $ultima_libreta ) )
+						if ( $ultima_libreta != null )
 						{
 							$valor_matricula = $ultima_libreta->valor_matricula;
 							$valor_pension = $ultima_libreta->valor_pension_mensual;

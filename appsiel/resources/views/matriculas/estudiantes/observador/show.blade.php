@@ -36,7 +36,13 @@
 			
 			<br><br>
 			<p style="text-align: center;">
-				<button type="button" class="btn btn-primary btn-xs" id="btn_cambiar_matricula"> Cambiar curso
+				<button type="button" class="btn btn-primary btn-xs" id="btn_cambiar_matricula"> 
+					<table style="width: 200px; margin: 0 auto;">
+						<tr>
+							<td style="width: 20px; margin: 0 auto;">{{ Form::Spin(48) }}</td>
+							<td style="width: 170px; margin: 0 auto;">Cambiar curso</td>
+						</tr>
+					</table>
 				</button>
 			</p>
 
@@ -77,10 +83,15 @@
 					return false;
 				}
 
+				$('#div_spin').show();
+
+				$(this).attr('disabled', 'disabled');
+
 				location.href = URL + '/matriculas/estudiantes/observador/show/' + $('#estudiante_id').val() + '?id=1&id_modelo=180&id_transaccion=&matricula_id=' + $('#matricula_id').val();
 				
-			});			
+			});
 
+			/* Evento change del select matricula_id */	
 			$('#matricula_id').on('change', function(event){
 
 				if ($('#matricula_id').val() == '') {

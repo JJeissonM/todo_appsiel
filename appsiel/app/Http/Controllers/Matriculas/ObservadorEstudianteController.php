@@ -131,7 +131,7 @@ class ObservadorEstudianteController extends TransaccionController
         $matricula->observacion_general = $request->observacion_general;
         $matricula->save();
 
-        return redirect('academico_docente/valorar_aspectos_observador/' . $request->id_estudiante . '?id=' . $request->url_id . '&curso_id=' . $request->curso_id . '&asignatura_id=' . $request->asignatura_id)->with('flash_message', 'Registros actualizados correctamente.');
+        return redirect( 'matriculas/estudiantes/observador/valorar_aspectos/' . $request->id_estudiante . '?id=' . $request->url_id . '&id_modelo=180&matricula_id=' . $request->matricula_id)->with('flash_message', 'Registros actualizados correctamente.');
     }
 
     public function eliminar_novedad($novedad_id)

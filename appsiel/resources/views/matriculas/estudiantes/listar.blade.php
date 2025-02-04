@@ -1,5 +1,16 @@
 @extends('layouts.principal')
 
+<?php 
+
+	$array_tipos_listados = [
+		'1' => 'Listado de estudiantes',
+		'2' => 'Ficha de datos básicos',
+		'3' => 'Listado de datos básicos',
+		'4' => 'Listado de usuarios',
+		'5' => 'Datos de matrículas y pensiones'
+	];
+?>
+
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 	<hr>
@@ -15,7 +26,7 @@
 					{{ Form::open(['url'=>'matriculas_estudiantes_generar_listado','id'=>'form_consulta']) }}
 					
 						<div class="row" style="padding:5px;">
-                            {{ Form::bsSelect('tipo_listado', null, 'Tipo de listado', ['1'=>'Listado de estudiantes', '2'=>'Ficha de datos básicos', '3'=>'Listado de datos básicos', '4'=>'Listado de usuarios', '5'=>'Datos de matrículas y pensiones'], []) }}
+                            {{ Form::bsSelect('tipo_listado', null, 'Tipo de listado', $array_tipos_listados, []) }}
                         </div>
 
 						<div class="row" style="padding:5px;">

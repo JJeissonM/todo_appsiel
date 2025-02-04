@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Matriculas\Estudiante;
 
 use App\Matriculas\Curso;
+use App\Tesoreria\TesoLibretasPago;
 use Illuminate\Support\Facades\DB;
 
 class Matricula extends Model
@@ -44,6 +45,18 @@ class Matricula extends Model
     public function libretas_pagos()
     {
         return $this->hasMany( 'App\Tesoreria\TesoLibretasPago', 'matricula_id' );
+    }
+
+    public function get_libreta_del_anio( $matricula_id, $fecha_desde_periodo_lectivo )
+    {
+        $anio = date( 'Y', strtotime( $fecha_desde_periodo_lectivo ) );
+
+        return TesoLibretasPago::where( [
+                                            ['matricula_id', '=', $matricula_id],
+                                            ['fecha_inicio', 'LIKE', '%' . $anio . '%']
+                                        ] )
+                                ->orderBy( 'id', 'DESC' )
+                                ->first();
     }
 
     public function get_observacion_general()
@@ -131,11 +144,11 @@ class Matricula extends Model
         $array_wheres = [['sga_matriculas.id', '>', 0]];
 
         if ($curso_id != null) {
-            $array_wheres = array_merge($array_wheres, ['sga_matriculas.curso_id' => $curso_id]);
+            $array_wheres = array_merge($array_wheres, [['sga_matriculas.curso_id', '=', $curso_id]]);
         }
 
         if ($periodo_lectivo_id != null) {
-            $array_wheres = array_merge($array_wheres, ['sga_matriculas.periodo_lectivo_id' => $periodo_lectivo_id]);
+            $array_wheres = array_merge($array_wheres, [['sga_matriculas.periodo_lectivo_id', '=', $periodo_lectivo_id]]);
         }
 
         if ($estado_matricula != null)
@@ -162,7 +175,6 @@ class Matricula extends Model
             ->select(
                 DB::raw($raw_nombre_completo),
                 'sga_matriculas.id AS matricula_id',
-                'sga_matriculas.id',
                 'sga_matriculas.codigo',
                 'sga_matriculas.fecha_matricula',
                 'sga_matriculas.id_colegio',
@@ -193,6 +205,9 @@ class Matricula extends Model
             ->get();
     }
 
+    /**
+     * Retorna todos los estudiantes matriculados en un curso y periodo lectivo
+     */
     public static function todos_estudiantes_matriculados( $curso_id, $periodo_lectivo_id)
     {
         $array_wheres = [['sga_matriculas.id', '>', 0]];

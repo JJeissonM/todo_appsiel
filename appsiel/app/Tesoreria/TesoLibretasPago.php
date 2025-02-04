@@ -3,8 +3,7 @@
 namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
-
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class TesoLibretasPago extends Model
 {

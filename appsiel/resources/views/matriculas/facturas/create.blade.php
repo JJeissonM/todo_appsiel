@@ -106,20 +106,21 @@
 				C.C.: {{ $responsable_financiero_estudiante->tercero->numero_identificacion }}
 			{{ Form::close() }}
 
+			<!--
 			<br/>
 			<div class="marco_formulario">
 				<br>
 				<table class="table table-bordered">
 					<tr>
 						<td style="width: 40%;">
-							{{ Form::bsText( 'descuento', null, '% Descuento', ['class'=>'descuento'] ) }}
+							{ { Form::bsText( 'descuento', null, '% Descuento', ['class'=>'descuento'] ) }}
 						</td>
 						<td>
 							<button type="button" class="btn btn-primary" id="btn_aplicar_descuento"> <i class="fa fa-check"></i> Aplicar </button>
 						</td>
 				</table>
 			</div>
-
+		-->
 			<br/>
 
 			@include( 'ventas.incluir.tabla_lineas_registros')

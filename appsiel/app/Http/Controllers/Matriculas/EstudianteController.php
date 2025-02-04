@@ -55,7 +55,7 @@ class EstudianteController extends ModeloController
             }
         }
         //generamos los indices de nuevo del array para que el switch no presente error
-        $listaTemp = null;
+        $listaTemp = [];
         foreach ($lista_campos as $lc) {
             $listaTemp[] = $lc;
         }
@@ -224,8 +224,8 @@ class EstudianteController extends ModeloController
         }
 
         $i = 0;
-        foreach ($grados as $fila_grado) {
-
+        foreach ($grados as $fila_grado)
+        {
             $grado = Grado::find($fila_grado->id);
 
             if ($request->curso_id == "Todos")

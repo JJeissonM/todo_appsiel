@@ -2,7 +2,7 @@
 
 @section('content')
 {{ Form::bsMigaPan($miga_pan) }}
-&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( 'matriculas/create?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
+&nbsp;&nbsp;&nbsp;{{ Form::bsBtnCreate( 'inscripciones_crear_matricula/' . $matricula->id_estudiante . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
 &nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'matriculas/imprimir/'.$id ) }}
 &nbsp;&nbsp;&nbsp;{{ Form::bsBtnEdit( 'matriculas/'.$id.'/edit?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') ) }}
 &nbsp;&nbsp;&nbsp;<a href="{{route('responsables.index')}}?id={{$app}}&id_modelo={{$modelo}}&estudiante_id={{$matricula->id_estudiante}}" class="btn-gmail" title="RESPONSABLES DEL ESTUDIANTE: Responsable Financiero (Acudiente), Mamá, Papá"><i class="fa fa-btn fa-users"></i> </a>

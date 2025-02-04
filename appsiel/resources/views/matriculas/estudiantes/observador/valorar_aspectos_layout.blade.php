@@ -8,13 +8,19 @@
 	
 	<div class="container-fluid">
 		<div class="marco_formulario">
-		    <h4>Actualización</h4>
+		    <h4>Actualización - Curso {{ $matricula_a_mostrar->curso->descripcion }}</h4>
 		    <hr>
 
             @if ( Input::get('id') == 5 ) 
                 {{Form::open(['url' => 'academico_docente/guardar_valoracion_aspectos','method'=>'post', 'id' => 'form_create', 'class'=>'form-horizontal']) }}
+				<?php 
+					$url_cancelar = url('academico_docente/revisar_estudiantes/curso_id/'.Input::get('curso_id').'/id_asignatura/'.Input::get('asignatura_id').'?id='.Input::get('id'));
+				?>
             @else
                 {{Form::open( ['url' => '/matriculas/estudiantes/observador/valorar_aspectos','method'=>'post', 'class'=>'form-horizontal', 'id' => 'form_create'] ) }}
+				<?php				
+					$url_cancelar = url( 'matriculas/estudiantes/observador/show/' . $estudiante->id . '?id=1&id_modelo=180&id_transaccion=&matricula_id=' . $matricula_a_mostrar->id );
+				?>
             @endif			
 
 				<div class="form-group">
@@ -53,7 +59,7 @@
 
 			<div class="form-group">
 				<a href="#" class="btn btn-primary btn-xs" id="bs_boton_guardar"><i class="fa fa-save"></i> Guardar</a>
-				<a href="{{ url('/') . '/academico_docente/revisar_estudiantes/curso_id/'. Input::get('curso_id') . '/id_asignatura/'.Input::get('asignatura_id') . '?id='.Input::get('id') }}" class="btn btn-danger btn-xs" id="bs_boton_cancelar">Cancelar</a>
+				<a href="{{ $url_cancelar }}" class="btn btn-danger btn-xs" id="bs_boton_cancelar">Cancelar</a>
 			</div>
 			
 			<div class="container" style="clear: both; width: auto; display: none;" id="mensaje_ok">

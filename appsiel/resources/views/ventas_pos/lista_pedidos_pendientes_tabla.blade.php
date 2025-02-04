@@ -86,6 +86,14 @@
                   @endif
                   
                   <a class="btn btn-default btn-xs btn-detail" href="{{ url( 'vtas_pedidos/' . $pedido->id . '?id=20&id_modelo=175&id_transaccion=42' ) }}" title="Consultar" id="btn_print" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
+                  
+                  
+                  @can( 'vtas_pos_anular_pedidos' )
+                    &nbsp;&nbsp;&nbsp;
+
+                    <button class="btn btn-danger btn-xs btn-detail btn_anular_pedido" data-href="{{ url( 'pos_anular_pedido/' . $pedido->id . '?id=20&id_modelo=175&id_transaccion=42&pdv_id=' . $pdv_id ) }}" title="Anular Pedido" ><i class="fa fa-trash"></i>&nbsp;</button>
+                  @endcan
+
                 </td>
             </tr>
         @endforeach

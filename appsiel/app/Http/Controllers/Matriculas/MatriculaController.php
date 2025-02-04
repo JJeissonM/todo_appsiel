@@ -28,6 +28,7 @@ use App\Calificaciones\ObservacionesBoletin;
 use App\Tesoreria\TesoLibretasPago;
 use App\Core\TipoDocumentoId;
 use App\Matriculas\Responsableestudiante;
+use App\Matriculas\Services\FacturaEstudiantesService;
 use App\Matriculas\Tiporesponsable;
 
 use Illuminate\Support\Facades\App;
@@ -271,6 +272,17 @@ class MatriculaController extends ModeloController
 
         // Se incrementa el consecutivo
         SecuenciaCodigo::incrementar_consecutivo('matriculas');
+
+        if ( $request->fecha_inicio != null && $request->numero_periodos != null && $request->valor_matricula != null && $request->valor_pension_mensual != null )    
+        {
+            $data = $request->all();
+            $data['matricula_id'] = $matricula->id;
+            $data['valor_pension_anual'] = $request->valor_pension_mensual * $request->numero_periodos;
+            $data['id_estudiante'] = $matricula->id_estudiante;
+            $data['estado'] = 'Activo';
+            $data['creado_por'] = Auth::user()->email;
+            (new FacturaEstudiantesService)->store_plan_pagos($data);
+        }
 
         return redirect('matriculas/show/' . $matricula->id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo)->with('flash_message', 'Matrícula creada correctamente. Código: ' . $matricula->codigo);
     }

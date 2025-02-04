@@ -32,6 +32,7 @@ use App\Inventarios\InvGrupo;
 use App\Sistema\TipoTransaccion;
 use App\Ventas\Services\CustomerServices;
 use App\Ventas\Services\DocumentsLinesServices;
+use App\Ventas\Services\OrderServices;
 use App\Ventas\VtasDocRegistro;
 use App\VentasPos\Services\FacturaPosService;
 
@@ -664,5 +665,20 @@ class PedidosPosController extends TransaccionController
             'lineas_registros' => $lineas_registros,
             'url_cancelar' => url('/').  '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' . Input::get('pdv_id') . '&action=create'
         ]);
+    }
+
+    public function anular_pedido($pedido_id)
+    {
+        // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
+        $pedido = VtasPedido::find( $pedido_id );
+        
+        if ( $pedido->documento_ventas_hijo() != null )
+        {
+            return 'Pedido NO puede ser anulado. Tiene documentos relacionados.';
+        }
+
+        (new OrderServices())->cancel_order($pedido);
+
+        return 'ok';
     }
 }

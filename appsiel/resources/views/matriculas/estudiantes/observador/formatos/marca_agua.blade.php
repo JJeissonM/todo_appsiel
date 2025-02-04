@@ -158,7 +158,8 @@
     }
 </style>
 
-<div class="container" style="width: 100%;">
+{{ Form::Spin(48) }}
+<div class="container" style="width: 100%;" id="container_formato">
 	
     @if($vista != 'show')
         @include('calificaciones.boletines.formatos.banner_colegio_con_escudo', ['opacity'=>0.7, 'tam_letra'=>4])
@@ -166,7 +167,7 @@
         <div class="watermark-{{$tam_hoja}} escudo">
             <img src="{{ config('matriculas.url_imagen_marca_agua') }}" />
         </div>        
-    @endif   
+    @endif
 	
 	<h4 align="center">OBSERVADOR DEL ALUMNO</h4>
     <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
@@ -182,7 +183,6 @@
             {{ $matricula_a_mostrar->get_observacion_general() }}
         @endif
     </div>
-
 
     @if($vista != 'show')
         @include('matriculas.estudiantes.observador.componentes_para_mostrar_al_imprimir')

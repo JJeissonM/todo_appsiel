@@ -5,7 +5,7 @@
 <h4> HISTORIAL DEL ESTUDIANTE </h4>
 <hr>
 <div class="table-responsive">
-	<table class="table table-bordered table-striped" id="myTable" width="100%">
+	<table class="table table-bordered table-striped" width="100%">
 		<tbody>
 			@foreach ($novedades as $novedad)
 				@php $periodo = App\Calificaciones\Periodo::find($novedad->id_periodo) @endphp

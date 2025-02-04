@@ -114,27 +114,40 @@ div.recuadro{
 }
 </style>
 
-<div class="container" style="width: 100%; border: 1px solid #333333;">
-
-	<table class="banner" width="100%" >
-	    <tr>
-	        <td width="250px">
-	            <img src="{{ asset(config('configuracion.url_instancia_cliente').'/storage/app/escudos/'.$colegio->imagen.'?'.rand(1,1000)) }}" width="160px" height="160px" />
-	        </td>
-
-	        <td align="center">
-	            <b>{{ $colegio->descripcion }}</b><br/>
-	            <b>{{ $colegio->slogan }}</b><br/>
-	            Resolución No. {{ $colegio->resolucion }}<br/>
-	            {{ $colegio->direccion }}<br/>
-	            Teléfonos: {{ $colegio->telefonos }}<br/>
-	        </td>
-	    </tr>
-	</table>
+<div class="container" style="width: 100%; border: 1px solid #333333;" id="container_formato">
 	
-	<h2 align="center">OBSERVADOR Y CONVIVENCIA DEL ALUMNO</h2>
+    @if($vista != 'show')
+		<table class="banner" width="100%" >
+			<tr>
+				<td width="250px">
+					<img src="{{ asset(config('configuracion.url_instancia_cliente').'/storage/app/escudos/'.$colegio->imagen.'?'.rand(1,1000)) }}" width="160px" height="160px" />
+				</td>
 
-	@include('matriculas.estudiantes.datos_basicos')
+				<td align="center">
+					<b>{{ $colegio->descripcion }}</b><br/>
+					<b>{{ $colegio->slogan }}</b><br/>
+					Resolución No. {{ $colegio->resolucion }}<br/>
+					{{ $colegio->direccion }}<br/>
+					Teléfonos: {{ $colegio->telefonos }}<br/>
+				</td>
+			</tr>
+		</table>
+	@endif
+	
+	<h4 align="center">OBSERVADOR DEL ALUMNO</h4>
+    <h5 align="center" style="margin-top:-15px;">{{$anio_lectivo_label}}</h5>
+    
+	@include('matriculas.estudiantes.observador.datos_basicos_estudiante')
+	@include('matriculas.estudiantes.observador.datos_adicionales_estudiante')
+	@include('matriculas.estudiantes.observador.datos_basicos_padres')
+
+    <div class="observacion">
+        <b>Observación:</b>
+        <br>
+        @if ( $matricula_a_mostrar != null )
+            {{ $matricula_a_mostrar->get_observacion_general() }}
+        @endif
+    </div>
 
 	<div class="page-break"></div>
 

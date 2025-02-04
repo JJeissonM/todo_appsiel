@@ -46,7 +46,43 @@ $(document).ready(function () {
         $("#pedido_id").val(0);
 
         resetear_ventana2();
-    });    
+    });
+    
+	$(document).on('click','.btn_anular_pedido',function(){
+        var fila = $(this).closest('tr');
+
+        var cells = fila.find('td');
+
+        var customer_name = cells.eq(0).text();
+        var order = cells.eq(2).text();
+        
+        if (confirm('Realmente quiere anular el pedido ' + order + ' para el cliente ' + customer_name ) ) 
+        {
+            var url = $(this).attr('data-href');
+
+            $.get(url, function (message) {
+
+                if (message != 'ok') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al anular el pedido!',
+                        text: message
+                    });
+                    return;
+                    
+                }
+                
+                fila.remove(); 
+
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Pedido anulado correctamente!',
+                    text: 'Pedido: ' + order + '. Cliente: ' + customer_name
+                });
+                
+            });
+        }       
+    });
 
     function resetear_ventana2()
     {

@@ -27,15 +27,15 @@ class ObservadorEstudianteService
         
         switch ( config('matriculas.formato_impresion_observador') ) {
             case '1':
-                $vista_formato = 'matriculas.estudiantes.observador.vista_preliminar';
+                $vista_formato = 'matriculas.estudiantes.observador.formatos.estandar';
                 break;
 
             case '2':
-                $vista_formato = 'matriculas.estudiantes.observador.tipo_historial';
+                $vista_formato = 'matriculas.estudiantes.observador.formatos.tipo_historial';
                 break;
 
             case '3':
-                $vista_formato = 'matriculas.estudiantes.observador.marca_agua';
+                $vista_formato = 'matriculas.estudiantes.observador.formatos.marca_agua';
                 break;
 
             default:

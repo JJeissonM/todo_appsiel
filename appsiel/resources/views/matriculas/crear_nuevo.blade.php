@@ -32,55 +32,17 @@
                     {{ VistaController::campos_dos_colummnas($form_create['campos']) }}
                 </div>
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">Requisitos de matrícula</div>
-                    <div class="panel-body">
-                        <table class="fluid" width="100%">
-                            <tr>
-                                <td><input type="checkbox" name="requisito1"> Documento identidad</td>
-                                <td><input type="checkbox" name="requisito2"> Constancia SIMAT</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" name="requisito3"> Fotos</td>
-                                <td><input type="checkbox" name="requisito4"> Registro calificaciones</td>
-                            </tr>
-                            <tr>
-                                <td><input type="checkbox" name="requisito5"> Certificación E.P.S.</td>
-                                <td><input type="checkbox" name="requisito6"> Registro de vacunación</td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
             </div>
 
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">Controles médicos</div>
-                        <div class="panel-body">
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('grupo_sanguineo', $estudiante->grupo_sanguineo, 'Grupo sanguíneo', []) }}
-                            </div>
+            @include('matriculas.incluir.formularios.requisitos_matricula')
 
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('medicamentos', $estudiante->medicamentos, 'Medicamento', []) }}
-                            </div>
+            @include('matriculas.incluir.formularios.controles_medicos', [ 'estudiante' => $inscripcion->tercero ])
 
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('alergias', $estudiante->alergias, 'Alergias', []) }}
-                            </div>
-
-                            <div class="row" style="padding:5px;">
-                                {{ Form::bsText('eps', $estudiante->eps, 'EPS', []) }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-sm-6">
-                    &nbsp;
-                </div>
-            </div>
+            @if((int)config('matriculas.incluir_formulario_para_crear_libreta_pagos') == 1)
+                @include('matriculas.incluir.formularios.libreta_pagos')                
+            @else
+                
+            @endif
 
             <div align="center">
 

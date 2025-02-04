@@ -33,6 +33,7 @@ Route::get('pos_factura_crear_desde_pedido/{pedido_id}', 'VentasPos\FacturaPosCo
 Route::get('pos_revisar_pedidos_ventas/{pdv_id}', 'VentasPos\ReporteController@revisar_pedidos_ventas');
 
 Route::get('pos_cargar_pedido/{pedido_id}', 'VentasPos\PedidosPosController@cargar_pedido');
+Route::get('pos_anular_pedido/{pedido_id}', 'VentasPos\PedidosPosController@anular_pedido');
 
 // Generar remisiones para documentos ya acumulados
 Route::get('pos_factura_generar_remisiones/{pdv_id}', 'VentasPos\FacturaPosController@generar_remisiones');

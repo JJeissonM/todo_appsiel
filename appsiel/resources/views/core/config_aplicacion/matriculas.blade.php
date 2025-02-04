@@ -222,6 +222,19 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$incluir_formulario_para_crear_libreta_pagos = 0;
+								if( isset($parametros['incluir_formulario_para_crear_libreta_pagos'] ) )
+								{
+									$incluir_formulario_para_crear_libreta_pagos = $parametros['incluir_formulario_para_crear_libreta_pagos'];
+								}
+							?>
+							{{ Form::bsSelect('incluir_formulario_para_crear_libreta_pagos', $incluir_formulario_para_crear_libreta_pagos, 'Incluir formulario para crear Libreta De Pagos en la creación de matrículas', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$cantidad_facturas_vencidas_permitidas = 2;
 								if( isset($parametros['cantidad_facturas_vencidas_permitidas'] ) )
 								{
@@ -229,12 +242,6 @@
 								}
 							?>
 							{{ Form::bsText('cantidad_facturas_vencidas_permitidas', $cantidad_facturas_vencidas_permitidas, 'Facturas vencidas permitidas para permitir acceso a estudiantes', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							&nbsp;
 						</div>
 					</div>
 
