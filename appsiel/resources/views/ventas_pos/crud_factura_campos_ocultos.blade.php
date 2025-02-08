@@ -115,6 +115,9 @@
 
 <input type="hidden" name="permitir_precio_unitario_negativo" id="permitir_precio_unitario_negativo"
         value="{{ (int)config('ventas_pos.permitir_precio_unitario_negativo') }}">
+        
+<input type="hidden" name="tiempo_espera_guardar_factura" id="tiempo_espera_guardar_factura"
+value="{{ (int)config('ventas_pos.tiempo_espera_guardar_factura') }}">
 
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>

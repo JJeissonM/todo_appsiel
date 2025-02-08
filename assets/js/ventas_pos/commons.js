@@ -578,7 +578,8 @@ function disable_boton_guardar_factura()
  * 
  * @returns 
  */
-function activar_boton_guardar_factura() {
+function activar_boton_guardar_factura()
+{
   disable_boton_guardar_factura();
   $("#div_efectivo_recibido").show();
   $("#div_total_cambio").show();
@@ -1106,6 +1107,7 @@ $(document).ready(function () {
       data += "&valor_datafono=" + $("#valor_datafono").val();
     }
 
+    /*
     $.post(url, data, function (doc_encabezado) {
       $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
       $("#btn_guardando").attr("id", "btn_guardar_factura");
@@ -1118,6 +1120,48 @@ $(document).ready(function () {
       enviar_impresion( doc_encabezado );
       
       $("#pedido_id").val(0);
+    });
+    */
+
+    var tiempo_espera_guardar_factura = 7000; // 7 segundos
+    if ( $('#tiempo_espera_guardar_factura').val() != 0 ) {
+      tiempo_espera_guardar_factura = parseInt( $('#tiempo_espera_guardar_factura').val() ) * 1000;
+    }
+
+    $.ajax({
+        url: url,
+        data: data,
+        type: 'POST',
+        timeout: tiempo_espera_guardar_factura,
+        success: function( doc_encabezado, status, jqXHR ) {
+            $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+            $("#btn_guardando").attr("id", "btn_guardar_factura");
+      
+            $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
+            
+            llenar_tabla_productos_facturados();
+      
+            enviar_impresion( doc_encabezado );
+            
+            $("#pedido_id").val(0);
+        },
+        error: function( response, status, jqXHR ) {
+          
+          $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+          $("#btn_guardando").attr("id", "btn_guardar_factura");
+          $("#btn_guardar_factura").removeAttr("disabled");
+
+            var error_label = 'ERROR AL PROCESAR LA SOLICITUD';
+            if( status == 'timeout' ) {
+                error_label = 'TIEMPO DE ESPERA AGOTADO';
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: error_label,
+                text: 'Factura no pudo ser guardada!' + "\n Por favor, intente nueamente." + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+            });
+        }
     });
   });
 

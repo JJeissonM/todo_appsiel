@@ -3,6 +3,9 @@
 
             <tr style="background: #ccc; font-weight: bold; text-align: center;">
                 <td> Cód. </td>
+                @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                    <td> Ref. </td>
+                @endif
                 <td> Producto </td>
                 <td> Bodega </td>
                 <td> Cantidad </td>
@@ -20,11 +23,13 @@
                     if (!isset($productos[$i]['CostoPromedio'])) {
                         continue;
                     }
-
                 ?>
                 @if( $productos[$i]['id'] != 0 )
     	            <tr>
     	                <td>{{ $productos[$i]['id'] }}</td>
+                        @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                            <td> {{ $productos[$i]['referencia'] }} </td>
+                        @endif
     	                <td>{{ $productos[$i]['descripcion'] }}</td>
                         <td> {{ $productos[$i]['bodega'] }} </td>
     	                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
@@ -49,7 +54,11 @@
                 }
             } ?>
             <tr>
-                <td colspan="3"> &nbsp; </td>
+                @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                    <td colspan="4"> &nbsp; </td>
+                @else
+                    <td colspan="3"> &nbsp; </td>
+                @endif  
                 <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
                 <td> {{ number_format($total_costo_total, 2, ',', '.') }} </td>

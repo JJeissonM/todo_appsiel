@@ -109,6 +109,7 @@ class ReporteController extends Controller
                 $productos[$i]['descripcion'] = $item->get_value_to_show(true);
                 $productos[$i]['unidad_medida1'] = $item->unidad_medida1;
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
+                $productos[$i]['referencia'] = $item->referencia;
 
                 $bodega = $bodegas->where( 'id',$bodega_id )->first();
                 $descripcion_bodega = '';

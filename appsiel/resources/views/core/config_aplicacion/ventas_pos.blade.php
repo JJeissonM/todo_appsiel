@@ -101,7 +101,14 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<div class="row" style="padding:5px;">
-								&nbsp;
+								<?php 
+									$tiempo_espera_guardar_factura = '7';
+									if( isset($parametros['tiempo_espera_guardar_factura'] ) )
+									{
+										$tiempo_espera_guardar_factura = $parametros['tiempo_espera_guardar_factura'];
+									}
+								?>
+								{{ Form::bsText('tiempo_espera_guardar_factura', $tiempo_espera_guardar_factura, 'Tiempo de espera para Guardar factura (en segundos)', ['class'=>'form-control']) }}
 							</div>
 						</div>
 					</div>

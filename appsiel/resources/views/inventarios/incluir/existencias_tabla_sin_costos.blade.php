@@ -2,6 +2,9 @@
     <table class="table table-bordered table-striped" style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%">
         <tr style="background: #ccc; font-weight: bold; text-align: center;">
             <td> Cód. </td>
+            @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                <td> Ref. </td>
+            @endif
             <td> Producto </td>
             <td> Bodega </td>
             <td> Cantidad física </td>
@@ -19,6 +22,9 @@
             @if( $productos[$i]['id'] != 0 )
 	            <tr>
                     <td>{{ $productos[$i]['id'] }}</td>
+                    @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                        <td> {{ $productos[$i]['referencia'] }} </td>
+                    @endif
 	                <td>{{ $productos[$i]['descripcion'] }}</td>
                     <td> {{ $productos[$i]['bodega'] }} </td>
 
@@ -37,7 +43,11 @@
             @else
                 @if($mostrar_cantidad)
                     <tr style="background: #4a4a4a; color: white;">
-                        <td colspan="3"> &nbsp; </td>
+                        @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                            <td colspan="4"> &nbsp; </td>
+                        @else
+                            <td colspan="3"> &nbsp; </td>
+                        @endif  
 
                         <td> &nbsp; </td>
 
@@ -47,8 +57,14 @@
                 @endif
             @endif
         @endfor
-        <tr>            
-            <td colspan="3"> &nbsp; </td>
+        <tr> 
+            
+            @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
+                <td colspan="4"> &nbsp; </td>
+            @else
+                <td colspan="3"> &nbsp; </td>
+            @endif      
+            
             <td> &nbsp; </td>
 
             @if($mostrar_cantidad)

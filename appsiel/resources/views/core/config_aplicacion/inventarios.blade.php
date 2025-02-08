@@ -20,6 +20,38 @@
 
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
+				<h4> Parámetros Generales  </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_columna_referencia_en_reportes = 0;
+								if( isset($parametros['mostrar_columna_referencia_en_reportes'] ) )
+								{
+									$mostrar_columna_referencia_en_reportes = $parametros['mostrar_columna_referencia_en_reportes'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_columna_referencia_en_reportes', $mostrar_columna_referencia_en_reportes, 'Mostrar campo Referencia en Reportes', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$codigo_principal_manejo_productos = 0;
+								if( isset($parametros['codigo_principal_manejo_productos'] ) )
+								{
+									$codigo_principal_manejo_productos = $parametros['codigo_principal_manejo_productos'];
+								}
+							?>
+							{{ Form::bsSelect('codigo_principal_manejo_productos', $codigo_principal_manejo_productos, 'Código principal manejo productos', ['item_id' => 'ID', 'referencia' => 'Referencia'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 
 				<h4> Parámetros por defecto creación de Productos  </h4>
 				<hr>
@@ -70,14 +102,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$codigo_principal_manejo_productos = 0;
-								if( isset($parametros['codigo_principal_manejo_productos'] ) )
-								{
-									$codigo_principal_manejo_productos = $parametros['codigo_principal_manejo_productos'];
-								}
-							?>
-							{{ Form::bsSelect('codigo_principal_manejo_productos', $codigo_principal_manejo_productos, 'Código principal manejo productos', ['item_id' => 'ID', 'referencia' => 'Referencia'], ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
@@ -555,9 +580,7 @@
 						</div>
 					</div>
 
-				</div>
-
-				
+				</div>				
 
 				<h4> Parámetros para manejo de ítems Mandatarios </h4>
 				<hr>
