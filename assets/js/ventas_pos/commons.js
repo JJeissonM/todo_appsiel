@@ -1151,15 +1151,15 @@ $(document).ready(function () {
           $("#btn_guardando").attr("id", "btn_guardar_factura");
           $("#btn_guardar_factura").removeAttr("disabled");
 
-            var error_label = 'ERROR AL PROCESAR LA SOLICITUD';
+            var error_label = 'Perdida de conexión.';
             if( status == 'timeout' ) {
-                error_label = 'TIEMPO DE ESPERA AGOTADO';
+                error_label = 'Tiempo de espera agotado.';
             }
 
             Swal.fire({
                 icon: 'error',
-                title: error_label,
-                text: 'Factura no pudo ser guardada!' + "\n Por favor, intente nueamente." + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                text: error_label + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
             });
         }
     });
