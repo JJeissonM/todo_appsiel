@@ -21,9 +21,9 @@
                         $descripcion_item = $linea->item->get_value_to_show(true);
                         
                         $referencia = '';
-                        if($linea->referencia != '')
+                        if($linea->item->referencia != '')
                         {
-                            $referencia = ' - ' . $linea->referencia;
+                            $referencia = ' - ' . $linea->item->referencia;
                         }
 
                         $descripcion_item .= $referencia;
