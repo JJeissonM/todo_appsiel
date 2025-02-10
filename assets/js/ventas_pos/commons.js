@@ -1159,8 +1159,8 @@ $(document).ready(function () {
             Swal.fire({
                 icon: 'error',
                 title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                text: error_label + JSON.stringify(response)  
-            }); // + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                text: error_label 
+            }); // + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
         }
     });
   });
