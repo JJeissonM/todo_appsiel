@@ -1017,7 +1017,7 @@ class InventarioController extends TransaccionController
                 $ultimo_item = 1;
             }
 
-            $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->nueva_cadena . '" data-producto_id="' . $linea->id . '" data-primer_item="'.$primer_item.
+            $html .= '<a class="list-group-item list-group-item-productos ' . $clase . ' flecha_mover" data-descripcion="' . $linea->get_value_to_show(true) . '" data-producto_id="' . $linea->id . '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item;
 
