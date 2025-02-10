@@ -168,7 +168,6 @@
 
 							for(i=0; i<cantidad;i++)
 							{
-
 								$('#ingreso_productos').find('tbody:last').append('<tr id="'+data[i].producto_id+'">'+
 																'<td class="text-center">'+data[i].producto_id+'</td>'+
 																'<td class="nom_prod">'+data[i]['producto_descripcion']+'</td>'+

@@ -524,20 +524,20 @@ class InvFisicoController extends TransaccionController
         
         $productos = InvProducto::where('inv_productos.inv_grupo_id', $grupo_id)
                                 ->where('inv_productos.estado', 'Activo')
-                                ->select(
-                                            DB::raw('CONCAT(inv_productos.descripcion, " (",inv_productos.unidad_medida1,") - Talla: ",inv_productos.unidad_medida2) AS producto_descripcion'),'inv_productos.id AS producto_id')
-                                ->get()
-                                ->toArray();
+                                ->get();
 
-        
+        $lista_items = [];
+        foreach ($productos as $producto) {
 
-        $cantidad = count($productos);
-        for($i=0; $i<$cantidad;$i++)
-        {
-            $productos[$i]['costo_unitario'] = InvCostoPromProducto::get_costo_promedio( $bodega_id, $productos[$i]['producto_id'] );
+            $item = $producto->toarray();
+            $item['producto_id'] = $producto->id;
+            $item['costo_unitario'] = $producto->get_costo_promedio( $bodega_id );
+            $item['producto_descripcion'] = $producto->get_value_to_show(true);
+
+            $lista_items[] = $item;
+
         }
-
-        return $productos;
+        return $lista_items;
     }
 
     public function cargar_lista_ingredientes_fabricacion($item_platillo_id,$cantidad_fabricar)

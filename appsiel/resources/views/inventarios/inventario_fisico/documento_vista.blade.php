@@ -19,14 +19,6 @@
                     <?php
 
                         $descripcion_item = $linea->item->get_value_to_show(true);
-                        
-                        $referencia = '';
-                        if($linea->referencia != '')
-                        {
-                            $referencia = ' - ' . $linea->referencia;
-                        }
-
-                        $descripcion_item .= $referencia;
 
                         $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 2);
 
