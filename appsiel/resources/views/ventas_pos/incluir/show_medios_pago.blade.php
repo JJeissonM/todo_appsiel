@@ -23,9 +23,11 @@
                                     
                                     if( $teso_movim->teso_cuenta_bancaria_id != '0-' )
                                     {
-                                        $caja_banco = explode('-',$teso_movim->teso_cuenta_bancaria_id)[1];
-                                        if ( explode('-',$teso_movim->teso_cuenta_bancaria_id)[2] ) {
-                                            $caja_banco = explode('-',$teso_movim->teso_cuenta_bancaria_id)[1] . ' (' . explode('-',$teso_movim->teso_cuenta_bancaria_id)[2] . ')';
+                                        $arr_caja_banco = explode('-', $teso_movim->teso_cuenta_bancaria_id );
+
+                                        $caja_banco = $arr_caja_banco[1];
+                                        if ( isset($arr_caja_banco[2]) ) {
+                                            $caja_banco = $arr_caja_banco[1] . ' (' . $arr_caja_banco[2] . ')';
                                         }
                                     }
                                 ?>
