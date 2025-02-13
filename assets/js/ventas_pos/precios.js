@@ -334,20 +334,6 @@ function set_precios_lbl_items()
 /**
  * 
  */
-function set_lista_precios_old()
-{
-  $.get(
-    url_raiz +
-      "/vtas_get_lista_precios_cliente" +
-      "/" +
-      $("#cliente_id").val()
-  ).done(function (data) {
-    precios = data[0];
-    descuentos = data[1];
-    set_precios_lbl_items();
-  });
-}
-
 function set_lista_precios()
 {
     var cliente_id = $("#cliente_id").val();
@@ -379,7 +365,9 @@ function set_lista_precios()
     set_precios_lbl_items();
 }
 
-
+/**
+ * 
+ */
 function calcular_totales_quantity() 
 {
     var total_cantidad = 0.0;
@@ -424,6 +412,10 @@ function calcular_totales_quantity()
     $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
 }
 
+/**
+ * 
+ * @param {*} fila 
+ */
 function calcular_precio_total_lbl_quantity(fila) 
 {
     precio_unitario = parseFloat(fila.find('.precio_unitario').text());
@@ -455,6 +447,12 @@ function calcular_precio_total_lbl_quantity(fila)
     fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
 }
 
+/**
+ * 
+ * @param {*} numero 
+ * @param {*} aproximacion_superior 
+ * @returns 
+ */
 function redondear_a_centena(numero, aproximacion_superior = false) 
 {
 	if ( redondear_centena == 0 )
