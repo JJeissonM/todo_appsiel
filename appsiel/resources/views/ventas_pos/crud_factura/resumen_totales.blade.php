@@ -18,34 +18,46 @@
             <td colspan="2">
                 <label class="control-label col-sm-3 col-md-3" for="cliente_input">Cliente:</label>              
                 <div class="col-sm-9 col-md-9">
-                    <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}"><div id="clientes_suggestions"> </div>
+                    <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}">
+                    <!-- 
+                        <div id="clientes_suggestions"> </div>
+                    -->
                 </div>
             </td>
         </tr>
-        <tr>
-            <td width="35%">
-                <strong> Subtotal </strong>
-            </td>
-            <td style="text-align: right;" colspan="2">
-                <div id="subtotal" style="display: inline;"> $ {{ $valor_subtotal }}</div>
-            </td>
-        </tr>
-        <tr>
-            <td width="35%">
-                <strong> Descuento </strong>
-            </td>
-            <td style="text-align: right;" colspan="2">
-                <div id="descuento" style="display: inline;"> $ {{ $valor_descuento }}</div>
-            </td>
-        </tr>
-        <tr>
-            <td width="35%">
-                <strong> Impuestos </strong>
-            </td>
-            <td style="text-align: right;" colspan="2">
-                <div id="total_impuestos" style="display: inline;"> $ {{ $valor_total_impuestos }}</div>
-            </td>
-        </tr>
+        
+        @if( !(int)config('ventas_pos.ocultar_fila_descuento_resumen_totales_create') || (int)config('configuracion.liquidacion_impuestos') )
+            <tr>
+                <td width="35%">
+                    <strong> Subtotal </strong>
+                </td>
+                <td style="text-align: right;" colspan="2">
+                    <div id="subtotal" style="display: inline;"> $ {{ $valor_subtotal }}</div>
+                </td>
+            </tr>
+        @endif
+
+        @if( !(int)config('ventas_pos.ocultar_fila_descuento_resumen_totales_create') )
+            <tr>
+                <td width="35%">
+                    <strong> Descuento </strong>
+                </td>
+                <td style="text-align: right;" colspan="2">
+                    <div id="descuento" style="display: inline;"> $ {{ $valor_descuento }}</div>
+                </td>
+            </tr>
+        @endif
+        
+        @if( (int)config('configuracion.liquidacion_impuestos') )
+            <tr>
+                <td width="35%">
+                    <strong> Impuestos </strong>
+                </td>
+                <td style="text-align: right;" colspan="2">
+                    <div id="total_impuestos" style="display: inline;"> $ {{ $valor_total_impuestos }}</div>
+                </td>
+            </tr>
+        @endif
 
         @if( (int)config('ventas_pos.manejar_propinas') )
 

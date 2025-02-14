@@ -175,6 +175,28 @@
 
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ocultar_fila_descuento_resumen_totales_create = '0';
+								if( isset($parametros['ocultar_fila_descuento_resumen_totales_create'] ) )
+								{
+									$ocultar_fila_descuento_resumen_totales_create = $parametros['ocultar_fila_descuento_resumen_totales_create'];
+								}
+							?>
+							{{ Form::bsSelect('ocultar_fila_descuento_resumen_totales_create', $ocultar_fila_descuento_resumen_totales_create, 'Ocultar fila Descuento en  Resumen Totales Create', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros de Impresión  </h4>
 				<hr>
 
