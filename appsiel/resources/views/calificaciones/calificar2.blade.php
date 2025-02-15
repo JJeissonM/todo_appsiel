@@ -98,5 +98,7 @@
 		</table>
 		
 		<input type="hidden" class="form-control" id="matriculas_ids_list" name="matriculas_ids_list" value="{{$matriculas_ids_list}}">
+
+		<input type="hidden" class="form-control" id="csrf_token" name="csrf_token" value="{{csrf_token()}}">
 	</div>
 @endsection

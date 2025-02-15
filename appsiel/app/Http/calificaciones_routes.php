@@ -19,7 +19,11 @@ Route::resource('calificaciones_logros', 'Calificaciones\LogroController');
 
 //Calificaciones
 Route::post('calificaciones/calificar2', 'Calificaciones\CalificacionController@calificar2');
+
 Route::get('calificaciones/almacenar_linea_calificacion_estudiante/{matricula_id}/{json_fila}', 'Calificaciones\CalificacionController@almacenar_linea_calificacion_estudiante');
+
+
+Route::post('calificaciones/almacenar_linea_calificacion_estudiante', 'Calificaciones\CalificacionController@almacenar_linea_calificacion_estudiante_v2');
 
 //  Asistencia a clases
 Route::get('calificaciones/asistencia_clases/reportes', 'Calificaciones\AsistenciaClaseController@reportes');
@@ -87,7 +91,7 @@ Route::resource('calificaciones/observaciones_boletin', 'Calificaciones\Observac
 Route::resource('calificaciones/boletines', 'Calificaciones\BoletinController', ['except' => ['show']]);
 
 Route::get('calificaciones/index2', 'Calificaciones\CalificacionController@index2')->name('calificaciones.index2');
-Route::post('calificaciones/almacenar_calificacion','Calificaciones\CalificacionController@almacenar_calificacion');
+
 Route::get('calificaciones/pesos/{curso}/{periodo}/{asignatura}/verificar', 'Calificaciones\CalificacionController@verificar_peso')->name('calificaciones.verificar_peso');
 Route::get('calificaciones/pesos/{curso}/{periodo}/{asignatura}/{celda}/listar', 'Calificaciones\CalificacionController@get_peso')->name('calificaciones.get_peso');
 

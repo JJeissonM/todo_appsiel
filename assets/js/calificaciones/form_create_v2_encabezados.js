@@ -131,10 +131,13 @@ $(document).ready(function () {
         $("#contenido_modal").html("");
 
         $("#myModal").modal({
-            keyboard: "true",
+            backdrop: 'static',
+            keyboard: "false"
         });
 
         $("#div_spin").fadeIn();
+        $(".btn_close_modal").removeAttr('disabled');
+        $(".btn_save_modal").removeAttr('disabled');
         $(".btn_edit_modal").hide();
         $(".btn_save_modal").show();
         $(".modal-title").html(
@@ -208,9 +211,6 @@ $(document).ready(function () {
                         text: "El peso total sobrepasa 100%, debe indicar un peso menor.",
                     });
                 } else {
-                    $("#div_spin").hide();
-
-                    $("#alert_mensaje").fadeIn();
 
                     // Si la Descripcion de la actividad esta vacia entonces, fue eliminada.
                     if ($("#descripcion").val() == "") {
@@ -230,18 +230,10 @@ $(document).ready(function () {
 
                     recalcular_definitivas();
 
-                    guardar_calificaciones();
+                    $(".btn_close_modal").attr('disabled','disabled');
+                    $(".btn_save_modal").attr('disabled','disabled');
 
-                    $("#myModal").modal("hide");
-
-                    Swal.fire({
-                        icon: "success",
-                        title: "¡Muy bien!",
-                        text:
-                            "El encabezado de la calificación ha sido " +
-                            respuesta +
-                            " correctamente.",
-                    });
+                    guardar_calificaciones( true );
                 }
             })
             .fail(function(xhr, status, error) {

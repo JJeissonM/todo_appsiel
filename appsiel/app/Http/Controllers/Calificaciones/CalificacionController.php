@@ -363,55 +363,107 @@ class CalificacionController extends Controller
         ]);
     }
 
-    public function almacenar_linea_calificacion_estudiante($matricula_id, $json_fila)
+    public function almacenar_linea_calificacion_estudiante_v2(Request $request)
     {
-        $request = $this->built_ObjRequets(json_decode($json_fila));
+        $data = $this->store_calificacion($request->json_fila);
 
-        $data = $this->almacenar_calificacion($request);
-
-        //return json_encode($data);
-        return response()->json( $data );
+        return response()->json($data);
     }
 
-    public function built_ObjRequets(object $json_fila)
+    public function store_calificacion(array $json_fila)
     {
-        $request = new Request;
+        $id_calificacion = (int)$json_fila['id_calificacion'];
+        $calificacion_texto = (float)$json_fila['calificacion'];
+        $id_calificacion_aux = (int)$json_fila['id_calificacion_aux'];
+
         $user = Auth::user();
-        $request["codigo_matricula"] = $user->empresa_id;
 
-        $request["codigo_matricula"] = $user->empresa_id;
+        $json_fila["creado_por"] = $user->email;
+        $json_fila["modificado_por"] = "0";
 
-        $request["lineas_registros_calificaciones"] = '[' . json_encode($json_fila) . ']';
+        $json_fila["id_colegio"] = $this->colegio->id;
 
-        $request["id_colegio"] = $this->colegio->id;
-        $request["anio"] = $json_fila->anio;
-        $request["id_periodo"] = $json_fila->id_periodo;
-        $request["curso_id"] = $json_fila->curso_id;
-        $request["id_estudiante"] = $json_fila->id_estudiante;
-        $request["id_asignatura"] = $json_fila->asignatura_id;
+        $linea_datos = ['id_colegio' => (int)$json_fila['id_colegio']] +
+            ['anio' => (int)$json_fila['anio']] +
+            ['id_periodo' => (int)$json_fila['id_periodo']] +
+            ['curso_id' => (int)$json_fila['curso_id']] +
+            ['id_asignatura' => (int)$json_fila['asignatura_id']] +
+            ['codigo_matricula' => $json_fila['codigo_matricula']] +
+            ['id_estudiante' => (int)$json_fila['id_estudiante']] +
+            ['calificacion' => $calificacion_texto] +
+            ['logros' => $json_fila['logros']] +
+            ['creado_por' => $json_fila['creado_por']];
 
-        //$request["calificacion"] = $bodega_default_id;
-        //$request["logros"] = $movimiento;
-        $request["creado_por"] = $user->email;
-        $request["modificado_por"] = "0";
+        $cantidad_calificaciones = 16;
+        if (isset( $json_fila['cantidad_calificaciones'] ) ) {
+            $cantidad_calificaciones = (int)$json_fila['cantidad_calificaciones'];
+        }
+        for ($k = 1; $k < $cantidad_calificaciones; $k++) {
+            $variable_columna = 'C' . $k;
+            $linea_datos += [$variable_columna => (float)$json_fila[$variable_columna]];
+        }
 
-        $request["C1"] = $json_fila->C1;
-        $request["C2"] = $json_fila->C2;
-        $request["C3"] = $json_fila->C3;
-        $request["C4"] = $json_fila->C4;
-        $request["C5"] = $json_fila->C5;
-        $request["C6"] = $json_fila->C6;
-        $request["C7"] = $json_fila->C7;
-        $request["C8"] = $json_fila->C8;
-        $request["C9"] = $json_fila->C9;
-        $request["C10"] = $json_fila->C10;
-        $request["C11"] = $json_fila->C11;
-        $request["C12"] = $json_fila->C12;
-        $request["C13"] = $json_fila->C13;
-        $request["C14"] = $json_fila->C14;
-        $request["C15"] = $json_fila->C15;
+        // Se verifica si la calificación y las calificaciones auxiliares ya existen
+        $calificacion = Calificacion::find($id_calificacion);
 
-        return $request;
+        if ($calificacion == null) {
+            // Crear nuevos registros
+            if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
+                $calificacion_creada = Calificacion::create($linea_datos);
+
+                $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
+
+                $id_calificacion = $calificacion_creada->id;
+                $calificacion_texto = $calificacion_creada->calificacion;
+                $id_calificacion_aux = $calificacion_aux_creada->id;
+            }
+        } else {
+
+            // Actualizar registros existentes
+            $calificacion_aux = CalificacionAuxiliar::find($id_calificacion_aux);
+
+            // Si la calificación ENVIADA es cero y no tiene logros se borran de la BD los registros almacenados
+            if ($calificacion_texto == 0 &&  $linea_datos['logros'] == '') {
+                $calificacion->delete();
+                $calificacion_aux->delete();
+
+                $id_calificacion = 'no';
+                $calificacion_texto = 0;
+                $id_calificacion_aux = 'no';
+            } else {
+
+                if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
+                    // Si no, se actualizan la calificación y las auxiliares
+                    $calificacion->fill($linea_datos);
+                    $calificacion->save();
+
+                    if ($calificacion_aux == null) {
+                        $calificacion_creada = Calificacion::create($linea_datos);
+
+                        $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
+
+                        $id_calificacion = $calificacion_creada->id;
+                        $calificacion_texto = $calificacion_creada->calificacion;
+                        $id_calificacion_aux = $calificacion_aux_creada->id;
+
+                        $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
+                        $id_calificacion_aux = $calificacion_aux_creada->id;
+                    } else {
+                        $calificacion_aux->fill($linea_datos);
+                        $calificacion_aux->save();
+                    }
+                }
+            }
+        }
+
+        return [
+                (object)[
+                    'numero_fila' => $json_fila['fila_id'],
+                    'id_calificacion' => $id_calificacion,
+                    'calificacion_texto' => $calificacion_texto,
+                    'id_calificacion_aux' => $id_calificacion_aux
+                ]
+            ];
     }
 
     /**
@@ -445,112 +497,6 @@ class CalificacionController extends Controller
                 break;
         }
     }
-
-    public function almacenar_calificacion(Request $request)
-    {
-        $lineas_registros_calificaciones = json_decode($request->lineas_registros_calificaciones);
-
-        $resultados = [];
-        $numero_fila = 1;
-        $cantidad_registros = count($lineas_registros_calificaciones);
-
-        for ($i = 0; $i < $cantidad_registros; $i++) {
-
-            $id_calificacion = (int)$lineas_registros_calificaciones[$i]->id_calificacion;
-            $calificacion_texto = (float)$lineas_registros_calificaciones[$i]->calificacion;
-            $id_calificacion_aux = (int)$lineas_registros_calificaciones[$i]->id_calificacion_aux;
-
-            $linea_datos = ['id_colegio' => (int)$request->id_colegio] +
-                ['anio' => (int)$request->anio] +
-                ['id_periodo' => (int)$request->id_periodo] +
-                ['curso_id' => (int)$request->curso_id] +
-                ['id_asignatura' => (int)$request->id_asignatura] +
-                ['codigo_matricula' => $lineas_registros_calificaciones[$i]->codigo_matricula] +
-                ['id_estudiante' => (int)$lineas_registros_calificaciones[$i]->id_estudiante] +
-                ['calificacion' => $calificacion_texto] +
-                ['logros' => $lineas_registros_calificaciones[$i]->logros] +
-                ['creado_por' => $request->creado_por];
-
-            $cantidad_calificaciones = 16;
-            if ((int)$request->cantidad_calificaciones != 0) {
-                $cantidad_calificaciones = (int)$request->cantidad_calificaciones;
-            }
-            for ($k = 1; $k < $cantidad_calificaciones; $k++) {
-                $variable_columna = 'C' . $k;
-                $linea_datos += [$variable_columna => (float)$lineas_registros_calificaciones[$i]->$variable_columna];
-            }
-
-            // Se verifica si la calificación y las calificaciones auxiliares ya existen
-            $calificacion = Calificacion::find($id_calificacion);
-
-
-            if ($calificacion == null) {
-                // Crear nuevos registros
-                if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
-                    $calificacion_creada = Calificacion::create($linea_datos);
-
-                    $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
-
-                    $id_calificacion = $calificacion_creada->id;
-                    $calificacion_texto = $calificacion_creada->calificacion;
-                    $id_calificacion_aux = $calificacion_aux_creada->id;
-                }
-            } else {
-
-                // Actualizar registros existentes
-                $calificacion_aux = CalificacionAuxiliar::find($id_calificacion_aux);
-
-                // Si la calificación ENVIADA es cero y no tiene logros se borran de la BD los registros almacenados
-                if ($calificacion_texto == 0 &&  $linea_datos['logros'] == '') {
-                    $calificacion->delete();
-                    $calificacion_aux->delete();
-
-                    $id_calificacion = 'no';
-                    $calificacion_texto = 0;
-                    $id_calificacion_aux = 'no';
-                } else {
-
-                    if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
-                        // Si no, se actualizan la calificación y las auxiliares
-                        $calificacion->fill($linea_datos);
-                        $calificacion->save();
-
-                        if ($calificacion_aux == null) {
-                            $calificacion_creada = Calificacion::create($linea_datos);
-
-                            $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
-
-                            $id_calificacion = $calificacion_creada->id;
-                            $calificacion_texto = $calificacion_creada->calificacion;
-                            $id_calificacion_aux = $calificacion_aux_creada->id;
-
-                            $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
-                            $id_calificacion_aux = $calificacion_aux_creada->id;
-                        } else {
-                            $calificacion_aux->fill($linea_datos);
-                            $calificacion_aux->save();
-                        }
-                    }
-                }
-            }
-
-            if (gettype($lineas_registros_calificaciones[$i]->fila_id) == 'string') {
-                $numero_fila = $lineas_registros_calificaciones[$i]->fila_id;
-            }
-
-            $resultados[] = (object)[
-                'numero_fila' => $numero_fila,
-                'id_calificacion' => $id_calificacion,
-                'calificacion_texto' => $calificacion_texto,
-                'id_calificacion_aux' => $id_calificacion_aux
-            ];
-
-            $numero_fila++;
-        }
-
-        return $resultados;
-    }
-
 
     // LLenar select dependiente
     public function get_select_periodos($periodo_lectivo_id)

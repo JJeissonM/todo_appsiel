@@ -31,15 +31,6 @@ $(document).ready(function () {
 
     guardando = false;
 
-    // Guardar calificaciones cada diez (10) segundos
-    /*setInterval( function(){ 
-          if( !guardando )
-          {
-              guardar_calificaciones();
-          }
-      }, 10000);
-      */
-
     // Vaciar los inputs que tienen cero (0)
     $("input[type=text]").each(function () {
         var val = $(this).val();
@@ -263,6 +254,9 @@ $(document).ready(function () {
     }
 
     function llenar_tabla_lineas_registros() {
+        
+        $("#tabla_lineas_registros_calificaciones").find("tbody:last").html('');
+
         var numero_fila = 1;
         $("#tabla_registros > tbody > tr").each(function (i, obj_fila_tabla) {
             
@@ -287,16 +281,16 @@ $(document).ready(function () {
         
     });
 
-    window.guardar_calificaciones = function () {
+    window.guardar_calificaciones = function (from_encabezados = false) {
         $("#div_cargando").show();
         guardando = true;
         $("#mensaje_sin_guardar").hide();
 
-        preparacion_para_enviar_lineas_calificaciones_estudiantes();
+        preparacion_para_enviar_lineas_calificaciones_estudiantes( from_encabezados );
     };
 
     // Inicializar array de ids para envio
-    function preparacion_para_enviar_lineas_calificaciones_estudiantes()
+    function preparacion_para_enviar_lineas_calificaciones_estudiantes( from_encabezados )
     {
         arr_matriculas_ids_list = JSON.parse( "[" + $("#matriculas_ids_list").val() + "]");
 
@@ -304,19 +298,20 @@ $(document).ready(function () {
 
         $("#counter").html(restantes);
 
+        // Tabla auxiliar oculta
+        llenar_tabla_lineas_registros();
+
         // Primera llamada a la funcion recursiva
-        enviar_una_linea_estudiante();
+        enviar_una_linea_estudiante( from_encabezados );
     }
 
     function get_tabla_lineas_registros()
     {
-        llenar_tabla_lineas_registros();
-
         return $("#tabla_lineas_registros_calificaciones").tableToJSON();
     }
 
     // The recursive function
-    function enviar_una_linea_estudiante() {
+    function enviar_una_linea_estudiante( from_encabezados ) {
 
         // Si ya se enviaron todos los documentos
         if (arr_matriculas_ids_list.length === 0) {
@@ -325,7 +320,6 @@ $(document).ready(function () {
 
             $("#bs_boton_guardar").html('<i class="fa fa-save"></i> Guardar');
 
-            //$("#popup_alerta_danger").hide();
             $("#div_cargando").hide();
             $("#mensaje_guardadas").show();
 
@@ -333,7 +327,21 @@ $(document).ready(function () {
             
             document.getElementById("counter").innerHTML = '';
 
-            //location.reload();
+            if ( from_encabezados ) {
+                
+                $("#div_spin").hide();
+
+                $("#alert_mensaje").fadeIn();
+                
+                $("#myModal").modal("hide");
+
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Muy bien!",
+                    text:
+                        "El encabezado de la calificación ha sido Almacenado correctamente.",
+                });
+            }
 
             return true;
         }
@@ -351,20 +359,12 @@ $(document).ready(function () {
         json_fila.asignatura_id = $("#id_asignatura").val();
         json_fila.anio = $("#anio").val();
 
-        var url =
-            url_raiz +
-            "/calificaciones/almacenar_linea_calificacion_estudiante/" +
-            matricula_id +
-            "/" +
-            JSON.stringify(json_fila);
+        var url = url_raiz + "/calificaciones/almacenar_linea_calificacion_estudiante";
 
         $.ajax({
             url: url,
-            type: "get",
-            dataType: "json",
-            cache: false,
-            contentType: false,
-            processData: false,
+            type: "POST",
+            data: {"json_fila":json_fila,"_token":$("#csrf_token").val()}
         }).done(function (response) {
 
             var fila = document.getElementById(response[0].numero_fila);
@@ -375,7 +375,7 @@ $(document).ready(function () {
 
             restantes--;
             document.getElementById("counter").innerHTML = restantes;
-            enviar_una_linea_estudiante();
+            enviar_una_linea_estudiante( from_encabezados );
         }).fail(function ( xhr ) {
 
             if ( xhr.status == 401 ) { //
@@ -385,10 +385,6 @@ $(document).ready(function () {
                     text: "La sesión se cerró de manera insperada. Por favor actualice la página y vuelva a iniciar sesión.",
                 });
             }
-
-            //response = JSON.stringify(xhr)
-            // error handling
-            //console.log( response, status, error )
         });
     }
 
