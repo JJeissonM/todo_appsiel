@@ -74,7 +74,7 @@
 		@endif
 
 		<?php  
-			dd( $doc_encabezado, $doc_encabezado->documento_ventas_hijo() );
+			//dd( $doc_encabezado, $doc_encabezado->documento_ventas_hijo() );
 		?>
 		@if( !is_null( $doc_encabezado->documento_ventas_hijo() ) )
 			<br>
