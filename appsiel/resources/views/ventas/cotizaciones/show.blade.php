@@ -13,8 +13,8 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',[ '3'=>'POS (80 mm)', '1'=>'Estándar','2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'vtas_cotizacion_imprimir/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
+	Formato: {{ Form::select('formato_impresion_id',[ '3' => 'POS (80 mm)', '1'=>'Estándar','2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	{{ Form::bsBtnPrint( 'vtas_cotizacion_imprimir/'.$id.$variables_url.'&formato_impresion_id=3' ) }}
 	{{ Form::bsBtnEmail( 'vtas_cotizacion_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=1' ) }}
 @endsection
 
