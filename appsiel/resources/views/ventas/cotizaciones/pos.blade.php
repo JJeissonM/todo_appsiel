@@ -5,10 +5,17 @@
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
     <link rel="stylesheet" href="{{ asset(" css/stylepdf.css") }}">
     <style>
+        
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: {{ config('ventas_pos.tamanio_fuente_factura') . 'px'  }};
+        }
+
         @page {
             size: 3.15in 38.5in;
             margin: 15px;
         }
+
 
         #tabla_productos_facturados,#tabla_totales
     {
@@ -58,11 +65,11 @@
                 <td style="text-align: center;">
                     <b>{{ $empresa->descripcion }}</b>
 
-                    @if($empresa->razon_social != '')
+                    @if($empresa->razon_social != '' && $empresa->descripcion != $empresa->razon_social)
                         <br />
                         {{ $empresa->razon_social }}
                     @else
-                        @if($empresa->nombre1 != '' && $empresa->apellido1 != '')
+                        @if($empresa->nombre1 != '' && $empresa->apellido1 != '' && $empresa->descripcion != $empresa->razon_social )
                             <br />
                             {{ $empresa->nombre1 }} {{ $empresa->apellido1 }} {{ $empresa->apellido2 }}
                         @endif    
@@ -112,15 +119,12 @@
 
     </div>
     <div class="subhead">
-        <b>Oferta Técnica: &nbsp;&nbsp;</b>
+        <b>Detalle: &nbsp;&nbsp;</b>
         <br>
         <p class="info text-indent">
             <?php echo $doc_encabezado->descripcion ?>
         </p>
     </div>
-
-    <hr>
-    <b>Oferta Económica: &nbsp;&nbsp;</b>
 
     <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
         
@@ -201,8 +205,6 @@
             </tr>
         </tfoot>
     </table>
-    <br>
-    <b>Cantidad de items: </b>   {{ $cantidad_items }}
 
     @include('ventas.incluir.factura_firma_totales2')
 
@@ -211,16 +213,6 @@
             <td width="25%"><b>Cotizó:</b></td>
             <td>{{ $doc_encabezado->vendedor->tercero->descripcion }}</td>
         </tr>
-
-        @if(config('ventas.detallar_condicion_ventas'))
-        <tr>
-            <td width="25%"><b>Cond. Venta:</b></td>
-            <td>
-                {{ $doc_encabezado->texto_condicion_venta() }}
-            </td>
-        </tr>
-        @endif
-
 
         @if( !is_null( $doc_encabezado->plazo_entrega ) )
             <tr>
