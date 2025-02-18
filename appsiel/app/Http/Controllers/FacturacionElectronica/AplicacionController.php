@@ -9,6 +9,7 @@ use App\FacturacionElectronica\Factura;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\FacturacionElectronica\DocSoporte;
+use App\Ventas\VtasDocEncabezado;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 
@@ -72,7 +73,17 @@ class AplicacionController extends Controller
 
         $json_doc_electronico_enviado = '{"actions":{"send_dian":true,"send_email":true,"email":"consumidor@gmail.com"},"invoice":{"env":"PRODUCCION","dataico_account_id":"0194ff82-92c4-8128-8ebe-c22e0e16181e","number":10,"issue_date":"18\/02\/2025","payment_date":"18\/02\/2025","invoice_type_code":"FACTURA_VENTA","payment_means_type":"DEBITO","payment_means":"MUTUAL_AGREEMENT","numbering":{"resolution_number":"18764073631207","prefix":"FVE","flexible":true},"notes":["-"],"customer":{"email":"consumidor@gmail.com","phone":"3022788301","party_type":"PERSONA_NATURAL","company_name":"CONSUMIDOR FINAL","first_name":"CONSUMIDOR ","family_name":"FINAL","party_identification":"222222222","party_identification_type":"13","tax_level_code":"SIMPLIFICADO","regimen":"ORDINARIO","department":"20","city":"001","address_line":"Cra 9 # 13A-48"},"items":[{"sku":"123","description":"TORNILLO CAB LENTEJA 1\/2","quantity":1,"price":60,"taxes":[{"tax_rate":0,"tax_category":"IVA"}]}],"charges":[]}}';
 
-        $obj_dataico->enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $label_documento, true );
+        $nota_credito_id = Input::get('nota_credito_id');
+        $encabezado_nota_credito = Factura::find( $nota_credito_id );
+        
+        $nota_credito = new FacturaGeneral( $encabezado_nota_credito, 'nota_credito' );
+
+        
+    	$factura_doc_encabezado = VtasDocEncabezado::get_registro_impresion( $encabezado_nota_credito->ventas_doc_relacionado_id ); 
+
+        $mensaje = $nota_credito->procesar_envio_factura( $factura_doc_encabezado );
+
+        //$obj_dataico->enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $label_documento, true );
     }
 
 }

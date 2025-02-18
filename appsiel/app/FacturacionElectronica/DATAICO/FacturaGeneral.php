@@ -49,7 +49,6 @@ class FacturaGeneral
 
    public function procesar_envio_factura( $factura_doc_encabezado )
    {
-
       switch ( $this->tipo_transaccion )
       {
          case 'factura':
