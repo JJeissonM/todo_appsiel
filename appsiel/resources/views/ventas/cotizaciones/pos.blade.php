@@ -148,7 +148,7 @@
             ?>
             @foreach($doc_registros as $linea )
             <tr>
-                <td> {{ $linea->item->get_value_to_show(true)}} </td>
+                <td style="width: 40%;"> {{ $linea->item->get_value_to_show(true)}} </td>
                 <td style="text-align: right;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                 <td style="text-align: right;"> {{ '$ '.number_format( $linea->precio_unitario / (1+$linea->tasa_impuesto/100) ,
                     0, ',', '.') }}
