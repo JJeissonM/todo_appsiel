@@ -410,6 +410,28 @@
 
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$formato_impresion_pedidos = 'estandar';
+								if( isset($parametros['formato_impresion_pedidos'] ) )
+								{
+									$formato_impresion_pedidos = $parametros['formato_impresion_pedidos'];
+								}
+							?>
+							{{ Form::bsSelect('formato_impresion_pedidos', $formato_impresion_pedidos, 'Formato de impresión de Pedidos POS', [ 'estandar' => 'Estándar', 'cotizacion' => 'Cotización'], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros manejo de propinas </h4>
 				<hr>
 				<div class="row">

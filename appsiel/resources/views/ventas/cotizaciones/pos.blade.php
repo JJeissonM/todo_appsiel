@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>{{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}</title>
-    <link rel="stylesheet" href="{{ asset(" css/stylepdf.css") }}">
     <style>
         
         body{
@@ -47,13 +45,15 @@
     }
     </style>
 </head>
+    
+<body onload="window.print()">
 <?php        
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];
         $tamanino_fuente_2 = '0.8em';
     ?>
-<body>
+
     <div class="headempresap">
         <table border="0" style="margin-top: 12px !important;" width="100%">
             <tr>
@@ -232,6 +232,18 @@
 
         <br><br>
         {!! generado_por_appsiel() !!}
+
+        
+
+    <script type="text/javascript">
+        window.onkeydown = function( event ) {
+            // Si se presiona la tecla q (Quit)
+            if ( event.keyCode == 81 )
+            {
+                window.close();
+            }
+        };
+    </script>
 </body>
 
 </html>

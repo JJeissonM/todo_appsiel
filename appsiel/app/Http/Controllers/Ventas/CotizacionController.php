@@ -152,16 +152,15 @@ class CotizacionController extends TransaccionController
     /*
         Imprimir
     */
-    public function imprimir(Request $request, $id)
+    public function imprimir($id)
     {
-        $documento_vista = $this->get_tipo_documento_vista( $id, $request->formato_impresion_id );
+        $documento_vista = $this->get_tipo_documento_vista( $id, Input::get('formato_impresion_id') );
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML($documento_vista); //->setPaper( $tam_hoja, $orientacion );
+        $pdf->loadHTML( $documento_vista ); //->setPaper( $tam_hoja, $orientacion );
 
-        //echo $documento_vista;
-        return $pdf->stream($this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf');
+        return $pdf->stream( $this->doc_encabezado->documento_transaccion_descripcion . ' - ' . $this->doc_encabezado->documento_transaccion_prefijo_consecutivo . '.pdf' );
     }
 
     /*

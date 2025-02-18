@@ -12,6 +12,7 @@ use App\FacturacionElectronica\DocSoporte;
 use App\Ventas\VtasDocEncabezado;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
+use GuzzleHttp\Client;
 
 class AplicacionController extends Controller
 {
@@ -82,6 +83,56 @@ class AplicacionController extends Controller
     	$factura_doc_encabezado = VtasDocEncabezado::get_registro_impresion( $encabezado_nota_credito->ventas_doc_relacionado_id ); 
 
         $mensaje = $nota_credito->procesar_envio_factura( $factura_doc_encabezado );
+        
+        $tokenPassword = config('facturacion_electronica.tokenPassword');
+
+        $prefijo_resolucion = 'FEV';
+
+        $consecutivo_doc_encabezado = $factura_doc_encabezado->consecutivo;
+
+        $url_emision = config('facturacion_electronica.WSDL');
+        
+        $url = $url_emision . '?number=' . $prefijo_resolucion . $consecutivo_doc_encabezado;
+        
+        /*
+      try {
+         $client = new Client(['base_uri' => $url_emision]);
+
+         $response = $client->get( $url, [
+             // un array con la data de los headers como tipo de peticion, etc.
+             'headers' => [
+                           'content-type' => 'application/json',
+                           'auth-token' => $tokenPassword
+                        ]
+         ]);
+      } catch (\GuzzleHttp\Exception\RequestException $e) {
+          $response = $e->getResponse();
+      }*/
+      
+      
+      $tokenPassword = '24d529763ddaf8265d5fff25afc1afb6'; // Mundo del PVC
+      
+       $url = 'https://api.dataico.com/dataico_api/v2/invoices?number=FEV9';
+     
+        $curl = curl_init($url);
+        
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, [
+                               'content-type' => 'application/json',
+                               'auth-token' => $tokenPassword
+                            ]
+                    );
+                
+
+                
+        $response = curl_exec($curl);
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $header_size);
+        $image_binary = substr($response, $header_size);
+        curl_close($curl);
+      
+      dd( $url, $response, $header_size, $header, $image_binary );
 
         //$obj_dataico->enviar_documento_electronico( $tokenPassword, $json_doc_electronico_enviado, $label_documento, true );
     }

@@ -1107,22 +1107,6 @@ $(document).ready(function () {
       data += "&valor_datafono=" + $("#valor_datafono").val();
     }
 
-    /*
-    $.post(url, data, function (doc_encabezado) {
-      $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-      $("#btn_guardando").attr("id", "btn_guardar_factura");
-      //$("title").append(doc_encabezado.consecutivo);
-
-      $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
-
-      llenar_tabla_productos_facturados();
-
-      enviar_impresion( doc_encabezado );
-      
-      $("#pedido_id").val(0);
-    });
-    */
-
     var tiempo_espera_guardar_factura = 7000; // 7 segundos
     if ( $('#tiempo_espera_guardar_factura').val() != 0 ) {
       tiempo_espera_guardar_factura = parseInt( $('#tiempo_espera_guardar_factura').val() ) * 1000;

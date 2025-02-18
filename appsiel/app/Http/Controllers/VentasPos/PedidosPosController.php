@@ -171,6 +171,10 @@ class PedidosPosController extends TransaccionController
 
         (new DocumentsLinesServices())->crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
+        if ( config('ventas_pos.formato_impresion_pedidos') == 'cotizacion' ) {
+            return $doc_encabezado->id;
+        }
+
         return $doc_encabezado->consecutivo;
     }
 
@@ -363,6 +367,10 @@ class PedidosPosController extends TransaccionController
         $request['modificado_por'] = Auth::user()->email;
 
         (new DocumentsLinesServices())->crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+
+        if ( config('ventas_pos.formato_impresion_pedidos') == 'cotizacion' ) {
+            return $doc_encabezado->id;
+        }
 
         return $doc_encabezado->consecutivo;
     }

@@ -84,6 +84,15 @@ function seleccionar_cliente(item_sugerencia)
     //$("html, body").animate({scrollTop: $(document).height() + "px"});
 }
 
+function ventana_imprimir_cotizacion(url)
+{
+	ventana_factura = window.open('', "Impresión de Cotización", "width=400,height=600,menubar=no");
+
+	ventana_factura.document.write( '<h3 style="padding: 45px;">Cargando . . . .</h3>' );
+
+    ventana_factura.location = url;
+}
+
 $(document).ready(function () {
 
     if ( $('#action').val() != 'create' )
@@ -527,18 +536,29 @@ $(document).ready(function () {
         $.post(url, data, function (doc_encabezado_consecutivo) {
             $('#btn_guardando').html( '<i class="fa fa-check"></i> Guardar pedido' );
             $('#btn_guardando').attr( 'id', 'btn_guardar_factura' );
-            $('title').append(doc_encabezado_consecutivo);
-            
-            $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
 
-            llenar_tabla_productos_facturados();
-
-            if ( $('#usar_complemento_JSPrintManager').val() == 3 )
+            if ( $('#formato_impresion_pedidos').val() == 'estandar' )
             {
-                print_comanda();
-            }
+                $('title').text('Pedido de ventas No. ' + doc_encabezado_consecutivo);
 
-            ventana_imprimir();
+                $('.lbl_consecutivo_doc_encabezado').text(doc_encabezado_consecutivo);
+
+                llenar_tabla_productos_facturados();
+
+                if ( $('#usar_complemento_JSPrintManager').val() == 3 )
+                {
+                    print_comanda();
+                }
+
+                ventana_imprimir();
+            }else{
+
+                // Cuando el formato de de impresion es cotizacion, doc_encabezado_consecutivo en realidad es el doc_encabezado_id
+                var url = url_raiz + '/' + 'vtas_cotizacion_imprimir/' + doc_encabezado_consecutivo + '?id=13&id_modelo=155&id_transaccion=30&formato_impresion_id=3';
+
+                ventana_imprimir_cotizacion(url);
+            }
+            
             resetear_ventana();
 
             if ( $('#action').val() != 'create' )
