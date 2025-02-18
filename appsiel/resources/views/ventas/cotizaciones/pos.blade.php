@@ -47,7 +47,7 @@
 </head>
     
 <body onload="window.print()">
-<?php        
+    <?php        
         $url_img = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'.$empresa->imagen;
 
         $ciudad = DB::table('core_ciudades')->where('id',$empresa->codigo_ciudad)->get()[0];

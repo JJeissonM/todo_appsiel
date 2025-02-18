@@ -155,6 +155,10 @@ class CotizacionController extends TransaccionController
     public function imprimir($id)
     {
         $documento_vista = $this->get_tipo_documento_vista( $id, Input::get('formato_impresion_id') );
+        
+        if ( Input::get('formato_impresion_id') == 3) { // pos
+            return $documento_vista;
+        }
 
         // Se prepara el PDF
         $pdf = App::make('dompdf.wrapper');
