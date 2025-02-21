@@ -1,7 +1,6 @@
-@extends('layouts.principal')
+@extends('layouts.academico_estudiante')
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
 
 	&nbsp;&nbsp;&nbsp;{{ Form::bsBtnPrint( 'matriculas/estudiantes/observador/imprimir_observador/'.$estudiante_id ) }}
 	<hr>

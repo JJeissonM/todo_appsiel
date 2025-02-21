@@ -353,7 +353,6 @@ class ReporteController extends Controller
         ];
 
         $tabla = '';
-
         if ( Input::get('show_table') == 'true' ) {
             $tabla = $this->get_tabla_stock_minimo();
         }
@@ -384,7 +383,7 @@ class ReporteController extends Controller
             ]);
         }
 
-        if ( $proveedor_id != null || $proveedor_id != '') {
+        if ( $proveedor_id != null && $proveedor_id != '' && $proveedor_id != 'undefined') {
             $array_wheres = array_merge( $array_wheres, [
                 ['inv_productos.categoria_id', '=', $proveedor_id]
             ]);

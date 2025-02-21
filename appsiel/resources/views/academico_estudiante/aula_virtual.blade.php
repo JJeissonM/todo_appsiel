@@ -1,4 +1,4 @@
-@extends('layouts.principal')
+@extends('layouts.academico_estudiante')
 
 @section('estilos_1')
 
@@ -92,8 +92,6 @@
 @endsection
 
 	@section('content')
-	{{ Form::bsMigaPan($miga_pan) }}		
-	<hr>
 
 	@include('layouts.mensajes')
 

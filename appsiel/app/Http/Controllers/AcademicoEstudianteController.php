@@ -76,7 +76,7 @@ class AcademicoEstudianteController extends Controller
             return redirect('inicio')->with('mensaje_error', 'El estudiante no tiene alguna matrícua activa.');
         }
 
-        if ((int)config('configuracion.modulo_activo_solo_para_descargar_informes')) {
+        if ((int)config('calificaciones.modulo_activo_solo_para_descargar_informes')) {
             return redirect('academico_estudiante_descargar_informes?id=6');            
         }
 
@@ -87,6 +87,7 @@ class AcademicoEstudianteController extends Controller
         $miga_pan = [
             ['url' => 'NO', 'etiqueta' => 'Académico estudiante']
         ];
+
         return view('academico_estudiante.index', compact('miga_pan', 'estudiante', 'curso'));
     }    
 
@@ -155,6 +156,7 @@ class AcademicoEstudianteController extends Controller
                     ];
 
         $matricula = Matricula::get_matricula_activa_un_estudiante($this->estudiante->id);
+        
         $curso = Curso::find($matricula->curso_id);
 
         return view('academico_estudiante.horario', compact('miga_pan', 'curso'));
@@ -229,6 +231,9 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.calificaciones', compact('miga_pan', 'periodos', 'estudiante', 'curso', 'codigo_matricula', 'mensaje_facturas_vencidas', 'parametros'));
     }
 
+    /**
+     * 
+     */
     public function ajax_calificaciones(Request $request)
     {
         $periodo = Periodo::find($request->periodo_id);
@@ -315,7 +320,9 @@ class AcademicoEstudianteController extends Controller
         return $filas;
     }
 
-
+    /**
+     * 
+     */
 
     public function observador_show($estudiante_id)
     {
@@ -329,8 +336,9 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.observador_show', compact('miga_pan', 'view_pdf', 'estudiante_id'));
     }
 
-
-
+    /**
+     * 
+     */
     public function agenda()
     {
         $miga_pan = [
@@ -342,6 +350,9 @@ class AcademicoEstudianteController extends Controller
     }
 
 
+    /**
+     * 
+     */
     public function actividades_escolares($curso_id, $asignatura_id)
     {
         $actividades = ActividadEscolar::get_actividades_periodo_lectivo_actual($curso_id, $asignatura_id);
@@ -355,10 +366,13 @@ class AcademicoEstudianteController extends Controller
             ['url' => 'NO', 'etiqueta' => 'Actividades escolares: ' . $asignatura->descripcion]
         ];
 
-        return view('calificaciones.actividades_escolares.index_estudiantes', compact('actividades', 'miga_pan'));
+        return view('academico_estudiante.actividades_escolares', compact('actividades', 'miga_pan'));
     }
 
 
+    /**
+     * 
+     */
     public function guias_planes_clases($curso_id, $asignatura_id)
     {
         $planes = PlanClaseEncabezado::consultar_guias_estudiantes( $curso_id, $asignatura_id );
@@ -375,8 +389,9 @@ class AcademicoEstudianteController extends Controller
         return view('calificaciones.actividades_escolares.guias_planes_clases', compact('planes', 'asignatura', 'curso', 'miga_pan'));
     }
 
-
-
+    /**
+     * 
+     */
     public function ver_guia_plan_clases($curso_id, $asignatura_id, $plan_id)
     {
 
@@ -399,8 +414,9 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.guia_plan_clases_show', compact('miga_pan', 'vista', 'plan_id'));
     }
 
-
-
+    /**
+     * 
+     */
     public function mi_plan_de_pagos($id_libreta)
     {
 
@@ -428,6 +444,9 @@ class AcademicoEstudianteController extends Controller
         }
     }
 
+    /**
+     * 
+     */
     public function consultar_preinforme($periodo_id, $curso_id, $estudiante_id)
     {
 
@@ -443,6 +462,9 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.preinforme_academico', compact('estudiante', 'periodo', 'anio', 'curso', 'asignaturas'));
     }
 
+    /**
+     * 
+     */
     public function reconocimientos()
     {
         $reconocimientos = SgaEstudianteReconocimiento::where('estudiante_id', $this->estudiante->id)
@@ -457,6 +479,9 @@ class AcademicoEstudianteController extends Controller
         return view('academico_estudiante.reconocimientos', compact('miga_pan', 'reconocimientos'));
     }
 
+    /**
+     * 
+     */
     public function aula_virtual( $curso_id )
     {
         $dia_semana = $this->get_dia_semana( Input::get('fecha') );
@@ -505,6 +530,9 @@ class AcademicoEstudianteController extends Controller
         return view( 'academico_estudiante.aula_virtual', compact( 'eventos', 'dia_semana', 'curso', 'miga_pan' ) );
     }
 
+    /**
+     * 
+     */
     public function get_dia_semana( $fecha )
     {
         $fecha2 = Carbon::createFromFormat('Y-m-d', $fecha );

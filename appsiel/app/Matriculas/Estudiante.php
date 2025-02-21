@@ -284,6 +284,11 @@ class Estudiante extends Model
             ->first();
     }
 
+    public static function get_por_usuario($user_id)
+    {
+        return Estudiante::where('user_id', $user_id)->first();
+    } 
+
 
     public function validar_eliminacion($id)
     {

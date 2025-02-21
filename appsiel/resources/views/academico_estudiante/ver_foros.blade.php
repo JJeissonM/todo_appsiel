@@ -1,12 +1,10 @@
-@extends('layouts.principal')
+@extends('layouts.academico_estudiante')
 
 @section('estilos_1')
 	<link rel="stylesheet" href="{{asset('assets/css/fullcalendar.min.css')}}">
 @endsection
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
 
 	@include('layouts.mensajes')
 

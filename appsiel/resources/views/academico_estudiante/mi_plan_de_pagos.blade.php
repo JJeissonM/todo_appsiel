@@ -1,9 +1,6 @@
-@extends('layouts.principal')
+@extends('layouts.academico_estudiante')
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
-
 	@include('layouts.mensajes')
 	
 	<div class="row">

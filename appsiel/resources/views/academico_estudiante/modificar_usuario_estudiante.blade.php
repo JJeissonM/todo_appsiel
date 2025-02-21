@@ -1,8 +1,6 @@
-@extends('layouts.principal')
+@extends('layouts.academico_estudiante')
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
 
 	<?php 
 		$variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');

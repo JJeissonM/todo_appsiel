@@ -623,6 +623,57 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$activar_horario = '0';
+								if( isset($parametros['activar_horario'] ) )
+								{
+									$activar_horario = $parametros['activar_horario'];
+								}
+							?>
+							{{ Form::bsSelect('activar_horario', $activar_horario, 'Activar Horario', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$activar_libreta_pagos = '0';
+								if( isset($parametros['activar_libreta_pagos'] ) )
+								{
+									$activar_libreta_pagos = $parametros['activar_libreta_pagos'];
+								}
+							?>
+							{{ Form::bsSelect('activar_libreta_pagos', $activar_libreta_pagos, 'Activar Libreta de Pagos', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$activar_reconocimientos = '0';
+								if( isset($parametros['activar_reconocimientos'] ) )
+								{
+									$activar_reconocimientos = $parametros['activar_reconocimientos'];
+								}
+							?>
+							{{ Form::bsSelect('activar_reconocimientos', $activar_reconocimientos, 'Activar Reconocimientos', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						&nbsp;
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$periodos_activos_visualizar_calificaciones = '';
 								if( isset($parametros['periodos_activos_visualizar_calificaciones'] ) )
 								{
@@ -652,6 +703,29 @@
 
 							?>
 							{{ Form::bsCheckBox('periodos_activos_visualizar_calificaciones', $valores, 'Periodos activos para visualizar calificaciones', $periodos, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$modulo_activo_solo_para_descargar_informes = '0';
+								if( isset($parametros['modulo_activo_solo_para_descargar_informes'] ) )
+								{
+									$modulo_activo_solo_para_descargar_informes = $parametros['modulo_activo_solo_para_descargar_informes'];
+								}
+							?>
+							{{ Form::bsSelect('modulo_activo_solo_para_descargar_informes', $modulo_activo_solo_para_descargar_informes, 'Modulo activo solo para descargar informes', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

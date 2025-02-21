@@ -1019,6 +1019,7 @@ class CompraController extends TransaccionController
         $inv_doc_encabezado = InvDocEncabezado::find( $doc_encabezado->entrada_almacen_id );
         //$costo_total_actual = $costo_unitario_actual * $linea_registro->cantidad;
         
+        $tasa_impuesto = 0;
         if ((int)config('configuracion.liquidacion_impuestos')) {
             $tasa_impuesto = $producto->impuesto->tasa_impuesto;
         }

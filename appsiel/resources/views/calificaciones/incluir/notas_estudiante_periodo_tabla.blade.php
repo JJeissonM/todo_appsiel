@@ -67,6 +67,7 @@
                     <td style="font-size: 16px;">{{$registros[$i]->asignatura}}</td>
                     <?php
                         $sumatoria_calificaciones = 0;
+                        $sumatoria_pesos = 0;
                         $mostrar_promedio = true;
                         $n = 0;
                         for ($k=1; $k < $limite; $k++) {                            
@@ -98,25 +99,31 @@
                                     $registro_calificacion = $registro_calificacion * $peso / 100;
 
                                     $texto_calificacion = number_format( $registro_calificacion, 2, '.', ',');
-                                    $lbl_peso = '<br><span style="font-size: 0.8em;">' . $registros[$i]->$c . ' x ' . $peso . '%</span>';
+                                    $lbl_peso = '<br><span style="font-size: 0.8em;"> x ' . $peso . '% = ' . $texto_calificacion . '</span>';
                                     $mostrar_promedio = false;
                                 }
                                 
                                 $n++;
                             }
 
-                            if( $texto_calificacion <= $nota_reprobar )
+                            if( $registros[$i]->$c <= $nota_reprobar )
                             {
                                 $style="color: #f00;";
                             }
                             
                     ?>
                             <td>
-                                <button style="{{$style}}" type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" data-placement="top" title="{{$fecha_calificacion.$detalle_calificacion}}"> {{$texto_calificacion}} </button >
-                                {!! $lbl_peso !!}
+                                @if( (int)$registros[$i]->$c == 0 )
+                                    --
+                                @else
+                                    <button style="{{$style}}" type="button" class="btn btn-secondary" data-toggle="tooltip" data-html="true" data-placement="top" title="{{$fecha_calificacion.$detalle_calificacion}}"> {{ $registros[$i]->$c }} </button >
+                                    {!! $lbl_peso !!}
+                                @endif
+                                
                             </td>
                     <?php
                             $sumatoria_calificaciones += (float)$registro_calificacion;
+                            $sumatoria_pesos += $peso;
                         }
                             $prom = $sumatoria_calificaciones;
                             if ( $n != 0 && $mostrar_promedio ) {
@@ -147,7 +154,12 @@
                                 $style2="color: #f00;";
                             }
                     ?>
-                            <th style="font-size: 16px; {{$style2}}"> {{number_format($prom, 2, '.', ',')}} </th>
+                            <td style="font-size: 16px; {{$style2}}"> 
+                                {{number_format($prom, 2, '.', ',')}}
+                                @if($sumatoria_pesos < 100)
+                                    <br><span style="font-size: 0.8em; color: orange;"> <span class="fa fa-warning"></span> {{ 100 - $sumatoria_pesos }}% pendiente <br> por calificar</span>
+                                @endif
+                            </td>
                             <td> {{$desempeno}} </td>
                             <td>
                                <ul>
