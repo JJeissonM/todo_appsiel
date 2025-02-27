@@ -4,41 +4,26 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
-use Auth;
-use DB;
-use View;
-use Lava;
-use Input;
-use Form;
-use NumerosEnLetras;
 use Carbon\Carbon;
 
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 
 // Modelos
 use App\Sistema\Html\MigaPan;
 use App\Sistema\Aplicacion;
-use App\Core\TipoDocApp;
 use App\Sistema\Modelo;
-use App\Core\Empresa;
 
 use App\Nomina\NomConcepto;
 use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
-use App\Nomina\NomCuota;
-use App\Nomina\NomPrestamo;
-use App\Nomina\AgrupacionConcepto;
 use App\Nomina\PrestacionesLiquidadas;
 use App\Nomina\DiaFestivo;
 
 use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use Illuminate\Support\Facades\Auth;
 
 class PrestacionesSocialesController extends TransaccionController
 {
@@ -48,7 +33,6 @@ class PrestacionesSocialesController extends TransaccionController
     protected $pos = 0;
     protected $registros_procesados = 0;
     protected $vec_campos;
-
 
     /*
         Por cada empleado activo liquida los conceptos automáticos, las cuotas y préstamos
@@ -68,7 +52,13 @@ class PrestacionesSocialesController extends TransaccionController
 
         foreach ($empleados_documento as $empleado)
         {
-            
+            /**
+             * 51 = Trabajador de Tiempo Parcial
+             */
+            if ( in_array($empleado->tipo_cotizante, [51] )) {
+                continue;
+            }
+
             $array_prestaciones_liquidadas->nom_doc_encabezado_id = $documento_nomina->id;
             $array_prestaciones_liquidadas->nom_contrato_id = $empleado->id;
             $array_prestaciones_liquidadas->fecha_final_promedios = $request->fecha_final_promedios;
@@ -172,7 +162,6 @@ class PrestacionesSocialesController extends TransaccionController
                                 $valores
                             );
     }
-
 
     // Retiro de conceptos con modo liquidacion automatica
     public function retirar_liquidacion($doc_encabezado_id,$prestaciones)

@@ -111,6 +111,6 @@ class ConsolidadoPrestacionesSociales extends Model
 	//Titulo para la exportación en PDF y EXCEL
 	public static function tituloExport()
 	{
-		return "LISTADO DE CSOLIDADO PRESTACIONES SOCIALES";
+		return "LISTADO DE CONSOLIDADO PRESTACIONES SOCIALES";
 	}
 }
