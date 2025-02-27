@@ -155,6 +155,7 @@
 			$('#periodo_lectivo_id').on('change',function()
 			{
 				$('#periodo_id').html('<option value=""></option>');
+				$('#curso_id').html('<option value=""></option>');
 				if ( $(this).val() == '') { return false; }
 
 				var periodo_lectivo_id = $('#periodo_lectivo_id').val();
