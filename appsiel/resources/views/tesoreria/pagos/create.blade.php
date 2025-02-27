@@ -5,27 +5,28 @@
 ?>
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
+{{ Form::bsMigaPan($miga_pan) }}
+<hr>
 
-	@include('layouts.mensajes')
-	
-	{!! $mensaje_duplicado !!}
+@include('layouts.mensajes')
 
-	<div class="container-fluid">
-		<div class="marco_formulario">
-		    <h4>Nuevo registro</h4>
-		    <hr>
+{!! $mensaje_duplicado !!}
 
-		    @if( is_null($registro) )
-				{{ Form::open( ['url'=>$form_create['url'],'id'=>'form_create']) }}
-					{{ Form::hidden( 'editando', 0, ['id'=>'editando'] ) }}
-			@else
-				{{ Form::model($registro, ['url' => [ $form_create['url'] ], 'method' => 'PUT','files' => true, 'id' => 'form_create']) }}
-					{{ Form::hidden( 'editando', 1, ['id'=>'editando'] ) }}
-			@endif
+<div class="container-fluid">
+	<div class="marco_formulario">
+		<h4>Nuevo registro</h4>
+		<hr>
 
-				<?php
+		@if( is_null($registro) )
+		{{ Form::open( ['url'=>$form_create['url'],'id'=>'form_create']) }}
+		{{ Form::hidden( 'editando', 0, ['id'=>'editando'] ) }}
+		@else
+		{{ Form::model($registro, ['url' => [ $form_create['url'] ], 'method' => 'PUT','files' => true, 'id' =>
+		'form_create']) }}
+		{{ Form::hidden( 'editando', 1, ['id'=>'editando'] ) }}
+		@endif
+
+		<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
 				  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm2($url).'</div>';
@@ -34,29 +35,29 @@
 				  }
 				?>
 
-				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-				{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
-				{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
-				{{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
+		{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
+		{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
+		{{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
 
-				{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
+		{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
 
-			{{ Form::close() }}
+		{{ Form::close() }}
 
-			<br/>
-			@include('tesoreria.pagos.tabla_ingreso_registros', [ 'lineas_tabla_ingreso_registros' => $lineas_tabla_ingreso_registros ] )
+		<br />
+		@include('tesoreria.pagos.tabla_ingreso_registros', [ 'lineas_tabla_ingreso_registros' =>
+		$lineas_tabla_ingreso_registros ] )
 
-		</div>
 	</div>
-	<br/><br/>
+</div>
+<br /><br />
 @endsection
 
 @section('scripts')
 
-	<script type="text/javascript">
-
-		function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
+<script type="text/javascript">
+	function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
         {
         	obj_text_input.parent().next().find(':input').focus();
         }
@@ -257,19 +258,19 @@
 
 				// Se obtienen todos los datos del formulario y se envían
 
-						// Desactivar el click del botón
-						$( this ).off( event );
+				// Desactivar el click del botón
+				$( this ).off( event );
 
-						// Eliminar fila(s) de ingreso de registro vacia
-						$('.linea_ingreso_default').remove();						
+				// Eliminar fila(s) de ingreso de registro vacia
+				$('.linea_ingreso_default').remove();						
 
-						// Se asigna la tabla de ingreso de registros a un campo hidden
-						var tabla_registros_documento = $('#ingreso_registros').tableToJSON();
-						$('#tabla_registros_documento').val( JSON.stringify(tabla_registros_documento) );
+				// Se asigna la tabla de ingreso de registros a un campo hidden
+				var tabla_registros_documento = $('#ingreso_registros').tableToJSON();
+				$('#tabla_registros_documento').val( JSON.stringify(tabla_registros_documento) );
 
-						// Enviar formulario
-						habilitar_campos_form_create();
-						$('#form_create').submit();	
+				// Enviar formulario
+				habilitar_campos_form_create();
+				$('#form_create').submit();	
 					
 			});
 
@@ -436,5 +437,5 @@
 				calcular_totales();
 			}
 		});
-	</script>
+</script>
 @endsection

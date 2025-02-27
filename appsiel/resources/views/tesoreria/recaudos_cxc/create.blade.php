@@ -5,18 +5,18 @@
 ?>
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
+{{ Form::bsMigaPan($miga_pan) }}
+<hr>
 
-	@include('layouts.mensajes')
+@include('layouts.mensajes')
 
-	<div class="container-fluid">
-		<div class="marco_formulario">
-		    <h4>Nuevo registro</h4>
-		    <hr>
-			{{ Form::open(['url'=>$form_create['url'],'id'=>'form_create']) }}
+<div class="container-fluid">
+	<div class="marco_formulario">
+		<h4>Nuevo registro</h4>
+		<hr>
+		{{ Form::open(['url'=>$form_create['url'],'id'=>'form_create']) }}
 
-				<?php
+		<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
 				  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm2($url).'</div>';
@@ -25,54 +25,56 @@
 				  }
 				?>
 
-				<div class="alert alert-warning" id="div_documento_descuadrado" style="display: none;">
-				  <strong>¡Advertencia!</strong> Documento está descuadrado.
-				</div>
-
-				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
-
-				{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
-				{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
-				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
-
-				{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
-
-				<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
-				<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="">
-				<input type="hidden" name="lineas_registros_descuento_pronto_pagos" id="lineas_registros_descuento_pronto_pagos" value="">
-				<input type="hidden" name="lineas_registros_asientos_contables" id="lineas_registros_asientos_contables" value="">
-				<input type="hidden" name="lineas_registros_efectivo" id="lineas_registros_efectivo" value="">
-				<input type="hidden" name="lineas_registros_transferencia_consignacion" id="lineas_registros_transferencia_consignacion" value="">
-				<input type="hidden" name="lineas_registros_tarjeta_debito" id="lineas_registros_tarjeta_debito" value="">
-				<input type="hidden" name="lineas_registros_tarjeta_credito" id="lineas_registros_tarjeta_credito" value="">
-				<input type="hidden" name="lineas_registros_cheques" id="lineas_registros_cheques" value="">
-
-			{{ Form::close() }}
-
-			<div class="marco_formulario">
-				@include('tesoreria.incluir.tabla_resumen_operaciones_create')
-			</div>
-
-			<div class="marco_formulario">
-				@include('tesoreria.recaudos_cxc.tabs_operaciones_recaudo')
-			</div>
-
-			<div class="marco_formulario">
-				@include('tesoreria.incluir.tabs_medios_de_pago')
-			</div>
-
+		<div class="alert alert-warning" id="div_documento_descuadrado" style="display: none;">
+			<strong>¡Advertencia!</strong> Documento está descuadrado.
 		</div>
-	</div>
 
-	<br/><br/>
+		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+
+		{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
+		{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
+		{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+
+		{{ Form::hidden( 'tipo_recaudo_aux', '', [ 'id' => 'tipo_recaudo_aux' ] ) }}
+
+		<input type="hidden" name="lineas_registros" id="lineas_registros" value="">
+		<input type="hidden" name="lineas_registros_retenciones" id="lineas_registros_retenciones" value="">
+		<input type="hidden" name="lineas_registros_descuento_pronto_pagos" id="lineas_registros_descuento_pronto_pagos"
+			value="">
+		<input type="hidden" name="lineas_registros_asientos_contables" id="lineas_registros_asientos_contables"
+			value="">
+		<input type="hidden" name="lineas_registros_efectivo" id="lineas_registros_efectivo" value="">
+		<input type="hidden" name="lineas_registros_transferencia_consignacion"
+			id="lineas_registros_transferencia_consignacion" value="">
+		<input type="hidden" name="lineas_registros_tarjeta_debito" id="lineas_registros_tarjeta_debito" value="">
+		<input type="hidden" name="lineas_registros_tarjeta_credito" id="lineas_registros_tarjeta_credito" value="">
+		<input type="hidden" name="lineas_registros_cheques" id="lineas_registros_cheques" value="">
+
+		{{ Form::close() }}
+
+		<div class="marco_formulario">
+			@include('tesoreria.incluir.tabla_resumen_operaciones_create')
+		</div>
+
+		<div class="marco_formulario">
+			@include('tesoreria.recaudos_cxc.tabs_operaciones_recaudo')
+		</div>
+
+		<div class="marco_formulario">
+			@include('tesoreria.incluir.tabs_medios_de_pago')
+		</div>
+
+	</div>
+</div>
+
+<br /><br />
 
 @endsection
 
 @section('scripts')
 
-	<script type="text/javascript">
-
-		var hay_cheques = 0;
+<script type="text/javascript">
+	var hay_cheques = 0;
 		var hay_efectivo = 0;
 		var hay_retencion = 0;
 		var hay_transferencia_consignacion = 0;
@@ -347,5 +349,5 @@
 		});
 
 
-	</script>
+</script>
 @endsection

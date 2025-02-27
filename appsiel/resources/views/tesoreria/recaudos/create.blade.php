@@ -5,17 +5,17 @@
 ?>
 
 @section('content')
-	{{ Form::bsMigaPan($miga_pan) }}
-	<hr>
+{{ Form::bsMigaPan($miga_pan) }}
+<hr>
 
-	@include('layouts.mensajes')
-	
-	<div class="container-fluid">
-		<div class="marco_formulario">
-		    <h4>Nuevo registro</h4>
-		    <hr>
-			{{ Form::open([ 'url' => $form_create['url'],'id'=>'form_create']) }}
-				<?php
+@include('layouts.mensajes')
+
+<div class="container-fluid">
+	<div class="marco_formulario">
+		<h4>Nuevo registro</h4>
+		<hr>
+		{{ Form::open([ 'url' => $form_create['url'],'id'=>'form_create']) }}
+		<?php
 				  if (count($form_create['campos'])>0) {
 				  	$url = htmlspecialchars($_SERVER['HTTP_REFERER']);
 				  	echo '<div class="row" style="margin: 5px;">'.Form::bsButtonsForm2($url).'</div>';
@@ -24,17 +24,17 @@
 				  }
 				?>
 
-				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
+		{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
-				{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
-				{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
-				{{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
+		{{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
+		{{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
+		{{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
 
-				<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
+		<input type="hidden" name="lineas_registros_medios_recaudo" id="lineas_registros_medios_recaudo" value="0">
 
-			{{ Form::close() }}
+		{{ Form::close() }}
 
-			<?php
+		<?php
 
 				$fila_foot = '<tr>
 					                <td style="display: none;"> <div id="total_valor_total">0</div> </td>
@@ -62,57 +62,60 @@
 						];
 			?>
 
-			<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#home">Medios de recaudo</a></li>
-			</ul>
+		<ul class="nav nav-tabs">
+			<li class="active"><a data-toggle="tab" href="#home">Medios de recaudo</a></li>
+		</ul>
 
-			<div class="tab-content">
-				
-				<div id="home" class="tab-pane fade in active">
-					<div id="div_ingreso_registros_medios_recaudo">
-						<br>
-					        <div class="table-responsive" id="table_content">
-					        <table class="table table-striped" id="ingreso_registros_medios_recaudo">
-					            <thead>
-					                <tr>
-					                	<th data-override="teso_medio_recaudo_id">Medio de recaudo</th>
-					                	<th data-override="teso_motivo_id">Motivo</th>
-					                	<th data-override="teso_caja_id">Caja</th>
-					                	<th data-override="teso_cuenta_bancaria_id">Cta. Bancaria</th>
-					                	<th data-override="valor">Valor</th>
-					                	<th width="10px"> </th>
-					                </tr>
-					            </thead>
-					            <tbody>
-					                
-					            </tbody>
-					            <tfoot>
-					                <tr>
-						                <td colspan="4">&nbsp;</td>
-						                <td> <div id="total_valor_total">$0.00</div> </td>
-						                <td> &nbsp; </td>
-						            </tr>
-					            </tfoot>
-					        </table>
-					    </div>
+		<div class="tab-content">
+
+			<div id="home" class="tab-pane fade in active">
+				<div id="div_ingreso_registros_medios_recaudo">
+					<br>
+					<div class="table-responsive" id="table_content">
+						<table class="table table-striped" id="ingreso_registros_medios_recaudo">
+							<thead>
+								<tr>
+									<th data-override="teso_medio_recaudo_id">Medio de recaudo</th>
+									<th data-override="teso_motivo_id">Motivo</th>
+									<th data-override="teso_caja_id">Caja</th>
+									<th data-override="teso_cuenta_bancaria_id">Cta. Bancaria</th>
+									<th data-override="valor">Valor</th>
+									<th width="10px"> </th>
+								</tr>
+							</thead>
+							<tbody>
+
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="4">&nbsp;</td>
+									<td>
+										<div id="total_valor_total">$0.00</div>
+									</td>
+									<td> &nbsp; </td>
+								</tr>
+							</tfoot>
+						</table>
 					</div>
-
-					<a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
 				</div>
 
+				<a id="btn_nuevo"
+					style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i
+						class="fa fa-btn fa-plus"></i> Agregar registro</a>
 			</div>
 
-			<!-- Modal -->
-			@include('tesoreria.incluir.ingreso_valores_recaudos')
 		</div>
+
+		<!-- Modal -->
+		@include('tesoreria.incluir.ingreso_valores_recaudos')
 	</div>
+</div>
 @endsection
 
 @section('scripts')
-	
-	<script type="text/javascript">
 
-		function ejecutar_acciones_con_item_sugerencia()
+<script type="text/javascript">
+	function ejecutar_acciones_con_item_sugerencia()
 		{
 			return true;
 		}
@@ -401,5 +404,5 @@
 				$('#teso_tipo_motivo').removeAttr('disabled');
 			}
 		});
-	</script>
+</script>
 @endsection
