@@ -45,7 +45,6 @@ class ConsolidadoPrestacionesController extends TransaccionController
             $fecha_final_promedios = $request->fecha_final_promedios;
 
             $empleado = $registro_empleado->contrato;
-
             
             /**
              * 51 = Trabajador de Tiempo Parcial
@@ -53,7 +52,7 @@ class ConsolidadoPrestacionesController extends TransaccionController
             if ( in_array($empleado->tipo_cotizante, [51] )) {
                 continue;
             }
-            
+
             /*
             if ( $empleado->estado == 'Retirado' )
             {
