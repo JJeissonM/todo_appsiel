@@ -191,12 +191,12 @@
 			</tr>
 			<tr>
 				<td colspan="6">
-					@include('core.dis_formatos.plantillas.cetificados_notas_texto_final')
+					@include('core.dis_formatos.plantillas.cetificados_notas.texto_final')
 				</td>
 			</tr>
 			<tr>
 				<td colspan="6">
-					@include('core.dis_formatos.plantillas.cetificados_notas_seccion_firmas_autorizadas')
+					@include('core.dis_formatos.plantillas.cetificados_notas.seccion_firmas_autorizadas')
 				</td>
 			</tr>
 		</table>

@@ -14,6 +14,8 @@
     <tbody>
         <?php
             $asignaturas_niveladas = [];
+            $sumatoria_calificaciones = 0;
+            $cantidad_asignaturas = 0;
         ?>
         @foreach($asignaturas as $asignatura)
             <?php
@@ -29,6 +31,9 @@
 
                      $asignaturas_niveladas[] = (object)[ 'asignatura' => $asignatura->descripcion, 'calificacion_real' => $nota_nivelacion->valor, 'escala_nacional' => $nota_nivelacion->escala_nacional ];
                 }
+                
+            $sumatoria_calificaciones += $calificacion->valor;
+            $cantidad_asignaturas++;
             ?>
             <tr style="font-size: 14px;">
                 <td style="width:400px;">
@@ -74,5 +79,9 @@
     }
 ?>
 
-@include('core.dis_formatos.plantillas.cetificados_notas_escala_valoracion')
+@if($mostrar_promedio_calificaciones)
+    @include('core.dis_formatos.plantillas.cetificados_notas.linea_promedio_notas',compact('cantidad_asignaturas', 'sumatoria_calificaciones', 'periodo_lectivo'))
+@endif
+
+@include('core.dis_formatos.plantillas.cetificados_notas.escala_valoracion')
         

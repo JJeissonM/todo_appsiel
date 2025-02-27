@@ -53,7 +53,7 @@ Route::post('calificaciones_consulta_notas_auxiliares','Calificaciones\ReporteCo
 
 Route::post('calificaciones_rendimiento_areas_asignaturas','Calificaciones\ReporteController@rendimiento_areas_asignaturas');
 
-Route::post('cali_repo_certificado_notas','Calificaciones\ReporteController@certificado_notas');
+Route::post('cali_repo_certificado_notas','GestionDocumentalController@certificado_notas');
 
 //Boletines
 // Formulario de revisar

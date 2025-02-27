@@ -19,7 +19,7 @@ Route::resource('inscripciones_en_linea', 'Matriculas\InscripcionesEnLineaContro
 Route::get('get_cursos_del_grado/{grado_id}', 'Matriculas\ReportesController@get_cursos_del_grado');
 
 
-Route::post('matri_constancia_estudios', 'Matriculas\ReportesController@matri_constancia_estudios');
+Route::post('matri_constancia_estudios', 'GestionDocumentalController@constancia_estudios');
 
 
 //Estudiantes

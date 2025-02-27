@@ -6,9 +6,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Document</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
 	<style>
-		@font-face {
-			font-family: Arial, sans-serif;
+		#body * {
+			font-family: 'Open Sans', sans-serif;
 		}
 
 		img {
@@ -20,10 +23,10 @@
 		}
 
 		@page {
-			margin: 40px 25px 100px 25px;
+			margin: 40px 25px 100px;
 		}
 
-		.header {
+		header {
 			position: fixed;
 			top: -60px;
 			left: 0px;
@@ -32,18 +35,15 @@
 		}
 
 		footer {
-			/*position: fixed;*/
-			bottom: -70px;
+			position: fixed;
 			left: 0px;
 			right: 0px;
-			height: 40px;
 			text-align: center;
 		}
 
 		.watermark-letter {
 			position: fixed;
-			top: 12%;
-			left: 0%;
+			top: 7%;
 			text-align: center;
 			opacity: .2;
 			z-index: -1000;
@@ -51,8 +51,7 @@
 
 		.watermark-folio {
 			position: fixed;
-			top: 20%;
-			left: 0%;
+			top: 15%;
 			text-align: center;
 			opacity: .2;
 			z-index: -1000;
@@ -60,9 +59,10 @@
 
 		.escudo img {
 			display: block;
-			margin: 0 20% 0;
-			width: 80%;
+			margin: auto;
+			width: 95%;
 		}
+
 
 		.table {
 			width: 100%;
@@ -96,27 +96,19 @@
 	</style>
 </head>
 
-<body id="body" style="font-size: 17px; position: relative;">
+<body id="body" style="font-size: 15px;">
 
 	<?php    
-    $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
-	$cont = 0;
-	$url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
-?>
+	    $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
+		$cont = 0;
+		$url = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen;
+	?>
 
 	@foreach($estudiantes as $estudiante)
-		<div class="page-break">
-		
+	<div class="page-break">
 		<div class="watermark-{{$tam_hoja}} escudo">
 			<img src="{{ $url }}" />
 		</div>
-
-		@if(config('matriculas.banner_reportes') == 'renderizado')
-			<div style="position: absolute; width: 100%">
-				<img src="{{ $url }}" width="80px" style="float: left" />
-				<img src="{{ asset('assets/img/escudo_colombia.png') }}" width="80px" style="float: right" />
-			</div>
-		@endif
 
 		@if(config('matriculas.banner_reportes') == 'imagen')
 			<div style="width: 100%;">
@@ -130,21 +122,14 @@
 					<td colspan="6" style="text-align: center; font-size: 1em;">
 						<div
 							style="width: 100%; padding-left: 70px; padding-right: 70px; margin-left: -20px; padding-top: 10px">
-							@include('core.dis_formatos.plantillas.cetificados_notas_texto_encabezado')
+							@include('core.dis_formatos.plantillas.cetificados_notas.texto_encabezado')
 						</div>
 					</td>
 				</tr>
 			@endif
-			
-			<!-- @ inject('calificacion_service', 'App\Calificaciones\Services\CalificacionesService') -->
-	
-			<?php 
-				$resultado_academico = 'APROBÓ';//$calificacion_service->get_resultado_academico($asignaturas, $periodo_lectivo->id, $periodo_id, $curso->id, $estudiante->id);
-			?>
-
 			<tr>
 				<td colspan="6">
-					@include('core.dis_formatos.plantillas.cetificados_notas_texto_introduccion')
+					@include('core.dis_formatos.plantillas.cetificados_notas.texto_introduccion')
 				</td>
 			</tr>
 			<tr>
@@ -154,31 +139,28 @@
 			</tr>
 			<tr>
 				<td colspan="6">
-					@include('core.dis_formatos.plantillas.cetificados_notas_texto_final')
+					@include('core.dis_formatos.plantillas.cetificados_notas.texto_final')
 				</td>
 			</tr>
 			<tr>
 				<td colspan="6">
-					@include('core.dis_formatos.plantillas.cetificados_notas_seccion_firmas_autorizadas')
+					@include('core.dis_formatos.plantillas.cetificados_notas.seccion_firmas_autorizadas')
 				</td>
 			</tr>
 		</table>
-		<footer style="border:none">
-			<div style="border-top: 2px solid rgb(0, 0, 0); height: 10px; margin: 0 4rem"></div>
-			<div style="text-align: center">
-				Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}
-				@if( $colegio->empresa->email != '' )
-					Email: {{$colegio->empresa->email}}
-				@endif
+		<footer style="border: none">
+			<hr>
+			<div style="text-align: center">Dirección: {{ $colegio->direccion }} Celular: {{ $colegio->telefonos }}
 			</div>
 			<div style="text-align: center">{{ $colegio->ciudad }}</div>
 		</footer>
 		@if($cont > 0)
 		<div></div>
 		@endif
+
 		<?php
-		$cont++;
-	?>
+			$cont++;
+		?>
 	</div>
 	@endforeach
 

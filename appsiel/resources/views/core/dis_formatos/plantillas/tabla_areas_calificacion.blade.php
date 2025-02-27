@@ -15,6 +15,9 @@
             $asignaturas_niveladas = [];
 
             $areas = $asignaturas->groupBy('area_id');
+
+            $cantidad_asignaturas = 0;
+            $sumatoria_calificaciones = 0;
         ?>
         @foreach($areas as $asignaturas)
             <?php
@@ -43,7 +46,10 @@
                     }else{
                         $detalle .= ', ' . $asignatura->descripcion;
                     }
-                    
+
+                            
+                    $cantidad_asignaturas++;
+                    $sumatoria_calificaciones += $valor_calificacion;
                 }
 
                 $prom = 0;
@@ -85,4 +91,9 @@
         @endforeach
     </tbody>
 </table>
+
+@if($mostrar_promedio_calificaciones)
+    @include('core.dis_formatos.plantillas.cetificados_notas.linea_promedio_notas',compact('cantidad_asignaturas', 'sumatoria_calificaciones', 'periodo_lectivo'))
+    <br><br>
+@endif
         

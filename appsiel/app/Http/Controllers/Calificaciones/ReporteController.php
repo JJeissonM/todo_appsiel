@@ -407,79 +407,9 @@ class ReporteController extends Controller
         return $vista;
     }
 
-    public function certificado_notas( Request $request )
-    {
-        $estudiantes = Matricula::todos_estudiantes_matriculados( $request->curso_id, $request->periodo_lectivo_id );
-        
-        if( $request->estudiante_id != '' )
-        {
-            $estudiantes = $estudiantes->where('id_estudiante', (int)$request->estudiante_id)->all();
-        }
-
-        // Seleccionar asignaturas del grado
-        $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $request->curso_id, null, $request->periodo_lectivo_id);
-
-        $curso = Curso::find( $request->curso_id );
-
-        $periodo_lectivo = PeriodoLectivo::find( $request->periodo_lectivo_id );
-
-        $maxima_escala_valoracion = 1;
-        $calificacion_maxima = EscalaValoracion::where( 'periodo_lectivo_id', $request->periodo_lectivo_id )->orderBy('calificacion_minima','DESC')->first();
-        if ($calificacion_maxima != null) {
-            $maxima_escala_valoracion = $calificacion_maxima->calificacion_maxima;
-        }        
-
-        $resultado_academico = $request->resultado_academico;
-
-        $periodo_id = $request->periodo_id;
-        $observacion_adicional = $request->observacion_adicional;
-        $tam_hoja = $request->tam_hoja;
-
-        $array_fecha = [ date('d'), ConfiguracionController::nombre_mes( date('m') ), date('Y') ];
-
-        if ( $request->fecha_expedicion != '' )
-        {
-            $fecha = explode('-', $request->fecha_expedicion );
-            $array_fecha = [ $fecha[2], ConfiguracionController::nombre_mes( $fecha[1] ), $fecha[0] ];            
-        }
-
-        $periodo = Periodo::find( $periodo_id );
-
-        $firma_autorizada_1 = FirmaAutorizada::find( $request->firma_autorizada_1 );
-        $firma_autorizada_2 = FirmaAutorizada::find( $request->firma_autorizada_2 );
-        
-        $parametros = config('gestion_documental');
-
-        $mostrar_intensidad_horaria = $parametros['mostrar_intensidad_horaria'];
-        $mostrar_numero_identificacion_estudiante = $parametros['mostrar_numero_identificacion_estudiante'];
-        $mostrar_imagen_firma_autorizada_1 = $parametros['mostrar_imagen_firma_autorizada_1'];
-        $mostrar_imagen_firma_autorizada_2 = $parametros['mostrar_imagen_firma_autorizada_2'];
-
-        $vista = View::make( 'core.dis_formatos.plantillas.'.$request->estilo_formato, compact( 'estudiantes', 'asignaturas', 'curso', 'periodo_lectivo', 'periodo_id', 'array_fecha', 'firma_autorizada_1', 'firma_autorizada_2', 'observacion_adicional', 'tam_hoja', 'maxima_escala_valoracion', 'periodo', 'resultado_academico', 'mostrar_intensidad_horaria', 'mostrar_numero_identificacion_estudiante', 'mostrar_imagen_firma_autorizada_1', 'mostrar_imagen_firma_autorizada_2' )  )->render();
-
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
-
-        return $vista;
-        /*
-        $view = View::make('core.pdf_documento', [ 'contenido' => $vista ] );
-            
-        // Se prepara el PDF
-        $orientacion='portrait';
-        $tam_hoja = $request->tam_hoja;
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML(($view))->setPaper($tam_hoja, $orientacion);
-
-        $estudiante = Estudiante::find((int)$request->estudiante_id);
-
-        $nombrearchivo = uniqid() . '.pdf';
-        if ($estudiante != null) {
-            $nombrearchivo = str_slug( $estudiante->tercero->descripcion ) . '-' . uniqid() . '.pdf';
-        }
-
-        Storage::put( 'pdf_certificado_notas_curso_' . str_slug($curso->descripcion,'_') . '/' . $nombrearchivo, $pdf->output());
-        */
-    }
-
+    /**
+     * rendimiento_areas_asignaturas
+     */
     public function rendimiento_areas_asignaturas( Request $request )
     {
 
