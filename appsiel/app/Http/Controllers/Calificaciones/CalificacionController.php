@@ -548,6 +548,25 @@ class CalificacionController extends Controller
         return $opciones;
     }
 
+    /**
+     * 
+     */
+    // LLenar select dependiente
+    public function get_select_cursos($periodo_lectivo_id)
+    {
+        $registros = CursoTieneAsignatura::where('periodo_lectivo_id',$periodo_lectivo_id)
+                                        ->distinct('curso_id')
+                                        ->select('curso_id')
+                                        ->get();
+
+        $opciones = '<option value="">Seleccionar...</option>';
+        foreach ($registros as $opcion) {
+            $opciones .= '<option value="' . $opcion->curso_id . '">' . $opcion->curso->descripcion . '</option>';
+        }
+
+        return $opciones;
+    }
+
     //verificar si el promedio es por pesos o normal
     public function verificar_peso($curso, $periodo, $asignatura)
     {

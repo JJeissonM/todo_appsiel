@@ -130,8 +130,12 @@ Route::get('calificaciones/asignar_asignaturas/get_tabla_asignaturas_asignadas/{
 
 
 // AJAX
-Route::get('get_select_periodos/{periodo_id}', 'Calificaciones\CalificacionController@get_select_periodos');
+Route::get('get_select_periodos/{periodo_lectivo_id}', 'Calificaciones\CalificacionController@get_select_periodos');
+
+Route::get('get_select_cursos/{periodo_lectivo_id}', 'Calificaciones\CalificacionController@get_select_cursos');
+
 Route::get('get_select_asignaturas/{curso_id}/{periodo_lectivo_id?}', 'Calificaciones\CalificacionController@get_select_asignaturas');
+
 Route::get('get_select_escala_valoracion/{periodo_id}/{curso_id}/{asignatura_id}', 'Calificaciones\CalificacionController@get_select_escala_valoracion');
 
 

@@ -168,10 +168,23 @@
 		        	type: 'get',
 		        	success: function(datos){
 
-		        		$('#div_cargando').hide();
-	    				
 	    				$('#periodo_id').html( datos );
 						$('#periodo_id').focus();
+
+						// Otro llamado para llenar el select de cursos
+						var url = "{{ url('get_select_cursos') }}" + "/" + periodo_lectivo_id;
+
+						$.ajax({
+							url: url,
+							type: 'get',
+							success: function(datos){
+
+								$('#div_cargando').hide();
+								
+								$('#curso_id').html( datos );
+								$('#curso_id').focus();
+							}
+						});
 			        }
 			    });
 			});
