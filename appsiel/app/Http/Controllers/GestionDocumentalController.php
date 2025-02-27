@@ -328,7 +328,7 @@ class GestionDocumentalController extends ModeloController
          }
  
          // Seleccionar asignaturas del grado
-         $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $request->curso_id, null, $request->periodo_lectivo_id);
+         $asignaturas = CursoTieneAsignatura::asignaturas_del_curso( $request->curso_id, null, $request->periodo_lectivo_id, null);
  
          $curso = Curso::find( $request->curso_id );
  

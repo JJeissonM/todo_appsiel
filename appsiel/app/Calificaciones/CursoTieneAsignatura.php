@@ -35,7 +35,10 @@ class CursoTieneAsignatura extends Model
         return $this->belongsTo( Asignatura::class, 'asignatura_id');
     }
 
-    public static function asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas = null )
+    /**
+     * Si estado_asignaturas = null, no tendra en cuenta el Estado
+     */
+    public static function asignaturas_del_curso( $curso_id, $area_id, $periodo_lectivo_id, $estado_asignaturas = 'Activo' )
     {
         $empresa_id = 1;
         $user = Auth::user();
@@ -71,10 +74,8 @@ class CursoTieneAsignatura extends Model
             }            
         }
 
-        if ( $estado_asignaturas == null) 
+        if ( $estado_asignaturas != 'Activo') 
         {
-            $array_wheres = array_merge( $array_wheres, [ 'sga_asignaturas.estado' => 'Activo' ] );
-        }else{
             $array_wheres = array_merge( $array_wheres, [ 'sga_asignaturas.estado' => $estado_asignaturas ] );
         }
 
