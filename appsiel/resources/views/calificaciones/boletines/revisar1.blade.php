@@ -18,7 +18,7 @@
 			</div>
 
 			<div class="row" style="padding:5px;">
-				{{ Form::bsSelect('curso_id','','Seleccionar curso',$cursos,['required'=>'required']) }}
+				{{ Form::bsSelect('curso_id','','Seleccionar curso',[],['required'=>'required']) }}
 			</div>
 
 			@if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
@@ -37,7 +37,7 @@
 					</button>
 					<br/><br/>
 				</div>
-			</div> 
+			</div>
 		{{Form::close()}}
 		
 		</div>
@@ -66,6 +66,39 @@
 		$(document).ready(function(){
 
 			var obj_textarea;
+
+			
+			$('#id_periodo').on('change',function()
+			{
+				$('#curso_id').html('<option value=""></option>');
+				if ( $(this).val() == '') { return false; }
+
+	    		$('#div_cargando').show();
+
+				var url = "{{ url('get_id_periodo_lectivo_del_periodo') }}" + "/" + $('#id_periodo').val();
+
+				$.ajax({
+		        	url: url,
+		        	type: 'get',
+		        	success: function(periodo_lectivo_id){
+
+						// Otro llamado para llenar el select de cursos
+						var url = "{{ url('get_select_cursos') }}" + "/" + periodo_lectivo_id;
+
+						$.ajax({
+							url: url,
+							type: 'get',
+							success: function(datos){
+
+								$('#div_cargando').hide();
+								
+								$('#curso_id').html( datos );
+								$('#curso_id').focus();
+							}
+						});
+			        }
+			    });
+			});
 
 			$('#btn_revisar').click(function(e){
 				e.preventDefault();
