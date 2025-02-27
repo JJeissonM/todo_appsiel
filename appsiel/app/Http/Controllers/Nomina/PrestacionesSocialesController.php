@@ -23,7 +23,10 @@ use App\Nomina\DiaFestivo;
 
 use App\Nomina\ModosLiquidacion\LiquidacionPrestacionSocial;
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class PrestacionesSocialesController extends TransaccionController
 {
@@ -331,7 +334,7 @@ class PrestacionesSocialesController extends TransaccionController
 
         $tam_hoja = 'letter';//array(0, 0, 612.00, 390.00);//'folio';
         $orientacion='portrait';//landscape
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML($vista)->setPaper($tam_hoja,$orientacion);
 
         return $pdf->stream('pdf_listado_vacaciones_pendientes.pdf');
