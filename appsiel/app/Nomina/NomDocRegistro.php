@@ -3,9 +3,7 @@
 namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
-
-use Auth;
-use DB;
+use Illuminate\Support\Facades\Auth;
 
 class NomDocRegistro extends Model
 {
@@ -357,13 +355,18 @@ class NomDocRegistro extends Model
     public function update_adicional($datos, $id)
     {
         $registro = NomDocRegistro::find($id);
+        
+        $documento = $registro->encabezado_documento;
+        
+        $documento->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$documento->id)->sum('valor_devengo');
+        
+        $documento->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$documento->id)->sum('valor_deduccion');
+        
+        $documento->save();
+
+        // Eliminar si todo esta en cero
         if ( ($datos['valor_devengo'] + $datos['valor_deduccion'] + $datos['cantidad_horas'] ) == 0)
         {
-            $documento = $registro->encabezado_documento;
-            $documento->total_devengos = NomDocRegistro::where('nom_doc_encabezado_id',$documento->id)->sum('valor_devengo');
-            $documento->total_deducciones = NomDocRegistro::where('nom_doc_encabezado_id',$documento->id)->sum('valor_deduccion');
-            $documento->save();
-
             $registro->delete();
         }
     }
