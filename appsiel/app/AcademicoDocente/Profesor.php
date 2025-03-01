@@ -31,7 +31,7 @@ class Profesor extends Model
                                 'users.estado AS campo4',
                                 'users.id AS campo5'
                             )
-                            ->orderBy('users.name')
+                            ->orderBy('users.created_at', 'DESC')
                             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
