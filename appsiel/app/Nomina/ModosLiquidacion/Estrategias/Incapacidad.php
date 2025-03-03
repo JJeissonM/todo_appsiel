@@ -3,6 +3,7 @@
 namespace App\Nomina\ModosLiquidacion\Estrategias;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\NomDocRegistro;
 
 class Incapacidad implements Estrategia
 {
@@ -32,13 +33,13 @@ class Incapacidad implements Estrategia
 				if ( $liquidacion['empleado']->sueldo < (float)config('nomina.SMMLV') )
 				{
 					$cantidad_horas = $liquidacion['documento_nomina']->tiempo_a_liquidar;
-					$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( (int)config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
+					$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( (float)config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
 				}
 				break;
 
 			case '2': // Siempre
 				$cantidad_horas = $liquidacion['documento_nomina']->tiempo_a_liquidar;
-				$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( (int)config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
+				$valor_auxilio = $liquidacion['concepto']->valor_fijo / ( (float)config('nomina.horas_laborales') / $liquidacion['documento_nomina']->tiempo_a_liquidar );
 				break;
 			
 			case '3': // No liquida
@@ -59,5 +60,10 @@ class Incapacidad implements Estrategia
 						'valor_deduccion' => $valores->deduccion 
 					]
 				];
+	}
+
+	public function retirar(NomDocRegistro $registro)
+	{
+        $registro->delete();
 	}
 }

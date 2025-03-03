@@ -2,29 +2,18 @@
 
 namespace App\Http\Controllers\Nomina;
 
-use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use View;
-use Auth;
-use Input;
 use Carbon\Carbon;
 
 use Spatie\Permission\Models\Permission;
 
 use App\Sistema\Aplicacion;
 
-use App\Nomina\Procesos\ArchivoPlanoPlanillaIntegrada;
-
-use App\Nomina\NomDocEncabezado;
 use App\Nomina\NomDocRegistro;
-use App\Nomina\NomConcepto;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomContrato;
 use App\Nomina\PlanillaGenerada;
-use App\Nomina\NovedadTnl;
 
 use App\Nomina\PilaNovedades;
 use App\Nomina\PilaSalud;
@@ -38,6 +27,8 @@ use App\Nomina\Services\Pila\SaludService;
 use App\Nomina\Services\Pila\PensionService;
 use App\Nomina\Services\Pila\RiesgoLaboralService;
 use App\Nomina\Services\Pila\ParafiscalService;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 /*
     Los campos tipo numérico “N”, se reportarán justificados a la derecha y rellenados con ceros a la izquierda. Los campos tipo alfa-numérico “A”, se reportarán justificados a la izquierda y se rellenarán con espacios a la derecha”.
@@ -325,7 +316,7 @@ class PlanillaIntegradaController extends Controller
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }        
             
-        $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (int)config('nomina.horas_laborales') * (int)config('nomina.horas_dia_laboral');
+        $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (float)config('nomina.horas_laborales') * (float)config('nomina.horas_dia_laboral');
         if ( ($this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal) && ($this->cantidad_dias_laborados != 0) )
         {
             $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados );// + 10;// $10 para que alcance la siguiente decena más cercana
@@ -394,7 +385,7 @@ class PlanillaIntegradaController extends Controller
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'cantidad_horas' );
 
-        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
+        return ( $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral') );
     }
 
     public function conceptos_liquidados_mes( $empleado, $fecha_inicial, $fecha_final )
@@ -737,7 +728,7 @@ class PlanillaIntegradaController extends Controller
                                                     ->whereBetween( 'fecha', [ $this->fecha_inicial, $this->fecha_final ] )
                                                     ->get();
 
-        $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+        $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (float)config('nomina.horas_dia_laboral') , 0 );
 
         // sumar devengos/deducciones asociados a la novedad
         $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');// + 10;// $10 para que alcance la siguiente decena más cercana
@@ -771,8 +762,6 @@ class PlanillaIntegradaController extends Controller
         $this->ibc_parafiscales -= $datos_lineas_adicionales->sum('aux_ibc_salud');
         $this->cantidad_dias_parafiscales -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');            
     }
-
-
 
     public function almacenar_datos_salud($planilla, $empleado)
     {
@@ -1260,7 +1249,7 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_novedades->fecha_final_incapacidad_riesgos_laborales_irl;
 
             $datos_columnas .= '000000000';
-            $datos_columnas .= $this->formatear_campo($datos_novedades->aux_cantidad_dias_laborados * (int)config('nomina.horas_dia_laboral'),'0','izquierda',3);
+            $datos_columnas .= $this->formatear_campo($datos_novedades->aux_cantidad_dias_laborados * (float)config('nomina.horas_dia_laboral'),'0','izquierda',3);
             $datos_columnas .= '          '; // Fecha radicación en el exterior
 
             $datos_filas .= $datos_columnas . "\n";

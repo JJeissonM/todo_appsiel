@@ -71,7 +71,7 @@ class PrimaAntiguedad implements Estrategia
 
         $this->tabla_resumen['valor_acumulado_salario'] = $liquidacion['empleado']->sueldo;
         $this->tabla_resumen['valor_salario_x_dia'] = $liquidacion['empleado']->salario_x_dia();
-        $this->tabla_resumen['cantidad_dias_salario'] = (int)config('nomina.horas_laborales') / (int)config('nomina.horas_dia_laboral');
+        $this->tabla_resumen['cantidad_dias_salario'] = (float)config('nomina.horas_laborales') / (float)config('nomina.horas_dia_laboral');
 
 
         $this->tabla_resumen['dias_totales_liquidacion'] = $parametros_prestacion->dias_a_liquidar;
@@ -86,7 +86,7 @@ class PrimaAntiguedad implements Estrategia
 
 		return [ 
 					[
-						'cantidad_horas' => (int)$parametros_prestacion->dias_a_liquidar * (int)config('nomina.horas_dia_laboral'),
+						'cantidad_horas' => (int)$parametros_prestacion->dias_a_liquidar * (float)config('nomina.horas_dia_laboral'),
 						'valor_devengo' => $valores->devengo,
 						'valor_deduccion' => $valores->deduccion,
 						'detalle' => '(' . $this->descripcion_prestacion . ')' 

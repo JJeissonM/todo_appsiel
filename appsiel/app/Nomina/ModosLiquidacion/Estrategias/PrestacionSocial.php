@@ -59,7 +59,7 @@ class PrestacionSocial
             $dias_adicionales = 2; // Se completan los treinta días
         }
 
-        $dias_totales_laborados = ( $dias_calendario - $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') ) + $dias_adicionales;
+        $dias_totales_laborados = ( $dias_calendario - $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral') ) + $dias_adicionales;
 
         return $dias_totales_laborados;
     }

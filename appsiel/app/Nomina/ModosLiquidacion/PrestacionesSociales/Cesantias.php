@@ -86,7 +86,7 @@ class Cesantias implements Estrategia
 
         return [
                     [
-                        'cantidad_horas' => $dias_totales_liquidacion * (int)config('nomina.horas_dia_laboral'),
+                        'cantidad_horas' => $dias_totales_liquidacion * (float)config('nomina.horas_dia_laboral'),
                         'valor_devengo' => $valores->devengo,
                         'valor_deduccion' => $valores->deduccion,
                         'tabla_resumen' => $this->tabla_resumen
@@ -120,7 +120,7 @@ class Cesantias implements Estrategia
 
         $this->tabla_resumen['base_liquidacion'] = $parametros_prestacion->base_liquidacion;
 
-        $this->tabla_resumen['cantidad_dias_salario'] = (int)config('nomina.horas_laborales') / (int)config('nomina.horas_dia_laboral');
+        $this->tabla_resumen['cantidad_dias_salario'] = (float)config('nomina.horas_laborales') / (float)config('nomina.horas_dia_laboral');
 
         switch ( $parametros_prestacion->base_liquidacion )
         {

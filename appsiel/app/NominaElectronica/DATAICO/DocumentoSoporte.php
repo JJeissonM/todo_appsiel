@@ -175,7 +175,7 @@ class DocumentoSoporte extends Model
       $one_line['code'] = $concepto->cpto_dian->codigo;
       
       if ($concepto->cpto_dian->liquida_dias) {
-         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (int)config('nomina.horas_dia_laboral') , 0 );
+         $one_line['days'] = round( $registro_concepto->sum('cantidad_horas') / (float)config('nomina.horas_dia_laboral') , 0 );
       }
       
       if ($concepto->cpto_dian->liquida_horas) {

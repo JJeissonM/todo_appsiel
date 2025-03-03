@@ -237,7 +237,7 @@ class TiempoNoLaborado implements Estrategia
 			$porcentaje_a_pagar = $porcentaje_liquidacion_legal;
 		}
 
-		$horas_laborales = (int)config('nomina.horas_laborales');
+		$horas_laborales = (float)config('nomina.horas_laborales');
 		if ( $empleado->horas_laborales != 0 )
 		{
 			$horas_laborales = $empleado->horas_laborales;

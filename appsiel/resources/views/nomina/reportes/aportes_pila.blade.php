@@ -54,6 +54,24 @@
 				</td>
 			</tr>
 		</tbody>
+		<tfoot>
+			<tr>
+				<td>
+					<div class="accordion">Total Aportes</div>
+
+					<table class="table table-bordered table-striped">
+						<tfoot>
+							<tr>
+								<td>  &nbsp; </td>
+								<td>  &nbsp; </td>
+								<td>  &nbsp; </td>
+								<td> {{ Form::TextoMoneda( $gran_total_general ) }} </td>
+							</tr>
+						</tfoot>
+					</table>
+				</td>
+			</tr>
+		</tfoot>
 	</table>
 
 	<div style="width: 100%; position: fixed; bottom: 0;">

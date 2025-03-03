@@ -85,12 +85,12 @@ class NomContrato extends Model
 
     public function salario_x_hora()
     {
-        return $this->sueldo / (int)config('nomina.horas_laborales');
+        return $this->sueldo / (float)config('nomina.horas_laborales');
     }
 
     public function salario_x_dia()
     {
-        return ($this->sueldo / (int)config('nomina.horas_laborales')) * (int)config('nomina.horas_dia_laboral');
+        return ($this->sueldo / (float)config('nomina.horas_laborales')) * (float)config('nomina.horas_dia_laboral');
     }
 
     public function fecha_liquidacion_contrato()

@@ -426,7 +426,7 @@ class ReporteController extends Controller
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'cantidad_horas' );
 
-        return ( $cantidad_horas_laboradas / (int)config('nomina.horas_dia_laboral') );
+        return ( $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral') );
     }
 
     /*
@@ -448,7 +448,9 @@ class ReporteController extends Controller
         $pila_service = new ParafiscalService();
         $coleccion_movimientos_parafiscales = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
 
-        $vista = View::make('nomina.reportes.aportes_pila', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_pension', 'coleccion_movimientos_riesgos_laborales', 'coleccion_movimientos_parafiscales', 'fecha_final_mes' ) )->render();
+        $gran_total_general = $this->get_gran_total_general( $coleccion_movimientos_salud, $coleccion_movimientos_pension, $coleccion_movimientos_riesgos_laborales, $coleccion_movimientos_parafiscales );
+
+        $vista = View::make('nomina.reportes.aportes_pila', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_pension', 'coleccion_movimientos_riesgos_laborales', 'coleccion_movimientos_parafiscales', 'fecha_final_mes', 'gran_total_general' ) )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -1118,6 +1120,34 @@ class ReporteController extends Controller
         Cache::forever( 'pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista_pdf);
 
         return $view;
+    }
+
+
+    public function get_gran_total_general( $coleccion_movimientos_salud, $coleccion_movimientos_pension, $coleccion_movimientos_riesgos_laborales, $coleccion_movimientos_parafiscales )
+    {
+        $gran_total_general = 0;
+
+        foreach ($coleccion_movimientos_salud as $movimiento_salud)
+        {
+            $gran_total_general += $movimiento_salud->total_cotizacion;
+        }
+
+        foreach ($coleccion_movimientos_pension as $movimiento_pension)
+        {
+            $gran_total_general += $movimiento_pension->total_cotizacion;
+        }
+
+        foreach ($coleccion_movimientos_riesgos_laborales as $movimiento_riesgos_laborales)
+        {
+            $gran_total_general += $movimiento_riesgos_laborales->total_cotizacion;
+        }
+
+        foreach ($coleccion_movimientos_parafiscales as $movimiento_parafiscales)
+        {
+            $gran_total_general += $movimiento_parafiscales->total_cotizacion;
+        }
+
+        return $gran_total_general;  
     }
 
 }

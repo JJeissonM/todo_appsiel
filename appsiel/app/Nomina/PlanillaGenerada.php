@@ -192,7 +192,7 @@ class PlanillaGenerada extends Model
                                                 'planilla_generada_id' => $planilla_generada->id,
                                                 'nom_contrato_id' => $contrato->id,
                                                 'tipo_linea' => 'adicional',
-                                                'cantidad_dias_linea_adicional' => round( $registro_documentos_nomina->cantidad_horas / (int)config('nomina.horas_dia_laboral'), 0),
+                                                'cantidad_dias_linea_adicional' => round( $registro_documentos_nomina->cantidad_horas / (float)config('nomina.horas_dia_laboral'), 0),
                                                 'novedad_tnl_id' => $registro_documentos_nomina->novedad_tnl_id,
                                                 'nom_concepto_id' => $registro_documentos_nomina->nom_concepto_id,
                                             ]);
