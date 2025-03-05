@@ -26,7 +26,7 @@
 							<div class="row">
 								<div class="col-sm-4">
 									<div class="row">
-										<label class="control-label col-sm-4" > <b> *Año lectivo: </b> </label>
+										<label class="control-label col-sm-4" > <b> *Año lectivo Anterior: </b> </label>
 
 										<div class="col-sm-8">
 											{{ Form::select( 'periodo_lectivo_id', App\Matriculas\PeriodoLectivoAux::opciones_campo_select(),null, [ 'class' => 'form-control', 'id' => 'periodo_lectivo_id', 'required' => 'required' ]) }}

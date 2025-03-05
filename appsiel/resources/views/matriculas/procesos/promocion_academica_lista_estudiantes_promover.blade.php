@@ -16,7 +16,7 @@
 				<th data-override="checkbox"><input type="checkbox" class="btn-gmail-check" id="checkbox_head"></th>
 				<td>No.</td>
 				<td>Estudiante</td>
-				<td>Grado / Curso Actual</td>
+				<td>Grado / Curso</td>
 				<td>Perido final</td>
 				<td>Nota promedio final</td>
 				<td>¿Niveló periodo final?</td>

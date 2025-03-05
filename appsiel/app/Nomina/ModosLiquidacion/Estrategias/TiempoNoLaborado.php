@@ -24,7 +24,7 @@ class TiempoNoLaborado implements Estrategia
 		clase_incapacidad: { enfermedad_general | licencia_maternidad | licencia_paternidad | accidente_trabajo | enfermedad_profesional}
 	*/
 
-	const CANTIDAD_HORAS_DIA_LABORAL = 8;
+	const CANTIDAD_HORAS_DIA_LABORAL = 7.667;
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{

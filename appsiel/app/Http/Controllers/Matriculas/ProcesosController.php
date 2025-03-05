@@ -111,7 +111,7 @@ class ProcesosController extends ModeloController
 
         } // Fin por cada registro
 
-        return redirect( 'web?id=1&id_modelo=19&&search=' . date('Y-m-d') )->with( 'flash_message', 'Promoción académica exitosa. Se crearon ' . $nuevas_matriculas . ' nuevas matrículas.' );
+        return redirect( 'web?id=1&id_modelo=19&&search=' . date('Y-m-d') )->with( 'flash_message', 'Promoción académica exitosa. Se crearon ' . $nuevas_matriculas . ' matrículas nuevas.' );
     }
 
 
