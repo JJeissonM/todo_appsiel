@@ -3,6 +3,7 @@
 namespace App\Contratotransporte;
 
 use App\Core\Tercero;
+use App\Sistema\Services\CrudService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -36,12 +37,12 @@ class Contratante extends Model
             ->select(
                 'core_tipos_docs_id.abreviatura AS campo1',
                 'core_terceros.numero_identificacion AS campo2',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                DB::raw('core_terceros.descripcion AS campo3'),
                 'cte_contratantes.estado AS campo4',
                 'cte_contratantes.id AS campo5'
             )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
             ->orWhere("cte_contratantes.estado", "LIKE", "%$search%")
             ->orderBy('cte_contratantes.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -79,5 +80,18 @@ class Contratante extends Model
     public function contratos()
     {
         return $this->hasMany(Contrato::class);
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"cte_contratos",
+                                    "llave_foranea":"contratante_id",
+                                    "mensaje":"Está relacionado en Contratos de Transporte."
+                                }
+                        }';
+
+        return (new CrudService())->validar_eliminacion_un_registro( $id, $tablas_relacionadas);
     }
 }

@@ -171,6 +171,29 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$logo_min_transporte = '';
+								if( isset($parametros['logo_min_transporte'] ) )
+								{
+									$logo_min_transporte = $parametros['logo_min_transporte'];
+								}
+							?>
+							{{ Form::bsSelect('logo_min_transporte', $logo_min_transporte, 'Logo Min. Transporte', ['super_transporte' => 'Súper Transporte','solo_transporte' => 'Solo Transporte'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$url_imagen_sello_empresa = '';
 								if( isset($parametros['url_imagen_sello_empresa'] ) )
 								{

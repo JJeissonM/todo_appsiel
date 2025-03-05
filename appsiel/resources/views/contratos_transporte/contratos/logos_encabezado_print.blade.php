@@ -1,4 +1,4 @@
-<table class="table table-bordered table-striped">
+<table class="table table-bordered">
     <tbody>
         <tr>
             <td class="border" style="width: 38%; text-align:center;">
@@ -27,7 +27,6 @@
                         </div>
                     @else
                         <div style="width: 100%;">
-                            <br>
                             <img style="max-height: 70px; max-width: 300px;" src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/'. $empresa->imagen }}">
                         </div>
                     @endif

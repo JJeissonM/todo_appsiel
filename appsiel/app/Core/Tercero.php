@@ -27,7 +27,7 @@ class Tercero extends Model
      */
     protected $fillable = ['core_empresa_id', 'imagen', 'tipo', 'razon_social', 'nombre1', 'otros_nombres', 'apellido1', 'apellido2', 'descripcion', 'id_tipo_documento_id', 'numero_identificacion', 'digito_verificacion', 'ciudad_expedicion', 'direccion1', 'direccion2', 'barrio', 'codigo_ciudad', 'codigo_postal', 'telefono1', 'telefono2', 'email', 'pagina_web', 'estado', 'user_id', 'contab_anticipo_cta_id', 'contab_cartera_cta_id', 'contab_cxp_cta_id', 'creado_por', 'modificado_por'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre/Razón Social', 'Identificación', 'Establecimiento', 'Dirección', 'Teléfono', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nom. Completo/Razón Social', 'Identificación', 'Descripción', 'Dirección', 'Teléfono', 'Estado'];
 
     public function ciudad()
     {
@@ -267,6 +267,8 @@ class Tercero extends Model
         if ((int)config('contabilidad.crear_cliente_y_proveedor_al_crear_tercero')) {
             (new TerceroService())->crear_tercero_como_cliente_y_proveedor($registro->id);
         }
+
+        
         
     }
 
