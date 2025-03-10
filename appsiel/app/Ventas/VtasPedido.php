@@ -52,7 +52,7 @@ class VtasPedido extends VtasDocEncabezado
         foreach ($lineas_registros as $linea) {
             $aux = $linea->toArray();
 
-            $aux['lbl_producto_descripcion'] = $linea->producto->get_value_to_show();
+            $aux['lbl_producto_descripcion'] = $linea->producto->get_value_to_show(true);
             $aux['cantidad'] = number_format( $linea->cantidad, 0, ',', '.');
             $aux['cantidad_pendiente'] = number_format( $linea->cantidad_pendiente, 0, ',', '.');
             $aux['precio_unitario'] = '$ ' . number_format( $linea->precio_unitario / ( 1 + $linea->tasa_impuesto / 100) , 0, ',', '.');
