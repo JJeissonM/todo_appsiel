@@ -268,7 +268,7 @@ class Tercero extends Model
             (new TerceroService())->crear_tercero_como_cliente_y_proveedor($registro->id);
         }
 
-        
+
         
     }
 

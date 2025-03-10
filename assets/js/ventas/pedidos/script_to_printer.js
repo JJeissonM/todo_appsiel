@@ -97,6 +97,7 @@
 
     function get_lineas()
     {
+        console.log('get_lineas');
         var newLine = '\n';
 
         var cmds = newLine;
@@ -110,7 +111,7 @@
         $('.linea_registro').each(function( ){
             //Libro Matemáticas D     1
             var item_name = $(this).find('.lbl_producto_descripcion').text();
-
+console.log('item_name',item_name);
             let end = 20;
             cmds += $(this).find('.cantidad').text() + ' - ' + item_name.substring(0, end);
 

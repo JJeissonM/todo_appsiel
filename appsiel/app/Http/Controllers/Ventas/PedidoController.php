@@ -30,6 +30,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\Services\DocumentsLinesServices;
 use App\Ventas\Services\OrderServices;
+use App\Ventas\VtasPedido;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -634,5 +635,26 @@ class PedidoController extends TransaccionController
 
 
         return redirect( 'vtas_pedidos/'.$doc_encabezado->id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','El registro del Pedido de ventas fue MODIFICADO correctamente.');
+    }
+
+    /**
+     * 
+     */
+    public function mesero_listado_pedidos_pendientes()
+    {        
+       
+        $miga_pan = [
+            ['url' => 'NO', 'etiqueta' => 'Ventas'],
+            ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Cocinas'],
+            ['url' => 'NO', 'etiqueta' => 'Listado de Pedidos Pendientes']
+        ];
+        
+        $pedidos = VtasPedido::where('estado', 'Pendiente')
+            ->whereIn('core_tipo_transaccion_id', [42, 60])
+            ->orderBy('created_at', 'DESC')->get();
+
+        $vista_pedidos = View::make('ventas.pedidos.restaurante.mesero.lista_pedidos_pendientes_tabla', compact('pedidos'))->render();
+
+        return view('ventas.pedidos.restaurante.mesero.index_pedidos_pendientes', compact( 'miga_pan', 'vista_pedidos'));
     }
 }

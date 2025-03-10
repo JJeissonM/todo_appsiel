@@ -522,8 +522,9 @@ $(document).ready(function () {
 
 	$('#btn_guardar').hide();
 
-	$('#fecha').val(fecha);
-	$('#fecha_vencimiento').val(fecha_vencimiento);
+	$('#fecha').val( format_fecha( fecha ) );
+
+	$('#fecha_vencimiento').val( format_fecha( fecha_vencimiento ) );
 
 	agregar_la_linea_ini();
 

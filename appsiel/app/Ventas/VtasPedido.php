@@ -42,6 +42,31 @@ class VtasPedido extends VtasDocEncabezado
     public function lineas_registros()
     {
         return $this->hasMany(VtasDocRegistro::class, 'vtas_doc_encabezado_id');
+    } 
+
+    public function lineas_registros_to_show()
+    {
+        $lineas_registros = $this->lineas_registros;
+        $lineas = [];
+
+        foreach ($lineas_registros as $linea) {
+            $aux = $linea->toArray();
+
+            $aux['lbl_producto_descripcion'] = $linea->producto->get_value_to_show();
+            $aux['cantidad'] = number_format( $linea->cantidad, 0, ',', '.');
+            $aux['cantidad_pendiente'] = number_format( $linea->cantidad_pendiente, 0, ',', '.');
+            $aux['precio_unitario'] = '$ ' . number_format( $linea->precio_unitario / ( 1 + $linea->tasa_impuesto / 100) , 0, ',', '.');
+            $aux['tasa_impuesto'] = number_format( $linea->tasa_impuesto, 0, ',', '.').'%';
+            
+            $aux['precio_subtotal'] = '$ ' . number_format( $linea->precio_unitario / ( 1 + $linea->tasa_impuesto / 100) * $linea->cantidad, 0, ',', '.');
+            
+            $aux['valor_total_descuento'] = '$ ' . number_format( $linea->valor_total_descuento, 0, ',', '.');
+            $aux['precio_total'] = '$ ' . number_format( $linea->precio_total, 0, ',', '.') . '<span class="precio_total" style="display: none;">' . $linea->precio_total . '</span>';
+
+            $lineas[] = $aux;
+        }
+
+        return $lineas;
     }   
 
     public static function consultar_registros2($nro_registros, $search)

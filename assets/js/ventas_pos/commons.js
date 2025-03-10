@@ -639,35 +639,6 @@ function agregar_nueva_linea() {
   agregar_la_linea();
 }
 
-
-
-  // Buscar mesas en pedidos
-  function mySearchInputFunction() {
-    // Solo busca en la primera columna de la tabla
-    // Declare variables
-    var input, filter, table, tr, td, i, txtValue, haystack;
-    input = document.getElementById("mySearchInput");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("myContentTable");
-    tr = table.getElementsByTagName("tr");
-
-    // Loop through all table rows, and hide those who don't match the search query
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td");
-        haystack = ''
-
-        for (let index = 0; index < td.length; index++) {
-          haystack += td[index].textContent || td[index].innerText;          
-        }
-        
-        if (haystack.toUpperCase().indexOf(filter) > -1) {
-            tr[i].style.display = "";
-        } else {
-            tr[i].style.display = "none";
-        }
-    }
-}
-
 /**
  * 
  * @param {*} vlr_efectivo_recibido 

@@ -231,7 +231,7 @@ class PedidosPosController extends TransaccionController
             "editable" => 1,
             "unico" => 0
         ]);
-
+        
         //Personalización de la lista de campos
         foreach ($lista_campos as $key => $value)
         {
@@ -337,6 +337,10 @@ class PedidosPosController extends TransaccionController
         $params_JSPrintManager = $factura_pos_service->get_parametros_complemento_JSPrintManager($pdv);
 
         $msj_resolucion_facturacion = '';
+
+        if ($fecha_vencimiento == "00-00-0000" ) {
+            $fecha_vencimiento = $fecha;
+        }
 
         return view('ventas_pos.crud_pedido_pos', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_pedido', 'redondear_centena', 'numero_linea', 'lineas_registros', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento','msj_resolucion_facturacion', 'params_JSPrintManager'));
     }
@@ -612,7 +616,9 @@ class PedidosPosController extends TransaccionController
         $encabezados_documentos = VtasDocEncabezado::where([
             ['estado', '=', 'Pendiente'],
             ['creado_por', '=', $creado_por]
-        ])->get();
+        ])
+        ->orderBy('created_at', 'desc')
+        ->get();
 
         $view = Input::get('view');
 

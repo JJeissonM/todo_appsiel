@@ -31,6 +31,8 @@ Route::get('vtas_pedidos_anular/{id}', 'Ventas\PedidoController@anular_pedido');
 Route::get('vtas_pedidos_get_formulario_edit_registro','Ventas\PedidoController@get_formulario_edit_registro');
 Route::post('vtas_pedidos_doc_registro_guardar','Ventas\PedidoController@doc_registro_guardar');
 
+Route::get('vtas_mesero_listado_pedidos_pendientes','Ventas\PedidoController@mesero_listado_pedidos_pendientes');
+
 Route::resource('vtas_pedidos', 'Ventas\PedidoController');
 
 // Direciones de entrega (Domicilios)

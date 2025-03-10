@@ -87,7 +87,15 @@
 	<input type="hidden" name="user_rol" id="user_rol" value="{{ $user->roles()->first()->name }}">
 
 	@can('vtas_bloquear_vista_index')
-		@include('ventas.index_vendedor')
+		<div class="container-fluid">
+			<div class="marco_formulario">
+				@can('vtas_pedidos_restaurante')
+					@include('ventas.pedidos.restaurante.mesero.index_cocinas')
+				@else
+					@include('ventas.index_vendeor')
+				@endcan
+			</div>
+		</div>
 	@else
 		<div class="container-fluid">
 			

@@ -301,7 +301,7 @@
 
 	<!-- Convertir HTML a PDF -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/0.9.0rc1/jspdf.min.js"></script>
-	<script src="{{asset('assets/js/todas_las_funciones.js')}}"></script>
+	<script src="{{ asset('assets/js/todas_las_funciones.js?aux=' . uniqid() )}}"></script>
 
 	<!-- Table Export -->
 	<script src="{{asset('assets/js/tableExport/xlsx.full.min.js')}}"></script>
