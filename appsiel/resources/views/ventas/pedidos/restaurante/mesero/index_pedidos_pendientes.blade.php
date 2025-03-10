@@ -108,10 +108,7 @@
             var lineas_registros = $(this).data('lineas_registros');
                 
             $.each(lineas_registros, function(i, element) {
-                var linea = element;
-                console.log('linea',linea);
-
-                
+                var linea = element;                
                 $('#tabla_lineas_registros tbody').append('<tr class="linea_registro"><td>' + (parseInt(i) + 1) + '</td><td class="lbl_producto_descripcion">' + linea.lbl_producto_descripcion + '</td><td class="cantidad">' + linea.cantidad + '</td><td>' + linea.cantidad_pendiente + '</td><td>' + linea.precio_unitario + '</td><td>' + linea.tasa_impuesto + '</td><td>' + linea.precio_subtotal + '</td><td>' + linea.valor_total_descuento + '</td><td>' + linea.precio_total + '</td></tr>');
             });
 

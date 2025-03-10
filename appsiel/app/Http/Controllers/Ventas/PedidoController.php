@@ -641,8 +641,7 @@ class PedidoController extends TransaccionController
      * 
      */
     public function mesero_listado_pedidos_pendientes()
-    {        
-       
+    {
         $miga_pan = [
             ['url' => 'NO', 'etiqueta' => 'Ventas'],
             ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Cocinas'],
