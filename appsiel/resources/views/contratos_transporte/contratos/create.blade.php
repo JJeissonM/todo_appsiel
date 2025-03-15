@@ -105,25 +105,25 @@
 							<h4 style="border-left: 5px solid #42A3DC !important; padding: 20px; background-color: #c9e2f1;">Información del FUEC</h4>
 						</div>						
 						
-						<div class="col-md-12" style="padding: 5px 20px;">
+						<div class="col-md-12" style="padding: 5px 20px; display: none;">
 							<p>Fechas del FUEC igual a las del contrato.</p>
 							<label class="radio-inline">
-								<input type="radio" name="fechas_iguales" value="1" checked>Sí
+								<input type="radio" name="fechas_iguales" value="1" >Sí
 							</label>
 							<label class="radio-inline">
-								<input type="radio" name="fechas_iguales" value="0">No
+								<input type="radio" name="fechas_iguales" value="0" checked>No
 							</label>
 						</div>						
 						
 						<div class="col-md-6" style="padding: 30px;">
 							
-							<div class="form-group" id="div_fecha_inicio_fuec" style="display: none;">
+							<div class="form-group" id="div_fecha_inicio_fuec">
 								<label>Fecha de Inicio FUEC</label>
-								<input onchange="validar_fecha_inicio_fuec()" type="date" class="form-control" name="fecha_inicio_fuec" id="fecha_inicio_fuec"/>
+								<input onchange="validar_fecha_inicio_fuec()" type="date" class="form-control" name="fecha_inicio_fuec" id="fecha_inicio_fuec" required="required"/>
 							</div>
-							<div class="form-group" id="div_fecha_fin_fuec" style="display: none;">
+							<div class="form-group" id="div_fecha_fin_fuec">
 								<label>Fecha de Terminación FUEC</label>
-								<input onchange="validar_fecha_fin_fuec()" class="form-control" type="date" name="fecha_fin_fuec" id="fecha_fin_fuec"/>
+								<input onchange="validar_fecha_fin_fuec()" class="form-control" type="date" name="fecha_fin_fuec" id="fecha_fin_fuec" required="required"/>
 							</div>
 
 							<div class="form-group">
@@ -450,6 +450,8 @@
 				text: 'La Fecha Final máxima debe ser el último día del mes.',
 				footer: 'Para cambiar esta configuración, comuníquese con soporte.'
 			});
+
+			$("#fecha_fin_fuec").val('');
 
 			return false;
 		}
