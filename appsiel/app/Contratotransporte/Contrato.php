@@ -9,7 +9,7 @@ class Contrato extends Model
 {
     protected $table = 'cte_contratos';
 
-    protected $fillable = ['id', 'estado', 'codigo', 'version', 'fecha', 'numero_contrato', 'numero_fuec', 'rep_legal', 'representacion_de', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'anio_contrato', 'tipo_servicio', 'nro_personas', 'disponibilidad', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratanteText', 'contratanteIdentificacion', 'contratanteDireccion', 'contratanteTelefono', 'contratante_id', 'vehiculo_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'estado', 'codigo', 'version', 'fecha', 'numero_contrato', 'numero_fuec', 'rep_legal', 'representacion_de', 'objeto', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_contrato', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_contrato', 'mes_contrato', 'anio_contrato', 'tipo_servicio', 'nro_personas', 'disponibilidad', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'contratanteText', 'contratanteIdentificacion', 'contratanteDireccion', 'contratanteTelefono', 'contratante_id', 'vehiculo_id', 'created_at', 'updated_at','descripcion_recorrido'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nro. Contrato', 'Objeto', 'Fecha Celebrado', 'Origen - Destino', 'Vigencia', 'Contratante', 'Vehículo', 'Propietario', 'Estado'];
 

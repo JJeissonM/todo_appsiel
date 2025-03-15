@@ -55,6 +55,12 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border" style="width: 20%; font-weight: bold;">ORIGEN - DESTINO</td>
             <td class="border_center" style="width: 80%; font-size: 12px;">{{$fuec_adicional->origen." - ".$fuec_adicional->destino}} / <b>{{$fuec_adicional->tipo_servicio}}</b></td>
         </tr>
+        @if($fuec_adicional->descripcion_recorrido!=null)
+            <tr>
+                <td class="border" style="width: 20%; font-weight: bold;">DESCRIPCIÓN DEL RECORRIDO</td>
+                <td class="border_center" style="width: 80%; font-size: 12px;">{{$fuec_adicional->descripcion_recorrido}}</b></td>
+            </tr>
+        @endif
     </tbody>
 </table>
 <table style="width: 100%;">

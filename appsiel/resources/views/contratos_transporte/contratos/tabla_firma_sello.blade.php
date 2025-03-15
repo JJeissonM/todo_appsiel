@@ -7,7 +7,7 @@
                 <br>Sello
             </td>
             <td class="border" style="width: 40%; text-align: center; font-weight: bold; margin-top: 10px !important; font-size: 14px;">
-                <img src="{{config('contratos_transporte.url_imagen_firma_rep_legal')}}"  style="max-height: 70px;">
+                <img src="{{config('contratos_transporte.url_imagen_firma_rep_legal')}}"  style="max-height: 70px; max-width: 200px;">
                 <br>FIRMA
                 <br>
                 <i style="font-size: 9px; text-decoration: none;" valign="bottom">{{$v->firma}}</i>

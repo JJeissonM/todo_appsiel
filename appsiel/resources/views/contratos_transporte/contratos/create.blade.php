@@ -147,6 +147,10 @@
 								</select>
 							</div>
 							<div class="form-group">
+								<label>Descripción del Recorrido</label>
+								<textarea class="form-control" name="descripcion_recorrido" rows="2"></textarea>
+							</div>
+							<div class="form-group">
 								<label>Tipo de Servicio</label>
 								<select class="form-control" name="tipo_servicio" required="required">
 									<option value="IDA-REGRESO">IDA Y REGRESO</option>
