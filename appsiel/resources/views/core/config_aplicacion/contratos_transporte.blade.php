@@ -87,14 +87,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$permitir_ingreso_contrato_en_mes_distinto_al_actual = 0;
-								if( isset($parametros['permitir_ingreso_contrato_en_mes_distinto_al_actual'] ) )
-								{
-									$permitir_ingreso_contrato_en_mes_distinto_al_actual = $parametros['permitir_ingreso_contrato_en_mes_distinto_al_actual'];
-								}
-							?>
-							{{ Form::bsSelect('permitir_ingreso_contrato_en_mes_distinto_al_actual', $permitir_ingreso_contrato_en_mes_distinto_al_actual, 'Permitir ingreso de contratos en un mes distinto al actual', ['No','Si'], ['class'=>'form-control']) }}
+							&nbsp;
 						</div>
 					</div>
 
@@ -244,6 +237,40 @@
 								}
 							?>
 							{{ Form::bsText('url_imagen_firma_y_sello_empresa', $url_imagen_firma_y_sello_empresa, 'URL imágen Firma Y Sello empresa', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				
+				<h4> Parámetros Generación de FUEC  </h4>
+				<hr>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$permitir_ingreso_contrato_en_mes_distinto_al_actual = 0;
+								if( isset($parametros['permitir_ingreso_contrato_en_mes_distinto_al_actual'] ) )
+								{
+									$permitir_ingreso_contrato_en_mes_distinto_al_actual = $parametros['permitir_ingreso_contrato_en_mes_distinto_al_actual'];
+								}
+							?>
+							{{ Form::bsSelect('permitir_ingreso_contrato_en_mes_distinto_al_actual', $permitir_ingreso_contrato_en_mes_distinto_al_actual, 'Permitir ingreso de contratos en un mes distinto al actual', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$bloquear_ingreso_fecha_final_planilla_en_mes_siguiente = 0;
+								if( isset($parametros['bloquear_ingreso_fecha_final_planilla_en_mes_siguiente'] ) )
+								{
+									$bloquear_ingreso_fecha_final_planilla_en_mes_siguiente = $parametros['bloquear_ingreso_fecha_final_planilla_en_mes_siguiente'];
+								}
+							?>
+							{{ Form::bsSelect('bloquear_ingreso_fecha_final_planilla_en_mes_siguiente', $bloquear_ingreso_fecha_final_planilla_en_mes_siguiente, 'Bloquear ingreso de Fecha Final del Fuec en el mes siguiente', ['No','Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

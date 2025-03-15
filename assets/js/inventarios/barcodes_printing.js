@@ -1,6 +1,5 @@
 
 var array_barcodes;
-var items_per_page = 30;
 function pc_print(data){
     var socket = new WebSocket("ws://127.0.0.1:40213/");
 
@@ -25,8 +24,14 @@ function get_data(item_init, item_end)
     return array_barcodes.slice( item_init, parseInt(item_end) + 1 );
 }
 
+/**
+ * Crea los botones para imprimir las etiquetas de códigos de barras
+ * Se ejecuta al presionar el botón Generar
+ */
 function create_btns_for_print_barcodes()
 {
+    var items_per_page = $('#items_per_page').val();
+
     $('#div_btns_barcodes').html('');
     var data = JSON.parse( $('#data_for_print').text() );
 
@@ -61,6 +66,11 @@ function create_btns_for_print_barcodes()
     }
 }
 
+/**
+ * Al presionar un botón de impresión
+ * @param {*} url 
+ * @param {*} obj_btn 
+ */
 function ajax_print(url, obj_btn) {
 
     var print_connector_type = $('#connector_type').val();

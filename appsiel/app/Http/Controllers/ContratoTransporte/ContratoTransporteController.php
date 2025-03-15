@@ -12,7 +12,7 @@ use App\Contratotransporte\Documentosvehiculo;
 use App\Contratotransporte\Planillac;
 use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
-
+use App\Contratotransporte\Services\FuecServices;
 use App\Contratotransporte\Vehiculo;
 use App\Contratotransporte\Vehiculoconductor;
 use App\Core\Empresa;
@@ -55,7 +55,10 @@ class ContratoTransporteController extends Controller
         if (count($cont) > 0) {
             foreach ($cont as $c) {
                 $c->tipo_registro = 'contrato';
-                $contratos[] = $c;
+
+                if ( $c->numero_fuec != null ) {
+                    $contratos[] = $c;
+                }                
 
                 $fuec_adicionales = $c->fuec_adicionales;
                 foreach ($fuec_adicionales as $fuec_adicional) {                    
@@ -196,8 +199,6 @@ class ContratoTransporteController extends Controller
 
         $ciudades = \App\Core\Ciudad::opciones_campo_select_2();
 
-        $permitir_ingreso_contrato_en_mes_distinto_al_actual = config('contratos_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual');
-
         return view('contratos_transporte.contratos.create')
             ->with('variables_url', '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))
             ->with('miga_pan', $miga_pan)
@@ -206,7 +207,6 @@ class ContratoTransporteController extends Controller
             ->with('vehiculos', $vehiculos_permitidos)
             ->with('source', $source)
             ->with('ciudades', $ciudades)
-            ->with('permitir_ingreso_contrato_en_mes_distinto_al_actual', $permitir_ingreso_contrato_en_mes_distinto_al_actual)
             ->with('v', $p);
     }
 
@@ -261,42 +261,63 @@ class ContratoTransporteController extends Controller
         $mes_actual = $hoy['mon'];
         
         if ((int) $mes_fecha_fin > (int) $mes_actual && config('contratos_transporte.permitir_ingreso_contrato_en_mes_distinto_al_actual') == 0) {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. La fecha final debe estar en el mes actual', $request->source);
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El contrato NO fue guardado. La fecha final debe estar en el mes actual', $request->source);
         }
 
         if ($request->vehiculo_id == "0") {
-            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El NO fue guardado. Debe indicar el vehículo para guardar el contrato', $request->source);
-        }
-        
-        $contrato_id = $this->storeContract($request);
+            return $this->redirectTo($request->variables_url, 'mensaje_error', 'El contrato NO fue guardado. Debe indicar el vehículo para guardar el contrato', $request->source);
+        }        
+
+        $contrato_id = $this->storeContract($request, $mes_actual);
+
         if ($contrato_id > 0) {
-            //verifico si el vehiculo ya hizo 4 contratos este mes, si los hizo se bloquea... debe pagar para hacerlo la proxima
-            $contratosMes = Contrato::where('vehiculo_id', $request->vehiculo_id)->get();
-            if (count($contratosMes) > 0) {
-                $total = 0;
-                foreach ($contratosMes as $cm) {
-                    $mes_fecha = explode('-', $cm->fecha_inicio)[1];
-                    if ($mes_actual == $mes_fecha) {
-                        $total = $total + 1;
+
+            $contrato = Contrato::find($contrato_id);
+
+            // Genero planilla - Aqui se relaciona la plantilla
+            $planilla_id = $this->planillacsStore($request, $contrato_id);
+            if ( $planilla_id > 0) {
+
+                if( !(int)$request->fechas_iguales )
+                {
+                    // Generar Fuec Adicional con fechas distintas al contrato
+                    $request['conductor1_id'] = null;
+                    $request['conductor2_id'] = null;
+                    $request['conductor3_id'] = null;
+
+                    if (isset($request->conductor_id)) {
+                        foreach ($request->conductor_id as $n => $id) {
+                            if ( $id != '') {
+                                $request['conductor' . ($n + 1) . '_id'] = $id;
+                            }
+                        }
                     }
+
+                    $request['fecha_inicio'] = $request['fecha_inicio_fuec'];
+                    $request['fecha_fin'] = $request['fecha_fin_fuec'];
+                    $request['contrato_id'] = $contrato_id;
+                    
+                    $fuec_adicional_id = (new FuecServices())->storeFuecAdicional($request);
+
+                    if ($fuec_adicional_id > 0) {            
+                        $messageType = 'flash_message';
+                        $message = 'FUEC Adicional Almacenado con exito';
+                    } else {
+                        $messageType = 'mensaje_error';
+                        $message = 'FUEC Adicional No pudo ser almacenado';
+                    }
+
+                    return redirect( url( '/cte_contratos' . '/' . $contrato_id . '/planillas/CONTRATOS/index?' . $request->variables_url . '&route=CONTRATOS') )->with($messageType, $message);
                 }
-                $limite = config('contratos_transporte.bloqueado_x_contratos');
-                if ($total >= $limite) {
-                    $lista_vehiculos = Vehiculo::find($request->vehiculo_id);
-                    $lista_vehiculos->bloqueado_cuatro_contratos = 'SI';
-                    $lista_vehiculos->save();
-                }
-            }
-            //genero planilla
-            if ($this->planillacsStore($request, $contrato_id) > 0) {
+
+                // Si no se guarda FUEC adicional
                 return $this->redirectTo($request->variables_url, 'flash_message', 'Almacenado con exito', $request->source);
             } else {
-                $con = Contrato::find($contrato_id);
-                if ($con != null) {
-                    $con->delete();
+                if ($contrato != null) {
+                    $contrato->delete();
                 }
                 return $this->redirectTo($request->variables_url, 'mensaje_error', 'No pudo ser almacenado', $request->source);
-            }
+            }            
         } else {
             return $this->redirectTo($request->variables_url, 'mensaje_error', 'No pudo ser almacenado', $request->source);
         }
@@ -315,7 +336,7 @@ class ContratoTransporteController extends Controller
     }
 
     //almacena un contrato con su grupo de usuarios
-    public function storeContract(Request $request)
+    public function storeContract(Request $request, $mes_actual)
     {
         $result = 0;
         $c = new Contrato($request->all());
@@ -329,7 +350,13 @@ class ContratoTransporteController extends Controller
         $c->version = null;
         $c->fecha = null;
         $c->numero_contrato = $this->nroContrato();
-        $c->numero_fuec = $this->nroFUEC();
+
+        $c->numero_fuec = null;
+        if( (int)$request->fechas_iguales )
+        {
+            $c->numero_fuec = (new FuecServices())->nroFUEC();
+        }        
+        
         $c->pie_uno = "--";
         $c->pie_dos = "--";
         $c->pie_tres = "--";
@@ -351,9 +378,30 @@ class ContratoTransporteController extends Controller
         $c->destino = strtoupper($c->destino);
         $c->objeto = strtoupper($c->objeto);
         $c->mes_contrato = strtoupper($c->mes_contrato);
-        if ($c->save()) {
+
+        // Almacenar
+        if ( $c->save() ) {
+            //verifico si el vehiculo ya hizo 4 contratos este mes, si los hizo se bloquea... debe pagar para hacerlo la proxima
+            $contratosMes = Contrato::where('vehiculo_id', $request->vehiculo_id)->get();
+            if (count($contratosMes) > 0) {
+                $total = 0;
+                foreach ($contratosMes as $cm) {
+                    $mes_fecha = explode('-', $cm->fecha_inicio)[1];
+                    if ($mes_actual == $mes_fecha) {
+                        $total = $total + 1;
+                    }
+                }
+                $limite = config('contratos_transporte.bloqueado_x_contratos');
+                if ($total >= $limite) {
+                    $lista_vehiculos = Vehiculo::find($request->vehiculo_id);
+                    $lista_vehiculos->bloqueado_cuatro_contratos = 'SI';
+                    $lista_vehiculos->save();
+                }
+            }
+
             $result = $c->id;
         }
+
         return $result;
     }
 
@@ -364,33 +412,6 @@ class ContratoTransporteController extends Controller
         // Se incrementa el consecutivo
         SecuenciaCodigo::incrementar_consecutivo('cte_contratos');
         
-        if (strlen($nro) == 1) {
-            return "000" . $nro;
-        }
-        if (strlen($nro) == 2) {
-            return "00" . $nro;
-        }
-        if (strlen($nro) == 3) {
-            return "0" . $nro;
-        }
-        if (strlen($nro) == 4) {
-            return  $nro;
-        }
-        if (strlen($nro) > 4) {
-            return substr($nro, -4);
-        }
-    }
-
-    //calcula el numero del FUEC
-    function nroFUEC()
-    {
-        $nro = SecuenciaCodigo::get_codigo('cte_fuec');
-        // Se incrementa el consecutivo
-        SecuenciaCodigo::incrementar_consecutivo('cte_fuec');
-        
-        if (strlen($nro) == 0) {
-            return "0001";
-        }
         if (strlen($nro) == 1) {
             return "000" . $nro;
         }
@@ -920,49 +941,56 @@ class ContratoTransporteController extends Controller
     }
 
 
-    //obtiene los conductores de un vehiculo
+    // Obtiene los conductores de un vehiculo
     public function conductores($id)
     {
         $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $id)->get();
-        $conductores = null;
-        $hoy = strtotime( date( "d-m-Y" ) );
-        if (count($conductoresDelVehiculo) > 0) {
-            foreach ($conductoresDelVehiculo as $c) {
-                $docs = $c->conductor->documentosconductors;
-                if (count($docs) > 0) {
-                    $vencido = false;
-                    foreach ($docs as $d) {
-                        if ($d->licencia == 'SI') {
-                            //tiene licencia, se revisa si esta vencida
-                            if ( strtotime($d->vigencia_fin) < $hoy ) {
-                                $vencido = true;
-                            }
-                        }
-                    }
-                    if (!$vencido) {
-                        $conductores[$c->conductor_id] = $c->conductor->tercero->descripcion;
-                    }
-                }
-            }
-            if ($conductores != null) {
-                return json_encode([
-                    'error' => 'NO',
-                    'data' => $conductores,
-                    'mensaje' => ''
-                ]);
-            } else {
-                return json_encode([
-                    'error' => 'SI',
-                    'data' => null,
-                    'mensaje' => 'Los conductores no tienen sus documentos en regla'
-                ]);
-            }
-        } else {
+
+        if (count($conductoresDelVehiculo) <= 0)
+        {
             return json_encode([
                 'error' => 'SI',
                 'data' => null,
-                'mensaje' => 'No hay conductores asociados al vehículo'
+                'mensaje' => 'No hay conductores asociados al vehículo.'
             ]);
         }
+
+        $conductores = null;
+        $hoy = strtotime( date( "d-m-Y" ) );
+        foreach ($conductoresDelVehiculo as $c)
+        {
+            $docs = $c->conductor->documentosconductors;
+            if (count($docs) > 0) {
+                $vencido = false;
+                foreach ($docs as $d)
+                {
+                    if ( strtotime($d->vigencia_fin) < $hoy )
+                    {
+                        $vencido = true;
+                    }
+                }
+                
+                if ( $vencido )
+                {
+                    continue;
+                }
+
+                $conductores[$c->conductor_id] = $c->conductor->tercero->descripcion;
+            }
+        }
+
+        if ($conductores == null) {
+            return json_encode([
+                'error' => 'SI',
+                'data' => null,
+                'mensaje' => 'Los conductores no tienen sus documentos en regla.'
+            ]);
+        }
+
+        return json_encode([
+            'error' => 'NO',
+            'data' => $conductores,
+            'mensaje' => ''
+        ]);
     }
 }

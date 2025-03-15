@@ -221,7 +221,7 @@ class ConductorController extends Controller
         $vehi = Vehiculo::all();
         if (count($vehi) > 0) {
             foreach ($vehi as $v) {
-                $todosVehiculos[$v->id] = "<b>PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
+                $todosVehiculos[$v->id] = "PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
             }
         }
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;

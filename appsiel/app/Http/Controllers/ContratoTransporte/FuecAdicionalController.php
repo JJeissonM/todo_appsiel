@@ -11,7 +11,7 @@ use App\Contratotransporte\FuecAdicional;
 use App\Contratotransporte\Planillac;
 
 use App\Contratotransporte\Plantilla;
-
+use App\Contratotransporte\Services\FuecServices;
 use App\Contratotransporte\Vehiculo;
 use App\Core\Empresa;
 
@@ -70,7 +70,7 @@ class FuecAdicionalController extends Controller
                     }
                     if (!$vencido) {
                         if ($un_vehiculo->bloqueado_cuatro_contratos == 'NO') {
-                            $vehiculos_permitidos[$un_vehiculo->id] = "<b>PLACA " . $un_vehiculo->placa . ", MOVIL INTERNO " . $un_vehiculo->int . ", CAPACIDAD " . $un_vehiculo->capacidad;
+                            $vehiculos_permitidos[$un_vehiculo->id] = "PLACA " . $un_vehiculo->placa . ", MOVIL INTERNO " . $un_vehiculo->int . ", CAPACIDAD " . $un_vehiculo->capacidad;
                         }
                     }
                 }
@@ -142,28 +142,9 @@ class FuecAdicionalController extends Controller
     {
         $ruta_show = 'cte_contratos/' . $request->contrato_id . '/planillas/' . $request->route . '/index';
         
-        $fuec_adicional_id = $this->storeFuecAdicional($request);
-        if ($fuec_adicional_id > 0) {
-            //verifico si el vehiculo ya hizo 4 contratos este mes, si los hizo se bloquea... debe pagar para hacerlo la proxima
-            $contratosMes = Contrato::where('vehiculo_id', $request->vehiculo_id)->get();
-            if (count($contratosMes) > 0) {
-                $total = 0;
-                $hoy = getdate();
-                $mes_actual = $hoy['mon'];
-                foreach ($contratosMes as $cm) {
-                    $mes_fecha = explode('-', $cm->fecha_inicio)[1];
-                    if ($mes_actual == $mes_fecha) {
-                        $total = $total + 1;
-                    }
-                }
-                $limite = config('contratos_transporte.bloqueado_x_contratos');
-                if ($total >= $limite) {
-                    $lista_vehiculos = Vehiculo::find($request->vehiculo_id);
-                    $lista_vehiculos->bloqueado_cuatro_contratos = 'SI';
-                    $lista_vehiculos->save();
-                }
-            }
-            
+        $fuec_adicional_id = (new FuecServices())->storeFuecAdicional($request);
+
+        if ($fuec_adicional_id > 0) {            
             $messageType = 'flash_message';
             $message = 'FUEC Adicional Almacenado con exito';
         } else {
@@ -171,47 +152,8 @@ class FuecAdicionalController extends Controller
             $message = 'FUEC Adicional No pudo ser almacenado';
         }
 
-        return redirect( $ruta_show . $request->variables_url)->with($messageType, $message);
+        return redirect( $ruta_show . $request->variables_url )->with($messageType, $message);
 
-    }
-
-    //almacena un contrato con su grupo de usuarios
-    public function storeFuecAdicional(Request $request)
-    {
-        $datos = $request->all();        
-
-        $datos['conductor2_id'] = $request->conductor2_id;
-        if ($request->conductor2_id == '') {
-            $datos['conductor2_id'] = null;
-        }
-
-        $datos['conductor3_id'] = $request->conductor3_id;
-        if ($request->conductor3_id == '') {
-            $datos['conductor3_id'] = null;
-        }
-
-        $result = 0;
-        $c = new FuecAdicional( $datos );
-        $c->valor_empresa = 0;
-        $c->valor_fuec = 0;
-        $c->valor_propietario = 0;
-        $c->direccion_notificacion = "--";
-        $c->telefono_notificacion = "--";
-        $c->estado = "ACTIVO";
-        $c->codigo = null;
-        $c->version = null;
-        $c->fecha = null;
-        $c->numero_fuec = $this->nroFUEC();
-        $c->pie_dos = "--";
-        $c->pie_tres = "--";
-        $c->pie_cuatro = "--";
-        $c->origen = strtoupper($c->origen);
-        $c->destino = strtoupper($c->destino);
-
-        if ($c->save()) {
-            $result = $c->id;
-        }
-        return $result;
     }
 
     //calcula el numero del contrato
@@ -222,33 +164,6 @@ class FuecAdicionalController extends Controller
         // Se incrementa el consecutivo
         SecuenciaCodigo::incrementar_consecutivo('cte_contratos');
         
-        if (strlen($nro) == 1) {
-            return "000" . $nro;
-        }
-        if (strlen($nro) == 2) {
-            return "00" . $nro;
-        }
-        if (strlen($nro) == 3) {
-            return "0" . $nro;
-        }
-        if (strlen($nro) == 4) {
-            return  $nro;
-        }
-        if (strlen($nro) > 4) {
-            return substr($nro, -4);
-        }
-    }
-
-    //calcula el numero del FUEC
-    function nroFUEC()
-    {
-        $nro = SecuenciaCodigo::get_codigo('cte_fuec');
-        // Se incrementa el consecutivo
-        SecuenciaCodigo::incrementar_consecutivo('cte_fuec');
-        
-        if (strlen($nro) == 0) {
-            return "0001";
-        }
         if (strlen($nro) == 1) {
             return "000" . $nro;
         }

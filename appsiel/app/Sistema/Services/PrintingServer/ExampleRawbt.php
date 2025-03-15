@@ -127,7 +127,7 @@ class ExampleRawbt
                 if ( strlen($item->label) > 38 ) {
                     $printer->text( substr( $item->label, 37, 75) . "\n" );
                 }else{
-                    $printer->text( "      \n" ); // ***** QUITAR EN PRODUCCION ***
+                    $printer->text( "      \n" );
                 }
 
                 $printer->barcode($item->barcode, Printer::BARCODE_JAN13);

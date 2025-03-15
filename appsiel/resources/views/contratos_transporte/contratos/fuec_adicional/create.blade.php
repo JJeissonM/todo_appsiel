@@ -95,17 +95,31 @@
                                 
 							<div class="col-md-6" style="padding: 30px;">
 								<div class="form-group">
-									<label>Vehículo</label>
-									<a href="#" data-toggle="tooltip" data-placement="right" title="Solo se muestran los vehículos que tengan todos sus documentos en regla."> <i class="fa fa-question-circle"></i> </a>
-									<select class="form-control select2" name="vehiculo_id" id="vehiculo_id" required="required" onchange="conductores()">
-										@if($vehiculos!=null)
-											<option value="">-- Seleccione vehículo --</option>
-											@foreach($vehiculos as $key=>$value)
-												<option value="{{$key}}">{!!$value!!}</option>
-											@endforeach
-										@else
-											<option value="">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
-										@endif
+									<label>Fecha de Inicio</label>
+									<input onchange="validar_fecha_inicio()" type="date" class="form-control" name="fecha_inicio" id="fecha_inicio" required />
+								</div>
+								<div class="form-group">
+									<label>Fecha de Terminación</label>
+									<input onchange="validar_fecha_fin()" class="form-control" type="date" name="fecha_fin" id="fecha_fin" required />
+								</div>
+								<div class="form-group">
+									<label>Nro. de Personas a Movilizar</label>
+									<input type="number" class="form-control" name="nro_personas" required>
+								</div>
+								<div class="form-group">
+									<label>Origen</label>
+									<select class="form-control select2" name="origen" id="origen" required="required">
+										@foreach($ciudades as $key=>$value)
+											<option value="{{$key}}">{!!$value!!}</option>
+										@endforeach
+									</select>
+								</div>
+								<div class="form-group">
+									<label>Destino</label>
+									<select class="form-control select2" name="destino" id="destino" required="required">
+										@foreach($ciudades as $key=>$value)
+											<option value="{{$key}}">{!!$value!!}</option>
+										@endforeach
 									</select>
 								</div>
 								<div class="form-group">
@@ -123,42 +137,23 @@
 										<option value="NO">NO</option>
 									</select>
 								</div>
-								<div class="form-group">
-									<label>Nro. de Personas a Movilizar</label>
-									<input type="number" class="form-control" name="nro_personas" required>
-								</div>
 							</div>
-							<div class="col-md-6" style="padding: 30px;">
-								<div class="form-group">
-									<label>Origen</label>
-									<!-- <input type="text" class="form-control" name="origen" required /> -->
-									<select class="form-control select2" name="origen" id="origen" required="required">
-										@foreach($ciudades as $key=>$value)
-											<option value="{{$key}}">{!!$value!!}</option>
-										@endforeach
-									</select>
-								</div>
-								<div class="form-group">
-									<label>Destino</label>
-									<!-- <input type="text" class="form-control" name="destino" required /> -->
-									<select class="form-control select2" name="destino" id="destino" required="required">
-										@foreach($ciudades as $key=>$value)
-											<option value="{{$key}}">{!!$value!!}</option>
-										@endforeach
-									</select>
-								</div>
-								<div class="form-group">
-									<label>Fecha de Inicio</label>
-									<input onchange="validar_fecha_inicio()" type="date" class="form-control" name="fecha_inicio" id="fecha_inicio" required />
-								</div>
-								<div class="form-group">
-									<label>Fecha de Terminación</label>
-									<input onchange="validar_fecha_fin()" class="form-control" type="date" name="fecha_fin" id="fecha_fin" required />
-								</div>
-							</div>
-                        </div>
 
 							<div class="col-md-6" style="padding: 30px;">
+								<div class="form-group">
+									<label>Vehículo</label>
+									<a href="#" data-toggle="tooltip" data-placement="right" title="Solo se muestran los vehículos que tengan todos sus documentos en regla."> <i class="fa fa-question-circle"></i> </a>
+									<select class="form-control select2" name="vehiculo_id" id="vehiculo_id" required="required" onchange="conductores()">
+										@if($vehiculos!=null)
+											<option value="">-- Seleccione vehículo --</option>
+											@foreach($vehiculos as $key=>$value)
+												<option value="{{$key}}">{!!$value!!}</option>
+											@endforeach
+										@else
+											<option value="">No hay vehículos con documentos en regla habilitados. Si continúa, el contrato no será guardado.</option>
+										@endif
+									</select>
+								</div>
 								<div class="form-group">
 									<label>Conductor 1</label>
 									<select name="conductor1_id" id="conductor1" required="required" class="form-control select2">
@@ -178,6 +173,7 @@
 									</select>
 								</div>
 							</div>
+                        </div>
 
 							<div class="form-group">
 								<div class="col-md-12" style="margin-top: 50px; text-align: center;">

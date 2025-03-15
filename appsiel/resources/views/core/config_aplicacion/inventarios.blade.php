@@ -580,6 +580,29 @@
 						</div>
 					</div>
 
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$items_per_page = '25';
+								if( isset($parametros['items_per_page'] ) )
+								{
+									$items_per_page = $parametros['items_per_page'];
+								}
+							?>
+							{{ Form::bsText('items_per_page', $items_per_page, 'Cant. de ítems por página en impresión POS de Cód. de barras ', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
 				</div>				
 
 				<h4> Parámetros para manejo de ítems Mandatarios </h4>

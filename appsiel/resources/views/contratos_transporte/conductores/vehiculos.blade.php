@@ -22,11 +22,11 @@
 						<label class="control-label">Vehículo</label>
 						<select class="form-control select2" style="width: 100% !important;" name="vehiculo_id" required>
 							@if($todosVehiculos!=null)
-							@foreach($todosVehiculos as $key=>$value)
-							<option value="{{$key}}">{!!$value!!}</option>
-							@endforeach
+								@foreach($todosVehiculos as $key=>$value)
+									<option value="{{$key}}">{!!$value!!}</option>
+								@endforeach
 							@else
-							<option value="0">No hay vehículos habilitados, si continua no se asociará el vehículo.</option>
+								<option value="0">No hay vehículos habilitados, si continua no se asociará el vehículo.</option>
 							@endif
 						</select>
 					</div>

@@ -61,14 +61,19 @@
 						<tbody>
 							@if(count($planillas)>0)
 								@foreach($planillas as $p)
-								<tr>
-									<td>{{$c->numero_contrato}}</td>
-									<td>{{$p->plantilla->titulo}}</td>
-									<td>{{$p->created_at}}</td>
-									<td>
-										<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
-									</td>
-								</tr>
+									<?php 
+										if ( $c->numero_fuec == null ) {
+											continue;
+										}
+									?>
+									<tr>
+										<td>{{$c->numero_fuec}}</td>
+										<td>{{$p->plantilla->titulo}}</td>
+										<td>{{$p->created_at}}</td>
+										<td>
+											<a target="_blank" href="{{ url('/cte_contratos/planillas/' . $p->id . '/imprimir')}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
+										</td>
+									</tr>
 								@endforeach
 							@endif
 							@if(count($fuec_adicionales)>0)

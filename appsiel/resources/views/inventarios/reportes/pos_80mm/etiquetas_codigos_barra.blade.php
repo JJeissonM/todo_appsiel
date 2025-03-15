@@ -32,7 +32,7 @@
     $barcodes = [];
 ?>
 
-<h5>Se generaron {{ $cantidad_total }} etiquetas <small> <br> Cada página tiene 30 etiquetas y se deben imprimir página por página. <br> <span style="color: brown;">Recuerde que debe acomodar el papel antes de imprimir cada página. </span></small></h5>
+<h5>Se generaron {{ $cantidad_total }} etiquetas <small> <br> Cada página tiene {{ config('inventarios.items_per_page') }} etiquetas y se deben imprimir página por página. <br> <span style="color: brown;">Recuerde que debe acomodar el papel antes de imprimir cada página. </span></small></h5>
      
 @foreach($items as $fila)
 
@@ -85,3 +85,5 @@
 <span id="data_for_print" style="color: white;">
     {{ json_encode($data) }}
 </span>
+
+<input type="hidden" name="items_per_page" id="items_per_page" value="{{ config('inventarios.items_per_page') }}">

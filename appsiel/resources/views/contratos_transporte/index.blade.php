@@ -19,7 +19,7 @@
 			<div class="col-md-12" style="padding-top: 30px;">
 				<div class="col-md-6">
 					<div class="panel panel-primary">
-						<h4 style="padding: 15px;">Contratos Este Mes ({{$mes_actual}})</h4>
+						<h4 style="padding: 15px;">FUEC generados mes actual ({{$mes_actual}})</h4>
 						<div class="panel-body">
 							<div class="table-responsive">
 								<table class="table table-striped table-responsive">
@@ -45,7 +45,7 @@
 															@if($c->estado=='ANULADO')
 															<p>ANULADO</p>
 															@else
-															<a target="_blank" href="{{route('cte_contratos.imprimir',$c->id)}}" class="btn-gmail" title="Imprimir"><i class="fa fa-print"></i></a>
+															<a target="_blank" href="{{  url('/cte_contratos/planillas/' . $c->planillacs->first()->id . '/imprimir' )}}" class="btn-gmail" title="Imprimir"><i class="fa fa-print"></i></a>
 															@endif
 														</td>
 													</tr>
