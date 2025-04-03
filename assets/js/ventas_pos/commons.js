@@ -1000,6 +1000,7 @@ $(document).ready(function () {
 
   // BOTON GUARDAR EL FORMULARIO
   $("#btn_guardar_factura").click(function (event) {
+
     event.preventDefault();
 
     if (hay_productos == 0) {
@@ -1044,80 +1045,86 @@ $(document).ready(function () {
     $(this).html('<i class="fa fa-spinner fa-spin"></i> Guardando');
     $(this).attr("disabled", "disabled");
     $(this).attr("id", "btn_guardando");
+    
+    console.log('Pausa de 1 segundo.');
 
-    $("#linea_ingreso_default").remove();
+    setTimeout(function(){
 
-    var table = $("#ingreso_registros").tableToJSON();
+        $("#linea_ingreso_default").remove();
 
-    json_table2 = get_json_registros_medios_recaudo();
+        var table = $("#ingreso_registros").tableToJSON();
 
-    if ($("#manejar_propinas").val() == 1) {
-      // Si hay propina, siempre va a venir una sola linea de medio de pago
-      json_table2 = separar_json_linea_medios_recaudo(json_table2);
-    }
+        json_table2 = get_json_registros_medios_recaudo();
 
-    if ($("#manejar_datafono").val() == 1) {
-      // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-      json_table2 = separar_json_linea_medios_recaudo(json_table2);
-    }
-
-    // Se asigna el objeto JSON a un campo oculto del formulario
-    $("#lineas_registros").val(JSON.stringify(table));
-    $("#lineas_registros_medios_recaudos").val(json_table2);
-
-    // Nota: No se puede enviar controles disabled
-
-    var url = $("#form_create").attr("action");
-    var data = $("#form_create").serialize();
-
-    if ($("#manejar_propinas").val() == 1) {
-      data += "&valor_propina=" + $("#valor_propina").val();
-    }
-
-    if ($("#manejar_datafono").val() == 1) {
-      data += "&valor_datafono=" + $("#valor_datafono").val();
-    }
-
-    var tiempo_espera_guardar_factura = 7000; // 7 segundos
-    if ( $('#tiempo_espera_guardar_factura').val() != 0 ) {
-      tiempo_espera_guardar_factura = parseInt( $('#tiempo_espera_guardar_factura').val() ) * 1000;
-    }
-
-    $.ajax({
-        url: url,
-        data: data,
-        type: 'POST',
-        timeout: tiempo_espera_guardar_factura,
-        success: function( doc_encabezado, status, jqXHR ) {
-            $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-            $("#btn_guardando").attr("id", "btn_guardar_factura");
-      
-            $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
-            
-            llenar_tabla_productos_facturados();
-      
-            enviar_impresion( doc_encabezado );
-            
-            $("#pedido_id").val(0);
-        },
-        error: function( response, status, jqXHR ) {
-          
-          $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-          $("#btn_guardando").attr("id", "btn_guardar_factura");
-          $("#btn_guardar_factura").removeAttr("disabled");
-
-            var error_label = 'Perdida de conexión.';
-            if( status == 'timeout' ) {
-                error_label = 'Tiempo de espera agotado.';
-            }
-
-            Swal.fire({
-                icon: 'error',
-                title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                text: error_label 
-            }); // + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+        if ($("#manejar_propinas").val() == 1) {
+          // Si hay propina, siempre va a venir una sola linea de medio de pago
+          json_table2 = separar_json_linea_medios_recaudo(json_table2);
         }
-    });
+
+        if ($("#manejar_datafono").val() == 1) {
+          // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
+          json_table2 = separar_json_linea_medios_recaudo(json_table2);
+        }
+
+        // Se asigna el objeto JSON a un campo oculto del formulario
+        $("#lineas_registros").val(JSON.stringify(table));
+        $("#lineas_registros_medios_recaudos").val(json_table2);
+
+        // Nota: No se puede enviar controles disabled
+
+        var url = $("#form_create").attr("action");
+        var data = $("#form_create").serialize();
+
+        if ($("#manejar_propinas").val() == 1) {
+          data += "&valor_propina=" + $("#valor_propina").val();
+        }
+
+        if ($("#manejar_datafono").val() == 1) {
+          data += "&valor_datafono=" + $("#valor_datafono").val();
+        }
+
+        var tiempo_espera_guardar_factura = 7000; // 7 segundos
+        if ( $('#tiempo_espera_guardar_factura').val() != 0 ) {
+          tiempo_espera_guardar_factura = parseInt( $('#tiempo_espera_guardar_factura').val() ) * 1000;
+        }
+
+        $.ajax({
+            url: url,
+            data: data,
+            type: 'POST',
+            timeout: tiempo_espera_guardar_factura,
+            success: function( doc_encabezado, status, jqXHR ) {
+                $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+                $("#btn_guardando").attr("id", "btn_guardar_factura");
+          
+                $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
+                
+                llenar_tabla_productos_facturados();
+          
+                enviar_impresion( doc_encabezado );
+                
+                $("#pedido_id").val(0);
+            },
+            error: function( response, status, jqXHR ) {
+              
+              $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+              $("#btn_guardando").attr("id", "btn_guardar_factura");
+              $("#btn_guardar_factura").removeAttr("disabled");
+
+                var error_label = 'Perdida de conexión.';
+                if( status == 'timeout' ) {
+                    error_label = 'Tiempo de espera agotado.';
+                }
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                    text: error_label 
+                }); // + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+            }
+        });
+
+    },1000);
   });
 
   // Lupa

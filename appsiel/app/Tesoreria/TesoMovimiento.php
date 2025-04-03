@@ -346,6 +346,7 @@ class TesoMovimiento extends Model
                                         'teso_movimientos.teso_caja_id',
                                         'teso_movimientos.teso_cuenta_bancaria_id',
                                         'teso_movimientos.core_tercero_id',
+                                        'teso_movimientos.created_at',
                                         'core_terceros.descripcion as tercero_descripcion' )
                             ->orderBy('teso_movimientos.fecha')
                             ->orderBy('teso_movimientos.created_at')
@@ -372,6 +373,7 @@ class TesoMovimiento extends Model
                                         'teso_movimientos.consecutivo',
                                         'teso_movimientos.teso_caja_id',
                                         'teso_movimientos.teso_cuenta_bancaria_id',
+                                        'teso_movimientos.created_at',
                                         'core_terceros.descripcion as tercero_descripcion' )
                             ->orderBy('teso_movimientos.fecha')
                             ->orderBy('teso_movimientos.created_at')

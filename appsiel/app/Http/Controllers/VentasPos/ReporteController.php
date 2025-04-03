@@ -24,7 +24,9 @@ use Illuminate\Support\Facades\View;
 
 class ReporteController extends Controller
 {
-
+    /**
+     * ESTADO PDV
+     */
     public function get_saldos_caja_pdv($pdv_id, $fecha_desde, $fecha_hasta)
     {
         $pdv = Pdv::find($pdv_id);
@@ -72,6 +74,9 @@ class ReporteController extends Controller
         return $tabla_encabezados_documentos;
     }
 
+    /**
+     * 
+     */
     public function resumen_por_medios_recaudos($encabezados_documentos)
     {
         $array_lista_medios_recaudos = collect();
@@ -81,6 +86,7 @@ class ReporteController extends Controller
             if ($documento->forma_pago == 'credito') {
                 $array_lista_medios_recaudos->push([
                     'fecha' => $documento->fecha,
+                    'created_at' => $documento->created_at,
                     'documento' => $documento->get_label_documento(),
                     'tercero' => $documento->tercero->descripcion,
                     'forma_pago' => 'credito', // [efectivo | cuenta_bancaria | credito]
@@ -89,6 +95,7 @@ class ReporteController extends Controller
                     'motivo' => 'Recaudo clientes',
                     'valor_entrada' => $documento->valor_total,
                     'valor_salida' => 0,
+                    'origin' => 'encabezado_documento',
                 ]);
 
                 continue;
@@ -97,6 +104,7 @@ class ReporteController extends Controller
             foreach ($obj_medios_recaudos as $linea) {
                 $array_lista_medios_recaudos->push([
                     'fecha' => $documento->fecha,
+                    'created_at' => $documento->created_at,
                     'documento' => $documento->get_label_documento(),
                     'tercero' => $documento->tercero->descripcion,
                     'forma_pago' => $linea->forma_pago, // [efectivo | cuenta_bancaria | credito]
@@ -105,6 +113,7 @@ class ReporteController extends Controller
                     'motivo' => $linea->motivo,
                     'valor_entrada' => $linea->valor_entrada,
                     'valor_salida' => $linea->valor_salida,
+                    'origin' => 'encabezado_documento',
                 ]);
             }
         }
@@ -154,6 +163,9 @@ class ReporteController extends Controller
         return $object;
     }
 
+    /**
+     * 
+     */
     public function get_lista_movimientos_caja_pdv($fecha_desde, $fecha_hasta, $teso_caja_id, $lista_por_medios_recaudos)
     {
         $teso_cuenta_bancaria_id = 0;
@@ -162,8 +174,13 @@ class ReporteController extends Controller
 
         foreach ($movimientos as $movimiento) {
 
-            if ( $lista_por_medios_recaudos->where( 'documento', $movimiento->documento_transaccion_prefijo_consecutivo)->count() > 0 ) {
-                continue;
+            $registro_repetido = $lista_por_medios_recaudos->where( 'documento', $movimiento->documento_transaccion_prefijo_consecutivo);
+
+            if ( $registro_repetido->count() > 0 ) {
+                
+                if ( $registro_repetido->first()['origin'] == 'encabezado_documento' ) {
+                    continue;
+                }                
             }
 
             $entrada = 0;
@@ -178,19 +195,20 @@ class ReporteController extends Controller
 
             $caja = '';
             $forma_pago = 'credito';
-            if (!is_null($movimiento->caja)) {
+            if ( $movimiento->caja != null) {
                 $caja = $movimiento->caja->descripcion;
                 $forma_pago = 'efectivo';
             }
 
             $cuenta_bancaria = '';
-            if (!is_null($movimiento->cuenta_bancaria)) {
+            if ( $movimiento->cuenta_bancaria != null ) {
                 $cuenta_bancaria = 'Cuenta ' . $movimiento->cuenta_bancaria->tipo_cuenta . ' ' . $movimiento->cuenta_bancaria->entidad_financiera->descripcion . ' No. ' . $movimiento->cuenta_bancaria->descripcion;
                 $forma_pago = 'cuenta_bancaria';
             }
 
             $lista_por_medios_recaudos->push([
                 'fecha' => $movimiento->fecha,
+                'created_at' => $movimiento->created_at,
                 'documento' => $movimiento->get_label_documento(),
                 'tercero' => $movimiento->tercero->descripcion,
                 'forma_pago' => $forma_pago, // [efectivo | cuenta_bancaria | credito]
@@ -199,10 +217,11 @@ class ReporteController extends Controller
                 'motivo' => $movimiento->motivo_descripcion,
                 'valor_entrada' => $entrada,
                 'valor_salida' => $salida,
+                'origin' => 'movimiento_tesoreria',
             ]);
         }
 
-        $sorted = $lista_por_medios_recaudos->sortBy('fecha');
+        $sorted = $lista_por_medios_recaudos->sortBy('created_at');
 
         $lineas_movimientos = $sorted->values()->all();
 
