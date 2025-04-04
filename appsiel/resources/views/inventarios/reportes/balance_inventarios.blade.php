@@ -1,10 +1,11 @@
 <h4 style="width: 100%; text-align: center;">Balance de inventarios</h4>
-<h5 style="width: 100%; text-align: center;"> 
+<h5 style="width: 100%; text-align: center;">
     del <code>{{ $fecha_desde }}</code> al <code>{{ $fecha_hasta }}</code>
     @if( $inv_bodega_id != '' )
-        &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; <b> Bodega: </b> {{ \App\Inventarios\InvBodega::find( $inv_bodega_id )->descripcion }}
+    &nbsp;&nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;&nbsp; <b> Bodega: </b> {{ \App\Inventarios\InvBodega::find(
+    $inv_bodega_id )->descripcion }}
     @endif
- </h5>
+</h5>
 <div class="table-responsive">
     <table id="myTable" class="table table-striped">
         {{ Form::bsTableHeader(['Cód.','Producto','S. Inicial','Entradas','Salidas','S. Final']) }}
@@ -13,9 +14,15 @@
                 $saldos_items_aux = collect( $saldos_items->toArray() );
                 $movimientos_entradas_aux = collect( $movimientos_entradas->toArray() );
                 $movimientos_salidas_aux = collect( $movimientos_salidas->toArray() );
+
+                $total_saldo_ini = 0;
+                $total_entrada =   0;
+                $total_salidas =   0;
+                $total_saldo_fin = 0;
+
             ?>
             @foreach( $items AS $item )
-                <?php 
+            <?php 
                     $saldo_ini = $saldos_items_aux->where( 'item_id', $item->id )->pluck('cantidad_total_movimiento')->first();
                     
                     $entradas = $movimientos_entradas_aux->where( 'item_id', $item->id )->pluck('cantidad_total_movimiento')->first();
@@ -44,9 +51,23 @@
                         <td class="text-right">{{ number_format( $salidas, 2, ',', '.') }}</td>
                         <td class="text-right">{{ number_format( $saldo_fin, 2, ',', '.') }}</td>
                     </tr>
+                    <?php 
+                        $total_saldo_ini += $saldo_ini;
+                        $total_entrada += $entradas;
+                        $total_salidas += $salidas;
+                        $total_saldo_fin += $saldo_fin; 
+                    ?>
                 @endif
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2"></td>
+                <td class="text-right">{{ number_format( $total_saldo_ini, 2, ',', '.') }} </td>
+                <td class="text-right">{{ number_format( $total_entradas, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format( $total_salidas, 2, ',', '.') }}</td>
+                <td class="text-right">{{ number_format( $total_saldo_fin, 2, ',', '.') }}</td>
+            </tr>
+        </tfoot>
     </table>
 </div>
-    
