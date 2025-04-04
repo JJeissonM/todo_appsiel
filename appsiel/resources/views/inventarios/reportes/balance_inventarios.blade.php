@@ -16,7 +16,7 @@
                 $movimientos_salidas_aux = collect( $movimientos_salidas->toArray() );
 
                 $total_saldo_ini = 0;
-                $total_entrada =   0;
+                $total_entradas =   0;
                 $total_salidas =   0;
                 $total_saldo_fin = 0;
 
@@ -53,7 +53,7 @@
                     </tr>
                     <?php 
                         $total_saldo_ini += $saldo_ini;
-                        $total_entrada += $entradas;
+                        $total_entradas += $entradas;
                         $total_salidas += $salidas;
                         $total_saldo_fin += $saldo_fin; 
                     ?>
