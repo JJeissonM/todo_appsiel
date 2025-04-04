@@ -1111,7 +1111,7 @@ $(document).ready(function () {
               $("#btn_guardando").attr("id", "btn_guardar_factura");
               $("#btn_guardar_factura").removeAttr("disabled");
 
-                var error_label = 'Pérdida de conexión de Internet.';
+                var error_label = 'Pérdida de conexión de INTERNET.';
                 if( status == 'timeout' ) {
                     error_label = 'Tiempo de espera agotado.';
                 }
