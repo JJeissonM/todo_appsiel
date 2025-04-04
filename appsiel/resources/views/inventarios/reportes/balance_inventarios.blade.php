@@ -63,10 +63,10 @@
         <tfoot>
             <tr>
                 <td colspan="2"></td>
-                <td class="text-right">{{ number_format( $total_saldo_ini, 2, ',', '.') }} </td>
-                <td class="text-right">{{ number_format( $total_entradas, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format( $total_salidas, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format( $total_saldo_fin, 2, ',', '.') }}</td>
+                <td class="text-right"><b>{{ number_format( $total_saldo_ini, 2, ',', '.') }} </b> </td>
+                <td class="text-right"><b>{{ number_format( $total_entradas, 2, ',', '.') }} </b></td>
+                <td class="text-right"><b>{{ number_format( $total_salidas, 2, ',', '.') }} </b></td>
+                <td class="text-right"><b>{{ number_format( $total_saldo_fin, 2, ',', '.') }} </b></td>
             </tr>
         </tfoot>
     </table>
