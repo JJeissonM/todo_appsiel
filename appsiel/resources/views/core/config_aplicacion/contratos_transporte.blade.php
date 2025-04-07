@@ -275,6 +275,29 @@
 					</div>
 
 				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_fechas_fuec_en_create_contratos = 0;
+								if( isset($parametros['mostrar_fechas_fuec_en_create_contratos'] ) )
+								{
+									$mostrar_fechas_fuec_en_create_contratos = $parametros['mostrar_fechas_fuec_en_create_contratos'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_fechas_fuec_en_create_contratos', $mostrar_fechas_fuec_en_create_contratos, 'Mostrar las fechas (inicio, final) del FUEC en la creación de contratos', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 
 				<br><br>
 

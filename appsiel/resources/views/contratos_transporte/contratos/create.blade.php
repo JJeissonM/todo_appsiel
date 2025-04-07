@@ -106,25 +106,37 @@
 						</div>						
 						
 						<div class="col-md-12" style="padding: 5px 20px; display: none;">
+
+							<?php 
+								$checked1 = 'checked';
+								$checked2 = '';	
+								if ( (int)config('contratos_transporte.mostrar_fechas_fuec_en_create_contratos') ) {
+								$checked1 = '';
+								$checked2 = 'checked';	
+								}
+							?>
+
 							<p>Fechas del FUEC igual a las del contrato.</p>
 							<label class="radio-inline">
-								<input type="radio" name="fechas_iguales" value="1" >Sí
+								<input type="radio" name="fechas_iguales" value="1" {{$checked1}}>Sí
 							</label>
 							<label class="radio-inline">
-								<input type="radio" name="fechas_iguales" value="0" checked>No
+								<input type="radio" name="fechas_iguales" value="0" {{$checked2}}>No
 							</label>
 						</div>						
 						
 						<div class="col-md-6" style="padding: 30px;">
 							
-							<div class="form-group" id="div_fecha_inicio_fuec">
-								<label>Fecha de Inicio FUEC</label>
-								<input onchange="validar_fecha_inicio_fuec()" type="date" class="form-control" name="fecha_inicio_fuec" id="fecha_inicio_fuec" required="required"/>
-							</div>
-							<div class="form-group" id="div_fecha_fin_fuec">
-								<label>Fecha de Terminación FUEC</label>
-								<input onchange="validar_fecha_fin_fuec()" class="form-control" type="date" name="fecha_fin_fuec" id="fecha_fin_fuec" required="required"/>
-							</div>
+							@if( (int)config('contratos_transporte.mostrar_fechas_fuec_en_create_contratos') )
+								<div class="form-group" id="div_fecha_inicio_fuec">
+									<label>Fecha de Inicio FUEC</label>
+									<input onchange="validar_fecha_inicio_fuec()" type="date" class="form-control" name="fecha_inicio_fuec" id="fecha_inicio_fuec" required="required"/>
+								</div>
+								<div class="form-group" id="div_fecha_fin_fuec">
+									<label>Fecha de Terminación FUEC</label>
+									<input onchange="validar_fecha_fin_fuec()" class="form-control" type="date" name="fecha_fin_fuec" id="fecha_fin_fuec" required="required"/>
+								</div>
+							@endif
 
 							<div class="form-group">
 								<label>Nro. de Personas a Movilizar</label>

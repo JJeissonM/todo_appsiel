@@ -16,5 +16,6 @@
   'url_imagen_firma_y_sello_empresa' => 'https://c0.klipartz.com/pngpicture/210/481/gratis-png-facsimil-firma-texto-sello-sello-de-goma.png',
   'permitir_ingreso_contrato_en_mes_distinto_al_actual' => '1',
   'bloquear_ingreso_fecha_final_planilla_en_mes_siguiente' => '1',
+  'mostrar_fechas_fuec_en_create_contratos' => '1',
   'url_id_modelo' => '0',
 ) ;
