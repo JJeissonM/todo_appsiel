@@ -1104,16 +1104,17 @@ $(document).ready(function () {
                 enviar_impresion( doc_encabezado );
                 
                 $("#pedido_id").val(0);
+                $("#uniqid").val( uniqid() );
             },
-            error: function( response, status, jqXHR ) {
+            error: function( response, textStatus, jqXHR ) {
               
               $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
               $("#btn_guardando").attr("id", "btn_guardar_factura");
               $("#btn_guardar_factura").removeAttr("disabled");
 
                 var error_label = 'Pérdida de conexión de INTERNET.';
-                if( status == 'timeout' ) {
-                    error_label = 'Tiempo de espera agotado.';
+                if( response.status == 500 ) { // Internal Server Error
+                    error_label = 'Error 500. Tiempo de espera agotado.';
                 }
 
                 Swal.fire({

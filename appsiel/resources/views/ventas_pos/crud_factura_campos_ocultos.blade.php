@@ -122,5 +122,7 @@ value="{{ (int)config('ventas_pos.tiempo_espera_guardar_factura') }}">
 <input type="hidden" name="formato_impresion_pedidos" id="formato_impresion_pedidos"
 value="{{ config('ventas_pos.formato_impresion_pedidos') }}">
 
+<input type="hidden" name="uniqid" id="uniqid" value="{{ uniqid() }}">
+
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>
