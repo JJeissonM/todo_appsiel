@@ -240,7 +240,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 										</tr>
 										<tr>
 											<td class="border" style="width: 15%; font-weight: bold; font-size: 14px; text-align: center;">RESPONSABLE DEL CONTRATANTE</td>
-											<td class="border" style="width: 40%; font-weight: bold; font-size: 14px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} @endif</td>
+											<td class="border" style="width: 40%; font-weight: bold; font-size: 14px;">@if($c->contratante_id==null || $c->contratante_id=='null') {{$c->contratanteText}} @else {{ $c->contratante->tercero->descripcion }} @endif</td>
 											<td class="border" style="width: 13%; font-weight: bold; font-size: 14px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif @endif</td>
 											<td class="border" style="width: 22%; font-weight: bold; font-size: 14px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->direccion1}} @endif</td>
 											<td class="border" style="width: 10%; font-weight: bold; font-size: 14px;">@if($c->contratante_id==null || $c->contratante_id=='null') @else {{$c->contratante->tercero->telefono1}} @endif</td>

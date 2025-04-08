@@ -9,9 +9,9 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
     <tbody>
         <tr>
             <td class="border" style="width: 20%; font-weight: bold;">RAZÓN SOCIAL</td>
-            <td class="border_center" style="width: 50%; font-size: 12px;">{{$p->razon_social}}</td>
+            <td class="border_center" style="width: 50%; font-size: 12px;">{{ $p->razon_social }}</td>
             <td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} </td>
-            <td class="border_center" style="width: 20%; font-size: 12px;">{{$p->nit}}</td>
+            <td class="border_center" style="width: 20%; font-size: 12px;">{{ $p->nit }}</td>
         </tr>
     </tbody>
 </table>
@@ -30,8 +30,8 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
             <td class="border_center" style="width: 50%; font-size: 12px;">
                 @if($c->contratante_id==null || $c->contratante_id=='null') 
                     {{$c->contratanteText}} 
-                @else 
-                    {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} 
+                @else
+                    {{ $c->contratante->tercero->descripcion }} 
                 @endif
             </td>
             <td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} /CC</td>
@@ -173,7 +173,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
                 @if($c->contratante_id==null || $c->contratante_id=='null') 
                     {{$c->contratanteText}} 
                 @else 
-                    {{$c->contratante->tercero->descripcion." ".$c->contratante->tercero->razon_social}} 
+                    {{ $c->contratante->tercero->descripcion }} 
                 @endif
             </td>
             <td class="border_center" style="width: 13%; font-size: 12px;">

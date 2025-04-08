@@ -64,7 +64,7 @@
                                             @if($contrato->contratante_id==null || $contrato->contratante_id=='null') 
                                                 {{$contrato->contratanteText}} 
                                             @else 
-                                                {{$contrato->contratante->tercero->descripcion." ".$contrato->contratante->tercero->razon_social}} 
+                                                {{$contrato->contratante->tercero->descripcion}} 
                                             @endif
                                         </td>
                                         <td><b>{{ config("configuracion.tipo_identificador") }} /CC </b></td>

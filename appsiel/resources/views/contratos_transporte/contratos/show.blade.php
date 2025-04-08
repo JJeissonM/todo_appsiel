@@ -45,7 +45,12 @@
 											<td class="border" style="width: 68%; text-align: center;">
 												<div class="col-md-8" style="border-right: 1px solid; font-size: 24px; line-height: 0.9em;">
 													<p style="font-weight: bold; color: #000;">{{$e->descripcion}}</p>
-													<p style="font-weight: bold; color: #000;">{{$e->razon_social}}</p>
+													@if( $e->descripcion != $e->razon_social )
+														
+														<p style="font-weight: bold; color: #000;">{{$e->razon_social}}</p>
+														
+													@endif
+													
 													<p style="font-size: 20px; font-weight: bold; color: #000;">{{ config("configuracion.tipo_identificador") }} : {{$e->numero_identificacion."-".$e->digito_verificacion}}</p>
 												</div>
 												<div class="col-md-4" style="text-align: left;">

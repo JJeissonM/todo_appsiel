@@ -49,7 +49,7 @@ class Vehiculo extends Model
                 'cte_vehiculos.marca AS campo4',
                 'cte_vehiculos.clase AS campo5',
                 'cte_vehiculos.modelo AS campo6',
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo7'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS campo7'),
                 'cte_vehiculos.bloqueado_cuatro_contratos AS campo8',
                 'cte_vehiculos.id AS campo9'
             )->where("cte_vehiculos.int", "LIKE", "%$search%")
@@ -58,7 +58,7 @@ class Vehiculo extends Model
             ->orWhere("cte_vehiculos.clase", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.marca", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.modelo", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion)'), "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.bloqueado_cuatro_contratos", "LIKE", "%$search%")
             ->orderBy('cte_vehiculos.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -76,7 +76,7 @@ class Vehiculo extends Model
                 'cte_vehiculos.marca AS MARCA',
                 'cte_vehiculos.clase AS CLASE',
                 'cte_vehiculos.modelo AS MODELO',
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROPIETARIO'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS PROPIETARIO'),
                 'cte_vehiculos.bloqueado_cuatro_contratos AS BLOQUEADO_4_CONTRATOS'
             )->where("cte_vehiculos.int", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.numero_vin", "LIKE", "%$search%")
@@ -84,7 +84,7 @@ class Vehiculo extends Model
             ->orWhere("cte_vehiculos.clase", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.marca", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.modelo", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere(DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion)'), "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.bloqueado_cuatro_contratos", "LIKE", "%$search%")
             ->orderBy('cte_vehiculos.created_at', 'DESC')
             ->toSql();

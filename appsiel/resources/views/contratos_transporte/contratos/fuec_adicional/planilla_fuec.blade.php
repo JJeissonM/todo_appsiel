@@ -31,7 +31,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
                 @if($fuec_adicional->contrato->contratante_id==null || $fuec_adicional->contrato->contratante_id=='null') 
                     {{$fuec_adicional->contrato->contratanteText}} 
                 @else 
-                    {{$fuec_adicional->contrato->contratante->tercero->descripcion." ".$fuec_adicional->contrato->contratante->tercero->razon_social}} 
+                    {{$fuec_adicional->contrato->contratante->tercero->descripcion}} 
                 @endif
             </td>
             <td class="border" style="width: 10%; font-weight: bold;">{{ config("configuracion.tipo_identificador") }} /CC</td>
@@ -177,7 +177,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
                 @if($fuec_adicional->contrato->contratante_id==null || $fuec_adicional->contrato->contratante_id=='null') 
                     {{$fuec_adicional->contrato->contratanteText}} 
                 @else 
-                    {{$fuec_adicional->contrato->contratante->tercero->descripcion." ".$fuec_adicional->contrato->contratante->tercero->razon_social}} 
+                    {{$fuec_adicional->contrato->contratante->tercero->descripcion}} 
                 @endif
             </td>
             <td class="border_center" style="width: 13%; font-size: 12px;">

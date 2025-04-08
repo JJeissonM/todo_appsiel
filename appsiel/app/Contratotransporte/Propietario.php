@@ -39,13 +39,13 @@ class Propietario extends Model
             ->select(
                 'core_tipos_docs_id.abreviatura AS campo1',
                 'core_terceros.numero_identificacion AS campo2',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo3'),
+                'core_terceros.descripcion AS campo3',
                 'cte_propietarios.tipo AS campo4',
                 'cte_propietarios.estado AS campo5',
                 'cte_propietarios.id AS campo6'
             )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
             ->orWhere("cte_propietarios.tipo", "LIKE", "%$search%")
             ->orWhere("cte_propietarios.estado", "LIKE", "%$search%")
             ->orderBy('cte_propietarios.created_at', 'DESC')
@@ -60,12 +60,12 @@ class Propietario extends Model
             ->select(
                 'core_tipos_docs_id.abreviatura AS TIPO_DOCUMENTO',
                 'core_terceros.numero_identificacion AS IDENTIDAD',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROPIETARIO_TENEDOR'),
+                'core_terceros.descripcion AS PROPIETARIO_TENEDOR',
                 'cte_propietarios.tipo AS TIPO',
                 'cte_propietarios.estado AS ESTADO'
             )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
             ->orWhere("cte_propietarios.tipo", "LIKE", "%$search%")
             ->orWhere("cte_propietarios.estado", "LIKE", "%$search%")
             ->orderBy('cte_propietarios.created_at', 'DESC')

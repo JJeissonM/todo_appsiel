@@ -46,9 +46,9 @@ class FuecAdicional extends Model
                 DB::raw('CONCAT("DÍA: ",cte_fuec_adicionales.dia_fuec," - MES: ",cte_fuec_adicionales.mes_fuec) AS campo3'),
                 DB::raw('CONCAT(cte_fuec_adicionales.origen," - ",cte_fuec_adicionales.destino) AS campo4'),
                 DB::raw('CONCAT("INICIO: ",cte_fuec_adicionales.fecha_inicio," - FINAL VIGENCIA: ",cte_fuec_adicionales.fecha_fin) AS campo5'),
-                DB::raw('CONCAT(t1.nombre1," ",t1.otros_nombres," ",t1.apellido1," ",t1.apellido2," ",t1.razon_social) AS campo6'),
+                't1.descripcion AS campo6',
                 DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase) AS campo7'),
-                DB::raw('CONCAT(t2.numero_identificacion," - ",t2.nombre1," ",t2.otros_nombres," ",t2.apellido1," ",t2.apellido2," ",t2.razon_social) AS campo8'),
+                't2.descripcion AS campo8',
                 'cte_fuec_adicionales.estado AS campo9',
                 'cte_fuec_adicionales.id AS campo10'
             )->where("cte_fuec_adicionales.numero_fuec", "LIKE", "%$search%")
@@ -56,9 +56,9 @@ class FuecAdicional extends Model
             ->orWhere(DB::raw("CONCAT('DÍA: ',cte_fuec_adicionales.dia_fuec,' - MES: ',cte_fuec_adicionales.mes_fuec)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(cte_fuec_adicionales.origen,' - ',cte_fuec_adicionales.destino)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT('INICIO: ',cte_fuec_adicionales.fecha_inicio,' - FINAL VIGENCIA: ',cte_fuec_adicionales.fecha_fin)"), "LIKE", "%$search%")
-            ->orWhere(DB::raw("CONCAT(t1.nombre1,' ',t1.otros_nombres,' ',t1.apellido1,' ',t1.apellido2,' ',t1.razon_social)"), "LIKE", "%$search%")
+            ->orWhere('t1.descripcion', "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT('INTERNO: ',cte_vehiculos.int,' - PLACA: ',cte_vehiculos.placa,' - MODELO: ',cte_vehiculos.modelo,' - MARCA: ',cte_vehiculos.marca,' - CLASE: ',cte_vehiculos.clase)"), "LIKE", "%$search%")
-            ->orWhere(DB::raw("CONCAT(t2.numero_identificacion,' - ',t2.nombre1,' ',t2.otros_nombres,' ',t2.apellido1,' ',t2.apellido2,' ',t2.razon_social)"), "LIKE", "%$search%")
+            ->orWhere('t2.descripcion', "LIKE", "%$search%")
             ->orWhere("cte_fuec_adicionales.estado", "LIKE", "%$search%")
             ->orderBy('cte_fuec_adicionales.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -90,18 +90,18 @@ class FuecAdicional extends Model
                 DB::raw('CONCAT("DÍA: ",cte_fuec_adicionales.dia_fuec," - MES: ",cte_fuec_adicionales.mes_fuec) AS FECHA'),
                 DB::raw('CONCAT(cte_fuec_adicionales.origen," - ",cte_fuec_adicionales.destino) AS ORIGEN_DESTINO'),
                 DB::raw('CONCAT("INICIO: ",cte_fuec_adicionales.fecha_inicio," - FINAL VIGENCIA: ",cte_fuec_adicionales.fecha_fin) AS VIGENCIA'),
-                DB::raw('CONCAT(t1.nombre1," ",t1.otros_nombres," ",t1.apellido1," ",t1.apellido2," ",t1.razon_social) AS CONTRATANTE'),
+                't1.descripcion AS CONTRATANTE',
                 DB::raw('CONCAT("INTERNO: ",cte_vehiculos.int," - PLACA: ",cte_vehiculos.placa," - MODELO: ",cte_vehiculos.modelo," - MARCA: ",cte_vehiculos.marca," - CLASE: ",cte_vehiculos.clase) AS VEHÍCULO'),
-                DB::raw('CONCAT(t2.numero_identificacion," - ",t2.nombre1," ",t2.otros_nombres," ",t2.apellido1," ",t2.apellido2," ",t2.razon_social) AS PROPIETARIO'),
+                't2.descripcion AS PROPIETARIO',
                 'cte_fuec_adicionales.estado AS ESTADO'
             )->where("cte_fuec_adicionales.numero_fuec", "LIKE", "%$search%")
             ->orWhere("cte_fuec_adicionales.objeto", "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT('DÍA: ',cte_fuec_adicionales.dia_fuec,' - MES: ',cte_fuec_adicionales.mes_fuec)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(cte_fuec_adicionales.origen,' - ',cte_fuec_adicionales.destino)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT('INICIO: ',cte_fuec_adicionales.fecha_inicio,' - FINAL VIGENCIA: ',cte_fuec_adicionales.fecha_fin)"), "LIKE", "%$search%")
-            ->orWhere(DB::raw("CONCAT(t1.nombre1,' ',t1.otros_nombres,' ',t1.apellido1,' ',t1.apellido2,' ',t1.razon_social)"), "LIKE", "%$search%")
+            ->orWhere('t1.descripcion', "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT('INTERNO: ',cte_vehiculos.int,' - PLACA: ',cte_vehiculos.placa,' - MODELO: ',cte_vehiculos.modelo,' - MARCA: ',cte_vehiculos.marca,' - CLASE: ',cte_vehiculos.clase)"), "LIKE", "%$search%")
-            ->orWhere(DB::raw("CONCAT(t2.numero_identificacion,' - ',t2.nombre1,' ',t2.otros_nombres,' ',t2.apellido1,' ',t2.apellido2,' ',t2.razon_social)"), "LIKE", "%$search%")
+            ->orWhere('t2.descripcion', "LIKE", "%$search%")
             ->orWhere("cte_fuec_adicionales.estado", "LIKE", "%$search%")
             ->orderBy('cte_fuec_adicionales.created_at', 'DESC')
             ->toSql();

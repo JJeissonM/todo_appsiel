@@ -2,12 +2,8 @@
 
 namespace App\Contratotransporte;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
-use Auth;
-
-use App\Contratotransporte\Propietario;
 
 class VehiculoPropietario extends Vehiculo
 {
@@ -39,7 +35,7 @@ class VehiculoPropietario extends Vehiculo
                 'cte_vehiculos.marca AS campo4',
                 'cte_vehiculos.clase AS campo5',
                 'cte_vehiculos.modelo AS campo6',
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo7'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS campo7'),
                 'cte_vehiculos.bloqueado_cuatro_contratos AS campo8',
                 'cte_vehiculos.id AS campo9'
             )
@@ -59,7 +55,7 @@ class VehiculoPropietario extends Vehiculo
                 'cte_vehiculos.marca AS MARCA',
                 'cte_vehiculos.clase AS CLASE',
                 'cte_vehiculos.modelo AS MODELO',
-                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS PROPIETARIO'),
+                DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS PROPIETARIO'),
                 'cte_vehiculos.bloqueado_cuatro_contratos AS BLOQUEADO_4_CONTRATOS'
             )
             ->orderBy('cte_vehiculos.created_at', 'DESC')

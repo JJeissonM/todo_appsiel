@@ -25,7 +25,7 @@ class Documentosconductor extends Model
                 'cte_documentosconductors.vigencia_inicio AS campo4',
                 'cte_documentosconductors.vigencia_fin AS campo5',
                 'core_terceros.numero_identificacion AS campo6',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS campo7'),
+                'core_terceros.descripcion AS campo7',
                 'cte_documentosconductors.id AS campo8'
             )->where("cte_documentosconductors.nro_documento", "LIKE", "%$search%")
             ->orWhere("cte_documentosconductors.documento", "LIKE", "%$search%")
@@ -33,7 +33,7 @@ class Documentosconductor extends Model
             ->orWhere("cte_documentosconductors.vigencia_inicio", "LIKE", "%$search%")
             ->orWhere("cte_documentosconductors.vigencia_fin", "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
             ->orderBy('cte_documentosconductors.created_at', 'DESC')
             ->paginate($nro_registros);
     }
@@ -49,14 +49,14 @@ class Documentosconductor extends Model
                 'cte_documentosconductors.vigencia_inicio AS VIGENCIA_INICIO',
                 'cte_documentosconductors.vigencia_fin AS VIGENCIA_FIN',
                 'core_terceros.numero_identificacion AS IDENTIFICACIÓN',
-                DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social) AS CONDUCTOR')
+                'core_terceros.descripcion AS CONDUCTOR'
             )->where("cte_documentosconductors.nro_documento", "LIKE", "%$search%")
             ->orWhere("cte_documentosconductors.documento", "LIKE", "%$search%")
             ->orWhere("cte_documentosconductors.categoria", "LIKE", "%$search%")
             ->orWhere("cte_documentosconductors.vigencia_inicio", "LIKE", "%$search%")
             ->orWhere("cte_documentosconductors.vigencia_fin", "LIKE", "%$search%")
             ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.razon_social)'), "LIKE", "%$search%")
+            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
             ->orderBy('cte_documentosconductors.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);

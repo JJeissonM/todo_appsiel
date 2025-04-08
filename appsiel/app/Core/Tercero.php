@@ -266,10 +266,7 @@ class Tercero extends Model
 
         if ((int)config('contabilidad.crear_cliente_y_proveedor_al_crear_tercero')) {
             (new TerceroService())->crear_tercero_como_cliente_y_proveedor($registro->id);
-        }
-
-
-        
+        }        
     }
 
     public static function get_campos_adicionales_edit($lista_campos, $registro)

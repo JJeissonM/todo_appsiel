@@ -167,7 +167,7 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 						<tbody>
 							<tr>
 								<td style="width: 25%; border: 1px solid; padding-left: 5px; font-weight: bold;">NOMBRE/APELLIDO</td>
-								<td style="width: 75%; border: 1px solid; padding-left: 5px;">@if($contratante!=null) {{$contratante->tercero->descripcion." ".$contratante->razon_social}} @else {{$c->contratanteText}} @endif</td>
+								<td style="width: 75%; border: 1px solid; padding-left: 5px;">@if($contratante!=null) {{ $contratante->tercero->descripcion }} @else {{$c->contratanteText}} @endif</td>
 							</tr>
 							<tr>
 								<td style="width: 25%; border: 1px solid; padding-left: 5px; font-weight: bold;">IDENTIFICACIÓN</td>
