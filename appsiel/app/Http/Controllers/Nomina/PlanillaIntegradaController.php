@@ -404,7 +404,7 @@ class PlanillaIntegradaController extends Controller
         $ing = ' ';
         $vsp = ' ';
         $fecha_de_ingreso = '          ';
-        if ( $empleado->fecha_ingreso > $this->fecha_inicial )
+        if ( $empleado->fecha_ingreso >= $this->fecha_inicial )
         {
             $ing = 'X';
             $vsp = 'X';
@@ -811,7 +811,9 @@ class PlanillaIntegradaController extends Controller
 
         $codigo_entidad_pension = $this->formatear_campo( $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
         $porcentaje_pension = 16 / 100;
-        if ( $empleado->es_pasante_sena )
+
+        // 32. Cotizante miembro de la carrera diplomática o consular de un país extranjero o funcionario de organismo multilateral
+        if ( $empleado->es_pasante_sena || $empleado->tipo_cotizante == 32 )
         {
             $porcentaje_pension = '0.0';
             $codigo_entidad_pension = '      ';
@@ -1266,12 +1268,6 @@ class PlanillaIntegradaController extends Controller
 
     public function get_tipo_cotizante( $empleado )
     {
-        /*$tipo_cotizante = '01';
-        if ( $empleado->es_pasante_sena)
-        {
-            $tipo_cotizante = '19';
-        }*/
-
         return $empleado->tipo_cotizante;
     }
 

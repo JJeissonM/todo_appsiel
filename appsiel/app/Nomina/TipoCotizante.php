@@ -7,7 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class TipoCotizante extends Model
 {
     protected $table = 'nom_pila_tipos_cotizantes';
+
+    /**
+     * El tipo de cotizante permitido corresponderá a: “1-Dependiente”, “2- Servicio Doméstico”, “18- Funcionarios Públicos sin tope máximo de IBC”, “19. Aprendices en etapa productiva”; “20. Estudiantes (Régimen Especial Ley 789 de 2002)”, “21. Estudiantes de posgrado en salud”, “22. Profesor de establecimiento particular”, “30. Dependiente entidades o universidades públicas de los regímenes Especial y de Excepción”, “31 Cooperados o precooperativas de trabajo asociado” “32. Cotizante miembro de la carrera diplomática o consular de un país extranjero o funcionario de organismo multilateral”, “51. Trabajador de tiempo parcial” y “55 - afiliado participe- dependiente”      */
     protected $fillable = ['codigo', 'descripcion', 'estado'];
+    
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Descripción', 'Estado'];
     public static function consultar_registros($nro_registros, $search)
     {

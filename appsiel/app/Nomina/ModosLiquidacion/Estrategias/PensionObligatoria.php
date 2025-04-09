@@ -12,7 +12,7 @@ class PensionObligatoria implements Estrategia
 	{
 
         // Para empleados con tipo contrato labor_contratada o pasantes SENA
-        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' || $liquidacion['empleado']->es_pasante_sena )
+        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' || $liquidacion['empleado']->es_pasante_sena || $liquidacion['empleado']->tipo_cotizante == 32)
         {
             return [ 
                         [

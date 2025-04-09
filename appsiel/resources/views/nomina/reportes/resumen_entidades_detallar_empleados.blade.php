@@ -33,13 +33,13 @@
 			<tr>
 				<td>
 					<div class="accordion"> Entidades de salud </div>
-					@include('nomina.reportes.tabla_resumen_entidades_detallar_empleados',['movimiento' => $coleccion_movimientos_salud])
+					@include('nomina.reportes.tabla_resumen_entidades_detallar_empleados',['movimiento' => $coleccion_movimientos_salud, 'gran_total' => $total_salud, 'label' => 'TOTAL SALUD'])
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<div class="accordion"> Entidades de pensión </div>
-					@include('nomina.reportes.tabla_resumen_entidades_detallar_empleados',['movimiento' => $coleccion_movimientos_afp])
+					@include('nomina.reportes.tabla_resumen_entidades_detallar_empleados',['movimiento' => $coleccion_movimientos_afp, 'gran_total' => $total_pension, 'label' => 'TOTAL PENSION'])
 				</td>
 			</tr>
 		</tbody>

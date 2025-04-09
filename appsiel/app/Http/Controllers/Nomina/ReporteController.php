@@ -36,7 +36,6 @@ use App\Nomina\Services\Pila\ParafiscalService;
 
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvProducto;
-use App\Nomina\Empleado;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -191,6 +190,9 @@ class ReporteController extends Controller
         return 'Se envío el desprendible a cada empleado con email registrado. Total envíos: ' . $enviados;
     }
 
+    /**
+     * 
+     */
     public function enviar_por_email_un_desprendible_de_pago($doc_encabezado_id, $empleado_id)
     {
         $documento = NomDocEncabezado::find( $doc_encabezado_id );
@@ -200,6 +202,9 @@ class ReporteController extends Controller
         return $this->enviar_email_desprendible_un_empleado($documento, $empleado);
     }
 
+    /**
+     * 
+     */
     public function enviar_email_desprendible_un_empleado($documento, $empleado)
     {
         $enviado = 'false-';
@@ -223,6 +228,9 @@ class ReporteController extends Controller
         return $enviado . $empleado->tercero->descripcion;
     }
 
+    /**
+     * 
+     */
     public function listado_acumulados(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -269,6 +277,9 @@ class ReporteController extends Controller
         return $vista;
     }
 
+    /**
+     * 
+     */
     public function libro_fiscal_vacaciones(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -287,6 +298,9 @@ class ReporteController extends Controller
         return $vista;
     }
 
+    /**
+     * 
+     */
     public function resumen_x_entidad_empleado(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
@@ -298,7 +312,11 @@ class ReporteController extends Controller
         $entidades_afp = NomEntidad::where('tipo_entidad','AFP')->get()->pluck('id')->toArray();
         $movimientos_entidades_afp = NomDocRegistro::movimientos_entidades_afp( $fecha_desde, $fecha_hasta, $entidades_afp);
 
-        $gran_total = $movimientos_entidades_salud->sum('valor_deduccion') + $movimientos_entidades_afp->sum('valor_deduccion');
+        $total_salud = $movimientos_entidades_salud->sum('valor_deduccion');
+
+        $total_pension =  $movimientos_entidades_afp->sum('valor_deduccion');
+
+        $gran_total = $total_salud + $total_pension;
 
         switch ( $request->tipo_reporte )
         {
@@ -310,18 +328,18 @@ class ReporteController extends Controller
                     $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id')->toArray();
                     $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades( $entidades_con_movimiento );
 
-                    $view = View::make('nomina.reportes.resumen_entidades', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
+                    $view = View::make('nomina.reportes.resumen_entidades', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta', 'total_salud', 'total_pension', 'gran_total') )->render();
                 break;
 
             case 'detallar_empleados':
 
-                    $entidades_con_movimiento = $movimientos_entidades_salud->groupBy('entidad_salud_id');                
+                    $entidades_con_movimiento = $movimientos_entidades_salud->groupBy('entidad_salud_id');
                     $coleccion_movimientos_salud = $this->crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento );
 
                     $entidades_con_movimiento = $movimientos_entidades_afp->groupBy('entidad_pension_id');
                     $coleccion_movimientos_afp = $this->crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento );
                     
-                    $view = View::make('nomina.reportes.resumen_entidades_detallar_empleados', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta','gran_total') )->render();
+                    $view = View::make('nomina.reportes.resumen_entidades_detallar_empleados', compact( 'coleccion_movimientos_salud', 'coleccion_movimientos_afp', 'fecha_desde', 'fecha_hasta', 'total_salud', 'total_pension', 'gran_total') )->render();
                 break;
 
             default:
@@ -338,6 +356,9 @@ class ReporteController extends Controller
         return $view;
     }
 
+    /**
+     * 
+     */
     public function crear_coleccion_movimientos_entidades( $entidades_con_movimiento )
     {
         $movimientos = collect([]);
@@ -365,6 +386,9 @@ class ReporteController extends Controller
         return $sorted->values()->all();
     }
 
+    /**
+     * 
+     */
     public function crear_coleccion_movimientos_entidades_terceros( $entidades_con_movimiento )
     {
         $movimientos = collect([]);
@@ -407,6 +431,9 @@ class ReporteController extends Controller
         return $sorted->values()->all();
     }
 
+    /**
+     * 
+     */
     public function calcular_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final, $nom_agrupacion_id )
     {
         $conceptos_de_la_agrupacion = AgrupacionConcepto::find( $nom_agrupacion_id )->conceptos;
@@ -438,7 +465,7 @@ class ReporteController extends Controller
 
         $pila_service = new SaludService();
         $coleccion_movimientos_salud = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
-
+        
         $pila_service = new PensionService();
         $coleccion_movimientos_pension = $pila_service->get_total_cotizacion_por_entidad( $fecha_final_mes );
 
