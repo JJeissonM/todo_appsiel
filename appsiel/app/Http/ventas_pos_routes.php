@@ -12,6 +12,8 @@ Route::get('pos_factura_imprimir/{doc_encabezado_id}', 'VentasPos\FacturaPosCont
 
 Route::get('pos_hacer_desarme_automatico/{pdv_id}/{fecha}', 'VentasPos\FacturaPosController@hacer_desarme_automatico');
 
+Route::get('pos_get_doc_encabezado_por_uniqid/{uniqid}', 'VentasPos\FacturaPosController@get_doc_encabezado_por_uniqid');
+
 // Anular factura que no esté acumulada
 Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_pos');
 

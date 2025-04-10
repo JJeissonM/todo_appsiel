@@ -7,7 +7,8 @@ var productos,
   cliente_default,
   forma_pago_default,
   fecha_vencimiento_default,
-  inv_producto_id;
+  inv_producto_id,
+  doc_encabezado;
 
 $("#btn_nuevo").hide();
 $("#btnPaula").hide();
@@ -1094,17 +1095,7 @@ $(document).ready(function () {
             type: 'POST',
             timeout: tiempo_espera_guardar_factura,
             success: function( doc_encabezado, status, jqXHR ) {
-                $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-                $("#btn_guardando").attr("id", "btn_guardar_factura");
-          
-                $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
-                
-                llenar_tabla_productos_facturados();
-          
-                enviar_impresion( doc_encabezado );
-                
-                $("#pedido_id").val(0);
-                $("#uniqid").val( uniqid() );
+              finalizar_almacenamiento_factura( doc_encabezado );
             },
             error: function( response, textStatus, jqXHR ) {
               
@@ -1112,21 +1103,59 @@ $(document).ready(function () {
               $("#btn_guardando").attr("id", "btn_guardar_factura");
               $("#btn_guardar_factura").removeAttr("disabled");
 
-                var error_label = 'Pérdida de conexión de INTERNET.';
-                if( response.status == 500 ) { // Internal Server Error
-                    error_label = 'Error 500. Tiempo de espera agotado.';
-                }
+              var error_label = 'Pérdida de conexión de INTERNET.';
+              if( response.status == 500 ) { // Internal Server Error
 
+                  var url = url_raiz + "/" + "pos_get_doc_encabezado_por_uniqid" + "/" + $("#uniqid").val();
+
+                  $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function( doc_encabezado, status, jqXHR ) {
+                      if ( doc_encabezado == 'null') {
+                        var error_label = 'Error 500. Tiempo de espera agotado.';
+                        Swal.fire({
+                          icon: 'error',
+                          title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                          text: error_label 
+                        });
+                      }else{
+                        finalizar_almacenamiento_factura( doc_encabezado );
+                      }
+                      
+                    },
+
+                  });
+
+              }else{
                 Swal.fire({
-                    icon: 'error',
-                    title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                    text: error_label 
+                  icon: 'error',
+                  title: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                  text: error_label 
                 }); // + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+              }
             }
         });
 
     },1000);
   });
+
+  function finalizar_almacenamiento_factura( doc_encabezado )
+  {
+    $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+    $("#btn_guardando").attr("id", "btn_guardar_factura");
+
+    $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
+    
+    llenar_tabla_productos_facturados();
+
+    enviar_impresion( doc_encabezado );
+    
+    $("#pedido_id").val(0);
+    $("#uniqid").val( uniqid() );
+
+    return false;
+  }
 
   // Lupa
   $("#btn_listar_items").click(function (event) {

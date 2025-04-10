@@ -243,7 +243,19 @@ class FacturaPosController extends TransaccionController
         }
 
         return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
-    }    
+    }  
+    
+    
+    public function get_doc_encabezado_por_uniqid( $uniqid )
+    {
+        $doc_encabezado = FacturaPos::where('uniqid', $uniqid)->get()->first();
+
+        if ( $doc_encabezado == null ) {
+            return 'null';
+        }
+        
+        return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
+    }
 
     public function build_json_doc_encabezado($doc_encabezado)
     {
