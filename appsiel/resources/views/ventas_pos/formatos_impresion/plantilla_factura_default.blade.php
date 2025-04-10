@@ -66,11 +66,7 @@
                     <div class="lbl_consecutivo_doc_encabezado" style="display: inline;">{{$datos_factura->lbl_consecutivo_doc_encabezado}}</div>
                 </td>
                 <td>
-                    <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;">{{$datos_factura->lbl_fecha}}</div> 
-                    @if($datos_factura->lbl_hora != '')
-                    / 
-                    <b>Hora:</b> <div id="lbl_hora" style="display: inline;">{{$datos_factura->lbl_hora}}</div>
-                    @endif
+                    <b>Fecha:</b> <div id="lbl_fecha" style="display: inline;">{{$datos_factura->lbl_fecha}}</div>&nbsp;<div id="lbl_hora" style="display: inline;">{{$datos_factura->lbl_hora}}</div>
                 </td>
             </tr>
 

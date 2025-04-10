@@ -260,7 +260,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
     $("#tr_total_cambio").hide();
   }
 
-  $("#lbl_fecha").text($("#fecha").val());
+  $("#lbl_fecha").text($("#fecha").val() );
   var d = new Date();
   $("#lbl_hora").text(
     addZero(get_hora(d.getHours())) +
