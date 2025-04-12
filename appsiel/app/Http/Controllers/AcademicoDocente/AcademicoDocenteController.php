@@ -178,6 +178,9 @@ class AcademicoDocenteController extends Controller
             $url_eliminar = 'academico_docente/eliminar_logros/' . $curso_id . '/' . $asignatura_id . '/id_fila' . $variables_url;
         }
 
+        if ($modelo->id == 225) {
+            $url_eliminar = 'web_eliminar/id_fila' . $variables_url;
+        }
 
         return view('layouts.index', compact('registros', 'curso', 'asignatura', 'nro_registros', 'id_app', 'id_modelo', 'search', 'sqlString', 'source', 'tituloExport', 'miga_pan', 'url_crear', 'titulo_tabla', 'encabezado_tabla', 'url_edit', 'url_print', 'url_ver', 'url_estado', 'url_eliminar'));
     }

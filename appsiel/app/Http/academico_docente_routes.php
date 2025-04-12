@@ -36,6 +36,23 @@ Route::get('academico_docente/calificar/{curso_id}/{asignatura_id}/{ruta}','Acad
 Route::post('academico_docente/calificar2', 'AcademicoDocente\AcademicoDocenteController@calificar2'); 
 Route::get('academico_docente/revisar_calificaciones/curso_id/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@revisar_calificaciones');
 
+
+
+
+
+//Selección de datos para calificar
+Route::get('academico_docente/calificar_desempenios/{curso_id}/{asignatura_id}/{ruta}','AcademicoDocente\CalificacionDesempeniosController@calificar_desempenios1');
+
+
+Route::post('academico_docente/calificar_desempenios/calificar2', 'Calificaciones\CalificacionController@calificar2');
+
+
+//Formulario de calificar_desempenios
+Route::post('academico_docente/calificar_desempenios2', 'AcademicoDocente\CalificacionDesempeniosController@calificar_desempenios2'); 
+Route::get('academico_docente/revisar_calificaciones/curso_id/{curso_id}/{asignatura_id}','AcademicoDocente\CalificacionDesempeniosController@revisar_calificaciones');
+
+
+
 // NOTAS DE NIVELACIONES
 Route::get('sga_ingresar_notas_nivelaciones/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@ingresar_notas_nivelaciones');
 Route::post('sga_notas_nivelaciones_cargar_estudiante', 'AcademicoDocente\AcademicoDocenteController@notas_nivelaciones_cargar_estudiante'); 

@@ -353,15 +353,10 @@
 			var url = "{{url('')}}/academico_docente/calificar_desempenios/";
 			if (elementos.length == 1) {
 
-				Swal.fire({
-					icon: 'error',
-					title: 'Alerta!',
-					text: 'Funcionalidad en desarrollo',
-				});
 				//procesar uno
-				//var curso_asignatura = elementos[0].split(';');
-				//url = url + curso_asignatura[0] + "/" + curso_asignatura[1] + "/{{rand(0, 1000)}}?id={{Input::get('id')}}";
-				//location.href = url;
+				var curso_asignatura = elementos[0].split(';');
+				url = url + curso_asignatura[0] + "/" + curso_asignatura[1] + "/{{rand(0, 1000)}}?id={{Input::get('id')}}";
+				location.href = url;
 			} else {
 				mensaje('Alerta!', 'Solo puede procesar un curso a la vez', 'warning');
 			}
