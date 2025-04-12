@@ -111,7 +111,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$manejar_calificaciones_por_niveles_de_desempenios = 'No';
+								if( isset($parametros['manejar_calificaciones_por_niveles_de_desempenios'] ) )
+								{
+									$manejar_calificaciones_por_niveles_de_desempenios = $parametros['manejar_calificaciones_por_niveles_de_desempenios'];
+								}
+							?>
+							{{ Form::bsSelect('manejar_calificaciones_por_niveles_de_desempenios', $manejar_calificaciones_por_niveles_de_desempenios, 'Manejar calificaciones por niveles desempenios (Usar Logros adicionales y Escala de Valoración)', [''=>'','Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

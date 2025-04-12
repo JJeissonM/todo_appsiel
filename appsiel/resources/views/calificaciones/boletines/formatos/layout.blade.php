@@ -13,10 +13,11 @@
         body{
             font-family: Arial, Helvetica, sans-serif;
             font-size: {{$tam_letra}}mm;
+			margin: 3px 3px 3px 3px;
             /*margin: {{$margenes->superior}}px {{$margenes->derecho}}px {{$margenes->inferior}}px {{$margenes->izquierdo}}px;*/
         }
 
-        @page{ margin: 30px 15px 15px 15px !important; }
+        @page{ margin: 2px 2px 2px 2px !important; }
         
         .page-break {
             page-break-after: always;

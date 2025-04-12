@@ -60,7 +60,7 @@
                 @include('calificaciones.boletines.fila_area')
 
                 <tr>
-                    <td style="width:{{$ancho_columna_asignatura}}px; padding: 5;">
+                    <td style="width:{{$ancho_columna_asignatura}}px; padding: 2;">
                         <b>{{ $linea->asignatura_descripcion }} </b>
                     </td>
 

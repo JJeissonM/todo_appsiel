@@ -655,6 +655,7 @@ class BoletinController extends Controller
 
             $a = 0;
             $cuerpo_boletin = (object)[];
+            
             foreach ($asignaturas_asignadas as $asignacion)
             {
                 $cuerpo_boletin->lineas[$a] = (object)[];
@@ -666,6 +667,8 @@ class BoletinController extends Controller
                 $cuerpo_boletin->lineas[$a]->area = $asignacion->asignatura->area;
                 $cuerpo_boletin->lineas[$a]->area_descripcion = $asignacion->asignatura->area->descripcion;
                 $cuerpo_boletin->lineas[$a]->area_id = $asignacion->asignatura->area->id;
+
+                
 
                 $cuerpo_boletin->lineas[$a]->calificaciones_todos_los_periodos_asignatura_estudiante = [];
                 if ($mostrar_notas_periodos_anteriores) {

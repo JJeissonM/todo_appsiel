@@ -105,8 +105,15 @@
 								<div class="collapse" id="collapse_calificaciones">
 									<div class="well">
 										<ul style="list-style: none;">
-											<li><a style="cursor: pointer;" onclick="calificacionesCrear()" title="Ingresar Calificaciones"><i class="fa fa-list-ol"></i> Ingresar Calificaciones</a></li>
-											<li><a style="cursor: pointer;" onclick="calificacionesConsultar()" title="Consultar Calificaciones"><i class="fa fa-search"></i> Consultar Calificaciones</a></li>
+
+											@if( config('calificaciones.manejar_calificaciones_por_niveles_de_desempenios') == 'Si' )
+												<li><a style="cursor: pointer;" onclick="calificacionesCrear_desempenios()" title="Ingresar Calificaciones"><i class="fa fa-list-ol"></i> Ingresar Calificaciones</a></li>
+											@else
+												<li><a style="cursor: pointer;" onclick="calificacionesCrear()" title="Ingresar Calificaciones"><i class="fa fa-list-ol"></i> Ingresar Calificaciones</a></li>
+												<li><a style="cursor: pointer;" onclick="calificacionesConsultar()" title="Consultar Calificaciones"><i class="fa fa-search"></i> Consultar Calificaciones</a></li>
+											@endif
+
+
 											@if( config('calificaciones.manejar_preinformes_academicos') == 'Si' )
 											<li><a style="cursor: pointer;" onclick="preinformeCrear()" title="Ingresar Pre-Informe"><i class="fa fa-file-pdf-o"></i> Ingresar Pre-Informe</a></li>
 											<li><a style="cursor: pointer;" onclick="preinformeConsultar()" title="Consultar Pre-Informe"><i class="fa fa-search"></i> Consultar Pre-Informe</a></li>
@@ -124,10 +131,18 @@
 								<div class="collapse" id="collapse_logros">
 									<div class="well">
 										<ul style="list-style: none;">
-											<li><a style="cursor: pointer;" onclick="logrosCrear()" title="Crear Logros"><i class="fa fa-bookmark-o"></i> Crear Logros</a></li>
-											<li><a style="cursor: pointer;" onclick="logrosConsultar()" title="Consultar Logros"><i class="fa fa-search"></i> Consultar Logros</a></li>
-											<li><a style="cursor: pointer;" onclick="logrosAdicionalesCrear()" title="Crear Logros Adicionales"><i class="fa fa-tag"></i> Crear Logros Adicionales</a></li>
-											<li><a style="cursor: pointer;" onclick="logrosAdicionalesConsultar()" title="Consultar Logros Adicionales"><i class="fa fa-search"></i> Consultar Logros Adicionales</a></li>
+
+											@if( config('calificaciones.manejar_calificaciones_por_niveles_de_desempenios') == 'Si' )
+												<li><a style="cursor: pointer;" onclick="logrosAdicionalesCrear()" title="Crear Logros"><i class="fa fa-tag"></i> Crear Logros</a></li>
+												<li><a style="cursor: pointer;" onclick="logrosAdicionalesConsultar()" title="Consultar Logros"><i class="fa fa-search"></i> Consultar Logros</a></li>
+											@else
+												<li><a style="cursor: pointer;" onclick="logrosCrear()" title="Crear Logros"><i class="fa fa-bookmark-o"></i> Crear Logros</a></li>
+												<li><a style="cursor: pointer;" onclick="logrosConsultar()" title="Consultar Logros"><i class="fa fa-search"></i> Consultar Logros</a></li>
+												<li><a style="cursor: pointer;" onclick="logrosAdicionalesCrear()" title="Crear Logros Adicionales"><i class="fa fa-tag"></i> Crear Logros Adicionales</a></li>
+												<li><a style="cursor: pointer;" onclick="logrosAdicionalesConsultar()" title="Consultar Logros Adicionales"><i class="fa fa-search"></i> Consultar Logros Adicionales</a></li>
+											@endif
+
+												
 										</ul>
 									</div>
 								</div>
@@ -322,6 +337,31 @@
 				var curso_asignatura = elementos[0].split(';');
 				url = url + curso_asignatura[0] + "/" + curso_asignatura[1] + "/{{rand(0, 1000)}}?id={{Input::get('id')}}";
 				location.href = url;
+			} else {
+				mensaje('Alerta!', 'Solo puede procesar un curso a la vez', 'warning');
+			}
+		} else {
+			mensaje('Alerta!', 'Debe seleccionar al menos un registro', 'warning');
+		}
+	}
+
+	
+
+	function calificacionesCrear_desempenios() {
+		let elementos = getElementos();
+		if (elementos.length > 0) {
+			var url = "{{url('')}}/academico_docente/calificar_desempenios/";
+			if (elementos.length == 1) {
+
+				Swal.fire({
+					icon: 'error',
+					title: 'Alerta!',
+					text: 'Funcionalidad en desarrollo',
+				});
+				//procesar uno
+				//var curso_asignatura = elementos[0].split(';');
+				//url = url + curso_asignatura[0] + "/" + curso_asignatura[1] + "/{{rand(0, 1000)}}?id={{Input::get('id')}}";
+				//location.href = url;
 			} else {
 				mensaje('Alerta!', 'Solo puede procesar un curso a la vez', 'warning');
 			}

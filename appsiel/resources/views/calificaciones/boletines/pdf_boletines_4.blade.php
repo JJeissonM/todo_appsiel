@@ -27,8 +27,7 @@
 			@include('calificaciones.boletines.banner_2_con_foto')
 		@endif
 
-		<?php 
-
+		<?php
 			$lineas_cuerpo_boletin = $registro->cuerpo_boletin->lineas;
 
 			$area_anterior = '';
