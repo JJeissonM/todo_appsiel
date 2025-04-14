@@ -50,8 +50,6 @@
 								{	
 									$escala_valoracion_id = $valor_desempenio->escala_valoracion_id;
 								}
-
-								//dd($vec_estudiantes[$k]['matricula_id'], $logro->id, $valor_desempenio,$todas_las_calificaciones);
 							?>
 							<td> 
 								{{ Form::select('escala_valoracion_id[]', $escalas_valoracion, $escala_valoracion_id, [ 'class' => 'select_escala_valoracion']) }}
