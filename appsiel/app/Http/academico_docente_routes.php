@@ -38,13 +38,14 @@ Route::get('academico_docente/revisar_calificaciones/curso_id/{curso_id}/{asigna
 
 
 
-
-
 //Selección de datos para calificar
 Route::get('academico_docente/calificar_desempenios/{curso_id}/{asignatura_id}/{ruta}','AcademicoDocente\CalificacionDesempeniosController@calificar_desempenios1');
 
+Route::post('academico_docente/calificar_desempenios/calificar2', 'AcademicoDocente\CalificacionDesempeniosController@calificar2');
 
-Route::post('academico_docente/calificar_desempenios/calificar2', 'Calificaciones\CalificacionController@calificar2');
+Route::get('academico_docente/almacenar_linea_calificacion_estudiante/{periodo_id}/{curso_id}/{asignatura_id}/{matricula_id}/{logro_id}/{escala_valoracion_id}', 'AcademicoDocente\CalificacionDesempeniosController@almacenar_linea_calificacion_estudiante');
+
+
 
 
 //Formulario de calificar_desempenios

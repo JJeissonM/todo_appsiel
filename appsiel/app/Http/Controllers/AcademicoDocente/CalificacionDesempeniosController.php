@@ -19,6 +19,7 @@ use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Asignatura;
 use App\Calificaciones\Calificacion;
 use App\Calificaciones\CalificacionAuxiliar;
+use App\Calificaciones\CalificacionDesempenio;
 use App\Calificaciones\CursoTieneAsignatura;
 use App\Calificaciones\EncabezadoCalificacion;
 use App\Calificaciones\Periodo;
@@ -183,8 +184,7 @@ class CalificacionDesempeniosController extends Controller
             $i++;
         }
 
-        $escala_min_max = EscalaValoracion::get_min_max($periodo->periodo_lectivo_id);
-
+        $escalas_valoracion = EscalaValoracion::opciones_campo_select();
 
         $pesos_encabezados = EncabezadoCalificacion::where([
             ['periodo_id', '=', $request->id_periodo],
@@ -205,16 +205,31 @@ class CalificacionDesempeniosController extends Controller
             $suma_porcentajes += $peso_encabezado->peso;
         }
 
+        $logros = Logro::where([
+            'periodo_id' => $request->id_periodo,
+            'curso_id' => $request->curso_id,
+            'asignatura_id' => $request->id_asignatura,
+            'escala_valoracion_id' => 0
+        ])->get();
+
+        $todas_las_calificaciones = CalificacionDesempenio::where([
+            'periodo_id' => $request->id_periodo,
+            'curso_id' => $request->curso_id,
+            'asignatura_id' => $request->id_asignatura
+        ])->get();
+
         return view('academico_docente.calificar_desempenios.calificar2', [
             'vec_estudiantes' => $vec_estudiantes,
             'cantidad_estudiantes' => count($estudiantes),
+            'todas_las_calificaciones' => $todas_las_calificaciones,
             'anio' => $anio,
             'curso' => $curso,
             'periodo' => $periodo,
+            'logros' => $logros,
             'periodo_lectivo' => $periodo_lectivo,
             'datos_asignatura' => $datos_asignatura,
             'ruta' => $request->ruta,
-            'escala_min_max' => $escala_min_max,
+            'escalas_valoracion' => $escalas_valoracion,
             'array_pesos' => $array_pesos,
             'hay_pesos' => $hay_pesos,
             'suma_porcentajes' => $suma_porcentajes,
@@ -224,6 +239,66 @@ class CalificacionDesempeniosController extends Controller
         ]);
     }
 
+    public function almacenar_linea_calificacion_estudiante($periodo_id, $curso_id, $asignatura_id, $matricula_id, $logro_id, $escala_valoracion_id)
+    {
+        $calificacion = CalificacionDesempenio::where([
+            'periodo_id' => $periodo_id,
+            'curso_id' => $curso_id,
+            'asignatura_id' => $asignatura_id,
+            'matricula_id' => $matricula_id,
+            'logro_id' => $logro_id
+        ])->get()->first();
+
+        if ((int)$escala_valoracion_id == 0)
+        {
+            if ( $calificacion == null ) {
+                return response()->json([
+                    'icon' => "info",
+                    'title' => "Transacción Exitosa!",
+                    'text' => 'Sin cambios.'
+                ]);
+            }
+
+            $calificacion->delete();
+            return response()->json([
+                'icon' => "warning",
+                'title' => "Transacción Exitosa!",
+                'text' => 'Calificación eliminada.'
+            ]);
+
+        }else{
+
+            if ( $calificacion == null ) {
+
+                $calificacion = CalificacionDesempenio::create([
+                    'periodo_id' => $periodo_id,
+                    'curso_id' => $curso_id,
+                    'asignatura_id' => $asignatura_id,
+                    'matricula_id' => $matricula_id,
+                    'logro_id' => $logro_id,
+                    'escala_valoracion_id' => (int)$escala_valoracion_id,
+                    'creado_por' => Auth::user()->email
+                ]);
+
+                return response()->json([
+                    'icon' => "success",
+                    'title' => "Transacción Exitosa!",
+                    'text' => 'Nueva Calificación almacenada.'
+                ]);
+            }
+
+            $calificacion->escala_valoracion_id = (int)$escala_valoracion_id;
+            $calificacion->modificado_por = Auth::user()->email;
+            $calificacion->save();
+
+        }
+        
+        return response()->json([
+            'icon' => "info",
+            'title' => "Transacción Exitosa!",
+            'text' => 'Calificación actualizada.'
+        ]);
+    }
 
     public function revisar_calificaciones($curso_id, $asignatura_id)
     {
