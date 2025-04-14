@@ -312,6 +312,38 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$etiqueta_observaciones = 'Observaciones'; 
+								if( isset($parametros['etiqueta_observaciones'] ) )
+								{
+									$etiqueta_observaciones = $parametros['etiqueta_observaciones'];
+								}
+							?>
+							{{ Form::bsText('etiqueta_observaciones', $etiqueta_observaciones, 'Etiqueta Observaciones', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<div class="row" style="padding:5px;">
+								<?php
+									$etiqueta_logros = 'Logros'; 
+									if( isset($parametros['etiqueta_logros'] ) )
+									{
+										$etiqueta_logros = $parametros['etiqueta_logros'];
+									}
+								?>
+								{{ Form::bsText('etiqueta_logros', $etiqueta_logros, 'Etiqueta Logros', ['class'=>'form-control']) }}
+							</div>
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto para imprimir boletines  </h4>
 				<hr>
 				<div class="row">

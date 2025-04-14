@@ -100,7 +100,7 @@ class CalificacionDesempeniosController extends Controller
             $vec_estudiantes[$i]['id_estudiante'] = $estudiante->id_estudiante;
             $vec_estudiantes[$i]['nombre'] = $estudiante->nombre_completo; //." ".$estudiante->apellido2." ".$estudiante->nombres;
             $vec_estudiantes[$i]['codigo_matricula'] = $estudiante->codigo;
-            $vec_estudiantes[$i]['matricula_id'] = $estudiante->id;
+            $vec_estudiantes[$i]['matricula_id'] = $estudiante->matricula_id;
             $vec_estudiantes[$i]['id_calificacion'] = "no";
             $vec_estudiantes[$i]['calificacion'] = 0;
             $vec_estudiantes[$i]['logros'] = '';

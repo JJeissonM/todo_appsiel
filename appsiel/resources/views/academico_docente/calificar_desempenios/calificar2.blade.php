@@ -63,7 +63,7 @@
 						<td colspan="3" style="text-align: center; font-size: 12px;">
 							No hay logros registrados en este periodo.
 						</td>
-					</tr>					
+					</tr>
 				@endif
 			</tbody>
 		</table>

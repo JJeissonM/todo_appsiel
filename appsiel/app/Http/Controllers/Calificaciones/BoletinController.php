@@ -25,7 +25,7 @@ use App\Calificaciones\AsistenciaClase;
 use App\AcademicoDocente\CursoTieneDirectorGrupo;
 use App\AcademicoDocente\AsignacionProfesor;
 use App\Calificaciones\CalificacionAuxiliar;
-
+use App\Calificaciones\CalificacionDesempenio;
 use App\Calificaciones\NotaNivelacion;
 use App\Calificaciones\Services\CalificacionesService;
 use App\Core\PasswordReset;
@@ -104,7 +104,18 @@ class BoletinController extends Controller
 
         $observaciones = ObservacionesBoletin::get_observaciones_boletines( $colegio->id, $periodo->id, $request->curso_id);
 
-        return View::make('calificaciones.boletines.revisar2',compact('estudiantes','asignaturas','colegio','periodo','anio','calificaciones','escala_valoracion','observaciones'))->render();
+        $logros = Logro::where([
+            'periodo_id' => $request->id_periodo,
+            'curso_id' => $request->curso_id,
+            'escala_valoracion_id' => 0
+        ])->get();
+
+        $todas_las_calificaciones = CalificacionDesempenio::where([
+            'periodo_id' => $request->id_periodo,
+            'curso_id' => $request->curso_id
+        ])->get();
+
+        return View::make('calificaciones.boletines.revisar2',compact('estudiantes','asignaturas','colegio','periodo','anio','calificaciones','escala_valoracion','observaciones', 'logros', 'todas_las_calificaciones'))->render();
 		
     }
     

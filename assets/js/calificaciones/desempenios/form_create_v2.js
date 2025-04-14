@@ -19,7 +19,7 @@ function getChildVar(a_value) {
 }
 
 $(document).ready(function () {
-    checkCookie();
+    //checkCookie();
 
     guardando = false;
 
