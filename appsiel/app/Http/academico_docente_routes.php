@@ -46,12 +46,8 @@ Route::post('academico_docente/calificar_desempenios/calificar2', 'AcademicoDoce
 Route::get('academico_docente/almacenar_linea_calificacion_estudiante/{periodo_id}/{curso_id}/{asignatura_id}/{matricula_id}/{logro_id}/{escala_valoracion_id}', 'AcademicoDocente\CalificacionDesempeniosController@almacenar_linea_calificacion_estudiante');
 
 
-
-
 //Formulario de calificar_desempenios
-Route::post('academico_docente/calificar_desempenios2', 'AcademicoDocente\CalificacionDesempeniosController@calificar_desempenios2'); 
-Route::get('academico_docente/revisar_calificaciones/curso_id/{curso_id}/{asignatura_id}','AcademicoDocente\CalificacionDesempeniosController@revisar_calificaciones');
-
+Route::post('academico_docente/calificar_desempenios2', 'AcademicoDocente\CalificacionDesempeniosController@calificar_desempenios2');
 
 
 // NOTAS DE NIVELACIONES
