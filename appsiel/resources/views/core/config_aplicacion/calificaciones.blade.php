@@ -210,7 +210,8 @@
 												'pdf_boletines_4' => 'Formato # 4 (resúmen)',
 												'pdf_boletines_6' => 'Formato # 5 (marca de agua)',
 												'pdf_boletines_7' => 'Formato # 6 (Calificaciones Aux.)',
-                        						'pdf_boletines_8_moderno_foto' => 'Formato # 7 (moderno con foto)'
+                        						'pdf_boletines_8_moderno_foto' => 'Formato # 7 (moderno con foto)',
+                        						'pdf_boletines_9_desempenios' => 'Formato # 8 (Por Desempeños)'
 											];
 
 							?>

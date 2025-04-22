@@ -164,7 +164,7 @@ class BoletinController extends Controller
                         'pdf_boletines_6' => 'Formato # 5 (marca de agua)',
                         'pdf_boletines_7' => 'Formato # 6 (Calificaciones Aux.)',
                         'pdf_boletines_8_moderno_foto' => 'Formato # 7 (moderno con foto)',
-                        'pdf_boletines_9_desempenios' => 'Formato # 8 (Por Desempeños)',
+                        'pdf_boletines_9_desempenios' => 'Formato # 8 (Por Desempeños)'
                     ];
 
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
