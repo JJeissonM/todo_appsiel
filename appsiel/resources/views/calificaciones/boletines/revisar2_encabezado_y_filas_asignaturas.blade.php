@@ -2,9 +2,9 @@
 <table class="contenido table table-striped">
 <thead>
     <tr>
-        <th>Asignaturas</th>
-        <th>Calificación</th>
-        <th>Logros</th>
+        <th>{{ config('calificaciones.etiqueta_asignatura') }}</th>
+        <th>{{ config('calificaciones.etiqueta_valoracion') }}</th>
+        <th>{{ config('calificaciones.etiqueta_logros') }}</th>
     </tr>
 </thead>
 <tbody>

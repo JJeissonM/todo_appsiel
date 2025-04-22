@@ -2,9 +2,9 @@
 <table class="contenido table table-bordered">
 <thead>
     <tr>
-        <th>Asignaturas</th>
-        <th>Logros</th>
-        <th>Desempeño</th>
+        <th>{{ config('calificaciones.etiqueta_asignatura') }}</th>
+        <th>{{ config('calificaciones.etiqueta_logros') }}</th>
+        <th>{{ config('calificaciones.etiqueta_valoracion') }}</th>
     </tr>
 </thead>
 <tbody>
@@ -22,9 +22,7 @@
 
             $logros_asignatura = $logros->where('asignatura_id', $asignatura->id)->all();
 
-
             $cant_logros = count( $logros_asignatura );
-            //dd($asignatura->descripcion, $logros, $cant_logros );
         ?>
 
         @foreach ( $logros_asignatura as $logro )

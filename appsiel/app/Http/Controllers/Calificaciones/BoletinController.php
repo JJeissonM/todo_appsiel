@@ -163,7 +163,8 @@ class BoletinController extends Controller
                         'pdf_boletines_4' => 'Formato # 4 (resúmen)',
                         'pdf_boletines_6' => 'Formato # 5 (marca de agua)',
                         'pdf_boletines_7' => 'Formato # 6 (Calificaciones Aux.)',
-                        'pdf_boletines_8_moderno_foto' => 'Formato # 7 (moderno con foto)'
+                        'pdf_boletines_8_moderno_foto' => 'Formato # 7 (moderno con foto)',
+                        'pdf_boletines_9_desempenios' => 'Formato # 8 (Por Desempeños)',
                     ];
 
         if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
@@ -379,7 +380,9 @@ class BoletinController extends Controller
             case 'pdf_boletines_6':
                 
                 $periodos = $this->get_periodos_para_columnas($periodo,'menor_igual');
+                
                 $view =  $this->get_view_for_pdf_boletines_6($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros,$with_page_breaks);
+
                 break;
             
             case 'pdf_boletines_7':
@@ -387,6 +390,14 @@ class BoletinController extends Controller
 
                     $view =  $this->get_view_for_pdf_boletines_7($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros,$with_page_breaks);
                     break;
+
+            case 'pdf_boletines_9_desempenios':
+                
+                $periodos = $this->get_periodos_para_columnas($periodo,'menor_igual');
+                
+                $view =  $this->get_view_for_pdf_boletines_9_desempenios($data_request['formato'], $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura,$mostrar_logros,$with_page_breaks);
+
+                break;
             
             default:
                 $periodos = $this->get_periodos_para_columnas($periodo,'menor_igual');
@@ -440,7 +451,7 @@ class BoletinController extends Controller
         $all_boletines = '';
 
         foreach($datos as $registro)
-        {            
+        {
             $obj_lineas_cuerpo_boletin = $this->dividir_lineas_cuerpo_boletin($registro->cuerpo_boletin->lineas,$cantidad_caracteres_para_proxima_pagina);
 
             $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->first_group;
@@ -475,6 +486,49 @@ class BoletinController extends Controller
     /**
      * 
      */
+    public function get_view_for_pdf_boletines_9_desempenios($formato, $colegio, $curso, $periodo, $convetir_logros_mayusculas, $mostrar_areas, $mostrar_calificacion_media_areas, $mostrar_fallas, $mostrar_nombre_docentes,$mostrar_escala_valoracion,$mostrar_usuarios_estudiantes, $mostrar_etiqueta_final, $tam_hoja, $tam_letra, $firmas, $datos,$margenes,$mostrar_nota_nivelacion,$mostrar_intensidad_horaria, $matriculas, $anio, $periodos, $url_imagen_marca_agua,$cantidad_caracteres_para_proxima_pagina,$ancho_columna_asignatura, $mostrar_logros, $with_page_breaks)
+    {
+        $lbl_numero_periodo = $this->get_label_periodo($periodo);
+
+        $all_boletines = '';
+
+        $logros = Logro::where([
+            'periodo_id' => $periodo->id,
+            'curso_id' => $curso->id,
+            'escala_valoracion_id' => 0
+        ])->get();
+
+        $todas_las_calificaciones = CalificacionDesempenio::where([
+            'periodo_id' => $periodo->id,
+            'curso_id' => $curso->id
+        ])->get();
+
+        foreach($datos as $registro)
+        {
+            $obj_lineas_cuerpo_boletin = $this->dividir_lineas_cuerpo_boletin_desempenios($registro->cuerpo_boletin->lineas, $cantidad_caracteres_para_proxima_pagina, $logros);
+
+            $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->first_group;
+
+            if (empty($obj_lineas_cuerpo_boletin->second_group)) {
+                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_9_desempenios_onepage', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros','with_page_breaks', 'logros', 'todas_las_calificaciones') )->render();
+                $back_side = '';
+            }else{
+                $front_side =  View::make( 'calificaciones.boletines.pdf_boletines_9_desempenios_frontside', compact( 'colegio', 'curso', 'periodo','lbl_numero_periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros','with_page_breaks', 'logros', 'todas_las_calificaciones') )->render();
+                
+                $lineas_cuerpo_boletin = $obj_lineas_cuerpo_boletin->second_group;
+
+                $back_side =  View::make( 'calificaciones.boletines.pdf_boletines_9_desempenios_backside', compact( 'colegio', 'curso', 'periodo', 'convetir_logros_mayusculas', 'mostrar_areas', 'mostrar_calificacion_media_areas', 'mostrar_fallas', 'mostrar_nombre_docentes','mostrar_escala_valoracion','mostrar_usuarios_estudiantes', 'mostrar_etiqueta_final', 'tam_hoja', 'tam_letra', 'firmas', 'registro','margenes','mostrar_nota_nivelacion', 'mostrar_intensidad_horaria', 'matriculas', 'anio', 'periodos', 'url_imagen_marca_agua','lineas_cuerpo_boletin','ancho_columna_asignatura','mostrar_logros','with_page_breaks', 'logros', 'todas_las_calificaciones') )->render();
+            }                
+
+            $all_boletines .= $front_side . $back_side;
+        }
+
+        return View::make( 'calificaciones.boletines.pdf_boletines_9_desempenios', compact( 'all_boletines','curso', 'tam_hoja', 'tam_letra','margenes', 'mostrar_areas'))->render();
+    }
+    
+    /**
+     * 
+     */
     public function dividir_lineas_cuerpo_boletin($lineas,$cantidad_caracteres_para_proxima_pagina)
     {
         $cant_caracteres = 0;
@@ -497,6 +551,38 @@ class BoletinController extends Controller
                 {
                     $cant_caracteres += strlen($un_logro->descripcion);
                 }
+            }
+
+            if ( $cant_caracteres < $cantidad_caracteres_para_proxima_pagina) {
+                $obj_lineas->first_group[] = $linea;
+            }else{
+                $obj_lineas->second_group[] = $linea;
+            }
+        }
+
+        return $obj_lineas;
+    }
+    
+    /**
+     * 
+     */
+    public function dividir_lineas_cuerpo_boletin_desempenios($lineas, $cantidad_caracteres_para_proxima_pagina, $logros)
+    {
+        $cant_caracteres = 0;
+        $obj_lineas = (object)[
+            'first_group' => [],
+            'second_group' => []
+        ];
+
+        foreach ($lineas as $key => $linea) {
+
+            $asignatura = $linea->asignacion_asignatura->asignatura;
+
+            $logros_asignatura = $logros->where( 'asignatura_id', $asignatura->id )->all();
+
+            foreach( $logros_asignatura as $un_logro )
+            {
+                $cant_caracteres += strlen($un_logro->descripcion);
             }
 
             if ( $cant_caracteres < $cantidad_caracteres_para_proxima_pagina) {
@@ -661,6 +747,7 @@ class BoletinController extends Controller
 
             $datos->estudiantes[$l] = (object)[];
             $datos->estudiantes[$l]->estudiante = $matricula->estudiante;
+            $datos->estudiantes[$l]->matricula = $matricula;
             $datos->estudiantes[$l]->password_estudiante = $all_passwords->where( 'email', $matricula->estudiante->tercero->email )->first();
             $datos->estudiantes[$l]->observacion = $observaciones_del_curso_en_el_periodo->where('id_estudiante', $matricula->estudiante->id )->first();
 

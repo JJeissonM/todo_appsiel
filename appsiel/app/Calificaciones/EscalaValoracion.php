@@ -12,7 +12,7 @@ class EscalaValoracion extends Model
 {
     protected $table = 'sga_escala_valoracion';
 
-    protected $fillable = ['periodo_lectivo_id','calificacion_minima','calificacion_maxima','nombre_escala','sigla','escala_nacional','imagen'];
+    protected $fillable = ['periodo_lectivo_id','calificacion_minima','calificacion_maxima','nombre_escala','sigla','escala_nacional','imagen', 'descripcion'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Escala nacional', 'Nombre escala', 'Sigla', 'Calificación mínima', 'Calificación máxima'];
 
