@@ -11,7 +11,7 @@
     //$ancho_columna_asignatura = 130;ancho_columna_asignatura
     $ancho_columna_calificacion = 70;
     $area_anterior = '';
-    $cant_columnas = 1;
+    $cant_columnas = 3;
     $estilo_advertencia = 'style="background-color:#F08282; color:white;"';
 ?>
 
@@ -61,7 +61,7 @@
                                 $is_the_first = false;
                             ?>						
                         @endif
-                        <td style="text-align: left;"> 
+                        <td style="text-align: left; padding: 3px;"> 
                             {{ $logro->descripcion }} 
                         </td>
 
@@ -72,7 +72,7 @@
                         @if( $valor_desempenio == null )                
                             <td {!! $estilo_advertencia !!}>--</td>
                         @else
-                            <td> {{ $valor_desempenio->escala_valoracion->nombre_escala }} </td>
+                            <td style="width:80px; vertical-align: middle; text-align:center;"> {{ $valor_desempenio->escala_valoracion->nombre_escala }} </td>
                         @endif
 
                     </tr>
@@ -100,7 +100,7 @@
         
     @include('calificaciones.boletines.mostrar_usuarios_estudiantes')
     
-    @include('calificaciones.boletines.seccion_firmas')
+    @include('calificaciones.boletines.seccion_firmas_desempenios')
     
     @include('calificaciones.boletines.pie_pagina')
     
