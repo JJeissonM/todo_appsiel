@@ -77,7 +77,7 @@
 		}
 	?>
 
-    <div style="width: 100%;">
+    <div style="width: 100%; clear: both; padding-top: 10px; padding-bottom: 10px; text-align: justify;">
         <div style="width: 39%; padding-left: 20px; padding-top: 10px; padding-bottom: 10px; text-align: justify; float: left;">
             <?php
 
