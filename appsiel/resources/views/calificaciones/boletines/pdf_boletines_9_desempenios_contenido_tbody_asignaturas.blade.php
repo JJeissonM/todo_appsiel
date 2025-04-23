@@ -13,14 +13,13 @@
 
         $cant_logros = count( $logros_asignatura );
 
-        $style_asignatura = 'style="width:{{$ancho_columna_asignatura}}px; font-size:12px; vertical-align: middle; padding-left: 15px;"';
     ?>
 
     @foreach ( $logros_asignatura as $logro )
         <tr>
             @if($is_the_first)
-                <td rowspan="{{ $cant_logros }}" {{ $style_asignatura }} >
-                    &nbsp;&nbsp;<b> {{ $asignatura->descripcion }}</b>
+                <td rowspan="{{ $cant_logros }}" style="width:{{$ancho_columna_asignatura}}px !important; font-size:12px !important; vertical-align: middle; text-align: center !important;">
+                    <b> {{ $asignatura->descripcion }}</b> aja
                 </td>
                 <?php
                     $is_the_first = false;

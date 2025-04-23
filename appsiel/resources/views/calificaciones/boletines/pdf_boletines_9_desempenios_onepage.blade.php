@@ -8,7 +8,6 @@
         $lbl_asigatura = 'ASIGNATURA';
     }
 
-    //$ancho_columna_asignatura = 130;ancho_columna_asignatura
     $ancho_columna_calificacion = 70;
     $area_anterior = '';
     $cant_columnas = 3;
@@ -34,8 +33,6 @@
         <tbody>
             
             @include('calificaciones.boletines.pdf_boletines_9_desempenios_contenido_tbody_asignaturas')
-
-            
 
             @include('calificaciones.boletines.formatos.fila_observaciones')
 
