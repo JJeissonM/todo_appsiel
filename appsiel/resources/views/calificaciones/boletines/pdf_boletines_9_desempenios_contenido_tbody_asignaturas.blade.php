@@ -19,7 +19,7 @@
         <tr>
             @if($is_the_first)
                 <td rowspan="{{ $cant_logros }}" style="width:{{$ancho_columna_asignatura}}px !important; font-size:12px !important; vertical-align: middle; text-align: center !important;">
-                    <b> {{ $asignatura->descripcion }}</b> aja
+                    <b> {{ $asignatura->descripcion }}</b>
                 </td>
                 <?php
                     $is_the_first = false;
