@@ -969,7 +969,7 @@ class FacturaPosController extends TransaccionController
         // Guardar otros movimientos según motivo
 
         // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
-        if ($motivo->teso_tipo_motivo == 'Anticipo proveedor') {
+        if ($motivo->teso_tipo_motivo == 'anticipo-proveedor') {
             $this->datos['valor_documento'] = $valor_movimiento * -1;
             $this->datos['valor_pagado'] = 0;
             $this->datos['saldo_pendiente'] = $valor_movimiento * -1;
@@ -979,7 +979,7 @@ class FacturaPosController extends TransaccionController
         }
 
         // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
-        if ($motivo->teso_tipo_motivo == 'Prestamo financiero') {
+        if ($motivo->teso_tipo_motivo == 'prestamo-recibido') {
             $this->datos['valor_documento'] = $valor_movimiento;
             $this->datos['valor_pagado'] = 0;
             $this->datos['saldo_pendiente'] = $valor_movimiento;
@@ -989,7 +989,7 @@ class FacturaPosController extends TransaccionController
         }
 
         // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
-        if ($motivo->teso_tipo_motivo == 'Pago anticipado') {
+        if ($motivo->teso_tipo_motivo == 'prestamo-entregado') {
             $this->datos['valor_documento'] = $valor_movimiento;
             $this->datos['valor_pagado'] = 0;
             $this->datos['saldo_pendiente'] = $valor_movimiento;
@@ -999,7 +999,7 @@ class FacturaPosController extends TransaccionController
         }
 
         // Generar CxC: movimiento de cartera de clientes
-        if ($motivo->teso_tipo_motivo == 'Anticipo') {
+        if ($motivo->teso_tipo_motivo == 'anticipo-clientes') {
             $this->datos['valor_documento'] = $valor_movimiento * -1;
             $this->datos['valor_pagado'] = 0;
             $this->datos['saldo_pendiente'] = $valor_movimiento * -1;

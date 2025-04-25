@@ -215,7 +215,7 @@ class RecaudoController extends TransaccionController
         $doc_encabezado->save();
         
         // Solo los anticipos de clientes se guardan en el movimiento de cartera (CxC)
-        if ( $request->teso_tipo_motivo == 'Anticipo' )
+        if ( $request->teso_tipo_motivo == 'anticipo-clientes' )
         {
             $this->datos['valor_documento'] = $total_recaudo * -1;
             $this->datos['valor_pagado'] = 0;
@@ -226,7 +226,7 @@ class RecaudoController extends TransaccionController
         }
  
         // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
-        if ( $request->teso_tipo_motivo == 'Prestamo financiero' )
+        if ( $request->teso_tipo_motivo == 'prestamo-recibido' )
         {
             $this->datos['valor_documento'] = $total_recaudo;
             $this->datos['valor_pagado'] = 0;
@@ -376,7 +376,7 @@ class RecaudoController extends TransaccionController
                 </table>';
 
         // Transacciones afectadas por el recaudo
-        if ( $encabezado_doc->teso_tipo_motivo == 'Recaudo cartera') 
+        if ( $encabezado_doc->teso_tipo_motivo == 'recaudo-cartera') 
         {
             // Se crea una tabla con los documentos pagados por el recaudo
             $documentos_pagados = DB::table('cxc_documento_tiene_recaudos')

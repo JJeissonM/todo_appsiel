@@ -24,7 +24,7 @@ class AccountingServices
             $obj_acco_move->store($model,$data);
 
             // Accounting Entry Contra
-            if ($movement->motivo->teso_tipo_motivo == 'Recaudo cartera' || $movement->motivo->teso_tipo_motivo == 'Pago proveedores') {
+            if ($movement->motivo->teso_tipo_motivo == 'recaudo-cartera' || $movement->motivo->teso_tipo_motivo == 'pago-proveedores') {
                 continue;
             }
             $obj_acco_move->store($model,$this->set_data_contra($movement,$data));

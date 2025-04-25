@@ -107,7 +107,7 @@ class RecaudoCxcController extends Controller
         $retenciones = Retencion::opciones_campo_select();
         $descuentos_pronto_pago = DescuentoPpEncabezado::opciones_campo_select();
 
-        $tipos_operaciones = [ '' => '', 'Recaudo cartera' => 'Recaudo cartera (CxC)', 'Anticipo' => 'Anticipo cliente (CxC a favor)', 'Otros recaudos' => 'Otros recaudos','Prestamo financiero' => 'Préstamo financiero (Crear CxP)'];
+        $tipos_operaciones = [ '' => '', 'recaudo-cartera' => 'Recaudo cartera (CxC)', 'anticipo-clientes' => 'Anticipo cliente (CxC a favor)', 'otros-recaudos' => 'Otros recaudos','prestamo-recibido' => 'Préstamo financiero (Crear CxP)'];
 
         $terceros = [''];
 

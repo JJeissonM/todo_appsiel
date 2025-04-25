@@ -77,7 +77,7 @@ class RegistroDeTarjetaDebito extends TesoDocEncabezado
 
             // Contabilizar Contrapartida (Si no es movimiento de cartera)
             // La contabilizacion para la Cartera se hace en el metodo almacenar_registros_cartera()
-            if ( $tipo_operacion != 'Recaudo cartera' && $tipo_operacion != 'Pago proveedores' )
+            if ( $tipo_operacion != 'recaudo-cartera' && $tipo_operacion != 'pago-proveedores' )
             {
                 $movimiento_contable = new ContabMovimiento();
                 // Se invierten los valores Debito y Credito de arriba

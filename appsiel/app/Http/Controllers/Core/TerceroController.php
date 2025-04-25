@@ -248,6 +248,7 @@ class TerceroController extends Controller
             return $this->get_datos_desdes_estudiantes($campo_busqueda,$operador,$texto_busqueda);
         }
 
+
         return $this->get_datos_desdes_terceros($campo_busqueda,$operador,$texto_busqueda);
     }
 

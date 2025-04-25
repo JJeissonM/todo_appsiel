@@ -42,7 +42,7 @@ $(document).ready( function(){
 
 		if ( validar_requeridos() ) {
 
-			if ( $('#tipo_movimiento').val() != "Anticipo" ) {
+			if ( $('#tipo_movimiento').val() != "anticipo-clientes" ) {
 				
 				$('#div_cargando').show();
 						

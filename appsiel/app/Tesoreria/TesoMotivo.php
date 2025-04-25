@@ -11,7 +11,7 @@ class TesoMotivo extends Model
 
     /*
         movimiento: (ENUM) { entrada | salida }
-        teso_tipo_motivo: (ENUM) { Recaudo cartera | Otros recaudos | Pago proveedores | Otros pagos | Anticipo | Anticipo proveedor | Traslado | Pago anticipado | Prestamo financiero }
+        teso_tipo_motivo: (ENUM) { recaudo-cartera | anticipo-clientes | otros-recaudos | prestamo-recibido | pago-proveedores | anticipo-proveedor | otros-pagos | prestamo-entregado | traslado-efectivo }
     */
     protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','descripcion','movimiento','estado','teso_tipo_motivo','contab_cuenta_id'];
 

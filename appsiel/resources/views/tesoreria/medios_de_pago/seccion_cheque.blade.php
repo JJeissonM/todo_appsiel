@@ -274,7 +274,7 @@
 				$('#input_valor_total_cheques').val(valor_total_cheques);
 
 
-				if ( tipo_operacion_id != 'Recaudo cartera' && tipo_operacion_id != 'Pago proveedores' )
+				if ( tipo_operacion_id != 'recaudo-cartera' && tipo_operacion_id != 'pago-proveedores' )
 				{
 					var actual_valor_total_otras_operaciones = parseFloat( $('#input_valor_total_otras_operaciones').val() );
 

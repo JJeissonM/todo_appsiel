@@ -191,7 +191,7 @@ $(document).ready(function(){
 		if ( validar_requeridos() ) 
 		{
 			//console.log( $('#teso_tipo_motivo').val() );
-			if ( $('#teso_tipo_motivo').val() == 'Recaudo cartera') {
+			if ( $('#teso_tipo_motivo').val() == 'recaudo-cartera') {
 				
 				$('#div_cargando').show();
 						

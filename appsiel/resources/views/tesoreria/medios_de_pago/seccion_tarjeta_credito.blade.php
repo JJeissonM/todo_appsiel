@@ -170,7 +170,7 @@
 				$('#valor_total_cuentas_bancarias').text( '$ ' + new Intl.NumberFormat("de-DE").format( nuevo_valor_total_cuentas_bancarias.toFixed(2) ) );
 				$('#input_valor_total_cuentas_bancarias').val( nuevo_valor_total_cuentas_bancarias );
 
-				if ( tipo_operacion_id != 'Recaudo cartera' && tipo_operacion_id != 'Pago proveedores' )
+				if ( tipo_operacion_id != 'recaudo-cartera' && tipo_operacion_id != 'pago-proveedores' )
 				{
 					var actual_valor_total_otras_operaciones = parseFloat( $('#input_valor_total_otras_operaciones').val() );
 

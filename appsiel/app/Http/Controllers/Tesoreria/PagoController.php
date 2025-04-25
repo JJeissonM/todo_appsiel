@@ -213,13 +213,13 @@ class PagoController extends TransaccionController
             $this->contabilizar_registro( $cuenta_id, $detalle_operacion, $valor_debito, $valor_credito);
 
             // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
-            if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' )
+            if ( $motivo->teso_tipo_motivo == 'anticipo-proveedor' )
             {
                 $this->almacenar_cxp( $this->datos, $valor );
             }
 
             // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
-            if ( $motivo->teso_tipo_motivo == 'Pago anticipado' )
+            if ( $motivo->teso_tipo_motivo == 'prestamo-entregado' )
             {
                 $this->almacenar_cxc( $this->datos, $valor );
             }
@@ -363,7 +363,7 @@ class PagoController extends TransaccionController
                 $motivo = $linea->motivo;
             }
 
-            if ( $motivo->teso_tipo_motivo == 'Anticipo proveedor' || $motivo->teso_tipo_motivo == 'Prestamo financiero' ||  $motivo->teso_tipo_motivo == 'Pago anticipado' )
+            if ( $motivo->teso_tipo_motivo == 'anticipo-proveedor' || $motivo->teso_tipo_motivo == 'prestamo-recibido' ||  $motivo->teso_tipo_motivo == 'prestamo-entregado' )
             {
                 $permitir_editar = false;
             }

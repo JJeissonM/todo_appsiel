@@ -94,7 +94,7 @@ class PagoCxpController extends TransaccionController
         $retenciones = Retencion::opciones_campo_select();
         $descuentos_pronto_pago = DescuentoProntoPago::opciones_campo_select();
 
-        $tipos_operaciones = [ '' => '', 'Pago proveedores' => 'Pago proveedores (CxP)', 'Anticipo proveedor' => 'Anticipo proveedor (CxP a favor)', 'Otros pagos' => 'Otros pagos', 'Pago anticipado' => 'Préstamo financiero (Crear CxC)'];
+        $tipos_operaciones = [ '' => '', 'pago-proveedores' => 'Pago proveedores (CxP)', 'anticipo-proveedor' => 'Anticipo proveedor (CxP a favor)', 'otros-pagos' => 'Otros pagos', 'prestamo-entregado' => 'Préstamo financiero (Crear CxC)'];
 
         $terceros = [''];
 

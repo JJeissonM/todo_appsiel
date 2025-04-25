@@ -561,7 +561,7 @@ class ContabReportesController extends Controller
                 $debito = 0;
                 $credito = $movimiento_cuenta[$i]['credito'];
                 $valor_cartera = $movimiento_cuenta[$i]['credito'];
-                $tipo_movimiento = 'Anticipo';
+                $tipo_movimiento = 'anticipo-clientes';
             }
             
             $valor_total = $valor_cartera;

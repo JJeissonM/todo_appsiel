@@ -2,17 +2,14 @@
 
 namespace App\Tesoreria;
 
-use DB;
-use Auth;
-
 use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoCaja;
-use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\ControlCheque;
 
 use App\Contabilidad\ContabMovimiento;
+use Illuminate\Support\Facades\Auth;
 
 class RegistroDeCheque extends TesoDocEncabezado
 {
@@ -102,7 +99,7 @@ class RegistroDeCheque extends TesoDocEncabezado
 
             // Contabilizar Contrapartida (Si no es movimiento de cartera)
             // La contabilizacion para la Cartera se hace en el metodo almacenar_registros_cartera()
-            if ( $tipo_operacion != 'Recaudo cartera' && $tipo_operacion != 'Pago proveedores' )
+            if ( $tipo_operacion != 'recaudo-cartera' && $tipo_operacion != 'pago-proveedores' )
             {
                 $movimiento_contable = new ContabMovimiento();
                 // Se invierten los valores Debito y Credito de arriba

@@ -106,7 +106,7 @@
 
 			<div>
 				<?php 
-					$motivos = App\Tesoreria\TesoMotivo::opciones_campo_select_ventas( 'Recaudo cartera' );
+					$motivos = App\Tesoreria\TesoMotivo::opciones_campo_select_ventas( 'recaudo-cartera' );
 					$medios_recaudo = App\Tesoreria\TesoMedioRecaudo::opciones_campo_select();
 			        $cajas = App\Tesoreria\TesoCaja::opciones_campo_select();
 			        $cuentas_bancarias = App\Tesoreria\TesoCuentaBancaria::opciones_campo_select();

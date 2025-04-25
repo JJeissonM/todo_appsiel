@@ -210,7 +210,7 @@ class TesoDocEncabezado extends Model
     public function transacciones_adicionales( $datos, $tipo_operacion, $valor )
     {
         // Solo los anticipos de clientes se guardan en el movimiento de cartera (CxC)
-        if ( $tipo_operacion == 'Anticipo' )
+        if ( $tipo_operacion == 'anticipo-clientes' )
         {
             $datos['valor_documento'] = $valor * -1;
             $datos['valor_pagado'] = 0;
@@ -221,7 +221,7 @@ class TesoDocEncabezado extends Model
         }
  
         // Generar CxP porque se utilizó dinero de un agente externo (banco, coopertaiva, tarjeta de crédito).
-        if ( $tipo_operacion == 'Prestamo financiero' )
+        if ( $tipo_operacion == 'prestamo-recibido' )
         {
             $datos['valor_documento'] = $valor;
             $datos['valor_pagado'] = 0;
@@ -232,7 +232,7 @@ class TesoDocEncabezado extends Model
         }
 
         // Generar CxP a favor. Saldo negativo por pagar (a favor de la empresa)
-        if ( $tipo_operacion == 'Anticipo proveedor' )
+        if ( $tipo_operacion == 'anticipo-proveedor' )
         {
             $datos['valor_documento'] = $valor * -1;
             $datos['valor_pagado'] = 0;
@@ -243,7 +243,7 @@ class TesoDocEncabezado extends Model
         }
 
         // Generar CxC por algún dinero prestado o anticipado a trabajadores o clientes.
-        if ( $tipo_operacion == 'Pago anticipado' )
+        if ( $tipo_operacion == 'prestamo-entregado' )
         {
             $datos['valor_documento'] = $valor;
             $datos['valor_pagado'] = 0;
