@@ -260,7 +260,6 @@ class TesoMovimiento extends Model
         return TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                                 ->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
                                 ->where( $array_wheres )
-                                //->where('teso_motivos.teso_tipo_motivo', '<>', 'Traslado')
                                 ->groupBy('teso_movimientos.teso_motivo_id')
                                 ->select(
                                             'teso_motivos.descripcion as motivo',

@@ -29,7 +29,7 @@ use App\Http\Controllers\Sistema\VistaController;
                 {{ Form::hidden( 'url_id', Input::get( 'id' ) ) }}
                 {{ Form::hidden( 'url_id_modelo', Input::get( 'id_modelo' ) ) }}
                 {{ Form::hidden( 'url_id_transaccion', Input::get( 'id_transaccion' ) ) }}
-                {{ Form::hidden( 'teso_tipo_motivo', 'Traslado' ) }}
+                {{ Form::hidden( 'teso_tipo_motivo', 'traslado-efectivo' ) }}
 
                 <input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 

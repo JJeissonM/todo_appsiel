@@ -88,7 +88,7 @@ class TrasladoEfectivosController extends TransaccionController
 
         $cajas = TesoCaja::opciones_campo_select();
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
-        $motivos = TesoMotivo::where('teso_tipo_motivo', 'Traslado')->get()->pluck('descripcion', 'movimiento');
+        $motivos = TesoMotivo::where('teso_tipo_motivo', 'traslado-efectivo')->get()->pluck('descripcion', 'movimiento');
 
         $btn_borrar = "<button class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-trash'></i></button>";
         $btn_confirmar = "<button class='btn btn-success btn-xs btn_confirmar'><i class='fa fa-check'></i></button>";

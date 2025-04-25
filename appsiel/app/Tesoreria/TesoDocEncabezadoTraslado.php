@@ -227,7 +227,7 @@ class TesoDocEncabezadoTraslado extends TesoDocEncabezado
         foreach ($registros as $item)
         {
             $motivo = explode('-', $item->teso_motivo_id);
-            $aux = TesoMotivo::where([['teso_tipo_motivo', 'Traslado'], ['movimiento', $motivo[0]]])->first();
+            $aux = TesoMotivo::where([['teso_tipo_motivo', 'traslado-efectivo'], ['movimiento', $motivo[0]]])->first();
             $medio_recaudo = explode('-', $item->teso_medio_recaudo_id);
             $caja = explode('-', $item->teso_caja_id);
             $cuenta = explode('-', $item->teso_cuenta_bancaria_id);
