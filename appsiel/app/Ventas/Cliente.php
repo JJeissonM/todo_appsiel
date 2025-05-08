@@ -11,8 +11,6 @@ use App\Ventas\DireccionEntrega;
 use App\Core\Tercero;
 use App\Sistema\Services\CrudService;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class Cliente extends Model
 {

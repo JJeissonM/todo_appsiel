@@ -4,9 +4,6 @@ namespace App\Http\Controllers\Matriculas;
 
 use Illuminate\Http\Request;
 
-use Auth;
-use View;
-
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\EmailController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -43,7 +40,10 @@ use App\Tesoreria\TesoMovimiento;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Matriculas\Services\FacturaEstudiantesService;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\View;
 
 class FacturaEstudianteController extends TransaccionController
 {
@@ -94,6 +94,11 @@ class FacturaEstudianteController extends TransaccionController
             if ($value['name'] == 'inv_bodega_id')
             {
                 $lista_campos[$key]['value'] = $cliente->inv_bodega_id;
+            }
+
+            if ($value['name'] == 'vendedor_id')
+            {
+                $lista_campos[$key]['value'] = $cliente->vendedor_id;
             }
 
             if ($value['name'] == 'forma_pago')
@@ -214,7 +219,7 @@ class FacturaEstudianteController extends TransaccionController
         $documento_vista = $this->generar_documento_vista( $id, 'ventas.formatos_impresion.'.Input::get('formato_impresion_id') );
 
         // Se prepara el PDF
-        $pdf = \App::make('dompdf.wrapper');
+        $pdf = App::make('dompdf.wrapper');
         $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
 
         //echo $documento_vista;

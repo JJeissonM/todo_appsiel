@@ -18,7 +18,7 @@
 	?>
 	<tr style="background-color: {{config('configuracion.color_principal_empresa')}}90;">
         <td colspan="{{ $cant_columnas_aux }}" style="text-align: center;">
-            <b> {{ $area_descripcion }}</b>
+            <b> {{ $area_descripcion . $cant_columnas_aux }}</b>
         </td>
     </tr>
     @if( $mostrar_calificacion_media_areas )
@@ -32,6 +32,7 @@
             <?php
                 $n = 0;
                 $total_poderadas = 0;
+                
                 foreach($periodos as $periodo_lista)	{
 
                     $cali_periodo = 0;
@@ -75,22 +76,18 @@
                         }
                     }
 
-                    $escala_valoracion_area = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion_media_ponderada, $periodo->periodo_lectivo_id );
-                    
-                    $lbl_escala_valoracion_area = '';
-                    if ( $escala_valoracion_area )
-                    {
-                        $lbl_escala_valoracion_area = $escala_valoracion_area->nombre_escala;
-                    }
-
                     $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' );
                     
                     // Calificacion del periodo
-                    echo '<td style="text-align: center; width: ' . $width_columnas . 'px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
+                    if($curso->maneja_calificacion==1)
+                    {
+                        echo '<td style="text-align: center; width: ' . $width_columnas . 'px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
+                    } // fin if maneja calificacion
+                    
 
                     $total_poderadas += $calificacion_media_ponderada;
                     $n++;
-                }
+                } // fin foreach periodos
 
                 $prom_area = 0;
                 if ($n != 0) {
@@ -98,15 +95,17 @@
                 }
 
                 $lbl_calificacion_area = number_format( $prom_area, $decimales, ',', '.' );
+
                 /*
+                */  
                 $escala_valoracion_prom_area = App\Calificaciones\EscalaValoracion::get_escala_segun_calificacion( $calificacion_media_ponderada, $periodo->periodo_lectivo_id );
                 
                 $lbl_escala_valoracion_prom_area = '';
                 if ( $escala_valoracion_prom_area )
                 {
                     $lbl_escala_valoracion_prom_area = $escala_valoracion_prom_area->nombre_escala;
-                } 
-                */               
+                }      
+                
 	
                 if( $mostrar_calificacion_requerida )
                 {
@@ -125,10 +124,12 @@
                 }
             ?>
             
-            <td style="text-align: center; width: {{$width_columnas}}px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
+            @if($curso->maneja_calificacion==1)
+                <td style="text-align: center; width: {{$width_columnas}}px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
+            @endif
 
             @if($mostrar_logros)
-                <td>&nbsp;</td>
+                <td>{{ $lbl_escala_valoracion_prom_area }}</td>
             @endif
         </tr>
     @endif

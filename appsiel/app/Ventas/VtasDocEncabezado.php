@@ -19,6 +19,7 @@ use App\Matriculas\FacturaAuxEstudiante;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 
 class VtasDocEncabezado extends Model
 {
@@ -101,6 +102,11 @@ class VtasDocEncabezado extends Model
         
         if ( $doc_padre == null )
         {
+            if ( !Schema::hasTable( 'vtas_pos_doc_encabezados' ) )
+            {
+                return null;
+            }
+
             $doc_padre = FacturaPos::find( $this->ventas_doc_relacionado_id );
         
             if ( $doc_padre == null )
@@ -109,7 +115,12 @@ class VtasDocEncabezado extends Model
             }
         }
 
-        if ($doc_padre->core_tipo_transaccion_id == $this->core_tipo_transaccion_id) {
+        if ($doc_padre->core_tipo_transaccion_id == $this->core_tipo_transaccion_id)
+        {
+            if ( !Schema::hasTable( 'vtas_pos_doc_encabezados' ) )
+            {
+                return null;
+            }
 
             // Buscar nuevamente en FacturaPos cuando la transaccion de Pedido es igual a la transaccion del doc_padre
             $doc_padre = FacturaPos::find( $this->ventas_doc_relacionado_id );
@@ -135,7 +146,11 @@ class VtasDocEncabezado extends Model
         
         if ( $doc_hijo == null )
         {
-            
+            if ( !Schema::hasTable( 'vtas_pos_doc_encabezados' ) )
+            {
+                return null;
+            }
+
             $doc_hijo = FacturaPos::where( 'ventas_doc_relacionado_id', $this->id )->get()->first();
 
             //dd($this,$doc_hijo);

@@ -1,5 +1,5 @@
 <div class="table-responsive" style="text-align: right;">
-    <table class="table table-bordered" style="display: inline;">
+    <table class="table table-bordered" style="display: inline-block;">
         <tr>
             <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-top"> Subtotal: &nbsp; </td>
             <td>$ &nbsp;</td>

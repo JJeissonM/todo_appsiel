@@ -22,6 +22,7 @@ use App\Ventas\ListaDctoDetalle;
 use App\Ventas\Services\PricesServices;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class InvProducto extends Model
 {
@@ -111,7 +112,12 @@ class InvProducto extends Model
     }
 
     public function get_codigo_proveedor()
-    {        
+    {
+        if ( !Schema::hasTable( 'compras_proveedores' ) )
+        {
+            return '';
+        }
+
         $codigo_proveedor = '';
         if( (int)config('inventarios.items_mandatarios_por_proveedor') )
         {
