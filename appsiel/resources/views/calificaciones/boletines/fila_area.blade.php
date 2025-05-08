@@ -6,7 +6,7 @@
 			<!--  122 = ID del Modelo "Areas"  947 = ID del Campo "Mostrar etiqueta en boletines" -->
 			@if( $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No' )
 				<td colspan="{{ $cant_columnas_aux }}" style="text-align: center;">
-					<b> {{ strtoupper( $linea->area_descripcion ) }}</b>
+					<b> {{ strtoupper( $linea->area_descripcion )}}</b>
 					&nbsp;
 					@if( $mostrar_calificacion_media_areas )
 						<?php
@@ -53,7 +53,11 @@
 							        break;
 							}
 						?>
-						(<b> Cal. media: {!! $lbl_nota_original !!} </b> <span style="color:red;"> {!! $advertencia !!} </span>)
+
+						@if( $curso->maneja_calificacion == 1 )
+							(<b> Cal. media: {!! $lbl_nota_original !!} </b> <span style="color:red;"> {!! $advertencia !!} </span>)
+						@endif
+						
 					@endif
 				</td>
 			@else

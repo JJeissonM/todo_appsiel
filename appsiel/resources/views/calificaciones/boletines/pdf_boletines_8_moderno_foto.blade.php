@@ -44,7 +44,7 @@
 							@endif
 
 							@if( !is_null( $linea->calificacion ) )
-								@if( $linea->calificacion->calificacion > 0 && $linea->maneja_calificacion)
+								@if( $linea->calificacion->calificacion > 0 && $curso->maneja_calificacion)
 									<b>Cal: </b> @include('calificaciones.boletines.lbl_descripcion_calificacion')
 								@endif
 							@endif

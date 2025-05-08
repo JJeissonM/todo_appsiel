@@ -18,10 +18,10 @@
 	?>
 	<tr style="background-color: {{config('configuracion.color_principal_empresa')}}90;">
         <td colspan="{{ $cant_columnas_aux }}" style="text-align: center;">
-            <b> {{ $area_descripcion . $cant_columnas_aux }}</b>
+            <b> {{ $area_descripcion }}</b>
         </td>
     </tr>
-    @if( $mostrar_calificacion_media_areas )
+    @if( $mostrar_calificacion_media_areas && $curso->maneja_calificacion == 1)
         <tr style="background-color: {{config('configuracion.color_principal_empresa')}}50;">
             <td style="text-align: right; font-size:0.7em;"><i>Promedio del área >></i></td>
 
@@ -79,10 +79,7 @@
                     $lbl_nota_original = number_format( $calificacion_media_ponderada, $decimales, ',', '.' );
                     
                     // Calificacion del periodo
-                    if($curso->maneja_calificacion==1)
-                    {
-                        echo '<td style="text-align: center; width: ' . $width_columnas . 'px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
-                    } // fin if maneja calificacion
+                    echo '<td style="text-align: center; width: ' . $width_columnas . 'px; padding: 1px;"> ' . $lbl_nota_original . ' <span style="color:red;">' . $advertencia . '</span></td>';
                     
 
                     $total_poderadas += $calificacion_media_ponderada;
@@ -124,12 +121,12 @@
                 }
             ?>
             
-            @if($curso->maneja_calificacion==1)
-                <td style="text-align: center; width: {{$width_columnas}}px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
-            @endif
+            <td style="text-align: center; width: {{$width_columnas}}px; padding: 1px;"> {{ $lbl_calificacion_area }} </td>
 
             @if($mostrar_logros)
-                <td>{{ $lbl_escala_valoracion_prom_area }}</td>
+                <td>
+                    {{ $lbl_escala_valoracion_prom_area }}
+                </td>
             @endif
         </tr>
     @endif
