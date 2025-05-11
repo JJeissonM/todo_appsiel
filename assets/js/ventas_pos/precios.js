@@ -339,8 +339,6 @@ function set_lista_precios()
     var cliente_id = $("#cliente_id").val();
     
     var cliente = clientes.find((item) => item.id === parseInt(cliente_id) );  
-
-    //var precios_list = todos_los_precios.find( (item) => item.id === cliente.lista_precios_id );
     
     var precios_list = [];
     $.each(todos_los_precios,function(key,item_lista_precios)
@@ -349,8 +347,6 @@ function set_lista_precios()
             precios_list.push(item_lista_precios);
         }        
     });
-
-    //var descuentos_list = todos_los_descuentos.find( (item) => item.id === cliente.lista_descuentos_id );
     
     var descuentos_list = [];
     $.each(todos_los_descuentos,function(key,item_lista_descuentos)

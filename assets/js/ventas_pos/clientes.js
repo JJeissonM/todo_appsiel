@@ -1,5 +1,5 @@
 
-var cantidad_clientes_local;
+var cantidad_clientes_local, numero_identificacion_existe;
 
 /**
  *
@@ -46,7 +46,7 @@ function set_cliente_default()
  * @param {*} item_sugerencia
  * @returns boolean
  */
-function seleccionar_cliente(item_sugerencia) {
+function seleccionar_cliente( item_sugerencia) {
   if (
     $("#lista_precios_id").val() !=
     item_sugerencia.attr("data-lista_precios_id") &&
@@ -61,22 +61,22 @@ function seleccionar_cliente(item_sugerencia) {
   }
 
   // Asignar descripción al TextInput
-  $("#cliente_input").val(item_sugerencia.html());
+  $("#cliente_input").val( item_sugerencia.html());
   $("#cliente_input").css("background-color", "transparent");
 
   // Asignar Campos ocultos
-  $("#cliente_id").val(item_sugerencia.attr("data-cliente_id"));
-  $("#zona_id").val(item_sugerencia.attr("data-zona_id"));
-  $("#clase_cliente_id").val(item_sugerencia.attr("data-clase_cliente_id"));
-  $("#liquida_impuestos").val(item_sugerencia.attr("data-liquida_impuestos"));
-  $("#core_tercero_id").val(item_sugerencia.attr("data-core_tercero_id"));
-  $("#lista_precios_id").val(item_sugerencia.attr("data-lista_precios_id"));
+  $("#cliente_id").val( item_sugerencia.attr("data-cliente_id"));
+  $("#zona_id").val( item_sugerencia.attr("data-zona_id"));
+  $("#clase_cliente_id").val( item_sugerencia.attr("data-clase_cliente_id"));
+  $("#liquida_impuestos").val( item_sugerencia.attr("data-liquida_impuestos"));
+  $("#core_tercero_id").val( item_sugerencia.attr("data-core_tercero_id"));
+  $("#lista_precios_id").val( item_sugerencia.attr("data-lista_precios_id"));
   $("#lista_descuentos_id").val(
     item_sugerencia.attr("data-lista_descuentos_id")
   );
 
   // Asignar resto de campos
-  $("#vendedor_id").val(item_sugerencia.attr("data-vendedor_id"));
+  $("#vendedor_id").val( item_sugerencia.attr("data-vendedor_id"));
   $("#vendedor_id").attr(
     "data-vendedor_descripcion",
     item_sugerencia.attr("data-vendedor_descripcion")
@@ -89,21 +89,21 @@ function seleccionar_cliente(item_sugerencia) {
   ).attr("class", "btn btn-default btn_vendedor vendedor_activo");
   $(document).prop("title", item_sugerencia.attr("data-vendedor_descripcion"));
 
-  $("#inv_bodega_id").val(item_sugerencia.attr("data-inv_bodega_id"));
+  $("#inv_bodega_id").val( item_sugerencia.attr("data-inv_bodega_id"));
 
-  $("#cliente_descripcion").val(item_sugerencia.attr("data-nombre_cliente"));
+  $("#cliente_descripcion").val( item_sugerencia.attr("data-nombre_cliente"));
   $("#cliente_descripcion_aux").val(
     item_sugerencia.attr("data-nombre_cliente")
   );
   $("#numero_identificacion").val(
     item_sugerencia.attr("data-numero_identificacion")
   );
-  $("#email").val(item_sugerencia.attr("data-email"));
-  $("#direccion1").val(item_sugerencia.attr("data-direccion1"));
-  $("#telefono1").val(item_sugerencia.attr("data-telefono1"));
+  $("#email").val( item_sugerencia.attr("data-email"));
+  $("#direccion1").val( item_sugerencia.attr("data-direccion1"));
+  $("#telefono1").val( item_sugerencia.attr("data-telefono1"));
 
   var forma_pago = "contado";
-  var dias_plazo = parseInt(item_sugerencia.attr("data-dias_plazo"));
+  var dias_plazo = parseInt( item_sugerencia.attr("data-dias_plazo"));
   if (dias_plazo > 0) {
     forma_pago = "credito";
   }
@@ -380,7 +380,7 @@ $(document).ready(function () {
           campo_busqueda: campo_busqueda,
           url_id: $("#url_id").val(),
         }).done(function (data) {
-          // Se llena el DIV con las sugerencias que arooja la consulta
+          // Se llena el DIV con las sugerencias que arroja la consulta
           $("#clientes_suggestions").show().html(data);
           $("a.list-group-item.active").focus();
         });
@@ -390,10 +390,231 @@ $(document).ready(function () {
 
   //Al hacer click en alguna de las sugerencias (escoger un cliente)
   $(document).on("click", ".list-group-item-cliente", function () {
+
     seleccionar_cliente($(this));
 
     return false;
   });
+
+  
+  //Al hacer click en alguna de las sugerencias (escoger un cliente)
+  $(document).on("click", "#btn_create_cliente", function () {
+    
+    modal_create_cliente();
+
+    return false;
+  });
+
+  /**
+   * 
+   */
+  function modal_create_cliente()
+  {
+    var url = "../vtas_consultar_clientes";
+
+    var url =  url_raiz + "/pos_clientes/create?id=13&id_modelo=138&id_transaccion";
+
+    $.get(url)
+    .done(function (data) {
+      
+      $("#myModal2").modal({ backdrop: "static" });
+      $("#div_spin2").hide();
+    
+      $("#myModal2 .modal-title").text("Creación de nuevo cliente");
+    
+      $("#myModal2 .btn_edit_modal").hide();
+      $("#myModal2 .btn-danger").show();
+      $("#myModal2 .btn_save_modal").show();
+      $("#myModal2 .btn_save_modal").attr('id', 'btn_save_cliente');
+      $("#myModal2 .btn_save_modal").attr('class', 'btn btn-primary');
+      $("#myModal2 .close").show();
+
+      $("#contenido_modal2").html(data);
+    });
+  }
+
+  /**
+   * 
+   */
+  $(document).on("click", "#btn_save_cliente", function () {
+    
+      if (!validar_requeridos()) {
+        return false;
+      }
+
+      validar_numero_identificacion();
+
+      if (numero_identificacion_existe) {
+        return false;
+      }
+
+      $("#btn_save_cliente").attr('disabled', 'disabled');
+
+      var formulario = $('#myModal2').find('form');
+
+      var url = formulario.attr('action') + "?id=20&modelo_id=138";
+      var data = formulario.serialize();
+
+      $.post(url, data, function (respuesta) {
+
+        /*
+        */
+        $("#btn_save_cliente").attr('class', 'btn btn-primary btn_save_modal');
+        $("#btn_save_cliente").removeAttr('disabled');
+        $("#btn_save_cliente").removeAttr('id');
+
+        $("#contenido_modal2").html('');
+        $('#myModal2').modal("hide");
+        
+        enfocar_tab_totales();
+
+        clientes.push(respuesta);
+
+        seleccionar_cliente_creado( respuesta );
+        $('#cliente_input').css('background-color', '#f8ff6d');
+
+      });
+  });
+
+  
+/**
+ *
+ * @param {*} item_sugerencia
+ * @returns boolean
+ */
+function seleccionar_cliente_creado( item_sugerencia ) {
+  if ( $("#lista_precios_id").val() != item_sugerencia.lista_precios_id && hay_productos > 0 )
+  {
+    Swal.fire({
+      icon: "error",
+      title: "Alerta!",
+      text: "El cliente Creado tiene una Lista de precios DIFERENTE para los productos ingresados. Debe retirar los productos ingresados.",
+    });
+    return false;
+  }
+
+  // Asignar descripción al TextInput
+  $("#cliente_input").val( item_sugerencia.descripcion );
+  $("#cliente_input").css("background-color", "transparent");
+
+  // Asignar Campos ocultos
+  $("#cliente_id").val( item_sugerencia.id );
+  $("#zona_id").val( item_sugerencia.zona_id);
+  $("#clase_cliente_id").val( item_sugerencia.clase_cliente_id);
+  $("#liquida_impuestos").val( item_sugerencia.liquida_impuestos);
+  $("#core_tercero_id").val( item_sugerencia.core_tercero_id);
+  $("#lista_precios_id").val( item_sugerencia.lista_precios_id);
+  $("#lista_descuentos_id").val( item_sugerencia.lista_descuentos_id );
+
+  // Asignar resto de campos
+  $("#vendedor_id").val( item_sugerencia.vendedor_id);
+  $("#vendedor_id").attr(
+    "data-vendedor_descripcion",
+    item_sugerencia.vendedor_descripcion
+  );
+  $(".vendedor_activo").attr("class", "btn btn-default btn_vendedor");
+  $(
+    "button[data-vendedor_id='" +
+    item_sugerencia.vendedor_id +
+    "']"
+  ).attr("class", "btn btn-default btn_vendedor vendedor_activo");
+  $(document).prop("title", item_sugerencia.vendedor_descripcion);
+
+  $("#inv_bodega_id").val( item_sugerencia.inv_bodega_id);
+
+  $("#cliente_descripcion").val( item_sugerencia.nombre_cliente);
+  $("#cliente_descripcion_aux").val(
+    item_sugerencia.nombre_cliente
+  );
+  $("#numero_identificacion").val(
+    item_sugerencia.numero_identificacion
+  );
+  $("#email").val( item_sugerencia.email);
+  $("#direccion1").val( item_sugerencia.direccion1);
+  $("#telefono1").val( item_sugerencia.telefono1);
+
+  var forma_pago = "contado";
+  var dias_plazo = parseInt( item_sugerencia.dias_plazo);
+  if (dias_plazo > 0) {
+    forma_pago = "credito";
+  }
+  $("#forma_pago").val(forma_pago);
+
+  // Para llenar la fecha de vencimiento
+  var fecha = new Date($("#fecha").val());
+  fecha.setDate(fecha.getDate() + (dias_plazo + 1));
+
+  var mes = fecha.getMonth() + 1; // Se le suma 1, Los meses van de 0 a 11
+  var dia = fecha.getDate(); // + 1; // Se le suma 1,
+
+  if (mes < 10) {
+    mes = "0" + mes;
+  }
+
+  if (dia < 10) {
+    dia = "0" + dia;
+  }
+  $("#fecha_vencimiento").val(fecha.getFullYear() + "-" + mes + "-" + dia);
+
+  set_lista_precios();
+
+  if (!$.isNumeric(parseInt($("#core_tercero_id").val()))) {
+    Swal.fire({
+      icon: "error",
+      title: "Alerta!",
+      text: "Error al seleccionar el cliente. Ingrese un cliente correcto.",
+    });
+  }
+
+  activar_boton_guardar_factura();
+
+}
+
+  /**
+   * 
+   */
+  function validar_numero_identificacion()
+  {
+    var documento = parseInt( $("#numero_identificacion_aux").val() );
+
+    var direccion = location.href;
+
+		if (direccion.search("edit") == -1) {
+			url = '../core/validar_numero_identificacion/'; // crear
+		} else {
+			url = '../../core/validar_numero_identificacion/'; // editar
+		}
+
+		$.get(url + documento, function (datos) {
+
+			if (datos != '') {
+				if ( parseInt(datos) == documento ) {
+					$('#btn_save_cliente').hide();
+          numero_identificacion_existe = true;
+					alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");
+          
+				} else {
+					// No hay problema
+          numero_identificacion_existe = false;
+					$('#btn_save_cliente').show();
+				}
+
+			} else {
+				// Número de identificación no existe
+        numero_identificacion_existe = false;
+				$('#btn_save_cliente').show();
+			}
+
+		});
+  }
+  
+  /**
+   * 
+   */
+	$(document).on('blur', '#numero_identificacion_aux', function () {
+    validar_numero_identificacion();
+	});
+
 
   //Al hacer click en la sugerencia Crear nuevo
   $(document).on(
@@ -408,7 +629,7 @@ $(document).ready(function () {
       set_cliente_default();
 
       if ($(this).attr("data-accion") == "crear_nuevo_registro") {
-        window.open($(this).attr("href"), "_blank");
+        modal_create_cliente();
       }
 
       return false;

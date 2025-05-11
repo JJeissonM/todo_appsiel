@@ -3,11 +3,54 @@
 namespace App\Ventas\Services;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Core\Tercero;
 use App\Ventas\Cliente;
 use Illuminate\Support\Facades\Auth;
 
 class CustomerServices
 {
+    public function store_new_customer(array $request)
+    {
+        $datos = $this->preparar_datos( $request );        
+
+        $tercero = new Tercero;
+        $tercero->fill( $datos );
+        $tercero->save();
+        
+        // Datos del Cliente
+        $Cliente = new Cliente;
+        $Cliente->fill( array_merge( $datos, ['core_tercero_id' => $tercero->id] ) );
+        $Cliente->save();
+
+        $array_tercero = $tercero->toArray();
+        unset($array_tercero['id']);
+
+        $cliente_creado = (object)array_merge( $Cliente->toArray(), $array_tercero );
+
+        $cliente_creado->vendedor_descripcion = $Cliente->vendedor->tercero->descripcion;
+        $cliente_creado->nombre_cliente = $tercero->descripcion;
+        $cliente_creado->dias_plazo = (int)$Cliente->condicion_pago->dias_plazo;
+        
+        $cliente_creado->condicion_pago_id = (int)$cliente_creado->condicion_pago_id;
+        $cliente_creado->zona_id = (int)$cliente_creado->zona_id;
+        $cliente_creado->lista_precios_id = (int)$cliente_creado->lista_precios_id;
+        $cliente_creado->vendedor_id = (int)$cliente_creado->vendedor_id;
+        $cliente_creado->inv_bodega_id = (int)$cliente_creado->inv_bodega_id;
+        $cliente_creado->clase_cliente_id = (int)$cliente_creado->clase_cliente_id;
+        $cliente_creado->lista_descuentos_id = (int)$cliente_creado->lista_descuentos_id;
+        $cliente_creado->liquida_impuestos = (int)$cliente_creado->liquida_impuestos;
+        $cliente_creado->core_tercero_id = (int)$cliente_creado->core_tercero_id;
+        $cliente_creado->id = (int)$cliente_creado->id;
+        $cliente_creado->id_tipo_documento_id = (int)$cliente_creado->id_tipo_documento_id;
+        $cliente_creado->numero_identificacion = (int)$cliente_creado->numero_identificacion;
+        $cliente_creado->core_empresa_id = (int)$cliente_creado->core_empresa_id;
+
+        return $cliente_creado;
+    }
+
+    /**
+     * 
+     */
     public function preparar_datos($datos)
     {
         if( !isset($datos['numero_identificacion']) )
@@ -109,6 +152,9 @@ class CustomerServices
         return $datos;
     }
 
+    /**
+     * 
+     */
     public function get_linea_item_sugerencia( Cliente $linea, $clase, $primer_item, $ultimo_item )
     {
         $descripcion = $linea->descripcion;

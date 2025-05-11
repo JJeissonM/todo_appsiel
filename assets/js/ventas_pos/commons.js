@@ -1145,6 +1145,8 @@ $(document).ready(function () {
     $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
     $("#btn_guardando").attr("id", "btn_guardar_factura");
 
+    $('#cliente_input').css('background-color', '#eee');
+
     $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
     
     llenar_tabla_productos_facturados();

@@ -4,15 +4,7 @@ namespace App\Http\Controllers\Ventas;
 
 use Illuminate\Http\Request;
 
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
 use App\Http\Controllers\Sistema\ModeloController;
-
-use Auth;
-use DB;
-use Input;
-use Storage;
 
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
@@ -25,6 +17,8 @@ use App\Ventas\VtasDocEncabezado;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\Services\CustomerServices;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class ClienteController extends ModeloController
 {
@@ -37,22 +31,13 @@ class ClienteController extends ModeloController
      */
     public function store(Request $request)
     {
-        $datos = (new CustomerServices())->preparar_datos($request->all());        
-
-        $tercero = new Tercero;
-        $tercero->fill( $datos );
-        $tercero->save();
-        
-        // Datos del Cliente
-        $Cliente = new Cliente;
-        $Cliente->fill( array_merge( $datos, ['core_tercero_id' => $tercero->id] ) );
-        $Cliente->save();
+        $Cliente = (new CustomerServices())->store_new_customer($request->all());
 
         $acciones = $this->acciones_basicas_modelo( Modelo::find( 138 ), '' );
         
         $url_ver = str_replace('id_fila', $Cliente->id, $acciones->show);
 
-        return redirect( $url_ver . '?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
+        return redirect( $url_ver . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo )->with( 'flash_message', 'Registro CREADO correctamente.' );
     }
 
 
@@ -113,7 +98,7 @@ class ClienteController extends ModeloController
                 $raw = 'CONCAT(core_terceros.apellido1, " ",core_terceros.apellido2, " ",core_terceros.nombre1, " ",core_terceros.otros_nombres) AS descripcion';
 
                 $opciones = Vendedor::leftJoin('core_terceros','core_terceros.id','=','vtas_vendedores.core_tercero_id')
-                            ->select('vtas_vendedores.id',DB::raw($raw))
+                            ->select('vtas_vendedores.id', DB::raw($raw))
                             ->get();
 
                 $vec = '{';

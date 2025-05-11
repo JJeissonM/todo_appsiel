@@ -23,6 +23,15 @@ function validar_datos_tercero()
     };
 }
 
+function enfocar_tab_totales()
+{
+    $('#header_tab3').removeAttr('class');
+    $('#header_tab1').attr('class','active');
+    
+    $('#tab3').attr('class','tab-pane fade');
+    $('#tab1').attr('class','tab-pane fade active in');
+}
+
 $(document).ready(function () {
 
     // GUARDAR EL FORMULARIO
@@ -135,11 +144,7 @@ $(document).ready(function () {
             ventana_imprimir_fe( url_print );
             resetear_ventana();
 
-            $('#header_tab3').removeAttr('class');
-            $('#header_tab1').attr('class','active');
-            
-            $('#tab3').attr('class','tab-pane fade');
-            $('#tab1').attr('class','tab-pane fade active in');
+            enfocar_tab_totales();
 
             if ( $('#action').val() != 'create' )
             {

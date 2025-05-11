@@ -82,3 +82,6 @@ Route::get('pos_acumulacion_convertir_en_factura_electronica/{vtas_doc_encabezad
 
 // RESTAURANTE
 Route::resource('pos_factura_restaurante', 'VentasPos\FacturaRestauranteController');
+
+
+Route::resource('pos_clientes', 'VentasPos\ClienteController');
