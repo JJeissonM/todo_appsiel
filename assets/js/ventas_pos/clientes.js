@@ -430,6 +430,8 @@ $(document).ready(function () {
       $("#myModal2 .close").show();
 
       $("#contenido_modal2").html(data);
+
+      $('#razon_social').parent().parent().hide();
     });
   }
 
