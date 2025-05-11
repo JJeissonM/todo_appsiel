@@ -23,6 +23,10 @@ class ClienteController extends ModeloController
         {
             switch ( $lista_campos[$i]['name'] )
             {
+                case 'vendedor_id':
+                    $lista_campos[$i]['value'] = 1;
+                    break;
+
                 case 'inv_bodega_id':
                     $lista_campos[$i]['value'] = config('ventas.inv_bodega_id');
                     break;
