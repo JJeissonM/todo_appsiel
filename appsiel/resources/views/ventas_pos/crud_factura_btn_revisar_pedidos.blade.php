@@ -16,6 +16,12 @@
         <button class="btn btn-success btn-xs" id="btn_revisar_anticipos">
             <i class="fa fa-money"></i> Revisar anticipos
         </button>
+        
+        &nbsp; &nbsp; &nbsp;
+
+        <button class="btn btn-default btn-xs" id="btn_update_uniqid">
+            <i class="fa fa-circle"></i> Refresh UniqId
+        </button>
 
 	</div>
 </div>

@@ -248,10 +248,17 @@ class FacturaPosController extends TransaccionController
     
     public function get_doc_encabezado_por_uniqid( $uniqid )
     {
+        FacturaPos::create([
+            'uniqid' => '6821cf049bf85',
+            'empresa_id' => 1,
+            'pdv_id' => 1,
+            'core_tipo_transaccion_id' => 1,
+            'core_tipo_doc_app_id' => 1,
+        ]);
         $doc_encabezado = FacturaPos::where('uniqid', $uniqid)->get()->first();
 
         if ( $doc_encabezado == null ) {
-            return 'null'; // No existe
+            return 'null'; // No existe. Todo Bien.
         }
         
         return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);

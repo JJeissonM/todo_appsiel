@@ -1085,75 +1085,77 @@ $(document).ready(function () {
           tiempo_espera_guardar_factura = parseInt( $('#tiempo_espera_guardar_factura').val() ) * 1000;
         }
 
-        var url = url_raiz + "/" + "pos_get_doc_encabezado_por_uniqid" + "/" + $("#uniqid").val();
-
-        $.ajax({
-          url: url,
-          type: 'GET',
-          async: false,
-          timeout: tiempo_espera_guardar_factura,
-          success: function( doc_encabezado, status, jqXHR ) {
-            if ( doc_encabezado != 'null')
-            {
-              var error_label = 'Error 500. Validación del servidor.';
-              Swal.fire({
-                icon: 'error',
-                title: 'FACTURA YA FUE ALMACENADA. Por favor, recargue la página y revisela en el botón Consultar Facturas!',
-                text: error_label 
-              });
-
-              puede_continuar = false;
-
-            }   else{
-              puede_continuar = true;
-            }     
-          },
-          error: function( response, textStatus, jqXHR1 ) {        
-              
-              $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-              $("#btn_guardando").attr("id", "btn_guardar_factura");
-              $("#btn_guardar_factura").removeAttr("disabled");
-
-              var error_label = 'Pérdida de conexión de INTERNET.';
-                Swal.fire({
-                  icon: 'error',
-                  title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                  text: error_label 
-                }); 
-                
-              puede_continuar = false;
-            }
-        });
-
-        if ( !puede_continuar ) {
-          return false;
-        }
-
         var url = $("#form_create").attr("action");
-        $.ajax({
+        $f.data('locked', false);
+
+       //Guardamos la referencia al formulario
+       var $f = $("#form_create");
+       //Comprobamos si el semaforo esta en verde (1)
+       if ($f.data('locked') != undefined && !$f.data('locked')){
+        //No esta bloqueado aun, bloqueamos, preparamos y enviamos la peticion
+         $.ajax({
             url: url,
             data: data,
             type: 'POST',
             async: false,
+            cache: false,
             timeout: tiempo_espera_guardar_factura,
-            success: function( doc_encabezado ) {
-              finalizar_almacenamiento_factura( doc_encabezado );
+             data: $f.serialize(), //por ejemplo
+             beforeSend: function(){ 
+              $f.data('locked', true);  // (2)
             },
-            error: function( response, textStatus, jqXHR ) {
-              
-              $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-              $("#btn_guardando").attr("id", "btn_guardar_factura");
-              $("#btn_guardar_factura").removeAttr("disabled");
+             success: function( doc_encabezado ){
+                finalizar_almacenamiento_factura( doc_encabezado );
+              },
+             error: function( xhr ){
+                $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+                $("#btn_guardando").attr("id", "btn_guardar_factura");
+                $("#btn_guardar_factura").removeAttr("disabled");
 
-              var error_label = 'Pérdida de conexión de INTERNET.';
-                Swal.fire({
-                  icon: 'error',
-                  title: '2. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                  text: error_label + JSON.stringify(response)  + "\n" +  textStatus  + "\n" +  JSON.stringify(jqXHR)
-             
-                });
+                console.log( 'xhr:', xhr );
+
+                var status_text = xhr.statusText; // Respuesta siempre
+                var response_text = xhr.responseText; // Solo cuando hay respuesta del servidor
+                var server_error_code = xhr.status; // Código de error HTTP. 0 cuando no hay respuesta del servidor
+
+                let position = status_text.search("NetworkError");
+                if ( position != -1 ) {
+                  var error_label = 'Error ' + server_error_code + '. Pérdida de conexión de INTERNET.';
+                  Swal.fire({
+                    icon: 'error',
+                    title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                    text: error_label
+                  }); 
+                  
+                  puede_continuar = false;
+
+                  return false;
+                }
+
+                position = response_text.search("Duplicate entry");
+                console.log('2 position: ', position);
+                if ( position == -1 ) {
+                  var error_label = 'Error ' + server_error_code + '. Validación del servidor.';
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'FACTURA YA FUE ALMACENADA. Por favor, recargue la página y revisela en el botón Consultar Facturas!',
+                    text: error_label 
+                  });
+                  
+                  puede_continuar = false;
+
+                  return false;
+                }
+              },
+             complete: function(){ 
+              $f.data('locked', false);  
             }
-        });
+         });
+      }else{
+         //Bloqueado!!!
+
+         console.log('Bloqueado!!!' + $f.data('locked'));
+      }
   });
 
   function finalizar_almacenamiento_factura( doc_encabezado )
@@ -1170,9 +1172,19 @@ $(document).ready(function () {
     enviar_impresion( doc_encabezado );
     
     $("#pedido_id").val(0);
-    $("#uniqid").val( uniqid() );
+    update_uniqid();
 
     return false;
+  }
+
+  $("#btn_update_uniqid").click(function (event) {
+    event.preventDefault();
+    update_uniqid();
+  });  
+
+  function update_uniqid()
+  {
+    $("#uniqid").val( uniqid() );
   }
 
   // Lupa
