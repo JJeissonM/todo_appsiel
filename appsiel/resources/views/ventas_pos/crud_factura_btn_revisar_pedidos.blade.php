@@ -19,7 +19,7 @@
         
         &nbsp; &nbsp; &nbsp;
 
-        <button class="btn btn-default btn-xs" id="btn_update_uniqid">
+        <button class="btn btn-default btn-xs" style="background-color: black !important; color: white !important;" id="btn_update_uniqid">
             <i class="fa fa-circle"></i> REFRESH
         </button>
 

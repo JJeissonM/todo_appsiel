@@ -1135,7 +1135,7 @@ $(document).ready(function () {
                   var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
                   Swal.fire({
                     icon: 'error',
-                    title: 'VALIDACIÓN No cierres. Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con los pasos de facturación.',
+                    title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
                     text: error_label 
                   });
                   
