@@ -1134,7 +1134,7 @@ $(document).ready(function () {
                 if ( position != -1 ) { // -1 la Cadena no existe
                   var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
                   Swal.fire({
-                    icon: 'error',
+                    icon: 'warning',
                     title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
                     text: error_label 
                   });
