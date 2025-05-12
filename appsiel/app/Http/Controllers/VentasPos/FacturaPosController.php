@@ -207,6 +207,13 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
+        FacturaPos::create([
+            'uniqid' => '6821cf049bf85',
+            'empresa_id' => 1,
+            'pdv_id' => 1,
+            'core_tipo_transaccion_id' => 1,
+            'core_tipo_doc_app_id' => 1,
+        ]);
         $lineas_registros = json_decode($request->lineas_registros);
 
         // Crear documento de Ventas
@@ -248,13 +255,6 @@ class FacturaPosController extends TransaccionController
     
     public function get_doc_encabezado_por_uniqid( $uniqid )
     {
-        FacturaPos::create([
-            'uniqid' => '6821cf049bf85',
-            'empresa_id' => 1,
-            'pdv_id' => 1,
-            'core_tipo_transaccion_id' => 1,
-            'core_tipo_doc_app_id' => 1,
-        ]);
         $doc_encabezado = FacturaPos::where('uniqid', $uniqid)->get()->first();
 
         if ( $doc_encabezado == null ) {

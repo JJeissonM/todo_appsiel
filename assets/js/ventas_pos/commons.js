@@ -9,6 +9,7 @@ var productos,
   fecha_vencimiento_default,
   inv_producto_id,
   doc_encabezado, puede_continuar;
+  var locked = false;
 
 $("#btn_nuevo").hide();
 $("#btnPaula").hide();
@@ -1086,12 +1087,9 @@ $(document).ready(function () {
         }
 
         var url = $("#form_create").attr("action");
-        $f.data('locked', false);
-
-       //Guardamos la referencia al formulario
-       var $f = $("#form_create");
+      
        //Comprobamos si el semaforo esta en verde (1)
-       if ($f.data('locked') != undefined && !$f.data('locked')){
+       if ( !locked ){
         //No esta bloqueado aun, bloqueamos, preparamos y enviamos la peticion
          $.ajax({
             url: url,
@@ -1100,14 +1098,13 @@ $(document).ready(function () {
             async: false,
             cache: false,
             timeout: tiempo_espera_guardar_factura,
-             data: $f.serialize(), //por ejemplo
-             beforeSend: function(){ 
-              $f.data('locked', true);  // (2)
+            beforeSend: function(){ 
+              locked = true;
             },
-             success: function( doc_encabezado ){
+            success: function( doc_encabezado ){
                 finalizar_almacenamiento_factura( doc_encabezado );
-              },
-             error: function( xhr ){
+            },
+            error: function( xhr ){
                 $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
                 $("#btn_guardando").attr("id", "btn_guardar_factura");
                 $("#btn_guardar_factura").removeAttr("disabled");
@@ -1133,12 +1130,38 @@ $(document).ready(function () {
                 }
 
                 position = response_text.search("Duplicate entry");
-                console.log('2 position: ', position);
-                if ( position == -1 ) {
-                  var error_label = 'Error ' + server_error_code + '. Validación del servidor.';
+                
+                if ( position != -1 ) { // -1 la Cadena no existe
+                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
                   Swal.fire({
                     icon: 'error',
-                    title: 'FACTURA YA FUE ALMACENADA. Por favor, recargue la página y revisela en el botón Consultar Facturas!',
+                    title: 'VALIDACIÓN DE FACTURA REPETIDA. No cierre la página. Por favor, verifique si la factura está alamcenada en el botón Consultar Facturas!',
+                    text: error_label 
+                  });
+                  
+                  puede_continuar = false;
+
+                  return false;
+                }
+                
+                if ( server_error_code == 500 ) { // Error Interno del Servidor
+                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Por favor, comuníquese con soporte.';
+                  Swal.fire({
+                    icon: 'error',
+                    title: '2. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
+                    text: error_label 
+                  });
+                  
+                  puede_continuar = false;
+
+                  return false;
+                }
+                
+                if ( server_error_code != 500 ) { // Error Interno del Servidor
+                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Por favor, comuníquese con soporte.';
+                  Swal.fire({
+                    icon: 'error',
+                    title: '3. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
                     text: error_label 
                   });
                   
@@ -1147,14 +1170,13 @@ $(document).ready(function () {
                   return false;
                 }
               },
-             complete: function(){ 
-              $f.data('locked', false);  
+            complete: function(){ 
+              locked = false;  
             }
          });
       }else{
          //Bloqueado!!!
-
-         console.log('Bloqueado!!!' + $f.data('locked'));
+         console.log( 'Bloqueado!!!' );
       }
   });
 
