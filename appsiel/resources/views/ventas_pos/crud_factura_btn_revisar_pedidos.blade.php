@@ -20,7 +20,7 @@
         &nbsp; &nbsp; &nbsp;
 
         <button class="btn btn-default btn-xs" id="btn_update_uniqid">
-            <i class="fa fa-circle"></i> Refresh UniqId
+            <i class="fa fa-circle"></i> REFRESH
         </button>
 
 	</div>

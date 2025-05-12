@@ -1135,7 +1135,7 @@ $(document).ready(function () {
                   var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
                   Swal.fire({
                     icon: 'error',
-                    title: 'VALIDACIÓN DE FACTURA REPETIDA. No cierre la página. Por favor, verifique si la factura está alamcenada en el botón Consultar Facturas!',
+                    title: 'VALIDACIÓN No cierres. Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con los pasos de facturación.',
                     text: error_label 
                   });
                   
