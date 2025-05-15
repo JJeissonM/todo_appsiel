@@ -6,25 +6,30 @@
     
     $user = \Auth::user();
     
-    if ( !$user->hasPermissionTo('core_bloquear_menu_reportes') )
+    if( $user != null)
     {
-        $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
-        
-        if ( !$reportes->isEmpty() ) {
+        if ( !$user->hasPermissionTo('core_bloquear_menu_reportes') )
+        {
+            $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
+            
+            if ( !$reportes->isEmpty() ) {
 
-                $item_reporte = '<li class="dropdown">
-                                    <a href="#" style="color: #FFFFFF !important;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Reportes <span class="caret"></span></a>
-                                    <ul class="dropdown-menu sub-menu" style="background-color: #42A3DC !important;">';
-                                        foreach($reportes as $un_reporte)
-                                        {
-                                            $item_reporte .= '<li> <a href="'.url('vista_reporte?id='.$un_reporte->core_app_id.'&reporte_id='.$un_reporte->id).'" style="color: #FFFFFF !important;">'.$un_reporte->descripcion.'</a>
-                                                            </li>';
-                                        }
+                    $item_reporte = '<li class="dropdown">
+                                        <a href="#" style="color: #FFFFFF !important;" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"> Reportes <span class="caret"></span></a>
+                                        <ul class="dropdown-menu sub-menu" style="background-color: #42A3DC !important;">';
+                                            foreach($reportes as $un_reporte)
+                                            {
+                                                $item_reporte .= '<li> <a href="'.url('vista_reporte?id='.$un_reporte->core_app_id.'&reporte_id='.$un_reporte->id).'" style="color: #FFFFFF !important;">'.$un_reporte->descripcion.'</a>
+                                                                </li>';
+                                            }
 
-                $item_reporte .= '   </ul>
-                                </li>';
+                    $item_reporte .= '   </ul>
+                                    </li>';
+            }
         }
     }
+
+    
 ?>
 
 @if (!Auth::guest())

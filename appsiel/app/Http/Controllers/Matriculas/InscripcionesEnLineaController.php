@@ -27,12 +27,13 @@ class InscripcionesEnLineaController extends Controller
 {
     public function index()
     {
-        return redirect( 'inscripciones_en_linea/create' );
+        return redirect( url('/') . '/inscripciones_en_linea/create' );
     }
 
     public function create()
     {
-        $modelo = Modelo::find( 323 );
+        $modelo = Modelo::where( 'modelo', 'InscripcionEnLinea' )->get()->first();
+
         $lista_campos = ModeloController::get_campos_modelo($modelo, '', 'create');
 
         $form_create = [
