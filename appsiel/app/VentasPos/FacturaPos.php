@@ -350,6 +350,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.creado_por',
                 'vtas_pos_doc_encabezados.modificado_por',
                 'vtas_pos_doc_encabezados.created_at',
+                'vtas_pos_doc_encabezados.updated_at',
                 'vtas_pos_doc_encabezados.lineas_registros_medios_recaudos',
                 'vtas_pos_doc_encabezados.valor_total',
                 'vtas_pos_doc_encabezados.ventas_doc_relacionado_id',
