@@ -46,17 +46,11 @@
 								if( $movimiento->Cantidad != 0)
 								{
 									$costo_unitario = $movimiento->Costo / $movimiento->Cantidad;
-								}else{
-									$movimiento->Costo = 0;	
 								}
 
-								if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
-								{
-									$movimiento->Costo = $item->get_costo_promedio( 0 ) * $movimiento->Cantidad;
-									if( $movimiento->Cantidad > 0 && $fecha_corte != date('Y-m-d'))
-									{
-										$costo_unitario = $movimiento->Costo / $movimiento->Cantidad;
-									}
+								if ( $movimiento->Costo < 0 || $fecha_corte == date('Y-m-d') ) {
+									$costo_unitario = $item->get_costo_promedio();
+									$movimiento->Costo = $movimiento->Cantidad * $costo_unitario;
 								}
 							?>
 							<tr>
