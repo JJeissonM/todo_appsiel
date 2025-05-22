@@ -346,7 +346,6 @@ class ReporteController extends Controller
 
         return $view;
     }
-
     
 
     // FORMULARIO STOCK MINIMO

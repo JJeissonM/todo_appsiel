@@ -53,7 +53,7 @@
 								if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
 								{
 									$movimiento->Costo = $item->get_costo_promedio( 0 ) * $movimiento->Cantidad;
-									if( $movimiento->Cantidad != 0)
+									if( $movimiento->Cantidad > 0 && $fecha_corte != date('Y-m-d'))
 									{
 										$costo_unitario = $movimiento->Costo / $movimiento->Cantidad;
 									}
