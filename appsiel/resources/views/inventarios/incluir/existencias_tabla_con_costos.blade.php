@@ -50,7 +50,7 @@
                 if( $productos[$i]['id'] != 0 )
                 {
                     $total_cantidad+= $productos[$i]['Cantidad'];
-                    $total_costo_total+= $productos[$i]['Costo'];
+                    $total_costo_total+= $productos[$i]['Cantidad'] * $productos[$i]['CostoPromedio'];
                 }
             } ?>
             <tr>
