@@ -7,6 +7,9 @@ use App\Inventarios\InvMovimiento;
 
 class StockAmountService
 {
+    /**
+     * 
+     */
     public function get_stock_amount_item($inv_bodega_id, $inv_producto_id, $deadline_date)
     {
         $array_wheres = [
@@ -25,7 +28,9 @@ class StockAmountService
         return $cantidad;
     }
 
-
+    /**
+     * 
+     */
     public function get_total_cost_amount_item($inv_bodega_id, $inv_producto_id, $deadline_date)
     {
         $array_wheres = [
@@ -48,6 +53,9 @@ class StockAmountService
         return $costo_total;
     }
 
+    /**
+     * 
+     */
     public function validate_stock_document_lines($lines, $warehouse_id, $fecha)
     {
         if (config('appsiel.inventories.allow_negative_stock')) {
@@ -78,6 +86,9 @@ class StockAmountService
         ];
     }
 
+    /**
+     * 
+     */
     public function prepare_lines($lines, $warehouse_id, $fecha)
     {
         $arr_lines = [];
@@ -101,6 +112,9 @@ class StockAmountService
         return $arr_lines;
     }
 
+    /**
+     * 
+     */
     public function get_date_last_movement($warehouse_id, $inv_producto_id)
     {
         $movement_line = InvMovimiento::where([

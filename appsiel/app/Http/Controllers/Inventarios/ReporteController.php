@@ -70,6 +70,9 @@ class ReporteController extends Controller
         return view('inventarios.existencias',compact('bodegas','items','grupo_inventario','miga_pan'));
     }
 
+    /**
+     * Reporte esta en el Menu de Auditoria y Control
+     */
     public function ajax_existencias(Request $request)
     {
         $obj = new FiltroMovimientos();
@@ -127,6 +130,7 @@ class ReporteController extends Controller
                     continue;
                 }
 
+                // Costo total del movimiento de inventarios del item
                 $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item_id, $fecha_corte);
 
                 //$productos[$i]['Costo'] = $movin_filtrado->where('inv_bodega_id', $bodega_id)->where('inv_producto_id', $item_id)->sum('costo_total');
@@ -140,7 +144,14 @@ class ReporteController extends Controller
 
             $costo_promedio = 0;
             if ($total_cantidad_item != 0) {
+
                 $costo_promedio = $total_costo_item / $total_cantidad_item;
+
+                if ( $total_costo_item < 0 || $fecha_corte == date('Y-m-d') ) {
+                    $costo_promedio = $item->get_costo_promedio();
+                    $total_costo_item = $total_cantidad_item * $costo_promedio;
+                }
+
                 for ($i2=$cantidad_bodegas; $i2 > 0; $i2--) {
                     if (isset($productos[$i - $i2]['CostoPromedio'])) {
                         $productos[$i - $i2]['CostoPromedio'] = $costo_promedio;
