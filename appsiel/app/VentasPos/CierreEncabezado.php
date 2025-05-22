@@ -4,7 +4,7 @@ namespace App\VentasPos;
 
 use App\Ventas\VtasPedido;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
@@ -88,7 +88,10 @@ class CierreEncabezado extends Model
 
     public static function get_campos_adicionales_create($lista_campos)
     {
-        if ( (int)config('ventas_pos.bloquear_cierre_si_hay_pedidos_pendientes') ) {
+        $user = Auth::user();
+
+        if ( $user->can('bloquear_cierre_si_hay_pedidos_pendientes') ) {
+
             $cantidad_pedidos_pendientes = VtasPedido::where('estado','Pendiente')->count();
 
             if($cantidad_pedidos_pendientes > 0)
