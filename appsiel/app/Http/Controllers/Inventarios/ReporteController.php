@@ -8,7 +8,7 @@ use App\Core\Tercero;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
-
+use App\Inventarios\InvBarcodesForPrint;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
@@ -25,6 +25,7 @@ use App\Inventarios\Services\FiltroMovimientos;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;
+use Illuminate\Support\Facades\Schema;
 
 class ReporteController extends Controller
 {
@@ -510,7 +511,15 @@ class ReporteController extends Controller
 
     public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id)
     {
-        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id);
+        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id);        
+
+        if ( Schema::hasTable( 'inv_barcodes_for_print' ) )
+        {
+            InvBarcodesForPrint::where([
+                                        [ 'id', '>', 0 ]
+                                    ])
+                                ->delete();
+        }
 
         $listado = collect([]);
         foreach ($items as $item) {
@@ -552,10 +561,22 @@ class ReporteController extends Controller
                     break;
             }
 
-
-
-            for ($i=0; $i < $cantidad_etiquetas; $i++) { 
+            for ($i=0; $i < $cantidad_etiquetas; $i++)
+            { 
                 $listado->push($item);
+
+                if ( Schema::hasTable( 'inv_barcodes_for_print' ) && $item->codigo_barras != null )
+                {
+                    InvBarcodesForPrint::create([
+                        'item_id' => $item->id,
+                        'label' => $item->label,
+                        'barcode' => $item->codigo_barras,
+                        'uom_1' => $item->unidad_medida1,
+                        'size' => $item->unidad_medida2,
+                        'supplier_code' => $item->get_codigo_proveedor(),
+                        'reference' => ($item->referencia == null) ? '' : $item->referencia
+                    ]);
+                }
             }
         }
 
