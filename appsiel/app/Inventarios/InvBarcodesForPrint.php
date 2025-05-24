@@ -8,7 +8,7 @@ class InvBarcodesForPrint extends Model
 {
     protected $table = 'inv_barcodes_for_print'; 
 
-    protected $fillable = [ 'item_id', 'label', 'barcode', 'reference', 'uom_1', 'size', 'supplier_code' ];
+    protected $fillable = [ 'item_id', 'label', 'barcode', 'reference', 'uom_1', 'size', 'supplier_code', 'unit_price' ];
 
     public function item()
     {

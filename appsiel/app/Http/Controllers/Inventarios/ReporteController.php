@@ -25,6 +25,7 @@ use App\Inventarios\Services\FiltroMovimientos;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\MovementService;
 use App\Inventarios\Services\StockAmountService;
+use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Support\Facades\Schema;
 
 class ReporteController extends Controller
@@ -515,10 +516,14 @@ class ReporteController extends Controller
 
         if ( Schema::hasTable( 'inv_barcodes_for_print' ) )
         {
-            InvBarcodesForPrint::where([
-                                        [ 'id', '>', 0 ]
-                                    ])
-                                ->delete();
+            InvBarcodesForPrint::truncate();
+
+            $todos_los_precios = ListaPrecioDetalle::where([
+                                ['lista_precios_id', '=', (int)config('ventas.lista_precios_id')],
+                                ['fecha_activacion', '<=', date('Y-m-d')]
+                            ])
+                            ->orderBy('fecha_activacion', 'ASC')
+                            ->get();
         }
 
         $listado = collect([]);
@@ -567,6 +572,9 @@ class ReporteController extends Controller
 
                 if ( Schema::hasTable( 'inv_barcodes_for_print' ) && $item->codigo_barras != null )
                 {
+                    $precio_venta = $todos_los_precios->where('inv_producto_id', $item->id)->last();
+                                                //dd( $todos_los_precios->toArray(), $precio_venta, $precio_venta->precio);
+
                     InvBarcodesForPrint::create([
                         'item_id' => $item->id,
                         'label' => $item->label,
@@ -574,7 +582,8 @@ class ReporteController extends Controller
                         'uom_1' => $item->unidad_medida1,
                         'size' => $item->unidad_medida2,
                         'supplier_code' => $item->get_codigo_proveedor(),
-                        'reference' => ($item->referencia == null) ? '' : $item->referencia
+                        'reference' => ($item->referencia == null) ? '' : $item->referencia,
+                        'unit_price' => ($precio_venta == null) ? 0 : $precio_venta->precio
                     ]);
                 }
             }
