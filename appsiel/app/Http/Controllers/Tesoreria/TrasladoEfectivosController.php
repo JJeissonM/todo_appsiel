@@ -50,8 +50,6 @@ class TrasladoEfectivosController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
         
-        //$nombre = true;
-        
         return view('tesoreria.traslados_efectivo.show', compact('empresa', 'botones_anterior_siguiente', 'doc_encabezado', 'doc_registros', 'registros_contabilidad', 'miga_pan', 'id', 'id_transaccion', 'documento_vista'));
     }
 
@@ -137,7 +135,7 @@ class TrasladoEfectivosController extends TransaccionController
         // 4to. Se marca commo anulado el documento
         $documento->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
 
-        return redirect('tesoreria/traslado_efectivo/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Documento de traslado de efectico fue anulado correctamente.');
+        return redirect( 'tesoreria/traslado_efectivo/' . $id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion'))->with('flash_message', 'Documento de traslado de efectico fue anulado correctamente.');
     }
 
 

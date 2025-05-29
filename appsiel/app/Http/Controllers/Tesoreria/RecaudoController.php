@@ -135,6 +135,8 @@ class RecaudoController extends TransaccionController
         $total_recaudo = 0;
         $cant = count($lineas_registros)-1;
 
+        $detalle_operacion = '';
+
         for ($i=0; $i < $cant; $i++) 
         {
             // Se obtienen las id de los campos que se van a almacenar. Los campos vienen separados por "-" en cada columna de la tabla 

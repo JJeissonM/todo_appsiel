@@ -931,6 +931,9 @@ class FacturaPosController extends TransaccionController
         $this->datos['core_tercero_id'] = $request->cliente_proveedor_id;
         $this->datos['descripcion'] = $request->detalle_operacion;
 
+        
+        $detalle_operacion = $request->detalle_operacion;
+
         $modelo = Modelo::find($request->id_modelo);
 
         // Guardar encabezado del documento
@@ -1010,6 +1013,7 @@ class FacturaPosController extends TransaccionController
             $this->datos['saldo_pendiente'] = $valor_movimiento * -1;
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
+            $this->datos['detalle'] = $detalle_operacion;
             CxpMovimiento::create($this->datos);
         }
 
@@ -1020,6 +1024,7 @@ class FacturaPosController extends TransaccionController
             $this->datos['saldo_pendiente'] = $valor_movimiento;
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
+            $this->datos['detalle'] = $detalle_operacion;
             CxpMovimiento::create($this->datos);
         }
 
@@ -1030,6 +1035,7 @@ class FacturaPosController extends TransaccionController
             $this->datos['saldo_pendiente'] = $valor_movimiento;
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
+            $this->datos['detalle'] = $detalle_operacion;
             CxcMovimiento::create($this->datos);
         }
 
@@ -1040,6 +1046,7 @@ class FacturaPosController extends TransaccionController
             $this->datos['saldo_pendiente'] = $valor_movimiento * -1;
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
+            $this->datos['detalle'] = $detalle_operacion;
             CxcMovimiento::create($this->datos);
         }
 

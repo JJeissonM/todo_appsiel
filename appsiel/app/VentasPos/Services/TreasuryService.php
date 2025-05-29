@@ -10,17 +10,23 @@ use \View;
 class TreasuryService
 {
     /**
-     * C
+     * Crea un abono a un documento CxC.
      */
     public function crear_abonos_documento($doc_encabezado_factura, $lineas_registros_medios_recaudos)
     {
-        (new RecaudoCxcController())->store( $this->build_request_object($doc_encabezado_factura, $lineas_registros_medios_recaudos) );
+        $aux_object = $this->get_lineas_registros_medios_recaudos( $lineas_registros_medios_recaudos );
+
+        if ( $aux_object->valor_abono == 0) {
+            return false;
+        }
+        
+        (new RecaudoCxcController())->store( $this->build_request_object($doc_encabezado_factura, $aux_object) );
     }
 
     /**
      * Construye el objeto de solicitud para crear un cruce de documentos CxC.
      */
-    public function build_request_object( $doc_encabezado_factura, $lineas_registros_medios_recaudos)
+    public function build_request_object( $doc_encabezado_factura, $aux_object)
     {
         $request = new Request();
 
@@ -49,6 +55,27 @@ class TreasuryService
         $request["lineas_registros_descuento_pronto_pagos"] = "";
         $request["lineas_registros_asientos_contables"] = "";
 
+        $request["lineas_registros_efectivo"] = '[' . $aux_object->lineas_registros_efectivo . ']';
+
+        $request["lineas_registros_transferencia_consignacion"] = '[' . $aux_object->lineas_registros_transferencia_consignacion . ']';
+
+        $cxc_movimiento_id = CxcMovimiento::where('core_empresa_id', $doc_encabezado_factura->core_empresa_id)
+            ->where('core_tipo_transaccion_id', $doc_encabezado_factura->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc_encabezado_factura->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc_encabezado_factura->consecutivo)
+            ->first()->id;
+
+        $request["lineas_registros"] = '[{"id_doc":"' . $cxc_movimiento_id . '","Cliente":"--","Documento interno":"--","Fecha":"--","Fecha vencimiento":"--","Valor Documento":"00","Valor pagado":"00","Saldo pendiente":"00","abono":"' . $aux_object->valor_abono . '"},{"id_doc":"","Cliente":"","Documento interno":"00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
+
+        $request["lineas_registros_tarjeta_debito"] = "";
+        $request["lineas_registros_tarjeta_credito"] = "";
+        $request["lineas_registros_cheques"] = "";
+
+        return $request;
+    }
+
+    public function get_lineas_registros_medios_recaudos( $lineas_registros_medios_recaudos )
+    {
         $valor_abono = 0;
         $lineas_registros_efectivo = '';
         $lineas_registros_transferencia_consignacion = '';
@@ -84,22 +111,10 @@ class TreasuryService
             $lineas_registros_efectivo .= '{"tipo_operacion_id_efectivo":"","teso_motivo_id_efectivo":"00","caja_id_efectivo":""}';    
         }
 
-        $request["lineas_registros_efectivo"] = '[' . $lineas_registros_efectivo . ']';
-
-        $request["lineas_registros_transferencia_consignacion"] = '[' . $lineas_registros_transferencia_consignacion . ']';
-
-        $cxc_movimiento_id = CxcMovimiento::where('core_empresa_id', $doc_encabezado_factura->core_empresa_id)
-            ->where('core_tipo_transaccion_id', $doc_encabezado_factura->core_tipo_transaccion_id)
-            ->where('core_tipo_doc_app_id', $doc_encabezado_factura->core_tipo_doc_app_id)
-            ->where('consecutivo', $doc_encabezado_factura->consecutivo)
-            ->first()->id;
-
-        $request["lineas_registros"] = '[{"id_doc":"' . $cxc_movimiento_id . '","Cliente":"--","Documento interno":"--","Fecha":"--","Fecha vencimiento":"--","Valor Documento":"00","Valor pagado":"00","Saldo pendiente":"00","abono":"' . $valor_abono . '"},{"id_doc":"","Cliente":"","Documento interno":"00","Fecha":"","Fecha vencimiento":"","Valor Documento":"","Valor pagado":"","Saldo pendiente":""}]';
-
-        $request["lineas_registros_tarjeta_debito"] = "";
-        $request["lineas_registros_tarjeta_credito"] = "";
-        $request["lineas_registros_cheques"] = "";
-
-        return $request;
+        return (object)[
+            'lineas_registros_efectivo' => $lineas_registros_efectivo,
+            'lineas_registros_transferencia_consignacion' => $lineas_registros_transferencia_consignacion,
+            'valor_abono' => $valor_abono
+        ];
     }
 }

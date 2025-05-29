@@ -51,12 +51,8 @@
         <a href="#" id="close" class="close">&times;</a>
         <strong>¡ADVERTENCIA!</strong>
         <br>
-        Al anular el documento se eliminan los registros del movimiento contable relacionado. La anulación no puede revertirse. Si quieres confirmar, hacer click en: 
-        @if(isset($nombre))
-                <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
-        @else
-            <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/recaudos_anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
-        @endif
+        Al anular el documento se eliminan los registros del movimiento contable relacionado. La anulación no puede revertirse. Si quieres confirmar, hacer click en:
+        <a class="btn btn-danger btn-sm" href="{{ url( 'tesoreria/traslado_efectivo/anular/'.$id.$variables_url ) }}"><i class="fa fa-arrow-right" aria-hidden="true"></i> Anular </a>
     </div>
 @endsection
 
