@@ -492,18 +492,22 @@ class VentaController extends TransaccionController
     */
     public function enviar_por_email( $id )
     {
+        $this->set_variables_globales();
+        
         $documento_vista = $this->generar_documento_vista( $id, 'ventas.formatos_impresion.'.Input::get('formato_impresion_id') );
 
-        $tercero = Tercero::find( $this->doc_encabezado->core_tercero_id );
+        $doc_encabezado = app( $this->transaccion->modelo_encabezados_documentos )->get_registro_impresion( $id );
 
-        $asunto = $this->doc_encabezado->documento_transaccion_descripcion.' No. '.$this->doc_encabezado->documento_transaccion_prefijo_consecutivo;
+        $tercero = Tercero::find( $doc_encabezado->core_tercero_id );
+
+        $asunto = $doc_encabezado->documento_transaccion_descripcion.' No. '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
 
         $cuerpo_mensaje = 'Saludos, <br/> Le hacemos llegar su '. $asunto;
 
         $email_destino = $tercero->email;
-        if ( $this->doc_encabezado->contacto_cliente_id != 0 )
+        if ( $doc_encabezado->contacto_cliente_id != 0 )
         {
-            $email_destino = $this->doc_encabezado->contacto_cliente->tercero->email;
+            $email_destino = $doc_encabezado->contacto_cliente->tercero->email;
         }
 
         $vec = EmailController::enviar_por_email_documento( $this->empresa->descripcion, $email_destino, $asunto, $cuerpo_mensaje, $documento_vista );

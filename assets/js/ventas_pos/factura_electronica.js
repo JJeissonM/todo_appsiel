@@ -142,7 +142,8 @@ $(document).ready(function () {
             $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
 
             $("#pedido_id").val(0);
-                        
+            $("#object_anticipos").val('null');
+            
             ventana_imprimir_fe( url_print );
             resetear_ventana();
 

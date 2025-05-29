@@ -258,6 +258,72 @@
 					</div>
 				</div>
 
+				
+
+				<h4> Parámetros por defecto para Recaudos de CxC </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$recaudos_cxc_modelo_id = 153;
+								if( isset($parametros['recaudos_cxc_modelo_id'] ) )
+								{
+									$recaudos_cxc_modelo_id = $parametros['recaudos_cxc_modelo_id'];
+								}
+							?>
+							{{ Form::bsSelect('recaudos_cxc_modelo_id', $recaudos_cxc_modelo_id, 'Modelo para Recaudos de CxC', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$recaudos_cxc_tipo_transaccion_id = 32;
+								if( isset($parametros['recaudos_cxc_tipo_transaccion_id'] ) )
+								{
+									$recaudos_cxc_tipo_transaccion_id = $parametros['recaudos_cxc_tipo_transaccion_id'];
+								}
+							?>
+							{{ Form::bsSelect('recaudos_cxc_tipo_transaccion_id', $recaudos_cxc_tipo_transaccion_id, 'Tipo de transacción para Recaudos de CxC', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$recaudos_cxc_tipo_doc_app_id = 3;
+								if( isset($parametros['recaudos_cxc_tipo_doc_app_id'] ) )
+								{
+									$recaudos_cxc_tipo_doc_app_id = $parametros['recaudos_cxc_tipo_doc_app_id'];
+								}
+							?>
+							{{ Form::bsSelect('recaudos_cxc_tipo_doc_app_id', $recaudos_cxc_tipo_doc_app_id, 'Documento para Recaudos de CxC', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tipo_operacion_recaudos_cxc = 'recaudo-cartera';
+								if( isset($parametros['tipo_operacion_recaudos_cxc'] ) )
+								{
+									$tipo_operacion_recaudos_cxc = $parametros['tipo_operacion_recaudos_cxc'];
+								}
+
+								$arr_tipo_operacion_recaudos_cxc = json_decode( '{"":"","recaudo-cartera":"Recaudo cartera clientes","anticipo-clientes":"Anticipo clientes","otros-recaudos":"Otros recaudos","prestamo-recibido":"Préstamo financiero (CxP)","pago-proveedores":"Pago a proveedores","anticipo-proveedor":"Anticipo proveedor","otros-pagos":"Otros pagos","prestamo-entregado":"Préstamo financiero (Cartera CxC)","traslado-efectivo":"Traslado"}', true );
+							?>
+							{{ Form::bsSelect('tipo_operacion_recaudos_cxc', $tipo_operacion_recaudos_cxc, 'Tipo de Operación para Recaudos de CxC', $arr_tipo_operacion_recaudos_cxc, ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros reporte cartera Estudiantes  </h4>
 				<hr>
 				<div class="row">

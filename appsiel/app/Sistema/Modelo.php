@@ -151,6 +151,7 @@ class Modelo extends Model
     public static function opciones_campo_select()
     {
         $opciones = Modelo::select('id', 'descripcion')
+            ->orderBy('descripcion')
             ->get();
 
         $vec[''] = '';

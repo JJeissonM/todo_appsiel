@@ -1103,6 +1103,12 @@ $(document).ready(function () {
             },
             success: function( doc_encabezado ){
                 finalizar_almacenamiento_factura( doc_encabezado );
+                /*Swal.fire({
+                    icon: 'success',
+                    title: 'Mensaje Aux. FACTURA GUARDADA.',
+                    text: 'OK'
+                  }); 
+                */
             },
             error: function( xhr ){
                 $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
@@ -1194,6 +1200,7 @@ $(document).ready(function () {
     enviar_impresion( doc_encabezado );
     
     $("#pedido_id").val(0);
+    $("#object_anticipos").val('null');
     update_uniqid();
 
     return false;

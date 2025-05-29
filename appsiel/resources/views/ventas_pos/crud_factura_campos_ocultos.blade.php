@@ -124,5 +124,7 @@ value="{{ config('ventas_pos.formato_impresion_pedidos') }}">
 
 <input type="hidden" name="uniqid" id="uniqid" value="{{ uniqid() }}">
 
+<input type="hidden" name="object_anticipos" id="object_anticipos" value="null">
+
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>

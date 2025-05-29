@@ -102,7 +102,9 @@ class TipoTransaccion extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = TipoTransaccion::where('estado', 'Activo')->select('id', 'descripcion')
+        $opciones = TipoTransaccion::where('estado', 'Activo')
+            ->select('id', 'descripcion')
+            ->orderBy('descripcion')
             ->get();
 
         $vec[''] = '';

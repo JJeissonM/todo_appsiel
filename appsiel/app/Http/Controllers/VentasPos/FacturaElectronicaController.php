@@ -18,8 +18,9 @@ use App\Ventas\VtasDocEncabezado;
 
 use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
-
+use App\VentasPos\Services\CxCService;
 use App\VentasPos\Services\InvoicingService;
+use App\VentasPos\Services\TreasuryService;
 
 class FacturaElectronicaController extends TransaccionController
 {
@@ -34,24 +35,24 @@ class FacturaElectronicaController extends TransaccionController
     public function store(Request $request)
     {
         $invoice_service = new InvoicingService();
-
-        //$request['core_tipo_transaccion_id'] = config('facturacion_electronica.transaction_type_id_default');
-        //$request['core_tipo_doc_app_id'] = config('facturacion_electronica.document_type_id_default');
         
         if ( !isset($request['creado_por']) ) {
             $request['creado_por'] = Auth::user()->email;
         }
         
         $request['estado'] = 'Pendiente';
+        
+        $crear_cruce_con_anticipos = false;
+        $crear_abonos = false; // Cuando es credito y se ingresa alguna línea de Medio de pago
+        if ( $request->object_anticipos != 'null' && $request->object_anticipos != '' )
+        {
+            $request['forma_pago'] = 'credito'; // Si hay anticipos, se asume que es crédito
+
+            $crear_cruce_con_anticipos = true; // Si hay anticipos, se crea el cruce con los anticipos
+            $crear_abonos = true; // Si hay anticipos, se crean los abonos
+        }
 
         $factura_pos_encabezado = $invoice_service->almacenar_factura_pos( $request ); // Con su Remision
-        
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accumulate_one_invoice( $factura_pos_encabezado->id );
-
-        $doc_header_serv = new DocumentHeaderService();
-        $result = $doc_header_serv->convert_to_electronic_invoice( $factura_pos_encabezado->id );
 
         if ( $request->pedido_id != 0) {
             $pedido = VtasPedido::find($request->pedido_id);
@@ -76,16 +77,33 @@ class FacturaElectronicaController extends TransaccionController
             }
         }
 
-        $mensaje = Factura::find((int)$result->new_document_header_id)->enviar_al_proveedor_tecnologico();
-        
+        // Acumular la factura
+        (new AccumulationService( 0 ))->accumulate_one_invoice( $factura_pos_encabezado->id );
+
+        // Convertir a factura electrónica
+        $doc_header_serv = new DocumentHeaderService();
+        $result = $doc_header_serv->convert_to_electronic_invoice( $factura_pos_encabezado->id );
+
+        // Enviar al proveedor tecnológico
+        $vtas_document_header = Factura::find( (int)$result->new_document_header_id );
+        $mensaje = $vtas_document_header->enviar_al_proveedor_tecnologico();        
         if ( $mensaje->tipo != 'mensaje_error' )
         {
             $factura_pos_encabezado->estado = 'Enviada';
             $factura_pos_encabezado->save();
             
-            $vtas_document_header = VtasDocEncabezado::find( (int)$result->new_document_header_id );
             $vtas_document_header->estado = 'Enviada';
             $vtas_document_header->save();
+        }
+        
+        if( $crear_cruce_con_anticipos )
+        {
+            (new CxCService())->crear_cruce_con_anticipos( $vtas_document_header, $request->object_anticipos );
+        }
+
+        if ( $crear_abonos) {
+            $datos = $factura_pos_encabezado->toArray();
+            (new TreasuryService())->crear_abonos_documento( $vtas_document_header, $datos['lineas_registros_medios_recaudos'] );
         }
 
         $url_print = url('/') . '/vtas_imprimir/' . $result->new_document_header_id . '?id=21&id_modelo=244&id_transaccion=52&formato_impresion_id=pos';

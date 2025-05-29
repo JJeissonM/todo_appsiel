@@ -114,7 +114,8 @@
 					$('#cantidad_estudiantes').val( $('#cantidad_estudiantes').val() - 1);
 					$(this).next('.checkbox_aux').text(0);
 				}
-			  });
+			});
+
 
 			$("#btn_cargar_estudiantes").on('click',function(event){
 		    	event.preventDefault();

@@ -175,7 +175,15 @@ use App\Http\Controllers\Sistema\VistaController;
                 LineaNum++;
                 var fila = $(this).closest("tr");
                 var ok = validar_linea();
-                console.log();
+                
+                if( !validar_caja_repetida() ) {
+                    return false;
+                }
+                
+                if( !validar_banco_repetido() ) {
+                    return false;
+                }
+
                 if (ok) {
                     $("#ingreso_registros").attr('class', 'table');
                     
@@ -209,6 +217,52 @@ use App\Http\Controllers\Sistema\VistaController;
                 }
 
             });
+
+            function validar_caja_repetida() {
+                var ok = true;
+                var caja = $('#teso_caja_id').val();
+
+                if (caja != '') {
+                    var LineaNum2 = 1;    
+                    caja += '-';                    
+                     $('#ingreso_registros tr').each(function () {
+                        if ( $('#caja_' + LineaNum2).find('span').text() == caja ) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Alerta!',
+                                text: 'Ya existe un registro con la misma Caja.'
+                            });
+                            ok = false;
+                        }
+                        LineaNum2++;
+                    });
+                }
+
+                return ok;
+            }
+
+            function validar_banco_repetido() {
+                var ok = true;
+                var cuenta = $('#teso_cuenta_bancaria_id').val();
+
+                if (cuenta != '') {
+                    var LineaNum2 = 1;    
+                    cuenta += '-';                    
+                     $('#ingreso_registros tr').each(function () {
+                        if ( $('#cuenta_' + LineaNum2).find('span').text() == cuenta ) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Alerta!',
+                                text: 'Ya existe un registro con la misma Cuenta Bancaria.'
+                            });
+                            ok = false;
+                        }
+                        LineaNum2++;
+                    });
+                }
+
+                return ok;
+            }
 
             function validar_linea() {
                 var ok;

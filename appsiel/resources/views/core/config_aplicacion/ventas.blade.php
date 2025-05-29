@@ -337,7 +337,6 @@
 
 				</div>
 
-				<br>
 
 				<h4> Parámetros por defecto para Pedidos  </h4>
 				<hr>
@@ -353,7 +352,7 @@
 									$pv_modelo_id = $parametros['pv_modelo_id'];
 								}
 							?>
-							{{ Form::bsSelect('pv_modelo_id', $pv_modelo_id, 'Modelo para devoluciones', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('pv_modelo_id', $pv_modelo_id, 'Modelo para pedidos', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -395,6 +394,62 @@
 
 				</div>
 
+				
+
+				<h4> Parámetros por defecto para Cruces de CxC </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cruces_cxc_modelo_id = 174;
+								if( isset($parametros['cruces_cxc_modelo_id'] ) )
+								{
+									$cruces_cxc_modelo_id = $parametros['cruces_cxc_modelo_id'];
+								}
+							?>
+							{{ Form::bsSelect('cruces_cxc_modelo_id', $cruces_cxc_modelo_id, 'Modelo para Cruces de CxC', App\Sistema\Modelo::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cruces_cxc_tipo_transaccion_id = 34;
+								if( isset($parametros['cruces_cxc_tipo_transaccion_id'] ) )
+								{
+									$cruces_cxc_tipo_transaccion_id = $parametros['cruces_cxc_tipo_transaccion_id'];
+								}
+							?>
+							{{ Form::bsSelect('cruces_cxc_tipo_transaccion_id', $cruces_cxc_tipo_transaccion_id, 'Tipo de transacción para Cruces de CxC', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cruces_cxc_tipo_doc_app_id = 0;
+								if( isset($parametros['cruces_cxc_tipo_doc_app_id'] ) )
+								{
+									$cruces_cxc_tipo_doc_app_id = $parametros['cruces_cxc_tipo_doc_app_id'];
+								}
+							?>
+							{{ Form::bsSelect('cruces_cxc_tipo_doc_app_id', $cruces_cxc_tipo_doc_app_id, 'Documento para Cruces de CxC', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 				
 				<h4> Pedidos en restaurantes  </h4>
 				<hr>

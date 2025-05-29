@@ -183,10 +183,6 @@ $('#btn_agregar').click(function(event){
         calcular_totales_medio_recaudos();
         reset_form_registro();
 
-        // Por ahora, Solo se va a permitir agregar una sola línea de recaudo
-        //$("#recaudoModal").modal("hide");
-        //$("#btn_nuevo").hide();
-
         // deshabilitar_campos_form_create();
         $('#btn_guardar').show();
 
@@ -211,6 +207,12 @@ $('#btn_agregar').click(function(event){
 $(document).on('click', '.btn_eliminar_linea_medio_recaudo', function(event) {
     event.preventDefault();
     var fila = $(this).closest("tr");
+    
+    if( fila.find('span').eq(0).text() == '0-' )
+    {
+        $("#object_anticipos").val('null');
+    }   
+
     fila.remove();
     calcular_totales_medio_recaudos();
     if ($('#total_valor_total').text()=='$0.00')
@@ -218,6 +220,8 @@ $(document).on('click', '.btn_eliminar_linea_medio_recaudo', function(event) {
         $('#efectivo_recibido').removeAttr( 'readonly' );
     }
     $("#btn_nuevo").show();
+
+    
 });
 
 function calcular_totales_medio_recaudos()

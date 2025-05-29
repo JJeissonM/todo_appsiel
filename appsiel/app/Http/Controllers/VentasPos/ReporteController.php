@@ -50,6 +50,7 @@ class ReporteController extends Controller
         $caja = TesoCaja::find($pdv->caja_default_id);
         $mensaje = $caja->descripcion;
         $saldo_inicial = TesoMovimiento::get_saldo_inicial($pdv->caja_default_id, 0, $fecha_desde);
+        
         $lineas_movimientos = $this->get_lista_movimientos_caja_pdv($fecha_desde, $fecha_hasta, $pdv->caja_default_id, $lista_por_medios_recaudos);
 
         //$vista_movimiento = View::make('ventas_pos.incluir.movimiento_caja_bancos', compact('fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje'));
@@ -81,6 +82,7 @@ class ReporteController extends Controller
     {
         $array_lista_medios_recaudos = collect();
         foreach ($encabezados_documentos as $documento) {
+            
             $obj_medios_recaudos = $this->get_total_por_medios_recaudos($documento->lineas_registros_medios_recaudos);
 
             if ($documento->forma_pago == 'credito') {

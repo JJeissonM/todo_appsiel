@@ -61,10 +61,12 @@ use App\Tesoreria\TesoCuentaBancaria;
 use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
+use App\VentasPos\Services\CxCService;
 use App\VentasPos\Services\DatafonoService;
 use App\VentasPos\Services\RecipeServices;
 use App\VentasPos\Services\TipService;
 use App\VentasPos\Services\FacturaPosService;
+use App\VentasPos\Services\TreasuryService;
 
 class FacturaPosController extends TransaccionController
 {
@@ -209,6 +211,18 @@ class FacturaPosController extends TransaccionController
     {
         $lineas_registros = json_decode($request->lineas_registros);
 
+        $acumular_factura = false;
+        $crear_cruce_con_anticipos = false;
+        $crear_abonos = false; // Cuando es credito y se ingresa alguna línea de Medio de pago
+        if ( $request->object_anticipos != 'null' && $request->object_anticipos != '' )
+        {
+            $request['forma_pago'] = 'credito'; // Si hay anticipos, se asume que es crédito
+
+            $acumular_factura = true;
+            $crear_cruce_con_anticipos = true; // Si hay anticipos, se crea el cruce con los anticipos
+            $crear_abonos = true; // Si hay anticipos, se crean los abonos
+        }
+
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
 
@@ -240,6 +254,22 @@ class FacturaPosController extends TransaccionController
                     self::actualizar_cantidades_pendientes( $pedido, 'restar' );
                 }
             }
+        }
+
+        if($acumular_factura)
+        {
+            $obj_acumm_serv = new AccumulationService( 0 );
+            $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
+        }   
+        
+        if( $crear_cruce_con_anticipos )
+        {
+            (new CxCService())->crear_cruce_con_anticipos( $doc_encabezado, $request->object_anticipos );
+        }
+
+        if ( $crear_abonos) {
+            $datos = $doc_encabezado->toArray();
+            (new TreasuryService())->crear_abonos_documento( $doc_encabezado, $datos['lineas_registros_medios_recaudos'] );
         }
 
         return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
