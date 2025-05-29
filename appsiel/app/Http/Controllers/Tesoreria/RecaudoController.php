@@ -65,7 +65,6 @@ class RecaudoController extends TransaccionController
      */
     public function create()
     {
-
         $id_transaccion = 8;// 8 = Recaudo cartera
 
         // Se obtiene el modelo según la variable modelo_id  de la url
@@ -222,6 +221,7 @@ class RecaudoController extends TransaccionController
             $this->datos['saldo_pendiente'] = $total_recaudo * -1;
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
+            $this->datos['detalle'] = $detalle_operacion;
             CxcMovimiento::create( $this->datos );
         }
  
@@ -233,6 +233,7 @@ class RecaudoController extends TransaccionController
             $this->datos['saldo_pendiente'] = $total_recaudo;
             $this->datos['fecha_vencimiento'] = $this->datos['fecha'];
             $this->datos['estado'] = 'Pendiente';
+            $this->datos['detalle'] = $detalle_operacion;
             CxpMovimiento::create( $this->datos );
         }
 
