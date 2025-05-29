@@ -4,8 +4,7 @@
         <table class="table table-bordered table-striped">
             {{ Form::bsTableHeader(['Documento','Fecha','Detalle','Abono']) }}
             <tbody>
-                <?php 
-                    //dd($abonos);
+                <?php
                     $total_abono = 0;
                 ?>
                 @foreach($abonos as $linea )
@@ -16,15 +15,21 @@
                             ->where('core_tipo_doc_app_id',$linea->core_tipo_doc_app_id)
                             ->where('consecutivo',$linea->consecutivo)
                             ->get()->first();
-
                             
                             if ($el_documento == null) {
                                 continue;
                             }
+
+                            $prefix_url = 'tesoreria/recaudos_cxc/';
+                            $id_modelo = 153; // Recaudos de CxC
+                            if ( $linea->core_tipo_transaccion_id == 8 ) {
+                                $prefix_url = 'tesoreria/recaudos/';
+                                $id_modelo = 46;
+                            }
                         ?>
 
                         <td class="text-center"> 
-                            <a href="{{ url('tesoreria/recaudos_cxc/'.$el_documento->id.'?id=3&id_modelo=153&id_transaccion=32') }}" target="_blank"> {{ $linea->documento_prefijo_consecutivo }}</a>  
+                            <a href="{{ url( $prefix_url . $el_documento->id.'?id=' . Input::get('id') . '&id_modelo=' . $id_modelo . '&id_transaccion=' . $linea->core_tipo_transaccion_id ) }}" target="_blank"> {{ $linea->documento_prefijo_consecutivo }}</a>  
                         </td>
                         <td> {{ $el_documento->fecha }} </td>
                         <td> {{ $el_documento->descripcion }} </td>
