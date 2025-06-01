@@ -151,7 +151,16 @@ class FacturaPosController extends TransaccionController
         
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
+        $miga_pan = [
+                  [ 
+                    'url' => $this->app->app.'?id='.$this->app->id,
+                    'etiqueta' => $this->app->descripcion
+                    ],
+                  [ 
+                    'url' => 'NO',
+                    'etiqueta' => 'Punto de ventas: ' . $pdv->descripcion
+                    ]
+                ];
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productos = $productos->sortBy('precio_venta');

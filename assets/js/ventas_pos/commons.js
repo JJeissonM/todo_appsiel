@@ -12,6 +12,7 @@ var productos,
   var locked = false;
 
 $("#btn_nuevo").hide();
+$("#btn_cancelar").hide();
 $("#btnPaula").hide();
 
 $("#teso_motivo_id").val(1);
