@@ -119,6 +119,7 @@ class InventoriesServices
                 $cantidad_proporcional = 1;
             }
 
+            // Si la cantidad proporcional es mayor a 1, se debe sacar una parte entera
             $cantidad_a_sacar = 1;
             if ( $cantidad_proporcional > 1 )
             {
@@ -128,8 +129,7 @@ class InventoriesServices
                     $cantidad_a_sacar = $parte_entera_requerida + 1;
                 }
             }else{
-                // $cantidad_a_sacar = 1
-                $cantidad_a_sacar = $cantidad_requerida_a_producir;
+                $cantidad_a_sacar = $cantidad_requerida_a_producir / $cantidad_proporcional;
             }
             
             $cantidad_a_ingresar = $cantidad_a_sacar * $cantidad_proporcional;
@@ -188,6 +188,8 @@ class InventoriesServices
     public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios )
     {
         $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha);
+
+        dd($movimiento);
 
         if ( gettype($movimiento) == "integer" )
         {
