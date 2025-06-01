@@ -189,8 +189,6 @@ class InventoriesServices
     {
         $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha);
 
-        dd($movimiento);
-
         if ( gettype($movimiento) == "integer" )
         {
             return 0;
