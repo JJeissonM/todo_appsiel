@@ -123,7 +123,7 @@
 	</tr>
 	<tr>
 		<td colspan="2">
-			<b>Detalle: </b> {{ $doc_encabezado->descripcion }}
+			<b>Detalle: </b> {!! $doc_encabezado->descripcion !!}
 		</td>
 	</tr>
 @endsection

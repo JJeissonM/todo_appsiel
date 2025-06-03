@@ -52,7 +52,7 @@
     </tr>
     <tr>        
         <td colspan="2" style="border: solid 1px #ddd;">
-            <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+            <b>Detalle: &nbsp;&nbsp;</b> {!! $doc_encabezado->descripcion !!}
         </td>
     </tr>
 @endsection
