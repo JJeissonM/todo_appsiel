@@ -522,7 +522,7 @@ $(document).ready(function () {
 
 	$('#btn_guardar').hide();
 
-	$('#fecha').val( format_fecha( fecha ) );
+	$('#fecha').val( get_fecha_hoy() );
 
 	$('#fecha_vencimiento').val( format_fecha( fecha_vencimiento ) );
 

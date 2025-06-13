@@ -74,6 +74,7 @@ $.fn.calcular_totales_aux = function()
     valor_ajuste_al_peso = valor_redondeado - total_factura;
 
     $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+    $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
 };
 
 $.fn.redondear_a_centena_aux = function(numero, aproximacion_superior = false) 
@@ -159,6 +160,7 @@ $.fn.reset_efectivo_recibido_aux = function()
     $('#lbl_efectivo_recibido').text('$ 0');
     $('#total_cambio').text('$ 0');
     $('#lbl_ajuste_al_peso').text('$ ');
+    $("#valor_ajuste_al_peso").val(0);
     total_cambio = 0;
     $('#btn_guardar_factura').attr('disabled', 'disabled');
 };
@@ -212,6 +214,7 @@ $.fn.checkCookie = function()
         $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
         $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
         $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
+        $("#valor_ajuste_al_peso").val(ultimo_valor_ajuste_al_peso);
     }
        
     $("html, body").animate({scrollTop: $(document).height() + "px"});

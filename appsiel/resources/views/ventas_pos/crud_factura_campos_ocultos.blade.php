@@ -66,6 +66,7 @@
 
 <input type="hidden" name="valor_total_cambio" id="valor_total_cambio" value="0">
 <input type="hidden" name="total_efectivo_recibido" id="total_efectivo_recibido">
+<input type="hidden" name="valor_ajuste_al_peso" id="valor_ajuste_al_peso">
 
 <input type="hidden" name="pedido_id" id="pedido_id" value="{{$pedido_id}}">
 

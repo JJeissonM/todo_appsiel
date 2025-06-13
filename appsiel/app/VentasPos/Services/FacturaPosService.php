@@ -147,9 +147,9 @@ class FacturaPosService
             'total_factura_mas_propina' => '',
             'lbl_total_datafono' => '',
             'total_factura_mas_datafono' => '',
-            'lbl_ajuste_al_peso' => '',
-            'lbl_total_recibido' => '0',
-            'lbl_total_cambio' => '',
+            'lbl_ajuste_al_peso' => 0,
+            'lbl_total_recibido' => 0,
+            'lbl_total_cambio' => 0,
             'lbl_creado_por_fecha_y_hora' => '',
             'lineas_registros' => '',
             'lineas_impuesto' => ''

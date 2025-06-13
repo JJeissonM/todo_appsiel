@@ -193,6 +193,8 @@ class FacturaPosController extends TransaccionController
 
         $valor_total_factura = 0;
         $total_efectivo_recibido = 0;
+        $valor_ajuste_al_peso = 0;
+        $valor_total_cambio = 0;
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
@@ -207,7 +209,7 @@ class FacturaPosController extends TransaccionController
 
         $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'valor_ajuste_al_peso', 'valor_total_cambio', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica'));
     }
 
     /**
@@ -499,9 +501,11 @@ class FacturaPosController extends TransaccionController
 
         $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
         
-        $total_efectivo_recibido = $this->get_total_campo_lineas_registros( json_decode(str_replace("$", "", $factura->lineas_registros_medios_recaudos) ), 'valor');
+        //'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio'
+        $total_efectivo_recibido = $factura->total_efectivo_recibido;
+        $valor_ajuste_al_peso = $factura->valor_ajuste_al_peso;
+        $valor_total_cambio = $factura->valor_total_cambio;
         
-        //$total_efectivo_recibido = 0;
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productos = $productos->sortBy('precio_venta');
         $productosTemp = $factura_pos_service->get_productos($pdv,$productos);
@@ -528,15 +532,16 @@ class FacturaPosController extends TransaccionController
 
         $valor_total_impuestos = number_format( $factura->lineas_registros->sum('precio_total') - $factura->lineas_registros->sum('base_impuesto_total'),'2',',','.');
 
-        // Para las propinas
         $valor_sub_total_factura = $factura->lineas_registros->sum('precio_total');
+        $valor_total_factura = $valor_sub_total_factura;
+
+        // Para las propinas
         $valor_lbl_propina = (new TipService())->get_tip_amount($factura);
-        $valor_total_factura = $valor_sub_total_factura + $valor_lbl_propina;
+        $valor_total_factura += $valor_lbl_propina;
 
         // Para Datafono
-        $valor_sub_total_factura = $factura->lineas_registros->sum('precio_total');
         $valor_lbl_datafono = (new DatafonoService())->get_datafono_amount($factura);
-        $valor_total_factura = $valor_sub_total_factura + $valor_lbl_datafono;
+        $valor_total_factura += $valor_lbl_datafono;
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
@@ -546,8 +551,8 @@ class FacturaPosController extends TransaccionController
         $medios_pago = null;
 
         $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
-        
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica'));
+
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica'));
     }
 
     /**
@@ -572,6 +577,9 @@ class FacturaPosController extends TransaccionController
         $doc_encabezado->lineas_registros_medios_recaudos = $request->lineas_registros_medios_recaudos;
         $doc_encabezado->valor_total = $total_factura;
         $doc_encabezado->modificado_por = Auth::user()->email;
+        $doc_encabezado->total_efectivo_recibido = $request->total_efectivo_recibido;
+        $doc_encabezado->valor_ajuste_al_peso = $request->valor_ajuste_al_peso;
+        $doc_encabezado->valor_total_cambio = $request->valor_total_cambio;
         $doc_encabezado->save();
 
         // Borrar líneas de registros anteriores

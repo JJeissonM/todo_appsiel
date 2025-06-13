@@ -292,6 +292,18 @@ class AccumulationService
         $obj_inv_doc_serv = new InvDocumentsService();
         $obj_inv_doc_serv->store_accounting_doc_head( $invoice->remision_doc_encabezado_id, $detalle_operacion );
 
+        // Contabilizar redondeo
+        if ($invoice->valor_ajuste_al_peso != 0)
+        {
+            $obj_accou_serv = new AccountingServices();
+
+            if ($invoice->valor_ajuste_al_peso > 0) {
+                $obj_accou_serv->contabilizar_registro($datos, (int)config('ventas_pos.cta_ingresos_redondeo'), 'Redondeo factura', 0, abs($invoice->valor_ajuste_al_peso), null, null);
+            }else{
+                $obj_accou_serv->contabilizar_registro($datos, (int)config('ventas_pos.cta_gastos_redondeo'), 'Redondeo factura', abs($invoice->valor_ajuste_al_peso), 0, null, null);
+            }
+        }
+
         // Actualizar encabezado de factura
         $invoice->estado = 'Contabilizado';
         $invoice->save();

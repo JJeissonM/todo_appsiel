@@ -62,13 +62,6 @@ class DocumentHeaderService
         TipoDocApp::aumentar_consecutivo($original_document_header->core_empresa_id, $fe_document_type_id_default);
 
         // Cambiar Tipo de Transacción, tipo de documento y consecutivo Para las tablas de movimientos relacionadas
-        $new_data = [
-            'core_tipo_transaccion_id' => $fe_transaction_type_id_default,
-            'core_tipo_doc_app_id' => $fe_document_type_id_default,
-            'consecutivo' => $new_consecutivo,
-            'modificado_por' => $modificado_por
-        ];
-
         $contab_movim = ContabMovimiento::where( $array_wheres )->get();
         foreach ($contab_movim as $line_movin) {
             $line_movin->core_tipo_transaccion_id = $fe_transaction_type_id_default;
@@ -76,12 +69,10 @@ class DocumentHeaderService
             $line_movin->consecutivo = $new_consecutivo;
             $line_movin->modificado_por = $modificado_por;
             $line_movin->save();
-            //$line_movin->update( $new_data );
         }
         
         $cxc_movim = CxcMovimiento::where( $array_wheres )->get()->first();
         if ($cxc_movim != null) {
-            //$cxc_movim->update( $new_data );
             $cxc_movim->core_tipo_transaccion_id = $fe_transaction_type_id_default;
             $cxc_movim->core_tipo_doc_app_id = $fe_document_type_id_default;
             $cxc_movim->consecutivo = $new_consecutivo;
@@ -113,11 +104,9 @@ class DocumentHeaderService
             $teso_line_movin->consecutivo = $new_consecutivo;
             $teso_line_movin->modificado_por = $modificado_por;
             $teso_line_movin->save();
-            //$teso_line_movin->update( $new_data );
         }
 
         // Tablas POS
-        //$original_document_header->update( array_merge( $new_data, [ 'estado' => 'Contabilizado - Sin enviar'] ) );
         $original_document_header->core_tipo_transaccion_id = $fe_transaction_type_id_default;
         $original_document_header->core_tipo_doc_app_id = $fe_document_type_id_default;
         $original_document_header->consecutivo = $new_consecutivo;
@@ -132,7 +121,6 @@ class DocumentHeaderService
             $line_pos_movim->consecutivo = $new_consecutivo;
             $line_pos_movim->modificado_por = $modificado_por;
             $line_pos_movim->save();
-            //$line_pos_movim->update( $new_data );
         }
 
         // Crear encabezado y lineas de registros en en Vtas estandar

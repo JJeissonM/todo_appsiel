@@ -8,7 +8,7 @@ var productos,
   forma_pago_default,
   fecha_vencimiento_default,
   inv_producto_id,
-  doc_encabezado, puede_continuar;
+  doc_encabezado, puede_continuar, vlr_efectivo_recibido;
   var locked = false;
 
 $("#btn_nuevo").hide();
@@ -76,13 +76,14 @@ function get_json_registros_medios_recaudo() {
     let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
     let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
 
+    let total_factura = parseFloat( $("#valor_total_factura").val() ) + parseFloat( $("#valor_ajuste_al_peso").val() );
+    
     json_table2 =
       '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"' + teso_motivo_default_id + '-' + texto_motivo + '","teso_caja_id":"' +
       $("#caja_pdv_default_id").val() +
       "-" +
       $("#caja_pdv_default_label").val() +
-      '","teso_cuenta_bancaria_id":"0-","valor":"$' +
-      $("#valor_total_factura").val() +
+      '","teso_cuenta_bancaria_id":"0-","valor":"$' + total_factura +
       '"}]';
   } else {
     json_table2 = "[";
@@ -361,6 +362,7 @@ function resetear_ventana() {
   $("#btn_cancelar_pedido").hide();
 
   $("#lbl_ajuste_al_peso").text("$ ");
+  $("#valor_ajuste_al_peso").val(0);
 
   $("#msj_ventana_impresion_abierta").hide();
 
@@ -465,7 +467,6 @@ function reset_efectivo_recibido() {
   $("#total_efectivo_recibido").val(0);
   $("#lbl_efectivo_recibido").text("$ 0");
   $("#total_cambio").text("$ 0");
-  //$('#lbl_ajuste_al_peso').text('$ ');
   total_cambio = 0;
   $("#btn_guardar_factura").attr("disabled", "disabled");
   $("#btn_guardar_factura_electronica").attr("disabled", "disabled");
@@ -603,7 +604,7 @@ function activar_boton_guardar_factura()
   // total_valor_total es el total de los Medios de Pago
   var valor_total_lineas_medios_recaudos = parseFloat( $("#total_valor_total").html().substring(1) );
 
-  var vlr_efectivo_recibido = 0;
+  vlr_efectivo_recibido = 0;
   if ( validar_input_numerico($("#efectivo_recibido")) ) {
     vlr_efectivo_recibido = parseFloat( $("#efectivo_recibido").val() );
   }

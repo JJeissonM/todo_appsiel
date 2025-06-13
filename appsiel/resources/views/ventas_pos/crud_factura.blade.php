@@ -203,7 +203,12 @@
         $('#total_efectivo_recibido').val( {{ $total_efectivo_recibido }} );
         $('#lbl_efectivo_recibido').text('$ ' + "{{ $total_efectivo_recibido }}");
 
-        $('#total_valor_total').text('$ ' + "{{ $total_efectivo_recibido }}");
+        // La suma de las lineas de registros de los medios de pagos
+        calcular_totales_medio_recaudos();
+        
+        // ','valor_ajuste_al_peso','valor_total_cambio'
+        $("#lbl_ajuste_al_peso").text("$ " + "{{ $valor_ajuste_al_peso }}" );
+        $("#valor_ajuste_al_peso").val( {{ $valor_ajuste_al_peso }} );
 
     </script>
 @endsection

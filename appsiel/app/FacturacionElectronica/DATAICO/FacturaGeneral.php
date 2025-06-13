@@ -159,7 +159,7 @@ class FacturaGeneral
 
       $flexible = 'true';
 
-      $notes = ' ';
+      $notes = '-';
       if ($this->doc_encabezado->descripcion != null || $this->doc_encabezado->descripcion != '') {
 	      $notes = trim(str_replace( array( "\r", "\r\n", "\n" ), '', $this->doc_encabezado->descripcion));
       }
@@ -271,6 +271,8 @@ class FacturaGeneral
 
          $string_items .= '{"sku": "' . $linea->item->id . '","description": "' . str_replace('"', '\"', $linea->item->descripcion) . '","quantity": ' . abs( number_format( $linea->cantidad, $this->cantidadDecimales, '.', '') ) . ',"price": ' . abs( number_format( $price, $this->cantidadDecimales, '.', '') );
          
+         $string_items .= ',"measuring-unit": "' . $linea->item->unidad_medida1 . '"';
+
          if ( $original_price != 0 ) {
             $string_items .= ',"original_price": ' . $original_price;
          }

@@ -169,6 +169,7 @@ function calcular_totales() {
     $("#lbl_ajuste_al_peso").text(
         "$ " + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso)
     );
+    $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
 
     if ($("#manejar_propinas").val() == 1) {
         calcular_valor_a_pagar_propina(total_factura);
@@ -406,6 +407,7 @@ function calcular_totales_quantity()
     valor_ajuste_al_peso = valor_redondeado - total_factura;
 
     $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
+    $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
 }
 
 /**

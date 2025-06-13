@@ -22,35 +22,6 @@
 
 				<h4> Parámetros Generales  </h4>
 				<hr>
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$redondear_centena = '';
-								if( isset($parametros['redondear_centena'] ) )
-								{
-									$redondear_centena = $parametros['redondear_centena'];
-								}
-							?>
-							{{ Form::bsSelect('redondear_centena', $redondear_centena, 'Redondear el precio total de la factura a la centena más cercana', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php 
-								$permite_facturacion_con_archivo_plano = 0;
-								if( isset($parametros['permite_facturacion_con_archivo_plano'] ) )
-								{
-									$permite_facturacion_con_archivo_plano = $parametros['permite_facturacion_con_archivo_plano'];
-								}
-							?>
-							{{ Form::bsSelect('permite_facturacion_con_archivo_plano', $permite_facturacion_con_archivo_plano, 'Permite facturación con archivo plano', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-				</div>
 
 				<div class="row">
 					<div class="col-md-6">
@@ -191,7 +162,78 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$permite_facturacion_con_archivo_plano = 0;
+								if( isset($parametros['permite_facturacion_con_archivo_plano'] ) )
+								{
+									$permite_facturacion_con_archivo_plano = $parametros['permite_facturacion_con_archivo_plano'];
+								}
+							?>
+							{{ Form::bsSelect('permite_facturacion_con_archivo_plano', $permite_facturacion_con_archivo_plano, 'Permite facturación con archivo plano', [ '0' => 'No', '1' => 'Si' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+				</div>
+
+				<h4> Parámetros de redondeo de precios (Ajuste al peso)  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$redondear_centena = '';
+								if( isset($parametros['redondear_centena'] ) )
+								{
+									$redondear_centena = $parametros['redondear_centena'];
+								}
+							?>
+							{{ Form::bsSelect('redondear_centena', $redondear_centena, 'Redondear el precio total de la factura a la centena más cercana', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$redondeo_siempre_positivo = '0';
+								if( isset($parametros['redondeo_siempre_positivo'] ) )
+								{
+									$redondeo_siempre_positivo = $parametros['redondeo_siempre_positivo'];
+								}
+							?>
+							{{ Form::bsSelect('redondeo_siempre_positivo', $redondeo_siempre_positivo, 'Redondear el precio siempre a la alza (positivo)', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+				</div>
+				
+				<div class="row">
+					<?php
+						$array_cuentas = App\Contabilidad\ContabCuenta::opciones_campo_select();
+					?>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_gastos_redondeo = 27;
+								if( isset($parametros['cta_gastos_redondeo'] ) )
+								{
+									$cta_gastos_redondeo = $parametros['cta_gastos_redondeo'];
+								}
+							?>
+							{{ Form::bsSelect('cta_gastos_redondeo', $cta_gastos_redondeo, 'Cta. Gastos (DB) por redondeo negativo', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_ingresos_redondeo = 27;
+								if( isset($parametros['cta_ingresos_redondeo'] ) )
+								{
+									$cta_ingresos_redondeo = $parametros['cta_ingresos_redondeo'];
+								}
+							?>
+							{{ Form::bsSelect('cta_ingresos_redondeo', $cta_ingresos_redondeo, 'Cta. Ingresos (CR) por redondeo positivo', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 

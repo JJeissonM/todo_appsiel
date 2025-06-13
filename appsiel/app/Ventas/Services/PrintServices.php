@@ -103,9 +103,9 @@ class PrintServices
                 'total_factura_mas_propina' => '$' . number_format( $total_factura_mas_propina, 2, ',' , '.'),
                 'lbl_total_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
                 'total_factura_mas_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
-                'lbl_ajuste_al_peso' => '',
-                'lbl_total_recibido' => '',
-                'lbl_total_cambio' => '',
+                'lbl_ajuste_al_peso' => $doc_encabezado->valor_ajuste_al_peso,
+                'lbl_total_recibido' => $doc_encabezado->total_efectivo_recibido,
+                'lbl_total_cambio' => $doc_encabezado->valor_total_cambio,
                 'lbl_creado_por_fecha_y_hora' => $doc_encabezado->created_at,
                 'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
                 'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render()
