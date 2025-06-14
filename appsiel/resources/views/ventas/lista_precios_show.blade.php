@@ -97,7 +97,7 @@
 									<tr>
 										<td>{{ $linea->producto_codigo }}</td>
 										<td>{{ $linea->referencia }}</td>
-										<td>{{ $linea->producto_descripcion }} ({{ $linea->unidad_medida1 }})</td>
+										<td>{{ $linea->producto_descripcion }} ({{ $linea->item->get_unidad_medida1() }})</td>
 										<td>{{ $linea->fecha_activacion }}</td>
 										<td align="right">${{ number_format( $linea->precio, 1, ',', '.') }}</td>
 										<td>{{ $linea->tipo }}</td>

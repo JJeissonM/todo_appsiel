@@ -193,14 +193,18 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
+
+							&nbsp;
+							<!--
+							< ?php 
 								$redondeo_siempre_positivo = '0';
 								if( isset($parametros['redondeo_siempre_positivo'] ) )
 								{
 									$redondeo_siempre_positivo = $parametros['redondeo_siempre_positivo'];
 								}
 							?>
-							{{ Form::bsSelect('redondeo_siempre_positivo', $redondeo_siempre_positivo, 'Redondear el precio siempre a la alza (positivo)', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+							{ { Form::bsSelect('redondeo_siempre_positivo', $redondeo_siempre_positivo, 'Redondear el precio siempre a la alza (positivo)', [ '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
+							-->
 						</div>
 					</div>
 

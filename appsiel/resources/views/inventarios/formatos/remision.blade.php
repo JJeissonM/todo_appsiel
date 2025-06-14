@@ -144,7 +144,7 @@
                 <td style="text-align: center;"> {{ $numero }} </td>
                 <td style="text-align: center;"> {{ $linea->producto_id }} </td>
                 <td> {{ $linea->item->get_value_to_show(true) }} </td>
-                <td style="text-align: center;"> {{ $linea->unidad_medida1 }} </td>
+                <td style="text-align: center;"> {{ $linea->item->get_unidad_medida1() }} </td>
                 <td style="text-align: right;"> {{ number_format( abs($linea->cantidad), 2, ',', '.') }} </td>
             </tr>
             <?php 

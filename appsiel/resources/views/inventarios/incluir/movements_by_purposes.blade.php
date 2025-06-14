@@ -53,7 +53,7 @@
                 </td>
                 <td> 
                     @if($movement_line->producto != null)
-                        {{ $movement_line->producto->descripcion }} ({{ $movement_line->producto->unidad_medida1 }}) 
+                        {{ $movement_line->producto->descripcion }} ({{ $movement_line->producto->get_unidad_medida1() }}) 
                     @endif
                 </td>
                 <td>{{ number_format($movement_line->cantidad, 2, ',', '.') }} </td>

@@ -51,7 +51,7 @@
                         $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
                         $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
 
-                        $unidad_medida = $linea->unidad_medida1;
+                        $unidad_medida = $linea->item->get_unidad_medida1();
 
                     ?>
                     <tr>

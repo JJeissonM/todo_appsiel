@@ -154,7 +154,7 @@
 			            		$costo_total = $movimiento_inventario->whereLoose( 'inv_producto_id', $item->id )->sum('costo_total');
 			            	?>
 				            <tr>
-				            	<td>{{ $item->descripcion }} ({{ $item->unidad_medida1 }})</td>
+				            	<td>{{ $item->descripcion }} ({{ $item->get_unidad_medida1() }})</td>
 				            	<td align="center"> {{ number_format( abs($cantidad), 2, ',','.') }} </td>
 				            	<?php 
 				                	$valor_promedio = 0;

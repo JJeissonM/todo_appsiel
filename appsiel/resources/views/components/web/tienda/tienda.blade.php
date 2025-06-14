@@ -83,14 +83,14 @@
                                                             <div class="price-box text-center">
                                                                 @if( $item->descuento == 0)
                                                                     <span class="regular-price" id="product-price-1">
-                                                                        <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
+                                                                        <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->get_unidad_medida1() }}</span>
                                                                     </span>
                                                                 @else
                                                                     <span class="regular-price" id="product-price-1">
-                                                                        <span class="price"> <del>${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->unidad_medida1 }}</del></span>
+                                                                        <span class="price"> <del>${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->get_unidad_medida1() }}</del></span>
                                                                        
                                                                         <br>
-                                                                        <span class="price">${{ number_format( $item->precio_venta - $item->valor_descuento,0,',','.' ) }} x {{ $item->unidad_medida1 }}</span>
+                                                                        <span class="price">${{ number_format( $item->precio_venta - $item->valor_descuento,0,',','.' ) }} x {{ $item->get_unidad_medida1() }}</span>
                                                                     </span>
                                                                 @endif
                                                             </div>

@@ -125,6 +125,7 @@ class DocumentHeaderService
 
         // Crear encabezado y lineas de registros en en Vtas estandar
         $data = $original_document_header->toArray();
+        
         unset($data['id']);
         $data['core_tipo_transaccion_id'] = $fe_transaction_type_id_default;
         $data['core_tipo_doc_app_id'] = $fe_document_type_id_default;

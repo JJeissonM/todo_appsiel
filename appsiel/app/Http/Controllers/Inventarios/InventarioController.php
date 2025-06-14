@@ -712,6 +712,7 @@ class InventarioController extends TransaccionController
             $producto = InvProducto::find($movimiento->inv_producto_id);
             $bodega = InvBodega::find($movimiento->inv_bodega_id);
 
+            $producto->unidad_medida1 = $producto->get_unidad_medida1();
             $productos[$i] = $movimiento->toArray();
             $productos[$i]['producto'] = $producto;
             $productos[$i]['bodega'] = $bodega->descripcion;
@@ -1156,6 +1157,8 @@ class InventarioController extends TransaccionController
         $producto = InvProducto::find($request->inv_producto_id);
 
         $producto->descripcion = $producto->get_value_to_show();
+
+        $producto->unidad_medida1 = $producto->get_unidad_medida1();
 
         $costo_prom = InvCostoPromProducto::get_costo_promedio( $request->id_bodega, $request->inv_producto_id);
 

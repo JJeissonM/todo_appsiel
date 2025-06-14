@@ -32,7 +32,7 @@
                         <td class="nom_prod">'. $etiqueta_producto .'</td>
                         <td>'.$motivo.'</td>
                         <td class="text-right">$'.number_format( $linea->costo_prom_sistema, 2, '.', '').'</td>
-                        <td class="text-center cantidad">'.number_format( $cantidad_dif, 2, '.', '').' '.$linea->unidad_medida1.'</td>
+                        <td class="text-center cantidad">'.number_format( $cantidad_dif, 2, '.', '').' '.$linea->item->get_unidad_medida1().'</td>
                         <td class="text-right costo_total">$'.$costo_total.'</td>
                         <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button>
                         </td>

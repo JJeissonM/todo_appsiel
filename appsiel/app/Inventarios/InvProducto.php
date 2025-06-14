@@ -16,6 +16,7 @@ use App\Inventarios\InvMovimiento;
 
 use App\Contabilidad\Impuesto;
 use App\Inventarios\Services\CodigoBarras;
+use App\Sistema\Campo;
 use App\Sistema\Services\CrudService;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ListaDctoDetalle;
@@ -54,6 +55,14 @@ class InvProducto extends Model
     {
         return $this->hasMany(InvFichaProducto::class, 'producto_id', 'id');
     }
+
+    public function get_unidad_medida1()
+    {
+        $campo = Campo::find(79);
+        $opciones = json_decode($campo->opciones, true);
+
+        return $opciones[$this->unidad_medida1] ?? $this->unidad_medida1;
+    }
     
     public function ingredientes()
     {
@@ -85,7 +94,7 @@ class InvProducto extends Model
         
         $codigo_proveedor = $this->get_codigo_proveedor();
 
-        $descripcion_item .= $talla . $referencia . $codigo_proveedor . ' (' . $this->unidad_medida1 . ')';
+        $descripcion_item .= $talla . $referencia . $codigo_proveedor . ' (' . $this->get_unidad_medida1() . ')';
 
         $prefijo = $this->id . ' ';
 
@@ -405,7 +414,6 @@ class InvProducto extends Model
             if ( $bodega_id != null )
             {
                 $costo_prom = $item->get_costo_promedio( $bodega_id );
-                //$existencia_actual = $item->get_existencia_actual( $bodega_id, date('Y-m-d') );
             }
 
             $item->costo_promedio = $costo_prom;
@@ -421,6 +429,8 @@ class InvProducto extends Model
                     $item->codigo_proveedor = $proveedor->codigo;
                 }
             }
+
+            $item->unidad_medida1 = $item->get_unidad_medida1();
         }
 
         return $registros;

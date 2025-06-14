@@ -23,7 +23,7 @@
 				<b>Descripción:</b> {{ $registro->descripcion }}
 			</td>
 			<td>
-				<b>U.M.:</b> {{ $registro->unidad_medida1 }}
+				<b>U.M.:</b> {{ $registro->get_unidad_medida1() }}
 			</td>
 			<td colspan="2">
 				<b>Categoría:</b> {{ $registro->grupo_inventario->descripcion }}

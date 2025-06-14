@@ -30,7 +30,7 @@
             <input type="hidden" class="movimiento" value="{{$linea->motivo->movimiento}}">
         </td>
         <td class="costo_unitario" align="right">@if( $linea->motivo->movimiento == 'entrada' )$<div class="elemento_modificar" title="Doble click para modificar." data-campo_modificado="costo_unitario">{{ number_format( $linea->costo_unitario, 2, '.', '') }}</div>@else${{ number_format( abs($linea->costo_unitario), 2, '.', '') }}@endif</td>
-        <td class="cantidad" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-campo_modificado="cantidad">{{ number_format( abs($linea->cantidad), 2, '.', '') }}</div> {{ $linea->item->unidad_medida1 }}
+        <td class="cantidad" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-campo_modificado="cantidad">{{ number_format( abs($linea->cantidad), 2, '.', '') }}</div> {{ $linea->item->get_unidad_medida1() }}
         </td>
         <td class="costo_total" align="right">${{ number_format( abs($linea->costo_total), 2, '.', '') }}</td>
         <td> <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button>

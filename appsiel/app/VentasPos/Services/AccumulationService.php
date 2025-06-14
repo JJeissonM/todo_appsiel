@@ -140,7 +140,7 @@ class AccumulationService
 
         // Movimiento de Tesoreria ó CxC
         //if ($this->is_pending_registro_pago($invoice->forma_pago,$array_wheres)) {
-            $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total, $invoice->descripcion);
+            $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total + $invoice->valor_ajuste_al_peso, $invoice->descripcion);
         //}
 
         $invoice->estado = 'Acumulado';
@@ -286,7 +286,7 @@ class AccumulationService
         // Contabilizar Caja y Bancos ó Cartera de clientes
         $datos = $invoice->toArray();
         $datos['estado'] = 'Activo';
-        $obj_sales_serv->contabilizar_movimiento_debito( $invoice->forma_pago, $datos, $datos['valor_total'], $detalle_operacion, $invoice->pdv->caja_default_id );
+        $obj_sales_serv->contabilizar_movimiento_debito( $invoice->forma_pago, $datos, $datos['valor_total'] + $datos['valor_ajuste_al_peso'], $detalle_operacion, $invoice->pdv->caja_default_id );
 
         // Inventarios (Inventarios y Costos)
         $obj_inv_doc_serv = new InvDocumentsService();

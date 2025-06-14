@@ -151,7 +151,7 @@
                         ?>                        
                         @foreach ($doc_registros as $producto)
                             <tr>
-                                <td class="text-center">{{ $producto->cantidad.' '.$producto->unidad_medida1 }}</td>
+                                <td class="text-center">{{ $producto->cantidad.' '.$producto->get_unidad_medida1() }}</td>
                                 <td>{{ $producto->producto_descripcion }}</td>
                                 <td class="text-right">$ {{ ($producto->precio_venta - $producto->valor_descuento) }}</td>
                                 <td class="text-right">$ {{ $producto->precio_total }}</td>                                

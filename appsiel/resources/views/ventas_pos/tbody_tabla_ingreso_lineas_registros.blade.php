@@ -42,7 +42,7 @@
             <div style="display: inline;"> 
                 <div class="elemento_modificar" title="Doble click para modificar."> {{$linea->cantidad}}</div>
             </div>  
-            (<div class="lbl_producto_unidad_medida" style="display: inline;">{{$linea->articulo->unidad_medida1}}</div>) 
+            (<div class="lbl_producto_unidad_medida" style="display: inline;">{{$linea->articulo->get_unidad_medida1()}}</div>) 
         </td>
         <td> 
             <div class="lbl_precio_unitario" style="display: inline;">$ {{ number_format( $linea->precio_unitario, 0, ',', '.') }}</div>

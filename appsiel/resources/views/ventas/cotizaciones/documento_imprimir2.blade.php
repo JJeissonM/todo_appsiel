@@ -153,11 +153,11 @@ use App\Core\Tercero;
         <tr>
             <td class="text-center"> {{ $i }} </td>
             <?php 
-                    $descripcion_item = $linea->producto_descripcion . ' (' . $linea->unidad_medida1 . ')';
+                    $descripcion_item = $linea->producto_descripcion . ' (' . $linea->item->get_unidad_medida1() . ')';
 
                     if( $linea->unidad_medida2 != '' )
                     {
-                        $descripcion_item = $linea->producto_descripcion . ' (' . $linea->unidad_medida1 . ') - Talla: ' . $linea->unidad_medida2;
+                        $descripcion_item = $linea->producto_descripcion . ' (' . $linea->item->get_unidad_medida1() . ') - Talla: ' . $linea->unidad_medida2;
                     }
                 ?>
             <td class="text-left" width="250px"> {{ $descripcion_item }} </td>

@@ -3,7 +3,7 @@
 namespace App\Inventarios;
 
 use App\Compras\Proveedor;
-
+use App\Sistema\Campo;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,6 +17,14 @@ class ItemProveedor extends InvProducto
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Referencia', 'Descripción', 'U.M.', 'Proveedor', 'Grupo inventario', 'IVA', 'Cod. Barras', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","eliminar":"web_eliminar/id_fila"}';
+
+    public function get_unidad_medida1()
+    {
+        $campo = Campo::find(79);
+        $opciones = json_decode($campo->opciones, true);
+
+        return $opciones[$this->unidad_medida1] ?? $this->unidad_medida1;
+    }
 
     public function proveedor()
     {

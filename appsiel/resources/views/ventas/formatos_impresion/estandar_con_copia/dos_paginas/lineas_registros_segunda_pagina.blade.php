@@ -6,7 +6,7 @@
     <tbody>
         @foreach($doc_registros_restantes as $linea )
             <?php
-                $unidad_medida = $linea->unidad_medida1;
+                $unidad_medida = $linea->item->get_unidad_medida1();
             ?>
 
             <tr>

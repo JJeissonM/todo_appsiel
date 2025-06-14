@@ -19,7 +19,7 @@
 
                 <?php 
 
-                    $unidad_medida = $linea->unidad_medida1;
+                    $unidad_medida = $linea->item->get_unidad_medida1();
 
                     $producto_descripcion = $linea->item->get_value_to_show(true);
                     
@@ -68,21 +68,17 @@
                 <?php
                     $subtotal = $total_factura + $total_descuentos - $total_impuestos;
                     $subtotal_sin_iva = $total_bruto - $total_impuestos;
+
+                    $total_factura += $doc_encabezado->valor_ajuste_al_peso;
+
+
                 ?>
         </tbody>
         <tfoot>
             <tr style="font-weight: bold;">
                 <td colspan="3"> Cantidad de items: {{ $cantidad_items }} </td>
                 <td style="text-align: center;"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
-                <td >&nbsp;</td>
-                <td style="text-align: right;"> {{ number_format($total_bruto, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> {{ number_format($subtotal_sin_iva, 0, ',', '.') }} </td>
-                <td>&nbsp;</td>
-                <td style="text-align: right;"> ${{ number_format($total_descuentos, 0, ',', '.') }} </td>
-                <td>&nbsp;</td>
-                <td style="text-align: right;"> ${{ number_format($total_impuestos, 0, ',', '.') }} </td>
-                <td style="text-align: right;"> ${{ number_format($total_factura, 0, ',', '.') }} </td>
-                <td>&nbsp;</td>
+                <td colspan="9"> &nbsp; </td>
             </tr>
         </tfoot>
     </table>

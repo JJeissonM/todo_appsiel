@@ -10,6 +10,7 @@ use App\Inventarios\Indumentaria\PrefijoReferencia;
 use App\Inventarios\Indumentaria\TipoMaterial;
 use App\Inventarios\Indumentaria\TipoPrenda;
 use App\Inventarios\Services\ItemsMandatariosSerices;
+use App\Sistema\Campo;
 use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,14 @@ class ItemMandatario extends Model
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Tipo', 'Material', 'Color', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila"}';
+
+    public function get_unidad_medida1()
+    {
+        $campo = Campo::find(79);
+        $opciones = json_decode($campo->opciones, true);
+
+        return $opciones[$this->unidad_medida1] ?? $this->unidad_medida1;
+    }
 
     public function grupo_inventario()
     {

@@ -34,7 +34,7 @@
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $producto_descripcion }} </td>
-                    <td style="text-align: center;"> {{ $linea->unidad_medida1 }} </td>
+                    <td style="text-align: center;"> {{ $linea->item->get_unidad_medida1() }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $precio_original, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $precio_original, 0, ',', '.') }} </td>

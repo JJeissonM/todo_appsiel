@@ -83,7 +83,7 @@
 				</div>
 			    <div class="container">
 			    	<div class="col-md-4" style="padding:5px;"> 
-			    		<b>Unid. Medida: </b> {{ $registro->item_platillo->unidad_medida1 }}
+			    		<b>Unid. Medida: </b> {{ $registro->item_platillo->get_unidad_medida1() }}
 			    	</div>
 			    	<div class="col-md-4" style="padding:5px;"> 
 			    		<b>Categoría: </b> {{ $registro->item_platillo->grupo_inventario->descripcion }}
@@ -135,7 +135,7 @@
                                     ?>
                                     <tr>
 										<td>{{ $linea['ingrediente']->id }}</td>
-										<td>{{ $linea['ingrediente']->descripcion }} ({{ $linea['ingrediente']->unidad_medida1 }})</td>
+										<td>{{ $linea['ingrediente']->descripcion }} ({{ $linea['ingrediente']->get_unidad_medida1() }})</td>
 										<td align="center">
 											<div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_cambiar_cantidad_porcion') . "/" . $registro->item_platillo->id . "/" . $linea['ingrediente']->id }}"> {{ number_format( $linea['cantidad_porcion'], 2, ',', '.') }}
 											</div>											

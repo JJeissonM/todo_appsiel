@@ -2,6 +2,7 @@
 
 namespace App\Ventas;
 
+use App\Inventarios\InvProducto;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +15,11 @@ class ListaPrecioDetalle extends Model
 
 	// Las acciones tienen valores predeterminados, si el modelo no va a tener una acción, se debe asignar la palabra "no" a la acción.
 	public $urls_acciones = '{"imprimir":"no","cambiar_estado":"no","eliminar":"web_eliminar/id_fila","otros_enlaces":"no"}'; // El valor de otros_enlaces dede ser en formato JSON
+
+    public function item()
+    {
+        return $this->belongsTo(InvProducto::class, 'inv_producto_id');
+    }
 
 	public static function consultar_registros($nro_registros, $search)
 	{
@@ -86,6 +92,7 @@ class ListaPrecioDetalle extends Model
 			->select(
 				'vtas_listas_precios_detalles.id',
 				'vtas_listas_precios_detalles.precio',
+				'vtas_listas_precios_detalles.inv_producto_id',
 				'vtas_listas_precios_detalles.fecha_activacion',
 				'inv_productos.descripcion as producto_descripcion',
 				'inv_productos.id as producto_codigo',
@@ -103,6 +110,10 @@ class ListaPrecioDetalle extends Model
 		foreach ($precios as $value)
 		{
 			if (!in_array($value->producto_codigo, $productos)) {
+				if ($value->item == null) {
+					continue; // Skip if item is null
+				}
+				$value->unidad_medida1 = $value->item->get_unidad_medida1();
 				$precios2[$i] = $value;
 				$productos[$i] = $value->producto_codigo;
 				$i++;

@@ -105,7 +105,7 @@
                         <td> {{ $linea->producto_descripcion }} </td>
                         <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
                         <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
-                        <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                        <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }} </td>
                         <td class="text-right"> {{ '$ '.number_format( $linea->precio_total, 0, ',', '.') }} </td>
                     </tr>
                     <?php 

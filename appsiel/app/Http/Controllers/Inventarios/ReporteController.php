@@ -112,7 +112,7 @@ class ReporteController extends Controller
             {
                 $productos[$i]['id'] = $item_id;
                 $productos[$i]['descripcion'] = $item->get_value_to_show(true);
-                $productos[$i]['unidad_medida1'] = $item->unidad_medida1;
+                $productos[$i]['unidad_medida1'] = $item->get_unidad_medida1();
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
                 $productos[$i]['referencia'] = $item->referencia;
 
@@ -468,6 +468,10 @@ class ReporteController extends Controller
                 $bodega_id = $bodega->id;
             }
 
+            if ($registro->item == null) {
+                continue;
+            }
+            
             $productos[] = (object)[
                 'item_id' => $registro->inv_producto_id,
                 'item_descripcion' => $registro->item->get_value_to_show( true ),
@@ -573,13 +577,12 @@ class ReporteController extends Controller
                 if ( Schema::hasTable( 'inv_barcodes_for_print' ) && $item->codigo_barras != null )
                 {
                     $precio_venta = $todos_los_precios->where('inv_producto_id', $item->id)->last();
-                                                //dd( $todos_los_precios->toArray(), $precio_venta, $precio_venta->precio);
 
                     InvBarcodesForPrint::create([
                         'item_id' => $item->id,
                         'label' => $item->label,
                         'barcode' => $item->codigo_barras,
-                        'uom_1' => $item->unidad_medida1,
+                        'uom_1' => $item->get_unidad_medida1(),
                         'size' => $item->unidad_medida2,
                         'supplier_code' => $item->get_codigo_proveedor(),
                         'reference' => ($item->referencia == null) ? '' : $item->referencia,

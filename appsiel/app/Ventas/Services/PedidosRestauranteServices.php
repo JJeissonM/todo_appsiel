@@ -207,7 +207,7 @@ class PedidosRestauranteServices
             'valor_total_descuento' => $linea->valor_total_descuento,                
             'lbl_producto_descripcion' => $linea->item->descripcion,
             'cantidad' => $linea->cantidad,
-            'lbl_producto_unidad_medida' => $linea->item->unidad_medida1,
+            'lbl_producto_unidad_medida' => $linea->item->get_unidad_medida1(),
             'lbl_tasa_impuesto' => $linea->tasa_impuesto,
             'lbl_precio_total' => $linea->precio_total,
         ];

@@ -13,6 +13,7 @@
             ?>
             @foreach($doc_registros as $linea )
                 <?php
+
                     $descripcion_item = $linea->item->get_value_to_show();
                     
                     $referencia = '';
@@ -29,7 +30,7 @@
                     <td> {{ $linea->bodega_descripcion }} </td>
                     <td> {{ $linea->inv_motivo_id }} -  {{ $linea->motivo_descripcion }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_unitario, 2, ',', '.') }} </td>
-                    <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }} </td>
+                    <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }} </td>
                     <td style="text-align: right;"> $ {{ number_format( $linea->costo_total, 2, ',', '.') }} </td>
                     <td>
                         @if( !in_array( $doc_encabezado->estado, ['Anulado', 'Facturada'] ) && Input::get('id_transaccion') != 2 )

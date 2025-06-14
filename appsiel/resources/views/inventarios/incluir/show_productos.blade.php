@@ -21,7 +21,7 @@
                     <td>{{ $fila->producto_descripcion }}</td>
                     <td>{{ $fila->bodega_descripcion }}</td>
                     <td class="text-right">{{ '$'.number_format($fila->costo_unitario, 2, ',', '.') }}</td>
-                    <td class="text-center">{{ number_format($fila->cantidad, 2, ',', '.') }} {{ $fila->unidad_medida1 }}</td>
+                    <td class="text-center">{{ number_format($fila->cantidad, 2, ',', '.') }} {{ $fila->get_unidad_medida1() }}</td>
                     <td class="text-right">{{ '$'.number_format($fila->costo_total, 2, ',', '.') }}</td>
                 </tr>
             <?php

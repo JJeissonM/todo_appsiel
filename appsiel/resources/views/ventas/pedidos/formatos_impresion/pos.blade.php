@@ -87,7 +87,7 @@
                 <tr>
                     <td> {{ $linea->item->get_value_to_show() }} </td>
                     <td> 
-                        {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->unidad_medida1 }}
+                        {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }}
                     </td>
                     <td> &nbsp; <br> ____________ </td>
                 </tr>
