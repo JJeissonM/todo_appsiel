@@ -55,6 +55,12 @@ class Servicio extends Model
             }
         }
 
+        foreach( $nuevaColeccion AS $register_collect )
+        {
+            $item = InvProducto::find( $register_collect->campo1 );
+            $register_collect->campo4 = $item->get_unidad_medida1();
+        }
+
         $request = request(); //obtenemos el Request para obtener la url y la query builder
 
         if (empty($nuevaColeccion)) {

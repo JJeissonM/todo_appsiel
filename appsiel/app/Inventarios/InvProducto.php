@@ -268,6 +268,12 @@ class InvProducto extends Model
             }
         }
 
+        foreach( $nuevaColeccion AS $register_collect )
+        {
+            $item = InvProducto::find( $register_collect->campo1 );
+            $register_collect->campo4 = $item->get_unidad_medida1();
+        }
+
         $request = request(); //obtenemos el Request para obtener la url y la query builder
 
         if (empty($nuevaColeccion)) {
@@ -507,6 +513,8 @@ class InvProducto extends Model
 
             $item->precio_venta = ListaPrecioDetalle::get_precio_producto( config('ventas.lista_precios_id'), date('Y-m-d'), $item->id );
 
+            $item->unidad_medida1 = $item->get_unidad_medida1();
+
             $item->descripcion = $item->get_value_to_show(true);
         }
 
@@ -603,6 +611,8 @@ class InvProducto extends Model
             $item->descuento = ListaDctoDetalle::get_descuento_producto( config('pagina_web.lista_descuentos_id'), date('Y-m-d'), $item->id );
 
             $item->valor_descuento = $item->precio_venta * ( $item->descuento / 100);
+            
+            $item->unidad_medida1 = $item->get_unidad_medida1();
         }
 
         return $productos;
