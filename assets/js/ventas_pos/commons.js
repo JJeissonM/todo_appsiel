@@ -109,6 +109,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
   var lbl_total_factura = 0;
   var lbl_base_impuesto_total = 0;
   var lbl_valor_impuesto = 0;
+  var valor_total_bolsas = 0;
 
   var cantidad_total_productos = 0;
 
@@ -176,6 +177,10 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
     $("#tabla_productos_facturados2").find("tbody:last").append(linea_factura2);
 
     lbl_total_factura += parseFloat($(this).find(".precio_total").text());
+        
+    valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+
+    lbl_total_factura += parseFloat( $("#precio_bolsa").val() );
 
     cantidad_total_productos++;
   });
@@ -227,6 +232,11 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
     "$ " + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso)
   );
 
+
+  $(".lbl_valor_total_bolsas").text(
+    "$ " + new Intl.NumberFormat("de-DE").format(valor_total_bolsas)
+  );
+  
   var efectivo_recibido = 0;
   if ( con_medios_recaudos ) {
     efectivo_recibido = parseFloat($("#efectivo_recibido").val());
@@ -363,6 +373,9 @@ function resetear_ventana() {
 
   $("#lbl_ajuste_al_peso").text("$ ");
   $("#valor_ajuste_al_peso").val(0);
+
+  $("#lbl_valor_total_bolsas").text("$ ");
+  $("#valor_valor_total_bolsas").val(0);
 
   $("#msj_ventana_impresion_abierta").hide();
 
@@ -1417,7 +1430,7 @@ $(document).ready(function () {
       $.get(url, function (respuesta) {
         $("#div_spin2").hide();
 
-        fila.find("td").eq(7).text("Anulado");
+        fila.find("td").eq(8).text("Anulado");
         fila.find(".btn_modificar_factura").hide();
         fila.find(".btn_anular_factura").hide();
         alert("Documento anulado correctamente.");

@@ -206,9 +206,11 @@
         // La suma de las lineas de registros de los medios de pagos
         calcular_totales_medio_recaudos();
         
-        // ','valor_ajuste_al_peso','valor_total_cambio'
         $("#lbl_ajuste_al_peso").text("$ " + "{{ $valor_ajuste_al_peso }}" );
         $("#valor_ajuste_al_peso").val( {{ $valor_ajuste_al_peso }} );
+        
+        $("#lbl_valor_total_bolsas").text("$ " + "{{ $valor_total_bolsas }}" );
+        $("#valor_total_bolsas").val( {{ $valor_total_bolsas }} );
 
     </script>
 @endsection

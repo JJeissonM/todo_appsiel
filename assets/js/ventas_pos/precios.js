@@ -14,6 +14,7 @@ var valor_impuesto_unitario = 0;
 var valor_unitario_descuento = 0;
 var total_cambio = 0;
 var valor_ajuste_al_peso = 0;
+var valor_total_bolsas = 0;
 var costo_unitario = 0;
 var precio_unitario = 0;
 
@@ -111,6 +112,8 @@ function calcular_totales() {
     var total_impuestos = 0.0;
     total_factura = 0.0;
 
+    var valor_total_bolsas = 0.0;
+
     $(".linea_registro").each(function () {
 
         if ( $(this).find(".elemento_modificar").eq(0).text() != '' ) {
@@ -129,6 +132,10 @@ function calcular_totales() {
         total_impuestos +=
         parseFloat($(this).find(".valor_impuesto").text()) * cantidad_linea;
         total_factura += parseFloat($(this).find(".precio_total").text());
+
+        valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+
+        total_factura += parseFloat( $("#precio_bolsa").val() );
     });
 
     $("#total_cantidad").text(
@@ -156,7 +163,7 @@ function calcular_totales() {
 
     // label Total factura  (Sumatoria de precio_total)
     var valor_redondeado = redondear_a_centena(total_factura);
-
+    
     $("#total_factura").text(
         "$ " + new Intl.NumberFormat("de-DE").format(valor_redondeado)
     );
@@ -171,12 +178,20 @@ function calcular_totales() {
     );
     $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
 
+    // Para el caso de que se maneje la bolsa
+    $("#lbl_valor_total_bolsas").text(
+        "$ " + new Intl.NumberFormat("de-DE").format(valor_total_bolsas)
+    );
+    $("#valor_total_bolsas").val(valor_total_bolsas);
+
+    // Si se maneja propina
     if ($("#manejar_propinas").val() == 1) {
         calcular_valor_a_pagar_propina(total_factura);
 
         calcular_totales_propina();
     }
 
+    // Si se maneja datafono
     if (
         $("#manejar_datafono").val() == 1 &&
         $("#calcular_comision_datafono").is(":checked")
@@ -371,7 +386,8 @@ function calcular_totales_quantity()
     var subtotal = 0.0;
     var valor_total_descuento = 0.0;
     var total_impuestos = 0.0;
-    total_factura = 0.0;
+    var total_factura = 0.0;
+    var valor_total_bolsas = 0.0;
 
     $('.linea_registro').each(function() {
         var cantidad_linea = parseFloat( $(this).find('.quantity').val() );
@@ -383,6 +399,10 @@ function calcular_totales_quantity()
         valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
         total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
         total_factura += parseFloat( $(this).find('.precio_total').text() );
+        
+        valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+
+        total_factura += parseFloat( $("#precio_bolsa").val() );
 
     });
 
@@ -408,6 +428,12 @@ function calcular_totales_quantity()
 
     $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
     $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
+
+    // Para el caso de que se maneje la bolsa
+    $("#lbl_valor_total_bolsas").text(
+        "$ " + new Intl.NumberFormat("de-DE").format(valor_total_bolsas)
+    );
+    $("#valor_total_bolsas").val(valor_total_bolsas);
 }
 
 /**

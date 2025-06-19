@@ -20,6 +20,20 @@
 
         <?php 
             $label_signo = '+';
+            if($doc_encabezado->valor_total_bolsas < 0) {
+                $label_signo = '-';
+            }
+
+            $valor_total_bolsas = abs($doc_encabezado->valor_total_bolsas);
+        ?>
+        <tr>
+            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Valor bolsas: &nbsp; </td>
+            <td> {{ $label_signo }} $ &nbsp;</td>
+            <td style="text-align: right;padding-right: 3px" class="totl-bottom"> {{ number_format($valor_total_bolsas, 0, ',', '.') }} </td>
+        </tr>
+
+        <?php 
+            $label_signo = '+';
             if($doc_encabezado->valor_ajuste_al_peso < 0) {
                 $label_signo = '-';
             }

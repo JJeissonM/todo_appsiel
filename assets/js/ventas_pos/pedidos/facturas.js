@@ -6,7 +6,6 @@ var base_impuesto_unitario = 0;
 var valor_impuesto_unitario = 0;
 var valor_unitario_descuento = 0;
 var total_cambio = 0;
-var valor_ajuste_al_peso = 0;
 var ventana_factura;
 var numero_linea = 0;
 

@@ -29,7 +29,7 @@
 
 		<?php
 			$lineas_cuerpo_boletin = $registro->cuerpo_boletin->lineas;
-
+//dd($lineas_cuerpo_boletin);
 			$area_anterior = '';
 			$cant_columnas = 1;
 

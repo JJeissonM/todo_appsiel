@@ -174,6 +174,27 @@
 					</div>
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$item_bolsa_id = 0;
+								if( isset($parametros['item_bolsa_id'] ) )
+								{
+									$item_bolsa_id = $parametros['item_bolsa_id'];
+								}
+							?>
+							{{ Form::bsSelect('item_bolsa_id', $item_bolsa_id, 'Ítem para facturación de Bolsa', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+				</div>
+
 				<h4> Parámetros de redondeo de precios (Ajuste al peso)  </h4>
 				<hr>
 				<div class="row">
@@ -443,14 +464,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$bloquear_cierre_si_hay_pedidos_pendientes = '';
-								if( isset($parametros['bloquear_cierre_si_hay_pedidos_pendientes'] ) )
-								{
-									$bloquear_cierre_si_hay_pedidos_pendientes = $parametros['bloquear_cierre_si_hay_pedidos_pendientes'];
-								}
-							?>
-							{{ Form::bsSelect('bloquear_cierre_si_hay_pedidos_pendientes', $bloquear_cierre_si_hay_pedidos_pendientes, 'Bloquear CIERRE si hay pedidos en estado Pendiente', [ ''=>'', 'No','Sí'], ['class'=>'form-control', 'required'=>'required']) }}
+							&nbsp;
 						</div>
 					</div>
 

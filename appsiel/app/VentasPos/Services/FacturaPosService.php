@@ -150,6 +150,7 @@ class FacturaPosService
             'lbl_ajuste_al_peso' => 0,
             'lbl_total_recibido' => 0,
             'lbl_total_cambio' => 0,
+            'lbl_valor_total_bolsas' => 0,
             'lbl_creado_por_fecha_y_hora' => '',
             'lineas_registros' => '',
             'lineas_impuesto' => ''
@@ -277,5 +278,10 @@ class FacturaPosService
 
         return $vec;
         
+    }
+
+    public function get_precio_bolsa( $lista_precios_id )
+    {
+        return ListaPrecioDetalle::get_precio_producto( $lista_precios_id, date('Y-m-d'),  (int)config('ventas_pos.item_bolsa_id'));
     }
 }

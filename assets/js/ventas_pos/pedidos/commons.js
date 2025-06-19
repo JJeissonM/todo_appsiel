@@ -590,6 +590,8 @@ $(document).ready(function () {
         var lbl_total_factura = 0;
         var lbl_base_impuesto_total = 0;
         var lbl_valor_impuesto = 0;
+        
+        var valor_total_bolsas = 0;
 
         var cantidad_total_productos = 0;
 
@@ -618,6 +620,10 @@ $(document).ready(function () {
             $('#tabla_productos_facturados2').find('tbody:last').append( linea_factura2 );
 
             lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
+        
+            valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+
+            lbl_total_factura += parseFloat( $("#precio_bolsa").val() );
 
             cantidad_total_productos++;
 
@@ -630,6 +636,11 @@ $(document).ready(function () {
         $('.lbl_valor_impuesto').text( '$ ' + new Intl.NumberFormat("de-DE").format( redondear_a_centena(lbl_valor_impuesto)));
 
         $('.lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format( valor_ajuste_al_peso));
+        
+        // Para el caso de que se maneje la bolsa
+        $("#lbl_valor_total_bolsas").text(
+            "$ " + new Intl.NumberFormat("de-DE").format(valor_total_bolsas)
+        );
 
         $('.lbl_condicion_pago').text( $('#forma_pago').val() );
         $('.lbl_fecha_vencimiento').text( $('#fecha_vencimiento').val() );
@@ -766,7 +777,8 @@ $(document).ready(function () {
         var subtotal = 0.0;
         var valor_total_descuento = 0.0;
         var total_impuestos = 0.0;
-        total_factura = 0.0;
+        var total_factura = 0.0;
+        var valor_total_bolsas = 0.0;
 
         $('.linea_registro').each(function() {
             var cantidad_linea = parseFloat( $(this).find('.elemento_modificar').eq(0).text() );
@@ -776,6 +788,10 @@ $(document).ready(function () {
             valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
             total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
             total_factura += parseFloat( $(this).find('.precio_total').text() );
+        
+            valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+
+            total_factura += parseFloat( $("#precio_bolsa").val() );
 
         });
 
@@ -801,6 +817,12 @@ $(document).ready(function () {
 
         $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
         $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
+
+        // Para el caso de que se maneje la bolsa
+        $("#lbl_valor_total_bolsas").text(
+            "$ " + new Intl.NumberFormat("de-DE").format(valor_total_bolsas)
+        );
+        $("#valor_total_bolsas").val(valor_total_bolsas);
     }
 
 

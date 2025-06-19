@@ -14,6 +14,7 @@ use App\VentasPos\Services\SalesServices;
 use App\Ventas\VtasMovimiento;
 
 use App\CxC\DocumentosPendientes;
+use App\Inventarios\InvProducto;
 use App\Inventarios\Services\InvDocumentsService;
 use App\Tesoreria\TesoMovimiento;
 use App\VentasPos\DocRegistro;
@@ -140,7 +141,7 @@ class AccumulationService
 
         // Movimiento de Tesoreria ó CxC
         //if ($this->is_pending_registro_pago($invoice->forma_pago,$array_wheres)) {
-            $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total + $invoice->valor_ajuste_al_peso, $invoice->descripcion);
+            $this->crear_registro_pago( $invoice->forma_pago, $datos, $invoice->valor_total + $invoice->valor_ajuste_al_peso + $invoice->valor_total_bolsas, $invoice->descripcion);
         //}
 
         $invoice->estado = 'Acumulado';
@@ -286,7 +287,7 @@ class AccumulationService
         // Contabilizar Caja y Bancos ó Cartera de clientes
         $datos = $invoice->toArray();
         $datos['estado'] = 'Activo';
-        $obj_sales_serv->contabilizar_movimiento_debito( $invoice->forma_pago, $datos, $datos['valor_total'] + $datos['valor_ajuste_al_peso'], $detalle_operacion, $invoice->pdv->caja_default_id );
+        $obj_sales_serv->contabilizar_movimiento_debito( $invoice->forma_pago, $datos, $datos['valor_total'] + $datos['valor_ajuste_al_peso'] + $datos['valor_total_bolsas'], $detalle_operacion, $invoice->pdv->caja_default_id );
 
         // Inventarios (Inventarios y Costos)
         $obj_inv_doc_serv = new InvDocumentsService();
@@ -302,6 +303,18 @@ class AccumulationService
             }else{
                 $obj_accou_serv->contabilizar_registro($datos, (int)config('ventas_pos.cta_gastos_redondeo'), 'Redondeo factura', abs($invoice->valor_ajuste_al_peso), 0, null, null);
             }
+        }
+
+        // Contabilizar valor bolsas
+        if ($invoice->valor_total_bolsas != 0)
+        {
+            $obj_accou_serv = new AccountingServices();
+
+            $item_bolsa = InvProducto::find( (int)config('ventas_pos.item_bolsa_id') );
+
+            if ( $item_bolsa != null ) {
+                $obj_accou_serv->contabilizar_registro($datos, $item_bolsa->grupo_inventario->cta_ingresos_id, 'Cobro de bolsas en factura de ventas', 0, abs($invoice->valor_total_bolsas), null, null);
+            }            
         }
 
         // Actualizar encabezado de factura

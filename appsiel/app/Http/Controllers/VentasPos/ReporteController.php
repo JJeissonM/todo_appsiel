@@ -18,6 +18,7 @@ use App\Ventas\VtasMovimiento;
 use App\Ventas\VtasPedido;
 use App\VentasPos\Movimiento;
 use App\VentasPos\Services\ReportsServices;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -64,9 +65,19 @@ class ReporteController extends Controller
     {
         $pdv = Pdv::find($pdv_id);
 
-        $encabezados_documentos = FacturaPos::consultar_encabezados_documentos($pdv_id, $fecha_desde, $fecha_hasta);
+        //$encabezados_documentos = FacturaPos::consultar_encabezados_documentos($pdv_id, $fecha_desde, $fecha_hasta)->toArray()['data'];
 
-        $encabezados_documentos2 = FacturaPos::where('pdv_id', $pdv_id)->where('estado', 'Pendiente')->whereBetween('fecha', [$fecha_desde, $fecha_hasta])->get();
+        $encabezados_documentos = FacturaPos::where([
+                                        'pdv_id' => $pdv_id,
+                                        'core_empresa_id' => Auth::user()->empresa_id
+                                    ])
+                                ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                ->orderBy('created_at', 'DESC')
+                                ->get();
+
+        //dd($encabezados_documentos);
+
+        //$encabezados_documentos2 = FacturaPos::where('pdv_id', $pdv_id)->where('estado', 'Pendiente')->whereBetween('fecha', [$fecha_desde, $fecha_hasta])->get();
 
         $view = Input::get('view');
 

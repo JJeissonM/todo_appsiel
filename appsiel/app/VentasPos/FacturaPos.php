@@ -11,13 +11,14 @@ use App\Inventarios\InvDocEncabezado;
 use App\VentasPos\Pdv;
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\ResolucionFacturacion;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 
 class FacturaPos extends Model
 {
     protected $table = 'vtas_pos_doc_encabezados';
 
-    protected $fillable = [ 'uniqid', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'datos_temporales_cliente', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'lote_acumulacion', 'valor_total', 'estado', 'creado_por', 'modificado_por', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio'];
+    protected $fillable = [ 'uniqid', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'datos_temporales_cliente', 'vendedor_id', 'pdv_id', 'cajero_id', 'forma_pago', 'fecha_entrega', 'fecha_vencimiento', 'lineas_registros_medios_recaudos', 'descripcion', 'lote_acumulacion', 'valor_total', 'estado', 'creado_por', 'modificado_por', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas'];
 
     public $urls_acciones = '{"store":"pos_factura","update":"pos_factura/id_fila","imprimir":"pos_factura_imprimir/id_fila","show":"pos_factura/id_fila"}'; // ,"eliminar":"pos_factura_anular/id_fila"
 
@@ -356,6 +357,7 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.total_efectivo_recibido',
                 'vtas_pos_doc_encabezados.valor_ajuste_al_peso',
                 'vtas_pos_doc_encabezados.valor_total_cambio',
+                'vtas_pos_doc_encabezados.valor_total_bolsas',
                 'vtas_pos_doc_encabezados.ventas_doc_relacionado_id',
                 'vtas_pos_doc_encabezados.forma_pago AS condicion_pago',
                 'core_tipos_docs_apps.descripcion AS documento_transaccion_descripcion',
@@ -385,7 +387,7 @@ class FacturaPos extends Model
             $array_wheres = array_merge($array_wheres, ['vtas_pos_doc_encabezados.estado' => $estado]);
         }
 
-        return FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
+        $collection = FacturaPos::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_pos_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_pos_doc_encabezados.core_tercero_id')
             ->leftJoin('vtas_pos_puntos_de_ventas', 'vtas_pos_puntos_de_ventas.id', '=', 'vtas_pos_doc_encabezados.pdv_id')
             ->where($array_wheres)
@@ -402,7 +404,77 @@ class FacturaPos extends Model
                 'vtas_pos_doc_encabezados.id AS campo9'
             )
             ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
-            ->get()
-            ->toArray();
+            ->get();
+
+        $nro_registros = 10; // Numero de registros por pagina
+        $search = 0;
+        
+        //hacemos el filtro de $search si $search tiene contenido
+        $nuevaColeccion = [];
+        if (count($collection) > 0)
+        {
+            if (strlen($search) > 0)
+            {
+                $nuevaColeccion = $collection->filter(function ($c) use ($search) {
+                    if (self::likePhp([$c->campo1, $c->campo2, $c->campo3, $c->campo4, $c->campo5, $c->campo6, $c->campo7, $c->campo8], $search)) {
+                        return $c;
+                    }
+                });
+            } else {
+                $nuevaColeccion = $collection;
+            }
+        }
+
+        foreach( $collection AS $register_collect )
+        {
+            $doc_venta = FacturaPos::find( $register_collect->campo9 );
+
+            $register_collect->campo6 = '$' . number_format( $doc_venta->valor_total + $doc_venta->valor_ajuste_al_peso + $doc_venta->valor_total_bolsas, 0, ',', '.' );
+        }
+
+        $request = request(); //obtenemos el Request para obtener la url y la query builder
+
+        if (empty($nuevaColeccion)) {
+            return $array = new LengthAwarePaginator([], 1, 1, 1, [
+                'path' => $request->url(),
+                'query' => $request->query(),
+            ]);
+        }
+
+        //obtenemos el numero de la página actual, por defecto 1
+        $page = 1;
+        if (isset($_GET['page'])) {
+            $page = $_GET['page'];
+        }
+        $total = count($nuevaColeccion); //Total para contar los registros mostrados
+        $starting_point = ($page * $nro_registros) - $nro_registros; // punto de inicio para mostrar registros
+        $array = $nuevaColeccion->slice($starting_point, $nro_registros); //indicamos desde donde y cuantos registros mostrar
+        $array = new LengthAwarePaginator($array, $total, $nro_registros, $page, [
+            'path' => $request->url(),
+            'query' => $request->query(),
+        ]); //finalmente se pagina y organiza la coleccion a devolver con todos los datos
+
+        return $array;
+    }
+
+    /**
+     * SQL Like operator in PHP.
+     * Returns TRUE if match else FALSE.
+     * @param array $valores_campos_seleccionados de campos donde se busca
+     * @param string $searchTerm termino de busqueda
+     * @return bool
+     */
+    public static function likePhp($valores_campos_seleccionados, $searchTerm)
+    {
+        $encontrado = false;
+        $searchTerm = str_slug($searchTerm); // Para eliminar acentos
+        foreach ($valores_campos_seleccionados as $valor_campo) {
+            $str = str_slug($valor_campo);
+            $pos = strpos($str, $searchTerm);
+            if ($pos !== false) {
+                $encontrado = true;
+            }
+        }
+        return $encontrado;
     }
 }

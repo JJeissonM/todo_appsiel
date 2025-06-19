@@ -127,5 +127,9 @@ value="{{ config('ventas_pos.formato_impresion_pedidos') }}">
 
 <input type="hidden" name="object_anticipos" id="object_anticipos" value="null">
 
+<!-- Campos ocultos para el manejo de bolsas -->
+<input type="hidden" name="precio_bolsa" id="precio_bolsa" value="{{ $precio_bolsa }}">
+<input type="hidden" name="valor_total_bolsas" id="valor_total_bolsas" value="0">
+
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>

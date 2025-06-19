@@ -473,6 +473,7 @@ class PedidosPosController extends TransaccionController
             'lbl_ajuste_al_peso' => '',
             'lbl_total_recibido' => '0',
             'lbl_total_cambio' => '',
+            'lbl_valor_total_bolsas' => '',
             'lbl_creado_por_fecha_y_hora' => '',
             'lineas_registros' => '',
             'lineas_impuesto' => ''

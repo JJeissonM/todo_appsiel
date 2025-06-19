@@ -70,6 +70,7 @@
                     $subtotal_sin_iva = $total_bruto - $total_impuestos;
 
                     $total_factura += $doc_encabezado->valor_ajuste_al_peso;
+                    $total_factura += $doc_encabezado->valor_total_bolsas;
 
 
                 ?>

@@ -7,6 +7,7 @@ var valor_impuesto_unitario = 0;
 var valor_unitario_descuento = 0;
 var total_cambio = 0;
 var valor_ajuste_al_peso = 0;
+var valor_total_bolsas = 0;
 var ventana_factura; 
 
 $('#teso_motivo_id').val( 1 );
@@ -43,6 +44,7 @@ $.fn.calcular_totales_aux = function()
     var valor_total_descuento = 0.0;
     var total_impuestos = 0.0;
     total_factura = 0.0;
+    var valor_total_bolsas = 0.0;
 
     $('.linea_registro').each(function() {
         cantidad += parseFloat( $(this).find('.cantidad').text() );
@@ -50,6 +52,10 @@ $.fn.calcular_totales_aux = function()
         valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
         total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * parseFloat( $(this).find('.cantidad').text() );
         total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+        valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+
+        total_factura += parseFloat( $("#precio_bolsa").val() );
     });
 
     $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(cantidad));
@@ -75,6 +81,12 @@ $.fn.calcular_totales_aux = function()
 
     $('#lbl_ajuste_al_peso').text( '$ ' + new Intl.NumberFormat("de-DE").format(valor_ajuste_al_peso));
     $("#valor_ajuste_al_peso").val(valor_ajuste_al_peso);
+
+    // Para el caso de que se maneje la bolsa
+    $("#lbl_valor_total_bolsas").text(
+        "$ " + new Intl.NumberFormat("de-DE").format(valor_total_bolsas)
+    );
+    $("#valor_total_bolsas").val(valor_total_bolsas);
 };
 
 $.fn.redondear_a_centena_aux = function(numero, aproximacion_superior = false) 
@@ -159,8 +171,13 @@ $.fn.reset_efectivo_recibido_aux = function()
     $('#total_efectivo_recibido').val(0);
     $('#lbl_efectivo_recibido').text('$ 0');
     $('#total_cambio').text('$ 0');
+    
     $('#lbl_ajuste_al_peso').text('$ ');
     $("#valor_ajuste_al_peso").val(0);
+
+    $('#lbl_valor_total_bolsas').text('$ ');
+    $("#valor_total_bolsas").val(0);
+    
     total_cambio = 0;
     $('#btn_guardar_factura').attr('disabled', 'disabled');
 };

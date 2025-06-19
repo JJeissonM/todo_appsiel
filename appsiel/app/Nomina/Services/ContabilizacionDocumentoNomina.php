@@ -249,6 +249,11 @@ class ContabilizacionDocumentoNomina
 		$lineas_tabla = [];
 		foreach ( $this->movimiento_contabilizar as $movimiento )
 		{
+            if( $movimiento->concepto == null && ( $movimiento->valor_debito + $movimiento->valor_credito ) == 0 )
+            {
+            	continue;
+            }
+            
 			$observacion = $this->get_observacion( $movimiento );
 
 			$movimiento->error = $observacion->error;
