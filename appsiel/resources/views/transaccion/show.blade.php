@@ -96,8 +96,8 @@
 		    
 			{!! $documento_vista !!}
 			
-			<br>
-
+			@yield('section_after_documento_vista')
+		    
 			<!-- se usa include porque es la misma estructura para la vista de todas las transacciones -->
 		    @include('transaccion.registros_contables')
 

@@ -2,16 +2,12 @@
     <tbody>
         <tr style="font-weight: bold;">
             <td style="text-align: right;"> Total factura: </td>
-            <td style="text-align: right;">
-                <div class="lbl_total_factura" style="display: inline; margin-right: 15px;">{{$datos_factura->lbl_total_factura}} </div>
-                
+            <td style="text-align: right;">                
                 @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
-                    <br>
-                    <div class="lbl_valor_total_bolsas" style="display: inline; font-size: 9px;">$ {{ $datos_factura->lbl_valor_total_bolsas }}</div>                    
+                    <div class="lbl_valor_total_bolsas" style="margin-right: 15px; font-size: 9px;">$ {{ $datos_factura->lbl_valor_total_bolsas }} </div>
                 @endif
-
-                <br>
-                <div class="lbl_ajuste_al_peso" style="display: inline; margin-right: 15px; font-size: 9px;">$ {{ $datos_factura->lbl_ajuste_al_peso }} </div>
+                <div class="lbl_ajuste_al_peso" style="margin-right: 15px; font-size: 9px;">$ {{ $datos_factura->lbl_ajuste_al_peso }} </div>
+                <div class="lbl_total_factura" style="margin-right: 15px;">{{$datos_factura->lbl_total_factura}} </div>
             </td>
         </tr>
         @if( (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') )

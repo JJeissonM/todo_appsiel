@@ -21,11 +21,11 @@
                     @endphp
                 @endforeach
             </tbody>
-            <tfoot>            
+            <tfoot>
                     <tr>
-                        <td colspan="2"> &nbsp; </td>
-                        <td style="text-align: right;"> {{ number_format( $total_valor_debito, 2, ',', '.') }}</td>
-                        <td style="text-align: right;"> {{ number_format( $total_valor_credito, 2, ',', '.') }}</td>
+                        <td colspan="2" style="border-top: solid 3px #ddd;"> &nbsp; </td>
+                        <td style="text-align: right; border-top: solid 3px #ddd;"> {{ number_format( $total_valor_debito, 2, ',', '.') }}</td>
+                        <td style="text-align: right; border-top: solid 3px #ddd;"> {{ number_format( $total_valor_credito, 2, ',', '.') }}</td>
                     </tr>
             </tfoot>
         </table>

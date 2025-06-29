@@ -90,6 +90,10 @@ class PrintServices
                 $total_factura_mas_datafono = $doc_encabezado->valor_total + $valor_datafono;
             }
 
+            $lbl_ajuste_al_peso = round($doc_encabezado->valor_ajuste_al_peso,2);
+
+            $lbl_total_factura = $doc_encabezado->valor_total + $lbl_ajuste_al_peso + $doc_encabezado->valor_total_bolsas;
+            
             $datos_factura = (object)[
                 'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
@@ -98,12 +102,12 @@ class PrintServices
                 'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
                 'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
-                'lbl_total_factura' => '$' . number_format($doc_encabezado->valor_total,2,',','.'),
+                'lbl_total_factura' => '$' . number_format($lbl_total_factura, 2,',','.'),
                 'lbl_total_propina' => '$' . number_format( $valor_propina, 2, ',' , '.'),
                 'total_factura_mas_propina' => '$' . number_format( $total_factura_mas_propina, 2, ',' , '.'),
                 'lbl_total_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
                 'total_factura_mas_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
-                'lbl_ajuste_al_peso' => $doc_encabezado->valor_ajuste_al_peso,
+                'lbl_ajuste_al_peso' => $lbl_ajuste_al_peso,
                 'lbl_total_recibido' => $doc_encabezado->total_efectivo_recibido,
                 'lbl_total_cambio' => $doc_encabezado->valor_total_cambio,
                 'lbl_valor_total_bolsas' => $doc_encabezado->valor_total_bolsas,

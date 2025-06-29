@@ -19,6 +19,7 @@
 @if( (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') )
     <div id="div_resumen_medios_pago" style="display: none;">
         <br>
+        <div style="text-align: center; width: 100%; font-weight: bold; font-size: 12px;">Detalle Medios de pago</div>
         <div class="table-responsive">
             <table class="tabla_resumen_medios_pago" id="tabla_resumen_medios_pago">
                 <thead>

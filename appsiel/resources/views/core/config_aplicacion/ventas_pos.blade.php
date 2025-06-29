@@ -421,6 +421,28 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$acumular_facturas_en_tiempo_real = '0';
+								if( isset($parametros['acumular_facturas_en_tiempo_real'] ) )
+								{
+									$acumular_facturas_en_tiempo_real = $parametros['acumular_facturas_en_tiempo_real'];
+								}
+							?>
+							{{ Form::bsSelect('acumular_facturas_en_tiempo_real', $acumular_facturas_en_tiempo_real, 'Acumular facturas en tiempo real (en el Create)', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+				
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$validar_existencias_al_acumular = '1';
 								if( isset($parametros['validar_existencias_al_acumular'] ) )
 								{

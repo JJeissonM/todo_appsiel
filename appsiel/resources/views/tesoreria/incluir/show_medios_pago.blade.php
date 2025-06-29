@@ -2,7 +2,7 @@
     @if( $registros_tesoreria != null )
         <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Medios de Pago</div>
         <div class="table-responsive">
-            <table class="table table-bordered table-striped" style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">
+            <table class="table table-bordered table-striped" style="text-align: center; width: 100%;">
                 {{ Form::bsTableHeader(['Caja/Banco','Monto']) }}
                 <tbody>
                     <?php 
@@ -34,8 +34,8 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td>&nbsp;</td>
-                        <td class="text-right"> ${{ number_format($total_movimiento, 2, ',', '.') }} </td>
+                        <td style="border-top: solid 3px #ddd;">&nbsp;</td>
+                        <td class="text-right" style="border-top: solid 3px #ddd;"> ${{ number_format($total_movimiento, 2, ',', '.') }} </td>
                     </tr>
                 </tfoot>
             </table>

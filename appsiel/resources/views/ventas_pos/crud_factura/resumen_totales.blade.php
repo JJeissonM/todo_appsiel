@@ -73,18 +73,19 @@
 
         <tr class="info">
             <td width="35%">
+                @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+                    <br>
+                @endif
+                <br>
                 <strong> Total factura </strong>
             </td>
             <td style="text-align: right;" colspan="2">
-                <div id="total_factura" style="display: inline;"> $ {{ number_format( $valor_total_factura,'2',',','.') }}</div>
-                <input type="hidden" name="valor_total_factura" id="valor_total_factura"
-                       value="{{$valor_total_factura}}">
                 @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
-                    <br>
                     <div id="lbl_valor_total_bolsas" style="display: inline; font-size: 9px; color: green;"> $ 0</div>                    
                 @endif
-                <br>
-                <div id="lbl_ajuste_al_peso" style="display: inline; font-size: 9px;"> $ 0</div>
+                <div id="lbl_ajuste_al_peso" style="font-size: 9px;"> $ 0</div>
+                <div id="total_factura" style="font-weight: bold;"> $ {{ number_format( $valor_total_factura,'2',',','.') }}</div>
+                <input type="hidden" name="valor_total_factura" id="valor_total_factura" value="{{ $valor_total_factura }}">
             </td>
         </tr>
         <tr id="div_efectivo_recibido" class="warning">

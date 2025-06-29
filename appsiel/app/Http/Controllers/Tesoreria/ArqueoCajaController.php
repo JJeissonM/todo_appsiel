@@ -140,6 +140,9 @@ class ArqueoCajaController extends ModeloController
         return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));
     }
 
+    /**
+     * 
+     */
     public function imprimir($id)
     {
         $view = ArqueoCajaController::vista_preliminar( $id, Input::get('formato_impresion_id') );  

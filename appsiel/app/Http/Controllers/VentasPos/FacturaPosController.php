@@ -226,6 +226,10 @@ class FacturaPosController extends TransaccionController
         $lineas_registros = json_decode($request->lineas_registros);
 
         $acumular_factura = false;
+        if ((int)config('ventas_pos.acumular_facturas_en_tiempo_real') ) {
+            $acumular_factura = true;
+        }
+
         $crear_cruce_con_anticipos = false;
         $crear_abonos = false; // Cuando es credito y se ingresa alguna línea de Medio de pago
         if ( $request->object_anticipos != 'null' && $request->object_anticipos != '' )

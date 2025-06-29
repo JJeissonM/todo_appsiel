@@ -1,10 +1,15 @@
 @if( isset($registros_tesoreria))
     @if( $registros_tesoreria != null )
         @if( (int)config('ventas_pos.mostrar_efectivo_recibio_y_cambio') )
-            <div style="text-align: center; width: 100%; background: #ddd; font-weight: bold;">Medios de Pago</div>
+            <div style="text-align: center; width: 100%; font-weight: bold; background: #ddd;">Medios de Pago</div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped" style="text-align: center; width: 100%; background: #ddd;">
-                    {{ Form::bsTableHeader(['Caja/Banco','Monto']) }}
+                <table class="table table-bordered table-striped" style="text-align: center; width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Caja/Banco</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         <?php 
                         

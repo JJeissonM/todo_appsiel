@@ -139,6 +139,33 @@ class ReportsServices
         ];
     }
 
+    /**
+     * 
+     */
+    public function resumen_ingresos_bolsas($fecha, $teso_caja_id)
+    {
+        $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
+
+        if ($pdv == null) {
+            return (object)[
+                'status' => 'error',
+                'message' => 'La caja no está asociada a ningún Punto de Ventas.',
+            ];
+        }
+
+        $documentos_pdv = FacturaPos::where([
+                                        ['pdv_id','=',$pdv->id],
+                                        ['estado', '<>', 'Anulado']
+                                    ])
+                                ->whereBetween('fecha', [$fecha, $fecha])
+                                ->get();
+
+        return (object)[
+            'status' => 'success',
+            'valor_total_bolsas' => $documentos_pdv->sum('valor_total_bolsas')
+        ];
+    }
+
     public function get_ventas_credito_pdv($pdv_id, $fecha_desde, $fecha_hasta)
     {        
         $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);

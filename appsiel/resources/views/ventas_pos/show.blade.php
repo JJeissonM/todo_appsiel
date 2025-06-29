@@ -119,9 +119,6 @@
 @endsection
 
 @section('documento_vista')
-	@if( $doc_encabezado->condicion_pago == 'contado')
-		{!! $medios_pago !!}
-	@endif
 
 	@include('ventas.incluir.documento_vista')
 	
@@ -129,6 +126,16 @@
 	
 	@include('components.design.ventana_modal2',['titulo2'=>'','texto_mensaje2'=>''])
 
+@endsection
+
+@section('section_after_documento_vista')
+	<div style="font-size: 1.1em !important;">
+		@include( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )
+	</div>	
+
+	@if( $doc_encabezado->condicion_pago == 'contado')
+		{!! $medios_pago !!}
+	@endif
 @endsection
 
 @section('registros_otros_documentos')

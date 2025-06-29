@@ -183,7 +183,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
     lbl_total_factura += parseFloat( $("#precio_bolsa").val() );
 
     cantidad_total_productos++;
-  });
+  }); // Fin por cada línea de productos
 
   var total_factura_redondeado = redondear_a_centena(lbl_total_factura);
 
@@ -294,9 +294,61 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
 
   $(".lbl_descripcion_doc_encabezado").text($("#descripcion").val());
 
+  llenar_resumen_impuestos();
+
   if ( con_medios_recaudos ) {
     llenar_resumen_medios_recaudo();
   }
+}
+
+function llenar_resumen_impuestos() {
+
+  $("#div_resumen_impuestos").show();
+  let array_tasas = {};
+
+  $(".linea_registro").each(function () {
+
+    var linea = {};
+    linea.cantidad = $(this).find(".cantidad").text();
+    linea.base_impuesto = $(this).find(".base_impuesto_total").text();
+    linea.valor_impuesto = $(this).find(".valor_impuesto").text();
+    linea.tasa_impuesto = $(this).find(".tasa_impuesto").text();
+    linea.precio_total = $(this).find(".precio_total").text();
+
+    // Si la tasa no está en el array, se agregan sus valores por primera vez
+    if (typeof array_tasas[linea.tasa_impuesto] === 'undefined') {
+        // Clasificar el impuesto
+        array_tasas[linea.tasa_impuesto] = {};
+        array_tasas[linea.tasa_impuesto]['tipo'] = 'IVA=' + linea.tasa_impuesto + '%';
+        if (parseFloat(linea.tasa_impuesto) === 0) {
+            array_tasas[linea.tasa_impuesto]['tipo'] = 'EX=0%';
+        }
+        // Guardar la tasa en el array
+        array_tasas[linea.tasa_impuesto]['tasa'] = linea.tasa_impuesto;
+
+        // Guardar el primer valor del impuesto y base en el array
+        array_tasas[linea.tasa_impuesto]['precio_total'] = parseFloat(linea.precio_total);
+        array_tasas[linea.tasa_impuesto]['base_impuesto'] = parseFloat(linea.base_impuesto);
+        array_tasas[linea.tasa_impuesto]['valor_impuesto'] = parseFloat(linea.valor_impuesto) * parseFloat(linea.cantidad);
+
+    } else {
+        // Si ya está la tasa creada en el array
+        // Acumular los siguientes valores del valor base y valor de impuesto según el tipo
+        array_tasas[linea.tasa_impuesto]['precio_total'] += parseFloat(linea.precio_total);
+        array_tasas[linea.tasa_impuesto]['base_impuesto'] += parseFloat(linea.base_impuesto);
+        array_tasas[linea.tasa_impuesto]['valor_impuesto'] += parseFloat(linea.valor_impuesto) * parseFloat(linea.cantidad);
+    }
+  });
+
+  $.each(array_tasas,function (index, value) {
+
+    $("#tabla_resumen_impuestos")
+      .find("tbody:last")
+      .append(
+        "<tr><td>" + value.tipo + "</td> <td style='text-align: right'>$ " + new Intl.NumberFormat("de-DE").format( value.precio_total.toFixed(0) ) + "</td> <td style='text-align: right'>$ " + new Intl.NumberFormat("de-DE").format( value.base_impuesto.toFixed(0) ) + "</td> <td style='text-align: right'>$ "+ new Intl.NumberFormat("de-DE").format( value.valor_impuesto.toFixed(0) ) + "</td></tr>"
+      );
+  });
+  
 }
 
 function llenar_resumen_medios_recaudo() {
@@ -442,6 +494,7 @@ function reset_tabla_ingreso_medios_pago() {
   $("#ingreso_registros_medios_recaudo").find("tbody").html("");
 
   $("#tabla_resumen_medios_pago").find("tbody").html("");
+  $("#tabla_resumen_impuestos").find("tbody").html("");
 
   // reset totales
   $("#total_valor_total").text("$0.00");

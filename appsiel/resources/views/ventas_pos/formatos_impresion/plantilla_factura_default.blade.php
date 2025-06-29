@@ -27,6 +27,20 @@
             font-size: 2em;
         }
 
+        
+        table {
+            width:100%;
+            border-collapse: collapse;
+        }
+
+        .table-bordered {
+            border: 1px solid #ddd;
+        }
+
+        .table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th {
+            border: 1px solid #ddd;
+        }
+
         @yield('estilos_adicionales')
     </style>
 </head>
@@ -151,11 +165,14 @@
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
     @endif
 
+    @include('ventas_pos.formatos_impresion.tabla_resumen_impuestos')
+
     @if($datos_factura->lineas_impuesto != '')
         {!! $datos_factura->lineas_impuesto !!}
     @endif
 
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
+    
     @if(isset($medios_pago))
         <div style="font-style: normal; font-weight: 100;">
             {!! $medios_pago !!}

@@ -19,13 +19,13 @@
         </tr>
         @if(config('ventas.detallar_iva_cotizaciones'))
             <tr>
-                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> {{ config('ventas.etiqueta_impuesto_principal') }} {{ $impuesto_iva }}%: &nbsp; </td>
+                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> Total {{ config('ventas.etiqueta_impuesto_principal') }}: &nbsp; </td>
                 <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> + $ &nbsp;{{ number_format($total_impuestos, 2, ',', '.') }} </td>
             </tr>
         @endif
 
         
-        @if( (int)config('ventas_pos.item_bolsa_id') )
+        @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
             <?php 
                 $label_signo = '+';
                 if($doc_encabezado->valor_total_bolsas < 0) {
@@ -34,7 +34,7 @@
                 $valor_total_bolsas = abs($doc_encabezado->valor_total_bolsas);
             ?>
             <tr>
-                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Valor bolsas: &nbsp; </td>
+                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Bolsas: &nbsp; </td>
                 <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom">
                     {{ $label_signo }} $ &nbsp;{{ number_format( $valor_total_bolsas, 2, ',', '.') }} 
                     <span id="valor_total_bolsas" style="display: none;">{{$doc_encabezado->valor_total_bolsas}}</span>
@@ -50,15 +50,15 @@
             $valor_ajuste_al_peso = abs($doc_encabezado->valor_ajuste_al_peso);
         ?>
         <tr>
-            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Ajuste al peso: &nbsp; </td>
+            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Redondeo al peso: &nbsp; </td>
             <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom">
                 {{ $label_signo }} $ &nbsp;{{ number_format( $valor_ajuste_al_peso, 2, ',', '.') }} 
                 <span id="valor_ajuste_al_peso" style="display: none;">{{$doc_encabezado->valor_ajuste_al_peso}}</span>
             </td>
         </tr>
         <tr>
-            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Total: &nbsp; </td>
-            <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom">
+            <td style="text-align: right; font-weight: bold;padding-right: 3px; border-top: solid 3px #ddd;" class="totl-bottom"> Total: &nbsp; </td>
+            <td style="text-align: right; font-weight: bold;padding-right: 3px; border-top: solid 3px #ddd;" class="totl-bottom">
                 $ &nbsp;{{ number_format($total_factura, 2, ',', '.') }} 
                 <span id="vlr_total_factura" style="display: none;">{{$total_factura}}</span>
             </td>

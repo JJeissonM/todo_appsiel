@@ -41,7 +41,8 @@
     ?>
 @endforeach
 
-<table style="width: 100%;" class="table table-bordered">
+<div style="text-align: center; width: 100%; font-weight: bold; background: #ddd;">Detalle impuestos</div>
+<table style="width: 100%; font-size: 0.9em;" class="table table-bordered">
     <thead>
         <tr>
             <th>Tipo producto</th>
@@ -54,12 +55,12 @@
         @foreach( $array_tasas as $key => $value )
         <tr>
             <td> {{ $value['tipo'] }} </td>
-            <td class="text-right"> ${{ number_format( $value['precio_total'], 0, ',', '.') }} </td>
+            <td style="text-align: right"> ${{ number_format( $value['precio_total'], 0, ',', '.') }} </td>
             <?php 
                 $base = $value['base_impuesto'];
             ?>
-            <td class="text-right"> ${{ number_format( $base, 0, ',', '.') }} </td>
-            <td class="text-right"> ${{ number_format( $value['valor_impuesto'], 0, ',', '.') }} </td>
+            <td style="text-align: right"> ${{ number_format( $base, 0, ',', '.') }} </td>
+            <td style="text-align: right"> ${{ number_format( $value['valor_impuesto'], 0, ',', '.') }} </td>
         </tr>
         @endforeach
     </tbody>
