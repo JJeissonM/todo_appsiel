@@ -4,7 +4,7 @@
         <table class="table table-bordered">
             <tr>
                 <td style="text-align: center; background-color: #ddd;"> 
-                    <span style="text-align: right; font-weight: bold;"> DETALLE MEDIOS DE PAGO </span> 
+                    <span style="text-align: right; font-weight: bold;">MEDIOS DE PAGO </span> 
                 </td>
             </tr>
         </table>

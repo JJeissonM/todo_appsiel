@@ -153,7 +153,7 @@
     </div>
 
     <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
-        {{ Form::bsTableHeader(['Producto','Cant. (Precio)',config('ventas.etiqueta_impuesto_principal'),'Total']) }}
+        {{ Form::bsTableHeader(['Producto','Cant. (Precio)','%'.config('ventas.etiqueta_impuesto_principal'),'Total']) }}
         <tbody>
             {!! $datos_factura->lineas_registros !!}
         </tbody>
@@ -165,18 +165,18 @@
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
     @endif
 
-    @include('ventas_pos.formatos_impresion.tabla_resumen_impuestos')
-
-    @if($datos_factura->lineas_impuesto != '')
-        {!! $datos_factura->lineas_impuesto !!}
-    @endif
-
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
     
     @if(isset($medios_pago))
         <div style="font-style: normal; font-weight: 100;">
             {!! $medios_pago !!}
         </div>    
+    @endif
+
+    @include('ventas_pos.formatos_impresion.tabla_resumen_impuestos')
+
+    @if($datos_factura->lineas_impuesto != '')
+        {!! $datos_factura->lineas_impuesto !!}
     @endif
 
     <table style="width: 100%; font-size: 11px;" class="table table-bordered">

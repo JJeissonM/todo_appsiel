@@ -41,7 +41,7 @@
     ?>
 @endforeach
 
-<div style="text-align: center; width: 100%; font-weight: bold; background: #ddd;">Detalle impuestos</div>
+<div style="text-align: center; width: 100%; font-weight: bold; background: #ddd;">Impuestos</div>
 <table style="width: 100%; font-size: 0.9em;" class="table table-bordered">
     <thead>
         <tr>

@@ -129,13 +129,13 @@
 @endsection
 
 @section('section_after_documento_vista')
-	<div style="font-size: 1.1em !important;">
-		@include( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )
-	</div>	
-
 	@if( $doc_encabezado->condicion_pago == 'contado')
 		{!! $medios_pago !!}
 	@endif
+
+	<div style="font-size: 1.1em !important;">
+		@include( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )
+	</div>	
 @endsection
 
 @section('registros_otros_documentos')

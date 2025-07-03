@@ -1,7 +1,7 @@
 @if( (int)config('configuracion.liquidacion_impuestos') )
     <div class="container">        
         <div style="text-align: center; widtd: 100%; background: #ddd; font-weight: bold; clear:botd;">
-            Detalle de impuestos
+            Impuestos
         </div>
 
         <table class="tabla_con_bordes">

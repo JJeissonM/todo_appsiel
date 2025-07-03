@@ -380,8 +380,7 @@ function llenar_resumen_medios_recaudo() {
           lbl_medio_pago +
           "</td><td>" +
           lbl_caja_banco +
-          "</td><td>" +
-          lbl_valor_medio_pago +
+          "</td><td style='text-align: right'>$ " + new Intl.NumberFormat("de-DE").format(lbl_valor_medio_pago ) +
           "</td></tr>"
       );
   } else {

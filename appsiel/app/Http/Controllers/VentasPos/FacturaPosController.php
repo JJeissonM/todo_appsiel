@@ -818,12 +818,12 @@ class FacturaPosController extends TransaccionController
             return 'No hay documentos pendientes.';
         }
         
-        // Un documento de desarme (MK) por acumulación
+        // 1. Un documento de desarme (MK) por acumulación
         $obj_acumm_serv->hacer_desarme_automatico();        
         
+        // 2. Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
         if ( (int)config( 'ventas_pos.crear_ensamble_de_recetas' ) )
         {
-            // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
             $obj_acumm_serv->hacer_preparaciones_recetas();
         }
 

@@ -34,7 +34,7 @@
                 $valor_total_bolsas = abs($doc_encabezado->valor_total_bolsas);
             ?>
             <tr>
-                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Bolsas: &nbsp; </td>
+                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom"> Ajuste: &nbsp; </td>
                 <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-bottom">
                     {{ $label_signo }} $ &nbsp;{{ number_format( $valor_total_bolsas, 2, ',', '.') }} 
                     <span id="valor_total_bolsas" style="display: none;">{{$doc_encabezado->valor_total_bolsas}}</span>
