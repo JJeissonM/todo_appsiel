@@ -44,7 +44,7 @@
                             
                             @if( $item->descuento == 0)
                                 <span class="regular-price" id="product-price-1">
-                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->get_get_unidad_medida1()() }}</span>
+                                    <span class="price">${{ number_format( $item->precio_venta,0,',','.' ) }} x {{ $item->get_unidad_medida1() }}</span>
                                 </span>
                             @else
                                 <span class="regular-price" id="product-price-1">

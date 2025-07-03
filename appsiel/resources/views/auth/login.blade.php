@@ -1,9 +1,14 @@
 @extends('layouts.login')
 
 @section('content')
+
+
 <div class="login-form">
 
   <div class="form-login">
+    <br>
+    @include('layouts.mensajes')
+
     <div class="col-md-12" style="text-align: center;">
       <img style="width: 100%;" src="{{asset('assets/img/appsiel-logo.png')}}" alt="Logo">
       <h2 class="text-center" style="font-size: 30px; font-family: 'Gotham-Narrow-Medium';">BIENVENIDOS</h2>

@@ -166,7 +166,7 @@ class PagoCxpController extends TransaccionController
         for ($i=0; $i < $cantidad; $i++) 
         {
             $abono = (float)$lineas_registros[$i]->abono;
-            $registro_documento_pendiente = CxpMovimiento::find( (int)$lineas_registros[$i]->id_doc );
+            $registro_movimiento_cxp = CxpMovimiento::find( (int)$lineas_registros[$i]->id_doc );
             
             // Almacenar registro de abono
             $datos = ['core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id]+
@@ -174,28 +174,28 @@ class PagoCxpController extends TransaccionController
                         ['consecutivo' => $doc_encabezado->consecutivo]+
                         ['core_empresa_id' => $doc_encabezado->core_empresa_id]+
                         ['core_tercero_id' => $doc_encabezado->core_tercero_id]+
-                        ['modelo_referencia_tercero_index' => $registro_documento_pendiente->modelo_referencia_tercero_index]+
-                        ['referencia_tercero_id' => $registro_documento_pendiente->referencia_tercero_id]+
+                        ['modelo_referencia_tercero_index' => $registro_movimiento_cxp->modelo_referencia_tercero_index]+
+                        ['referencia_tercero_id' => $registro_movimiento_cxp->referencia_tercero_id]+
                         ['fecha' => $doc_encabezado->fecha]+
-                        ['doc_cxp_transacc_id' => $registro_documento_pendiente->core_tipo_transaccion_id]+
-                        ['doc_cxp_tipo_doc_id' => $registro_documento_pendiente->core_tipo_doc_app_id]+
-                        ['doc_cxp_consecutivo' => $registro_documento_pendiente->consecutivo]+
+                        ['doc_cxp_transacc_id' => $registro_movimiento_cxp->core_tipo_transaccion_id]+
+                        ['doc_cxp_tipo_doc_id' => $registro_movimiento_cxp->core_tipo_doc_app_id]+
+                        ['doc_cxp_consecutivo' => $registro_movimiento_cxp->consecutivo]+
                         ['abono' => $abono ]+
                         ['creado_por' => $doc_encabezado->creado_por];
 
             CxpAbono::create( $datos );
 
             // CONTABILIZAR
-            $detalle_operacion = 'Abono factura de proveedor '.$registro_documento_pendiente->doc_proveedor_prefijo.' - '.$registro_documento_pendiente->doc_proveedor_consecutivo;
+            $detalle_operacion = 'Abono factura de proveedor '.$registro_movimiento_cxp->doc_proveedor_prefijo.' - '.$registro_movimiento_cxp->doc_proveedor_consecutivo;
 
-            // MOVIMIENTO DEBITO: Cuenta por pagar. Cada Documento pagado puede tener cuenta por cobrar distinta.
+            // MOVIMIENTO DEBITO: Cuenta por pagar. Cada Documento pagado puede tener cuenta por pagar distinta.
             // Del movimiento contable, Se llama al ID de la cuenta (moviento CR) afectada por el documento CxP para el tercero al que se le está haciendo el pago
-            $cuenta_cxp_id = ContabMovimiento::where('core_tipo_transaccion_id',$registro_documento_pendiente->core_tipo_transaccion_id)
-                                            ->where('core_tipo_doc_app_id',$registro_documento_pendiente->core_tipo_doc_app_id)
-                                            ->where('consecutivo',$registro_documento_pendiente->consecutivo)
-                                            ->where('core_tercero_id',$registro_documento_pendiente->core_tercero_id)
+            $cuenta_cxp_id = ContabMovimiento::where('core_tipo_transaccion_id',$registro_movimiento_cxp->core_tipo_transaccion_id)
+                                            ->where('core_tipo_doc_app_id',$registro_movimiento_cxp->core_tipo_doc_app_id)
+                                            ->where('consecutivo',$registro_movimiento_cxp->consecutivo)
+                                            ->where('core_tercero_id',$registro_movimiento_cxp->core_tercero_id)
                                             ->where('valor_debito',0)
-                                            ->whereNotIn('contab_cuenta_id',$cuentas_ya_aplicadas)
+                                            //->whereNotIn('contab_cuenta_id',$cuentas_ya_aplicadas)
                                             ->value('contab_cuenta_id');
 
             if( is_null( $cuenta_cxp_id ) )
@@ -208,7 +208,7 @@ class PagoCxpController extends TransaccionController
             ContabilidadController::contabilizar_registro2( array_merge( $request->all(), [ 'consecutivo' => $doc_encabezado->consecutivo ] ), $cuenta_cxp_id, $detalle_operacion, $abono, 0);
 
             // Se diminuye el saldo_pendiente en el documento pendiente, si saldo_pendiente == 0 se marca como pagado
-            $registro_documento_pendiente->actualizar_saldos($abono);
+            $registro_movimiento_cxp->actualizar_saldos($abono);
 
             $total_abonos_cxc += $abono;
         }

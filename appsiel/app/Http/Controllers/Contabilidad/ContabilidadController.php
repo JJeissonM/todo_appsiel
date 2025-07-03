@@ -406,7 +406,32 @@ class ContabilidadController extends TransaccionController
 
         if ( !$array_estado['permitir_eliminar'] )
         {
-            return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','El documento no se puede eliminar; tiene transacciones de CxP o CxC con abonos o pagos aplicados. Retire los abonos o pagos para poder eliminar el documento.');
+            return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Documento NO puede ser anulado. tiene transacciones de CxP o CxC con abonos o pagos aplicados. Retire los abonos o pagos para poder eliminar el documento.');
+        }        
+
+        $array_wheres = ['core_empresa_id'=>$doc_encabezado->core_empresa_id, 
+                            'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                            'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                            'consecutivo' => $doc_encabezado->consecutivo];
+
+        // Está en un documento cruce de cxp?
+        $cantidad = CxpAbono::where($array_wheres)
+                            ->where('doc_cruce_transacc_id','<>',0)
+                            ->count();
+
+        if($cantidad != 0)
+        {
+            return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Documento NO puede ser anulado. Está en documento cruce de CxP.');
+        }
+
+        // Está en un documento cruce de cartera?
+        $cantidad = CxcAbono::where($array_wheres)
+                            ->where('doc_cruce_transacc_id','<>',0)
+                            ->count();
+
+        if($cantidad != 0)
+        {
+            return redirect( 'contabilidad/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Documento NO puede ser anulado. Está en documento cruce de cartera (CxC).');
         }
 
         // Elimimar movimientos de CxC y CxP, si los hubiere

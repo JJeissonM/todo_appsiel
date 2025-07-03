@@ -1183,8 +1183,6 @@ $(document).ready(function () {
                 $("#btn_guardando").attr("id", "btn_guardar_factura");
                 $("#btn_guardar_factura").removeAttr("disabled");
 
-                console.log( 'xhr:', xhr );
-
                 var status_text = xhr.statusText; // Respuesta siempre
                 var response_text = xhr.responseText; // Solo cuando hay respuesta del servidor
                 var server_error_code = xhr.status; // Código de error HTTP. 0 cuando no hay respuesta del servidor
@@ -1203,6 +1201,7 @@ $(document).ready(function () {
                   return false;
                 }
 
+                // Si hay respuesta del servidor, pero hay un error de Laravel
                 position = response_text.search("Duplicate entry");
                 
                 if ( position != -1 ) { // -1 la Cadena no existe
@@ -1210,6 +1209,22 @@ $(document).ready(function () {
                   Swal.fire({
                     icon: 'warning',
                     title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
+                    text: error_label 
+                  });
+                  
+                  puede_continuar = false;
+
+                  return false;
+                }
+
+                // Cuando se cerró la sesión del usuario
+                position = response_text.search("Trying to get property &#039;email&#039; of non-object");
+                
+                if ( position != -1 ) { // -1 la Cadena no existe
+                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Se cerró la sesión inesperadamente.';
+                  Swal.fire({
+                    icon: 'warning',
+                    title: '4. FACTURA NO GUARDADA. ¡NO CIERRES! Inicia sesión en otra pestaña y continúa con la facturación.',
                     text: error_label 
                   });
                   

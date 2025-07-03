@@ -411,25 +411,29 @@ class DocCruceController extends TransaccionController
 
 
       $documentos_abonados = CxpAbono::where($array_wheres)->get();
+
+      //dd($documentos_abonados);
+
       $this->documentos_cxp_ya_aplicados = [];
       // En un documento cruce se actualizan los movimientos de cartera tanto por el documento de cartera, como por el documento de recaudo
       foreach ($documentos_abonados as $linea)
       {
 
         // Se debe actualizar el movimiento de cxp tanto para la cartera como para el documento a favor
+
         // Se verifica si cada documento abonado aún tiene saldo pendiente por pagar
         $mov_documento_cartera = CxpMovimiento::where('core_tipo_transaccion_id', $linea->doc_cxp_transacc_id)
                                                     ->where('core_tipo_doc_app_id', $linea->doc_cxp_tipo_doc_id)
                                                     ->where('consecutivo', $linea->doc_cxp_consecutivo)
                                                     ->where('core_tercero_id', $linea->core_tercero_id)
-                                                    ->whereNotIn('id',$this->documentos_cxp_ya_aplicados)
+                                                    //->whereNotIn('id',$this->documentos_cxp_ya_aplicados)
                                                     ->get()
                                                     ->first();
 
         $response = $this->actualizar_mov_cxp( $mov_documento_cartera, $linea, 'cartera', $linea->abono );
 
         if ($response == 'error') {
-          continue;
+          //continue;
         }
 
         // Para el docuento a favor del abono
@@ -438,7 +442,7 @@ class DocCruceController extends TransaccionController
                                                     ->where('core_tipo_doc_app_id', $linea->core_tipo_doc_app_id)
                                                     ->where('consecutivo', $linea->consecutivo)
                                                     ->where('core_tercero_id', $linea->core_tercero_id)
-                                                    ->whereNotIn('id',$this->documentos_cxp_ya_aplicados)
+                                                    //->whereNotIn('id',$this->documentos_cxp_ya_aplicados)
                                                     ->get()
                                                     ->first();
         
@@ -458,6 +462,7 @@ class DocCruceController extends TransaccionController
       return redirect( 'doc_cruce_cxp/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('flash_message','Documento de cruce anulado correctamente.');
     }
 
+    // $valor_abono es siempre positivo
     public function actualizar_mov_cxp( $linea_movimiento, $linea_abono, $tipo_movimiento, $valor_abono )
     {
       $valor_abonos_aplicados = 0;
@@ -486,6 +491,7 @@ class DocCruceController extends TransaccionController
             $nuevo_saldo_pendiente = $linea_movimiento->valor_documento - $valor_abonos_aplicados + $valor_abono;
             $nuevo_valor_pagado = $valor_abonos_aplicados - $valor_abono; // el valor_abonos_aplicados es como mínimo el valor de $valor_abono
           }else{
+
             // Otro abonos realizados POR el documento afavor, restando el del abono actual
             $valor_abonos_aplicados = CxpAbono::where('core_tipo_transaccion_id',$linea_abono->core_tipo_transaccion_id)
                                             ->where('core_tipo_doc_app_id',$linea_abono->core_tipo_doc_app_id)

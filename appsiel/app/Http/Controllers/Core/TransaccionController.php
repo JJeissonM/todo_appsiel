@@ -59,6 +59,14 @@ class TransaccionController extends Controller
 
     public function index()
     {
+        $user = Auth::user(); // Solo para verificar que la sesión esté activa.
+
+        if($user == null)
+        {
+            $app = Aplicacion::find( Input::get('id') );
+            return redirect( url('login') )->with('mensaje_error', 'La sesión se cerró inesperadamente. Por favor, ingrese nuevamente su usuario y contraseña.' );
+        }
+
         $this->set_variables_globales();
 
         $select_crear = $this->get_boton_select_crear( $this->app );

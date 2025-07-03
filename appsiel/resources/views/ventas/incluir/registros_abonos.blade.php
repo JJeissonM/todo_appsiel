@@ -22,9 +22,21 @@
 
                             $prefix_url = 'tesoreria/recaudos_cxc/';
                             $id_modelo = 153; // Recaudos de CxC
-                            if ( $linea->core_tipo_transaccion_id == 8 ) {
-                                $prefix_url = 'tesoreria/recaudos/';
-                                $id_modelo = 46;
+                            switch ( $linea->core_tipo_transaccion_id ) {
+                                
+                                case '8': // Recaudos generales de tesorería
+                                    $prefix_url = 'tesoreria/recaudos/';
+                                    $id_modelo = 46; // Recaudos de tesorería
+                                    break;
+
+                                case '9': // Notas de contabilidad
+                                    $prefix_url = 'contabilidad/';
+                                    $id_modelo = 47; // Documentos contables 
+                                    break;
+                                
+                                default:
+                                    # code...
+                                    break;
                             }
                         ?>
 

@@ -76,6 +76,13 @@ class FacturaPosController extends TransaccionController
 
     public function create()
     {
+        $user = Auth::user(); // Solo para verificar que la sesión esté activa.
+
+        if($user == null)
+        {
+            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'La sesión se cerró inesperadamente. Por favor, ingrese nuevamente su usuario y contraseña.' );
+        }
+
         $pdv = Pdv::find(Input::get('pdv_id'));
         $factura_pos_service = new FacturaPosService();
 
@@ -223,6 +230,8 @@ class FacturaPosController extends TransaccionController
      */
     public function store(Request $request)
     {
+        $email = Auth::user()->email; // Solo para verificar que la sesión esté activa. Si se cerró la sesión, Laravel lanza una excepción
+
         $lineas_registros = json_decode($request->lineas_registros);
 
         $acumular_factura = false;
