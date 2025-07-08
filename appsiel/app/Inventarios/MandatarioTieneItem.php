@@ -33,8 +33,7 @@ class MandatarioTieneItem extends Model
     }
 
     public function store_adicional( $datos, $registro )
-    {
-        
+    {        
         $referencia = (new ItemsMandatariosSerices())->build_reference($datos, $registro);
 
         $user = Auth::user();

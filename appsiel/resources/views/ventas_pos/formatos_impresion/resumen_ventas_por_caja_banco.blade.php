@@ -8,7 +8,7 @@
             @foreach($ventas_por_medios_pago_con_iva as $linea)
                 <tr>
                     <td>
-                        <b>{{ $linea->medio_pago }}:</b>
+                        <b>{{ $linea->caja_banco }}:</b>
                     </td>
                     <td align="right">
                         ${{ number_format( $ventas_contado_sin_iva * $linea->porcentaje_participacion_total_ventas, 0, ',', '.') }}

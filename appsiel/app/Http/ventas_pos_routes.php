@@ -62,6 +62,8 @@ Route::post('pos_movimientos_ventas', 'VentasPos\ReporteController@movimientos_v
 Route::post('pos_resumen_existencias', 'VentasPos\ReporteController@resumen_existencias');
 Route::post('pos_comprobante_informe_diario', 'VentasPos\ReporteController@comprobante_informe_diario');
 
+Route::post('pos_resumen_diario', 'VentasPos\ReporteController@resumen_diario');
+
 Route::get('pos_get_facturas_con_lineas_registros_sin_movimiento/{fecha_desde}/{fecha_hasta}', 'VentasPos\ReporteController@get_facturas_con_lineas_registros_sin_movimiento');
 
 

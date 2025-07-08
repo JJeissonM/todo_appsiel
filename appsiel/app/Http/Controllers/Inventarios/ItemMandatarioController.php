@@ -111,6 +111,9 @@ class ItemMandatarioController extends ModeloController
         return response()->json( $json );
     }
 
+    /**
+     * 
+     */
     public function edit( $id )
     {
         $lista_campos = ModeloController::get_campos_modelo( $this->modelo, '', 'edit' );
@@ -266,6 +269,7 @@ class ItemMandatarioController extends ModeloController
         }
         
         $item_relacionado->estado = 'Activo';
+        $item_relacionado->prefijo_referencia_id = $item_mandatario->prefijo_referencia_id;
         $item_relacionado->creado_por = $item_mandatario->creado_por;
         $item_relacionado->save(); // Para obtener el ID
         

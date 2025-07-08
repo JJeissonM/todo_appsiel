@@ -166,6 +166,15 @@ class ItemMandatario extends Model
         $registro->referencia = $referencia;
         $registro->estado = 'Activo';
         $registro->core_empresa_id = $user->empresa_id;
+
+        if ( !isset( $datos['impuesto_id'] ) ) {
+            $registro->impuesto_id = (int)config('inventarios.item_impuesto_id');
+        }
+
+        if ( !isset( $datos['unidad_medida1'] ) ) {
+            $registro->unidad_medida1 = 94; // Unidad de medida por defecto: UND
+        }
+
         $registro->save();
     }
 
@@ -175,6 +184,22 @@ class ItemMandatario extends Model
         
         $referencia = (new ItemsMandatariosSerices())->build_reference($datos, $prenda);
 
+        if ( !isset( $datos['impuesto_id'] ) ) {
+            $prenda->impuesto_id = (int)config('inventarios.item_impuesto_id');
+        }
+
+        if ( !isset( $datos['unidad_medida1'] ) ) {
+            $prenda->unidad_medida1 = 94; // Unidad de medida por defecto: UND
+        }
+
+        if ( $prenda->estado == null ) {
+            $prenda->estado = 'Activo';
+        }
+
+        if ( $prenda->core_empresa_id == null ) {
+            $prenda->core_empresa_id = Auth::user()->empresa_id;
+        }
+
         $prenda->referencia = $referencia;
         $prenda->save();
 
@@ -182,6 +207,10 @@ class ItemMandatario extends Model
         
         foreach ($registros_relacionados as $item_relacionado )
         {
+            $item_relacionado->unidad_medida1 = $prenda->unidad_medida1;
+            $item_relacionado->inv_grupo_id = $prenda->inv_grupo_id;
+            $item_relacionado->impuesto_id = $prenda->impuesto_id;
+            $item_relacionado->prefijo_referencia_id = $prenda->prefijo_referencia_id;
             $item_relacionado->descripcion = $prenda->descripcion;
             $item_relacionado->referencia = $referencia . '-' . $item_relacionado->unidad_medida2;
             $item_relacionado->save();

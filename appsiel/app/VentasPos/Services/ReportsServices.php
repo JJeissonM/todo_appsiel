@@ -270,4 +270,67 @@ class ReportsServices
 
         return $ventas_por_medios_pago_con_iva;
     }
+
+    public function get_ventas_por_caja_bancos($pdv_id, $fecha_desde, $fecha_hasta)
+    {
+        $documentos_pdv = FacturaPos::where([
+                                            ['pdv_id','=',$pdv_id],
+                                            ['estado', '<>', 'Anulado']
+                                        ])
+                                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
+                                    ->get();
+
+        $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha_desde, $fecha_hasta);
+//dd($movimiento_tesoreria_pdv);
+        $ventas_por_medios_pago_con_iva  = collect([]);
+
+        $total_venta_contado_con_iva = $movimiento_tesoreria_pdv->sum('valor_movimiento');
+        
+        $movin_cajas = $movimiento_tesoreria_pdv->groupBy('teso_caja_id');
+        foreach ($movin_cajas as $caja_id => $movin_grupo) {
+
+            if ( $caja_id == 0) {
+                continue; // No se debe incluir el movimiento de caja 0
+            }
+            
+            $primera_linea_movin_grupo = $movin_grupo->first();
+
+            $porcentaje_participacion_total_ventas = 0;
+            if ($total_venta_contado_con_iva != 0) {
+                $porcentaje_participacion_total_ventas = $movin_grupo->sum('valor_movimiento') / $total_venta_contado_con_iva;
+            }
+            
+            $ventas_por_medios_pago_con_iva->push((object)[
+                    'caja_banco' => $primera_linea_movin_grupo->caja->descripcion,
+                    'total_venta' => $movin_grupo->sum('valor_movimiento'),
+                    'porcentaje_participacion_total_ventas' => $porcentaje_participacion_total_ventas
+                ]);
+        }
+
+        /**
+         * 
+         */
+        $movin_bancos = $movimiento_tesoreria_pdv->groupBy('teso_cuenta_bancaria_id');
+        foreach ($movin_bancos as $banco_id => $movin_grupo) {
+
+            if ( $banco_id == 0) {
+                continue; // No se debe incluir el movimiento de caja 0
+            }
+            
+            $primera_linea_movin_grupo = $movin_grupo->first();
+
+            $porcentaje_participacion_total_ventas = 0;
+            if ($total_venta_contado_con_iva != 0) {
+                $porcentaje_participacion_total_ventas = $movin_grupo->sum('valor_movimiento') / $total_venta_contado_con_iva;
+            }
+            
+            $ventas_por_medios_pago_con_iva->push((object)[
+                    'caja_banco' => $primera_linea_movin_grupo->cuenta_bancaria->descripcion,
+                    'total_venta' => $movin_grupo->sum('valor_movimiento'),
+                    'porcentaje_participacion_total_ventas' => $porcentaje_participacion_total_ventas
+                ]);
+        }
+
+        return $ventas_por_medios_pago_con_iva;
+    }
 }

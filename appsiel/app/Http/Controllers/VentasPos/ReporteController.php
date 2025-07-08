@@ -539,5 +539,80 @@ class ReporteController extends Controller
         }
 
         return $data;
+    }    
+
+    public function resumen_diario(Request $request)
+    {
+        $fecha_corte = $request->fecha_corte;
+        $pdv_id = $request->pdv_id;
+
+        if ($pdv_id == '') {
+            $title = 'Advertencia';
+            $message = 'Debe selecciona un PDV.';
+            $vista = View::make('common.error_message', compact('title', 'message'))->render();
+            return $vista;
+        }
+
+        $array_wheres = [
+            ['vtas_pos_movimientos.fecha', '=', $fecha_corte],
+            ['vtas_pos_movimientos.pdv_id', '=', $pdv_id]
+        ];
+
+        $movimientos = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+            ->leftJoin('inv_indum_prefijos_referencias', 'inv_indum_prefijos_referencias.id', '=', 'inv_productos.prefijo_referencia_id')
+            ->where($array_wheres)
+            ->select(
+                'vtas_pos_movimientos.*',
+                'inv_indum_prefijos_referencias.id AS item_prefijo_id'
+            )
+            ->orderBy('vtas_pos_movimientos.consecutivo')
+            ->get();
+        
+        $movin_por_grupos = $movimientos->groupBy('item_prefijo_id');
+
+        $data_by_items = collect();
+        foreach ($movin_por_grupos as $prefijo_group) {
+            
+            $item_group_movim = $prefijo_group->groupBy('inv_producto_id');
+            
+            $list_items = collect();
+            foreach ($item_group_movim as $item_group) {
+
+                $list_items->push([
+                    'item' => $item_group->first()->item,
+                    'cantidad' => $item_group->sum('cantidad'),
+                    'precio_total' => $item_group->sum('precio_total'),
+                    'base_impuesto_total' => $item_group->sum('base_impuesto_total'),
+                    'valor_total_descuento' => $item_group->sum('valor_total_descuento'),
+                    'tasa_impuesto' => $item_group->first()->tasa_impuesto
+                ]);
+            }
+            
+            $data_by_items->push([
+                'prefijo' => $prefijo_group->first()->item->prefijo_referencia,
+                'items' => $list_items
+            ]);
+        }
+        
+        $service = new ReportsServices();
+        $ventas_totales_iva_incluido = $movimientos->sum('precio_total');
+
+        $ventas_credito_pdv = $service->get_ventas_credito_pdv($pdv_id, $fecha_corte, $fecha_corte);
+
+        $ventas_credito_sin_iva = $ventas_credito_pdv->sum('precio_total');
+
+        $ventas_contado_sin_iva = $ventas_totales_iva_incluido - $ventas_credito_sin_iva;
+
+        $ventas_por_medios_pago_con_iva = $service->get_ventas_por_caja_bancos($pdv_id, $fecha_corte, $fecha_corte);
+
+        //dd($ventas_por_medios_pago_con_iva);
+
+        // Las variables dicen sin IVA, pero en realidad son con IVA incluido
+
+        $vista = View::make( 'ventas_pos.formatos_impresion.resumen_diario', compact('data_by_items', 'fecha_corte', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva', 'pdv_id', 'movimientos') )->render();
+
+        Cache::put('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista, 720);
+
+        return $vista;
     }
 }
