@@ -281,7 +281,7 @@ class ReportsServices
                                     ->get();
 
         $movimiento_tesoreria_pdv = $this->get_movimiento_tesoreria_pdv($documentos_pdv, $fecha_desde, $fecha_hasta);
-//dd($movimiento_tesoreria_pdv);
+        
         $ventas_por_medios_pago_con_iva  = collect([]);
 
         $total_venta_contado_con_iva = $movimiento_tesoreria_pdv->sum('valor_movimiento');

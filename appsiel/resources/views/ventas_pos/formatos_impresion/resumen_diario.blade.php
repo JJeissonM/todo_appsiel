@@ -64,12 +64,15 @@
             ?>
             @foreach ( $data_by_items as $movin_grupo)
                     <?php 
-                        //dd($movin_grupo);
+                        $descripcion_prefijo = 'Sin Categoría';
+                        if( $movin_grupo['prefijo'] != null ) {
+                            $descripcion_prefijo = $movin_grupo['prefijo']->descripcion;
+                        }
                     ?>
                 <table width="100%" style=" font-size: {{ $tamanino_fuente_2 }};">
                     <thead>
                         <tr>
-                            <th colspan="5">{{ $movin_grupo['prefijo']->descripcion }}</th>
+                            <th colspan="5">{{ $descripcion_prefijo }}</th>
                         </tr>
                         <tr style="background-color: #ddd !important;">
                             <th style="width: 30%;">ITEM</th>
