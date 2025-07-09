@@ -22,6 +22,14 @@ function generar_string_celdas(fila) {
 	var celdas = [];
 	var num_celda = 0;
 
+	
+	var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
+
+	var talla = ''
+	if ( producto.unidad_medida2 != '') {
+		talla = " - " + producto.unidad_medida2
+	}
+
 	celdas[num_celda] = '<td style="display: none;"><div class="inv_producto_id">' + inv_producto_id + '</div></td>';
 
 	num_celda++;
@@ -66,7 +74,7 @@ function generar_string_celdas(fila) {
 
 	num_celda++;
 
-	celdas[num_celda] = '<td> <span style="background-color:#F7B2A3;">' + inv_producto_id + '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + ' </div> </td>';
+	celdas[num_celda] = '<td> <span style="background-color:#F7B2A3;">' + inv_producto_id + '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' + $('#inv_producto_id').val() + talla + ' </div> </td>';
 
 	num_celda++;
 
