@@ -17,6 +17,11 @@
 						if ( $item->estado != 'Activo' ) {
 							continue;
 						}
+
+						$talla = '';
+						if ( $item->unidad_medida2 != '' ) {
+							$talla = ' - ' . $item->unidad_medida2;
+						}
 					?>
 					<tr>
 						<td class="table-text">
@@ -31,7 +36,7 @@
 							@endif
 						</td>
 						<td class="table-text"><div>{{ $item->referencia }}</div></td>
-						<td class="table-text"><div>{{ $item->descripcion }}</div></td>
+						<td class="table-text"><div>{{ $item->descripcion . $talla }}</div></td>
 						<td class="table-text" style="text-align: right;">
 							<div>
 								<span class="lbl_precio_item" data-item_id="{{ $item->id }}">

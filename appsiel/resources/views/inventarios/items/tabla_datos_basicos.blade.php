@@ -34,7 +34,9 @@
 				<b>IVA:</b> {{ $registro->get_impuesto_label() }}
 			</td>
 			<td>
-				<b>Cod. Barras:</b> {{ $registro->codigo_barras }}
+				@if( Input::get('id_modelo') != 315 )
+					<b>Cod. Barras:</b> {{ $registro->codigo_barras }}
+				@endif
 			</td>
 			<td>
 				@if( $registro->tipo_prenda != null )

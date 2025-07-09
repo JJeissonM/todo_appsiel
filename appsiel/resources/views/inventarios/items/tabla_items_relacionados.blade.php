@@ -33,7 +33,8 @@
 	<table class="table table-bordered table-striped">
 		<thead>
 			<tr>
-				<th>Referencia</th>
+				<th>Cód.</th>
+				<th>Cód. Barras</th>
 				<th>Talla</th>
 				<th>Costo prom.</th>
 				<th>P. ventas</th>
@@ -51,7 +52,8 @@
 					$url_redirect = '[inv_item_mandatario/' . $registro->id . '?id=8&id_modelo=315&id_transaccion=]';
 				?>
 				<tr class="referencia_talla" data-codigo_referencia_talla="{{$item->referencia}}">
-					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->referencia }}</div></td>
+					<td align="center"> {{ $item->id }} </td>
+					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->codigo_barras }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
 					<td align="right"> ${{ number_format($item->get_costo_promedio(),0,',','.') }} </td>
 					<td align="right"> ${{ number_format($item->get_precio_venta(),0,',','.') }} </td>

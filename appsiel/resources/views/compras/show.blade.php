@@ -23,8 +23,8 @@
 @endsection
 
 @section('botones_imprimir_email')
-	Formato: {{ Form::select('formato_impresion_id',['estandar'=>'Estándar','pos'=>'POS','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
-	{{ Form::bsBtnPrint( 'compras_imprimir/'.$id.$variables_url.'&formato_impresion_id=estandar' ) }}
+	Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Estándar','estandar2'=>'Estándar v2'],null, [ 'id' =>'formato_impresion_id' ]) }}
+	{{ Form::bsBtnPrint( 'compras_imprimir/'.$id.$variables_url.'&formato_impresion_id=pos' ) }}
 @endsection
 
 @section('botones_anterior_siguiente')
