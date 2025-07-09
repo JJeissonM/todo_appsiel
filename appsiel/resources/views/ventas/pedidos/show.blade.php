@@ -24,7 +24,9 @@
 	@endif
 	
 	@if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado == 'Pendiente')
-		<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+		@can('vtas_pedidos_anular')
+			<button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-btn fa-close"></i></button>
+		@endcan
 	@endif
 
 @endsection
