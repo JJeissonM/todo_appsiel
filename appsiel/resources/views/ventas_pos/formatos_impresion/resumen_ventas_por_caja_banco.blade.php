@@ -34,14 +34,6 @@
                     ${{ number_format( $total_ventas_al_detal + $ventas_credito_sin_iva, 0, ',', '.' ) }}
                 </td>
             </tr>
-            <tr>
-                <td align="right">
-                    <b>VENTAS POR MAYOR:</b>
-                </td>
-                <td align="right">
-                    $0
-                </td>
-            </tr>
         </tbody>
     </table>
 </div>

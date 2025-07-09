@@ -96,12 +96,21 @@
         @endif
     </table>
     <br>
+
+    @if(isset($medios_pago))
+        <div style="font-style: normal; font-weight: 100;">
+            {!! $medios_pago !!}
+        </div>    
+    @endif
+
+    <br>
+    <br>
     <table>
         <tr>
             <td width="15%"> </td>
-            <td width="30%"> _______________________ </td>
+            <td width="30%"> _____________________ </td>
             <td width="10%"> </td>
-            <td width="30%"> _______________________ </td>
+            <td width="30%"> _____________________ </td>
             <td width="15%"> </td>
         </tr>
         <tr>
