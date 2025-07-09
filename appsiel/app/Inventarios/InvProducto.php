@@ -62,6 +62,17 @@ class InvProducto extends Model
         return $this->belongsTo(PrefijoReferencia::class, 'prefijo_referencia_id');
     }
 
+    public function item_mandatario()
+    {
+        $mandatario_id = MandatarioTieneItem::where('item_id', $this->id)
+            ->value('mandatario_id');
+
+        return ItemMandatario::find($mandatario_id);
+    }
+
+    /**
+     * 
+     */
     public function get_unidad_medida1()
     {
         $campo = Campo::find(79);
@@ -90,6 +101,8 @@ class InvProducto extends Model
     {
         $descripcion_item = $this->descripcion;
 
+        $descripcion_item .= $this->get_color();
+
         $talla = $this->get_talla();
         
         $referencia = '';
@@ -115,6 +128,9 @@ class InvProducto extends Model
         return $prefijo . $descripcion_item;
     }
 
+    /**
+     * 
+     */
     public function get_talla()
     {        
         $talla = '';
@@ -126,6 +142,23 @@ class InvProducto extends Model
         return $talla;
     }
 
+    /**
+     * 
+     */
+    public function get_color()
+    {        
+        $color = '';
+        if( $this->item_mandatario() != null )
+        {
+            $color = ' ' . $this->item_mandatario()->paleta_color->descripcion;
+        }
+
+        return $color;
+    }
+
+    /**
+     * 
+     */
     public function get_codigo_proveedor()
     {
         if ( !Schema::hasTable( 'compras_proveedores' ) )
@@ -145,6 +178,9 @@ class InvProducto extends Model
         return $codigo_proveedor;
     }
 
+    /**
+     * 
+     */
     public function tasa_impuesto()
     {
         $impuesto = $this->impuesto;
@@ -157,6 +193,9 @@ class InvProducto extends Model
         return $impuesto->tasa_impuesto;
     }
 
+    /**
+     * 
+     */
     public function get_costo_promedio( $bodega_id = 0 )
     {
         if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 0)
@@ -213,6 +252,9 @@ class InvProducto extends Model
         $this->save();
     }
 
+    /**
+     * 
+     */
     public function get_productos($tipo)
     {
         $opciones = InvProducto::where('estado', 'Activo')
@@ -238,6 +280,9 @@ class InvProducto extends Model
         return $vec;
     }
 
+    /**
+     * 
+     */
     public static function consultar_registros($nro_registros, $search)
     {
         $collection =  InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
@@ -443,6 +488,8 @@ class InvProducto extends Model
             }
 
             $item->unidad_medida1 = $item->get_unidad_medida1();
+            
+            $item->descripcion .= $item->get_color();
         }
 
         return $registros;
