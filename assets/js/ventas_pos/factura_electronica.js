@@ -23,17 +23,6 @@ function validar_datos_tercero()
     };
 }
 
-function enfocar_tab_totales()
-{
-    $('#header_tab3').removeAttr('class');
-    $('#header_tab2').removeAttr('class');
-    $('#header_tab1').attr('class','active');
-    
-    $('#tab3').attr('class','tab-pane fade');
-    $('#tab2').attr('class','tab-pane fade');
-    $('#tab1').attr('class','tab-pane fade active in');
-}
-
 $(document).ready(function () {
 
     // GUARDAR EL FORMULARIO

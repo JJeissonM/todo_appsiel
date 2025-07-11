@@ -27,6 +27,9 @@ function ejecutar_acciones_con_item_sugerencia(
   $(".text_input_sugerencias").select();
 }
 
+/**
+ * 
+ */
 function validar_fecha_diferente() {
   if ($("#fecha").val() != get_fecha_hoy()) {
     $("#msj_fecha_diferente").show();
@@ -103,6 +106,10 @@ function get_json_registros_medios_recaudo() {
   return json_table2;
 }
 
+/**
+ * 
+ * @param {*} con_medios_recaudos 
+ */
 function llenar_tabla_productos_facturados( con_medios_recaudos = true ) 
 {
   var linea_factura, linea_factura2;
@@ -301,6 +308,9 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
   }
 }
 
+/**
+ * 
+ */
 function llenar_resumen_impuestos() {
 
   $("#div_resumen_impuestos").show();
@@ -351,6 +361,10 @@ function llenar_resumen_impuestos() {
   
 }
 
+/**
+ * 
+ * @returns 
+ */
 function llenar_resumen_medios_recaudo() {
   if ($("#forma_pago").val() == "credito") {
     $("#div_resumen_medios_pago").hide();
@@ -408,6 +422,9 @@ function llenar_resumen_medios_recaudo() {
   }
 }
 
+/**
+ * 
+ */
 function resetear_ventana() {
   $("#tabla_productos_facturados").find("tbody").html("");
   $("#tabla_productos_facturados2").find("tbody").html("");
@@ -460,6 +477,9 @@ function resetear_ventana() {
   }
 }
 
+/**
+ * 
+ */
 function reset_tabla_ingreso_items() {
   $(".linea_registro").each(function () {
     $(this).remove();
@@ -470,6 +490,9 @@ function reset_tabla_ingreso_items() {
   set_cantidades_ingresadas();
 }
 
+/**
+ * 
+ */
 function reset_resumen_de_totales() {
   // reset totales
   $("#total_cantidad").text("0");
@@ -489,6 +512,23 @@ function reset_resumen_de_totales() {
   $("#div_total_cambio").attr("class", "default");
 }
 
+/**
+ * 
+ */
+function enfocar_tab_totales()
+{
+    $('#header_tab3').removeAttr('class');
+    $('#header_tab2').removeAttr('class');
+    $('#header_tab1').attr('class','active');
+    
+    $('#tab3').attr('class','tab-pane fade');
+    $('#tab2').attr('class','tab-pane fade');
+    $('#tab1').attr('class','tab-pane fade active in');
+}
+
+/**
+ * 
+ */
 function reset_tabla_ingreso_medios_pago() {
   $("#ingreso_registros_medios_recaudo").find("tbody").html("");
 
@@ -499,6 +539,9 @@ function reset_tabla_ingreso_medios_pago() {
   $("#total_valor_total").text("$0.00");
 }
 
+/**
+ * 
+ */
 function reset_linea_ingreso_default() {
   $("#efectivo_recibido").val("");
 
@@ -527,6 +570,9 @@ function reset_linea_ingreso_default() {
   valor_unitario_descuento = 0;
 }
 
+/**
+ * 
+ */
 function reset_efectivo_recibido() {
   $("#efectivo_recibido").val("");
   $("#total_efectivo_recibido").val(0);
@@ -695,6 +741,10 @@ function activar_boton_guardar_factura()
   }
 }
 
+/**
+ * 
+ * @returns 
+ */
 function agregar_nueva_linea() {
 
   if (!calcular_precio_total()) {
