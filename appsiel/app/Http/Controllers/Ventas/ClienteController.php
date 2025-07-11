@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Ventas;
 
+use App\Core\Services\TerceroService;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -199,8 +200,6 @@ class ClienteController extends ModeloController
         return redirect('vtas_clientes/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo)->with('flash_message','Registro MODIFICADO correctamente.');
     }
 
-
-    
     public function eliminar_cliente($id)
     {
         // Verificar si cliente está en movimiento de ventas
@@ -219,9 +218,14 @@ class ClienteController extends ModeloController
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Cliente no se puede eliminar tiene documentos de ventas.');
         }
 
-        Cliente::find($id)->delete();
+        $cliente = Cliente::find($id);
 
-        return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Cliente ELIMINADO correctamente.');
+        $core_tercero_id = $cliente->core_tercero_id;
+        $cliente->delete();
+
+        $response = (new TerceroService())->delete_tercero( $core_tercero_id );        
+
+        return redirect('web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('flash_message','Cliente ELIMINADO correctamente. ' . $response->message);
     }
 
     // Detalles de Listas de precios y descuentos

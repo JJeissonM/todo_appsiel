@@ -6,7 +6,7 @@
     <style type="text/css">
         body{
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         @page {

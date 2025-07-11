@@ -134,4 +134,33 @@ class TerceroService
         }
         
     }
+
+    public function delete_tercero($tercero_id)
+    {
+        $tercero = Tercero::find($tercero_id);
+
+        if ( $tercero == null ) {
+            return (object)[
+                'status' => 'error',
+                'message' => '¡¡¡ Tercero No Existe' . ' !!!'
+            ];
+        }
+
+        $mensaje = $tercero->validar_eliminacion( $tercero_id );
+            
+        if( $mensaje != 'ok' )
+        {
+            return (object)[
+                'status' => 'error',
+                'message' => '¡¡¡ Tercero No puede ser ELIMINADO. ' . $mensaje . ' !!!'
+            ];
+        }
+
+        $tercero->delete();
+
+        return (object)[
+            'status' => 'success',
+            'message' => 'Tercero Eliminado correctamente.'
+        ];
+    }
 }

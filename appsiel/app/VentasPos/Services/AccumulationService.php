@@ -277,12 +277,11 @@ class AccumulationService
         $movim_pos = Movimiento::where('core_tipo_transaccion_id', $invoice->core_tipo_transaccion_id)
                         ->where('core_tipo_doc_app_id', $invoice->core_tipo_doc_app_id)
                         ->where('consecutivo', $invoice->consecutivo)
-                        ->get()
-                        ->first();
-        if ($movim_pos != null) {
-            $movim_pos->estado = 'Contabilizado';
-            $movim_pos->save();
-        } 
+                        ->get();
+        foreach ($movim_pos as $mov_line) {
+            $mov_line->estado = 'Contabilizado';
+            $mov_line->save();
+        }  
 
         // Contabilizar Caja y Bancos ó Cartera de clientes
         $datos = $invoice->toArray();
