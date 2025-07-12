@@ -124,6 +124,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ocultar_logros_si_hay_logros_adicionales = '0';
+								if( isset($parametros['ocultar_logros_si_hay_logros_adicionales'] ) )
+								{
+									$ocultar_logros_si_hay_logros_adicionales = $parametros['ocultar_logros_si_hay_logros_adicionales'];
+								}
+							?>
+							{{ Form::bsSelect('ocultar_logros_si_hay_logros_adicionales', $ocultar_logros_si_hay_logros_adicionales, 'Ocultar logros normales si hay logros adicionales', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Diseño y formato  </h4>
 				<hr>
 
