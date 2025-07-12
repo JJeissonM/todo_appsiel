@@ -3,7 +3,7 @@
 	@if( !config('calificaciones.ocultar_logros_si_hay_logros_adicionales') )
 		@include('calificaciones.boletines.lista_logros_lineas')
 	@else
-		@if ( $linea->logros_adicionales != null )
+		@if ( $linea->logros_adicionales == null )
 			@include('calificaciones.boletines.lista_logros_lineas')
 		@endif
 	@endif
