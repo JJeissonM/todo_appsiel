@@ -41,6 +41,16 @@
 ?>
 	
 <td style="background-color:{{$color_back}} color:{{$color_font}}; text-align: justify;">
+
+	<?php
+        $propositos = $metas_del_curso_en_el_periodo->where('asignatura_id', $asignatura_id )->all();
+
+		$linea = (object) array();
+		$linea->propositos = $propositos;
+	?>
+
+	@include('calificaciones.boletines.proposito',['convetir_logros_mayusculas'=>'No'])
+
 	<ul style="list-style: none;">
 		@foreach($logros as $un_logro)
 			<?php
@@ -58,7 +68,14 @@
 					$lista .= '• ' . $texto_logro . '<br>';
 				}
 			?>
-			<li> {!! $lista !!} </li>
+
+			@if( !config('calificaciones.ocultar_logros_si_hay_logros_adicionales') )
+				<li> {!! $lista !!} </li>
+			@else
+				@if ( $n_nom_logros_adicionales == 0 )
+					<li> {!! $lista !!} </li>
+				@endif
+			@endif			
 		@endforeach
 
 		@foreach($logros_adicionales as $un_logro_adicional)

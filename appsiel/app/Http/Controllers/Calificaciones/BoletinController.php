@@ -115,7 +115,17 @@ class BoletinController extends Controller
             'curso_id' => $request->curso_id
         ])->get();
 
-        return View::make('calificaciones.boletines.revisar2',compact('estudiantes','asignaturas','colegio','periodo','anio','calificaciones','escala_valoracion','observaciones', 'logros', 'todas_las_calificaciones'))->render();
+        $metas_del_curso_en_el_periodo = collect([]);
+        if( config( 'calificaciones.colegio_maneja_metas' ) == 'Si' )
+        {
+            $metas_del_curso_en_el_periodo = Meta::where( [
+                                                ['periodo_id', '=', $request->id_periodo],
+                                                ['curso_id', '=', $request->curso_id]
+                                            ])->select('id', 'codigo', 'periodo_id', 'curso_id', 'asignatura_id', 'descripcion')
+                                            ->get();
+        }
+
+        return View::make('calificaciones.boletines.revisar2',compact('estudiantes','asignaturas','colegio','periodo','anio','calificaciones','escala_valoracion','observaciones', 'logros', 'todas_las_calificaciones', 'metas_del_curso_en_el_periodo'))->render();
 		
     }
     
@@ -907,6 +917,10 @@ class BoletinController extends Controller
             {
                 $all_logros->push($logro);
             }
+        }
+        
+        if ( $all_logros->isEmpty() ) {
+            return null;
         }
 
         return $all_logros;

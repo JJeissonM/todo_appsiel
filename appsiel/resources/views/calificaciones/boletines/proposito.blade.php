@@ -1,7 +1,8 @@
 <?php
 	
-	if ( !is_null( $linea->propositos ) ) 
+	if ( $linea->propositos != null ) 
 	{
+		
 		$lista_propositos = '';
 		foreach ($linea->propositos as $proposito)
 		{
