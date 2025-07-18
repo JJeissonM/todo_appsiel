@@ -427,6 +427,7 @@ $(document).ready(function () {
       $("#myModal2 .btn_save_modal").show();
       $("#myModal2 .btn_save_modal").attr('id', 'btn_save_cliente');
       $("#myModal2 .btn_save_modal").attr('class', 'btn btn-primary');
+      $("#btn_save_cliente").removeAttr('disabled');
       $("#myModal2 .close").show();
 
       $("#contenido_modal2").html(data);
