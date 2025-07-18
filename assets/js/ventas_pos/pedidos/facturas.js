@@ -137,7 +137,7 @@ function redondear_a_centena(numero, aproximacion_superior = false) {
 
 	saldo2 = saldo1 - millares;
 
-	if (saldo2 > 99.99999) {
+	if (saldo2 > 49.99999) {
 		// se obtiene solo la parte entera
 		//centenas = Math.trunc( saldo2 / 100 ) * 100;
 		centenas = (saldo2 / 100).toFixed(0) * 100;

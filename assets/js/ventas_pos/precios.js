@@ -473,49 +473,6 @@ function calcular_precio_total_lbl_quantity(fila)
 
 /**
  * 
- * @param {*} numero 
- * @param {*} aproximacion_superior 
- * @returns 
- */
-function redondear_a_centena(numero, aproximacion_superior = false) 
-{
-	if ( redondear_centena == 0 )
-	{
-		return numero.toFixed(0);
-	}
-
-	var millones = 0;
-	var millares = 0;
-	var centenas = 0;
-
-	var saldo1, saldo2, saldo3;
-
-	if (numero > 999999.99999) {
-		// se obtiene solo la parte entera
-		millones = Math.trunc(numero / 1000000) * 1000000;
-	}
-
-	saldo1 = numero - millones;
-
-	if (saldo1 > 999.99999) {
-		// se obtiene solo la parte entera
-		millares = Math.trunc(saldo1 / 1000) * 1000;
-	}
-
-	saldo2 = saldo1 - millares;
-
-	if (saldo2 > 99.99999) {
-		// se obtiene solo la parte entera
-		//centenas = Math.trunc( saldo2 / 100 ) * 100;
-		centenas = (saldo2 / 100).toFixed(0) * 100;
-	}
-
-	return (millones + millares + centenas);
-
-}
-
-/**
- * 
  * @param {*} efectivo_recibido 
  */
 function calcular_total_cambio(efectivo_recibido) {
