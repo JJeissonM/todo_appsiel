@@ -32,6 +32,8 @@ class ItemsMandatariosSerices
             $reference .= $registro->tipo_material->codigo;
         }
         
+        $reference .= $registro->id;
+        
         return $reference;
     }
 }
