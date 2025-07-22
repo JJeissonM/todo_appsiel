@@ -8,6 +8,8 @@ use App\Core\Tercero;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Inventarios\Indumentaria\TipoMaterial;
+use App\Inventarios\Indumentaria\TipoPrenda;
 use App\Inventarios\InvBarcodesForPrint;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Cache;
@@ -18,6 +20,7 @@ use App\Inventarios\InvProducto;
 use App\Inventarios\InvGrupo;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvDocEncabezado;
+use App\Inventarios\ItemMandatario;
 use App\Inventarios\MinStock;
 
 use App\Inventarios\Services\FiltroMovimientos;
@@ -63,13 +66,20 @@ class ReporteController extends Controller
         $bodegas = InvBodega::opciones_campo_select();
         $items = InvProducto::opciones_campo_select();
         $grupo_inventario = InvGrupo::opciones_campo_select();
+        $tipos_de_prendas = [];
+        $tipos_de_material = [];
+        if( ItemMandatario::get()->count() > 0 )
+        {
+            $tipos_de_prendas = TipoPrenda::opciones_campo_select();
+            //$tipos_de_material = TipoMaterial::opciones_campo_select();
+        }
 
         $miga_pan = [
                 ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
                 ['url'=>'NO','etiqueta'=>'Existencias']
             ];
 
-        return view('inventarios.existencias',compact('bodegas','items','grupo_inventario','miga_pan'));
+        return view('inventarios.existencias',compact('bodegas','items','grupo_inventario','tipos_de_prendas','tipos_de_material','miga_pan'));
     }
 
     /**
@@ -81,7 +91,27 @@ class ReporteController extends Controller
         
         $movin_filtrado = $obj->aplicar_filtros( null, $request->fecha_corte, $request->mov_bodega_id, $request->grupo_inventario_id, $request->item_id );
 
-        $view = $this->get_vista_inv_movimiento_corte( $movin_filtrado, $request->mostrar_costo, $request->mostrar_cantidad, $request->fecha_corte );
+        $new_movim = collect([]);
+        if( (int)$request->tipo_prenda_id != 0)
+        {
+            foreach ($movin_filtrado as $linea_movimiento) {
+
+                $item_mandatario = $linea_movimiento->producto->item_mandatario();
+                if ( $item_mandatario != null) {
+                    if( $item_mandatario->tipo_prenda_id != (int)$request->tipo_prenda_id)
+                    {
+                        continue;
+                    }
+                }
+
+                $new_movim->push($linea_movimiento);
+            }
+
+        }else{
+            $new_movim = $movin_filtrado;
+        }
+
+        $view = $this->get_vista_inv_movimiento_corte( $new_movim, $request->mostrar_costo, $request->mostrar_cantidad, $request->fecha_corte );
 
         Cache::put( 'pdf_reporte_inv_existencias_corte', $view, 720 ); // 720 minutos = 12 horas
         
@@ -112,6 +142,7 @@ class ReporteController extends Controller
             {
                 $productos[$i]['id'] = $item_id;
                 $productos[$i]['descripcion'] = $item->get_value_to_show(true);
+
                 $productos[$i]['unidad_medida1'] = $item->get_unidad_medida1();
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
                 $productos[$i]['referencia'] = $item->referencia;
@@ -139,6 +170,12 @@ class ReporteController extends Controller
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];
                 $total_costo_item += $productos[$i]['Costo'];
+
+                if ( $item->item_mandatario() != null) {
+
+                    $productos[$i]['Material'] = $item->item_mandatario()->tipo_material->descripcion;
+                    $productos[$i]['TipoPrenda'] = $item->item_mandatario()->tipo_prenda->descripcion;
+                }                
             
                 $i++;
                 $cantidad_bodegas++;
@@ -157,9 +194,9 @@ class ReporteController extends Controller
                 for ($i2=$cantidad_bodegas; $i2 > 0; $i2--) {
                     if (isset($productos[$i - $i2]['CostoPromedio'])) {
                         $productos[$i - $i2]['CostoPromedio'] = $costo_promedio;
-                    }                    
-                }                    
-            }            
+                    }
+                }
+            }
 
             $productos[$i]['id'] = 0;
             $productos[$i]['descripcion'] = '';
@@ -171,6 +208,9 @@ class ReporteController extends Controller
             $productos[$i]['CostoPromedio'] = $costo_promedio;
 
             $productos[$i]['Costo'] = $total_costo_item;
+
+            $productos[$i]['Material'] = '';
+            $productos[$i]['TipoPrenda'] = '';
 
             $i++;
         }
@@ -188,9 +228,9 @@ class ReporteController extends Controller
                 break;
         }
 
-        $view_1 = View::make('inventarios.incluir.existencias_encabezado',compact('bodega','fecha_corte'));
+        $view_1 = View::make('inventarios.incluir.existencias_encabezado',compact('bodega','fecha_corte','productos'));
 
-        if ( $mostrar_costo ) {
+        if ( $mostrar_costo ) {            
             $view_2 = View::make('inventarios.incluir.existencias_tabla_con_costos',compact('bodega','productos'));
         }else{
             $view_2 = View::make('inventarios.incluir.existencias_tabla_sin_costos',compact('bodega','productos', 'mostrar_cantidad' ));

@@ -12,6 +12,23 @@
 		{{ Form::label('grupo_inventario_id','Grupo de inventarios') }}
 		{{ Form::select('grupo_inventario_id',$grupo_inventario,null,['class'=>'form-control','id'=>'grupo_inventario_id']) }}
 <br>
+
+		@if( !empty($tipos_de_prendas) )
+			
+			{{ Form::label('tipo_prenda_id','Tipo de prenda') }}
+			{{ Form::select('tipo_prenda_id',$tipos_de_prendas,null,['class'=>'form-control','id'=>'tipo_prenda_id']) }}
+			<br>
+			
+		@endif
+
+		@if( !empty($tipos_de_material) )
+			
+			{{ Form::label('tipo_material_id','Tipo de Material') }}
+			{{ Form::select('tipo_material_id',$tipos_de_material,null,['class'=>'form-control','id'=>'tipo_material_id']) }}
+			<br>
+			
+		@endif
+
 		{{ Form::label('item_id','Producto') }}
 		{{ Form::select('item_id',$items,null,['class'=>'combobox','id'=>'item_id']) }}
 <br>
