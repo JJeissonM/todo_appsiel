@@ -7,7 +7,7 @@
                 <div style="vertical-align: center;">
                     {{ Form::label('fecha_corte', 'Fecha corte:') }} {{ $fecha_corte }}
                 </div>
-                Cantidad de productos: {{ count($productos) / 2 }}
+                Cantidad de registros: {{ count($productos) / 2 }}
             </div>
     </div>
 </div>
