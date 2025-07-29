@@ -24,7 +24,7 @@ class Platillo extends InvProducto
                 continue;
             }
 
-            $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion;
+            $vec[$opcion->id] = $opcion->get_value_to_show();
         }
 
         return $vec;

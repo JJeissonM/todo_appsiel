@@ -50,7 +50,11 @@
 		
 		<input type="hidden" name="referencia" id="referencia" value="{{$registro->referencia}}">
 
-		@include('inventarios.items.tabla_datos_basicos')
+		@if( Input::get('id_modelo') == 315)
+			@include('inventarios.items.tabla_datos_basicos_prendas')
+		@else
+			@include('inventarios.items.tabla_datos_basicos')
+		@endif
 
 		@if( Input::get('id_modelo') == 331)
 			@include('inventarios.items.mandatarios.tabla_items_relacionados_proveedor')

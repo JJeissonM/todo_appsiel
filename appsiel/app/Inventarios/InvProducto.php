@@ -323,6 +323,7 @@ class InvProducto extends Model
         {
             $item = InvProducto::find( $register_collect->campo1 );
             $register_collect->campo4 = $item->get_unidad_medida1();
+            $register_collect->campo3 = $item->get_value_to_show(true);
         }
 
         $request = request(); //obtenemos el Request para obtener la url y la query builder

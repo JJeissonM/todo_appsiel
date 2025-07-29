@@ -23,18 +23,30 @@
 				<b>Descripción:</b> {{ $registro->descripcion }}
 			</td>
 			<td>
-				<b>U.M.:</b> {{ $registro->get_unidad_medida1() }}
+				@if( $registro->tipo_prenda != null )
+					<b>Color:</b> {{ $registro->paleta_color->descripcion }}
+				@endif
 			</td>
 			<td>
 				<b>Categoría:</b> {{ $registro->grupo_inventario->descripcion }}
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
-				<b>IVA:</b> {{ $registro->get_impuesto_label() }}
+			<td>
+				@if( $registro->tipo_prenda != null )
+					<b>Material:</b> {{ $registro->tipo_material->descripcion }}
+				@endif
 			</td>
-			<td colspan="2">
-				<b>Cod. Barras:</b> {{ $registro->codigo_barras }}
+			<td>
+				@if( $registro->tipo_prenda != null )
+					<b>Tipo Prenda:</b> {{ $registro->tipo_prenda->descripcion }}
+				@endif
+			</td>
+			<td>
+				<b>U.M.:</b> {{ $registro->get_unidad_medida1() }}		
+			</td>
+			<td>
+				<b>IVA:</b> {{ $registro->get_impuesto_label() }}
 			</td>
 		</tr>
 	</table>

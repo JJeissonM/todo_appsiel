@@ -14,9 +14,10 @@
 		$ingredientes_posibles = \App\Inventarios\InvProducto::where('estado','Activo')->whereNotIn('id',$ids_items_ingredientes)
 											->get();
     
-        $vec['']='';
-        foreach ($ingredientes_posibles as $opcion){
-            $vec[$opcion->id] = $opcion->id . ' ' . $opcion->descripcion;
+        $arr_ingredientes['']='';
+        foreach ($ingredientes_posibles as $opcion)
+		{
+            $arr_ingredientes[$opcion->id] = $opcion->get_value_to_show();
         }
 
         $reg_anterior = \App\Inventarios\RecetaCocina::where([
@@ -79,7 +80,7 @@
 		<div class="marco_formulario">
 		    <div class="container">
 			    <div class="container">
-					<h3 style="width: 100%;text-align: center;">Producto terminado: "{{ $registro->item_platillo->descripcion }}"</h3>
+					<h3 style="width: 100%;text-align: center;">Producto terminado: "{{ $registro->item_platillo->get_value_to_show() }}"</h3>
 				</div>
 			    <div class="container">
 			    	<div class="col-md-4" style="padding:5px;"> 
@@ -129,13 +130,11 @@
 										$sum_cantidad_porcion += $linea['cantidad_porcion'];
                                         $sum_costo_total += $linea['cantidad_porcion'] * $linea['ingrediente']->get_costo_promedio(0); 
 
-                                        $string_search_platillo = $registro->item_platillo->descripcion;
-
 										$cantidad_items++;
                                     ?>
                                     <tr>
 										<td>{{ $linea['ingrediente']->id }}</td>
-										<td>{{ $linea['ingrediente']->descripcion }} ({{ $linea['ingrediente']->get_unidad_medida1() }})</td>
+										<td>{{ $linea['ingrediente']->get_value_to_show( true ) }} </td>
 										<td align="center">
 											<div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_cambiar_cantidad_porcion') . "/" . $registro->item_platillo->id . "/" . $linea['ingrediente']->id }}"> {{ number_format( $linea['cantidad_porcion'], 2, ',', '.') }}
 											</div>											
@@ -183,7 +182,7 @@
 						<h3>Agregar Insumo</h3>
 						<div class="row">
 							<div class="col-md-6">
-								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$vec,['class'=>'combobox']) }}
+								{{ Form::bsSelect('item_ingrediente_id',null,'Ítem insumo',$arr_ingredientes,['class'=>'combobox']) }}
 							</div>
 							<div class="col-md-6">
 								{{ Form::bsText('cantidad_porcion',null,'Cant. porción',['required'=>'required']) }}
