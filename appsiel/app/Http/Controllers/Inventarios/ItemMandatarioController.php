@@ -458,4 +458,31 @@ class ItemMandatarioController extends ModeloController
 
         return $validacion;
     }
+
+    public function validar_prenda_unica( $registro_id, $inv_grupo_id, $prefijo_referencia_id, $tipo_prenda_id, $paleta_color_id, $tipo_material_id )
+    {
+        $prenda = ItemMandatario::where([
+            ['id', '<>', $registro_id],
+            ['inv_grupo_id', '=', $inv_grupo_id],
+            ['prefijo_referencia_id', '=', $prefijo_referencia_id],
+            ['tipo_prenda_id', '=', $tipo_prenda_id],
+            ['paleta_color_id', '=', $paleta_color_id],
+            ['tipo_material_id', '=', $tipo_material_id]
+        ])
+        ->get()
+        ->first();
+        
+        if ( $prenda != null )
+        {
+            return response()->json( [
+                'status' => 'error',
+                'message' => 'Ya existe una prenda con las mismas características: Categoria, Prefijo, Tipo de prenda, Color y Tipo de material.'
+            ] );
+        }
+
+        return response()->json( [
+            'status' => 'ok',
+            'message' => 'No existe una prenda con las mismas características.'
+        ] );
+    }
 }

@@ -26,6 +26,8 @@ class ItemMandatario extends Model
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila"}';
 
+    public $archivo_js = 'assets/js/inventarios/crud_prendas.js';    
+
     public function get_unidad_medida1()
     {
         $campo = Campo::find(79);

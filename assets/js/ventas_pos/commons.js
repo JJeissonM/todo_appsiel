@@ -405,8 +405,8 @@ function llenar_resumen_medios_recaudo() {
         array_celdas.eq(2).find("span").eq(1).text() +
         "" +
         array_celdas.eq(3).find("span").eq(1).text();
-      var lbl_valor_medio_pago = array_celdas.eq(4).text();
-
+      var lbl_valor_medio_pago = array_celdas.eq(4).text().substring(1);
+      
       $("#tabla_resumen_medios_pago")
         .find("tbody:last")
         .append(
@@ -414,8 +414,8 @@ function llenar_resumen_medios_recaudo() {
             lbl_medio_pago +
             "</td><td>" +
             lbl_caja_banco +
-            "</td><td>" +
-            lbl_valor_medio_pago +
+            "</td><td style='text-align: right'>$ " +
+            new Intl.NumberFormat("de-DE").format( lbl_valor_medio_pago ) +
             "</td></tr>"
         );
     });
