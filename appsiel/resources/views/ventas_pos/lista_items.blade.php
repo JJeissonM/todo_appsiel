@@ -14,6 +14,12 @@
 			<tbody>
 				@foreach( $productos as $item)
 					<?php 
+
+						if (!(int)$item->grupo_inventario->mostrar_en_pagina_web)
+						{
+							continue;
+						}
+
 						if ( $item->estado != 'Activo' ) {
 							continue;
 						}
