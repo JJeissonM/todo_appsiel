@@ -219,17 +219,17 @@ function generar_string_celdas() {
     inv_producto_id +
     '</span> <div class="lbl_producto_descripcion" style="display: inline;"> ' +
     descripcion_item +
-    " </div> </td>";
+    ' </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' +
+    unidad_medida +
+    '</div>)</td>';
 
   num_celda++;
 
   celdas[num_celda] =
     '<td> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> ' +
     cantidad +
-    '</div> </div>  (<div class="lbl_producto_unidad_medida" style="display: inline;">' +
-    unidad_medida +
-    "</div>)" +
-    " </td>";
+    '</div> </div> ' +
+    ' </td>';
 
   num_celda++;
 

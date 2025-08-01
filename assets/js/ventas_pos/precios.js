@@ -147,18 +147,18 @@ function calcular_totales() {
     $("#subtotal").text(
         "$ " +
         new Intl.NumberFormat("de-DE").format(
-            (subtotal + valor_total_descuento).toFixed(2)
+            (subtotal + valor_total_descuento).toFixed(0)
         )
     );
 
     $("#descuento").text(
         "$ " +
-        new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2))
+        new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0))
     );
 
     // Total impuestos (Sumatoria de valor_impuesto por cantidad)
     $("#total_impuestos").text(
-        "$ " + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2))
+        "$ " + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(0))
     );
 
     // label Total factura  (Sumatoria de precio_total)
@@ -245,12 +245,12 @@ function calcular_precio_total_lbl(fila)
     fila
       .find(".lbl_valor_total_descuento")
       .text(
-        new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2))
+        new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0))
       );
 
     fila
       .find(".lbl_precio_total")
-      .text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
+      .text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)));
 }
 
 /**
@@ -276,7 +276,7 @@ function validar_venta_menor_costo()
     $("#popup_alerta").text(
         "El precio está por debajo del costo de venta del producto." +
         " $" +
-        new Intl.NumberFormat("de-DE").format(costo_unitario.toFixed(2)) +
+        new Intl.NumberFormat("de-DE").format(costo_unitario.toFixed(0)) +
         " + IVA"
     );
   
@@ -410,12 +410,12 @@ function calcular_totales_quantity()
 
     // Subtotal (Sumatoria de base_impuestos por cantidad)
     //var valor = ;
-    $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) ) );
+    $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(0) ) );
 
-    $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+    $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0)));
 
     // Total impuestos (Sumatoria de valor_impuesto por cantidad)
-    $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
+    $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(0)));
 
     // label Total factura  (Sumatoria de precio_total)
     var valor_redondeado = redondear_a_centena(total_factura);
@@ -466,9 +466,9 @@ function calcular_precio_total_lbl_quantity(fila)
 
     fila.find('.valor_total_descuento').text(valor_total_descuento);
 
-    fila.find('.lbl_valor_total_descuento').text(new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+    fila.find('.lbl_valor_total_descuento').text(new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0)));
 
-    fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(2)));
+    fila.find('.lbl_precio_total').text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)));
 }
 
 /**

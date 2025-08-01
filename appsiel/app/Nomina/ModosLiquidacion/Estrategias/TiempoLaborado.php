@@ -14,7 +14,7 @@ class TiempoLaborado implements Estrategia
 {
 	protected $vacaciones_programadas;
 
-	const CANTIDAD_HORAS_DIA_LABORAL = 7.667;
+	const CANTIDAD_HORAS_DIA_LABORAL = 7.333;
 
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{

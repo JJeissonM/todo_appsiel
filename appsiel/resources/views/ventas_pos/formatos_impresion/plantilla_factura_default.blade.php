@@ -155,7 +155,7 @@
     </div>
 
     <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
-        {{ Form::bsTableHeader(['Producto','Cant. (Precio)','%'.config('ventas.etiqueta_impuesto_principal'),'Total']) }}
+        {{ Form::bsTableHeader(['Producto (U.M.)','Cant. (Precio)','%'.config('ventas.etiqueta_impuesto_principal'),'Total']) }}
         <tbody>
             {!! $datos_factura->lineas_registros !!}
         </tbody>

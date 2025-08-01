@@ -123,19 +123,21 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
   $(".linea_registro").each(function () {
 
     linea_factura =
-      "<tr> <td> " +
-      $(this).find(".lbl_producto_descripcion").text() +
-      " </td> <td> " +
-      $(this).find(".cantidad").text() +
-      " " +
-      $(this).find(".lbl_producto_unidad_medida").text() +
-      " ($" +
-      $(this).find(".precio_unitario").text() +
-      ") </td> <td> " +
-      $(this).find(".lbl_tasa_impuesto").text() +
-      "</td> <td> " +
-      $(this).find(".lbl_precio_total").text() +
-      "  </td></tr>";
+      '<tr> <td style="padding: 4px;"> ' +
+      $(this).find('.lbl_producto_descripcion').text() +
+      ' (' +
+      $(this).find('.lbl_producto_unidad_medida').text() +
+      ') </td> <td style="text-align: center;"> ' +
+      $(this).find('.cantidad').text() +
+      '<br> ($' +
+      new Intl.NumberFormat("de-DE").format(
+          parseFloat( $(this).find('.precio_unitario').text()).toFixed(0)
+        ) +
+      ') </td> <td> ' +
+      $(this).find('.lbl_tasa_impuesto').text() +
+      '</td> <td> ' +
+      $(this).find('.lbl_precio_total').text() +
+      '  </td></tr>';
 
     // Para formato impresora 58mm
     if (

@@ -184,12 +184,12 @@ class PrintServices
 
         if ($parametros['pie_pagina_linea_2'] != '')
         {
-            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_2'];
+            $pie_pagina .= '<br><br>'.$parametros['pie_pagina_linea_2'];
         }
 
         if ($parametros['pie_pagina_linea_3'] != '')
         {
-            $pie_pagina .= '<br>'.$parametros['pie_pagina_linea_3'];
+            $pie_pagina .= '<br><br>'.$parametros['pie_pagina_linea_3'];
         }
 
         return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];

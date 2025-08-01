@@ -35,28 +35,6 @@ class CrudController extends Controller
         $this->variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion');
     }
 
-
-    /*
-    //     A L M A C E N A R UN NUEVO REGISTRO
-    */
-    public function store(Request $request)
-    {   
-        // Se crea un nuevo registro para el ID del modelo enviado en el request 
-        $registro = $this->crear_nuevo_registro( $request, $request->url_id_modelo );
-
-        $this->almacenar_imagenes( $request, $modelo->ruta_storage_imagen, $registro );
-
-        // Si HAY tareas adicionales u otros modelos que afectar (almacenar en otras tablas)
-        if ($modelo->controller_complementario!='') 
-        {
-            return App::call( $modelo->controller_complementario.'@store',['request'=>$request,'registro'=>$registro] );
-        }else{ // Si no, se envía a la vista SHOW del ModeloController
-            return redirect( 'web/'.$registro->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Registro CREADO correctamente.' );
-        }
-
-    }
-
-
     /*
       * Esta función debe estar en ImagenController y en lugar de recibir todo el $request, solo necesita el array archivos tipo file
     */
@@ -87,38 +65,6 @@ class CrudController extends Controller
             $registro->save();
         }
     }
-
-
-    // FOMRULARIO PARA EDITAR UN REGISTRO
-    public function edit($id)
-    {
-        // Se obtiene el registro a modificar del modelo
-        $registro = app($modelo->name_space)->find($id);
-
-        $lista_campos = $this->get_campos_modelo($modelo,$registro,'edit');
-
-        // Se crear un array para generar el formulario
-        // Este array se envía a la vista layouts.create, que carga la platilla principal,
-        // La vista layouts.create incluye a la vista core.vistas.form_create que es la usa al array
-        // form_create para generar un formulario html 
-        $form_create = [
-                        'url' => $modelo->url_form_create,
-                        'campos' => $lista_campos
-                    ];
-
-        $miga_pan = $this->get_miga_pan($modelo,$registro->descripcion);
-
-        $archivo_js = app($modelo->name_space)->archivo_js;
-
-        $url_action = 'web/'.$id;
-        if ($modelo->url_form_create != '') {
-            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
-        }
-
-        return view('layouts.edit',compact('form_create','miga_pan','registro','archivo_js','url_action'));        
-    }
-
-
 
     //     A L M A C E N A R  LA MODIFICACION DE UN REGISTRO
     public function update(Request $request, $id)

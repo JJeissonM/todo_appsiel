@@ -8,6 +8,7 @@ use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ResolucionFacturacion;
+use App\Ventas\Services\PrintServices;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -127,7 +128,7 @@ class FacturaPosService
             $empresa->email = $pdv->email;
         }
 
-        $etiquetas = $this->get_etiquetas();
+        $etiquetas = (new PrintServices())->get_etiquetas();
 
         $plantilla_factura_pos_default = config('ventas_pos.plantilla_factura_pos_default');
         if ($pdv->plantilla_factura_pos_default != null && $pdv->plantilla_factura_pos_default != '') {
@@ -161,43 +162,7 @@ class FacturaPosService
         $pdv_descripcion = $pdv->descripcion;
 
         return View::make('ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default, compact('empresa', 'resolucion', 'etiquetas', 'pdv_descripcion', 'cliente', 'tipo_doc_app', 'plantilla_factura_pos_default','datos_factura'))->render();
-    }
-
-    public function get_etiquetas()
-    {
-        $parametros = config('ventas');
-
-        $encabezado = '';
-
-        if ($parametros['encabezado_linea_1'] != '') {
-            $encabezado .= $parametros['encabezado_linea_1'];
-        }
-
-        if ($parametros['encabezado_linea_2'] != '') {
-            $encabezado .= '<br>' . $parametros['encabezado_linea_2'];
-        }
-
-        if ($parametros['encabezado_linea_3'] != '') {
-            $encabezado .= '<br>' . $parametros['encabezado_linea_3'];
-        }
-
-
-        $pie_pagina = '';
-
-        if ($parametros['pie_pagina_linea_1'] != '') {
-            $pie_pagina .= $parametros['pie_pagina_linea_1'];
-        }
-
-        if ($parametros['pie_pagina_linea_2'] != '') {
-            $pie_pagina .= '<br>' . $parametros['pie_pagina_linea_2'];
-        }
-
-        if ($parametros['pie_pagina_linea_3'] != '') {
-            $pie_pagina .= '<br>' . $parametros['pie_pagina_linea_3'];
-        }
-
-        return ['encabezado' => $encabezado, 'pie_pagina' => $pie_pagina];
-    }    
+    } 
 
     public function get_parametros_complemento_JSPrintManager($pdv)
     {

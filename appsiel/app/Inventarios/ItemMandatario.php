@@ -11,6 +11,7 @@ use App\Inventarios\Indumentaria\TipoMaterial;
 use App\Inventarios\Indumentaria\TipoPrenda;
 use App\Inventarios\Services\ItemsMandatariosSerices;
 use App\Sistema\Campo;
+use App\Sistema\Services\CrudService;
 use App\Ventas\ListaPrecioDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class ItemMandatario extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Color', 'Material', 'Tipo', 'Estado'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila","eliminar":"web_eliminar/id_fila"}';
 
     public $archivo_js = 'assets/js/inventarios/crud_prendas.js';    
 
@@ -217,5 +218,18 @@ class ItemMandatario extends Model
             $item_relacionado->referencia = $referencia . '-' . $item_relacionado->unidad_medida2;
             $item_relacionado->save();
         }
+    }
+
+    public function validar_eliminacion($id )
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"inv_mandatario_tiene_items",
+                                    "llave_foranea":"mandatario_id",
+                                    "mensaje":"Ítem mandatario tiene Ítems relacionados."
+                                }
+                        }';
+
+        return (new CrudService())->validar_eliminacion_un_registro( $id, $tablas_relacionadas);
     }
 }

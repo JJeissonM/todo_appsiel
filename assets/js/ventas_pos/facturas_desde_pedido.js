@@ -62,12 +62,12 @@ $.fn.calcular_totales_aux = function()
 
     // Subtotal (Sumatoria de base_impuestos por cantidad)
     //var valor = ;
-    $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(2) ) );
+    $('#subtotal').text( '$ ' + new Intl.NumberFormat("de-DE").format( (subtotal + valor_total_descuento).toFixed(0) ) );
 
-    $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(2)));
+    $('#descuento').text('$ ' + new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0)));
 
     // Total impuestos (Sumatoria de valor_impuesto por cantidad)
-    $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(2)));
+    $('#total_impuestos').text('$ ' + new Intl.NumberFormat("de-DE").format(total_impuestos.toFixed(0)));
 
     // label Total factura  (Sumatoria de precio_total)
     var valor_redondeado = $.fn.redondear_a_centena_aux(total_factura);
@@ -196,7 +196,7 @@ $.fn.calcular_total_cambio = function( efectivo_recibido )
 
 $.fn.set_label_efectivo_recibido = function( efectivo_recibido )
 {
-    $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( efectivo_recibido ).toFixed(2) ) );
+    $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format( parseFloat( efectivo_recibido ).toFixed(0) ) );
 };
 
 $.fn.cambiar_estilo_div_total_cambio = function(){
@@ -228,7 +228,7 @@ $.fn.checkCookie = function()
     if (ultimo_valor_total_factura > 0)
     {
         $('#total_factura').text('$ ' + new Intl.NumberFormat("de-DE").format( $.fn.redondear_a_centena(ultimo_valor_total_factura ) ) );
-        $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(2)));
+        $('#lbl_efectivo_recibido').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_efectivo_recibido.toFixed(0)));
         $('#total_cambio').text('$ ' + new Intl.NumberFormat("de-DE").format((ultimo_valor_total_cambio)));
         $('#lbl_ajuste_al_peso').text('$ ' + new Intl.NumberFormat("de-DE").format(ultimo_valor_ajuste_al_peso));
         $("#valor_ajuste_al_peso").val(ultimo_valor_ajuste_al_peso);
