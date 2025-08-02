@@ -1161,11 +1161,11 @@ $(document).ready(function () {
         }
       }
     }
-
+    
     // Desactivar el click del botón
-    $(this).html('<i class="fa fa-spinner fa-spin"></i> Guardando');
-    $(this).attr("disabled", "disabled");
-    $(this).attr("id", "btn_guardando");
+    $("#btn_guardar_factura").html('<i class="fa fa-spinner fa-spin"></i> Guardando');
+    $("#btn_guardar_factura").attr("disabled", "disabled");
+    $("#btn_guardar_factura").attr("id", "btn_guardando");
     
 
         $("#linea_ingreso_default").remove();
@@ -1222,12 +1222,6 @@ $(document).ready(function () {
             },
             success: function( doc_encabezado ){
                 finalizar_almacenamiento_factura( doc_encabezado );
-                /*Swal.fire({
-                    icon: 'success',
-                    title: 'Mensaje Aux. FACTURA GUARDADA.',
-                    text: 'OK'
-                  }); 
-                */
             },
             error: function( xhr ){
                 $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
@@ -1322,9 +1316,6 @@ $(document).ready(function () {
 
   function finalizar_almacenamiento_factura( doc_encabezado )
   {
-    $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-    $("#btn_guardando").attr("id", "btn_guardar_factura");
-
     $('#cliente_input').css('background-color', '#eee');
 
     $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
@@ -1332,6 +1323,9 @@ $(document).ready(function () {
     llenar_tabla_productos_facturados();
 
     enviar_impresion( doc_encabezado );
+
+    $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+    $("#btn_guardando").attr("id", "btn_guardar_factura");
     
     $("#pedido_id").val(0);
     $("#object_anticipos").val('null');

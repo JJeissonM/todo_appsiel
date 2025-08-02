@@ -39,9 +39,10 @@
                 }
 
             ?>
-            <td> {{ $linea->producto_descripcion . $referencia }} </td>
-            <td class="text-right">
-                {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }}
+            <td> {{ $linea->producto_descripcion . $referencia }} ({{ $linea->item->get_unidad_medida1() }})</td>
+            <td class="text-center">
+                {{ number_format( $linea->cantidad, 2, ',', '.') }} 
+                <br>
                 {{ $precio_unitario }}
             </td>
             <td class="text-center"> {{ $tasa_impuesto }} </td>
@@ -65,13 +66,14 @@
                     $referencia = ' - ' . $linea->referencia;
                 }
             ?>
-            <td> {{ $linea->producto_descripcion . $referencia }} </td>
-            <td class="text-right">
-                {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }}
+            <td style="margin: 4px;"> {{ $linea->producto_descripcion . $referencia }} ( {{ $linea->item->get_unidad_medida1() }})</td>
+            <td style="text-align: center;">
+                {{ number_format( $linea->cantidad, 2, ',', '.') }}
+                <br>
                 (${{ number_format( $linea->precio_unitario, 0, ',', '.') }})
             </td>
-            <td class="text-center"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.') }}% </td>
-            <td class="text-right"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+            <td style="text-align: center;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.') }}% </td>
+            <td  style="text-align: right;"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
         </tr>
 
         @if( $linea->valor_total_descuento != 0 )

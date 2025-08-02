@@ -37,7 +37,7 @@
                                     }
                                 ?>
                                 <td style="text-align: left;"> {{ $caja_banco }} </td>
-                                <td style="text-align: right;"> ${{ number_format( abs($teso_movim->valor), 2, ',', '.') }} </td>
+                                <td style="text-align: right;"> ${{ number_format( abs($teso_movim->valor), 0, ',', '.') }} </td>
                             </tr>
                             <?php 
                                 $total_movimiento += abs($teso_movim->valor);
@@ -47,7 +47,7 @@
                     <tfoot>
                         <tr>
                             <td>&nbsp;</td>
-                            <td style="text-align: right; font-weight:bold;"> ${{ number_format($total_movimiento, 2, ',', '.') }} </td>
+                            <td style="text-align: right; font-weight:bold;"> ${{ number_format($total_movimiento, 0, ',', '.') }} </td>
                         </tr>
                     </tfoot>
                 </table>

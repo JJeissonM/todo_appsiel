@@ -79,18 +79,18 @@ class PrintServices
             $ruta_vista = 'ventas_pos.formatos_impresion.' . $plantilla_factura_pos_default;
             
             $valor_propina = ( new TipService() )->get_tip_amount($doc_encabezado);
-            $total_factura_mas_propina = 0;
+            $total_factura_mas_propina = $doc_encabezado->valor_total;
             if ( $valor_propina != 0) {
                 $total_factura_mas_propina = $doc_encabezado->valor_total + $valor_propina;
             }
 
             $valor_datafono = ( new DatafonoService() )->get_datafono_amount($doc_encabezado);
-            $total_factura_mas_datafono = 0;
+            $total_factura_mas_datafono = $doc_encabezado->valor_total;
             if ( $valor_datafono != 0) {
                 $total_factura_mas_datafono = $doc_encabezado->valor_total + $valor_datafono;
             }
 
-            $lbl_ajuste_al_peso = round($doc_encabezado->valor_ajuste_al_peso,2);
+            $lbl_ajuste_al_peso = round($doc_encabezado->valor_ajuste_al_peso,0);
 
             $lbl_total_factura = $doc_encabezado->valor_total + $lbl_ajuste_al_peso + $doc_encabezado->valor_total_bolsas;
             
@@ -102,11 +102,11 @@ class PrintServices
                 'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
                 'lbl_descripcion_doc_encabezado' => $doc_encabezado->descripcion,
-                'lbl_total_factura' => '$' . number_format($lbl_total_factura, 2,',','.'),
-                'lbl_total_propina' => '$' . number_format( $valor_propina, 2, ',' , '.'),
-                'total_factura_mas_propina' => '$' . number_format( $total_factura_mas_propina, 2, ',' , '.'),
-                'lbl_total_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
-                'total_factura_mas_datafono' => '$' . number_format( $valor_datafono, 2, ',' , '.'),
+                'lbl_total_factura' => '$' . number_format($lbl_total_factura, 0,',','.'),
+                'lbl_total_propina' => '$' . number_format( $valor_propina, 0, ',' , '.'),
+                'total_factura_mas_propina' => '$' . number_format( $total_factura_mas_propina, 0, ',' , '.'),
+                'lbl_total_datafono' => '$' . number_format( $valor_datafono, 0, ',' , '.'),
+                'total_factura_mas_datafono' => '$' . number_format( $valor_datafono, 0, ',' , '.'),
                 'lbl_ajuste_al_peso' => $lbl_ajuste_al_peso,
                 'lbl_total_recibido' => $doc_encabezado->total_efectivo_recibido,
                 'lbl_total_cambio' => $doc_encabezado->valor_total_cambio,

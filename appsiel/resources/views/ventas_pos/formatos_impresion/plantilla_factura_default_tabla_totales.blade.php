@@ -7,7 +7,7 @@
                 @endif
                 Total factura:
             </td>
-            <td style="text-align: right;">                
+            <td style="text-align: right;">
                 @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
                     <div class="lbl_valor_total_bolsas" style="margin-right: 15px; font-size: 9px;">$ {{ $datos_factura->lbl_valor_total_bolsas }} </div>
                 @endif
