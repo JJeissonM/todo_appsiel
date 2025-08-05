@@ -31,6 +31,7 @@ function llenar_tabla_productos_facturados(doc_encabezado)
 
     $('#doc_encabezado_documento_transaccion_descripcion').text( doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
     $('#doc_encabezado_fecha').text( doc_encabezado.doc_encabezado_fecha);
+    $('#doc_encabezado_hora_creacion').text( doc_encabezado.doc_encabezado_hora_creacion);
     $('#doc_encabezado_tercero_nombre_completo').text( doc_encabezado.doc_encabezado_tercero_nombre_completo);
     $('#doc_encabezado_documento_transaccion_prefijo_consecutivo').text( doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
     $('#doc_encabezado_vendedor_descripcion').text( doc_encabezado.doc_encabezado_vendedor_descripcion);
@@ -792,7 +793,7 @@ $(document).ready(function () {
 			
             if (respuesta == 'ok') {                
                 if (confirm('Realmente quiere anular el pedido ' + $('#btn_anular_pedido').attr('data-pedido_label') ) ) {
-                    var url = url_raiz + "/" + "vtas_pedidos_restaurante_cancel" + "/" + $('#pedido_id').val();
+                    var url = url_raiz + "/" + "vtas_pedidos_restaurante_cancel" + "/" + $('#pedido_id').val() + "/" + email;
 
                     $.get(url, function (pedido) {
 

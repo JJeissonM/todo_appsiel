@@ -301,18 +301,18 @@ class PedidoRestauranteController extends TransaccionController
         return response()->json( $this->build_json_pedido($pedido), 200);
     }
 
-    public function cancel($id)
+    public function cancel($id, $user_email)
     {
         $pedido = VtasPedido::find($id);
 
         $pedido->estado = 'Anulado';
-        $pedido->modificado_por = Auth::user()->email;
+        $pedido->modificado_por = $user_email;
         $pedido->save();
 
         $lineas_registros = $pedido->lineas_registros;
         foreach ($lineas_registros as $linea) {
             $linea->estado = 'Anulado';
-            $linea->modificado_por = Auth::user()->email;
+            $linea->modificado_por = $user_email;
             $linea->save();
         }
 
@@ -325,6 +325,7 @@ class PedidoRestauranteController extends TransaccionController
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
             'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo,
             'doc_encabezado_fecha' => $doc_encabezado->fecha,
+            'doc_encabezado_hora_creacion' => $doc_encabezado->created_at->format('H:i a'),
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),

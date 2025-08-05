@@ -125,7 +125,7 @@ Route::get('vtas_pedidos_restaurante_mesas_disponibles_mesero/{vendedor_id}', 'V
 Route::get('vtas_get_pedidos_mesero_para_una_mesa/{vendedor_id}/{cliente_id}', 'Ventas\PedidoRestauranteController@get_pedidos_mesero_para_una_mesa');
 
 Route::get('vtas_cargar_datos_editar_pedido/{pedido_id}', 'Ventas\PedidoRestauranteController@cargar_datos_editar_pedido');
-Route::get('vtas_pedidos_restaurante_cancel/{pedido_id}', 'Ventas\PedidoRestauranteController@cancel');
+Route::get('vtas_pedidos_restaurante_cancel/{pedido_id}/{user_email}', 'Ventas\PedidoRestauranteController@cancel');
 
 Route::get('vtas_pedidos_restaurante_mesas_permitidas_para_cambiar', 'Ventas\PedidoRestauranteController@mesas_permitidas_para_cambiar');
 Route::get('vtas_pedidos_restaurante_cambiar_pedidos_de_mesa/{mesa_pedidos_id}/{nueva_mesa_id}', 'Ventas\PedidoRestauranteController@cambiar_pedidos_de_mesa');

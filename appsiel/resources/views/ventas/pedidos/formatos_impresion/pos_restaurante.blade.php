@@ -77,6 +77,8 @@
                     No.</b> <div style="display: inline;" id="doc_encabezado_documento_transaccion_prefijo_consecutivo"></div>
                     <br>
                     <b>Fecha:</b> <div style="display: inline;" id="doc_encabezado_fecha"></div>
+                    &nbsp;&nbsp;&nbsp;
+                    <b>Hora:</b> <div style="display: inline;" id="doc_encabezado_hora_creacion"></div>
                 </div>
             </td>
         </tr>
