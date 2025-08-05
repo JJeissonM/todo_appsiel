@@ -83,7 +83,7 @@
                         {{ $fila->cliente->tercero->get_label_to_show() }}
                     </td>
                     <td class="table-text">
-                        {{ $fila->condicion_pago }}
+                        {{ $fila->forma_pago }}
                     </td>
                     <td class="table-text">
                         {{ $fila->descripcion }}
