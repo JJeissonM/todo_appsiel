@@ -605,7 +605,7 @@
 
 				</div>				
 
-				<h4> Parámetros para manejo de ítems Mandatarios </h4>
+				<h4> Parámetros para manejo de ítems Mandatarios (Prendas)</h4>
 				<hr>
 				<div class="row">
 
@@ -623,7 +623,16 @@
 					</div>
 
 					<div class="col-md-6">
-						&nbsp;
+						<div class="row" style="padding:5px;">
+							<?php 
+								$validar_prenda_con_caracteristicas_unicas = '1';
+								if( isset($parametros['validar_prenda_con_caracteristicas_unicas'] ) )
+								{
+									$validar_prenda_con_caracteristicas_unicas = $parametros['validar_prenda_con_caracteristicas_unicas'];
+								}
+							?>
+							{{ Form::bsSelect('validar_prenda_con_caracteristicas_unicas', $validar_prenda_con_caracteristicas_unicas, 'Validar creación de prendas con características únicas', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
 					</div>
 
 				</div>
