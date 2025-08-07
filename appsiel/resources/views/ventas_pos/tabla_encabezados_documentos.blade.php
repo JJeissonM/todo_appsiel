@@ -72,6 +72,14 @@
                             @endif
                         
                         @endif
+
+                        @if ( (int)config('ventas_pos.acumular_facturas_en_tiempo_real') )
+                            @if( $fila->estado == 'Contabilizado' && $view != 'index')
+                                @can('vtas_pos_anular_documento_en_consultar_facturas_pdv')
+                                    <button class="btn btn-danger btn-xs btn_anular_factura_contabilizada" data-pdv_id="{{ $pdv->id }}" data-doc_encabezado_id="{{$fila->id}}" data-lbl_factura="{{$fila->get_label_documento()}}" title="Anular"> <i class="fa fa-trash"></i> </button>
+                                @endcan
+                            @endif
+                        @endif
                     </td>
                     <td class="table-text">
                         {{ $fila->fecha }}

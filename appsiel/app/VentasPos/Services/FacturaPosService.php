@@ -2,13 +2,26 @@
 
 namespace App\VentasPos\Services;
 
+use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
+use App\CxC\CxcAbono;
+use App\CxC\CxcMovimiento;
+use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvGrupo;
+use App\Inventarios\Services\InvDocumentsService;
 use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoMotivo;
+use App\Tesoreria\TesoMovimiento;
 use App\Ventas\ListaPrecioDetalle;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\Services\PrintServices;
+use App\Ventas\VtasDocEncabezado;
+use App\Ventas\VtasMovimiento;
+use App\Ventas\VtasPedido;
+use App\VentasPos\DocRegistro;
+use App\VentasPos\FacturaPos;
+use App\VentasPos\Movimiento;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -248,5 +261,127 @@ class FacturaPosService
     public function get_precio_bolsa( $lista_precios_id )
     {
         return ListaPrecioDetalle::get_precio_producto( $lista_precios_id, date('Y-m-d'),  (int)config('ventas_pos.item_bolsa_id'));
+    }
+
+    public function anular_factura_contabilizada( int $factura_id, bool $anular_remision )
+    {
+        $factura = FacturaPos::find($factura_id);
+
+        $array_wheres = [
+            'core_empresa_id' => $factura->core_empresa_id,
+            'core_tipo_transaccion_id' => $factura->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $factura->core_tipo_doc_app_id,
+            'consecutivo' => $factura->consecutivo
+        ];
+
+        $modificado_por = Auth::user()->email;
+
+        // 1ro. Anular documento asociado de inventarios
+        // Obtener las remisiones relacionadas con la factura y anularlas o dejarlas en estado Pendiente
+        $ids_documentos_relacionados = explode(',', $factura->remision_doc_encabezado_id);
+        $cant_registros = count($ids_documentos_relacionados);
+        for ($i = 0; $i < $cant_registros; $i++) {
+            $remision = InvDocEncabezado::find($ids_documentos_relacionados[$i]);
+            if (!is_null($remision)) {
+                if ($anular_remision) // anular_remision es tipo boolean
+                {
+                    (new InvDocumentsService())->anular_documento_inventarios($remision->id);
+                } else {
+                    $remision->update(['estado' => 'Pendiente', 'modificado_por' => $modificado_por]);
+                }
+            }
+        }
+
+        // 2do. Borrar registros contables del documento
+        ContabMovimiento::where($array_wheres)->delete();
+
+        // 3ro. Se elimina el documento del movimimeto de cuentas por cobrar y de tesorería
+        CxcMovimiento::where($array_wheres)->delete();
+        TesoMovimiento::where($array_wheres)->delete();
+
+        // 4to. Se elimina el movimiento de ventas POS y Ventas Estándar
+        Movimiento::where($array_wheres)->delete();
+        VtasMovimiento::where($array_wheres)->delete();
+
+        // 5to. Se marcan como anulados los registros del documento
+        DocRegistro::where('vtas_pos_doc_encabezado_id', $factura->id)->update(['estado' => 'Anulado', 'modificado_por' => $modificado_por]);
+
+        // Si la factura se hizo desde un pedido
+        $pedido = VtasDocEncabezado::where( 'ventas_doc_relacionado_id' , $factura->id )->get()->first();
+        if( $pedido != null )
+        {
+            if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
+                $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+
+                foreach ($todos_los_pedidos as $un_pedido) {
+                    $un_pedido->estado = "Pendiente";
+                    $un_pedido->ventas_doc_relacionado_id = 0;
+                    $un_pedido->save();
+
+                    $this->actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
+                }
+            }else{
+                $pedido->estado = "Pendiente";
+                $pedido->ventas_doc_relacionado_id = 0;
+                $pedido->save();
+
+                $this->actualizar_cantidades_pendientes( $pedido, 'sumar' );
+            }
+        }
+
+        // 6to. Se marca como anulado el documento
+        $factura->update(['estado' => 'Anulado', 'remision_doc_encabezado_id' => '', 'modificado_por' => $modificado_por]);
+    }
+
+    public function factura_tiene_abonos_cxc( $factura_id )
+    {
+        $factura = FacturaPos::find( $factura_id );
+
+        // Verificar si la factura tiene abonos, si tiene no se puede eliminar
+        $cantidad = CxcAbono::where('doc_cxc_transacc_id', $factura->core_tipo_transaccion_id)
+            ->where('doc_cxc_tipo_doc_id', $factura->core_tipo_doc_app_id)
+            ->where('doc_cxc_consecutivo', $factura->consecutivo)
+            ->count();
+
+        if ( $cantidad != 0 ) {
+            return (object)[
+                'status' => true,
+                'message' => 'Factura NO puede ser eliminada. Se le han hecho Recaudos de CXC (Tesorería).'
+            ];
+        }
+        
+        return (object)[
+            'status' => false,
+            'message' => null
+        ];
+    }
+
+    public function actualizar_cantidades_pendientes( $encabezado_pedido, $operacion )
+    {
+        $lineas_registros_pedido = $encabezado_pedido->lineas_registros;
+        foreach( $lineas_registros_pedido AS $linea_pedido )
+        {            
+            if ( $operacion == 'restar' )
+            {
+                $linea_pedido->cantidad_pendiente = 0;
+            }else{
+                // sumar: al anular
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad;
+            }
+                
+            $linea_pedido->save();
+        }
+    }
+
+    public function get_todos_los_pedidos_mesero_para_la_mesa($pedido)
+    {
+        return VtasPedido::where(
+                            [
+                                ['cliente_id','=',$pedido->cliente_id],
+                                ['vendedor_id','=',$pedido->vendedor_id],
+                                ['estado','=','Pendiente']
+                            ]
+                        )
+                ->get();
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Inventarios\Services;
 
+use App\Compras\ComprasDocEncabezado;
 use Illuminate\Http\Request;
 
 use App\Core\Transactions\Services\DocumentsService AS TransactionDocumentsService;
@@ -15,8 +16,11 @@ use App\Inventarios\InvMotivo;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\InvDocEncabezado;
-
+use App\Nomina\OrdenDeTrabajo;
+use App\Ventas\VtasDocEncabezado;
+use App\Ventas\VtasDocRegistro;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 
 class InvDocumentsService
 {
@@ -259,6 +263,131 @@ class InvDocumentsService
                 $obj_accou_serv->contabilizar_registro( $inv_doc_head->toArray() + $linea->toArray(), $cta_contrapartida_id, $detalle_operacion, abs($linea->costo_total), 0 );
             }
                 
+        }
+    }    
+
+    // Este método no hace validación de existencias
+    // Dichas validaciones se debieron hacer antes.
+    /**
+     * Nota: Este método es el mismo que está en InventarioController. Queda pendiente refactorizar las clases que llaman al método anterior (el de InventarioController)
+     */
+    public function anular_documento_inventarios($doc_encabezado_id)
+    {
+        $documento = InvDocEncabezado::find($doc_encabezado_id);
+
+        // Eliminar Movimineto contable
+        ContabMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('consecutivo', $documento->consecutivo)
+            ->delete();
+
+        // Eliminar movimiento de inventarios
+        InvMovimiento::where('core_tipo_transaccion_id', $documento->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $documento->core_tipo_doc_app_id)
+            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+            ->where('consecutivo', $documento->consecutivo)
+            ->delete();
+
+        // Marcar registros del documento como anulados
+        $registros = InvDocRegistro::where('inv_doc_encabezado_id', $documento->id)->get();
+        
+        // Calcular costos promedios de cada producto del documento, cuando el motivo del movimiento es de entrada
+        $average_cost_serv = new AverageCost();
+        foreach ($registros as $linea)
+        {
+            $motivo = InvMotivo::find($linea->inv_motivo_id);
+            if ($motivo->movimiento == 'entrada')
+            {
+                // Se CALCULA el nuevo costo promedio del movimiento con el producto YA retirado
+                $costo_prom = $average_cost_serv->calculate_average_cost($linea->inv_bodega_id, $linea->inv_producto_id, $linea->costo_unitario, $documento->fecha, $linea->cantidad);
+                
+                $this->actualizar_costo_promedio($linea->inv_bodega_id, $linea->inv_producto_id, $costo_prom, $documento->core_tipo_transaccion_id, $average_cost_serv);
+
+                // Marcar cada registro del documento como Anulado
+                $linea->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);
+            }
+        }
+
+        // Para una remisión de ventas, se activa nuevamente el pedido de ventas, si se generó con base en pedido
+        if( $documento->core_tipo_transaccion_id == 24 ) 
+        {
+            $pedido = VtasDocEncabezado::find( $documento->vtas_doc_encabezado_origen_id );
+            if( !is_null($pedido) )
+            {
+
+                $this->actualizar_cantidades_pendientes( $pedido, $documento, 'sumar' );
+
+                $pedido->estado = "Pendiente";
+                $pedido->save();
+
+                $documento->vtas_doc_encabezado_origen_id = 0;
+                $documento->save();
+            }      
+        }
+
+        // Para una entrada de almacén, se activa nuevamente la orden de compras, si se generó con base en OC
+        if( $documento->core_tipo_transaccion_id == 35 ) 
+        {
+            $orden_compra = ComprasDocEncabezado::where( 'entrada_almacen_id', $documento->id )->get()->first();
+            if( !is_null($orden_compra) )
+            {
+                $orden_compra->entrada_almacen_id = 0;
+                $orden_compra->estado = "Pendiente";
+                $orden_compra->save();
+            }       
+        }
+
+        // Si esta relacionado con una Orden de Trabajo
+        if ( Schema::hasTable( 'nom_ordenes_de_trabajo' ) )
+        {
+            OrdenDeTrabajo::where( 'inv_doc_encabezado_id',$documento->id )->update(['inv_doc_encabezado_id'=>0]);
+        }
+
+        // Marcar documento como Anulado
+        $documento->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);
+    }
+
+    public function actualizar_costo_promedio($inv_bodega_id, $inv_producto_id, $costo_prom, $core_tipo_transaccion_id, $average_cost_serv)
+    {
+        $tipo_transferencia = 2;
+        if ( (int)config('inventarios.maneja_costo_promedio_por_bodegas') == 1  )
+        {
+            // Actualizo/Almaceno el costo promedio
+            $average_cost_serv->set_costo_promedio( $inv_bodega_id, $inv_producto_id, $costo_prom);
+        }else{
+
+            // Cuando no maneja costo promedio por bodegas (un solo costo para todo)
+
+            // Solo se calcula costo promedio, si la entrada NO es por transferencia
+            if ($core_tipo_transaccion_id != $tipo_transferencia) 
+            {
+                // Actualizo/Almaceno el costo promedio
+                $average_cost_serv->set_costo_promedio( $inv_bodega_id, $inv_producto_id, $costo_prom);
+            }
+        }
+    }
+
+    public function actualizar_cantidades_pendientes( $encabezado_pedido, $encabezado_remision, $operacion )
+    {
+        $lineas_registros_remision = $encabezado_remision->lineas_registros;
+        foreach( $lineas_registros_remision AS $linea_remision )
+        {
+            $linea_pedido = VtasDocRegistro::find( $linea_remision->linea_registro_doc_origen_id );
+            
+            if(is_null($linea_pedido) )
+            {
+                continue;
+            }
+            
+            if ( $operacion == 'restar' )
+            {
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente - abs($linea_remision->cantidad);
+            }else{
+                // sumar: al anular la remision
+                $linea_pedido->cantidad_pendiente = $linea_pedido->cantidad_pendiente + abs($linea_remision->cantidad);
+            }
+                
+            $linea_pedido->save();
         }
     }
 }

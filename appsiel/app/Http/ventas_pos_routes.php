@@ -17,6 +17,9 @@ Route::get('pos_get_doc_encabezado_por_uniqid/{uniqid}', 'VentasPos\FacturaPosCo
 // Anular factura que no esté acumulada
 Route::get('pos_factura_anular/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_pos');
 
+// Anular factura Contabilizada
+Route::get('pos_anular_factura_contabilizada/{doc_encabezado_id}', 'VentasPos\FacturaPosController@anular_factura_contabilizada');
+
 Route::get('pos_factura_borrar_propina/{doc_encabezado_id}', 'VentasPos\FacturaPosController@borrar_propina');
 
 Route::get('pos_factura_validar_existencias/{pdv_id}', 'VentasPos\FacturaPosController@validar_existencias');

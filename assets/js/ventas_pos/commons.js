@@ -1553,6 +1553,49 @@ $(document).ready(function () {
     }
   });
   
+  
+  $(document).on("click", ".btn_anular_factura_contabilizada", function (event) {
+    event.preventDefault();
+
+    var opcion = confirm(
+      "¿Seguro desea anular la factura " +
+        $(this).attr("data-lbl_factura") +
+        "?"
+    );
+
+    if (opcion) {
+      fila = $(this).closest("tr");
+
+      $("#div_spin2").fadeIn();
+      var url =
+        url_raiz +
+        "/" +
+        "pos_anular_factura_contabilizada" +
+        "/" +
+        $(this).attr("data-doc_encabezado_id");
+
+      $.get(url, function (respuesta) {
+        $("#div_spin2").hide();
+
+        if ( respuesta.status == "error" ) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: respuesta.message
+          });
+          return false;          
+        }
+
+        fila.find("td").eq(8).text("Anulado");
+        fila.find(".btn_modificar_factura").hide();
+        fila.find(".btn_anular_factura_contabilizada").hide();
+        alert("Documento anulado correctamente.");
+      });
+    } else {
+      return false;
+    }
+  });
+  
   // Al mostrar la ventana modal
   $("#recaudoModal").on("shown.bs.modal", function () {
     $("#form_registro").before(
