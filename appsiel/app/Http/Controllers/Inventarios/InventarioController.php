@@ -1152,7 +1152,7 @@ class InventarioController extends TransaccionController
     }
     
     /**
-     * Obtener el stock de un item en una bodega específica.
+     * Obtener el stock de un item en una bodega específica. Si la bodega es cero, se suman las existencias de todas las bodegas activas.
      * Este método es llamado por AJAX
      */
     public function get_item_stock( $item_id, $bodega_id, $fecha)
