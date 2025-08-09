@@ -747,7 +747,8 @@ function activar_boton_guardar_factura()
  * 
  * @returns 
  */
-function agregar_nueva_linea() {
+function agregar_nueva_linea() 
+{
 
   if (!calcular_precio_total()) {
 
@@ -1357,6 +1358,9 @@ $(document).ready(function () {
     set_precios_lbl_items();
   });
 
+  /**
+   * Al hacer click en el botón de registrar ingresos o gastos
+   */
   $(document).on("click", ".btn_registrar_ingresos_gastos", function (event) {
     event.preventDefault();
 
@@ -1392,6 +1396,9 @@ $(document).ready(function () {
     }); /**/
   });
 
+  /**
+   * Al hacer click en el botón de consultar estado del PDV
+   */
   $(document).on("click", ".btn_consultar_estado_pdv", function (event) {
     event.preventDefault();
 
@@ -1424,6 +1431,9 @@ $(document).ready(function () {
     }); /**/
   });
 
+  /**
+   * Al hacer click en el botón de revisar pedidos de ventas
+   */
   $(document).on("click", ".btn_revisar_pedidos_ventas", function (event) {
     event.preventDefault();
 
@@ -1450,6 +1460,9 @@ $(document).ready(function () {
     }); /**/
   });
 
+  /**
+   * Al hacer click en el botón de guardar el registro de ingresos o gastos
+   */
   $(document).on("click", "#myModal2 .btn_save_modal", function (event) {
     event.preventDefault();
 
@@ -1487,6 +1500,9 @@ $(document).ready(function () {
     });
   });
 
+  /**
+   * Al hacer click en el botón de consultar documentos pendientes
+   */
   $(document).on("click", ".btn_consultar_documentos", function (event) {
     event.preventDefault();
 
@@ -1553,7 +1569,9 @@ $(document).ready(function () {
     }
   });
   
-  
+  /**
+   * Al hacer click en el botón de anular factura contabilizada
+   */
   $(document).on("click", ".btn_anular_factura_contabilizada", function (event) {
     event.preventDefault();
 
@@ -1609,6 +1627,9 @@ $(document).ready(function () {
     $("#div_pendiente_ingresar_medio_recaudo").remove();
   });
 
+  /**
+   * Al hacer click en el botón de borrar propina
+   */
   $(document).on("click", ".btn_borrar_propina", function (event) {
     event.preventDefault();
 

@@ -38,6 +38,8 @@ Route::get('inv_consultar_productos_v2','Inventarios\InventarioController@consul
 Route::get('inv_consultar_existencia_producto','Inventarios\InventarioController@consultar_existencia_producto');
 Route::get('inv_validacion_saldo_movimientos_posteriores/{bodega_id}/{producto_id}/{fecha}/{cantidad_nueva}/{saldo_a_la_fecha}/{movimiento}/{cantidad_anterior?}','Inventarios\InventarioController@get_validacion_saldo_movimientos_posteriores');
 
+Route::get('inv_get_item_stock/{item_id}/{bodega_id}/{fecha}','Inventarios\InventarioController@get_item_stock');
+
 
 Route::get('inv_fisico_imprimir/{id}','Inventarios\InvFisicoController@imprimir');
 Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajuste');

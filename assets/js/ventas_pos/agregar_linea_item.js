@@ -16,9 +16,61 @@ function agregar_la_linea_ini() {
  * 
  * @returns boolean
  */
-function agregar_la_linea() {
 
-    if (!validar_venta_menor_costo()) {
+var hay_stock = true;
+
+function agregar_la_linea() 
+{
+
+    if( $('#acumular_facturas_en_tiempo_real').val() == '1' )
+    {
+        if( $('#permitir_inventarios_negativos').val() == '0' )
+        {
+            // Verificar que haya existencia en la bodega seleccionada
+            var url = url_raiz + "/" + "inv_get_item_stock" + "/" + inv_producto_id + "/" + $('#inv_bodega_id').val() + "/" + $('#fecha').val();
+
+             $.ajax({
+                    url: url,
+                    type: 'GET',
+                    async: false,
+                    cache: false,
+                    success: function ( actual_quantity ) {                
+                        hay_stock = true;
+                        var difference = parseFloat( actual_quantity ) - cantidad;
+
+                        if ( difference.toFixed(0) < 0)
+                        {
+                            hay_stock = false;
+                            Swal.fire({
+                                icon: "error",
+                                title: "Alerta!",
+                                text: "La cantidad ingresada (" + cantidad + ") supera la existencia actual: " + actual_quantity,
+                            });
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "No se pudo verificar la existencia del producto. Intente nuevamente.",
+                        });
+                        return false;
+                    }
+            });
+        }
+
+    }
+
+    if ( !hay_stock )
+    {
+        return false;
+    }
+
+    console.log("agregar_la_linea sin problema");
+
+    if ( !validar_venta_menor_costo() )
+    {
         return false;
     }
 
@@ -28,9 +80,9 @@ function agregar_la_linea() {
 
     if (!$.isNumeric(parseInt($("#core_tercero_id").val()))) {
         Swal.fire({
-        icon: "error",
-        title: "Alerta!",
-        text: "Error al seleccionar el cliente. Ingrese un cliente correcto.",
+            icon: "error",
+            title: "Alerta!",
+            text: "Error al seleccionar el cliente. Ingrese un cliente correcto.",
         });
 
         return false;
@@ -74,9 +126,7 @@ function agregar_la_linea() {
     $("#efectivo_recibido").removeAttr("readonly");
     $("#efectivo_recibido").css("background-color", "white");
 
-    //if ($("#manejar_platillos_con_contorno").val() == 1) {
-    //    reset_component_items_contorno();
-    //}
+    return true;
 }
 
 /**
@@ -150,8 +200,10 @@ function mandar_codigo2(item_id) {
     }
 
     numero_linea = 1;
-    agregar_la_linea();
-    mostrar_mensaje_item_agregado()
+    if( agregar_la_linea() )
+    {
+        mostrar_mensaje_item_agregado()
+    }
 }
 
 /**
@@ -216,9 +268,14 @@ function mandar_codigo4(item_id) {
     }
     
     numero_linea = 1;
-    agregar_la_linea();
-    $("#quantity").val("");
-    mostrar_mensaje_item_agregado()
+    
+    if( agregar_la_linea() )
+    {
+        $("#quantity").val("");
+        mostrar_mensaje_item_agregado();
+    }
+
+    
 }
 
 /**

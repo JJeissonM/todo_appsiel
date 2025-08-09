@@ -1150,6 +1150,29 @@ class InventarioController extends TransaccionController
 
         return $producto;
     }
+    
+    /**
+     * Obtener el stock de un item en una bodega específica.
+     * Este método es llamado por AJAX
+     */
+    public function get_item_stock( $item_id, $bodega_id, $fecha)
+    {
+        $existencia_actual = 0;
+
+        if ( $bodega_id == 0 ) 
+        {
+            $bodegas = InvBodega::where('estado', 'Activo')
+                                ->get();
+            foreach ($bodegas as $bodega)
+            {
+                $existencia_actual += InvMovimiento::get_existencia_actual($item_id, $bodega->id, $fecha);
+            }
+
+            return $existencia_actual;
+        }
+
+        return InvMovimiento::get_existencia_actual($item_id, $bodega_id, $fecha);
+    }
 
     // AL cambiar la selección de un producto en el formulario de ingreso_productos_2.blade.php
     public function post_ajax(Request $request)
