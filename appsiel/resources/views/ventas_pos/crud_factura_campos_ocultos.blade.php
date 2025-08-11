@@ -136,5 +136,8 @@ value="{{ config('ventas_pos.acumular_facturas_en_tiempo_real') }}">
 <input type="hidden" name="permitir_inventarios_negativos" id="permitir_inventarios_negativos"
 value="{{ config('ventas.permitir_inventarios_negativos') }}">
 
+<input type="hidden" name="mostrar_saldo_pendiente_cxc_al_imprimir" id="mostrar_saldo_pendiente_cxc_al_imprimir"
+value="{{ config('ventas_pos.mostrar_saldo_pendiente_cxc_al_imprimir') }}">
+
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>

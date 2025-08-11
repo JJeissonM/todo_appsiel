@@ -12,44 +12,51 @@ function agregar_la_linea_ini() {
     $("#inv_producto_id").focus();
 }
 
-/**
- * 
- * @returns boolean
- */
-
-var hay_stock = true;
-
-function agregar_la_linea() 
+class StockService
 {
+    constructor() {
+        this.hay_stock = true;
+        this.cantidades_ya_ingresadas = 0;
+        this.lbl_stock_amount = '';
+    }
 
-    if( $('#acumular_facturas_en_tiempo_real').val() == '1' )
+    verificarExistencia(inv_producto_id, bodega_id, cantidad, fecha, cantidad_restar)
     {
-        if( $('#permitir_inventarios_negativos').val() == '0' )
-        {
-            // Verificar que haya existencia en la bodega seleccionada
-            var url = url_raiz + "/" + "inv_get_item_stock" + "/" + inv_producto_id + "/" + $('#inv_bodega_id').val() + "/" + $('#fecha').val();
+        this.hay_stock = true;
+        //this.lbl_stock_amount = '';
 
-             $.ajax({
+        if( $('#acumular_facturas_en_tiempo_real').val() == '1' )
+        {
+            if( $('#permitir_inventarios_negativos').val() == '0' )
+            {
+                this.cantidades_ya_ingresadas = get_cantidades_ya_ingresadas(inv_producto_id) - cantidad_restar;
+
+                var url = url_raiz + "/" + "inv_get_item_stock" + "/" + inv_producto_id + "/" + bodega_id + "/" + fecha;
+
+                $.ajax({
                     url: url,
                     type: 'GET',
                     async: false,
                     cache: false,
-                    success: function ( actual_quantity ) {                
-                        hay_stock = true;
-                        var difference = parseFloat( actual_quantity ) - cantidad;
+                    success: (actual_quantity) => {
+                        var new_stock = parseFloat(actual_quantity) - this.cantidades_ya_ingresadas;
+                        var difference = new_stock - cantidad;
 
-                        if ( difference.toFixed(0) < 0)
-                        {
-                            hay_stock = false;
+                        //this.lbl_stock_amount = '<div style="color: green; font-weight:bold; font-size: 0.8em; clear:both;">Saldo: ' + difference.toFixed(2) + '</div>';
+
+                        if (difference < 0) {
+                            this.hay_stock = false;
+                            
+                            var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
+
                             Swal.fire({
                                 icon: "error",
                                 title: "Alerta!",
-                                text: "La cantidad ingresada (" + cantidad + ") supera la existencia actual: " + actual_quantity,
+                                text: "La cantidad ingresada (" + cantidad + ") para el ítem " + producto.descripcion + " - " + producto.unidad_medida2 + " supera la existencia actual: " + new_stock.toFixed(3).replace(".", ","),
                             });
                         }
                     },
-                    error: function (xhr, status, error) {
-                        
+                    error: () => {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
@@ -57,17 +64,27 @@ function agregar_la_linea()
                         });
                         return false;
                     }
-            });
+                });
+            }
         }
 
     }
+}
 
-    if ( !hay_stock )
+/**
+ * 
+ * @returns boolean
+ */
+function agregar_la_linea() 
+{
+    var stock_service = new StockService();    
+
+    stock_service.verificarExistencia( inv_producto_id, $('#inv_bodega_id').val(), cantidad, $('#fecha').val(), 0 );
+
+    if ( !stock_service.hay_stock )
     {
         return false;
     }
-
-    console.log("agregar_la_linea sin problema");
 
     if ( !validar_venta_menor_costo() )
     {
@@ -125,6 +142,14 @@ function agregar_la_linea()
     numero_linea++;
     $("#efectivo_recibido").removeAttr("readonly");
     $("#efectivo_recibido").css("background-color", "white");
+
+    /*
+    Inactived code.
+    if ( stock_service.lbl_stock_amount != '' )
+    {
+        $(".linea_registro:last").find("td").eq(13).append( stock_service.lbl_stock_amount );        
+    }
+    */
 
     return true;
 }
@@ -289,4 +314,20 @@ function mostrar_mensaje_item_agregado()
     $("#popup_alerta").css("opacity", "revert");
     $("#popup_alerta").text("Producto agregado.");
     $("#popup_alerta").show(200);
+}
+
+function get_cantidades_ya_ingresadas( item_id )
+{
+    var cantidades_ya_ingresadas = 0;
+    // Recorremos las filas de la tabla para sumar las cantidades ya ingresadas del mismo producto
+    $(".linea_registro").each(function () {
+        
+        if ( $(this).find('.inv_producto_id').text() == item_id)
+        {
+            cantidades_ya_ingresadas += parseFloat( $(this).find('.cantidad').text() );
+        }
+    });
+
+    //console.log("Cantidades ya ingresadas para el item " + item_id + ": " + cantidades_ya_ingresadas);
+    return cantidades_ya_ingresadas;
 }

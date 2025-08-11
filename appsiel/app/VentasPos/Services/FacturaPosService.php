@@ -167,7 +167,8 @@ class FacturaPosService
             'lbl_valor_total_bolsas' => 0,
             'lbl_creado_por_fecha_y_hora' => '',
             'lineas_registros' => '',
-            'lineas_impuesto' => ''
+            'lineas_impuesto' => '',
+            'saldo_pendiente_cxc' => 0
         ];
 
         $cliente = $pdv->cliente;

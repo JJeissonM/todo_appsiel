@@ -167,6 +167,14 @@
         @include('ventas_pos.formatos_impresion.plantilla_factura_default_tabla_totales')
     @endif
 
+    @if( (int)config('ventas_pos.mostrar_saldo_pendiente_cxc_al_imprimir') )        
+        <div style="text-align: left; width: 100%; font-weight: bold; font-size: 12px; padding-top: 4px; padding-bottom: 4px; background: #ddd;">
+            Saldo Cartera:
+            <span id="lbl_saldo_pendiente_cxc" style="font-weight: bold;">${{ number_format( $datos_factura->saldo_pendiente_cxc,0,',','.') }}</span>
+        </div>
+        <br>
+    @endif
+
     @include('ventas_pos.formatos_impresion.tabla_medios_pago')
     
     @if(isset($medios_pago))

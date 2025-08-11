@@ -298,6 +298,28 @@
 				</div>
 
 				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$mostrar_saldo_pendiente_cxc_al_imprimir = 0;
+								if( isset($parametros['mostrar_saldo_pendiente_cxc_al_imprimir'] ) )
+								{
+									$mostrar_saldo_pendiente_cxc_al_imprimir = $parametros['mostrar_saldo_pendiente_cxc_al_imprimir'];
+								}
+							?>
+							{{ Form::bsSelect('mostrar_saldo_pendiente_cxc_al_imprimir', $mostrar_saldo_pendiente_cxc_al_imprimir, 'Mostrar saldo pendiente de CxC al imprimir factura', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">

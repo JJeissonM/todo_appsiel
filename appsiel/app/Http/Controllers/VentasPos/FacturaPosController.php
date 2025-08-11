@@ -58,6 +58,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Contabilidad\ContabMovimiento;
 use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoCuentaBancaria;
+use App\Ventas\Services\CxCServices;
 use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
 use App\VentasPos\Services\CrudService;
@@ -360,7 +361,8 @@ class FacturaPosController extends TransaccionController
             'cliente_info' => array_merge( $doc_encabezado->cliente->tercero->toArray(), [
                 'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente->tercero->tipo_doc_identidad->abreviatura,
                 'descripcion_ciudad' => $doc_encabezado->cliente->tercero->ciudad->descripcion,
-            ])
+            ]),
+            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $doc_encabezado->fecha)
         ];        
     }
 
