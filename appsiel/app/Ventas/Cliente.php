@@ -202,6 +202,8 @@ class Cliente extends Model
             $aux['telefono1'] = $opcion->tercero->telefono1;
             $aux['numero_identificacion'] = $opcion->tercero->numero_identificacion;
             $aux['email'] = $opcion->tercero->email;
+            $aux['dias_plazo'] = $opcion->condicion_pago->dias_plazo;
+            
             //$aux[''] = $opcion->tercero->razon_social;           
 
             $vec[] = $aux;

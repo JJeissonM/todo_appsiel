@@ -46,7 +46,8 @@ function set_cliente_default()
  * @param {*} item_sugerencia
  * @returns boolean
  */
-function seleccionar_cliente( item_sugerencia) {
+function seleccionar_cliente( item_sugerencia )
+{
   if (
     $("#lista_precios_id").val() !=
     item_sugerencia.attr("data-lista_precios_id") &&
@@ -59,6 +60,8 @@ function seleccionar_cliente( item_sugerencia) {
     });
     return false;
   }
+
+  console.log(item_sugerencia, item_sugerencia.attr("data-dias_plazo"));
 
   // Asignar descripción al TextInput
   $("#cliente_input").val( item_sugerencia.html());
@@ -185,26 +188,26 @@ function consultar_clientes(query) {
 function draw_suggestion_list(lista_clientes) {
   var html = '<div class="list-group">';
   var es_el_primero = true;
-  var ultimo_item = 0;
+  var ultimo_cliente = 0;
   cantidad_clientes_local = 1;
   var cantidad_datos = clientes.length;
 
-  $.each(lista_clientes, function (key, item) {
-    var primer_item = 0;
+  $.each(lista_clientes, function (key, cliente) {
+    var primer_cliente = 0;
     var clase = "";
     if (es_el_primero) {
       clase = "active";
       es_el_primero = false;
-      primer_item = 1;
+      primer_cliente = 1;
     }
 
     if (cantidad_clientes_local == cantidad_datos) {
-      ultimo_item = 1;
+      ultimo_cliente = 1;
     }
 
-    //var label = item.referencia + " " + item.descripcion + " (" + item.id + ")";
+    //var label = cliente.referencia + " " + cliente.descripcion + " (" + cliente.id + ")";
 
-    html += get_linea_item_sugerencia(item, clase, primer_item, ultimo_item);
+    html += get_linea_item_sugerencia(cliente, clase, primer_cliente, ultimo_cliente);
 
     cantidad_clientes_local++;
   });

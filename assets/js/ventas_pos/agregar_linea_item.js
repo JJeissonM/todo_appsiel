@@ -51,15 +51,15 @@ class StockService
 
                             Swal.fire({
                                 icon: "error",
-                                title: "Alerta!",
-                                text: "La cantidad ingresada (" + cantidad + ") para el ítem " + producto.descripcion + " - " + producto.unidad_medida2 + " supera la existencia actual: " + new_stock.toFixed(3).replace(".", ","),
+                                title: "La cantidad de " + cantidad + " para " + producto.descripcion + " - " + producto.unidad_medida2 + " supera el stock actual de " + new_stock,
+                                text: "",
                             });
                         }
                     },
                     error: () => {
                         Swal.fire({
                             icon: "error",
-                            title: "Error",
+                            title: "Error de conexión",
                             text: "No se pudo verificar la existencia del producto. Intente nuevamente.",
                         });
                         return false;
