@@ -52,7 +52,7 @@ class InventoriesServices
         	$obj_aux = (object)[ 
                         'referencia' => $linea->referencia,
                         'item_id' => $linea->item_id,
-						'descripcion' => $item->descripcion,
+						'descripcion' => $item->get_value_to_show(true),
 						'existencia' => $linea->existencia,
 						'cantidad_facturada' => $linea->cantidad_a_disminuir,
 						'nuevo_saldo' => $linea->nuevo_saldo

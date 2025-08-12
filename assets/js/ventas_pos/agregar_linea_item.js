@@ -23,7 +23,14 @@ class StockService
     verificarExistencia(inv_producto_id, bodega_id, cantidad, fecha, cantidad_restar)
     {
         this.hay_stock = true;
-        //this.lbl_stock_amount = '';
+        //this.lbl_stock_amount = '';        
+                            
+        var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
+
+        if(producto.tipo === 'servicio')
+        {
+            return true; // No se verifica stock para servicios
+        }
 
         if( $('#acumular_facturas_en_tiempo_real').val() == '1' )
         {

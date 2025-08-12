@@ -1321,11 +1321,8 @@ $(document).ready(function () {
 
     $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
 
-    console.log($('#mostrar_saldo_pendiente_cxc_al_imprimir').val(),doc_encabezado.saldo_pendiente_cxc, $('#lbl_saldo_pendiente_cxc').text());
     if( $('#mostrar_saldo_pendiente_cxc_al_imprimir').val() == 1 )
     {
-      console.log($('#lbl_saldo_pendiente_cxc').text(),doc_encabezado.saldo_pendiente_cxc,doc_encabezado.saldo_pendiente_cxc.toFixed(0));
-
       $('#lbl_saldo_pendiente_cxc').text( new Intl.NumberFormat("de-DE").format(  doc_encabezado.saldo_pendiente_cxc.toFixed(0) ) );
     }
     

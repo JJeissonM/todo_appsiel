@@ -467,7 +467,6 @@ function calcular_precio_total() {
 		$("#precio_total").val(precio_total);
 		return '';
 	} else {
-		console.log('entra')
 		precio_total = 0;
 		return 'Error en Precio total';
 	}
@@ -675,7 +674,8 @@ function consultar_existencia(bodega_id, producto_id)
 					
 					var mov = $('#inv_motivo_id').val().split('-');
 					
-					if ( mov[1] != 'entrada' && respuesta.tipo != 'servicio' ) 
+					// core_tipo_transaccion_id = 42 (Pedido de ventas)
+					if ( mov[1] != 'entrada' && respuesta.tipo != 'servicio' && $('#core_tipo_transaccion_id').val() != 42 ) 
 					{	
 						$('#inv_producto_id').select();
 						return false;
@@ -832,7 +832,7 @@ $(document).ready(function(){
 
 		    	var url = '../vtas_consultar_clientes';
 
-				var url_id = $('#url_id').val(); console.log(url_id);
+				var url_id = $('#url_id').val();
 
 				$.get( url, { 
 					texto_busqueda: $(this).val(),
@@ -962,6 +962,7 @@ $(document).ready(function(){
 					reset_linea_ingreso_default();
 				}else{
 					seleccionar_producto( item );
+
                 	consultar_existencia( $('#inv_bodega_id').val(), item.attr('data-producto_id') );
                 	return false;
 				}
