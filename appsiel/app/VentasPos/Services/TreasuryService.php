@@ -93,14 +93,21 @@ class TreasuryService
 
                 $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
 
+                $recaudos_cxc_motivo_id = explode("-", $linea->teso_motivo_id)[0];
+
+                if( (int)config('tesoreria.recaudos_cxc_motivo_id') != 0 )
+                {
+                    $recaudos_cxc_motivo_id = (int)config('tesoreria.recaudos_cxc_motivo_id');
+                }
+
                 if ( $teso_caja_id == 0 )
                 {
                     // Si la caja es 0, es una linea de registro por transferencia o consignación
-                    $lineas_registros_transferencia_consignacion .= '{"tipo_operacion_id_transferencia_consignacion":"' . config('tesoreria.tipo_operacion_recaudos_cxc') . '","teso_motivo_id_transferencia_consignacion":"' . explode("-", $linea->teso_motivo_id)[0] . '","banco_id_transferencia_consignacion":"' . explode("-", $linea->teso_cuenta_bancaria_id)[0] . '","valor_transferencia_consignacion":"' . (float)substr($linea->valor, 1) . '","Operación":"--","Motivo":"--","numero_comprobante_transferencia_consignacion":"","Caja":"--","Valor":"00"},';
+                    $lineas_registros_transferencia_consignacion .= '{"tipo_operacion_id_transferencia_consignacion":"' . config('tesoreria.tipo_operacion_recaudos_cxc') . '","teso_motivo_id_transferencia_consignacion":"' . $recaudos_cxc_motivo_id . '","banco_id_transferencia_consignacion":"' . explode("-", $linea->teso_cuenta_bancaria_id)[0] . '","valor_transferencia_consignacion":"' . (float)substr($linea->valor, 1) . '","Operación":"--","Motivo":"--","numero_comprobante_transferencia_consignacion":"","Caja":"--","Valor":"00"},';
 
                 }else{
 
-                    $lineas_registros_efectivo .= '{"tipo_operacion_id_efectivo":"' . config('tesoreria.tipo_operacion_recaudos_cxc') . '","teso_motivo_id_efectivo":"' . explode("-", $linea->teso_motivo_id)[0] . '","caja_id_efectivo":"' . explode("-", $linea->teso_caja_id)[0] . '","valor_efectivo":"' . (float)substr($linea->valor, 1) . '","Operación":"--","Motivo":"--","Caja":"--","Valor":"00"},';
+                    $lineas_registros_efectivo .= '{"tipo_operacion_id_efectivo":"' . config('tesoreria.tipo_operacion_recaudos_cxc') . '","teso_motivo_id_efectivo":"' . $recaudos_cxc_motivo_id . '","caja_id_efectivo":"' . explode("-", $linea->teso_caja_id)[0] . '","valor_efectivo":"' . (float)substr($linea->valor, 1) . '","Operación":"--","Motivo":"--","Caja":"--","Valor":"00"},';
                 }
                 
                 $valor_abono += (float)substr($linea->valor, 1);

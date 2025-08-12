@@ -324,6 +324,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$recaudos_cxc_motivo_id = 0;
+								if( isset($parametros['recaudos_cxc_motivo_id'] ) )
+								{
+									$recaudos_cxc_motivo_id = $parametros['recaudos_cxc_motivo_id'];
+								}
+							?>
+							{{ Form::bsSelect('recaudos_cxc_motivo_id', $recaudos_cxc_motivo_id, 'Motivo para Recaudos de CxC', App\Tesoreria\TesoMotivo::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros reporte cartera Estudiantes  </h4>
 				<hr>
 				<div class="row">
