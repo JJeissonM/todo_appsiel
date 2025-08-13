@@ -1031,12 +1031,19 @@ class InventarioController extends TransaccionController
         
         // Linea crear nuevo registro
         $modelo_id = 22; // Items
+        $app_id = Input::get('url_id');
+        if ((int)config('inventarios.modelo_id_default_creacion_items') > 0)
+        {
+            $modelo_id = (int)config('inventarios.modelo_id_default_creacion_items');
 
-        if (Aplicacion::find(8)->estado == 'Inactivo') { // 8 = Aplicacion Inventarios
-            $modelo_id = 220; // Servicios
+            // 315 = Prendas
+            if ( $modelo_id == 315 )
+            {
+                $app_id = 8; // Inventarios
+            }
         }
 
-        $href =  url( 'web/create?id=' . Input::get('url_id') . '&id_modelo=' . $modelo_id . '&id_transaccion' );
+        $href =  url( 'web/create?id=' . $app_id . '&id_modelo=' . $modelo_id . '&id_transaccion' );
         $html .= '<a href="'. $href . '" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
 
         $html .= '</div>';
@@ -1110,6 +1117,11 @@ class InventarioController extends TransaccionController
 
         // Linea crear nuevo registro
         $modelo_id = 22; // Items
+        if ((int)config('inventarios.modelo_id_default_creacion_items') > 0)
+        {
+            $modelo_id = (int)config('inventarios.modelo_id_default_creacion_items');
+        }
+
         $href =  url( 'web/create?id=8&id_modelo=' . $modelo_id . '&id_transaccion' );
         $html .= '<a href="'. $href . '" target="_blank" class="list-group-item list-group-item-sugerencia list-group-item-warning" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo registro </a>';
 

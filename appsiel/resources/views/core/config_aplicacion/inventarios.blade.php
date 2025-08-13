@@ -138,6 +138,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$modelo_id_default_creacion_items = 22;
+								if( isset($parametros['modelo_id_default_creacion_items'] ) )
+								{
+									$modelo_id_default_creacion_items = $parametros['modelo_id_default_creacion_items'];
+								}
+							?>
+							{{ Form::bsSelect('modelo_id_default_creacion_items', $modelo_id_default_creacion_items, 'Catálogo por defecto para la creación de ítems', [ 22 => 'Ítems', 315 => 'Prendas', 220 => 'Servicios' ], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros para costeo de productos  </h4>
 				<hr>
 				<div class="row">
