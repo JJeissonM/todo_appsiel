@@ -3572,7 +3572,7 @@ Se debe ingreas una dupla separada por coma: url,etiqueta.',
     221 => 
     array (
       'id' => 226,
-      'descripcion' => 'Cta. Anticipo Default',
+      'descripcion' => 'Cta. Anticipo/Saldo a favor Default',
       'tipo' => 'select',
       'name' => 'contab_anticipo_cta_id',
       'opciones' => 'model_App\\Contabilidad\\ContabCuenta',

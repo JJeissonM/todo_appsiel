@@ -50,7 +50,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td colspan="3">Pendiente x aplicar (Anticipo)</td>
+            <td colspan="3">Pendiente x aplicar (Anticipo/Saldo a favor)</td>
             <td>{{ Form::text( 'pendiente_aplicar', null, [ 'id' => 'pendiente_aplicar', 'disabled' => 'disabled' ] ) }} <button class="btn btn-success btn-xs btn_agregar_documento"><i class="fa fa-check"></i></button></td>
         </tr>                       
     </tfoot>

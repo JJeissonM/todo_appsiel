@@ -12,7 +12,7 @@ class ClaseCliente extends Model
 	
     protected $fillable = ['descripcion', 'cta_x_cobrar_id', 'cta_anticipo_id', 'clase_padre_id', 'estado'];
  
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tercero', 'Cta x cobrar default', 'Cta anticipo default', 'Clase padre', 'Estado'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tercero', 'Cta x cobrar default', 'Cta Anticipo/Saldo a favor default', 'Clase padre', 'Estado'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
 

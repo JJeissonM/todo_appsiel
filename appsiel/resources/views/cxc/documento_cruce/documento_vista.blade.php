@@ -1,6 +1,6 @@
 <div style="text-align: center; font-weight: bold; width: 100%; border: solid 1px #ddd;"> Detalle de documentos cruzados </div>
 <table class="table table-bordered table-striped">
-    {{ Form::bsTableHeader(['Documentos Cartera','Documentos Recaudo/Anticipos','Valor cruzado']) }}
+    {{ Form::bsTableHeader(['Documentos Cartera','Doc. Recaudo/Anticipos/Saldo a favor','Valor cruzado']) }}
     <tbody>
         <?php        
             $total_valor = 0;

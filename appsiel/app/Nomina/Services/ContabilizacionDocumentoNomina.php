@@ -311,10 +311,10 @@ class ContabilizacionDocumentoNomina
 				$tipo_causacion = 'Crear CxC';
 				break;
 			case 'anticipo_cxp':
-				$tipo_causacion = 'Anticipo CxP';
+				$tipo_causacion = 'Anticipo/Saldo a favor CxP';
 				break;
 			case 'anticipo_cxc':
-				$tipo_causacion = 'Anticipo CxC';
+				$tipo_causacion = 'Anticipo/Saldo a favor CxC';
 				break;
 			
 			default:
@@ -501,7 +501,7 @@ class ContabilizacionDocumentoNomina
             return 'Documento NO puede ser retirado. Algunos registros tienen abonos de CxC.';
         }
 
-		// Se retira moiiento de cartera y anticipos
+		// Se retira movimiento de cartera y anticipos
         CxcMovimiento::where( $array_wheres2 )->delete();
 
         // VALIDACION DE ABONOS DE CXP
@@ -517,7 +517,7 @@ class ContabilizacionDocumentoNomina
             return 'Documento NO puede ser retirado. Algunos registros tienen abonos de CxP.';
         }
 
-        // Se retira moiiento de cartera y anticipos
+        // Se retira movimiento de cartera y anticipos
         CxpMovimiento::where( $array_wheres2 )->delete();
 
         // RETIRO DEL MOVIMIENTO CONTABLE

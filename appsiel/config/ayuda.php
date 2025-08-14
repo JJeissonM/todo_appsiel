@@ -301,7 +301,7 @@ return array(
                 'app' => 'ventas',
                 'urls' => array(
                     '0' => array(
-                        'label' => 'Manejo de Anticipo Clientes',
+                        'label' => 'Manejo de Anticipo/Saldo a favor Clientes',
                         'preview' => 'https://appsiel.com/Ayudas/Videos/Ventas/manejo_de_anticipo_clientes.jpg',
                         'url' => 'https://appsiel.com/Ayudas/Videos/Ventas/manejo_de_anticipo_clientes.mp4',
                         'duracion' => '6:02',

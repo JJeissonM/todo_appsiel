@@ -59,6 +59,6 @@
     <div class="col-md-12">
         <b>Valor a aplicar:</b><span id="label_anticipo_aplicar" class="text-right"> $ 0 </span>
 		<input type="hidden" name="valor_anticipo_aplicar" id="valor_anticipo_aplicar" value="0">
-        <button class="btn btn-success btn-sm" id="btn_aplicar_anticipo"> <i class="fa fa-check"></i> Aplicar anticipo </button>
+        <button class="btn btn-success btn-sm" id="btn_aplicar_anticipo"> <i class="fa fa-check"></i> Aplicar anticipo/Saldo a favor </button>
     </div>
 </div>

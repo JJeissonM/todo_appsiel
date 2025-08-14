@@ -117,7 +117,7 @@
 									$cta_anticipo_clientes_default = $parametros['cta_anticipo_clientes_default'];
 								}
 							?>
-							{{ Form::bsSelect('cta_anticipo_clientes_default', $cta_anticipo_clientes_default, 'Cta. Anticipo clientes', $array_cuentas, ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_anticipo_clientes_default', $cta_anticipo_clientes_default, 'Cta. Anticipo/Saldo a favor clientes', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 
@@ -147,7 +147,7 @@
 									$cta_anticipo_proveedores_default = $parametros['cta_anticipo_proveedores_default'];
 								}
 							?>
-							{{ Form::bsSelect('cta_anticipo_proveedores_default', $cta_anticipo_proveedores_default, 'Cta. Anticipo proveedores', $array_cuentas, ['class'=>'combobox']) }}
+							{{ Form::bsSelect('cta_anticipo_proveedores_default', $cta_anticipo_proveedores_default, 'Cta. Anticipo/Saldo a favor proveedores', $array_cuentas, ['class'=>'combobox']) }}
 						</div>
 					</div>
 

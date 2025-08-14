@@ -450,7 +450,7 @@ class RecaudoController extends TransaccionController
                                    '.$encabezado_doc->documento.'
                                 </td>
                                 <td>
-                                   Anticipo
+                                   Anticipo/Saldo a favor
                                 </td>
                                 <td>
                                    $'.number_format(($total_recaudo - $total_pagado), 0, ',', '.').'
@@ -503,7 +503,7 @@ class RecaudoController extends TransaccionController
 
             $tabla2.='<tr>
                             <td>
-                               Anticipo '.$fila->detalle_operacion.'
+                               Anticipo/Saldo a favor '.$fila->detalle_operacion.'
                             </td>
                             <td>
                                $'.number_format($valor, 0, ',', '.').'

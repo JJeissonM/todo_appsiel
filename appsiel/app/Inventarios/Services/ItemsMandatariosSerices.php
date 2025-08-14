@@ -31,8 +31,9 @@ class ItemsMandatariosSerices
         if ( $registro->tipo_material != null ) {
             $reference .= $registro->tipo_material->codigo;
         }
-        
-        $reference .= '-' . $registro->id;
+
+        // Adding the ID to the reference is commented out, as it may not be needed.
+        //$reference .= '-' . $registro->id;
         
         return $reference;
     }

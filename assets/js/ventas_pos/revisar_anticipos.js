@@ -6,7 +6,7 @@ $(document).ready(function () {
       Swal.fire({
                     icon: 'error',
                     title: 'Alerta!',
-                    text: 'Ya hay Anticipos agregados como Medio de pago. Debe retirar los anticipos antes de agregar más.',
+                    text: 'Ya hay Anticipos/Saldos a favor agregados como Medio de pago. Debe retirar los anticipos/Saldos a favor antes de agregar más.',
                 });
       return false;
     }
@@ -18,7 +18,7 @@ $(document).ready(function () {
     $("#myModal2").modal({ backdrop: "static" });
 
     $("#myModal2 .modal-title").text(
-      "Anticipos del cliente " + $("#cliente_input").val()
+      "Anticipos/Saldos a favor del cliente " + $("#cliente_input").val()
     );
 
     $("#myModal2 .btn_edit_modal").hide();
@@ -111,7 +111,7 @@ $(document).ready(function () {
       celda_valor_total = '<td class="valor_total">$' + $("#valor_anticipo_aplicar").val() + '</td>';
 
       $('#ingreso_registros_medios_recaudo').find('tbody:last').append('<tr>'+
-            '<td><span style="color:white;">0-</span><span>Anticipo</span></td>'+
+            '<td><span style="color:white;">0-</span><span>Anticipo/Saldo a favor</span></td>'+
             '<td><span style="color:white;">' + $("#teso_motivo_default_id").val() + '-</span><span>Ventas de contado</span></td>'+ '<td><span style="color:white;">0-</span><span></span></td>' + '<td><span style="color:white;">0-</span><span></span></td>' + celda_valor_total + '<td>' + btn_borrar + '</td>' + '</tr>');
 
         // Se calculan los totales para la última fila

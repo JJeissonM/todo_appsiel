@@ -316,7 +316,7 @@
 									$tipo_operacion_recaudos_cxc = $parametros['tipo_operacion_recaudos_cxc'];
 								}
 
-								$arr_tipo_operacion_recaudos_cxc = json_decode( '{"":"","recaudo-cartera":"Recaudo cartera clientes","anticipo-clientes":"Anticipo clientes","otros-recaudos":"Otros recaudos","prestamo-recibido":"Préstamo financiero (CxP)","pago-proveedores":"Pago a proveedores","anticipo-proveedor":"Anticipo proveedor","otros-pagos":"Otros pagos","prestamo-entregado":"Préstamo financiero (Cartera CxC)","traslado-efectivo":"Traslado"}', true );
+								$arr_tipo_operacion_recaudos_cxc = json_decode( '{"":"","recaudo-cartera":"Recaudo cartera clientes","anticipo-clientes":"Anticipo/Saldo a favor clientes","otros-recaudos":"Otros recaudos","prestamo-recibido":"Préstamo financiero (CxP)","pago-proveedores":"Pago a proveedores","anticipo-proveedor":"Anticipo/Saldo a favor proveedor","otros-pagos":"Otros pagos","prestamo-entregado":"Préstamo financiero (Cartera CxC)","traslado-efectivo":"Traslado"}', true );
 							?>
 							{{ Form::bsSelect('tipo_operacion_recaudos_cxc', $tipo_operacion_recaudos_cxc, 'Tipo de Operación para Recaudos de CxC', $arr_tipo_operacion_recaudos_cxc, ['class'=>'form-control', 'required'=>'required']) }}
 						</div>

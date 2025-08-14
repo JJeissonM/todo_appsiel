@@ -14,7 +14,7 @@
         &nbsp; &nbsp; &nbsp;
 
         <button class="btn btn-success btn-xs" id="btn_revisar_anticipos">
-            <i class="fa fa-money"></i> Revisar anticipos
+            <i class="fa fa-money"></i> Revisar anticipos/Saldos a favor
         </button>
         
         &nbsp; &nbsp; &nbsp;

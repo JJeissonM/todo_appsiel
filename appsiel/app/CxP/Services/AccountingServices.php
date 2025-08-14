@@ -67,7 +67,7 @@ class AccountingServices
             $cta_cr = (int)$parametros_config['cta_ingresos_default'] . ' - Cuenta INGRESOS';
             
             $tipo_causacion_db = 'crear_anticipo_cxp';
-            $cta_db = (int)$parametros_config['cta_anticipo_proveedores_default'] . ' - Cuenta ANTICIPO PROVEEDORES';
+            $cta_db = (int)$parametros_config['cta_anticipo_proveedores_default'] . ' - Cuenta ANTICIPO/SALDO A FAVOR PROVEEDORES';
         }else{
             // Se le anticipó de más al proveedor (o la factura dio menos)
             $tipo_causacion_cr = 'crear_cxp';

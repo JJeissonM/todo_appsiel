@@ -64,7 +64,7 @@ class AccountingServices
         {
             // El cliente paga menos
             $cta_db = (int)$parametros_config['cta_gastos_default'] . '- Cuenta GASTO';
-            $cta_cr = (int)$parametros_config['cta_anticipo_clientes_default'] . '- Cuenta ANTICIPO CLIENTES';
+            $cta_cr = (int)$parametros_config['cta_anticipo_clientes_default'] . '- Cuenta ANTICIPO/SALDO A FAVOR CLIENTES';
             $tipo_causacion_db = 'causacion';
             $tipo_causacion_cr = 'crear_anticipo_cxc';
         }else{
