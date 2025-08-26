@@ -30,15 +30,15 @@
 
         <td align="center">
             <br/>
-            <b style="font-size: {{$tam_letra+1}}mm;">{{ $colegio->descripcion }}</b>
+            <b style="font-size: {{$tam_letra+1}}mm;">{!! $colegio->descripcion !!}</b>
             <br/>
             Resoluciones: {!! $colegio->resolucion !!}
             @if(config('matriculas.codigo_dane') != '')
                 <br/>
-                Código DANE: {{ config('matriculas.codigo_dane') }}
+                Código DANE: {!! config('matriculas.codigo_dane') !!}
             @endif
             <br/>
-            NIT: {{ $colegio->empresa->numero_identificacion . '-' .$colegio->empresa->digito_verificacion }}
+            NIT: {!! $colegio->empresa->numero_identificacion . '-' .$colegio->empresa->digito_verificacion !!}
         </td>
 
         <td width="20%">

@@ -25,12 +25,12 @@
 
         <td align="center">
             <br/>
-            <b style="font-size: {{$tam_letra+1}}mm;">{{ $colegio->descripcion }}</b>
+            <b style="font-size: {{$tam_letra+1}}mm;">{!! $colegio->descripcion !!}</b>
             <br/>
-            <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->ciudad }}</b>
+            <b style="font-size: {{$tam_letra}}mm;">{!! $colegio->ciudad !!}</b>
             <br/>
-            Resolución No. {{ $colegio->resolucion }}<br/>
-            {{ $colegio->direccion }},Teléfono: {{ $colegio->telefonos }}
+            Resolución No. {!! $colegio->resolucion !!}<br/>
+            {!! $colegio->direccion !!},Teléfono: {!! $colegio->telefonos !!}
         </td>
 
         <td width="15%">
