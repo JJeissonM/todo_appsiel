@@ -33,7 +33,7 @@
                 }
 
             ?>
-            <td style="padding: 4px;"> {{ $linea->item->get_value_to_show() }} ({{ $linea->item->get_unidad_medida1() }})</td>
+            <td style="padding: 4px;"> {{ $linea->item->get_value_to_show() }}</td>
             <td style="text-align: center;">
                 {{ number_format( $linea->cantidad, 2, ',', '.') }} 
                 <br>
@@ -53,7 +53,7 @@
 @else
     @foreach($doc_registros as $linea )
         <tr>
-            <td style="padding: 4px;"> {{ $linea->item->get_value_to_show() }} ( {{ $linea->item->get_unidad_medida1() }})</td>
+            <td style="padding: 4px;"> {{ $linea->item->get_value_to_show() }}</td>
             <td style="text-align: center;">
                 {{ number_format( $linea->cantidad, 2, ',', '.') }}
                 <br>
