@@ -23,12 +23,6 @@
     @foreach($doc_registros as $linea )
         <tr>
             <?php
-                $referencia = '';
-                if($linea->referencia != '')
-                {
-                    $referencia = ' - ' . $linea->referencia;
-                }
-
                 $tasa_impuesto = '';
                 $precio_unitario = '';
                 $precio_total = '';
@@ -39,14 +33,14 @@
                 }
 
             ?>
-            <td style="padding: 4px;"> {{ $linea->producto_descripcion . $referencia }} ({{ $linea->item->get_unidad_medida1() }})</td>
+            <td style="padding: 4px;"> {{ $linea->item->get_value_to_show() }} ({{ $linea->item->get_unidad_medida1() }})</td>
             <td style="text-align: center;">
                 {{ number_format( $linea->cantidad, 2, ',', '.') }} 
                 <br>
                 {{ $precio_unitario }}
             </td>
             <td style="text-align: center;"> {{ $tasa_impuesto }} </td>
-            <td class="text-right"> {{ $precio_total }} </td>
+            <td style="text-align: right;"> {{ $precio_total }} </td>
         </tr>
 
         @if( $linea->valor_total_descuento != 0 )
@@ -59,21 +53,14 @@
 @else
     @foreach($doc_registros as $linea )
         <tr>
-            <?php
-                $referencia = '';
-                if($linea->referencia != '')
-                {
-                    $referencia = ' - ' . $linea->referencia;
-                }
-            ?>
-            <td style="margin: 4px;"> {{ $linea->producto_descripcion . $referencia }} ( {{ $linea->item->get_unidad_medida1() }})</td>
+            <td style="padding: 4px;"> {{ $linea->item->get_value_to_show() }} ( {{ $linea->item->get_unidad_medida1() }})</td>
             <td style="text-align: center;">
                 {{ number_format( $linea->cantidad, 2, ',', '.') }}
                 <br>
                 (${{ number_format( $linea->precio_unitario, 0, ',', '.') }})
             </td>
             <td style="text-align: center;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.') }}% </td>
-            <td  style="text-align: right;"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+            <td style="text-align: right;"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
         </tr>
 
         @if( $linea->valor_total_descuento != 0 )

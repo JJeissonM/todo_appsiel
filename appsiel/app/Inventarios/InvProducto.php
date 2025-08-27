@@ -108,22 +108,28 @@ class InvProducto extends Model
         $referencia = '';
         if( (int)config('inventarios.mostrar_referencia_en_descripcion_items') && $this->referencia != '')
         {
-            $referencia = ' - ' . $this->referencia;
+            if($this->referencia != '')
+            {
+                $referencia = ' - ' . $this->referencia;
+            }
         }
         
         $codigo_proveedor = $this->get_codigo_proveedor();
 
-        $descripcion_item .= $talla . $referencia . $codigo_proveedor . ' (' . $this->get_unidad_medida1() . ')';
-
         $prefijo = $this->id . ' ';
 
-        if ( $ocultar_id ) {
+        if ( $ocultar_id )
+        {
             $prefijo = '';
         }
 
-        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia') {
+        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+        {
             $prefijo = $this->referencia . ' ';
+            $referencia = '';
         }
+
+        $descripcion_item .= $talla . $referencia . $codigo_proveedor . ' (' . $this->get_unidad_medida1() . ')';
 
         return $prefijo . $descripcion_item;
     }
