@@ -39,13 +39,13 @@
                 }
 
             ?>
-            <td> {{ $linea->producto_descripcion . $referencia }} ({{ $linea->item->get_unidad_medida1() }})</td>
-            <td class="text-center">
+            <td style="padding: 4px;"> {{ $linea->producto_descripcion . $referencia }} ({{ $linea->item->get_unidad_medida1() }})</td>
+            <td style="text-align: center;">
                 {{ number_format( $linea->cantidad, 2, ',', '.') }} 
                 <br>
                 {{ $precio_unitario }}
             </td>
-            <td class="text-center"> {{ $tasa_impuesto }} </td>
+            <td style="text-align: center;"> {{ $tasa_impuesto }} </td>
             <td class="text-right"> {{ $precio_total }} </td>
         </tr>
 
