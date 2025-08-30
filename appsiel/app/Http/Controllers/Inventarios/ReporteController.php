@@ -628,7 +628,7 @@ class ReporteController extends Controller
                     
                     $entradas = $movimientos_entradas_aux->where( 'item_id', $item->id )->pluck('cantidad_total_movimiento')->first();
                     
-                    $cantidad_etiquetas = 1;
+                    $cantidad_etiquetas = 0;
 
                     if ($entradas != null) {
                         $cantidad_etiquetas = $entradas;
