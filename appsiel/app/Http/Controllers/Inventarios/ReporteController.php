@@ -530,7 +530,17 @@ class ReporteController extends Controller
         $inv_producto_id = $request->inv_producto_id;
         $mostrar_descripcion = $request->mostrar_descripcion;
         $numero_columnas = $request->numero_columnas;
+
+        if ( $numero_columnas == null || $numero_columnas == '' ) {
+            $numero_columnas = 1;
+        }
+
         $estado = $request->estado;
+
+        if ( $estado == null || $estado == '' ) {
+            $estado = 'Activo';
+        }
+
         $etiqueta = $request->etiqueta;
         $items_a_mostrar = $request->items_a_mostrar;
         $cantidad_etiquetas_x_item = $request->cantidad_etiquetas_x_item;
@@ -538,8 +548,11 @@ class ReporteController extends Controller
         $ancho = $request->ancho;
         $alto = $request->alto;
         $tamanio_letra = $request->tamanio_letra;
+
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
                 
-        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id );
+        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta );
 
         $route = 'inventarios.reportes.etiquetas_codigos_barra';
         if ( $request->tam_hoja == 'pos_80mm' ) {
@@ -554,7 +567,7 @@ class ReporteController extends Controller
 
     }
 
-    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id)
+    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta)
     {
         $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id);        
 
@@ -571,6 +584,12 @@ class ReporteController extends Controller
         }
 
         $listado = collect([]);
+        if ($cantidad_etiquetas_x_item) {
+            $movimientos_entradas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, '', $fecha_desde, $fecha_hasta, 'entrada' );
+
+            $movimientos_entradas_aux = collect( $movimientos_entradas->toArray() );
+        }
+
         foreach ($items as $item) {
 
             switch ($cantidad_etiquetas_x_item) {
@@ -603,6 +622,18 @@ class ReporteController extends Controller
             
                 case 'cantidad_fija':
                     $cantidad_etiquetas = $cantidad_etiquetas_fijas;                    
+                    break;
+                
+                case 'entre_fechas':
+                    
+                    $entradas = $movimientos_entradas_aux->where( 'item_id', $item->id )->pluck('cantidad_total_movimiento')->first();
+                    
+                    $cantidad_etiquetas = 1;
+
+                    if ($entradas->first() != 0) {
+                        $cantidad_etiquetas = $entradas;
+                    }
+                    
                     break;
                             
                 default:
