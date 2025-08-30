@@ -630,7 +630,7 @@ class ReporteController extends Controller
                     
                     $cantidad_etiquetas = 1;
 
-                    if ($entradas->first() != 0) {
+                    if ($entradas != null) {
                         $cantidad_etiquetas = $entradas;
                     }
                     
