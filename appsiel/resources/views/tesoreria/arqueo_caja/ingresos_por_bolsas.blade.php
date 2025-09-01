@@ -8,7 +8,7 @@
 @if( $result->status == 'success')
     <div class="row">
         <div class="well">
-            <b>Ingresos por bolsas: </b> $ {{ number_format( $result->valor_total_bolsas, 0, ',','.') }} <br>
+            <b>Recargo bolsas (incluido en ventas): </b> $ {{ number_format( $result->valor_total_bolsas, 0, ',','.') }} <br>
         </div>
     </div>
     <br>
