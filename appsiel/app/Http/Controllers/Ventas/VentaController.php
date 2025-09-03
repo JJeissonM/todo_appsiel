@@ -711,7 +711,7 @@ class VentaController extends TransaccionController
         return redirect( 'ventas/'.$id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion );
     }
     
-    // Parámetro enviados por GET
+    // Parámetros enviados por GET
     public function consultar_clientes()
     {
         $campo_busqueda = Input::get('campo_busqueda');
@@ -803,7 +803,12 @@ class VentaController extends TransaccionController
             $modelo_id = 7; // Terceros
         }
 
-        $html .= '<a href="'.url('vtas_clientes/create?id=' . Input::get('url_id') . '&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        if ( Input::get('enlace_tipo_boton') == 'true' ) {
+            $html .= '<button href="'.url('vtas_clientes/create?id=' . Input::get('url_id') . '&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </button>';
+        }else{
+            $html .= '<a href="'.url('vtas_clientes/create?id=' . Input::get('url_id') . '&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+        }
+        
 
         $html .= '</div>';
 

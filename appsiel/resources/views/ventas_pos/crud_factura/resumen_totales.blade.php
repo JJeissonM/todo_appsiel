@@ -19,9 +19,6 @@
                 <label class="control-label col-sm-3 col-md-3" for="cliente_input">Cliente:</label>              
                 <div class="col-sm-9 col-md-9">
                     <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}">
-                    <!-- 
-                        <div id="clientes_suggestions"> </div>
-                    -->
                 </div>
             </td>
         </tr>

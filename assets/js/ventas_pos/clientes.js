@@ -61,8 +61,6 @@ function seleccionar_cliente( item_sugerencia )
     return false;
   }
 
-  console.log(item_sugerencia, item_sugerencia.attr("data-dias_plazo"));
-
   // Asignar descripción al TextInput
   $("#cliente_input").val( item_sugerencia.html());
   $("#cliente_input").css("background-color", "transparent");
@@ -217,7 +215,7 @@ function draw_suggestion_list(lista_clientes) {
   var app_id = 20; // App Ventas POS
 
   html +=
-    '<a href="' +
+    '<button href="' +
     url_raiz +
     "/vtas_clientes/create?id=" +
     app_id +
@@ -226,7 +224,7 @@ function draw_suggestion_list(lista_clientes) {
     "&id_transaccion" +
     '" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="' +
     modelo_id +
-    '" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
+    '" data-accion="crear_nuevo_registro" > + Crear nuevo </button>';
 
   html += "</div>";
 
@@ -292,6 +290,51 @@ function get_linea_item_sugerencia(cliente, clase, primer_item, ultimo_item) {
 
   return html;
 }
+
+  /**
+   * 
+   */
+  function validar_numero_identificacion()
+  {
+    var documento = parseInt( $("#numero_identificacion_aux").val() );
+
+    var direccion = location.href;
+
+		if (direccion.search("edit") == -1) {
+			url = '../core/validar_numero_identificacion/'; // crear
+		} else {
+			url = '../../core/validar_numero_identificacion/'; // editar
+		}
+
+    $.ajax({
+            url: url + documento,
+            data: data,
+            type: 'GET',
+            async: false,
+            success: function( datos ){
+                if (datos != '') {
+                  if ( parseInt(datos) == documento ) {
+                    $('#btn_save_cliente').hide();
+                    numero_identificacion_existe = true;
+                    alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");
+                    
+                  } else {
+                    // No hay problema
+                    numero_identificacion_existe = false;
+                    $('#btn_save_cliente').show();
+                  }
+
+                } else {
+                  // Número de identificación no existe
+                  numero_identificacion_existe = false;
+                  $('#btn_save_cliente').show();
+                }
+            },
+            error: function( xhr ){
+         
+            }
+    });
+  }
 
 // AL CARGAR EL DOCUMENTO
 $(document).ready(function () {
@@ -382,6 +425,7 @@ $(document).ready(function () {
           texto_busqueda: $(this).val(),
           campo_busqueda: campo_busqueda,
           url_id: $("#url_id").val(),
+          enlace_tipo_boton: 'true',
         }).done(function (data) {
           // Se llena el DIV con las sugerencias que arroja la consulta
           $("#clientes_suggestions").show().html(data);
@@ -448,7 +492,9 @@ $(document).ready(function () {
         return false;
       }
 
-      validar_numero_identificacion();
+      //validar_numero_identificacion_aux();
+
+      console.log(numero_identificacion_existe);
 
       if (numero_identificacion_existe) {
         return false;
@@ -576,43 +622,6 @@ function seleccionar_cliente_creado( item_sugerencia ) {
 
 }
 
-  /**
-   * 
-   */
-  function validar_numero_identificacion()
-  {
-    var documento = parseInt( $("#numero_identificacion_aux").val() );
-
-    var direccion = location.href;
-
-		if (direccion.search("edit") == -1) {
-			url = '../core/validar_numero_identificacion/'; // crear
-		} else {
-			url = '../../core/validar_numero_identificacion/'; // editar
-		}
-
-		$.get(url + documento, function (datos) {
-
-			if (datos != '') {
-				if ( parseInt(datos) == documento ) {
-					$('#btn_save_cliente').hide();
-          numero_identificacion_existe = true;
-					alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");
-          
-				} else {
-					// No hay problema
-          numero_identificacion_existe = false;
-					$('#btn_save_cliente').show();
-				}
-
-			} else {
-				// Número de identificación no existe
-        numero_identificacion_existe = false;
-				$('#btn_save_cliente').show();
-			}
-
-		});
-  }
   
   /**
    * 
