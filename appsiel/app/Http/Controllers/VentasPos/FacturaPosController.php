@@ -783,6 +783,7 @@ class FacturaPosController extends TransaccionController
     public function validar_existencias( $pdv_id )
     {
         $obj_acumm_serv = new AccumulationService( $pdv_id );
+
         if( !$obj_acumm_serv->thereis_documents() )
         {
             return 'No hay documentos pendientes.';
@@ -859,6 +860,7 @@ class FacturaPosController extends TransaccionController
             return redirect('pos_factura/' . $factura_id . '?id=20&id_modelo=230&id_transaccion=47' )->with('mensaje_error', $validation);
         }
 
+        // Acumular y Contabilizar
         $obj_acumm_serv->accumulate_one_invoice($factura_id);
 
         return redirect('pos_factura/' . $factura_id . '?id=20&id_modelo=230&id_transaccion=47' )->with('flash_message', 'Factura Acumulada correctamente.');

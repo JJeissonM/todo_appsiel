@@ -297,9 +297,11 @@ class InventarioController extends TransaccionController
 
         if ( $core_tipo_transaccion_id == 2 ) { // 2: Transferencia
             $descripcion = 'Doc. Creado automáticamente desde la creación de una Transferencia.';
+            return $obj_inv_doc_serv->create_document_making( $lineas_registros, $inv_bodega_id, $fecha,  $descripcion);   
         }
 
-        return $obj_inv_doc_serv->create_document_making( $lineas_registros, $inv_bodega_id, $fecha,  $descripcion);        
+        return false;
+     
     }
 
     /*

@@ -126,12 +126,16 @@ $(document).ready(function () {
             data += '&valor_datafono=' + $('#valor_datafono').val();
         }
         
-        $.post(url.replace('pos_factura', 'pos_factura_electronica'), data, function (url_print) {
+        $.post(
+            url.replace('pos_factura', 'pos_factura_electronica'),
+            data, 
+            function (url_print) {
             $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
             $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
 
             $("#pedido_id").val(0);
             $("#object_anticipos").val('null');
+            $("#uniqid").val( uniqid() );
             
             ventana_imprimir_fe( url_print );
             resetear_ventana();

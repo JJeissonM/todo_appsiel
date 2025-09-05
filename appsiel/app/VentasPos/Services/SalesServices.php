@@ -30,12 +30,13 @@ class SalesServices
             $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $data_invoice_line['inv_producto_id'] );
             $valor_total_impuesto = abs( $data_invoice_line['valor_impuesto'] * $data_invoice_line['cantidad'] );
 
-            $obj_accou_serv->contabilizar_registro( $data_invoice_line, $cta_impuesto_ventas_id, $detalle_operacion, 0, abs($valor_total_impuesto) );
+            $obj_accou_serv->contabilizar_registro( $data_invoice_line, $cta_impuesto_ventas_id, 'Reg. de Impuesto. ' . $detalle_operacion, 0, abs($valor_total_impuesto) );
         }
 
         // Contabilizar Ingresos (CR)
         // La cuenta de ingresos se toma del grupo de inventarios
         $cta_ingresos_id = InvProducto::get_cuenta_ingresos( $data_invoice_line['inv_producto_id'] );
+
         $obj_accou_serv->contabilizar_registro( $data_invoice_line, $cta_ingresos_id, $detalle_operacion, 0, $data_invoice_line['base_impuesto_total']);
     }    
 

@@ -68,6 +68,9 @@ class AccumulationService
         return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios );
     }
 
+    /**
+     * Acumular y Contabilizar una factura
+    */
     public function accumulate_one_invoice($invoice_id)
     {
         $invoice = FacturaPos::find($invoice_id);
