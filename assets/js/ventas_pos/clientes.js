@@ -457,7 +457,7 @@ $(document).ready(function () {
    */
   function modal_create_cliente()
   {
-    var url = "../vtas_consultar_clientes";
+    //var url = "../vtas_consultar_clientes";
 
     var url =  url_raiz + "/pos_clientes/create?id=13&id_modelo=138&id_transaccion";
 

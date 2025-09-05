@@ -804,7 +804,7 @@ class VentaController extends TransaccionController
         }
 
         if ( Input::get('enlace_tipo_boton') == 'true' ) {
-            $html .= '<button href="'.url('vtas_clientes/create?id=' . Input::get('url_id') . '&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </button>';
+            $html .= '<button class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </button>';
         }else{
             $html .= '<a href="'.url('vtas_clientes/create?id=' . Input::get('url_id') . '&id_modelo='.$modelo_id.'&id_transaccion').'" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="'.$modelo_id.'" data-accion="crear_nuevo_registro" > + Crear nuevo </a>';
         }
