@@ -5,6 +5,10 @@
 	<hr>
 
 	@include('layouts.mensajes')
+	
+	<?php
+		$array_cuentas = App\Contabilidad\ContabCuenta::opciones_campo_select();
+	?>
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
@@ -174,25 +178,93 @@
 					</div>
 				</div>
 
+
+				<h4> Parámetros Para facturación de bolsas  </h4>
+				<hr>
+
 				<div class="row">
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$item_bolsa_id = 0;
-								if( isset($parametros['item_bolsa_id'] ) )
+							<?php
+								// NOTA: Inicialmente se usó la variable 'item_bolsa_id'. Luego se cambió a 'habilitar_facturacion_bolsa' para que fuera más claro su uso y se agregaron más parámetros relacionados.
+								$habilitar_facturacion_bolsa = 0;
+								if( isset($parametros['habilitar_facturacion_bolsa'] ) )
 								{
-									$item_bolsa_id = $parametros['item_bolsa_id'];
+									$habilitar_facturacion_bolsa = $parametros['habilitar_facturacion_bolsa'];
 								}
 							?>
-							{{ Form::bsSelect('item_bolsa_id', $item_bolsa_id, 'Ítem para facturación de Bolsa', App\Inventarios\Servicio::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('habilitar_facturacion_bolsa', $habilitar_facturacion_bolsa, 'Habilitar facturación de Bolsa por línea de registro', ['No','Sí'], []) }}
 						</div>
 					</div>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$categoria_id_facturacion_bolsa = '';
+								if( isset($parametros['categoria_id_facturacion_bolsa'] ) )
+								{
+									$categoria_id_facturacion_bolsa = $parametros['categoria_id_facturacion_bolsa'];
+								}
+
+								$valores = '';
+								if ( is_array($categoria_id_facturacion_bolsa) ) 
+								{
+									$es_el_primero = true;
+									foreach( $categoria_id_facturacion_bolsa AS $key => $value )
+									{
+										global $valores;
+
+										if ($es_el_primero) {
+											$valores = $value;
+											$es_el_primero = false;
+										}else{
+											$valores .=  ',' . $value;
+										}
+									    
+									}
+								}
+
+								$opciones = App\Inventarios\InvGrupo::where('estado','Activo')->get();
+
+						        $grupos_inventario = [];
+						        foreach ($opciones as $opcion)
+						        {
+						            $grupos_inventario[$opcion->id] = $opcion->descripcion;
+						        }
+							?>
+							{{ Form::bsCheckBox('categoria_id_facturacion_bolsa', $valores, 'Grupo de Inventarios para facturación de bolsas', $grupos_inventario, ['class'=>'form-control']) }}
 						</div>
 					</div>
+				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$cta_ingresos_facturacion_bolsas = 27;
+								if( isset($parametros['cta_ingresos_facturacion_bolsas'] ) )
+								{
+									$cta_ingresos_facturacion_bolsas = $parametros['cta_ingresos_facturacion_bolsas'];
+								}
+							?>
+							{{ Form::bsSelect('cta_ingresos_facturacion_bolsas', $cta_ingresos_facturacion_bolsas, 'Cta. Ingresos (CR) facturación bolsas', $array_cuentas, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$precio_bolsa = '20';
+								if( isset($parametros['precio_bolsa'] ) )
+								{
+									$precio_bolsa = $parametros['precio_bolsa'];
+								}
+							?>
+							{{ Form::bsText('precio_bolsa', $precio_bolsa, 'Precio unitario bolsa', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
 				</div>
 
 				<h4> Parámetros de redondeo de precios (Ajuste al peso)  </h4>
@@ -232,9 +304,6 @@
 				</div>
 				
 				<div class="row">
-					<?php
-						$array_cuentas = App\Contabilidad\ContabCuenta::opciones_campo_select();
-					?>
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">

@@ -261,7 +261,11 @@ class FacturaPosService
 
     public function get_precio_bolsa( $lista_precios_id )
     {
-        return ListaPrecioDetalle::get_precio_producto( $lista_precios_id, date('Y-m-d'),  (int)config('ventas_pos.item_bolsa_id'));
+        if ( !(int)config('ventas_pos.habilitar_facturacion_bolsa') ) {
+            return 0;
+        }
+
+        return (float)config('ventas_pos.precio_bolsa');
     }
 
     public function anular_factura_contabilizada( int $factura_id, bool $anular_remision )

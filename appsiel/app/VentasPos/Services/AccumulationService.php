@@ -312,11 +312,11 @@ class AccumulationService
         {
             $obj_accou_serv = new AccountingServices();
 
-            $item_bolsa = InvProducto::find( (int)config('ventas_pos.item_bolsa_id') );
+            $cta_ingresos_id = (int)config('ventas_pos.cta_ingresos_facturacion_bolsas');
 
-            if ( $item_bolsa != null ) {
-                $obj_accou_serv->contabilizar_registro($datos, $item_bolsa->grupo_inventario->cta_ingresos_id, 'Cobro de bolsas en factura de ventas', 0, abs($invoice->valor_total_bolsas), null, null);
-            }            
+            if ( $cta_ingresos_id != null && $cta_ingresos_id != 0 ) {
+                $obj_accou_serv->contabilizar_registro($datos, $cta_ingresos_id, 'Cobro de bolsas en factura de ventas', 0, abs($invoice->valor_total_bolsas), null, null);
+            }
         }
 
         // Actualizar encabezado de factura

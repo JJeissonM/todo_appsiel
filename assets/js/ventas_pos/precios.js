@@ -172,9 +172,14 @@ function calcular_totales() {
         parseFloat($(this).find(".valor_impuesto").text()) * cantidad_linea;
         total_factura += parseFloat($(this).find(".precio_total").text());
 
-        valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+        // precio_bolsa es distinto a cero cuando esta habilitada la facturación de bolsas 
+        if ( $("#precio_bolsa").val() != 0 && item_is_in_group( $(this).find('.inv_producto_id').text(), 'categoria_id_facturacion_bolsa' ) ) {
+    
+            valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
 
-        total_factura += parseFloat( $("#precio_bolsa").val() );
+            total_factura += parseFloat( $("#precio_bolsa").val() );
+
+        }
     });
 
     $("#total_cantidad").text(
@@ -439,10 +444,14 @@ function calcular_totales_quantity()
         total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) * cantidad_linea;
         total_factura += parseFloat( $(this).find('.precio_total').text() );
         
-        valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+        // precio_bolsa es distinto a cero cuando esta habilitada la facturación de bolsas 
+        if ( $("#precio_bolsa").val() != 0 && item_is_in_group( $(this).find('.inv_producto_id').text(), 'categoria_id_facturacion_bolsa' ) ) {
+    
+            valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
 
-        total_factura += parseFloat( $("#precio_bolsa").val() );
+            total_factura += parseFloat( $("#precio_bolsa").val() );
 
+        }
     });
 
     $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format(total_cantidad));

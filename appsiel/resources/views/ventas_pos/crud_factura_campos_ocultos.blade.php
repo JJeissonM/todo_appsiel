@@ -129,7 +129,8 @@ value="{{ config('ventas_pos.formato_impresion_pedidos') }}">
 
 <!-- Campos ocultos para el manejo de bolsas -->
 <input type="hidden" name="precio_bolsa" id="precio_bolsa" value="{{ $precio_bolsa }}">
-<input type="hidden" name="valor_total_bolsas" id="valor_total_bolsas" value="0">
+<input type="hidden" name="valor_total_bolsas" id="valor_total_bolsas" value="{{$valor_total_bolsas}}">
+@include('ventas_pos.campos.categoria_id_facturacion_bolsa')
 
 <input type="hidden" name="acumular_facturas_en_tiempo_real" id="acumular_facturas_en_tiempo_real"
 value="{{ config('ventas_pos.acumular_facturas_en_tiempo_real') }}">

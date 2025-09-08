@@ -1,6 +1,6 @@
 <?php
     $row_span = 5;
-    if( (int)config('ventas_pos.item_bolsa_id') )
+    if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
     {
         $row_span = 6;
     }
@@ -25,7 +25,7 @@
         @endif
 
         
-        @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+        @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
             <?php 
                 $label_signo = '+';
                 if($doc_encabezado->valor_total_bolsas < 0) {

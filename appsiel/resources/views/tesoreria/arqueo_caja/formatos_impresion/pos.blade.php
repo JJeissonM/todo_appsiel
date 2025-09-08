@@ -68,7 +68,7 @@
             @include('tesoreria.arqueo_caja.resumen_ventas_pos2')
         @endif
 
-        @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+        @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
             @include('tesoreria.arqueo_caja.ingresos_por_bolsas')
         @endif
 

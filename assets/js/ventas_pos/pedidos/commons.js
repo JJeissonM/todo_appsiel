@@ -620,11 +620,16 @@ $(document).ready(function () {
             $('#tabla_productos_facturados2').find('tbody:last').append( linea_factura2 );
 
             lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
+
+            // precio_bolsa es distinto a cero cuando esta habilitada la facturación de bolsas 
+            if ( $("#precio_bolsa").val() != 0 && item_is_in_group( $(this).find('.inv_producto_id').text(), 'categoria_id_facturacion_bolsa' ) ) {
         
-            valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
+                valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
 
-            lbl_total_factura += parseFloat( $("#precio_bolsa").val() );
+                lbl_total_factura += parseFloat( $("#precio_bolsa").val() );
 
+            }
+            
             cantidad_total_productos++;
 
         });

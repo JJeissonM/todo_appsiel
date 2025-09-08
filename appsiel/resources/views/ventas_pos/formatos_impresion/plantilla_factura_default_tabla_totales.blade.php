@@ -2,13 +2,13 @@
     <tbody>
         <tr style="font-weight: bold;">
             <td style="text-align: right;">
-                @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+                @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
                     <br>
                 @endif
                 Total factura:
             </td>
             <td style="text-align: right;">
-                @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+                @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
                     <div class="lbl_valor_total_bolsas" style="margin-right: 15px; font-size: 9px;">$ {{ $datos_factura->lbl_valor_total_bolsas }} </div>
                 @endif
                 <div class="lbl_ajuste_al_peso" style="margin-right: 15px; font-size: 9px;">$ {{ $datos_factura->lbl_ajuste_al_peso }} </div>

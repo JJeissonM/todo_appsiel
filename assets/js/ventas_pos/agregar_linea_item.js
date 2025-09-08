@@ -23,8 +23,8 @@ class StockService
     verificarExistencia(inv_producto_id, bodega_id, cantidad, fecha, cantidad_restar)
     {
         this.hay_stock = true;
-        //this.lbl_stock_amount = '';        
-                            
+        //this.lbl_stock_amount = '';
+        
         var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
 
         if(producto.tipo === 'servicio')
@@ -337,4 +337,17 @@ function get_cantidades_ya_ingresadas( item_id )
 
     //console.log("Cantidades ya ingresadas para el item " + item_id + ": " + cantidades_ya_ingresadas);
     return cantidades_ya_ingresadas;
+}
+
+function item_is_in_group( item_id, name_grupo_id )
+{
+    var producto = productos.find((item) => item.id === parseInt( item_id ) );
+
+    var arr_grupos = $('#' + name_grupo_id).val().split(',').map(Number);
+	
+    if ( arr_grupos.includes( producto.inv_grupo_id ) ) {
+      return true;
+    }
+
+    return false;
 }

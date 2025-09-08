@@ -70,14 +70,14 @@
 
         <tr class="info">
             <td width="35%">
-                @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+                @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
                     <br>
                 @endif
                 <br>
                 <strong> Total factura </strong>
             </td>
             <td style="text-align: right;" colspan="2">
-                @if( (int)config('ventas_pos.item_bolsa_id') != 0 )
+                @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
                     <div id="lbl_valor_total_bolsas" style="display: inline; font-size: 9px; color: green;"> $ 0</div>                    
                 @endif
                 <div id="lbl_ajuste_al_peso" style="font-size: 9px;"> $ 0</div>
