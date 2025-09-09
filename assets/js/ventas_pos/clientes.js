@@ -215,16 +215,7 @@ function draw_suggestion_list(lista_clientes) {
   var app_id = 20; // App Ventas POS
 
   html +=
-    '<button href="' +
-    url_raiz +
-    "/vtas_clientes/create?id=" +
-    app_id +
-    "&id_modelo=" +
-    modelo_id +
-    "&id_transaccion" +
-    '" target="_blank" class="list-group-item list-group-item-sugerencia-crear-nuevo list-group-item-info" data-modelo_id="' +
-    modelo_id +
-    '" data-accion="crear_nuevo_registro" > + Crear nuevo </button>';
+    '<div id="btn_crear_nuevo_registro" class="list-group-item list-group-item-info btn" data-modelo_id="' + modelo_id + '" > + Crear nuevo </div>';
 
   html += "</div>";
 
@@ -421,17 +412,28 @@ $(document).ready(function () {
           var url = "../../vtas_consultar_clientes";
         }
 
-        $.get(url, {
-          texto_busqueda: $(this).val(),
-          campo_busqueda: campo_busqueda,
-          url_id: $("#url_id").val(),
-          enlace_tipo_boton: 'true',
-        }).done(function (data) {
-          // Se llena el DIV con las sugerencias que arroja la consulta
-          $("#clientes_suggestions").show().html(data);
-          $("a.list-group-item.active").focus();
-        });
-        break;
+        $.ajax({
+            url: url,
+            data: {
+              texto_busqueda: $(this).val(),
+              campo_busqueda: campo_busqueda,
+              url_id: $("#url_id").val(),
+              enlace_tipo_boton: 'true',
+            },
+            type: 'GET',
+            async: false,
+            cache: false,
+            success: function( data ){
+              // Se llena el DIV con las sugerencias que arroja la consulta
+              $("#clientes_suggestions").show().html(data);
+              $("a.list-group-item.active").focus();
+            },
+            error: function( xhr ){
+
+            }
+      });
+
+      break;
     }
   });
 
@@ -634,7 +636,7 @@ function seleccionar_cliente_creado( item_sugerencia ) {
   //Al hacer click en la sugerencia Crear nuevo
   $(document).on(
     "click",
-    ".list-group-item-sugerencia-crear-nuevo",
+    "#btn_crear_nuevo_registro",
     function () {
       $("#cliente_input").css("background-color", "transparent");
 
@@ -643,9 +645,7 @@ function seleccionar_cliente_creado( item_sugerencia ) {
 
       set_cliente_default();
 
-      if ($(this).attr("data-accion") == "crear_nuevo_registro") {
-        modal_create_cliente();
-      }
+      modal_create_cliente();
 
       return false;
     }
