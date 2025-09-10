@@ -43,7 +43,8 @@ class ClienteController extends ModeloController
 
         $form_create = [
                             'url' => 'pos_clientes',
-                            'campos' => $lista_campos
+                            'campos' => $lista_campos,
+                            'form_id' => 'form_create_cliente'
                         ];
 
         $datos_columnas = true;

@@ -494,10 +494,6 @@ $(document).ready(function () {
         return false;
       }
 
-      //validar_numero_identificacion_aux();
-
-      console.log(numero_identificacion_existe);
-
       if (numero_identificacion_existe) {
         return false;
       }

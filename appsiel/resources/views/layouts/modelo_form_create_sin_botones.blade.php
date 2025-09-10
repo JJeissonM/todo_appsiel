@@ -1,10 +1,16 @@
 <?php
 	use App\Http\Controllers\Sistema\VistaController;
+
+	$form_id = 'form_create';
+
+	if ( isset($form_create['form_id']) ) {
+		$form_id = $form_create['form_id'];
+	}
 ?>
 
 <div class="container-fluid">
 	<div class="marco_formulario">
-		{{ Form::open(['url'=>$form_create['url'],'id'=>'form_create','files' => true]) }}
+		{{ Form::open(['url'=>$form_create['url'],'id'=> $form_id,'files' => true]) }}
 
 			@if( isset( $datos_columnas ) )
 				@if( $datos_columnas )
