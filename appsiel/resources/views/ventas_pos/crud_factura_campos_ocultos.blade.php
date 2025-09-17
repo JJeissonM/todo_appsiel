@@ -140,5 +140,7 @@ value="{{ config('ventas.permitir_inventarios_negativos') }}">
 <input type="hidden" name="mostrar_saldo_pendiente_cxc_al_imprimir" id="mostrar_saldo_pendiente_cxc_al_imprimir"
 value="{{ config('ventas_pos.mostrar_saldo_pendiente_cxc_al_imprimir') }}">
 
+<input type="hidden" name="form_token" id="form_token" value="{{ csrf_token() }}">
+
 <!-- Boton para hacer pruebas -->
 <button onclick="testing_print_jspm();" style="display: none;" id="btn_pruebas">testing_print_jspm</button>

@@ -9,7 +9,7 @@ class FormBuilder
     }
     
 
-    get_html_form( dataform )
+    get_html_form( dataform, token )
     {
         // Create the form element
         var form = $('<form/>', {
@@ -18,7 +18,7 @@ class FormBuilder
             method: 'POST'
         });
 
-        form.append('<input name="_token" type="hidden" value="fDrIarmy1MH7mweM0TWORplLwxskXIr5HX0SGAkQ">');
+        form.append('<input name="_token" type="hidden" value="' + token + '">');
 
         var fields = dataform.fields;
         var row = '';
