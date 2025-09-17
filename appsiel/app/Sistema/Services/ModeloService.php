@@ -153,7 +153,8 @@ class ModeloService
     public function ajustar_valores_lista_campos( $lista_campos )
     {
         $cant = count($lista_campos);
-        for ($i = 0; $i < $cant; $i++) {
+        for ($i = 0; $i < $cant; $i++)
+        {
             $nombre_campo = $lista_campos[$i]['name'];
 
             // El campo Atributos se ingresa en  formato JSON {"campo1":"valor1","campo2":"valor2"}
@@ -215,6 +216,9 @@ class ModeloService
                         break;
                     case 'user_id':
                         $lista_campos[$i]['value'] = $user_id;
+                        break;
+                    case 'core_empresa_id':
+                        $lista_campos[$i]['value'] = Auth::user()->empresa_id;
                         break;
                     default:
                         # code...

@@ -35,6 +35,8 @@ function set_catalogos(pdv_id) {
       fecha_vencimiento_default = datos.fecha_vencimiento_default;
       contornos_permitidos = datos.contornos_permitidos;
       vendedores = datos.vendedores;
+      
+      dataform_modelo_cliente = datos.dataform_modelo_cliente;
   
       if ($("#action").val() == "edit") {
         set_lista_precios();

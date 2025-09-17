@@ -809,4 +809,21 @@ class ModeloController extends Controller
 
         return view($vista, compact('modelo', 'form_create', 'miga_pan', 'archivo_js'));
     }
+
+    /**
+     * 
+     */    
+    public function testing()
+    {
+        $modelo = Modelo::find(138); // 138 = Clientes
+        $registro = ''; 
+        $accion = 'create';
+
+
+        $campos = (new ModeloService())->get_campos_modelo($modelo, $registro, $accion);
+
+        dd( $campos );
+
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\VentasPos\Services;
 
 use App\Inventarios\InvProducto;
 use App\Inventarios\Services\RecipeServices;
+use App\Sistema\Services\CrudService as SystemCrudService;
 use App\Ventas\Cliente;
 use App\Ventas\ListaDctoDetalle;
 use App\Ventas\ListaPrecioDetalle;
@@ -98,6 +99,9 @@ class CrudService
     {
         // El costo promedio del item se llama desde inv_productos
         $pdv = Pdv::find( $pdv_id );
+        
+        $model_id = 138; // Cliente
+        
         $datos = [
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
                     'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
@@ -111,6 +115,7 @@ class CrudService
                     'fecha_vencimiento_default' => $pdv->cliente->fecha_vencimiento_pago( date('Y-m-d') ),
                     'contornos_permitidos' => (new RecipeServices())->get_recetas_items_manejan_contornos(),
                     'vendedores' => Vendedor::get_lista_para_catalogos_pos(),
+                    'dataform_modelo_cliente' => (new SystemCrudService())->get_model_dataform( $model_id, '', 'create', '', 'create_cliente'),
                 ];
         
         return response()->json( $datos );

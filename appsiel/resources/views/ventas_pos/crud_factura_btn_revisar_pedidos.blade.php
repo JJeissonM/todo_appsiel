@@ -22,6 +22,13 @@
         <button class="btn btn-default btn-xs" style="background-color: black !important; color: white !important;" id="btn_update_uniqid">
             <i class="fa fa-circle"></i> REFRESH
         </button>
+        
+        <!-- -->
+        &nbsp; &nbsp; &nbsp;
+
+        <button class="btn btn-default btn-xs" style="background-color: rgb(64, 216, 236) !important; color: rgb(20, 4, 4) !important;" id="btn_testing">
+            <i class="fa fa-cog"></i> Testing
+        </button>
 
 	</div>
 </div>

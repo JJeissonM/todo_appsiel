@@ -299,7 +299,6 @@ function get_linea_item_sugerencia(cliente, clase, primer_item, ultimo_item) {
 
     $.ajax({
             url: url + documento,
-            data: data,
             type: 'GET',
             async: false,
             success: function( datos ){
@@ -447,8 +446,10 @@ $(document).ready(function () {
 
   
   //Al hacer click en alguna de las sugerencias (escoger un cliente)
-  $(document).on("click", "#btn_create_cliente", function () {
+  $(document).on("click", "#btn_create_cliente", function (event) {
     
+    event.preventDefault();
+
     modal_create_cliente();
 
     return false;
@@ -459,12 +460,6 @@ $(document).ready(function () {
    */
   function modal_create_cliente()
   {
-    //var url = "../vtas_consultar_clientes";
-
-    var url =  url_raiz + "/pos_clientes/create?id=13&id_modelo=138&id_transaccion";
-
-    $.get(url)
-    .done(function (data) {
       
       $("#myModal2").modal({ backdrop: "static" });
       $("#div_spin2").hide();
@@ -479,10 +474,15 @@ $(document).ready(function () {
       $("#btn_save_cliente").removeAttr('disabled');
       $("#myModal2 .close").show();
 
-      $("#contenido_modal2").html(data);
+      $("#contenido_modal2").html( 
+      new FormBuilder().get_html_form( JSON.parse(dataform_modelo_cliente) ) );
+
+      $("#contenido_modal2").find('#numero_identificacion').attr('id','numero_identificacion_aux');
+
+      var form_action_ori = $('#create_cliente').attr('action');
+      $('#create_cliente').attr('action', form_action_ori.replace("vtas_clientes", "pos_clientes"));     
 
       $('#razon_social').parent().parent().hide();
-    });
   }
 
   /**
@@ -630,10 +630,10 @@ function seleccionar_cliente_creado( item_sugerencia ) {
 
 
   //Al hacer click en la sugerencia Crear nuevo
-  $(document).on(
-    "click",
-    "#btn_crear_nuevo_registro",
-    function () {
+  $(document).on("click", "#btn_crear_nuevo_registro", function (event) {
+
+      event.preventDefault();
+
       $("#cliente_input").css("background-color", "transparent");
 
       $("#clientes_suggestions").html("");
@@ -646,4 +646,16 @@ function seleccionar_cliente_creado( item_sugerencia ) {
       return false;
     }
   );
+
+  
+  
+  $(document).on('click', '#btn_testing', function (event) {
+      
+      event.preventDefault();
+
+      modal_create_cliente();
+
+      //console.log('testing');
+      //new FormBuilder( JSON.parse(dataform_modelo_cliente) );
+  });
 });
