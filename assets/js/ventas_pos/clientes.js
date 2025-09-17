@@ -224,7 +224,7 @@ function draw_suggestion_list(lista_clientes) {
 
 function get_linea_item_sugerencia(cliente, clase, primer_item, ultimo_item) {
   var descripcion = cliente.descripcion;
-  if (cliente.razon_social != "") {
+  if (cliente.razon_social != "" && cliente.razon_social != null) {
     descripcion += " (" + cliente.razon_social + ")";
   }
   

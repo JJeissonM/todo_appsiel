@@ -44,6 +44,7 @@ class CustomerServices
         $cliente_creado->id_tipo_documento_id = (int)$cliente_creado->id_tipo_documento_id;
         $cliente_creado->numero_identificacion = (int)$cliente_creado->numero_identificacion;
         $cliente_creado->core_empresa_id = (int)$cliente_creado->core_empresa_id;
+        $cliente_creado->razon_social = $tercero->razon_social;
 
         return $cliente_creado;
     }
