@@ -70,7 +70,8 @@ class ReportsServices
 
             $totales_cuentas_bancarias[] = [
                 'label' => TesoEntidadFinanciera::find($cuenta_bancaria->entidad_financiera_id)->descripcion . " - Nro. " . $cuenta_bancaria->descripcion,
-                'total' => $total_cuenta_bancaria
+                'total' => $total_cuenta_bancaria,
+                'teso_cuenta_bancaria_id' => $cuenta_bancaria->id
             ];
         }
         
@@ -166,6 +167,9 @@ class ReportsServices
         ];
     }
 
+    /**
+     * 
+     */
     public function get_ventas_credito_pdv($pdv_id, $fecha_desde, $fecha_hasta)
     {        
         $movimientos_pdv = Movimiento::get_movimiento_ventas_no_anulado( $pdv_id, $fecha_desde, $fecha_hasta);
@@ -173,6 +177,9 @@ class ReportsServices
         return $movimientos_pdv->where( 'forma_pago', 'credito');
     }
 
+    /**
+     * 
+     */
     public function get_movimiento_tesoreria_pdv($documentos_pdv)
     {
         $arr_consecutivos = [];
@@ -205,6 +212,9 @@ class ReportsServices
                                 ->get();
     }
 
+    /**
+     * 
+     */
     public function get_movimiento_tesoreria_propinas($documentos_pdv)
     {
         $arr_consecutivos = [];
@@ -236,6 +246,9 @@ class ReportsServices
                                 ->get();
     }
 
+    /**
+     * 
+     */
     public function get_ventas_por_medios_pago_con_iva($pdv_id, $fecha_desde, $fecha_hasta)
     {
         $documentos_pdv = FacturaPos::where([
@@ -271,6 +284,9 @@ class ReportsServices
         return $ventas_por_medios_pago_con_iva;
     }
 
+    /**
+     * 
+     */
     public function get_ventas_por_caja_bancos($pdv_id, $fecha_desde, $fecha_hasta)
     {
         $documentos_pdv = FacturaPos::where([
@@ -332,5 +348,24 @@ class ReportsServices
         }
 
         return $ventas_por_medios_pago_con_iva;
+    }
+
+    /**
+     * 
+     */
+    public function get_movimentos_trasacciones_recaudos($fecha)
+    {
+        $arr_core_tipo_transaccion_id = [
+            8, // 8 = Recaudos Generales
+            (int)config('tesoreria.recaudos_cxc_tipo_transaccion_id')
+        ];
+
+        return TesoMovimiento::where([
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
+                                    ['fecha', '=', $fecha]
+                                ])
+                                ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)
+                                ->get();
     }
 }
