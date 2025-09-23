@@ -167,11 +167,22 @@ class FacturaController extends TransaccionController
 
         $ruta_show = 'fe_factura/'.$vtas_doc_encabezado->id.'?id=' . Input::get('id') .'&id_modelo='. Input::get('id_modelo') .'&id_transaccion='. Input::get('id_transaccion');
 
-        $error_message = $this->validar_resolucion_y_tercero( $vtas_doc_encabezado );
+        $mensaje = $this->validar_resolucion_y_tercero( $vtas_doc_encabezado );
 
-        if ( $error_message != '' )
-        {
-           return redirect( $ruta_show )->with( 'mensaje_error',  $error_message );
+        if (is_array($mensaje)) {
+            $mensaje = (object) $mensaje;
+        }
+
+        if (is_object($mensaje) && property_exists($mensaje, 'tipo') && $mensaje->tipo == 'mensaje_error') {
+            return redirect($ruta_show)->with($mensaje->tipo, $mensaje->contenido);
+        } elseif (config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI') {
+            $this->contabilizar_factura($vtas_doc_encabezado);
+            $mensaje = (object)[
+                'tipo' => 'flash_message',
+                'contenido' => "<h3>Documento ya fue enviado correctamente a la DIAN. </h3>"
+            ];
+
+            return redirect($ruta_show)->with($mensaje->tipo, $mensaje->contenido);
         }
 
         $mensaje = $vtas_doc_encabezado->enviar_al_proveedor_tecnologico();

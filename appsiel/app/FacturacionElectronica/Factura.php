@@ -9,6 +9,7 @@ use App\FacturacionElectronica\TFHKA\DocumentoElectronico;
 use App\FacturacionElectronica\ResultadoEnvio;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
+use App\FacturacionElectronica\OSEI\FacturaGeneralOsei;
 use App\Ventas\ResolucionFacturacion;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -170,6 +171,10 @@ class Factura extends VtasDocEncabezado
                 $obj_resultado = new ResultadoEnvio;
                 $mensaje = $obj_resultado->almacenar_resultado( $resultado_original, $this->documento_factura, $this->id );
                 break;
+                
+            case 'OSEI':
+                $factura_osei = new FacturaGeneralOsei( $this, 'factura' );
+                $mensaje = $factura_osei->procesar_envio_factura( $this );
             
             default:
                 break;

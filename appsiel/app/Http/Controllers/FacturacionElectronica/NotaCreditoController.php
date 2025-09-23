@@ -34,7 +34,7 @@ use App\FacturacionElectronica\Factura;
 use App\FacturacionElectronica\NotaCredito;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
-
+use App\FacturacionElectronica\OSEI\FacturaGeneralOsei;
 use App\Ventas\Services\NotaCreditoServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -239,6 +239,11 @@ class NotaCreditoController extends TransaccionController
             case 'DATAICO':
                 $factura_dataico = new FacturaGeneral( $encabezado_nota_credito, 'nota_credito' );
                 $mensaje = $factura_dataico->procesar_envio_factura( $factura_doc_encabezado );
+                break;
+                
+            case 'OSEI':
+                $factura_osei = new FacturaGeneralOsei($encabezado_nota_credito, 'nota_credito');
+                $mensaje = $factura_osei->procesar_envio_factura($factura_doc_encabezado);
                 break;
             
             case 'TFHKA':

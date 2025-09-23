@@ -1,6 +1,19 @@
 <?php  
     $variables_url = '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.$id_transaccion;
 	$tipo_operacion = 'nota_credito';
+
+	$prefix = $doc_encabezado->tipo_documento_app->prefijo;
+	$number = $doc_encabezado->documento_transaccion_consecutivo;
+
+	switch (config('facturacion_electronica.proveedor_tecnologico_default'))
+	{
+		case 'OSEI':
+			$url = "https://osei.com.co/api/v1/invoices/download_pdf_appsiel/$prefix/$number";
+			break;
+		default:
+			$url = 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url;
+			break;
+	}
 ?>
 
 @extends('transaccion.show')
@@ -30,7 +43,7 @@
 	@endif
 
 	@if( !$docs_relacionados[1] && $doc_encabezado->estado == 'Enviada' )
-    	<a class="btn-gmail" href="{{ url( 'fe_consultar_documentos_emitidos/' . $doc_encabezado->id . '/' . $tipo_operacion . $variables_url ) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
+    	<a class="btn-gmail" href="{{ url($url) }}" title="Representación gráfica (PDF)" target="_blank"><i class="fa fa-file-pdf-o"></i></a>
 	@endif
 
 

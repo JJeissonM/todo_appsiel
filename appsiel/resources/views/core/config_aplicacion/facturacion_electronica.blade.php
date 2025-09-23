@@ -33,7 +33,7 @@
 									$proveedor_tecnologico_default = $parametros['proveedor_tecnologico_default'];
 								}
 							?>
-							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'TFHKA' => 'The Fatory HKA'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('proveedor_tecnologico_default', $proveedor_tecnologico_default, 'Proveedor tecnológico', ['DATAICO' => 'DATAICO', 'OSEI'=>'OSEI', 'TFHKA' => 'The Fatory HKA'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 
