@@ -243,8 +243,6 @@ class FacturaGeneralOsei
         $prefixFE = $factura_doc_encabezado->tipo_documento_app->prefijo;;
         $numberFE = (string) $factura_doc_encabezado->consecutivo;
 
-        $prefixFE = 'APSI';
-        $numberFE = '411';
         $endpointGetCufe = "https://osei.com.co/api/v1/invoices/get_cufe/{$prefixFE}/{$numberFE}";
         $cURL = curl_init();
         curl_setopt($cURL, CURLOPT_URL, $endpointGetCufe);
