@@ -1,5 +1,5 @@
 
-@include('calificaciones.boletines.formatos.banner_colegio_con_escudo')
+@include('ventas.formatos_impresion.colegio_banner_con_escudo')
 <hr>
 
 
