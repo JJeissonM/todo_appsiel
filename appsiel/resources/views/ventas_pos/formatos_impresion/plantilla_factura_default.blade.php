@@ -101,20 +101,35 @@
 
         $json_dataico = (object)[];
         $errores_einvoice = '';
+        $resultado_envio = null;
 
         if($datos_factura->core_tipo_transaccion_id == 52)
         {
-            $encabezado_doc = \App\FacturacionElectronica\Factura::find( $doc_encabezado->id );
-
-            if( Input::get('id_transaccion') == 47 )
+            switch( config('facturacion_electronica.proveedor_tecnologico_default') )
             {
-                $encabezado_doc = \App\VentasPos\FacturaPos::find( $doc_encabezado->id );
-            }
-            
-            $object_dataico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $encabezado_doc, 'factura' ));
-            $json_dataico =  $object_dataico->get_einvoice_in_dataico();
+                case 'DATAICO':
+                    $encabezado_doc = \App\FacturacionElectronica\Factura::find( $doc_encabezado->id );
 
-            $errores_einvoice =  $object_dataico->get_errores($json_dataico);
+                    if( Input::get('id_transaccion') == 47 )
+                    {
+                        $encabezado_doc = \App\VentasPos\FacturaPos::find( $doc_encabezado->id );
+                    }
+                    
+                    $object_dataico = (new \App\FacturacionElectronica\DATAICO\FacturaGeneral( $encabezado_doc, 'factura' ));
+                    $json_dataico =  $object_dataico->get_einvoice_in_dataico();
+
+                    $errores_einvoice =  $object_dataico->get_errores($json_dataico);
+                break;
+
+                case 'OSEI':
+                    $resultado_envio = (new \App\FacturacionElectronica\Services\SendingResultServices())->get_sending_result( $doc_encabezado->id );
+
+                    if( $resultado_envio != null )
+                    {
+                        $errores_einvoice = $resultado_envio->reglasNotificacionDIAN;
+                    }
+                break;
+            }            
         }
     ?>
 
