@@ -575,6 +575,8 @@ class InvProducto extends Model
 
             $item->unidad_medida1 = $item->get_unidad_medida1();
 
+            $item->descripcion_prenda = $item->descripcion . ' ' . $item->get_color() . ' ' . $item->get_talla();
+            
             $item->descripcion = $item->get_value_to_show(true);
         }
 
