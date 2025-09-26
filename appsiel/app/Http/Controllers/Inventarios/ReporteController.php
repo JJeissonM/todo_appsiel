@@ -653,7 +653,7 @@ class ReporteController extends Controller
 
                     InvBarcodesForPrint::create([
                         'item_id' => $item->id,
-                        'label' => $item->label,
+                        'label' => $item->get_value_to_show(),
                         'barcode' => $item->codigo_barras,
                         'uom_1' => $item->get_unidad_medida1(),
                         'size' => $item->unidad_medida2,

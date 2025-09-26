@@ -6,8 +6,8 @@
 <h3 style="width: 100%; text-align: center;"> Lista de etiquetas de códigos de barra de items </h3>
 <hr>
 
-Ver el siguiente video antes de continuar con la impresión del código de barras; si ya conoce el proceso, puede omitir.
-<a href="https://youtu.be/e9KWVpHbLzc" target="_blank" style="font-size: 1.2em;">📹 Video tutorial</a>
+VER EL SIGUIENTE VIDEO PARA CONTINUAR CON LA IMPRESIÓN DEL CÓDIGO DE BARRAS; SI YA CONOCE EL PROCESO, PUEDE OMITIR.
+<a href="https://youtu.be/e9KWVpHbLzc" target="_blank" style="font-size: 1.2em;">📹 VIDEO TUTORIAL</a>
 
 <hr>
 <div class="container-fluid">
