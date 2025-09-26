@@ -592,6 +592,8 @@ class ReporteController extends Controller
 
         foreach ($items as $item) {
 
+            $cantidad_etiquetas = 1;
+            
             switch ($cantidad_etiquetas_x_item) {
                 case 'una':
                     $cantidad_etiquetas = 1;
