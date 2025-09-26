@@ -31,7 +31,7 @@
                 <tbody>
                     <tr>
                         <td style="color: black; text-align: right; width: 50%;">
-                            Ventas de contado:
+                            Efectivo:
                         </td>
                         <td style="color: black;">
                             <?php 
@@ -47,7 +47,7 @@
                     </tr>
                     <tr> 
                         <td style="color: black; text-align: right;">
-                            Ventas a crédito:
+                            Crédito:
                         </td>
                         <td style="color: black;" colspan="3">
                             ${{ number_format($result->total_credito,0,',','.') }}
@@ -55,7 +55,7 @@
                     </tr>
                 </tbody>
                 <tfoot>
-                    <tr>
+                    <tr style="background: #ddd;">
                         <td style="color: black; font-weight: bold; text-align: right;">
                             Total ventas:
                         </td>
@@ -114,12 +114,20 @@
                                         $total_consignaciones += $linea_total['total'] +  $recaudos->where('teso_cuenta_bancaria_id', $linea_total['teso_cuenta_bancaria_id'])->sum('valor_movimiento');
                                     ?>
                                 @endforeach
+                                <tr style="background: #ddd;">
+                                    <td style="text-align: right;">
+                                        Total QR/Transf.:
+                                    </td>
+                                    <td style="text-align: right;">
+                                        ${{ number_format( $total_consignaciones,0,',','.') }}
+                                    </td>
+                                </tr>
                             </table>                        
                         </td>
                     </tr>
                 </tbody>
                 <tfoot>
-                    <tr>
+                    <tr style="background: #ddd;">
                         <td style="color: black; font-weight: bold; text-align: center;" colspan="2">
                             Total ingresos de Tesorería: ${{ number_format( $total_ingresos_contado + $total_consignaciones,0,',','.') }}
                         </td>

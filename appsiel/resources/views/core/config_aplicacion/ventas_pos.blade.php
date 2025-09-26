@@ -178,6 +178,27 @@
 					</div>
 				</div>
 
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ocultar_seccion_conteo_billetes_y_monedas = '0';
+								if( isset($parametros['ocultar_seccion_conteo_billetes_y_monedas'] ) )
+								{
+									$ocultar_seccion_conteo_billetes_y_monedas = $parametros['ocultar_seccion_conteo_billetes_y_monedas'];
+								}
+							?>
+							{{ Form::bsSelect('ocultar_seccion_conteo_billetes_y_monedas', $ocultar_seccion_conteo_billetes_y_monedas, 'Ocultar Sección Conteo de billetes y monedas en Print de Arqueo de Caja', ['No','Sí'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+				</div>
+
 
 				<h4> Parámetros Para facturación de bolsas  </h4>
 				<hr>
