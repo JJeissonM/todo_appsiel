@@ -183,7 +183,7 @@ use App\Core\Tercero;
     {!! $otroscampos->terminos_y_condiciones !!}
 @endif
     
-@include('ventas.incluir.factura_firma_totales2')
+@include('ventas.incluir.factura_firma_totales_colegio')
 <hr>
 <br>
 
