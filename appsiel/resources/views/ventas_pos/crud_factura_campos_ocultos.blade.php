@@ -88,9 +88,15 @@
 <input type="hidden" name="manejar_datafono" id="manejar_datafono" value="{{ config('ventas_pos.manejar_datafono') }}">
 
 @can('bloqueo_cambiar_precio_unitario')
-<input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="1">
+        <input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="1">
 @else
-<input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="0">
+        <input type="hidden" name="bloqueo_cambiar_precio_unitario" id="bloqueo_cambiar_precio_unitario" value="0">
+@endcan
+
+@can('editar_precio_total_en_linea_registro_factura_pos')
+        <input type="hidden" name="editar_precio_total_en_linea_registro_factura_pos" id="editar_precio_total_en_linea_registro_factura_pos" value="1">
+@else
+        <input type="hidden" name="editar_precio_total_en_linea_registro_factura_pos" id="editar_precio_total_en_linea_registro_factura_pos" value="0">
 @endcan
 
 @can('bloqueo_cambiar_tasa_descuento')

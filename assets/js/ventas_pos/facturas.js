@@ -255,16 +255,28 @@ function generar_string_celdas() {
     "</div></td>";
 
   num_celda++;
-
-  var btn_borrar =
-    "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
-  celdas[num_celda] =
+  
+  if ( $('#editar_precio_total_en_linea_registro_factura_pos').val() == 1)
+  {
+    celdas[num_celda] =
+    '<td> <div class="lbl_precio_total" style="display: inline;"> <div class="elemento_modificar_precio_total" title="Doble click para modificar.">' +
+    "$" +
+    new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)) +
+    " </div> </div> </td>";
+  }else{
+    celdas[num_celda] =
     '<td> <div class="lbl_precio_total" style="display: inline;">' +
     "$" +
     new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)) +
-    " </div> </td> <td>" +
-    btn_borrar +
-    "</td>";
+    " </div> </td>";
+  }  
+
+  num_celda++;
+
+  var btn_borrar =
+    "<button type='button' class='btn btn-danger btn-xs btn_eliminar'><i class='fa fa-btn fa-trash'></i></button>";
+
+  celdas[num_celda] = "<td>" +  btn_borrar + "</td>";
 
   var cantidad_celdas = celdas.length;
   var string_celdas = "";

@@ -292,9 +292,19 @@ function calcular_precio_total_lbl(fila)
         new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0))
       );
 
-    fila
+    if ( $('#editar_precio_total_en_linea_registro_factura_pos').val() == 1)
+    {
+        fila
+      .find(".lbl_precio_total")
+      .html( '<div class="elemento_modificar_precio_total" title="Doble click para modificar.">$' + new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)) + '</div>');
+    }else{
+        fila
       .find(".lbl_precio_total")
       .text(new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)));
+    } 
+
+    
+    
 }
 
 /**

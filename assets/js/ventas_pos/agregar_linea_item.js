@@ -150,14 +150,6 @@ function agregar_la_linea()
     $("#efectivo_recibido").removeAttr("readonly");
     $("#efectivo_recibido").css("background-color", "white");
 
-    /*
-    Inactived code.
-    if ( stock_service.lbl_stock_amount != '' )
-    {
-        $(".linea_registro:last").find("td").eq(13).append( stock_service.lbl_stock_amount );        
-    }
-    */
-
     return true;
 }
 
@@ -323,6 +315,11 @@ function mostrar_mensaje_item_agregado()
     $("#popup_alerta").show(200);
 }
 
+/**
+ * 
+ * @param {*} item_id 
+ * @returns 
+ */
 function get_cantidades_ya_ingresadas( item_id )
 {
     var cantidades_ya_ingresadas = 0;
@@ -339,6 +336,12 @@ function get_cantidades_ya_ingresadas( item_id )
     return cantidades_ya_ingresadas;
 }
 
+/**
+ * 
+ * @param {*} item_id 
+ * @param {*} name_grupo_id 
+ * @returns 
+ */
 function item_is_in_group( item_id, name_grupo_id )
 {
     var producto = productos.find((item) => item.id === parseInt( item_id ) );

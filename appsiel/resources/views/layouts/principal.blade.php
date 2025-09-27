@@ -57,7 +57,7 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"> -->
 	<link rel="stylesheet" href="{{ asset('assets/css/jquery.dataTables.min.css') }}">
 
-	<link rel="stylesheet" href="{{ asset('assets/css/mis_estilos.css') }}">
+	<link rel="stylesheet" href="{{ asset('assets/css/mis_estilos.css?aux=' . uniqid()) }}">
 	<link rel="stylesheet" href="{{asset('css/sweetAlert2.min.css')}}">
 	<!-- Select2 -->
 	<link rel="stylesheet" href="{{ asset('assets/bower_components/select2/dist/css/select2.min.css')}}">

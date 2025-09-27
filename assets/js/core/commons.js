@@ -8,5 +8,5 @@ function set_cantidades_ingresadas()
       cantidades_ingresadas += parseFloat( $(this).find(".cantidad").text() );
     });
 
-    $('#cantidades_ingresadas').text(cantidades_ingresadas);
+    $('#cantidades_ingresadas').text(cantidades_ingresadas.toFixed(2));
 }

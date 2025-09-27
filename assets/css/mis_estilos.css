@@ -58,6 +58,14 @@ thead > tr > th {
 	display: inline;
 }
 
+.elemento_modificar_precio_total{
+	border: solid 1px #ddd;
+	border-radius: 4px;
+	padding: 5px;
+	text-align: center;
+	display: inline;
+}
+
 #myTopBtn {
 	/*display: none;*/
 	position: fixed;
