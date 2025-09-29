@@ -368,4 +368,15 @@ class ReportsServices
                                 ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)
                                 ->get();
     }
+    public function get_movimentos_cuentas_bancarias($fecha)
+    {
+        return TesoMovimiento::where([
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
+                                    ['fecha', '=', $fecha]
+                                ])
+                                ->where('teso_caja_id', 0)
+                                ->groupBy('teso_cuenta_bancaria_id')
+                                ->get();
+    }
 }

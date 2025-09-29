@@ -56,6 +56,8 @@
                     @if(config('ventas_pos.mostrar_resumen_ventas_pos_en_arqueo'))
                         @include('tesoreria.arqueo_caja.resumen_ventas_pos')
                     @endif
+                    
+                    @include('tesoreria.arqueo_caja.movimiento_cuentas_bancarias')
 
                     @if( (int)config('ventas_pos.habilitar_facturacion_bolsa') )
                         @include('tesoreria.arqueo_caja.ingresos_por_bolsas')

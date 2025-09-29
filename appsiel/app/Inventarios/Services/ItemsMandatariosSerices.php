@@ -32,8 +32,10 @@ class ItemsMandatariosSerices
             $reference .= $registro->tipo_material->codigo;
         }
 
-        // Adding the ID to the reference is commented out, as it may not be needed.
-        //$reference .= '-' . $registro->id;
+        if( (int)config('inventarios.agregar_ID_en_la_referencia') )
+        {
+            $reference .= '-' . $registro->id;
+        }
         
         return $reference;
     }

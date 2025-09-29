@@ -659,6 +659,29 @@
 					</div>
 
 				</div>
+				
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$agregar_ID_en_la_referencia = '0';
+								if( isset($parametros['agregar_ID_en_la_referencia'] ) )
+								{
+									$agregar_ID_en_la_referencia = $parametros['agregar_ID_en_la_referencia'];
+								}
+							?>
+							{{ Form::bsSelect('agregar_ID_en_la_referencia', $agregar_ID_en_la_referencia, 'Agregar ID de la prenda en la creación/edición', ['No','Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
 
 				<br><br>
 
