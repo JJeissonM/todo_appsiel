@@ -14,7 +14,7 @@
             <thead>
                 <tr>
                     <th colspan="3" style="color: black !important; background-color: #f2f2f2;">
-                        <center><strong>MOVIMIENTOS QR/TRANSF</strong></center>
+                        <center><strong>2. MOVIMIENTOS QR/TRANSF</strong></center>
                     </th>
                 </tr>  
             </thead>

@@ -60,7 +60,7 @@
             <thead>
                 <tr>
                     <td colspan="3" style="color: black!important;text-align: center; background-color: #f2f2f2;">
-                        <center><strong>ARQUEO DE CAJA (EFECTIVO)</strong></center>
+                        <center><strong>3. ARQUEO DE CAJA (EFECTIVO)</strong></center>
                     </td>
                 </tr>       
             </thead>
@@ -123,7 +123,7 @@
             ?>
 
             <tr class="read">
-                <td class="contact"><b>TOTAL ESPERADO</b>{!! $lbl_efectivo_base !!}</td>
+                <td class="contact"><b>T. ESPERADO</b>{!! $lbl_efectivo_base !!}</td>
                 <td class="subject text-center"></td>
                 <td class="subject text-right">
                     <b>${{number_format($efectivo_base + $registro->total_mov_entradas - $registro->total_mov_salidas,'0',',','.')}}</b>

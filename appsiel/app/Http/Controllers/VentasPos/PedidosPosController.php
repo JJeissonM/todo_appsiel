@@ -119,6 +119,7 @@ class PedidosPosController extends TransaccionController
         $valor_total_impuestos = 0;
         $valor_total_factura = 0;
         $total_efectivo_recibido = 0;
+        $valor_total_bolsas = 0;
 
         $vendedores = Vendedor::where('estado','Activo')->get();
 
@@ -132,7 +133,7 @@ class PedidosPosController extends TransaccionController
 
         $precio_bolsa = 0;
 
-        return view('ventas_pos.crud_pedido_pos', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_pedido','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'pdv_descripcion','tipo_doc_app','msj_resolucion_facturacion', 'params_JSPrintManager', 'precio_bolsa'));
+        return view('ventas_pos.crud_pedido_pos', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_pedido','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'pdv_descripcion','tipo_doc_app','msj_resolucion_facturacion', 'params_JSPrintManager', 'precio_bolsa', 'valor_total_bolsas'));
     }
 
     /**
@@ -345,8 +346,9 @@ class PedidosPosController extends TransaccionController
         }
 
         $precio_bolsa = 0;
+        $valor_total_bolsas = 0;
 
-        return view('ventas_pos.crud_pedido_pos', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_pedido', 'redondear_centena', 'numero_linea', 'lineas_registros', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento','msj_resolucion_facturacion', 'params_JSPrintManager', 'precio_bolsa'));
+        return view('ventas_pos.crud_pedido_pos', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_pedido', 'redondear_centena', 'numero_linea', 'lineas_registros', 'total_efectivo_recibido','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento','msj_resolucion_facturacion', 'params_JSPrintManager', 'precio_bolsa', 'valor_total_bolsas'));
     }
 
     /**

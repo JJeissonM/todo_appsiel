@@ -107,7 +107,7 @@
     <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_totales">
         <tbody>
             <tr style="font-weight: bold;">
-                <td style="text-align: right;"> Total factura: </td>
+                <td style="text-align: right;"> Total pedido: </td>
                 <td style="text-align: right;">
                     <div class="lbl_total_factura" style="display: inline; margin-right: 15px;">{{$datos_factura->lbl_total_factura}} </div>
                 </td>

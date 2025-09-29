@@ -15,7 +15,7 @@
             <thead>
                 <tr>
                     <td style="color: black !important; background-color: #f2f2f2;">
-                        <center><strong>1. RESUMEN DE VENTAS POS</strong></center>
+                        <center><strong>RESUMEN DE VENTAS POS</strong></center>
                         @if((int)config('ventas_pos.manejar_propinas'))
                             <center>(No incluye Propinas)</center>
                         @endif
