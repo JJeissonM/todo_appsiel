@@ -123,7 +123,7 @@ class InvProducto extends Model
             $prefijo = '';
         }
 
-        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia')
+        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia' && (int)config('inventarios.mostrar_referencia_en_descripcion_items'))
         {
             $prefijo = $this->referencia . ' ';
             $referencia = '';
@@ -502,7 +502,7 @@ class InvProducto extends Model
         return $registros;
     }
 
-    public static function get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar, $bodega_id, $ordenar_por, $inv_producto_id )
+    public static function get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar, $bodega_id, $ordenar_por, $inv_producto_id, $tipo_prenda_id )
     {
         $array_wheres = [ 
                             ['inv_productos.core_empresa_id' ,'=', Auth::user()->empresa_id],
@@ -552,8 +552,21 @@ class InvProducto extends Model
                                 ->orderBy($ordenar_por,'ASC')
                                 ->get();
 
-        foreach ($registros as $item)
+        foreach ($registros as $key => $item)
         {
+            if ( $tipo_prenda_id != 0 )
+            {
+                $item_mandatario = $item->item_mandatario();
+                if ( $item_mandatario != null )
+                {
+                    if( $item_mandatario->tipo_prenda_id != $tipo_prenda_id )
+                    {
+                        $registros->forget($key);
+                        continue;
+                    }
+                }
+            }
+            
             $tasa_impuesto = 0;
             if ($item->impuesto != null) {
                 $tasa_impuesto = $item->impuesto->get_tasa2($item->id, 0, 0);
@@ -576,6 +589,10 @@ class InvProducto extends Model
             $item->unidad_medida1 = $item->get_unidad_medida1();
 
             $item->descripcion_prenda = $item->descripcion . ' ' . $item->get_color() . ' ' . $item->get_talla();
+
+            if ($item->descripcion_prenda == null) {
+                dd($item->descripcion, $item->get_color(), $item->get_talla());
+            }
             
             $item->descripcion = $item->get_value_to_show(true);
         }

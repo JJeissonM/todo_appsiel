@@ -551,8 +551,10 @@ class ReporteController extends Controller
 
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
+        
+        $tipo_prenda_id = (int)$request->tipo_prenda_id;        
                 
-        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta );
+        $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id );
 
         $route = 'inventarios.reportes.etiquetas_codigos_barra';
         if ( $request->tam_hoja == 'pos_80mm' ) {
@@ -567,9 +569,9 @@ class ReporteController extends Controller
 
     }
 
-    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta)
+    public function get_etiquetas_items($grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id)
     {
-        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id);        
+        $items = InvProducto::get_datos_basicos_ordenados( $grupo_inventario_id, $estado, $items_a_mostrar,null,'inv_productos.id', $inv_producto_id, $tipo_prenda_id);        
 
         if ( Schema::hasTable( 'inv_barcodes_for_print' ) )
         {
@@ -784,7 +786,7 @@ class ReporteController extends Controller
         $purpose_id = $request->purpose_id;
 
         $movements = (new MovementService())->movements_by_purpose($init_date,$end_date,$transaction_type_id,$purpose_id);
-        //dd($movements);
+        
         $vista = View::make( 'inventarios.incluir.movements_by_purposes', compact('movements') )->render();
         
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
