@@ -376,7 +376,8 @@ class ReportsServices
                                     ['fecha', '=', $fecha]
                                 ])
                                 ->where('teso_caja_id', 0)
-                                ->groupBy('teso_cuenta_bancaria_id')
-                                ->get();
+                                ->orderBy('valor_movimiento','DESC')
+                                ->get()
+                                ->groupBy('teso_cuenta_bancaria_id');
     }
 }

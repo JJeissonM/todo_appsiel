@@ -23,6 +23,11 @@ class TesoCuentaBancaria extends Model
         return $this->belongsTo(TesoEntidadFinanciera::class, 'entidad_financiera_id');
     }
 
+    public function get_value_to_show()
+    {
+        return $this->entidad_financiera->descripcion . ' - ' . $this->descripcion;
+    }
+
     /*public $vistas = [ 
                         'create' => 'web',
                         'edit' => ''

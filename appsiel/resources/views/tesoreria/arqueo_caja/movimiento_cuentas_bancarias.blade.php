@@ -5,132 +5,105 @@
 
     $movimentos_cuentas_bancarias = $service->get_movimentos_cuentas_bancarias($registro->fecha);
 
-    dd($movimentos_cuentas_bancarias);
+   //dd($movimentos_cuentas_bancarias);
 ?>
 
-@if( $result->status == 'success')
-    <!-- SOLO VENTAS POS -->
-
+@if( $movimentos_cuentas_bancarias->count() > 0 )
     <div class="row">
-        <div class="col-md-6">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <td colspan="2" style="color: black !important; background-color: #f2f2f2;">
-                            <center><strong>MOVIMIENTOS QR/TRANSF</strong></center>
-                        </td>
-                    </tr>  
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="color: black; text-align: right; width: 50%;">
-                            Efectivo:
-                        </td>
-                        <td style="color: black;">
-                            <?php 
-                                $total_consignaciones = 0;
-                                foreach($result->totales_cuentas_bancarias as $linea_total)
-                                {
-                                    $total_consignaciones += $linea_total['total'];
-                                }
-                            ?>
-                            ${{ number_format($result->total_contado + $total_consignaciones,0,',','.') }}
-
-                        </td>
-                    </tr>
-                    <tr> 
-                        <td style="color: black; text-align: right;">
-                            Crédito:
-                        </td>
-                        <td style="color: black;" colspan="3">
-                            ${{ number_format($result->total_credito,0,',','.') }}
-                        </td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr style="background: #ddd;">
-                        <td style="color: black; font-weight: bold; text-align: right;">
-                            Total ventas:
-                        </td>
-                        <td style="color: black; font-weight: bold;">
-                            ${{ number_format($result->total_contado + $result->total_credito + $total_consignaciones,0,',','.') }}
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-        
-        <div class="col-md-6">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <td colspan="2" style="color: black !important; background-color: #f2f2f2;">
-                            <center><strong>RESUMEN DE INGRESOS DE TESORERÍA</strong></center>
-                            @if((int)config('ventas_pos.manejar_propinas'))
-                                <center>(No incluye Propinas)</center>
-                            @endif
-                            @if((int)config('ventas_pos.manejar_datafono'))
-                                <center>(No incluye Comisión Datafono)</center>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
-                            Efectivo
-                        </td>
-                        <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
-                            QR/Transf.
-                        </td>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                        $total_ingresos_contado = $result->total_contado + $recaudos->where('teso_caja_id', $registro->teso_caja_id)->sum('valor_movimiento');
-                        $total_consignaciones = 0;
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th colspan="3" style="color: black !important; background-color: #f2f2f2;">
+                        <center><strong>MOVIMIENTOS QR/TRANSF</strong></center>
+                    </th>
+                </tr>  
+            </thead>
+            <tbody>
+                @foreach ( $movimentos_cuentas_bancarias as $teso_cuenta_bancaria_id => $grupo)
+                    <?php 
+                        $cuenta_bancaria = $grupo->first()->cuenta_bancaria;
                     ?>
                     <tr>
-                        <td class="subject" style="color: black;">
-                            {{ $registro->caja->descripcion }}: ${{ number_format( $total_ingresos_contado, 0, ',', '.') }}
-                        </td>
-                        <td class="subject" style="color: black;">
-                            <table class="table">
-                                @foreach($result->totales_cuentas_bancarias as $linea_total)
-                                    <tr>
-                                        <td style="text-align: right;">
-                                            {{ $linea_total['label'] }}:
-                                        </td>
-                                        <td style="text-align: right;">
-                                            ${{ number_format($linea_total['total'] + $recaudos->where('teso_cuenta_bancaria_id', $linea_total['teso_cuenta_bancaria_id'])->sum('valor_movimiento'),0,',','.') }}
-                                        </td>
-                                    </tr>
-                                    <?php
-                                        $total_consignaciones += $linea_total['total'] +  $recaudos->where('teso_cuenta_bancaria_id', $linea_total['teso_cuenta_bancaria_id'])->sum('valor_movimiento');
-                                    ?>
-                                @endforeach
-                                <tr style="background: #ddd;">
-                                    <td style="text-align: right;">
-                                        Total QR/Transf.:
-                                    </td>
-                                    <td style="text-align: right;">
-                                        ${{ number_format( $total_consignaciones,0,',','.') }}
-                                    </td>
-                                </tr>
-                            </table>                        
+                        <td colspan="3" style="color: black !important; background-color: #eeeded;">
+                            <center><strong>{{ $cuenta_bancaria->get_value_to_show() }}</strong></center>
                         </td>
                     </tr>
-                </tbody>
-                <tfoot>
-                    <tr style="background: #ddd;">
-                        <td style="color: black; font-weight: bold; text-align: center;" colspan="2">
-                            Total ingresos de Tesorería: ${{ number_format( $total_ingresos_contado + $total_consignaciones,0,',','.') }}
+                    <tr>
+                        <td style="color: black !important; background-color: #f8f6f6;">
+                            <center><strong>MOTIVO</strong></center>
+                        </td>
+                        <td style="color: black !important; background-color: #f8f6f6;">
+                            <center><strong>MOVIMIENTO</strong></center>
+                        </td>
+                        <td style="color: black !important; background-color: #f8f6f6;">
+                            <center><strong>VALOR</strong></center>
                         </td>
                     </tr>
-                </tfoot>
-            </table>
-        </div>
-        
+                    <?php 
+                        $movim_motivo = $grupo->groupBy('teso_motivo_id');
+                        $total_entradas = 0;
+                        $total_salidas = 0;
+                    ?>
+                    @foreach ( $movim_motivo as $grupo_motivo )                            
+                        <?php 
+                            $motivo = $grupo_motivo->first()->motivo;
+                        ?>
+                        <tr>
+                            <td>
+                                {{ $motivo->descripcion }}
+                            </td>
+                            <td style="text-align: center;">
+                                {{ ucwords($motivo->movimiento) }}
+                            </td>
+                            <td style="text-align: right;">
+                                ${{ number_format( abs($grupo_motivo->sum('valor_movimiento')), 0, ',', '.') }}
+                            </td>
+                        </tr> 
+                        
+                        <?php 
+                            if ( $motivo->movimiento == 'entrada') {
+                                $total_entradas += abs($grupo_motivo->sum('valor_movimiento'));
+                            }else{
+                                $total_salidas += abs($grupo_motivo->sum('valor_movimiento'));
+                            }
+                        ?>                       
+                    @endforeach
+                        <tr style="border-top: 3px solid #ddd;">
+                            <td>
+                                Total Entrada
+                            </td>
+                            <td style="text-align: center;">
+                                &nbsp;
+                            </td>
+                            <td style="text-align: right;">
+                                ${{ number_format( $total_entradas, 0, ',', '.') }}
+                            </td>
+                        </tr> 
+                        <tr>
+                            <td>
+                                Total Salida
+                            </td>
+                            <td style="text-align: center;">
+                                &nbsp;
+                            </td>
+                            <td style="text-align: right;">
+                                ${{ number_format( $total_salidas, 0, ',', '.') }}
+                            </td>
+                        </tr> 
+                        <tr style="border-top: 3px solid #ddd;">
+                            <td>
+                                Total Esperado
+                            </td>
+                            <td style="text-align: center;">
+                                &nbsp;
+                            </td>
+                            <td style="text-align: right; font-weight: bold;">
+                                ${{ number_format( $total_entradas - $total_salidas, 0, ',', '.') }}
+                            </td>
+                        </tr> 
+                @endforeach
+            </tbody>
+        </table>
     </div>
     <br>
-@else
-    <b>Nota:</b> {{ $result->message }}
 @endif
