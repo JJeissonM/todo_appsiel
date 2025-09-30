@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('inv_item_mandatario_delete_item_relacionado/{id}', 'Inventarios\ItemMandatarioController@delete_item_relacionado');
+
 Route::get('inv_item_mandatario_update_item_relacionado/{campo}/{item_id}/{nuevo_valor}', 'Inventarios\ItemMandatarioController@update_item_relacionado');
+
 Route::get('inv_item_mandatario_etiquetas_codigos_barra/{mandatario_id}/{item_id}/{cantidad}', 'Inventarios\ItemMandatarioController@etiquetas_codigos_barra');
 
 Route::get('inv_item_mandatario_validar_prenda_unica/{registro_id}/{inv_grupo_id}/{prefijo_referencia_id}/{tipo_prenda_id}/{paleta_color_id}/{tipo_material_id}', 'Inventarios\ItemMandatarioController@validar_prenda_unica');
@@ -12,6 +14,8 @@ Route::resource('inv_item_mandatario', 'Inventarios\ItemMandatarioController');
 
 Route::get('inv_get_formulario_edit_registro','Inventarios\InventarioController@get_formulario_edit_registro');
 Route::post('inv_doc_registro_guardar','Inventarios\InventarioController@doc_registro_guardar');
+
+Route::get('inv_get_tipo_material/{tipo_material_id}', 'Inventarios\ItemMandatarioController@get_tipo_material');
 
 //ficha técnica
 Route::get('ficha_tecnica/{id}','Inventarios\ProductoController@create_ficha');

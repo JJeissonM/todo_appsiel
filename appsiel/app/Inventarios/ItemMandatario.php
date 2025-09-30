@@ -21,7 +21,7 @@ class ItemMandatario extends Model
 {
     protected $table = 'inv_items_mandatarios';
 
-    protected $fillable = [ 'core_empresa_id', 'descripcion', 'unidad_medida1', 'referencia', 'inv_grupo_id', 'impuesto_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'codigo_barras', 'estado', 'creado_por', 'modificado_por' ];
+    protected $fillable = [ 'core_empresa_id', 'descripcion', 'unidad_medida1', 'referencia', 'imagen', 'inv_grupo_id', 'impuesto_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Color', 'Material', 'Tipo', 'Estado'];
 
@@ -179,6 +179,36 @@ class ItemMandatario extends Model
         }
 
         $registro->save();
+    }
+
+    public static function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+        $cantida_campos = count($lista_campos);
+        for ($i = 0; $i <  $cantida_campos; $i++) {
+            switch ($lista_campos[$i]['name']) {
+                case 'lbl_descripcion_de_prenda':
+
+                    $lista_campos[$i]['value'] = '<div style="border-style: outset; margin: 15px; padding: 10px; height: 40px; font-size: 1.2em;"> Descripción Prenda: <span id="lbl_descripcion"> ' . $registro->descripcion  . ' </span> </div> <input type="hidden" id="descripcion" name="descripcion" value="' . $registro->descripcion  . '" />';
+                    
+                    break;
+
+                case 'descripcion_detalle':
+
+                    $descripcion_detalle = str_replace( $registro->tipo_prenda->descripcion . ' ', '', $registro->descripcion );
+                    
+                    $descripcion_detalle = str_replace( ' ' . $registro->tipo_material->descripcion, '', $descripcion_detalle );
+
+                    $lista_campos[$i]['value'] = $descripcion_detalle;
+                    
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+        }
+
+        return $lista_campos;
     }
 
     public function update_adicional($datos, $id)

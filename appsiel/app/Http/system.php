@@ -14,3 +14,7 @@ Route::get('sys_printing_feed_reverse_paper/{line_numbers?}', 'System\PrintingSe
 
 
 Route::get('sys_model_testing', 'Sistema\ModeloController@testing');
+
+Route::get('sys_get_campo_by_name/{campo_name}', 'Sistema\VistaController@get_campo_by_name');
+
+

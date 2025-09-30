@@ -10,7 +10,7 @@ class TipoMaterial extends Model
 {
     protected $table = 'inv_indum_tipos_materiales';
 
-    protected $fillable = ['codigo','descripcion','estado','creado_por','modificado_por'];
+    protected $fillable = ['codigo','descripcion', 'mostrar_en_descripcion_de_prenda', 'estado','creado_por','modificado_por'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código',  'Descripción', 'Estado'];
 
@@ -112,10 +112,11 @@ class TipoMaterial extends Model
     public static function opciones_campo_select()
     {
         $opciones = TipoMaterial::where('estado','Activo')
+                            ->orderBy('descripcion')
                             ->get();
         $vec['']='';
         foreach ($opciones as $opcion){
-            $vec[$opcion->id] = $opcion->codigo.' '.$opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion;
         }
 
         return $vec;

@@ -4,7 +4,6 @@ namespace App\Inventarios\Services;
 
 class ItemsMandatariosSerices
 {
-
     public function build_reference( $datos, $registro )
     {
         if (isset($datos['referencia'])) {

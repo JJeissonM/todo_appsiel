@@ -112,10 +112,11 @@ class TipoPrenda extends Model
     public static function opciones_campo_select()
     {
         $opciones = TipoPrenda::where('estado','Activo')
+                            ->orderBy('descripcion')
                             ->get();
         $vec['']='';
         foreach ($opciones as $opcion){
-            $vec[$opcion->id] = $opcion->codigo.' '.$opcion->descripcion;
+            $vec[$opcion->id] = $opcion->descripcion;
         }
 
         return $vec;

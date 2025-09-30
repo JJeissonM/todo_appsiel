@@ -662,4 +662,18 @@ class VistaController extends Controller
 
         return $valor;
     }
+
+    /**
+     * 
+     */
+    public function get_campo_by_name( $campo_name )
+    {
+        $campo = Campo::where('name', $campo_name)->get()->first();
+
+        if ( $campo == null ) {
+            return json_encode(null);
+        }
+
+        return json_encode($campo->toArray());
+    }
 }

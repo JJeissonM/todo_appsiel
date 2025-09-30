@@ -15,6 +15,7 @@ use App\Inventarios\InvProducto;
 use App\Inventarios\Services\CodigoBarras;
 use App\Inventarios\Services\TallaItem;
 use App\Inventarios\EntradaAlmacen;
+use App\Inventarios\Indumentaria\TipoMaterial;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\MandatarioTieneItem;
 use App\Ventas\ListaPrecioDetalle;
@@ -494,5 +495,19 @@ class ItemMandatarioController extends ModeloController
             'status' => 'ok',
             'message' => 'No existe una prenda con las mismas características.'
         ] );
+    }
+
+    /**
+     * 
+     */
+    public function get_tipo_material( $tipo_material_id )
+    {
+        $tipo_material = TipoMaterial::find( $tipo_material_id );
+
+        if ( $tipo_material == null ) {
+            return null;
+        }
+
+        return response()->json($tipo_material->toArray());
     }
 }
