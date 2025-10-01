@@ -188,7 +188,7 @@ class RegistrosDocumentosController extends TransaccionController
         {
             if ( isset( $request->valor ) )
             {
-                $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i) );
+                $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i), $documento );
             }
 
             if ( isset( $request->cantidad_horas ) )
@@ -202,16 +202,15 @@ class RegistrosDocumentosController extends TransaccionController
         return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros CREADOS correctamente. Nómina: '.$documento->descripcion.', Concepto: '.$concepto->descripcion );
     }
 
-    public function registrar_por_valor( $concepto, $core_tercero_id, $datos, $valor )
+    public function registrar_por_valor( $concepto, $core_tercero_id, $datos, $valor, $documento )
     {
         if ( $valor > 0 ) 
         {
             $valores = $this->get_valor_devengo_deduccion( $concepto->naturaleza, $valor );
 
-            $contrato = NomContrato::where([
-                                        ['core_tercero_id','=',$core_tercero_id],
-                                        ['estado','=','Activo']
-                                    ])->get()->first();
+            $empleados_del_documento = $documento->empleados;
+
+            $contrato =$empleados_del_documento->where('core_tercero_id',(int)$core_tercero_id)->first();
 
             NomDocRegistro::create(
                                     $datos +
@@ -296,7 +295,7 @@ class RegistrosDocumentosController extends TransaccionController
                 {
                     if ( isset( $request->valor ) )
                     {
-                        $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i) );
+                        $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i), $documento );
                     }
 
                     if ( isset( $request->cantidad_horas ) )
