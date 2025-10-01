@@ -3,16 +3,17 @@
 namespace App\Inventarios\Services;
 
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvProducto;
 use App\VentasPos\Movimiento;
 
 class FiltroMovimientos
 {
 	public $movimiento;
-
+	/*
 	public function __construct()
 	{
 		$this->movimiento = new InvMovimiento();
-	}/**/
+	}*/
 
 	public function filtro_entre_fechas( $fecha_ini, $fecha_fin )
 	{
@@ -48,7 +49,7 @@ class FiltroMovimientos
 		}
 	}
 
-	public function aplicar_filtros( $fecha_ini, $fecha_fin, $inv_bodega_id, $inv_grupo_id, $item_id )
+	public function aplicar_filtros( $fecha_ini, $fecha_fin, $inv_bodega_id, $inv_grupo_id, $item_id, $tipo_prenda_id )
 	{
         $array_wheres = [ 
 			['inv_movimientos.fecha', '<=', $fecha_fin],
@@ -70,9 +71,48 @@ class FiltroMovimientos
             $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_producto_id' => $item_id] );
         }	
 
-		return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+		$movin_filtrado = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
 					->where($array_wheres)
 					->select('inv_movimientos.*','inv_productos.estado')
+					->get();
+
+		$new_movim = collect([]);
+        if( $tipo_prenda_id != 0)
+        {
+            foreach ($movin_filtrado as $linea_movimiento) {
+
+                $item_mandatario = $linea_movimiento->producto->item_mandatario();
+                if ( $item_mandatario != null) {
+                    if( $item_mandatario->tipo_prenda_id != $tipo_prenda_id)
+                    {
+                        continue;
+                    }
+                }
+
+                $new_movim->push($linea_movimiento);
+            }
+
+        }else{
+            $new_movim = $movin_filtrado;
+        }
+
+		return $new_movim;
+	}
+
+	public function items_con_movimientos( $fecha_fin, $inv_bodega_id, array $items_ids )
+	{
+        $array_wheres = [ 
+			['inv_movimientos.fecha', '<=', $fecha_fin]
+		];
+
+        if ( $inv_bodega_id != '' )
+        {
+            $array_wheres = array_merge( $array_wheres, ['inv_movimientos.inv_bodega_id' => $inv_bodega_id] );
+        }
+
+		return InvMovimiento::where($array_wheres)
+					->whereIn('inv_movimientos.inv_producto_id',$items_ids)
+					->select('inv_movimientos.*')
 					->get();
 	}
 

@@ -23,7 +23,7 @@ class ItemMandatario extends Model
 
     protected $fillable = [ 'core_empresa_id', 'descripcion', 'unidad_medida1', 'referencia', 'imagen', 'inv_grupo_id', 'impuesto_id', 'paleta_color_id', 'prefijo_referencia_id', 'tipo_material_id', 'tipo_prenda_id', 'estado', 'creado_por', 'modificado_por' ];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Color', 'Material', 'Tipo', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Ref.', 'Descripción', 'Color', 'Material', 'Tipo', 'Categoría', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"inv_item_mandatario/id_fila","store":"web","update":"web/id_fila","eliminar":"web_eliminar/id_fila"}';
 
@@ -90,6 +90,7 @@ class ItemMandatario extends Model
         return ItemMandatario::leftJoin('inv_indum_tipos_prendas','inv_indum_tipos_prendas.id','=','inv_items_mandatarios.tipo_prenda_id')
         ->leftJoin('inv_indum_tipos_materiales','inv_indum_tipos_materiales.id','=','inv_items_mandatarios.tipo_material_id')
         ->leftJoin('inv_indum_paletas_colores','inv_indum_paletas_colores.id','=','inv_items_mandatarios.paleta_color_id')
+        ->leftJoin( 'inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.inv_grupo_id')
         ->where($array_wheres)
             ->select(
                 'inv_items_mandatarios.referencia AS campo1',
@@ -97,8 +98,9 @@ class ItemMandatario extends Model
                 DB::raw('CONCAT(inv_indum_paletas_colores.descripcion," (",inv_indum_paletas_colores.codigo,") ") AS campo3'),
                 DB::raw('CONCAT(inv_indum_tipos_materiales.descripcion," (",inv_indum_tipos_materiales.codigo,") ") AS campo4'),
                 DB::raw('CONCAT(inv_indum_tipos_prendas.descripcion," (",inv_indum_tipos_prendas.codigo,") ") AS campo5'),
-                'inv_items_mandatarios.estado AS campo6',
-                'inv_items_mandatarios.id AS campo7'
+                'inv_grupos.descripcion AS campo6',
+                'inv_items_mandatarios.estado AS campo7',
+                'inv_items_mandatarios.id AS campo8'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.referencia", "LIKE", "%$search%")
@@ -106,6 +108,7 @@ class ItemMandatario extends Model
             ->orWhere("inv_indum_tipos_prendas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_indum_tipos_materiales.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_indum_paletas_colores.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.estado", "LIKE", "%$search%")
             ->orderBy('inv_items_mandatarios.created_at', 'DESC')
             ->paginate($nro_registros);
@@ -120,6 +123,7 @@ class ItemMandatario extends Model
         $string = ItemMandatario::leftJoin('inv_indum_tipos_prendas','inv_indum_tipos_prendas.id','=','inv_items_mandatarios.tipo_prenda_id')
         ->leftJoin('inv_indum_tipos_materiales','inv_indum_tipos_materiales.id','=','inv_items_mandatarios.tipo_material_id')
         ->leftJoin('inv_indum_paletas_colores','inv_indum_paletas_colores.id','=','inv_items_mandatarios.paleta_color_id')
+        ->leftJoin( 'inv_grupos', 'inv_grupos.id', '=', 'inv_items_mandatarios.inv_grupo_id')
         ->where($array_wheres)
             ->select(
                 'inv_items_mandatarios.id AS CÓDIGO',
@@ -128,6 +132,7 @@ class ItemMandatario extends Model
                 DB::raw('CONCAT(inv_indum_tipos_prendas.descripcion," (",inv_indum_tipos_prendas.codigo,") ") AS TIPO_PRENDA'),
                 DB::raw('CONCAT(inv_indum_tipos_materiales.descripcion," (",inv_indum_tipos_materiales.codigo,") ") AS TIPO_MATERIAL'),
                 DB::raw('CONCAT(inv_indum_paletas_colores.descripcion," (",inv_indum_paletas_colores.codigo,") ") AS COLOR'),
+                'inv_grupos.descripcion AS CATEGORIA',
                 'inv_items_mandatarios.estado AS ESTADO'
             )
             ->where("inv_items_mandatarios.id", "LIKE", "%$search%")
@@ -136,6 +141,7 @@ class ItemMandatario extends Model
             ->orWhere("inv_indum_tipos_prendas.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_indum_tipos_materiales.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_indum_paletas_colores.descripcion", "LIKE", "%$search%")
+            ->orWhere("inv_grupos.descripcion", "LIKE", "%$search%")
             ->orWhere("inv_items_mandatarios.estado", "LIKE", "%$search%")
             ->orderBy('inv_items_mandatarios.created_at', 'DESC')
             ->toSql();

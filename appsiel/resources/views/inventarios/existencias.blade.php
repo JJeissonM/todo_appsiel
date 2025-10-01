@@ -13,6 +13,12 @@
 		{{ Form::select('grupo_inventario_id',$grupo_inventario,null,['class'=>'form-control','id'=>'grupo_inventario_id']) }}
 <br>
 
+		@if( !empty($prefijos_referencias) )			
+			{{ Form::label('prefijo_referencia_id', config('inventarios.etiqueta_prefijo_referencia') ) }}
+			{{ Form::select('prefijo_referencia_id',$prefijos_referencias,null,['class'=>'form-control','id'=>'prefijo_referencia_id']) }}
+			<br>			
+		@endif
+
 		@if( !empty($tipos_de_prendas) )
 			
 			{{ Form::label('tipo_prenda_id','Tipo de prenda') }}

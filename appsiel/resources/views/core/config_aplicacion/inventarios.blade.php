@@ -677,7 +677,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php
+								$etiqueta_prefijo_referencia = 'Unidad de negocio';
+								if( isset($parametros['etiqueta_prefijo_referencia'] ) )
+								{
+									$etiqueta_prefijo_referencia = $parametros['etiqueta_prefijo_referencia'];
+								}
+							?>
+							{{ Form::bsText('etiqueta_prefijo_referencia', $etiqueta_prefijo_referencia, 'Etiqueta a mostrar para el campo <Prefijo> de Prendas', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
