@@ -1,5 +1,6 @@
 @extends( 'calificaciones.boletines.formatos.layout' )
 
+<!-- PRESCOLAR -->
 @section('contenido_formato')
 
 	@foreach($datos as $registro)

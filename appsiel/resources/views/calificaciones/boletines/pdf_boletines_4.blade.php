@@ -1,5 +1,6 @@
 @extends( 'calificaciones.boletines.formatos.layout' )
 
+<!-- RESUMEN -->
 @section('contenido_formato')
 
 	<?php
@@ -15,7 +16,7 @@
 
 		$label_columna = 'Prom.';
 		if ( $mostrar_calificacion_requerida ) {
-			$label_columna = 'Nota <br> Mínima <br> Requerida';
+			$label_columna = 'Nota Mín. Requerida';
 		}
 	?>
 

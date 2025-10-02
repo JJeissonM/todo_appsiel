@@ -36,7 +36,7 @@
 				<th>Cód.</th>
 				<th>Cód. Barras</th>
 				<th>Talla</th>
-				<th>Costo prom.</th>
+				<!-- <th>Costo prom.</th> -->
 				<th>P. ventas</th>
 				<th>Estado</th>
 				<th>Acción</th>
@@ -55,7 +55,8 @@
 					<td align="center"> {{ $item->id }} </td>
 					<td class="referencia_item" align="center"><div class="elemento_modificar_no" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/referencia/" . $item->id }}"> {{ $item->codigo_barras }}</div></td>
 					<td class="talla_item" align="center"><div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('inv_item_mandatario_update_item_relacionado') . "/talla/" . $item->id }}"> {{ $item->unidad_medida2 }}</td>
-					<td align="right"> ${{ number_format($item->get_costo_promedio(),0,',','.') }} </td>
+					<!-- <td align="right"> ${ { number_format($item->get_costo_promedio(),0,',','.') }} </td>
+					-->
 					<td align="right"> ${{ number_format($item->get_precio_venta(),0,',','.') }} </td>
 					<td align="center"> {{ $item->estado }} </td>
 					<td align="center">
@@ -82,7 +83,7 @@
 		</tbody>
 		<tfoot>
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <button style="background-color: transparent; color: #3394FF; border: none;" class="btn_nuevo_item_relacionado">
                     	<i class="fa fa-btn fa-plus"></i> Agregar registro
                     	<span data-mandatario_id="{{ $registro->id }}"></span>
