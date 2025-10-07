@@ -11,13 +11,23 @@
     <div class="marco_formulario">
         <div class="row">
             <div class="col-md-6">
-                
+
+                <input type="hidden" name="msj_resolucion_facturacion" id="msj_resolucion_facturacion"
+        value="{{ $msj_resolucion_facturacion }}">
+                @if ( $msj_resolucion_facturacion != '')
+                    <div class="container" style="clear: both; width: auto;">      
+                        <div class="alert alert-danger alert-dismissible">
+                            <em><i class="fa fa-times" aria-hidden="true"></i> {!! $msj_resolucion_facturacion !!}</em>
+                        </div>
+                    </div>
+                @endif
             </div>
             <div class="col-md-6">
                 @include('ventas.incluir.lista_facturas_electronicas',['titulo'=>'Fact. Electrónicas pendientes por enviar'])
             </div>
         </div>
     </div>
+
 
 @endsection
 
@@ -29,6 +39,14 @@
 	var es_el_primero = true;
 	var arr_ids_facturas = '';
 	var restantes;
+    
+    if ( $('#msj_resolucion_facturacion').val() != '') {
+        Swal.fire({
+            icon: 'error',
+            title: 'Alerta!',
+            text: $('#msj_resolucion_facturacion').val()
+        });
+    }
 
 	$(document).ready(function(){
 

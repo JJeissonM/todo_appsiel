@@ -4,6 +4,7 @@ namespace App\VentasPos\Services;
 
 use App\Contabilidad\ContabMovimiento;
 use App\Core\Services\ResolucionFacturacionService;
+use App\Core\TipoDocApp;
 use App\CxC\CxcAbono;
 use App\CxC\CxcMovimiento;
 use App\Inventarios\InvDocEncabezado;
@@ -29,7 +30,13 @@ class FacturaPosService
 {
     public function get_msj_resolucion_facturacion( $pdv )
     {
-        $obj_resolucion_facturacion = $this->get_obj_resolucion_facturacion( $pdv );
+        $tipo_doc_app = $pdv->tipo_doc_app;
+        if( (int)config('ventas_pos.modulo_fe_activo') )
+        {
+            $tipo_doc_app = TipoDocApp::find( (int)config('facturacion_electronica.document_type_id_default') );
+        }
+
+        $obj_resolucion_facturacion = $this->get_obj_resolucion_facturacion( $tipo_doc_app, $pdv->core_empresa_id );
 
         $msj_resolucion_facturacion = '';
         $status = 'success';
@@ -46,9 +53,9 @@ class FacturaPosService
         ];
     }
 
-    public function get_obj_resolucion_facturacion( $pdv )
+    public function get_obj_resolucion_facturacion( $tipo_doc_app, $core_empresa_id )
     {
-        return (new ResolucionFacturacionService())->validate_resolucion_facturacion($pdv->tipo_doc_app, $pdv->core_empresa_id);
+        return (new ResolucionFacturacionService())->validate_resolucion_facturacion($tipo_doc_app, $core_empresa_id);
     }
 
     public function ajustar_campos( $lista_campos, $pdv, $vendedor, $transaccion )

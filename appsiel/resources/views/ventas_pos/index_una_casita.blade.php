@@ -114,11 +114,9 @@
                         @endcan
                         
                         @can('vtas_pos_no_facturar_pdv')
-
                             @can('vtas_pos_btn_facturar_restaurante')
                                 {!! $btn_facturar_restaurante !!}
                             @endcan
-
                         @else 
                             {!! $btn_facturar !!}
                         @endcan

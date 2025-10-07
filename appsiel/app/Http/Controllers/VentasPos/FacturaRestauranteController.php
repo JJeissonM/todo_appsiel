@@ -143,8 +143,9 @@ class FacturaRestauranteController extends TransaccionController
         $resolucion_facturacion_electronica = $factura_pos_service->get_resolucion_facturacion_electronica();
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
+        $valor_total_bolsas = 0;
 
-        return view('ventas_pos.restaurante.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica', 'precio_bolsa'));
+        return view('ventas_pos.restaurante.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
     }
 
 }

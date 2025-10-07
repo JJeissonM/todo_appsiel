@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\FacturacionElectronica;
 
+use App\Core\Services\ResolucionFacturacionService;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Core\TransaccionController;
@@ -23,6 +24,7 @@ use App\Inventarios\RemisionVentas;
 use App\Ventas\Services\DocumentHeaderService as VtasDocumentHeaderService;
 use App\VentasPos\FacturaPos;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;

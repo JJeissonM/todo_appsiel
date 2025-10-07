@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\FacturacionElectronica;
 
+use App\Core\Services\ResolucionFacturacionService;
+use App\Core\TipoDocApp;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
 use App\Http\Controllers\Controller;
 
@@ -13,12 +15,18 @@ use App\Ventas\VtasDocEncabezado;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Redirect;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
 
 class AplicacionController extends Controller
 {
     public function index()
     {
-    	return view('facturacion_electronica.index');
+
+        $tipo_doc_app = TipoDocApp::find( (int)config('facturacion_electronica.document_type_id_default') );
+
+        $msj_resolucion_facturacion = (new ResolucionFacturacionService())->validate_resolucion_facturacion($tipo_doc_app, Auth::user()->empresa_id)->message;
+
+    	return view('facturacion_electronica.index', compact('msj_resolucion_facturacion'));
     }
 
     // SOLO DATAICO

@@ -113,7 +113,8 @@ class FacturaPosController extends TransaccionController
         /**
          * Validar resolución de Facturación
          */
-        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );        
+        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );
+        
         if ( $msj_resolucion_facturacion->status == 'error' )
         {
             return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
