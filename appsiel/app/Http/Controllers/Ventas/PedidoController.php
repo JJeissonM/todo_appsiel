@@ -387,7 +387,12 @@ class PedidoController extends TransaccionController
     */
     public function imprimir($id)
     {
-        $documento_vista = $this->generar_documento_vista($id, 'ventas.pedidos.formatos_impresion.'.Input::get('formato_impresion_id') );
+        $formato_impresion_id = Input::get('formato_impresion_id');
+        if ( $formato_impresion_id == null ) {
+            $formato_impresion_id = 'estandar';
+        }
+
+        $documento_vista = $this->generar_documento_vista($id, 'ventas.pedidos.formatos_impresion.'.$formato_impresion_id );
 
         // Se prepara el PDF
         $orientacion = 'portrait';
