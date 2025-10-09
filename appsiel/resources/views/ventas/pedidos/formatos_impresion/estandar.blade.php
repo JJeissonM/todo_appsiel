@@ -76,6 +76,9 @@
                         <td> {{ $linea->item->get_value_to_show() }} </td>
                         <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     </tr>
+                    <?php 
+                        $i++;
+                    ?>
                 @endforeach
             </tbody>
         </table>
