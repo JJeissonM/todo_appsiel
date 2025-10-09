@@ -1,8 +1,8 @@
 <h3> Flujo de efectivo </h3>
 <hr>
-<table class="table table-bordered tabla_registros" style="margin-top: -4px;">
+<table class="table table-bordered tabla_registros" style="margin-top: -4px; font-size: 0.8em;">
     <thead>
-        <tr>
+        <tr style="font-size: 0.85em;">
         @for($i = 0; $i < $columns; $i++)
             <th>
                 {{ $data_array[0][$i] }}

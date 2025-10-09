@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <table class="">
+    <table>
         <tr>
             <td style="border: none" width="60%">
                 <div class="headempresa">
@@ -60,7 +60,7 @@
 
         
         <table class="table table-bordered table-striped">
-            {{ Form::bsTableHeader(['No.','Ítem','Cantidad']) }}
+            {{ Form::bsTableHeader(['Ítem','Cantidad']) }}
             <tbody>
                 <?php 
                 $i = 1;
@@ -72,7 +72,6 @@
                 ?>
                 @foreach($doc_registros as $linea )
                     <tr>
-                        <td width="12.5%" class="text-center"> {{ $i }} </td>
                         <td> {{ $linea->item->get_value_to_show() }} </td>
                         <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     </tr>
