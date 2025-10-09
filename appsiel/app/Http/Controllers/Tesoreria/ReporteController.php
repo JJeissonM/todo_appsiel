@@ -6,8 +6,6 @@ use Illuminate\Http\Request;
 
 use App\Core\Acl;
 
-use Lava;
-
 use App\Http\Controllers\Core\ConfiguracionController;
 use App\Matriculas\Matricula;
 use App\Matriculas\Curso;
@@ -16,7 +14,7 @@ use App\Core\Colegio;
 use App\Core\TipoDocApp;
 use App\Core\Tercero;
 use App\Sistema\Aplicacion;
-
+use App\Tesoreria\Services\ReportsServices;
 use App\Tesoreria\TesoLibretasPago;
 use App\Tesoreria\TesoRecaudosLibreta;
 use App\Tesoreria\TesoPlanPagosEstudiante;
@@ -32,6 +30,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Khill\Lavacharts\Laravel\LavachartsFacade;
 
 class ReporteController extends TesoreriaController
 {
@@ -86,7 +85,7 @@ class ReporteController extends TesoreriaController
         }
 
 
-        $stocksTable1 = Lava::DataTable();
+        $stocksTable1 = LavachartsFacade::DataTable();
         $stocksTable1->addDateColumn('Fecha')
             ->addNumberColumn('Recaudos')
             ->addNumberColumn('Pagos');
@@ -104,7 +103,7 @@ class ReporteController extends TesoreriaController
         }
 
         // Se almacena la gráfica en movimiento_tesoreria, luego se llama en la vista [ como mágia :) ]
-        Lava::BarChart('movimiento_tesoreria', $stocksTable1, [
+        LavachartsFacade::BarChart('movimiento_tesoreria', $stocksTable1, [
             'is3D' => True,
             'orientation' => 'horizontal',
         ]);
@@ -150,7 +149,7 @@ class ReporteController extends TesoreriaController
 
 
         // Creación de gráfico de Torta MATRICULAS
-        $stocksTable1 = Lava::DataTable();
+        $stocksTable1 = LavachartsFacade::DataTable();
 
         $stocksTable1->addStringColumn('Meses')
             ->addNumberColumn('Valor');
@@ -181,14 +180,14 @@ class ReporteController extends TesoreriaController
             }
         }
 
-        $chart1 = Lava::PieChart('torta_matriculas', $stocksTable1, [
+        $chart1 = LavachartsFacade::PieChart('torta_matriculas', $stocksTable1, [
             'is3D'                  => True,
             'pieSliceText'          => 'value'
         ]);
 
 
         // Creación de gráfico de Torta PENSIONES
-        $stocksTable = Lava::DataTable();
+        $stocksTable = LavachartsFacade::DataTable();
 
         $stocksTable->addStringColumn('Meses')
             ->addNumberColumn('Valor');
@@ -219,7 +218,7 @@ class ReporteController extends TesoreriaController
             }
         }
 
-        $chart = Lava::PieChart('torta_pensiones', $stocksTable, [
+        $chart = LavachartsFacade::PieChart('torta_pensiones', $stocksTable, [
             'is3D'                  => True,
             'pieSliceText'          => 'value'
         ]);
@@ -256,10 +255,32 @@ class ReporteController extends TesoreriaController
         return view('tesoreria.flujo_de_efectivo', compact('miga_pan', 'terceros'));
     }
 
+    /**
+     * 
+     */
     public function ajax_flujo_de_efectivo(Request $request)
     {
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
+
+        $flujo_efectivo_tipo_reporte = $request->flujo_efectivo_tipo_reporte;
+
+        if ( $flujo_efectivo_tipo_reporte == 'columnario')
+        {
+            $data_array = (new ReportsServices())->build_array( $request->all() );
+
+            $rows = count( $data_array );
+
+            $columns = count( $data_array[0] );
+
+            $vista = View::make('tesoreria.reportes.flujo_efectivo_columnario', compact( 'data_array', 'rows', 'columns') )->render();
+
+            Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+            return $vista;            
+        }
+
+        //dd('stop');
 
         $saldo_inicial = 0;
 
@@ -269,8 +290,6 @@ class ReporteController extends TesoreriaController
         }
 
         $movimiento_entradas = TesoMovimiento::movimiento_por_tipo_motivo('entrada', $fecha_desde, $fecha_hasta)->toArray();
-        
-        //dd($movimiento_entradas);
         
         $movimiento_salidas = TesoMovimiento::movimiento_por_tipo_motivo('salida', $fecha_desde, $fecha_hasta)->toArray();
 
@@ -283,7 +302,7 @@ class ReporteController extends TesoreriaController
             Se debe cambiar la $tabla2 por una vista que ya está creada, solo falta terminarla
             View::make('tesoreria.incluir.flujo_efectivo_tabla', compact( variables requeridas por la vista))
         */
-        $tabla2 = '<h3> Flujo de efectivo </h3><p>Nota: no se tienen en cuenta los movimientos con motivo tipo <b>Traslado</b>.</p><hr><table class="table table-striped tabla_registros" style="margin-top: -4px;">
+        $tabla2 = '<h3> Flujo de efectivo </h3><hr><table class="table table-striped tabla_registros" style="margin-top: -4px;">
                         <thead>
                             <tr>
                                 <th>
