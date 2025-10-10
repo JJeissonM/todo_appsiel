@@ -417,8 +417,6 @@
 						
 							if( item.attr('data-producto_id') === undefined )
 							{
-								//alert('El producto ingresado no existe.');
-								//reset_linea_ingreso_default();
 								$('#inv_producto_id').select();
 							}else{
 								seleccionar_producto( item );
@@ -472,7 +470,11 @@
 						
 						if( item.attr('data-producto_id') === undefined )
 						{
-							alert('El producto ingresado no existe.');
+							Swal.fire({
+							icon: 'warning',
+							title: '¡Atención!',
+							text: 'El producto ingresado no existe.'
+						});
 							reset_linea_ingreso_default();
 						}else{
 							seleccionar_producto( item );
@@ -690,13 +692,29 @@
 				}
 
 				var valor_total_recaudos = $('#total_valor_total').text();
+
+				if($('#forma_pago').val() == 'contado'){
+					if( parseFloat( valor_total_recaudos.substring(1) ) === 0 )
+					{
+						Swal.fire({
+							icon: 'warning',
+							title: '¡Atención!',
+							text: 'Debe ingresar un medio de pago cuando la factura es de contado.'
+						});
+						return false;
+					}
+				}
 				
 				// Se reemplaza varias veces el "." por vacio, y luego la coma por punto
 				var total_factura = $('#total_factura').text().replace(".","").replace(".","").replace(".","").replace(".","").replace(",",".");
 
 				if( valor_total_recaudos !== '$0.00' && parseFloat( valor_total_recaudos.substring(1) ) !== parseFloat( total_factura.substring(2) )  )
 				{
-					alert('El total de recaudos no coincide con el total de la factura.');
+					Swal.fire({
+							icon: 'warning',
+							title: '¡Atención!',
+							text: 'El total de Medios de pagos no coincide con el Total de la factura.'
+						});
 					return false;
 				}
 

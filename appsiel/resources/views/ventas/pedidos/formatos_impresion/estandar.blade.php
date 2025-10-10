@@ -31,8 +31,6 @@
                     <br/>
                     <b>Fecha:</b> {{ $doc_encabezado->fecha }}
                     <br/>
-                    <b>Fecha Entrega:</b> {{ $doc_encabezado->fecha_entrega }}
-                    <br/>
                     <b>Atendido por:</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
                 </div>          
                 
@@ -40,6 +38,11 @@
         </tr>
     </table>
 
+<div class="row">
+    <div style="text-align: center; width: 100%; font-size: 1.3em; padding: 5px;">
+        <b>Fecha Entrega:</b> {{ $doc_encabezado->fecha_entrega }}
+    </div>
+</div>
     
 <div class="subhead">
     @if($doc_encabezado->estado == 'Anulado')
@@ -49,7 +52,6 @@
         </div>
         <br><br>
     @endif
-    
 </div>
     
 
@@ -59,7 +61,7 @@
         <div style="text-align: center; background-color: #ddd;"> <span style="text-align: right; font-weight: bold;"> Productos del pedido </span> </div>
 
         
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped" style="font-size: 1.15em;">
             {{ Form::bsTableHeader(['Ítem','Cantidad']) }}
             <tbody>
                 <?php 
@@ -72,8 +74,8 @@
                 ?>
                 @foreach($doc_registros as $linea )
                     <tr>
-                        <td> {{ $linea->item->get_value_to_show() }} </td>
-                        <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
+                        <td style="padding: 5px;"> <b>{{ str_replace('(UND)', '', $linea->item->get_value_to_show()) }}</b> </td>
+                        <td width="12.5%" class="text-center"> {{ number_format( $linea->cantidad, $cantidad_decimales, ',', '.') }} </td>
                     </tr>
                     <?php 
                         $i++;

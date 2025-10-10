@@ -25,6 +25,7 @@ use App\Ventas\VtasDocRegistro;
 
 use App\Contabilidad\Impuesto;
 use App\Http\Controllers\Tesoreria\RecaudoController;
+use App\Inventarios\ItemMandatario;
 use App\Sistema\Modelo;
 use App\Tesoreria\TesoMotivo;
 use App\Ventas\ListaDctoDetalle;
@@ -474,7 +475,14 @@ class PedidoController extends TransaccionController
 
         $etiquetas = $this->get_etiquetas();
 
-        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas','contacto'))->render();
+        $cantidad_decimales = 2;
+        
+        if( ItemMandatario::get()->count() > 0 )
+        {
+            $cantidad_decimales = 0;
+        }
+
+        return View::make( $ruta_vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'resolucion','etiquetas','contacto', 'cantidad_decimales'))->render();
     }
 
     public function get_etiquetas()
