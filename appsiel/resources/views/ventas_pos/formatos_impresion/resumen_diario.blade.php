@@ -4,9 +4,9 @@
     <title> Comprobante Informe Diario </title>
 
     <style type="text/css">
-        body{
+        .wrapper{
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 11px;
+            font-size: 12px;
         }
 
         @page {
@@ -31,6 +31,9 @@
 </head>
 <body>
 
+    <div class="wrapper">
+
+    
     @if( empty($data_by_items->toArray()) )
         <h3>No hay movimiento de ventas en la fecha seleccionada.</h3>
     @else
@@ -184,6 +187,8 @@
             
         </table>
     @endif
+
+    </div>
 </body>
 
 </html>
