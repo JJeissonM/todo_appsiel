@@ -134,6 +134,45 @@ class InvProducto extends Model
         return $prefijo . $descripcion_item;
     }
 
+    public function get_value_to_show_interno( $ocultar_id = false )
+    {
+        $descripcion_item = $this->descripcion;
+
+        $descripcion_item .= $this->get_color();
+
+        $descripcion_item .= $this->get_tipo_material();
+
+        $talla = $this->get_talla();
+        
+        $referencia = '';
+        if( (int)config('inventarios.mostrar_referencia_en_descripcion_items') && $this->referencia != '')
+        {
+            if($this->referencia != '')
+            {
+                $referencia = ' - ' . $this->referencia;
+            }
+        }
+        
+        $codigo_proveedor = $this->get_codigo_proveedor();
+
+        $prefijo = $this->id . ' ';
+
+        if ( $ocultar_id )
+        {
+            $prefijo = '';
+        }
+
+        if (config('inventarios.codigo_principal_manejo_productos') == 'referencia' && (int)config('inventarios.mostrar_referencia_en_descripcion_items'))
+        {
+            $prefijo = $this->referencia . ' ';
+            $referencia = '';
+        }
+
+        $descripcion_item .= $talla . $referencia . $codigo_proveedor;
+
+        return $prefijo . $descripcion_item;
+    }
+
     /**
      * 
      */
@@ -160,6 +199,20 @@ class InvProducto extends Model
         }
 
         return $color;
+    }
+
+    /**
+     * 
+     */
+    public function get_tipo_material()
+    {        
+        $tipo_material = '';
+        if( $this->item_mandatario() != null )
+        {
+            $tipo_material = ' ' . $this->item_mandatario()->tipo_material->descripcion;
+        }
+
+        return $tipo_material;
     }
 
     /**

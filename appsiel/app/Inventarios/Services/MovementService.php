@@ -197,7 +197,7 @@ class MovementService
                 }
 
                 $productos[$i]['id'] = $item->id;
-                $productos[$i]['descripcion'] = $item->get_value_to_show(true);
+                $productos[$i]['descripcion'] = $item->get_value_to_show_interno(true);
 
                 $productos[$i]['unidad_medida1'] = $item->get_unidad_medida1();
                 $productos[$i]['unidad_medida2'] = $item->unidad_medida2;
