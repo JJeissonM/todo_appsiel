@@ -6,7 +6,7 @@
     <style type="text/css">
         .wrapper{
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 13px;
+            font-size: 14px;
         }
 
         @page {
