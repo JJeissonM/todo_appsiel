@@ -49,7 +49,7 @@
                         <td> {{ $documento->cliente->tercero->descripcion }} </td>
                         <td> {{ $documento->vendedor->tercero->descripcion }} </td>
                         <td> {{ $documento->estado }} </td>
-                        <td> {{ $linea->producto->get_value_to_show() }} </td>
+                        <td> {{ str_replace('(UND)', '', $linea->producto->get_value_to_show() ) }} </td>
                         <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
                         <td align="right"> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
                         <td align="right"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
