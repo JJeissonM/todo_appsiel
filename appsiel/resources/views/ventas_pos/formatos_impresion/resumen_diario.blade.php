@@ -66,7 +66,7 @@
                         ?>
                         @foreach ( $data_by_items as $movin_grupo)
                                 <?php 
-                                    $descripcion_prefijo = 'Sin Categoría';
+                                    $descripcion_prefijo = 'OTROS';
                                     if( $movin_grupo['prefijo'] != null ) {
                                         $descripcion_prefijo = $movin_grupo['prefijo']->descripcion;
                                     }
@@ -94,7 +94,7 @@
                                     @foreach ( $items_movim as $movim_line )
                                         <tr>
                                             <td>
-                                                {{ $movim_line['item']->get_value_to_show(true) }}
+                                                {{ str_replace('(UND)', '', $movim_line['item']->get_value_to_show(true) ) }}
                                             </td>
                                             <td align="center">
                                                 {{ $movim_line['cantidad'] }}
