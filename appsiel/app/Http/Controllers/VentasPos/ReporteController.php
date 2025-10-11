@@ -576,7 +576,7 @@ class ReporteController extends Controller
                 'vtas_pos_movimientos.*',
                 'inv_indum_prefijos_referencias.id AS item_prefijo_id'
             )
-            ->orderBy('vtas_pos_movimientos.consecutivo')
+            ->orderBy('inv_indum_prefijos_referencias.descripcion','DESC')
             ->get();
         
         $movin_por_grupos = $movimientos->groupBy('item_prefijo_id');

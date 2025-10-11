@@ -6,7 +6,7 @@
     <style type="text/css">
         .wrapper{
             font-family: Arial, Helvetica, sans-serif;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         @page {
@@ -69,7 +69,7 @@
                         ?>
                         @foreach ( $data_by_items as $movin_grupo)
                                 <?php 
-                                    $descripcion_prefijo = 'OTROS';
+                                    $descripcion_prefijo = 'VARIOS/OTROS';
                                     if( $movin_grupo['prefijo'] != null ) {
                                         $descripcion_prefijo = $movin_grupo['prefijo']->descripcion;
                                     }
