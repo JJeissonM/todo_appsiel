@@ -25,12 +25,19 @@
 			</div>
 		@endforeach
 
-		{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
-		{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],null,['id'=>'tam_hoja']) }}
+		<?php
+			$reports_list = [
+						75 // POS: Resúmen Diario de Ventas
+					];
+		?>
+		@if( !in_array(Input::get('reporte_id'), $reports_list) )
+			{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
+			{{ Form::select('tam_hoja',['letter'=>'Carta','folio'=>'Oficio','pos_80mm'=>'POS 80mm'],null,['id'=>'tam_hoja']) }}
 
-		<br>
-		{{ Form::label( 'orientacion', 'Orientación' ) }}
-		{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],null,['id'=>'orientacion']) }}
+			<br>
+			{{ Form::label( 'orientacion', 'Orientación' ) }}
+			{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],null,['id'=>'orientacion']) }}
+		@endif
 
 		{{ Form::hidden( 'reporte_instancia', $reporte ) }}
 		{{ Form::hidden( 'url_id',Input::get('id') ) }}

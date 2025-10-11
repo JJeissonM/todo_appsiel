@@ -19,16 +19,25 @@
                 <th> Total </th>
                 <th> Creado en </th>
                 <th> Actualizado en </th>
-                <th> Espera (min.) </th>
+
+                @if($divisor_minutos == 1)
+                    <th> Tiempo de creado (min.) </th>
+                @else
+                    <th> Tiempo de creado (días) </th>
+                @endif
             </tr>
         </thead>
         <tbody>
+            <?php 
+                $total_cantidad = 0;
+                $total_precio = 0;
+            ?>
             @foreach($documentos_ventas as $documento)
                 <?php  
                     $fechaAntigua  = $documento->created_at;
                     $fechaReciente = \Carbon\Carbon::now();
 
-                    $cantidadMinutos = $fechaAntigua->diffInMinutes($fechaReciente);
+                    $cantidadMinutos = round( $fechaAntigua->diffInMinutes($fechaReciente) / $divisor_minutos, 0);
                 ?>
                 <?php 
                     $lineas_registros = $documento->lineas_registros;
@@ -42,22 +51,35 @@
                         <td> {{ $documento->estado }} </td>
                         <td> {{ $linea->producto->get_value_to_show() }} </td>
                         <td> {{ number_format( $linea->cantidad, 0, ',', '.') }} </td>
-                        <td> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
-                        <td> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
+                        <td align="right"> ${{ number_format( $linea->precio_unitario, 0, ',', '.') }} </td>
+                        <td align="right"> ${{ number_format( $linea->precio_total, 0, ',', '.') }} </td>
                         <td> {{ $documento->created_at }} </td>
                         <td> 
                             @if( $documento->created_at != $documento->updated_at)
                                 {{ $documento->updated_at }} 
                             @endif
                         </td>
-                        <td> 
+                        <td align="center"> 
                             @if( $documento->estado == 'Pendiente')
                                 {{ $cantidadMinutos }} 
                             @endif
                         </td>
                     </tr>
+                    <?php 
+                        $total_cantidad += $linea->cantidad;
+                        $total_precio += $linea->precio_total;
+                    ?>
                 @endforeach
             @endforeach
         </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="6"></td>
+                <td>{{ number_format( $total_cantidad, 0, ',', '.') }}</td>
+                <td></td>
+                <td align="right">${{ number_format( $total_precio, 0, ',', '.') }}</td>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
     </table>
 </div>

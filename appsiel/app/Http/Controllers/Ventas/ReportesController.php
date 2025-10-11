@@ -16,7 +16,7 @@ use App\Ventas\VtasPedido;
 
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvDocEncabezado;
-
+use App\Inventarios\ItemMandatario;
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
@@ -517,7 +517,14 @@ class ReportesController extends Controller
 
         $mensaje = 'Estado: ' . $request->estado;
 
-        $vista = View::make('ventas.reportes.pedidos_de_ventas', compact( 'documentos_ventas',  'mensaje') )->render();
+        $divisor_minutos = 1;
+        
+        if( ItemMandatario::get()->count() > 0 )
+        {
+            $divisor_minutos = 60 * 24; // 60 minutos x 24 horas
+        }
+
+        $vista = View::make('ventas.reportes.pedidos_de_ventas', compact( 'documentos_ventas',  'mensaje', 'divisor_minutos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
