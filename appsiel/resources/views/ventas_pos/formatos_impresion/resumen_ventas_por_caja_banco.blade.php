@@ -19,7 +19,7 @@
                 ?>
             @endforeach
             <tr>
-                <td>
+                <td align="right">
                     <b>Crédito:</b>
                 </td>
                 <td align="right">
