@@ -21,9 +21,9 @@
                 <th> Actualizado en </th>
 
                 @if($divisor_minutos == 1)
-                    <th> Tiempo de creado (min.) </th>
+                    <th> Creado (mín.) </th>
                 @else
-                    <th> Tiempo de creado (días) </th>
+                    <th> Creado (días) </th>
                 @endif
             </tr>
         </thead>
