@@ -48,10 +48,10 @@
         <table style="margin-top: 12px !important; font-size: {{ $tamanino_fuente_2 }};" width="100%">
             <tr>
                 <td>
-                    <b>Fecha:</b>  {{ $fecha_corte }}
+                    <b>Fecha desde:</b>  {{ $fecha_desde }}
                 </td>
                 <td>
-                    &nbsp;
+                    <b>Fecha hasta:</b>  {{ $fecha_hasta }}
                 </td>
             </tr>
         </table>
@@ -175,7 +175,7 @@
         </div>
     <br>
     
-    @include('ventas_pos.formatos_impresion.resumen_ventas_por_caja_banco', [ 'fecha' => $fecha_corte, 'pdv_id' => $pdv_id ] )
+    @include('ventas_pos.formatos_impresion.resumen_ventas_por_caja_banco' )
     @endif
 </body>
 

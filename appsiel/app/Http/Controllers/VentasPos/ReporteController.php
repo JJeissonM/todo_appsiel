@@ -458,6 +458,9 @@ class ReporteController extends Controller
         return $vista;
     }
 
+    /**
+     * 
+     */
     public function comprobante_informe_diario(Request $request)
     {
         $fecha_corte = $request->fecha_corte;
@@ -509,6 +512,9 @@ class ReporteController extends Controller
         return $vista;
     }
 
+    /**
+     * 
+     */
     public function get_facturas_con_lineas_registros_sin_movimiento($fecha_desde, $fecha_hasta)
     {
         $facturas = FacturaPos::whereBetween('fecha', [$fecha_desde, $fecha_hasta])
@@ -541,9 +547,13 @@ class ReporteController extends Controller
         return $data;
     }    
 
+    /**
+     * 
+     */
     public function resumen_diario(Request $request)
     {
-        $fecha_corte = $request->fecha_corte;
+        $fecha_desde = $request->fecha_desde;
+        $fecha_hasta = $request->fecha_hasta;
         $pdv_id = $request->pdv_id;
 
         if ($pdv_id == '') {
@@ -554,7 +564,8 @@ class ReporteController extends Controller
         }
 
         $array_wheres = [
-            ['vtas_pos_movimientos.fecha', '=', $fecha_corte],
+            ['vtas_pos_movimientos.fecha', '>=', $fecha_desde],
+            ['vtas_pos_movimientos.fecha', '<=', $fecha_hasta],
             ['vtas_pos_movimientos.pdv_id', '=', $pdv_id]
         ];
 
@@ -597,19 +608,17 @@ class ReporteController extends Controller
         $service = new ReportsServices();
         $ventas_totales_iva_incluido = $movimientos->sum('precio_total');
 
-        $ventas_credito_pdv = $service->get_ventas_credito_pdv($pdv_id, $fecha_corte, $fecha_corte);
+        $ventas_credito_pdv = $service->get_ventas_credito_pdv($pdv_id, $fecha_desde, $fecha_hasta);
 
         $ventas_credito_sin_iva = $ventas_credito_pdv->sum('precio_total');
 
         $ventas_contado_sin_iva = $ventas_totales_iva_incluido - $ventas_credito_sin_iva;
 
-        $ventas_por_medios_pago_con_iva = $service->get_ventas_por_caja_bancos($pdv_id, $fecha_corte, $fecha_corte);
-
-        //dd($ventas_por_medios_pago_con_iva);
+        $ventas_por_medios_pago_con_iva = $service->get_ventas_por_caja_bancos($pdv_id, $fecha_desde, $fecha_hasta);
 
         // Las variables dicen sin IVA, pero en realidad son con IVA incluido
 
-        $vista = View::make( 'ventas_pos.formatos_impresion.resumen_diario', compact('data_by_items', 'fecha_corte', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva', 'pdv_id', 'movimientos') )->render();
+        $vista = View::make( 'ventas_pos.formatos_impresion.resumen_diario', compact('data_by_items', 'fecha_desde', 'fecha_hasta', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva', 'pdv_id', 'movimientos') )->render();
 
         Cache::put('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista, 720);
 
