@@ -70,6 +70,28 @@ class InvProducto extends Model
         return ItemMandatario::find($mandatario_id);
     }
 
+    public function get_url_imagen()
+    {
+        if ( $this->imagen != '' && $this->imagen != null ) {
+            return config('configuracion.url_instancia_cliente')."/storage/app/inventarios/" . $this->imagen;
+        }       
+
+        $mandatario_id = MandatarioTieneItem::where('item_id', $this->id)
+            ->value('mandatario_id');
+
+        $mandatario = ItemMandatario::find($mandatario_id);
+
+        if ( $mandatario != null)
+        {
+            if ( $mandatario->imagen != '' && $mandatario->imagen != null)
+            {
+                return config('configuracion.url_instancia_cliente')."/storage/app/inventarios/" . $mandatario->imagen;
+            }
+        }
+
+        return '';
+    }
+
     /**
      * 
      */

@@ -229,7 +229,9 @@ class MovementService
 
                     $productos[$i]['Material'] = $item->item_mandatario()->tipo_material->descripcion;
                     $productos[$i]['TipoPrenda'] = $item->item_mandatario()->tipo_prenda->descripcion;
-                }                
+                }
+                
+                $productos[$i]['url_imagen'] = $item->get_url_imagen();             
             
                 $i++;
                 $cantidad_bodegas++;
