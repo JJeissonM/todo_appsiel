@@ -113,13 +113,17 @@ class FacturaPosController extends TransaccionController
         /**
          * Validar resolución de Facturación
          */
-        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );
-        
-        if ( $msj_resolucion_facturacion->status == 'error' )
+        $msj_resolucion_facturacion = '';
+        if( (int)config('ventas_pos.modulo_fe_activo') )
         {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
+            $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );
+        
+            if ( $msj_resolucion_facturacion->status == 'error' )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
+            }
+            $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
         }
-        $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
 
         /**
          * Asignar campos por defecto
@@ -457,13 +461,17 @@ class FacturaPosController extends TransaccionController
         $user = Auth::user();
 
         $factura_pos_service = new FacturaPosService();
-
-        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );        
-        if ( $msj_resolucion_facturacion->status == 'error' )
+        
+        $msj_resolucion_facturacion = '';
+        if( (int)config('ventas_pos.modulo_fe_activo') )
         {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
+            $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );        
+            if ( $msj_resolucion_facturacion->status == 'error' )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
+            }
+            $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
         }
-        $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, $factura, 'edit');
 

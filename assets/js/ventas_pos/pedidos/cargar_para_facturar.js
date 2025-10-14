@@ -35,6 +35,8 @@ $(document).ready(function () {
                 // Se calculan los totales
                 calcular_totales();
 
+                reset_tabla_ingreso_medios_pago();
+
                 $("#efectivo_recibido").focus();
             });
 

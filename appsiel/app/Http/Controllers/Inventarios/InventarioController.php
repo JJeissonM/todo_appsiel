@@ -1024,7 +1024,7 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item;
 
-            $descripcion_item = $linea->get_value_to_show();
+            $descripcion_item = $linea->get_value_to_show_interno();
 
             $html .=            '" > ' . $descripcion_item . ' </a>';
 
@@ -1112,7 +1112,7 @@ class InventarioController extends TransaccionController
                                 '" data-accion="na" '.
                                 '" data-ultimo_item="'.$ultimo_item; // Esto debe ser igual en todas las busquedas
 
-            $html .=            '" > ' . $linea->get_value_to_show() . ' </a>';
+            $html .=            '" > ' . $linea->get_value_to_show_interno() . ' </a>';
 
             $num_item++;
         }

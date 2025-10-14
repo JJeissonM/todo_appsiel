@@ -62,8 +62,7 @@ class ResolucionFacturacionService
                 'message' => $msj_resolucion_facturacion
             ];
         }
-
-
+        
         $cantidad_facturas_restantes = $resolucion_facturacion->numero_fact_final - $consecutivo_actual;
 
         if( $cantidad_facturas_restantes <= (int)config('facturacion_electronica.cantidad_facturas_restantes_aviso_resolucion') )
