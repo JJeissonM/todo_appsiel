@@ -91,7 +91,7 @@ class ComprasDocEncabezado extends Model
         $resultados_envios_fe_doc_soporte = $this->resultados_envios_fe_doc_soporte();
 
         foreach ($resultados_envios_fe_doc_soporte as $resultado) {
-            if($resultado->resultado == 'Procesado' || $resultado->resultado == 'Rechazado por la DIAN'){
+            if($resultado->esValidoDian == 1){
                 $procesado = true;
             }
         }

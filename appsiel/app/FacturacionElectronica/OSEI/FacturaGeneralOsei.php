@@ -2,12 +2,9 @@
 
 namespace App\FacturacionElectronica\OSEI;
 
-use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
-use GuzzleHttp\Client;
-
 use App\FacturacionElectronica\Services\DocumentHeaderService;
-use App\Ventas\Cliente;
-use App\Ventas\VtasDocEncabezado;
+
+use Illuminate\Support\Facades\Log;
 
 class FacturaGeneralOsei
 {
@@ -113,12 +110,12 @@ class FacturaGeneralOsei
             // $array_respuesta = json_decode((string) $response->getBody(), true);
             $responseBody = (string) $response->getBody();
 
-            \Log::info('Cuerpo de respuesta cruda de OSEI: ' . $responseBody);
+            Log::info('Cuerpo de respuesta cruda de OSEI: ' . $responseBody);
 
             $array_respuesta = json_decode($responseBody, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                \Log::error('Error al decodificar JSON de OSEI: ' . json_last_error_msg() . ' Cuerpo recibido: ' . $responseBody);
+                Log::error('Error al decodificar JSON de OSEI: ' . json_last_error_msg() . ' Cuerpo recibido: ' . $responseBody);
                 return (object)[
                     'tipo' => 'mensaje_error',
                     'contenido' => "Error interno: OSEI envió JSON inválido. Mensaje: " . json_last_error_msg()

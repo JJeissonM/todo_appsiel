@@ -4,7 +4,7 @@ namespace App\FacturacionElectronica;
 
 use App\Compras\ComprasDocEncabezado;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
-
+use App\FacturacionElectronica\OSEI\DocSoporte as OSEIDocSoporte;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -148,6 +148,11 @@ class DocSoporte extends ComprasDocEncabezado
             case 'DATAICO':
                 $factura_dataico = new DATAICODocSoporte( $this, 'support_doc' );
                 $mensaje = $factura_dataico->procesar_envio_factura();
+                break;
+                
+            case 'OSEI':
+                $factura_osei = new OSEIDocSoporte( $this, 'support_doc' );
+                $mensaje = $factura_osei->procesar_envio_factura();
                 break;
             
             default:
