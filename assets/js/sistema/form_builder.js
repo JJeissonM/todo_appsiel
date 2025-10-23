@@ -110,7 +110,12 @@ class FormBuilder
                 break;
 
             case 'personalizado':
-                input = '<div id="' + field.name + '">' + field.value + '</div>';
+                var value = field.value;
+                if( value == null )
+                {
+                    value = '';
+                }
+                input = '<div id="' + field.name + '">' + value + '</div>';
                 break;
 
             case 'constante':

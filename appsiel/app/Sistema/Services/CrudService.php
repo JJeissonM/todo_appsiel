@@ -83,6 +83,10 @@ class CrudService
 
                 $lista_campos[$i]['opciones'] = $new_options->toArray();
             }
+
+            if ($lista_campos[$i]['value'] == 'null') {
+                $lista_campos[$i]['value'] = null;
+            }
         }
         return $lista_campos;
     }

@@ -477,6 +477,7 @@ $(document).ready(function () {
       $("#contenido_modal2").html( 
       new FormBuilder().get_html_form( JSON.parse(dataform_modelo_cliente), $('#form_token').val() ) );
 
+      $("#contenido_modal2").find('#numero_identificacion').attr('name','numero_identificacion_aux');
       $("#contenido_modal2").find('#numero_identificacion').attr('id','numero_identificacion_aux');
 
       var form_action_ori = $('#create_cliente').attr('action');
