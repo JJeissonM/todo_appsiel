@@ -20,11 +20,15 @@ function guardar_valor_nuevo(fila)
     elemento_modificar.html(valor_nuevo);
     elemento_modificar.show();
 
+    // Vaidar exitencias al modificar cantidad
     var stock_service = new StockService();
-    stock_service.verificarExistencia( parseInt(fila.find(".inv_producto_id").text()), $('#inv_bodega_id').val(), valor_nuevo, $('#fecha').val(), valor_actual );
-    if ( !stock_service.hay_stock )
+    if( elemento_modificar.attr('id') != 'elemento_modificar_precio_unitario' )
     {
-        elemento_modificar.html(valor_actual);
+        stock_service.verificarExistencia( parseInt(fila.find(".inv_producto_id").text()), $('#inv_bodega_id').val(), valor_nuevo, $('#fecha').val(), valor_actual );
+        if ( !stock_service.hay_stock )
+        {
+            elemento_modificar.html(valor_actual);
+        }
     }
 
     var producto = productos.find(
