@@ -333,7 +333,12 @@ class DocSoporte
       if (strlen($postal_zone) <= 1) {
          $postal_zone = '200001';
       }
+      
       $origin = 'residente';
+      if (in_array($party_identification_type,[22,42])) // 22=Cédula de extranjería, 42=Documento de identificación extranjero
+      {
+         $origin = 'no_residente';
+      }
 
       $department_id = substr($cliente->tercero->ciudad->id, 3, 2);
       $city_id = substr($cliente->tercero->ciudad->id, 5, strlen($cliente->tercero->ciudad->id) - 1);
