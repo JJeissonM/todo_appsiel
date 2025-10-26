@@ -108,6 +108,23 @@ class DocSoporte
             return json_decode(json_encode($mensaje));
          }
       } catch (\GuzzleHttp\Exception\ClientException $e) {
+
+         if ( $e->getResponse() != null ) {
+
+            switch ($e->getResponse()->getstatusCode()) {
+               case '404':
+                  return (object)[
+                                 'tipo' => 'mensaje_error',
+                                 'contenido' => "Ruta no encontrada: " . $this->url_emision
+                              ];
+                  break;
+               
+               default:
+                  # code...
+                  break;
+            }            
+         }
+
          // Esto captura errores 4xx
          $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
          $responseBody = json_decode($responseBody, true);
