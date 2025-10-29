@@ -28,17 +28,15 @@ class ItemsFiltersServices
 		if ( isset($filters->prefijo_referencia_id) || isset($filters->tipo_prenda_id) )
         {
 			$mandatarios = true;
-        }
-
-
-        if ( $filters->prefijo_referencia_id != '' )
-        {
-            $array_wheres = array_merge( $array_wheres, [ 'inv_indum_prefijos_referencias.id' => (int)$filters->prefijo_referencia_id ] );
-        }
-		
-        if ( $filters->tipo_prenda_id != '' )
-        {
-            $array_wheres = array_merge( $array_wheres, [ 'inv_indum_tipos_prendas.id' => (int)$filters->tipo_prenda_id ] );
+			if ( $filters->prefijo_referencia_id != '' )
+			{
+				$array_wheres = array_merge( $array_wheres, [ 'inv_indum_prefijos_referencias.id' => (int)$filters->prefijo_referencia_id ] );
+			}
+			
+			if ( $filters->tipo_prenda_id != '' )
+			{
+				$array_wheres = array_merge( $array_wheres, [ 'inv_indum_tipos_prendas.id' => (int)$filters->tipo_prenda_id ] );
+			}
         }
 
 		if ( !$mandatarios )
