@@ -41,6 +41,8 @@ Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/
 
 Route::get('nom_get_options_incapacidades_anteriores/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@get_options_incapacidades_anteriores');
 
+// Manejo de Turnos
+Route::resource('nom_turnos_registros', 'Nomina\GestionTurnosController');
 
 // LIQUIDACION DE PRESTACIONES SOCIALES
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');

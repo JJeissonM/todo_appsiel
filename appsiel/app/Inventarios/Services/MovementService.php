@@ -187,6 +187,8 @@ class MovementService
             $total_cantidad_item = 0;
             $total_costo_item = 0;
             $cantidad_bodegas = 0;
+            
+            $descripcion_bodega = '';
             foreach ( $lista_bodegas as $key2 => $bodega_id )
             {
                 $cantidad = $stock_serv->get_stock_amount_item($bodega_id, $item->id, $filters->fecha_corte);
@@ -205,7 +207,6 @@ class MovementService
 
                 $bodega = $bodegas->where( 'id',$bodega_id )->first();
                 
-                $descripcion_bodega = '';
                 if ($bodega != null) {
                     $descripcion_bodega = $bodega->descripcion;
                 }
