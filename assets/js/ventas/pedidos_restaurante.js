@@ -208,6 +208,27 @@ function mandar_codigo2(item_id) {
 	agregar_la_linea2();
 }
 
+
+
+/**
+ * 
+ * @param {*} item_id 
+ * @param {*} name_grupo_id 
+ * @returns 
+ */
+function item_is_in_group( item_id, name_grupo_id )
+{
+    var producto = productos.find((item) => item.id === parseInt( item_id ) );
+
+    var arr_grupos = $('#' + name_grupo_id).val().split(',').map(Number);
+	
+    if ( arr_grupos.includes( producto.inv_grupo_id ) ) {
+      return true;
+    }
+
+    return false;
+}
+
 $(document).ready(function () {
 
     if ( $('#action').val() != 'create' )
