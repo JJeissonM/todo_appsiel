@@ -36,7 +36,7 @@ class Modelo extends Model
             'sys_modelos.modelo AS campo7',
             'sys_modelos.url_ver AS campo8',
             'sys_modelos.url_print AS campo9',
-            'sys_modelos.modelo AS campo10',
+            'sys_modelos.url_eliminar AS campo10',
             'sys_modelos.id AS campo11'
         )
             ->where("sys_modelos.id", "LIKE", "%$search%")

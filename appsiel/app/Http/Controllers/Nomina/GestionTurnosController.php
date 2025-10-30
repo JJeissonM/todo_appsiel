@@ -19,6 +19,7 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\RegistroTurno;
 use App\Nomina\TipoTurno;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -42,10 +43,10 @@ class GestionTurnosController extends TransaccionController
 
         return view( 'nomina.index', compact( 'miga_pan' ) );
     }
-
-    /*
-        Formulario para registrar los valores a liquidar del concepto y el documento seleccionado
-    */
+    
+    /**
+     * 
+     */
     public function create()
     {
         $empleados = NomContrato::where([
@@ -60,135 +61,89 @@ class GestionTurnosController extends TransaccionController
             $fecha = Input::get('fecha');
         }
 
+        $turnos_ingresados = RegistroTurno::where('fecha', '=', $fecha)->get();
+        foreach ($empleados as $empleado)
+        {
+            $empleado->tipo_turno_id = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->tipo_turno_id ?? null;
+            $empleado->anotacion = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->anotacion ?? null;
+            $empleado->estado_turno = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->estado ?? null;
+        }
+
+        $action = 'create';
+        if ( $turnos_ingresados->count() > 0) {
+            $action = 'edit';
+        }
+
         $miga_pan = [
                         ['url'=> 'nomina?id=' . Input::get('id') ,'etiqueta'=>'Nómina'],
-                        ['url'=> 'web?id=' . Input::get('id') ,'&id_modelo=337','etiqueta'=>'Registros de Turnos'],
-                        ['url'=> 'NO','etiqueta'=>'Ingresar datos']
+                        ['url'=> 'web?id=' . Input::get('id') . '&id_modelo=337', 'etiqueta'=>'Registros de Turnos'],
+                        ['url'=> 'NO','etiqueta'=>'Registrar datos']
                     ];
          
         $tipos_turnos = TipoTurno::opciones_campo_select();
-        return view( 'nomina.turnos.create_registros', compact('miga_pan', 'empleados', 'tipos_turnos', 'fecha') );
-    }
-
-    public static function get_array_tabla_registros( $nom_concepto_id, $nom_doc_encabezado_id, $ruta )
-    {
-        // Se obtienen las descripciones del concepto y documento de nómina
-        $concepto = NomConcepto::find( $nom_concepto_id );
-        $documento = NomDocEncabezado::find( $nom_doc_encabezado_id );
-
-        // Se obtienen los Empleados del documento
-        $empleados = $documento->empleados;
-        
-        // Verificar si ya se han ingresado registro para ese concepto y documento
-        $cant_registros = NomDocRegistro::where([
-                                                'nom_doc_encabezado_id'=>$nom_doc_encabezado_id,
-                                                'nom_concepto_id'=>$nom_concepto_id
-                                                ])
-                                            ->count();
-
-        // Si ya tienen al menos un empleado con concepto ingresado
-        if( $cant_registros > 0 )
-        {
-            
-            // Se crea un vector con los valores de los conceptos para modificarlas
-            $vec_registros = array();
-            $i=0;
-            foreach($empleados as $empleado)
-            {
-                $vec_empleados[$i]['core_tercero_id'] = $empleado->tercero->id;
-                $vec_empleados[$i]['nombre'] = $empleado->tercero->descripcion;
-                
-                // Se verifica si cada persona tiene valor ingresado
-                $datos = NomDocRegistro::where(['nom_doc_encabezado_id'=>$nom_doc_encabezado_id,
-                                                'nom_concepto_id'=>$nom_concepto_id,
-                                                'core_tercero_id'=>$empleado->core_tercero_id])
-                                        ->get()
-                                        ->first();
-
-                $vec_empleados[$i]['valor_concepto'] = 0;
-                $vec_empleados[$i]['cantidad_horas'] = 0;
-                $vec_empleados[$i]['nom_registro_id'] = "no";
-                
-                // Si el persona tiene calificacion se envian los datos de esta para editar
-                if( !is_null($datos) )
-                {
-                    switch ($concepto->naturaleza)
-                    {
-                        case 'devengo':
-                            $vec_empleados[$i]['valor_concepto'] = $datos->valor_devengo;
-                            break;
-                        case 'deduccion':
-                            $vec_empleados[$i]['valor_concepto'] = $datos->valor_deduccion;
-                            break;
-                        
-                        default:
-                            # code...
-                            break;
-                    }
-
-                    if ( (float)$concepto->porcentaje_sobre_basico != 0 )
-                    {
-                        $vec_empleados[$i]['cantidad_horas'] = $datos->cantidad_horas;
-                    }
-
-                    $vec_empleados[$i]['nom_registro_id'] = $datos->id;
-
-                }
-                
-                $i++;
-            } // Fin foreach (llenado de array con datos)
-            return ['vec_empleados'=>$vec_empleados,
-                'cantidad_empleados'=>count($empleados),
-                'concepto'=>$concepto,
-                'documento'=>$documento,
-                'ruta'=>$ruta];
-        }else{
-            // Si no tienen datos, se crean por primera vez
-            return ['empleados'=>$empleados,
-                'cantidad_empleados'=>count($empleados),
-                'concepto'=>$concepto,
-                'documento'=>$documento,
-                'ruta'=>$ruta];
-        }
+        return view( 'nomina.turnos.create_registros', compact('miga_pan', 'empleados', 'tipos_turnos', 'fecha', 'action') );
     }
 
     /**
-     * Para almacenar los registros de documentos
-     *  Normalmente para conceptos tipo Manuales
+     * 
      */
     public function store(Request $request)
     {
         $datos = [];
-        $usuario = Auth::user();
 
-        $concepto = NomConcepto::find($request->nom_concepto_id);
-        $documento = NomDocEncabezado::find($request->nom_doc_encabezado_id);
+        $cantidad_empleados = count( $request->contrato_id );
 
-        $datos['nom_doc_encabezado_id'] = $request->nom_doc_encabezado_id;
-        $datos['fecha'] = $documento->fecha;
-        $datos['core_empresa_id'] = $documento->core_empresa_id;
-        $datos['nom_concepto_id'] = $request->nom_concepto_id;
-        $datos['estado'] = 'Activo';
-        $datos['creado_por'] = $usuario->email;
-        $datos['modificado_por'] = '';
+        $datos['fecha'] = $request->fecha;
+        $datos['estado'] = 'Pendiente';
 
         // Guardar los valores para cada persona      
-        for( $i=0; $i < (int)$request->cantidad_empleados; $i++)
+        for( $i=0; $i < $cantidad_empleados; $i++)
         {
-            if ( isset( $request->valor ) )
-            {
-                $this->registrar_por_valor( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('valor.'.$i), $documento );
-            }
+            $datos['contrato_id'] = (int)$request->input('contrato_id.' . $i);
+            $datos['tipo_turno_id'] = (int)$request->input('tipo_turno_id.' . $i);
 
-            if ( isset( $request->cantidad_horas ) )
-            {
-                $this->registrar_por_cantidad_horas( $concepto, $request->input('core_tercero_id.'.$i), $datos, $request->input('cantidad_horas.'.$i) );
+            $datos['valor'] = 0;
+            $tipo_turno = TipoTurno::find( $datos['tipo_turno_id'] );
+            if ( $tipo_turno != null ) {
+                $datos['valor'] = $tipo_turno->valor;
+            }            
+            
+            $datos['anotacion'] = $request->input('anotacion.' . $i);
+
+            $registro_turno = RegistroTurno::where([
+                                                    ['contrato_id', '=', $datos['contrato_id']],
+                                                    ['fecha', '=', $datos['fecha']]
+                                                ])->first();
+
+            if ( $registro_turno == null ) {
+
+                if ( $datos['tipo_turno_id'] != 0)
+                {
+                    RegistroTurno::create( $datos );
+                }
+                
+                $label = 'Registrados';
+            }else{
+
+                if ( $registro_turno->estado == 'Liquidado') {
+                    continue;
+                }
+
+                if ( $datos['tipo_turno_id'] != 0)
+                {
+                    $registro_turno->tipo_turno_id = $datos['tipo_turno_id'];
+                    $registro_turno->valor = $datos['valor'];
+                    $registro_turno->anotacion = $datos['anotacion'];
+                    $registro_turno->save();
+                }else{
+                    $registro_turno->delete();
+                }
+                
+                $label = 'Actualizados';
             }
         }
 
-        $this->actualizar_totales_documento($documento->id);
-
-        return redirect( 'web?id='.$request->app_id.'&id_modelo='.$request->modelo_id )->with( 'flash_message','Registros CREADOS correctamente. Nómina: '.$documento->descripcion.', Concepto: '.$concepto->descripcion );
+        return redirect( 'web?id=' . $request->app_id . '&id_modelo=' . $request->modelo_id )->with( 'flash_message','Turnos ' . $label . ' correctamente. Fecha: ' . $request->fecha );
     }
     
 }

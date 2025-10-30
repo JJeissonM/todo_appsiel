@@ -11,13 +11,13 @@ class RegistroTurno extends Model
     protected $table = 'nom_turnos_registros';
 
     /**
-     * estado => { Pendiente | Liquidado}
+     * estado => { Pendiente | Liquidado }
      */
     protected $fillable = ['contrato_id', 'tipo_turno_id', 'fecha', 'valor', 'anotacion', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Tipo Turno', 'Fecha', 'Valor', 'Anotación', 'Estado'];
 
-    public $urls_acciones = '{"create":"nom_turnos_registros/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
+    public $urls_acciones = '{"create":"nom_turnos_registros/create","edit":"web/id_fila/edit","show":"web/id_fila","eliminar":"web_eliminar/id_fila"}';
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -34,7 +34,7 @@ class RegistroTurno extends Model
                 'nom_turnos_registros.estado AS campo7',
                 'nom_turnos_registros.id AS campo8'
             )
-            ->orderBy('nom_contratos.created_at', 'DESC')
+            ->orderBy('nom_turnos_registros.fecha', 'DESC')
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
@@ -121,7 +121,7 @@ class RegistroTurno extends Model
             ->orWhere("nom_grupos_empleados.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
-            ->orderBy('nom_contratos.created_at', 'DESC')
+            ->orderBy('nom_turnos_registros.fecha', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
@@ -130,5 +130,46 @@ class RegistroTurno extends Model
     public static function tituloExport()
     {
         return "LISTADO DE REGISTROS DE TURNOS";
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $registro = RegistroTurno::find( $id );
+        if ( $registro->estado == 'Liquidado' ) {
+            return 'No es posible eliminar un registro de turno que ya ha sido liquidado.';
+        }
+
+        return 'ok';
+    }
+
+    public static function get_campos_adicionales_edit($lista_campos, $registro)
+    {
+
+        if($registro == null)
+        {
+            return $lista_campos;
+        }
+
+        if ( $registro->estado == 'Liquidado') {
+            return [
+                [
+                    "id" => 999,
+                    "descripcion" => "El turno ya está Liquidado.",
+                    "tipo" => "personalizado",
+                    "name" => "lbl_turno_liquidado",
+                    "opciones" => "",
+                    "value" => '<div class="form-group">                    
+                                                    <label class="control-label col-sm-3" style="color: red;" > <b> No se puede Modificar un turno que ya ha sido Liquidado </b> </label>    
+                                                </div>',
+                    "atributos" => [],
+                    "definicion" => "",
+                    "requerido" => 0,
+                    "editable" => 1,
+                    "unico" => 0
+                ]
+            ];
+        }
+
+        return $lista_campos;
     }
 }
