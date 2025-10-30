@@ -64,7 +64,12 @@ class GestionTurnosController extends TransaccionController
         $turnos_ingresados = RegistroTurno::where('fecha', '=', $fecha)->get();
         foreach ($empleados as $empleado)
         {
-            $empleado->tipo_turno_id = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->tipo_turno_id ?? null;
+            $turno_ingresado = $turnos_ingresados->where('contrato_id', $empleado->id)->first();
+
+            if ( $turno_ingresado != null) {
+                $empleado->tipo_turno_id = $turno_ingresado->tipo_turno_id;
+            }
+            
             $empleado->anotacion = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->anotacion ?? null;
             $empleado->estado_turno = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->estado ?? null;
         }
