@@ -77,3 +77,5 @@
 <input type="hidden" name="manejar_platillos_con_contorno" id="manejar_platillos_con_contorno" value="{{ (int)config('inventarios.manejar_platillos_con_contorno') }}">
 
 @include('ventas_pos.campos.categoria_id_platillos_con_contornos')
+
+@include('ventas_pos.campos.categoria_id_facturacion_bolsa')
