@@ -85,83 +85,23 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Fosyga',
+            'descripcion' => 'Fosyga EPS',
             'codigo_nacional' => 'MIN001',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Fondo de Solidaridad y Garantía Fosyga',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Fondo de Solidaridad y Garantía Fosyga',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '900462447',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Fosyga Régimen de Excepción',
+            'descripcion' => 'Fosyga EPS - Régimen de Excepción',
             'codigo_nacional' => 'MIN002',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Fondo de Solidaridad y Garantía Fosyga',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Fondo de Solidaridad y Garantía Fosyga',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '900462447',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Fosyga Residente Exterior o Régimen Subsidiado',
+            'descripcion' => 'Fosyga EPS - Residente Exterior o Régimen Subsidiado',
             'codigo_nacional' => 'MIN003',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
@@ -655,45 +595,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfasucre',
+            'descripcion' => 'Comfasucre EPS',
             'codigo_nacional' => 'CCFC33',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Caja de Compensación Familiar del Sucre',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Caja de Compensación Familiar del Sucre',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '892200015',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfasucre',
+            'descripcion' => 'CCF Comfasucre',
             'codigo_nacional' => 'CCF41',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -731,45 +641,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfamiliar Guajira',
+            'descripcion' => 'Comfamiliar Guajira EPS',
             'codigo_nacional' => 'CCFC23',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Caja de Compensación Familiar de La Guajira',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Caja de Compensación Familiar de La Guajira',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '892115006',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfamiliar Guajira',
+            'descripcion' => 'CCF Comfamiliar Guajira',
             'codigo_nacional' => 'CCF30',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -921,45 +801,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfaboy',
+            'descripcion' => 'Comfaboy EPS',
             'codigo_nacional' => 'CCFC09',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Comfaboy',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Comfaboy',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '891800213',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfaboy',
+            'descripcion' => 'CCF Comfaboy',
             'codigo_nacional' => 'CCF10',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -1035,45 +885,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfachoco',
+            'descripcion' => 'Comfachoco EPS',
             'codigo_nacional' => 'CCFC20',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'CCF del Chocó',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'CCF del Chocó',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '891600091',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfachocó',
+            'descripcion' => 'CCF Comfachocó',
             'codigo_nacional' => 'CCF29',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -1225,45 +1045,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfamiliar de Nariño',
+            'descripcion' => 'Comfamiliar de Nariño EPS',
             'codigo_nacional' => 'CCFC27',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'CCF de Nariño',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'CCF de Nariño',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '891280008',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfamiliar Nariño',
+            'descripcion' => 'CCF Comfamiliar Nariño',
             'codigo_nacional' => 'CCF35',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -1377,45 +1167,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfamilar Huila',
+            'descripcion' => 'Comfamilar Huila EPS',
             'codigo_nacional' => 'CCFC24',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Comfamiliar del Huila',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Comfamiliar del Huila',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '891180008',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfamiliar Huila',
+            'descripcion' => 'CCF Comfamiliar Huila',
             'codigo_nacional' => 'CCF32',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -1491,45 +1251,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfacor',
+            'descripcion' => 'Comfacor EPS',
             'codigo_nacional' => 'CCFC15',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Comfacor',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Comfacor',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '891080005',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfacor',
+            'descripcion' => 'CCF Comfacor',
             'codigo_nacional' => 'CCF16',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -2099,45 +1829,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfenalco Valle',
+            'descripcion' => 'Comfenalco Valle EPS',
             'codigo_nacional' => 'EPS012',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Comfenalco Valle',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Comfenalco Valle',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '890303093',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfenalco Valle',
+            'descripcion' => 'CCF Comfenalco Valle',
             'codigo_nacional' => 'CCF56',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -2365,45 +2065,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Cajacopi Atlántico',
+            'descripcion' => 'Cajacopi Atlántico EPS',
             'codigo_nacional' => 'CCFC55',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Caja de Compensación Familiar Cajacopi Atlántico',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Caja de Compensación Familiar Cajacopi Atlántico',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '890102044',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Cajacopi Atlántico',
+            'descripcion' => 'CCF Cajacopi Atlántico',
             'codigo_nacional' => 'CCF05',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -2593,45 +2263,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Compensar',
+            'descripcion' => 'Compensar EPS',
             'codigo_nacional' => 'EPS008',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Caja de Compensación Familiar Compensar',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Caja de Compensación Familiar Compensar',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '860066942',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Compensar',
+            'descripcion' => 'CCF Compensar',
             'codigo_nacional' => 'CCF24',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -2669,45 +2309,15 @@ class NominaSeeder extends Seeder
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfacundi',
+            'descripcion' => 'Comfacundi EPS',
             'codigo_nacional' => 'CCFC53',
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Comfacundi',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Comfacundi',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '860045904',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
-            'descripcion' => 'Comfacundi',
+            'descripcion' => 'CCF Comfacundi',
             'codigo_nacional' => 'CCF26',
             'tipo_entidad' => 'CCF',
             'estado' => 'Activo'
@@ -4384,36 +3994,6 @@ class NominaSeeder extends Seeder
             'tipo_entidad' => 'EPS',
             'estado' => 'Activo'
         ]);
-        $tercero_id = Tercero::create([
-            'core_empresa_id' => '1',
-            'imagen' => '',
-            'tipo' => 'Persona jurídica',
-            'razon_social' => 'Cafesalud Entidad Promotora de Salud S.A',
-            'nombre1' => '',
-            'otros_nombres' => '',
-            'apellido1' => '',
-            'apellido2' => '',
-            'descripcion' => 'Cafesalud Entidad Promotora de Salud S.A',
-            'id_tipo_documento_id' => '31',
-            'numero_identificacion' => '800140949',
-            'digito_verificacion' => '0',
-            'direccion1' => '',
-            'direccion2' => '',
-            'barrio' => '',
-            'codigo_ciudad' => '',
-            'codigo_postal' => '',
-            'telefono1' => '',
-            'telefono2' => '',
-            'email' => '',
-            'pagina_web' => '',
-            'estado' => 'Activo',
-            'user_id' => '',
-            'contab_anticipo_cta_id' => '0',
-            'contab_cartera_cta_id' => '0',
-            'contab_cxp_cta_id' => '0',
-            'creado_por' => 'administrator@appsiel.com.co',
-            'modificado_por' => ''
-        ])->id;
 
         NomEntidad::create([
             'core_tercero_id' => $tercero_id,
