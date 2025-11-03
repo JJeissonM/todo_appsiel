@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Sistema\Reporte;
 use App\Sistema\Aplicacion;
 use App\Sistema\Services\ModeloService;
+use App\VentasPos\Services\ReportsServices;
 use Illuminate\Support\Facades\Input;
 
 class ReporteController extends Controller
@@ -44,9 +45,29 @@ class ReporteController extends Controller
         return view( 'core.reportes.vista_reportes', compact( 'reporte','lista_campos','miga_pan') );
     }
 
+    /**
+     * 
+     */
+    public function print_reporte()
+    {
+        $data = Input::all();
+        
+        $reporte_url_form_action = json_decode( $data['reporte_instancia'] )->url_form_action;
 
-    /*
-      * Generar documento PDF con la vista almacenada en Cache, según el nombre de listado que se genera en los reportes automáticos
-    */
-    
+        switch ($reporte_url_form_action) {
+            case 'pos_resumen_diario':
+                $fecha_desde = $data['fecha_desde'];
+                $fecha_hasta = $data['fecha_hasta'];
+                $pdv_id = $data['pdv_id'];
+
+                return (new ReportsServices())->get_view_for_resumen_diario($fecha_desde, $fecha_hasta, $pdv_id, 'print' );
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return 'No hay formato de impresión definido para este reporte.';
+    }
 }

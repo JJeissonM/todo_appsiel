@@ -29,6 +29,9 @@
 			$reports_list = [
 						75 // POS: Resúmen Diario de Ventas
 					];
+			$reports_list_print = [
+						75 // POS: Resúmen Diario de Ventas
+					];
 		?>
 		@if( !in_array(Input::get('reporte_id'), $reports_list) )
 			{{ Form::label( 'tam_hoja', 'Tamaño hoja' ) }}
@@ -59,7 +62,10 @@
 			<span>
 				{{ Form::bsBtnPdf( $reporte->descripcion ) }}
 				{{ Form::bsBtnExcel( 'Exportar a Excel' ) }}
-
+				
+				@if( in_array(Input::get('reporte_id'), $reports_list_print) )
+					{{ Form::bsBtnPrint( url('/') ) }}
+				@endif
 
 				<div id="div_btns_barcodes" >
 
@@ -100,6 +106,7 @@
 			var URL = "{{ url('/') }}";
 
 			var url_pdf_ori = $('#btn_pdf').attr('href');
+			$('#btn_print').hide();
 
 			$("#form_consulta > [required='required']").each(function(){
 				$(this).prev('label').append('*');
@@ -115,6 +122,7 @@
 				$('#resultado_consulta').html( "" );
 				$('#btn_excel').hide();
 				$('#btn_pdf').hide();
+				$('#btn_print').hide();
 
 				$('#btn_pdf').attr('href', url_pdf_ori);
 
@@ -141,6 +149,7 @@
 					if (form_consulta.attr('data-url_form_action') != 'inv_etiquetas_codigos_barra' ) {
 						$('#btn_excel').show(500);
 						$('#btn_pdf').show(500);
+						$('#btn_print').show(500);
 
 						var url_pdf = $('#btn_pdf').attr('href');
 						var n = url_pdf.search('a3p0');
@@ -149,6 +158,15 @@
 						}
 						
 						$('#btn_pdf').attr('href', new_url);
+
+						// Btn Print
+						var url_print = $('#btn_print').attr('href');
+
+						if ( url_print != undefined) {
+							var data = $('#form_consulta').serialize();
+
+							$('#btn_print').attr('href', url_print + '/core_print_reporte?' + data );
+						}
 
 						return false;
 					}

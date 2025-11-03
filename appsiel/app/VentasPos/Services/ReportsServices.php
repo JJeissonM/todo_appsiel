@@ -8,9 +8,79 @@ use App\Tesoreria\TesoMovimiento;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
 use App\VentasPos\Pdv;
+use Illuminate\Support\Facades\View;
 
 class ReportsServices
-{    
+{
+    /**
+     * 
+     */
+    public function get_view_for_resumen_diario( $fecha_desde, $fecha_hasta, $pdv_id, $view = 'show' )
+    {        
+        if ($pdv_id == '') {
+            $title = 'Advertencia';
+            $message = 'Debe selecciona un PDV.';
+            $vista = View::make('common.error_message', compact('title', 'message'))->render();
+            return $vista;
+        }
+
+        $array_wheres = [
+            ['vtas_pos_movimientos.fecha', '>=', $fecha_desde],
+            ['vtas_pos_movimientos.fecha', '<=', $fecha_hasta],
+            ['vtas_pos_movimientos.pdv_id', '=', $pdv_id]
+        ];
+
+        $movimientos = Movimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_pos_movimientos.inv_producto_id')
+            ->leftJoin('inv_indum_prefijos_referencias', 'inv_indum_prefijos_referencias.id', '=', 'inv_productos.prefijo_referencia_id')
+            ->where($array_wheres)
+            ->select(
+                'vtas_pos_movimientos.*',
+                'inv_indum_prefijos_referencias.id AS item_prefijo_id'
+            )
+            ->orderBy('inv_indum_prefijos_referencias.descripcion','DESC')
+            ->get();
+        
+        $movin_por_grupos = $movimientos->groupBy('item_prefijo_id');
+
+        $data_by_items = collect();
+        foreach ($movin_por_grupos as $prefijo_group) {
+            
+            $item_group_movim = $prefijo_group->groupBy('inv_producto_id');
+            
+            $list_items = collect();
+            foreach ($item_group_movim as $item_group) {
+
+                $list_items->push([
+                    'item' => $item_group->first()->item,
+                    'cantidad' => $item_group->sum('cantidad'),
+                    'precio_total' => $item_group->sum('precio_total'),
+                    'base_impuesto_total' => $item_group->sum('base_impuesto_total'),
+                    'valor_total_descuento' => $item_group->sum('valor_total_descuento'),
+                    'tasa_impuesto' => $item_group->first()->tasa_impuesto
+                ]);
+            }
+            
+            $data_by_items->push([
+                'prefijo' => $prefijo_group->first()->item->prefijo_referencia,
+                'items' => $list_items
+            ]);
+        }
+        
+        $ventas_totales_iva_incluido = $movimientos->sum('precio_total');
+
+        $ventas_credito_pdv = $this->get_ventas_credito_pdv($pdv_id, $fecha_desde, $fecha_hasta);
+
+        $ventas_credito_sin_iva = $ventas_credito_pdv->sum('precio_total');
+
+        $ventas_contado_sin_iva = $ventas_totales_iva_incluido - $ventas_credito_sin_iva;
+
+        $ventas_por_medios_pago_con_iva = $this->get_ventas_por_caja_bancos($pdv_id, $fecha_desde, $fecha_hasta);
+
+        // Las variables dicen sin IVA, pero en realidad son con IVA incluido
+
+        return View::make( 'ventas_pos.formatos_impresion.resumen_diario', compact('data_by_items', 'fecha_desde', 'fecha_hasta', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva', 'pdv_id', 'movimientos', 'view') )->render();
+    }
+
     public function resumen_ventas_arqueo_caja($fecha, $teso_caja_id)
     {
         $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
@@ -368,6 +438,10 @@ class ReportsServices
                                 ->whereIn('core_tipo_transaccion_id', $arr_core_tipo_transaccion_id)
                                 ->get();
     }
+
+    /**
+     * 
+     */
     public function get_movimentos_cuentas_bancarias($fecha)
     {
         return TesoMovimiento::where([

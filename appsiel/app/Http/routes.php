@@ -185,6 +185,7 @@ Route::resource('propiedad_horizontal', 'PropiedadHorizontal\PropiedadHorizontal
 
 // Generación de reportes
 Route::get('vista_reporte', 'Sistema\ReporteController@vista_reporte');
+Route::get('core_print_reporte', 'Sistema\ReporteController@print_reporte');
 
 // GENERAR PDF Con base en el nombre_listado almacenado en la Cache 
 Route::get('generar_pdf/{reporte_id}', 'Sistema\VistaController@generar_pdf');

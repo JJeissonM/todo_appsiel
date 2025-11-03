@@ -29,7 +29,11 @@
 
     </style>
 </head>
-<body>
+    @if($view == 'show')
+        <body>
+    @else
+        <body onload="window.print()">
+    @endif
 
     <div class="wrapper">
 
