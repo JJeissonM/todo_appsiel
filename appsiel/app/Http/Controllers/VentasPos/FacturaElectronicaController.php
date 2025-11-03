@@ -86,7 +86,10 @@ class FacturaElectronicaController extends TransaccionController
 
         // Enviar al proveedor tecnológico
         $vtas_document_header = Factura::find( (int)$result->new_document_header_id );
-        $mensaje = $vtas_document_header->enviar_al_proveedor_tecnologico();        
+        
+        $mensaje = $vtas_document_header->enviar_al_proveedor_tecnologico();
+        $mensaje = $vtas_document_header->enviar_al_proveedor_tecnologico();
+
         if ( $mensaje->tipo != 'mensaje_error' )
         {
             $factura_pos_encabezado->estado = 'Enviada';
