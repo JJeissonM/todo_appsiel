@@ -437,12 +437,12 @@ class InvMovimiento extends Model
                                 ->where('fecha','<=',$fecha_corte)
                                 ->sum('cantidad');
 
-        if ( is_null($existencia_actual) )
+        if ( $existencia_actual == null )
         {
             $existencia_actual = 0;
         }
 
-        return $existencia_actual;
+        return round( $existencia_actual, 2);
     }
 
     // Retorna un objeto o un valor null

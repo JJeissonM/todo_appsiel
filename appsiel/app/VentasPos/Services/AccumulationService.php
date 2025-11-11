@@ -43,29 +43,37 @@ class AccumulationService
         return true;
     }
 
-    public function hacer_desarme_automatico()
+    public function hacer_desarme_automatico( $detalle_operacion = '', $fecha = null )
     {
         $pdv_id = $this->pos->id;
         $bodega_default_id = $this->pos->bodega_default_id;
-        $fecha = $this->pos->ultima_fecha_apertura();
+        
+        if ( $fecha == null ) {
+            $fecha = $this->pos->ultima_fecha_apertura();
+        }
+        
         $parametros_config_inventarios = config('inventarios');
 
         $obj_inv_doc_serv = new InventoriesServices();
-        return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios );
+        return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion );
     }
 
-    public function hacer_preparaciones_recetas()
+    public function hacer_preparaciones_recetas( $detalle_operacion = '', $fecha = null )
     {
         $pdv_id = $this->pos->id;
         $bodega_default_id = $this->pos->bodega_default_id;
-        $fecha = $this->pos->ultima_fecha_apertura();
+        
+        if ( $fecha == null ) {
+            $fecha = $this->pos->ultima_fecha_apertura();
+        }
+
         $parametros_config_inventarios = config('inventarios');
 
         $obj_inv_doc_serv = new RecipeServices();
         
         $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id);
         
-        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios );
+        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion );
     }
 
     /**
@@ -90,6 +98,7 @@ class AccumulationService
             $cliente = $invoice->cliente;
         }
 
+        // Crear remisión si no existe
         $bodega_default_id = $invoice->pdv->bodega_default_id;
 
         if ($invoice->remision_doc_encabezado_id == 0) {

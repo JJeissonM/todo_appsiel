@@ -77,8 +77,17 @@ class FacturaElectronicaController extends TransaccionController
             }
         }
 
-        // Acumular la factura
-        (new AccumulationService( 0 ))->accumulate_one_invoice( $factura_pos_encabezado->id );
+        // Acumular la factura ////////////////////
+        $obj_acumm_serv = new AccumulationService( $factura_pos_encabezado->pdv_id );    
+        
+        // Realizar preparaciones de recetas
+        $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $factura_pos_encabezado->get_label_documento(), $factura_pos_encabezado->fecha );
+
+        // Realizar desarme automático
+        $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $factura_pos_encabezado->get_label_documento(), $factura_pos_encabezado->fecha);
+
+        $obj_acumm_serv->accumulate_one_invoice( $factura_pos_encabezado->id ); 
+        ////////////////////////////////
 
         // Convertir a factura electrónica
         $doc_header_serv = new DocumentHeaderService();

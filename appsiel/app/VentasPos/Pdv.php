@@ -52,6 +52,10 @@ class Pdv extends Model
 
     public function ultima_fecha_apertura()
     {
+        if ((int)config('ventas_pos.acumular_facturas_en_tiempo_real') ) {
+            return date('Y-m-d');
+        }
+
         $ultima_apertura = AperturaEncabezado::where('pdv_id',$this->id)->orderBy('created_at', 'desc')->get()->first();
 
         if ( $ultima_apertura == null ) {

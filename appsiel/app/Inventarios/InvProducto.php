@@ -364,6 +364,20 @@ class InvProducto extends Model
     /**
      * 
      */
+    public function getEsEnsamblado()
+    {
+        $count = ItemDesarmeAutomatico::where('item_producir_id', $this->id)->count();
+        if($count > 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 
+     */
     public static function consultar_registros($nro_registros, $search)
     {
         $collection =  InvProducto::leftJoin('inv_grupos', 'inv_grupos.id', '=', 'inv_productos.inv_grupo_id')
@@ -572,6 +586,8 @@ class InvProducto extends Model
             $item->unidad_medida1 = $item->get_unidad_medida1();
             
             $item->descripcion .= $item->get_color();
+
+            $item->es_ensamblado = $item->getEsEnsamblado();
         }
 
         return $registros;

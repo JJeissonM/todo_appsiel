@@ -288,10 +288,17 @@ class FacturaPosController extends TransaccionController
                 }
             }
         }
-
+        
         if($acumular_factura)
         {
-            $obj_acumm_serv = new AccumulationService( 0 );
+            $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );  
+        
+            // Realizar preparaciones de recetas
+            $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
+
+            // Realizar desarme automático
+            $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
+
             $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
         }   
         
@@ -832,36 +839,20 @@ class FacturaPosController extends TransaccionController
         // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
         $obj_acumm_serv->hacer_preparaciones_recetas();
 
-    }
-
-    /*
-        ACUMULAR
-        => Genera movimiento de ventas
-        => Genera Documentos de Remisión y movimiento de inventarios
-        => Genera Movimiento de Tesorería O CxC
-        y
-        CONTABILIZAR
-        => Genera Movimiento Contable para:
-            * Movimiento de Ventas (Ingresos e Impuestos)
-            * Movimiento de Inventarios (Inventarios y Costos)
-            * Movimiento de Tesorería (Caja y Bancos)
-            * Movimiento de CxC (Cartera de clientes)
-    */
-    public function acumular_una_factura($factura_id)
-    {
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accumulate_one_invoice($factura_id);
-
-        return 1;
     }   
 
     // Llamado desde la vista Show (Boton de accion)
     public function acumular_una_factura_individual($factura_id)
     {
-        $obj_acumm_serv = new AccumulationService( 0 );
-
         $invoice = FacturaPos::find($factura_id);
+
+        $obj_acumm_serv = new AccumulationService( $invoice->pdv_id );  
+        
+        // Realizar preparaciones de recetas
+        $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha );
+
+        // Realizar desarme automático
+        $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $invoice->get_label_documento(), $invoice->fecha );
 
         $validation = $this->validar_existencias( $invoice->pdv_id );
         if( $validation != 1 )
@@ -873,17 +864,11 @@ class FacturaPosController extends TransaccionController
         $obj_acumm_serv->accumulate_one_invoice($factura_id);
 
         return redirect('pos_factura/' . $factura_id . '?id=20&id_modelo=230&id_transaccion=47' )->with('flash_message', 'Factura Acumulada correctamente.');
-    }   
-
-    public function contabilizar_una_factura($factura_id)
-    {
-        $obj_acumm_serv = new AccumulationService( 0 );
-
-        $obj_acumm_serv->accounting_one_invoice($factura_id);
-
-        return 1;
     }
 
+    /**
+     * 
+     */
     public function form_registro_ingresos_gastos($pdv_id, $id_modelo, $id_transaccion)
     {
         $pdv = Pdv::find((int)$pdv_id);
@@ -941,6 +926,9 @@ class FacturaPosController extends TransaccionController
         return 1;
     }
 
+    /**
+     * 
+     */
     public function store_registro_ingresos_gastos(Request $request)
     {
         // $this->datos es una variable de 
@@ -1070,6 +1058,9 @@ class FacturaPosController extends TransaccionController
         return '<h4>Registro almacenado correctamente<br><span class="text-info">Documento: ' . $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo . '</span></h4><hr><a class="btn-gmail" href="' . url('/') . '/tesoreria/pagos_imprimir/' . $doc_encabezado->id . '?id=3&id_modelo=' . $request->id_modelo . '&id_transaccion=' . $request->id_transaccion . '&formato_impresion_id=pos' . '" title="Imprimir" id="btn_print" target="_blank"><i class="fa fa-btn fa-print"></i></a>';
     }
 
+    /**
+     * 
+     */
     public function unificar_lineas_registros_pedidos($pedido)
     {
         $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);

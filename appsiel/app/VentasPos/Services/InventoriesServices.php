@@ -87,7 +87,7 @@ class InventoriesServices
 
         // Para dar entradas en MK
         $parametros_items_producir = ItemDesarmeAutomatico::whereIn('item_producir_id', $ids_items_facturados)->groupBy('item_producir_id')->get();
-
+        
         /**
          * $lineas_desarme se puede rerfactorizar, no es necesario elaborar un String, sino un Array, que se convierte más fácil a JSON
          */
@@ -106,6 +106,9 @@ class InventoriesServices
                 $existencia_item_facturado = 0;
             }
             
+            /**
+             * cantidad_requerida_a_producir: Cantidad que se debe producir para cubrir la venta
+             */
             $cantidad_requerida_a_producir = $cantidad_facturada - $existencia_item_facturado;
 
             if ( $cantidad_requerida_a_producir <= 0 )
@@ -124,6 +127,7 @@ class InventoriesServices
             if ( $cantidad_proporcional > 1 )
             {
                 $parte_entera_requerida = intdiv( $cantidad_requerida_a_producir, $cantidad_proporcional);
+
                 if ( $cantidad_requerida_a_producir % $cantidad_proporcional != 0 )
                 {
                     $cantidad_a_sacar = $parte_entera_requerida + 1;
@@ -132,6 +136,9 @@ class InventoriesServices
                 $cantidad_a_sacar = $cantidad_requerida_a_producir / $cantidad_proporcional;
             }
             
+            /**
+             * cantidad_a_ingresar: Cantidad que se debe ingresar al inventario por el desarme, de acuerdo a la cantidad proporcional
+             */
             $cantidad_a_ingresar = $cantidad_a_sacar * $cantidad_proporcional;
 
             $costo_unitario_item_a_consumir = $parametro_item_producir->item_consumir->get_costo_promedio( $bodega_default_id );
@@ -149,7 +156,7 @@ class InventoriesServices
 
             $hay_productos++;
         }
-
+        
         if ( $hay_productos == 0 )
         {
             return 99; // Type integer
@@ -178,23 +185,24 @@ class InventoriesServices
                                             ->select(DB::raw('sum(cantidad) AS cantidad_facturada'), 'inv_producto_id')
                                             ->groupBy('inv_producto_id')
                                             ->get();
+                                            ;
         if ($inv_producto_id !== null) {
-            return $cantidades_facturadas->where('inv_producto_id', $inv_producto_id)->all();
+            return $cantidades_facturadas->where('inv_producto_id', $inv_producto_id)->all();dd('no null');
         }
 
         return $cantidades_facturadas;
     }
 
-    public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios )
+    public function create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion = '' )
     {
         $movimiento = $this->get_lineas_registros_desarme($pdv_id, $bodega_default_id, $parametros_config_inventarios, $fecha);
-
+        
         if ( gettype($movimiento) == "integer" )
         {
             return 0;
         }
 
-        $request = $this->built_ObjRequets_desarme($parametros_config_inventarios, $bodega_default_id, $movimiento, $fecha);
+        $request = $this->built_ObjRequets_desarme($parametros_config_inventarios, $bodega_default_id, $movimiento, $fecha, $detalle_operacion);
 
         $obj_inv_docum_line_serv = new InvDocumentsLinesService();
         $lineas_registros = $obj_inv_docum_line_serv->preparar_array_lineas_registros( $bodega_default_id, $request->movimiento, null);
@@ -205,7 +213,7 @@ class InventoriesServices
         return 1;
     }
 
-    public function built_ObjRequets_desarme( $parametros_config_inventarios, $bodega_default_id, $movimiento, $fecha)
+    public function built_ObjRequets_desarme( $parametros_config_inventarios, $bodega_default_id, $movimiento, $fecha, $detalle_operacion = '')
     {
         $request = new Request;
         $user = Auth::user();
@@ -214,7 +222,7 @@ class InventoriesServices
         $request["core_tipo_doc_app_id"] = (int)$parametros_config_inventarios['core_tipo_doc_app_id'];
         $request["fecha"] = $fecha;
         $request["core_tercero_id"] = (int)$parametros_config_inventarios['core_tercero_id'];
-        $request["descripcion"] = "";
+        $request["descripcion"] = $detalle_operacion;
         $request["documento_soporte"] = "";
         $request["inv_bodega_id"] = $bodega_default_id;
         $request["movimiento"] = $movimiento;

@@ -50,11 +50,13 @@ class StockService
                         var difference = new_stock - cantidad;
 
                         //this.lbl_stock_amount = '<div style="color: green; font-weight:bold; font-size: 0.8em; clear:both;">Saldo: ' + difference.toFixed(2) + '</div>';
-
-                        if (difference < 0) {
-                            this.hay_stock = false;
                             
-                            var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
+                        var producto = productos.find((item) => item.id === parseInt( inv_producto_id ));
+
+                        console.log('es_ensamblado: ' + producto.es_ensamblado);
+
+                        if (difference < 0 && !producto.es_ensamblado ) {
+                            this.hay_stock = false;
 
                             Swal.fire({
                                 icon: "error",
