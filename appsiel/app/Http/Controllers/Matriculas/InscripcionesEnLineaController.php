@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Sistema\ModeloController;
 
 use App\Core\Empresa;
+use App\Core\ModeloEavValor;
 use App\Core\Tercero;
 use App\Sistema\Modelo;
 
@@ -129,6 +130,10 @@ class InscripcionesEnLineaController extends Controller
         $inscripcion->save();
 
         (new ResponsablesEstudiantesService())->crear_datos_padres_y_acudiente($request,$empresa_id,$estudiante->id);
+        
+        // Llenar campos tipo EAV
+        $obj_eav = new ModeloEavValor();
+        $obj_eav->almacenar_registros_eav( $datos, $request->url_id_modelo, $inscripcion->id );
 
         // se llama la vista de show
         return redirect( 'inscripciones_en_linea/' . $inscripcion->id )->with('flash_message', config('matriculas.mensaje_inscripcion_creada'));
@@ -197,6 +202,12 @@ class InscripcionesEnLineaController extends Controller
         $descripcion_transaccion = 'Ficha de Inscripción';
 
         $estudiante = $inscripcion->estudiante();
+
+        $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1570';
+        $estudiante->es_de_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+
+        $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1571';
+        $estudiante->diagnostico_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
 
         return View::make('matriculas.formatos.inscripcion1',compact('inscripcion','descripcion_transaccion','empresa','vista','estudiante') )->render();
     }

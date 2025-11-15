@@ -91,16 +91,29 @@
         <td style="border: solid 1px black;" colspan="2">
             <b>Colegio anterior:</b> {{ $inscripcion->colegio_anterior }}
         </td>
-        <td style="border: solid 1px black;" colspan="4">
+        <td style="border: solid 1px black;" colspan="2">
             <b>Observación:</b> {{ $inscripcion->observacion }}
         </td>
     </tr>
+
+    @if($estudiante->es_de_inclusion != null)
+        <tr>
+            <td style="border: solid 1px black;" colspan="2">
+                <b>¿El estudiante es de inclusión?:</b> {{ $estudiante->es_de_inclusion }}
+            </td>
+            <td style="border: solid 1px black;" colspan="2">
+                <b>Diagnóstico de inclusión:</b> {{ $estudiante->diagnostico_inclusion }}
+            </td>
+        </tr>
+    @endif
 </table>
 
 <br>
 @include('matriculas.estudiantes.datos_basicos_padres')
 
-<br><br>
+    @if($estudiante->es_de_inclusion == null)
+        <br><br>
+    @endif
 
 <table width="100%">
     <tr>

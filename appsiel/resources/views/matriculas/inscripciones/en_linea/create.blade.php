@@ -29,10 +29,10 @@
                     <div class="col-md-12">
                 
                         <ul class="nav nav-tabs">
-                            <li class="active">
+                            <li class="active" id="header_tab1">
                                 <a data-toggle="tab" href="#info_estudiante"><span class="label label-info">1</span>&nbsp;{{ config('matriculas.etiqueta_datos_aspirante') }}</a>
                             </li>
-                            <li>
+                            <li id="header_tab2">
                                 <a data-toggle="tab" href="#info_padres"><span class="label label-info">2</span>&nbsp;DATOS DE PADRES Y ACUDIENTE</a>
                             </li>
                         </ul>
@@ -60,16 +60,21 @@
                     {{ Form::hidden('url_id_modelo', 323) }}
                 @endif
 
-                <div style="width: 100%; text-align: center;">
-                    <a href="#" class="btn btn-primary btn-lg" id="bs_boton_guardar">Guardar</a>
-                </div>
-
             {{ Form::close() }}
+            
+            <div style="width: 100%; text-align: center;">
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default" id="btn_next"> Continuar <i class="fa fa-chevron-right"></i></button>
+                </div>
+            </div>
 
 		</div>
+        
 	</div>
-    
-    <div style="background: aliceblue; margin: -25px 0px 15px 0px;">
+
+    <br>
+    <div style="background: aliceblue; margin: -25px 0px 15px 0px; font-size:1.4em !important;">
         {!! generado_por_appsiel() !!}
     </div>
     
@@ -271,6 +276,57 @@
 
 				$('#form_create').submit();
 			});
+
+			$('#btn_next').on('click',function(event){
+				event.preventDefault();
+                
+                $('#header_tab1').removeAttr('class');
+                $('#header_tab2').attr('class','active');
+                
+                $('#info_estudiante').attr('class','tab-pane fade');
+                $('#info_padres').attr('class','tab-pane fade active in');
+                $('#btn_next').hide();
+			});
+
+			$('#btn_previous').on('click',function(event){
+				event.preventDefault();
+                
+                $('#header_tab2').removeAttr('class');
+                $('#header_tab1').attr('class','active');
+                
+                $('#info_padres').attr('class','tab-pane fade');
+                $('#info_estudiante').attr('class','tab-pane fade active in');
+                $('#btn_next').show();
+			});
+
+            $('.nav-tabs a').on('shown.bs.tab', function(event){
+                var x = $(event.target).text();         // active tab
+
+                if (x == '2 DATOS DE PADRES Y ACUDIENTE') {
+                    $('#btn_next').hide();
+                }else{
+                    $('#btn_next').show();
+                }
+
+                //var y = $(event.relatedTarget).text();  // previous tab
+            });
+
+
+			$('#core_campo_id-1570').on('change',function(event){
+				event.preventDefault();
+                if ( $("#core_campo_id-1570").val() == 'Si' ) {
+                    $("#core_campo_id-1571").parent().parent().show();
+                }else{
+                    $("#core_campo_id-1571").parent().parent().hide();
+                    $("#core_campo_id-1571").val('');
+                }
+			});
+            
+            if ( $("#core_campo_id-1571").val() != undefined ) {
+                $("#core_campo_id-1571").parent().parent().hide();
+            }
+
+            
 		});
 	</script>
 	@if( isset($archivo_js) )

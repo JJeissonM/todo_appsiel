@@ -22,6 +22,7 @@ use App\Matriculas\Inscripcion;
 use App\Matriculas\Estudiante;
 
 use App\Core\Colegio;
+use App\Core\ModeloEavValor;
 use App\Matriculas\Matricula;
 use App\Matriculas\Services\ResponsablesEstudiantesService;
 use Illuminate\Support\Facades\App;
@@ -163,6 +164,15 @@ class InscripcionController extends ModeloController
         $descripcion_transaccion = 'Ficha de Inscripción';
 
         $estudiante = $inscripcion->estudiante();
+
+        /**
+         * 323 = ID Modelo de Inscripciones en linea
+         */
+        $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1570';
+        $estudiante->es_de_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
+
+        $string_ids_campos = '323-' . $inscripcion->id . '-core_campo_id-1571';
+        $estudiante->diagnostico_inclusion = ModeloEavValor::get_valor_campo( $string_ids_campos );
 
         $formato = 'formatos.inscripciones.estandar';
         if ( !in_array(config('matriculas.formato_default_fichas_incripcion_y_matricula'), [null,'']) ) {

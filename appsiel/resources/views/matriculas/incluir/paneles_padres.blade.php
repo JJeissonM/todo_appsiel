@@ -116,3 +116,13 @@
         &nbsp;
     </div>
 </div>
+
+
+
+<div style="width: 100%; text-align: center;">
+
+    <div class="btn-group">
+        <button type="button" class="btn btn-default" id="btn_previous"><i class="fa fa-chevron-left"></i> Atrás</button>
+        <button type="button" class="btn btn-primary" id="bs_boton_guardar">Guardar</button>
+    </div>
+</div>
