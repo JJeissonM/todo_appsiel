@@ -61,7 +61,13 @@
                     <!-- <td> { { $fila['caja_o_banco'] }} </td>
                     <td> { { $fila['concepto'] }} </td> -->
                     <td> {{ $fila['motivo'] }} </td>
-                    <td> {{ $entrada }} </td>
+                    <td> 
+                        @if($mensaje == $fila['caja_o_banco'])
+                            {{ $entrada }}
+                        @else
+                            {{ $entrada }} <i class="fa fa-warning" title="{{ $fila['caja_o_banco'] }}"></i>
+                        @endif                         
+                    </td>
                     <td> {{ $salida}} </td>
                     <td> ${{ number_format( $saldo, 0, ',','.') }} </td>
                 </tr>
