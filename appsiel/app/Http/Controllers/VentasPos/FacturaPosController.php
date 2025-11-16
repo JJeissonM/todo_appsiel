@@ -839,7 +839,29 @@ class FacturaPosController extends TransaccionController
         // Un documento de ENSAMBLE (MK) por cada Item Platillo vendido
         $obj_acumm_serv->hacer_preparaciones_recetas();
 
-    }   
+    }
+    
+    /*
+        ACUMULAR
+        => Genera movimiento de ventas
+        => Genera Documentos de Remisión y movimiento de inventarios
+        => Genera Movimiento de Tesorería O CxC
+        y
+        CONTABILIZAR
+        => Genera Movimiento Contable para:
+            * Movimiento de Ventas (Ingresos e Impuestos)
+            * Movimiento de Inventarios (Inventarios y Costos)
+            * Movimiento de Tesorería (Caja y Bancos)
+            * Movimiento de CxC (Cartera de clientes)
+    */
+    public function acumular_una_factura($factura_id)
+    {
+        $obj_acumm_serv = new AccumulationService( 0 );
+
+        $obj_acumm_serv->accumulate_one_invoice($factura_id);
+
+        return 1;
+    }
 
     // Llamado desde la vista Show (Boton de accion)
     public function acumular_una_factura_individual($factura_id)
