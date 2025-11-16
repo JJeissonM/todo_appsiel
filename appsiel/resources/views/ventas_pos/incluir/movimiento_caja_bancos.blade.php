@@ -65,7 +65,10 @@
                         @if($mensaje == $fila['caja_o_banco'])
                             {{ $entrada }}
                         @else
-                            {{ $entrada }} <i class="fa fa-warning" title="{{ $fila['caja_o_banco'] }}"></i>
+                            {{ $entrada }} 
+                            @if($entrada != '$0')
+                                <i class="fa fa-warning" title="{{ $fila['caja_o_banco'] }}"></i>
+                            @endif                            
                         @endif                         
                     </td>
                     <td> {{ $salida}} </td>
