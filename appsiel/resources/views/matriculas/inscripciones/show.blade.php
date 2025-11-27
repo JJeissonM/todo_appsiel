@@ -12,7 +12,7 @@
 		
 		{{ Form::bsBtnPrint( str_replace('id_fila', $id, $acciones->imprimir ) ) }}
 		
-		<a class="btn-gmail" href="{{ url( 'inscripciones_crear_matricula/' . $id .'?id='.Input::get('id').'&id_modelo=19' ) }}" title="Matrícular"><i class="fa fa-btn fa-book"></i></a>
+		<a class="btn-gmail" href="{{ url( 'inscripciones_crear_matricula/' . $id .'?id='.Input::get('id').'&id_modelo=' . Input::get('id_modelo') ) }}" title="Matrícular"><i class="fa fa-btn fa-book"></i></a>
 
 	</div>
 

@@ -100,15 +100,24 @@ class MatriculaController extends ModeloController
      */
     public function crear_nuevo(Request $request)
     {
-        //dd( $request->id_inscripcion );
+        $id_modelo = (int)Input::get('id_modelo');
 
-        // LLAMAR AL FORMULARIO PARA CREAR UNA NUEVA MATRICULA, SEGÚN EL DOC. ID DEL ESTUDIANTE
-        $inscripcion = Inscripcion::find( $request->id_inscripcion );
+        if ( $id_modelo == 66) { // Inscripciones
+            // LLAMAR AL FORMULARIO PARA CREAR UNA NUEVA MATRICULA, SEGÚN EL DOC. ID DEL ESTUDIANTE
+            $inscripcion = Inscripcion::find( $request->id_inscripcion );
 
-        $tercero = Tercero::find( $inscripcion->core_tercero_id );
+            $tercero = Tercero::find( $inscripcion->core_tercero_id );
+
+            $id_modelo = 19; // Matriculas
+        }else{
+            // id_inscripcion en realidad es el ID de la matricula (sino que se llama desde otra vista)
+            $matricula_activa = Matricula::find( $request->id_inscripcion );
+
+            $tercero = $matricula_activa->estudiante->tercero;
+        }        
 
         // Se obtiene el modelo según la variable modelo_id  de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        $modelo = Modelo::find( $id_modelo );
 
         $lista_campos = ModeloController::get_campos_modelo($modelo, '', 'create');
         //eliminamos los campos de acudiente por defecto en el modelo
@@ -150,11 +159,6 @@ class MatriculaController extends ModeloController
                     }
 
                     break;
-                case 'acudiente':
-
-                    $lista_campos[$i]['value'] = $inscripcion->acudiente;
-
-                    break;
 
                 default:
                     # code...
@@ -179,7 +183,7 @@ class MatriculaController extends ModeloController
 
         $miga_pan = [
             ['url' => 'matriculas?id=' . Input::get('id'), 'etiqueta' => 'Matrículas'],
-            ['url' => 'matriculas/create?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => 'Nueva'],
+            ['url' => 'web?id=1&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => $modelo->descripcion],
             ['url' => 'NO', 'etiqueta' => 'Crear nueva']
         ];
 
@@ -189,7 +193,7 @@ class MatriculaController extends ModeloController
         //obtenemos el listado de tipos de responsables (PAPA, MAMA, RESPONSABLE-FINANCIERO, ACUDIENTE, ETC)
         $tipos = Tiporesponsable::all();
         $tiposdoc = TipoDocumentoId::all();
-        return view('matriculas.crear_nuevo', compact('matriculas', 'miga_pan', 'form_create', 'estudiante', 'id_colegio', 'inscripcion', 'estudiante_existe', 'tipos', 'tiposdoc'));
+        return view('matriculas.crear_nuevo', compact('matriculas', 'miga_pan', 'form_create', 'estudiante', 'id_colegio', 'estudiante_existe', 'tipos', 'tiposdoc'));
     }
 
     /**
@@ -413,16 +417,20 @@ class MatriculaController extends ModeloController
      */
     public function edit($id)
     {
+        $id_modelo = (int)Input::get('id_modelo');
+        if ( $id_modelo == 66) { // Inscripciones
+            $id_modelo = 19; // Matriculas
+        }
 
         // Se obtiene el modelo según la variable modelo_id de la url
-        $modelo = Modelo::find(Input::get('id_modelo'));
+        $modelo = Modelo::find( $id_modelo );
 
         // Se obtiene el registro a modificar del modelo
         $matricula = app($modelo->name_space)->find($id);
 
         if ($matricula->periodo_lectivo_id != 0) {
             if (PeriodoLectivo::find($matricula->periodo_lectivo_id)->cerrado) {
-                return redirect('web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'))->with('mensaje_error', 'Matrícula no puede ser MODIFICADA. El Periodo Lectivo está cerrado.');
+                return redirect('web?id=' . Input::get('id') . '&id_modelo=' . $id_modelo)->with('mensaje_error', 'Matrícula no puede ser MODIFICADA. El Periodo Lectivo está cerrado.');
             }
         }
 

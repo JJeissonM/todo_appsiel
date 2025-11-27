@@ -19,12 +19,12 @@
             {{ csrf_field() }}
 
             <input type="hidden" name="id_colegio" id="id_colegio" value="{{ $id_colegio }}">
-            <input type="hidden" name="email" id="email" value="{{ $inscripcion->tercero->email }}">
-            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $inscripcion->tercero->id }}">
-            <input type="hidden" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ $inscripcion->fecha_nacimiento }}">
+            <input type="hidden" name="email" id="email" value="{{ $estudiante->tercero->email }}">
+            <input type="hidden" name="core_tercero_id" id="core_tercero_id" value="{{ $estudiante->tercero->id }}">
+            <input type="hidden" name="fecha_nacimiento" id="fecha_nacimiento" value="{{ $estudiante->fecha_nacimiento }}">
             <input type="hidden" name="estudiante_existe" id="estudiante_existe" value="{{ $estudiante_existe }}">
 
-            @include('matriculas.incluir.datos_inscripcion', [ 'tercero' => $inscripcion->tercero ])
+            @include('matriculas.incluir.datos_inscripcion', [ 'tercero' => $estudiante->tercero ])
 
             <div class="panel panel-primary">
                 <div class="panel-heading">DATOS DE LA MATRÍCULA</div>
@@ -36,7 +36,7 @@
 
             @include('matriculas.incluir.formularios.requisitos_matricula')
 
-            @include('matriculas.incluir.formularios.controles_medicos', [ 'estudiante' => $inscripcion->tercero ])
+            @include('matriculas.incluir.formularios.controles_medicos', [ 'estudiante' => $estudiante->tercero ])
 
             @if((int)config('matriculas.incluir_formulario_para_crear_libreta_pagos') == 1)
                 @include('matriculas.incluir.formularios.libreta_pagos')                
@@ -88,6 +88,20 @@
             html = html + "</tr>";
 
         }
+
+        function focusConScroll(selector) {
+            setTimeout(function() {
+                const el = $(selector)[0];
+                if (!el) return;
+
+                el.focus();
+                el.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+            }, 400); // un poco más grande para dejar que todo lo demás termine primero
+        }
+
 
         $.fn.addRow = function() {
             
@@ -148,8 +162,6 @@
             hay_responsable--;
         });
 
-
-
         $(document).ready(function() {
 
             $('#btn_excel').show();
@@ -159,11 +171,7 @@
                 $( "#responsable_agregado" ).val( 1 );
             }
 
-            $('#sga_grado_id').focus();
-
-            if (typeof $('#btn_imprimir') !== 'undefined') {
-                $('#btn_imprimir').focus();
-            }
+            focusConScroll('#sga_grado_id');
 
             $('#btn_agregar_linea').on('click', function(event) {
                 event.preventDefault();
@@ -187,7 +195,8 @@
                 if ( $( "#responsable_agregado" ).val() == 0 )
                 {
                     alert('Debe ingresar al responsable del estudiante.');
-                    $('#tercero_responsable_id').focus();
+                    //$('#tercero_responsable_id').focus();
+                    focusConScroll('#tercero_responsable_id');
                     return false;
                 }
 

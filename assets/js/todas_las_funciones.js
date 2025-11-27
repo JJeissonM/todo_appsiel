@@ -194,7 +194,6 @@ $(document).ready(function () {
 		});
 	});
 
-
 	function getParameterByName(name) {
 		name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 		var regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
@@ -209,6 +208,11 @@ $(document).ready(function () {
 
 			var id_select_padre = $(this).val();
 			var id_modelo = getParameterByName('id_modelo');
+
+			if ( id_modelo == 66 ) { // Inscripciones
+				id_modelo = 19; // Matriculas
+			}
+
 			var url;
 
 			var direccion = location.href;
