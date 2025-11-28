@@ -37,7 +37,7 @@
 							<input type="hidden" name="source" value="{{$source}}" />
 							<input type="hidden" name="plantilla_id" value="{{$v->id}}" />
 							<input type="hidden" name="contrato_id" value="{{$contrato->id}}" />
-							<input type="hidden" name="route" value="{{Input::get('route')}}" />
+							<input type="hidden" name="source" value="{{Input::get('source')}}" />
                             
 							<input type="hidden" name="contrato_fecha_inicio" id="contrato_fecha_inicio" value="{{$contrato->fecha_inicio}}" />
 							<input type="hidden" name="contrato_fecha_fin" id="contrato_fecha_fin" value="{{$contrato->fecha_fin}}" />

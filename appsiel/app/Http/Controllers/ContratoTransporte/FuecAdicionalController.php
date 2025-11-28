@@ -140,7 +140,7 @@ class FuecAdicionalController extends Controller
 
     public function store(Request $request)
     {
-        $ruta_show = 'cte_contratos/' . $request->contrato_id . '/planillas/' . $request->route . '/index';
+        $ruta_show = 'cte_contratos/' . $request->contrato_id . '/planillas/' . $request->source . '/index';
         
         $fuec_adicional_id = (new FuecServices())->storeFuecAdicional($request);
 

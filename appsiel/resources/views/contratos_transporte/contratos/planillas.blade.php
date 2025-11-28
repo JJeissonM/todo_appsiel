@@ -29,7 +29,7 @@
 		<div class="row" style="padding: 20px;">
 			<div class="col-md-12">
 				<!--<div class="col-md-12" style="margin-bottom: 40px;">
-					<a href="{{route('cte_contratos.planillacreate',[$c->id,$source]).$variables_url}}" class="btn btn-primary"><i class="fa fa-arrow-right"></i> GENERAR FUEC PARA ESTE CONTRATO</a>
+					<a href="{ {route('cte_contratos.planillacreate',[$c->id,$source]).$variables_url}}" class="btn btn-primary"><i class="fa fa-arrow-right"></i> GENERAR FUEC PARA ESTE CONTRATO</a>
 				</div>-->
 				<div class="col-md-6">
 					<div class="list-group">
@@ -90,7 +90,7 @@
 							@endif
 							<tr>
 								<td colspan="4">
-									<a href="{{route('cte_contratos_fuec_adicional.create',['contrato_id='.$c->id, 'id=19', 'modelo_id=197',  'route=' .Input::get('route') ])}}" class="btn btn-primary btn-md"><i class="fa fa-plus"></i> Crear nuevo FUEC</a>
+									<a href="{{route('cte_contratos_fuec_adicional.create',['contrato_id='.$c->id, 'id=19', 'modelo_id=197',  'source=' .Input::get('source') ])}}" class="btn btn-primary btn-md"><i class="fa fa-plus"></i> Crear nuevo FUEC</a>
 								</td>
 							</tr>
 						</tbody>

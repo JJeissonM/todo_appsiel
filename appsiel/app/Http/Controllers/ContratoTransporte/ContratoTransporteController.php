@@ -9,6 +9,7 @@ use App\Contratotransporte\Contrato;
 use App\Contratotransporte\Contratogrupou;
 use App\Contratotransporte\Documentosconductor;
 use App\Contratotransporte\Documentosvehiculo;
+use App\Contratotransporte\FuecAdicional;
 use App\Contratotransporte\Planillac;
 use App\Contratotransporte\Planillaconductor;
 use App\Contratotransporte\Plantilla;
@@ -31,42 +32,19 @@ class ContratoTransporteController extends Controller
         $miga_pan = [
             ['url' => 'NO', 'etiqueta' => 'Contratos Transporte']
         ];
+        
+        $user = Auth::user();
+
         $hoy = getdate();
         $mes_actual = $hoy['mon'];
         if (strlen($mes_actual) == 1) {
             $mes_actual = '0'.$mes_actual;
         }
 
+        $fecha_desde = date('Y'). '-' . $mes_actual . '-01';
+        $fecha_hasta = date('Y') . '-' . $mes_actual . '-' . date('t');
 
-        $cont = [];
-        $user = Auth::user();
-        if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
-            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
-            if (!is_null($vehiculo)) {
-                $cont = Contrato::where('fecha_inicio','like', date('Y').'-'.$mes_actual.'%' )
-                                ->where('vehiculo_id', $vehiculo->id)->orderBy('created_at', 'DESC')->get();
-            }
-        } else {
-            $cont = Contrato::where('fecha_inicio','like', date('Y').'-'.$mes_actual.'%' )
-                            ->orderBy('created_at', 'DESC')->get();
-        }
-
-        $contratos = null;
-        if (count($cont) > 0) {
-            foreach ($cont as $c) {
-                $c->tipo_registro = 'contrato';
-
-                if ( $c->numero_fuec != null ) {
-                    $contratos[] = $c;
-                }                
-
-                $fuec_adicionales = $c->fuec_adicionales;
-                foreach ($fuec_adicionales as $fuec_adicional) {                    
-                    $fuec_adicional->tipo_registro = 'fuec_adicional';
-                    $contratos[] = $fuec_adicional;
-                }
-            }
-        }
+        $contratos = (new FuecServices())->get_listado_fuecs_entre_fechas( $user, $fecha_desde, $fecha_hasta );
         
         $mes_actual = $this->mes()[$mes_actual];
 
@@ -307,7 +285,7 @@ class ContratoTransporteController extends Controller
                         $message = 'FUEC Adicional No pudo ser almacenado';
                     }
 
-                    return redirect( url( '/cte_contratos' . '/' . $contrato_id . '/planillas/CONTRATOS/index?' . $request->variables_url . '&route=CONTRATOS') )->with($messageType, $message);
+                    return redirect( url( '/cte_contratos' . '/' . $contrato_id . '/planillas/CONTRATOS/index?' . $request->variables_url . '&source=CONTRATOS') )->with($messageType, $message);
                 }
 
                 // Si no se guarda FUEC adicional
@@ -440,12 +418,12 @@ class ContratoTransporteController extends Controller
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
 
-        $route = 'CONTRATOS';
+        $source = 'CONTRATOS';
         if ( Auth::user()->hasRole('Vehículo (FUEC)') ) {
-            $route = 'MISCONTRATOS';
+            $source = 'MISCONTRATOS';
         }
 
-        $miga_pan = $this->get_miga_pan($route);
+        $miga_pan = $this->get_miga_pan($source);
 
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         $contratante = $c->contratante;
@@ -462,7 +440,7 @@ class ContratoTransporteController extends Controller
             ->with('c', $c)
             ->with('v', $v)
             ->with('contratante', $contratante)
-            ->with('route', $route)
+            ->with('source', $source)
             ->with('vehiculo', $vehiculo)
             ->with('e', $emp);
     }

@@ -102,4 +102,58 @@ class FuecServices
 
         return $result;
     }
+
+    public function get_listado_fuecs_entre_fechas( $user, $fecha_desde, $fecha_hasta )
+    {
+        $array_wheres = [
+            ['fecha_inicio','>=', $fecha_desde],
+            ['fecha_fin','<=', $fecha_hasta]
+        ];
+
+        $cont = [];
+        if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
+            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            if (!is_null($vehiculo)) {
+                $array_wheres[] = ['vehiculo_id', '=', $vehiculo->id];
+            }
+        }
+
+        $cont = Contrato::where( $array_wheres )->orderBy('created_at', 'DESC')->get();
+
+        $fuecs_adicionales_2 = FuecAdicional::where( $array_wheres )->orderBy('created_at', 'DESC')->get();
+
+        $contratos = null;
+        if (count($cont) > 0) {
+            $arr_nros_fuecs = [];
+            foreach ($cont as $c) {
+                $c->tipo_registro = 'contrato';
+
+                if ( $c->numero_fuec != null ) {
+                    $contratos[] = $c;
+                    $arr_nros_fuecs[] = $c->numero_fuec;
+                }                
+
+                $fuec_adicionales = $c->fuec_adicionales;
+                foreach ($fuec_adicionales as $fuec_adicional) {
+                    $fuec_adicional->tipo_registro = 'fuec_adicional';
+                    $arr_nros_fuecs[] = $fuec_adicional->numero_fuec;
+                    $contratos[] = $fuec_adicional;
+                }
+                
+                foreach ($fuecs_adicionales_2 as $fuec_adicional2) {
+
+                    if (in_array( $fuec_adicional2->numero_fuec, $arr_nros_fuecs )) {
+                        continue;
+                    }
+
+                    $fuec_adicional2->tipo_registro = 'fuec_adicional';
+                    $arr_nros_fuecs[] = $fuec_adicional2->numero_fuec;
+                    $contratos[] = $fuec_adicional2;
+                }
+
+            }
+        }
+
+        return $contratos;
+    }
 }
