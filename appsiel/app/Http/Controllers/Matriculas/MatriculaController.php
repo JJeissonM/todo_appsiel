@@ -325,6 +325,10 @@ class MatriculaController extends ModeloController
                                     ->get()
                                     ->last();
 
+        if ( $inscripcion == null) {
+            return false;
+        }
+
         if ( $inscripcion->estado == 'Activo' )
         {
             $inscripcion->estado = 'Pendiente';
