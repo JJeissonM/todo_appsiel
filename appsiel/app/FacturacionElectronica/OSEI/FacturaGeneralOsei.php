@@ -240,7 +240,7 @@ class FacturaGeneralOsei
         $prefixFE = $factura_doc_encabezado->tipo_documento_app->prefijo;;
         $numberFE = (string) $factura_doc_encabezado->consecutivo;
 
-        $endpointGetCufe = "https://osei.com.co/api/v1/invoices/get_cufe/{$prefixFE}/{$numberFE}";
+        $endpointGetCufe = "https://osei.com.co/api/v1/invoices/get_cufe/{$prefixFE}/{$numberFE}/{$auth_token}";
         $cURL = curl_init();
         curl_setopt($cURL, CURLOPT_URL, $endpointGetCufe);
         curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
