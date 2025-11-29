@@ -54,11 +54,18 @@
                         Hasta: {{ $contract->fecha_fin }}
                     </td>
                     <td>
-                        @if($contract->tipo_registro == 'fuec_adicional')
-                            {{ $contract->contrato->contratante->tercero->descripcion }}                            
-                        @else
-                            {{ $contract->contratante->tercero->descripcion }}                            
-                        @endif 
+                        <?php 
+                            $contrato = $contract;
+                            if($contract->tipo_registro == 'fuec_adicional') {
+                                $contrato = $contract->contrato;
+                            }
+
+                            $lbl_contratante = $contrato->contratanteText;
+                            if ( $contrato->contratante != null ) {
+                                $lbl_contratante = $contrato->contratante->tercero->descripcion;
+                            }
+                        ?>
+                        {{ $lbl_contratante }}
                     </td>
                 </tr>
             @endforeach
