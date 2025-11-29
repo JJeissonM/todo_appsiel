@@ -67,3 +67,7 @@ Route::post('cte_mantenimientos/observaciones/store', 'ContratoTransporte\Manten
 Route::get('cte_contratos_fuec_adicional_imprimir/{fuec_adicional_id}', 'ContratoTransporte\FuecAdicionalController@imprimir')->name('cte_contratos_fuec_adicional.imprimir');
 Route::resource('cte_contratos_fuec_adicional', 'ContratoTransporte\FuecAdicionalController');
 Route::get('cte_contratos_fuec_adicional_imprimir/planillas/{id}/verificar', 'ContratoTransporte\FuecAdicionalController@verificarPlanilla')->name('cte_contratos_fuec_adicional.planillaverificar');
+
+// REPORTES
+
+Route::post('cte_fuecs_list', 'ContratoTransporte\ReportsController@get_fuecs_list');

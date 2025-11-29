@@ -15,6 +15,13 @@
 					<a href="#" class="list-group-item list-group-item-action active">
 						Datos del Vehículo
 					</a>
+					<a href="#" class="list-group-item list-group-item-action">
+						@php
+							$estadoClase = strtolower($v->estado) === 'activo' ? 'background:#d4edda;color:#155724;padding:2px 6px;border-radius:4px;' : 'background:#f8d7da;color:#721c24;padding:2px 6px;border-radius:4px;';
+						@endphp
+						<b>Estado:</b> <span style="{{ $estadoClase }}">{{ $v->estado }}</span>
+
+					</a>
 					<a href="#" class="list-group-item list-group-item-action"><b>Número Interno:</b> {{$v->int}}</a>
 					<a href="#" class="list-group-item list-group-item-action"><b>Placa:</b> {{$v->placa}}</a>
 					<a href="#" class="list-group-item list-group-item-action"><b>Número Vinculación:</b> {{$v->numero_vin}}</a>

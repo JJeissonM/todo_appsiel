@@ -122,14 +122,14 @@ class FuecServices
 
         $fuecs_adicionales_2 = FuecAdicional::where( $array_wheres )->orderBy('created_at', 'DESC')->get();
 
-        $contratos = null;
+        $contratos = collect([]);
         if (count($cont) > 0) {
             $arr_nros_fuecs = [];
             foreach ($cont as $c) {
                 $c->tipo_registro = 'contrato';
 
                 if ( $c->numero_fuec != null ) {
-                    $contratos[] = $c;
+                    $contratos->push( $c );
                     $arr_nros_fuecs[] = $c->numero_fuec;
                 }                
 
@@ -137,7 +137,7 @@ class FuecServices
                 foreach ($fuec_adicionales as $fuec_adicional) {
                     $fuec_adicional->tipo_registro = 'fuec_adicional';
                     $arr_nros_fuecs[] = $fuec_adicional->numero_fuec;
-                    $contratos[] = $fuec_adicional;
+                    $contratos->push( $fuec_adicional );
                 }
                 
                 foreach ($fuecs_adicionales_2 as $fuec_adicional2) {
@@ -148,7 +148,7 @@ class FuecServices
 
                     $fuec_adicional2->tipo_registro = 'fuec_adicional';
                     $arr_nros_fuecs[] = $fuec_adicional2->numero_fuec;
-                    $contratos[] = $fuec_adicional2;
+                    $contratos->push( $fuec_adicional2 );
                 }
 
             }

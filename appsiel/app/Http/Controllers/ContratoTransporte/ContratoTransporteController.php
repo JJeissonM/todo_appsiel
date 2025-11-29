@@ -145,9 +145,9 @@ class ContratoTransporteController extends Controller
         $lista_vehiculos = null;
         if ($source == 'MISCONTRATOS') {
             $u = Auth::user();
-            $lista_vehiculos = Vehiculo::where('placa', $u->email)->get();
+            $lista_vehiculos = Vehiculo::where('placa', $u->email)->where('estado','Activo')->get();
         } else {
-            $lista_vehiculos = Vehiculo::all();
+            $lista_vehiculos = Vehiculo::where('estado','Activo')->get();
         }
         
         $hoy = strtotime( date( "d-m-Y" ) );

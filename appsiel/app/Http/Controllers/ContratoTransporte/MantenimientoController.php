@@ -35,7 +35,7 @@ class MantenimientoController extends Controller
                 'etiqueta' => 'Listado de Vehículos'
             ]
         ];
-        $vehiculos = Vehiculo::all();
+        $vehiculos = Vehiculo::where('estado', 'Activo')->get();
         $variables_url = "?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion;
         return view('contratos_transporte.mantenimientos.index')
             ->with('variables_url', $variables_url)

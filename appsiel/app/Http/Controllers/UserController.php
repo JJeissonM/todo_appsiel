@@ -388,7 +388,7 @@ class UserController extends ModeloController
 
     public function crear_usuarios_masivos()
     {
-        $vehiculos = Vehiculo::all();
+        $vehiculos = Vehiculo::where('estado','Activo')->get();
 
         $l = 0;
         foreach ($vehiculos as $registro)
@@ -400,8 +400,6 @@ class UserController extends ModeloController
             if ( is_null( $usuarios_existe ) )
             {
                 $descripcion = 'Vehículo ' . $registro->marca . ' ' . $registro->modelo . ', placa: ' . $registro->placa;
-
-                
 
                 $password = str_random(8);
 

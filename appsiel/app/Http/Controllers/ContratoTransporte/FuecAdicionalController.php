@@ -50,7 +50,7 @@ class FuecAdicionalController extends Controller
             $u = Auth::user();
             $lista_vehiculos = Vehiculo::where('placa', $u->email)->get();
         } else {
-            $lista_vehiculos = Vehiculo::all();
+            $lista_vehiculos = Vehiculo::where('estado','Activo')->get();
         }
         
         $hoy = strtotime( date( "d-m-Y" ) );

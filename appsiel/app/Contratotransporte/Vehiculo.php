@@ -7,13 +7,15 @@ use Illuminate\Support\Facades\DB;
 
 use App\Core\PasswordReset;
 use App\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class Vehiculo extends Model
 {
     protected $table = 'cte_vehiculos';
-    protected $fillable = ['id', 'int', 'bloqueado_cuatro_contratos', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'int', 'bloqueado_cuatro_contratos', 'placa', 'numero_vin', 'numero_motor', 'modelo', 'marca', 'clase', 'color', 'cilindraje', 'capacidad', 'fecha_control_kilometraje', 'propietario_id', 'estado', 'created_at', 'updated_at'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Interno', 'Vinculación', 'Placa', 'Marca', 'Clase', 'Modelo', 'Propietario', 'Bloqueado 4 Contratos/Mes'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Interno', 'Vinculación', 'Placa', 'Marca', 'Clase', 'Modelo', 'Propietario', 'Bloqueado 4 Contratos/Mes', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"cte_vehiculos/id_fila/show"}';
 
@@ -21,11 +23,34 @@ class Vehiculo extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = Vehiculo::all();
+        $user = Auth::user();
+
+        $array_wheres = [];
+
+        $operador = '=';
+        $value = 'Activo';
+
+        if ( (int)Input::get('reporte_id') == 76 ) {
+            $operador = 'like';
+            $value = '%activo%'; // Esto incluye todos los estados
+        }
+        
+        $array_wheres[] = ['estado', $operador, $value];
+
+        if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
+            
+            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+
+            if ( $vehiculo != null) {
+                $array_wheres[] = ['id', '=', $vehiculo->id];
+            }
+        }
+        
+        $opciones = Vehiculo::where( $array_wheres )->get();
 
         $vec[''] = '';
         foreach ($opciones as $opcion) {
-            $vec[$opcion->id] = $opcion->clase . ' ' . $opcion->marca . ' ' . $opcion->modelo . ' ' . $opcion->placa . ')';
+            $vec[$opcion->id] = $opcion->placa . ' - ' . $opcion->clase . ' ' . $opcion->marca . ' ' . $opcion->modelo;
         }
 
         return $vec;
@@ -51,7 +76,8 @@ class Vehiculo extends Model
                 'cte_vehiculos.modelo AS campo6',
                 DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS campo7'),
                 'cte_vehiculos.bloqueado_cuatro_contratos AS campo8',
-                'cte_vehiculos.id AS campo9'
+                'cte_vehiculos.estado AS campo9',
+                'cte_vehiculos.id AS campo10'
             )->where("cte_vehiculos.int", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.numero_vin", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.placa", "LIKE", "%$search%")
@@ -77,7 +103,8 @@ class Vehiculo extends Model
                 'cte_vehiculos.clase AS CLASE',
                 'cte_vehiculos.modelo AS MODELO',
                 DB::raw('CONCAT(core_tipos_docs_id.abreviatura," - ",core_terceros.numero_identificacion," - ",core_terceros.descripcion) AS PROPIETARIO'),
-                'cte_vehiculos.bloqueado_cuatro_contratos AS BLOQUEADO_4_CONTRATOS'
+                'cte_vehiculos.bloqueado_cuatro_contratos AS BLOQUEADO_4_CONTRATOS',
+                'cte_vehiculos.estado AS ESTADO'
             )->where("cte_vehiculos.int", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.numero_vin", "LIKE", "%$search%")
             ->orWhere("cte_vehiculos.placa", "LIKE", "%$search%")

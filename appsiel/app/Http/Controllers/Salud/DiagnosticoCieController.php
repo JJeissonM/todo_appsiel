@@ -13,6 +13,7 @@ use Input;
 
 use App\Sistema\Modelo;
 use App\Salud\DiagnosticoCie;
+use App\Sistema\Aplicacion;
 
 class DiagnosticoCieController extends ModeloController
 {

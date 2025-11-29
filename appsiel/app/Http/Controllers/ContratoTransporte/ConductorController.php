@@ -218,7 +218,7 @@ class ConductorController extends Controller
             ]
         ];
         $todosVehiculos = null;
-        $vehi = Vehiculo::all();
+        $vehi = Vehiculo::where('estado', 'Activo')->get();
         if (count($vehi) > 0) {
             foreach ($vehi as $v) {
                 $todosVehiculos[$v->id] = "PLACA " . $v->placa . ", MOVIL INTERNO " . $v->int . ", CAPACIDAD " . $v->capacidad;
