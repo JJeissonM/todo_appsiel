@@ -118,9 +118,9 @@ class RegistroTurno extends Model
             )
             ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_grupos_empleados.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
-            ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
+            ->orWhere("nom_turnos_tipos.descripcion", "LIKE", "%$search%")
+            ->orWhere("nom_turnos_registros.anotacion", "LIKE", "%$search%")
+            ->orWhere("nom_turnos_registros.estado", "LIKE", "%$search%")
             ->orderBy('nom_turnos_registros.fecha', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);

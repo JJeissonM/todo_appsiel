@@ -4,9 +4,9 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
 use App\Nomina\EquivalenciaContable;
 use App\Nomina\NominaElectronica\ConceptoDian;
+use Illuminate\Support\Facades\DB;
 
 class NomConcepto extends Model
 {

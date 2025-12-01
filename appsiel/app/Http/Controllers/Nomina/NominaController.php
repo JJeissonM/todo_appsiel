@@ -19,6 +19,7 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\Services\LiquidacionPorTurnosService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -33,6 +34,7 @@ class NominaController extends TransaccionController
     protected $pos = 0;
     protected $registros_procesados = 0;
     protected $vec_campos;
+    public $encabezado_doc;
 
     /* 
         7: Tiempo NO Laborado
@@ -97,8 +99,15 @@ class NominaController extends TransaccionController
             $cant = count( $this->array_ids_modos_liquidacion_automaticos );
 
             for ( $i=0; $i < $cant; $i++ ) 
-            {                
-                $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
+            {
+                if ( $empleado->clase_contrato == 'por_turnos') {
+                    if( (new LiquidacionPorTurnosService())->almacenar_registro_empleado( $empleado, $documento, $usuario ))
+                    {
+                        $this->registros_procesados++;
+                    }
+                }else{
+                    $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
+                }                
             }
         }
 
@@ -310,15 +319,22 @@ class NominaController extends TransaccionController
         $documento_nomina = NomDocEncabezado::find( $id );
         $registros_documento = $documento_nomina->registros_liquidacion;
 
+        $liquidacion_turnos_service = new LiquidacionPorTurnosService();
+
         foreach ( $registros_documento as $registro )
         {
-            if ( !is_null( $registro->concepto ) && !is_null($registro->contrato) )
+            if ( $registro->concepto != null && $registro->contrato != null )
             {
                 if ( in_array( $registro->concepto->modo_liquidacion_id, $this->array_ids_modos_liquidacion_automaticos) )
                 {
                     // Se llama al subsistema de liquidación
                     $liquidacion = new LiquidacionConcepto( $registro->concepto->id, $registro->contrato, $documento_nomina);
                     $liquidacion->retirar( $registro->concepto->modo_liquidacion_id, $registro );
+                }
+
+                if ( $registro->concepto->id == (int)config('nomina.concepto_pago_turnos') )
+                {
+                    $liquidacion_turnos_service->retirar_registro_empleado( $registro->contrato, $documento_nomina );
                 }
             }   
         }

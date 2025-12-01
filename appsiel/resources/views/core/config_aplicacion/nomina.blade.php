@@ -183,6 +183,9 @@
 
 				</div>
 
+				<h4> Parámetros para liquidación de Turnos  </h4>
+				<hr>
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -200,7 +203,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$concepto_pago_turnos = 1;
+								if( isset($parametros['concepto_pago_turnos'] ) )
+								{
+									$concepto_pago_turnos = $parametros['concepto_pago_turnos'];
+								}
+							?>
+							{{ Form::bsSelect('concepto_pago_turnos', $concepto_pago_turnos, 'Concepto para pago de turnos (Modo manual)', App\Nomina\ConceptoManual::opciones_campo_select(), ['class'=>'form-control']) }}
 						</div>
 					</div>
 

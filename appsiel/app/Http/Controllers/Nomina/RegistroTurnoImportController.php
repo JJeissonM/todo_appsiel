@@ -175,29 +175,36 @@ class RegistroTurnoImportController extends Controller
             $turnoDefault = null;
             foreach ($cacheContratos as $c) {
                 if ($c && $c->id == $contratoId) {
-                    $turnoDefault = $c->turno_default_id;
+                    $turnoDefault = $c->turno_default;
                     break;
                 }
             }
-            
-            $tipo_turno_id = $mejorTurno->id ?? $turnoDefault ?? config('nomina.turno_default_id');
 
-            if ( $tipo_turno_id == 0 ) {
-                $tipo_turno_id = null;
+            if ($mejorTurno == null) {
+
+                $mejorTurno = $turnoDefault;
             }
 
-            RegistroTurno::create([
-                'contrato_id'     => $contratoId,
-                'tipo_turno_id'   => $tipo_turno_id,
-                'fecha'           => $fecha,
-                'checkin_time_1'  => $horas[0] ?? null,
-                'checkout_time_1' => $horas[1] ?? null,
-                'checkin_time_2'  => $horas[2] ?? null,
-                'checkout_time_2' => $horas[3] ?? null,
-                'valor'           => $mejorTurno->valor ?? 0,
-                'anotacion'       => '',
-                'estado'          => 'Pendiente',
-            ]);
+            if ($mejorTurno == null) {
+
+                $mejorTurno = TipoTurno::find( (int)config('nomina.turno_default_id') );
+            }
+
+            if ( $mejorTurno->valor != 0) {
+                RegistroTurno::create([
+                    'contrato_id'     => $contratoId,
+                    'tipo_turno_id'   => $mejorTurno->id,
+                    'fecha'           => $fecha,
+                    'checkin_time_1'  => $horas[0] ?? null,
+                    'checkout_time_1' => $horas[1] ?? null,
+                    'checkin_time_2'  => $horas[2] ?? null,
+                    'checkout_time_2' => $horas[3] ?? null,
+                    'valor'           => $mejorTurno->valor,
+                    'anotacion'       => '',
+                    'estado'          => 'Pendiente',
+                ]);
+            }
+            
         }
         
         return redirect( 'nom_turnos_registros/create?id=' . $request->app_id . '&id_modelo=' . $request->modelo_id . '&fecha=' . $fechaPrimerDia )->with( 'flash_message','Turnos importados correctamente. Fecha primer día: ' . $fechaPrimerDia );
