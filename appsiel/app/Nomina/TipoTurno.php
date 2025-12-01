@@ -2,21 +2,20 @@
 
 namespace App\Nomina;
 
-use App\Nomina\CambioSalario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TipoTurno extends Model
 {
     protected $table = 'nom_turnos_tipos';
 
     /**
-     * estado => { Pendiente | Liquidado}
+     * estado => { Activo | Inactivo}
      */
-    protected $fillable = ['descripcion', 'valor', 'detalle', 'estado'];
+    protected $fillable = ['descripcion', 'checkin_time_1', 'checkout_time_1', 'checkin_time_2', 'checkout_time_2', 'valor', 'detalle', 'estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tipo Turno', 'Valor', 'Detalle', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Tipo Turno', 'Hora entrada 1', 'Hora salida 1', 'Hora entrada 2', 'Hora salida 2', 'Valor', 'Detalle', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -24,10 +23,14 @@ class TipoTurno extends Model
     {
         $collection = TipoTurno::select(
                 'descripcion AS campo1',
-                'valor AS campo2',
-                'detalle AS campo3',
-                'estado AS campo4',
-                'id AS campo5'
+                'checkin_time_1 AS campo2',
+                'checkout_time_1 AS campo3',
+                'checkin_time_2 AS campo4',
+                'checkout_time_2 AS campo5',
+                'valor AS campo6',
+                'detalle AS campo7',
+                'estado AS campo8',
+                'id AS campo9'
             )
             ->orderBy('descripcion')
             ->get();
@@ -96,6 +99,10 @@ class TipoTurno extends Model
     {
         $string = TipoTurno::select(
                 'descripcion AS TIPO_TURNO',
+                'checkin_time_1 AS HORA_ENTRADA_1',
+                'checkout_time_1 AS HORA_SALIDA_1',
+                'checkin_time_2 AS HORA_ENTRADA_2',
+                'checkout_time_2 AS HORA_SALIDA_2',
                 'valor AS VALOR',
                 'detalle AS DETALLE',
                 'estado AS ESTADO',
@@ -130,4 +137,76 @@ class TipoTurno extends Model
 
         return $vec;
     }
+
+    public function store_adicional($datos, $registro)
+    {
+        if($registro->checkin_time_1 == "00:00:00" || $registro->checkin_time_1 == '')
+        {
+            $registro->checkin_time_1 = null;
+        }
+        if($registro->checkout_time_1 == "00:00:00" || $registro->checkout_time_1 == '')
+        {
+            $registro->checkout_time_1 = null;
+        }
+        if($registro->checkin_time_2 == "00:00:00" || $registro->checkin_time_2 == '')
+        {
+            $registro->checkin_time_2 = null;
+        }
+        if($registro->checkout_time_2 == "00:00:00" || $registro->checkout_time_2 == '')
+        {
+            $registro->checkout_time_2 = null;
+        }
+
+        $registro->save();
+
+    }
+
+    public function update_adicional($datos, $id )
+    {
+        $registro = TipoTurno::find($id);
+
+        if($registro->checkin_time_1 == "00:00:00" || $registro->checkin_time_1 == '')
+        {
+            $registro->checkin_time_1 = null;
+        }
+        if($registro->checkout_time_1 == "00:00:00" || $registro->checkout_time_1 == '')
+        {
+            $registro->checkout_time_1 = null;
+        }
+        if($registro->checkin_time_2 == "00:00:00" || $registro->checkin_time_2 == '')
+        {
+            $registro->checkin_time_2 = null;
+        }
+        if($registro->checkout_time_2 == "00:00:00" || $registro->checkout_time_2 == '')
+        {
+            $registro->checkout_time_2 = null;
+        }
+
+        $registro->save();
+    }
+
+    public function validar_eliminacion($id)
+    {
+        $tablas_relacionadas = '{
+                            "0":{
+                                    "tabla":"nom_turnos_registros",
+                                    "llave_foranea":"tipo_turno_id",
+                                    "mensaje":"Está asignado en registros de turnos."
+                                }
+                        }';
+
+        $tablas = json_decode( $tablas_relacionadas );
+        //$cantidad = count($tablas);
+        foreach($tablas AS $una_tabla)
+        { 
+            $registro = DB::table( $una_tabla->tabla )->where( $una_tabla->llave_foranea, $id )->get();
+
+            if ( !empty($registro) )
+            {
+                return $una_tabla->mensaje;
+            }
+        }
+
+        return 'ok';
+    } 
 }

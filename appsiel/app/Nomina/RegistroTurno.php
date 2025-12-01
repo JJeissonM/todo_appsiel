@@ -11,9 +11,9 @@ class RegistroTurno extends Model
     protected $table = 'nom_turnos_registros';
 
     /**
-     * estado => { Pendiente | Liquidado }
+     * estado => { Pendiente | Aprobado | Liquidado }
      */
-    protected $fillable = ['contrato_id', 'tipo_turno_id', 'fecha', 'valor', 'anotacion', 'estado'];
+    protected $fillable = ['contrato_id', 'tipo_turno_id', 'fecha', 'checkin_time_1', 'checkout_time_1', 'checkin_time_2', 'checkout_time_2', 'valor', 'anotacion', 'estado'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Tipo Turno', 'Fecha', 'Valor', 'Anotación', 'Estado'];
 

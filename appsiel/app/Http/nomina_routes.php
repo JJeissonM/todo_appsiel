@@ -43,6 +43,9 @@ Route::get('nom_get_options_incapacidades_anteriores/{fecha_inicial_tnl}/{fecha_
 
 // Manejo de Turnos
 Route::resource('nom_turnos_registros', 'Nomina\GestionTurnosController');
+Route::get('nomina/turnos/importar', 'Nomina\\RegistroTurnoImportController@create')->name('nomina.turnos.import.create');
+Route::post('nomina/turnos/importar', 'Nomina\\RegistroTurnoImportController@store')->name('nomina.turnos.import.store');
+
 
 // LIQUIDACION DE PRESTACIONES SOCIALES
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');

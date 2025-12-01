@@ -21,7 +21,8 @@
         "doctrine/dbal": "^2.10",
         "cmgmyr/messenger": "^2.16",
         "webklex/laravel-pdfmerger": "*",
-        "mike42/escpos-php": "*"
+        "mike42/escpos-php": "*",
+        "phpoffice/phpspreadsheet": "^1.25"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

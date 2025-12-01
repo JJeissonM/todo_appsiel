@@ -183,6 +183,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$turno_default_id = 1; 
+								if( isset($parametros['turno_default_id'] ) )
+								{
+									$turno_default_id = $parametros['turno_default_id'];
+								}
+							?>
+							{{ Form::bsSelect('turno_default_id', $turno_default_id, 'Turno por Defecto', App\Nomina\TipoTurno::opciones_campo_select(), ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros liquidación de prestaciones sociales  </h4>
 				<hr>
 				<div class="row">

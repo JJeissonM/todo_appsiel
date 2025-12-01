@@ -75,10 +75,22 @@ class GestionTurnosController extends TransaccionController
             if ( $action == 'create')
             {
                 $empleado->tipo_turno_id = $empleado->turno_default_id;
+                
+                $turno_default = $empleado->turno_default;
+                if ($turno_default != null) {
+                    $empleado->checkin_time_1 = $turno_default->checkin_time_1;
+                    $empleado->checkout_time_1 = $turno_default->checkout_time_1;
+                    $empleado->checkin_time_2 = $turno_default->checkin_time_2;
+                    $empleado->checkout_time_2 = $turno_default->checkout_time_2;
+                }
             }
             
             if ( $turno_ingresado != null) {
                 $empleado->tipo_turno_id = $turno_ingresado->tipo_turno_id;
+                $empleado->checkin_time_1 = $turno_ingresado->checkin_time_1;
+                $empleado->checkout_time_1 = $turno_ingresado->checkout_time_1;
+                $empleado->checkin_time_2 = $turno_ingresado->checkin_time_2;
+                $empleado->checkout_time_2 = $turno_ingresado->checkout_time_2;
             }
 
             $empleado->anotacion = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->anotacion ?? null;

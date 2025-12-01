@@ -13,9 +13,9 @@ class NomContratoPorTurno extends NomContrato
     /**
      * clase_contrato = { normal | labor_contratada | por_turnos }
      */
-    protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'clase_riesgo_laboral_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id','genera_planilla_integrada','tipo_cotizante','turno_default_id'];
+    protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'clase_riesgo_laboral_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id','genera_planilla_integrada','tipo_cotizante','turno_default_id', 'fingerprint_reader_id'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Grupo Empleado', 'Cargo', 'Fecha ingreso', 'Estado'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Grupo Empleado', 'Cargo', 'Fecha ingreso', 'ID Lector Huellas', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
 
@@ -30,8 +30,9 @@ class NomContratoPorTurno extends NomContrato
                 'nom_grupos_empleados.descripcion AS campo3',
                 'nom_cargos.descripcion AS campo4',
                 'nom_contratos.fecha_ingreso AS campo5',
-                'nom_contratos.estado AS campo6',
-                'nom_contratos.id AS campo7'
+                'nom_contratos.fingerprint_reader_id AS campo6',
+                'nom_contratos.estado AS campo7',
+                'nom_contratos.id AS campo8'
             )
             ->where("nom_contratos.clase_contrato", "=", "por_turnos")
             ->orderBy('nom_contratos.created_at', 'DESC')
@@ -108,13 +109,15 @@ class NomContratoPorTurno extends NomContrato
                 'nom_grupos_empleados.descripcion AS GRUPO_EMPLEADO',
                 'nom_cargos.descripcion AS CARGO',
                 'nom_contratos.id AS ID',
-                'nom_contratos.estado AS ESTADO'
+                'nom_contratos.estado AS ESTADO',
+                'nom_contratos.fingerprint_reader_id AS ID_LECTOR_HUELLAS'
             )
             ->where("core_terceros.numero_identificacion", "LIKE", "%$search%")
             ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_grupos_empleados.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_cargos.descripcion", "LIKE", "%$search%")
             ->orWhere("nom_contratos.estado", "LIKE", "%$search%")
+            ->orWhere("nom_contratos.fingerprint_reader_id", "LIKE", "%$search%")
             ->orderBy('nom_contratos.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
