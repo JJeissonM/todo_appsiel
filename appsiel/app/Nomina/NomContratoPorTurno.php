@@ -133,7 +133,7 @@ class NomContratoPorTurno extends NomContrato
     {
         $registro->clase_contrato = 'por_turnos';
 
-        if ($registro->contrato_hasta == '')
+        if ($registro->contrato_hasta == '' || $registro->contrato_hasta == '0000-00-00')
         {
             $registro->contrato_hasta = date('2099-12-31');
         }
@@ -171,6 +171,13 @@ class NomContratoPorTurno extends NomContrato
 
     public static function update_adicional($datos, $registro_id)
     {
-        //
+        $registro = NomContratoPorTurno::find($registro_id);
+
+        if ($registro->contrato_hasta == '' || $registro->contrato_hasta == '0000-00-00')
+        {
+            $registro->contrato_hasta = date('2099-12-31');
+            $registro->save();
+        }
+        
     }
 }
