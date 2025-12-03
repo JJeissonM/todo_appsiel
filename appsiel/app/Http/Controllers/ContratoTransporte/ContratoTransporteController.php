@@ -57,15 +57,16 @@ class ContratoTransporteController extends Controller
 
     public function get_documentos_vencidos_condutores($user)
     {
+        
+        $docs = Documentosconductor::all();
+
         //valido documentos vencidos
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
             $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
-            if (!is_null($vehiculo)) {
+            if ( $vehiculo != null ) {
                 $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $vehiculo->id)->get()->pluck('conductor_id')->toArray();
                 $docs = Documentosconductor::whereIn('conductor_id', $conductoresDelVehiculo)->get();
             }
-        } else {
-            $docs = Documentosconductor::all();
         }
 
         $documentos_vencidos = null;
@@ -88,14 +89,14 @@ class ContratoTransporteController extends Controller
 
     public function get_documentos_vencidos_vehiculos($user)
     {
+        $docs = Documentosvehiculo::all();
+        
         //valido documentos vencidos
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
             $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
-            if (!is_null($vehiculo)) {
+            if ( $vehiculo != null ) {
                 $docs = Documentosvehiculo::where('vehiculo_id', $vehiculo->id)->get();
             }
-        } else {
-            $docs = Documentosvehiculo::all();
         }
 
         $hoy = strtotime( date( "d-m-Y" ) );
