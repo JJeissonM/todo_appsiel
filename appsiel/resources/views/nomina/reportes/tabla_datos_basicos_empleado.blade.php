@@ -7,11 +7,20 @@
     <tr>
         <td style="border: 1px solid;"><b> Fecha ingreso: </b> {{ $empleado->fecha_ingreso }}</td>
         <td style="border: 1px solid;" colspan="2">
-            <b> E.P.S.: </b> {{ $empleado->entidad_salud->descripcion }}
-            &nbsp;&nbsp; | &nbsp;&nbsp;
-            <b> A.F.P.: </b> {{ $empleado->entidad_pension->descripcion }}
-            &nbsp;&nbsp; | &nbsp;&nbsp;
-            <b> A.R.L.: </b> {{ $empleado->entidad_arl->descripcion }}
+
+            @if( $empleado->entidad_salud != null)
+                <b> E.P.S.: </b> {{ $empleado->entidad_salud->descripcion }}                
+            @endif
+            
+            @if( $empleado->entidad_pension != null)
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+                <b> A.F.P.: </b> {{ $empleado->entidad_pension->descripcion }}                
+            @endif
+            
+            @if( $empleado->entidad_arl != null)
+                &nbsp;&nbsp; | &nbsp;&nbsp;
+                <b> A.R.L.: </b> {{ $empleado->entidad_arl->descripcion }}                
+            @endif
         </td>
     </tr>
 </table>
