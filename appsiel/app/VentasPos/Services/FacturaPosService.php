@@ -106,35 +106,77 @@ class FacturaPosService
         return $lista_campos;
     }
 
+    /**
+     * 
+     */
     public function get_productos($pdv,$productos)
     {
         $items_en_lista_precios = ListaPrecioDetalle::where('lista_precios_id',$pdv->cliente->lista_precios_id)->get()->pluck('inv_producto_id')->toArray();
 
         $productosTemp = null;
-        foreach ($productos as $pr)
+        foreach ($productos as $item)
         {
-            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
+            $grupo_inventario = InvGrupo::find($item->inv_grupo_id);
 
             if ( !$grupo_inventario->mostrar_en_pagina_web ) {
                 continue;
             }
 
             if ((int)config('ventas_pos.mostrar_solo_items_con_precios_en_lista_cliente_default')) {
-                if (!in_array($pr->id,$items_en_lista_precios)) {
+                if (!in_array($item->id,$items_en_lista_precios)) {
                     continue;
                 }
             }            
             
             if ( $grupo_inventario == null )
             {
-                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $item->descripcion . ' no tiene un grupo de inventario válido.' );
             }
 
-            $pr->categoria = $grupo_inventario->descripcion;
-            $productosTemp[$pr->categoria][] = $pr;
+            $item->categoria = $grupo_inventario->descripcion;
+            $productosTemp[$item->categoria][] = $item;
         }
 
         return $productosTemp;
+    }
+
+    /**
+     * 
+     */
+    public function get_productos_por_grupo($productos, $arr_ids_grupos)
+    {
+        $productosTemp = null;
+        foreach ($productos as $item)
+        {
+            if ( !in_array( $item->inv_grupo_id, $arr_ids_grupos ) ) {
+                continue;
+            }          
+            
+            if ( $item->grupo_inventario == null )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $item->descripcion . ' no tiene un grupo de inventario válido.' );
+            }
+
+            $item->categoria = $item->grupo_inventario->descripcion;
+            $productosTemp[$item->categoria][] = $item;
+        }
+
+        return $productosTemp;
+    }
+
+    /**
+     * 
+     */
+    public function get_ids_grupos_pdv( $pdv )
+    {
+        $arr_ids_grupos = [];
+        $grupos_pdv = $pdv->grupos_inventario();
+        foreach ( $grupos_pdv AS $grupo_pdv )
+        {
+            $arr_ids_grupos[] = $grupo_pdv->id;
+        }
+
+        return $arr_ids_grupos;
     }
 
     public function generar_plantilla_factura($pdv, $empresa)

@@ -1,4 +1,15 @@
 var contornos_permitidos;
+var productos,
+  precios,
+  todos_los_precios,
+  descuentos,
+  todos_los_descuentos,
+  clientes,
+  cliente_default,
+  forma_pago_default,
+  fecha_vencimiento_default,
+  vendedores,
+  dataform_modelo_cliente;
 
 function set_catalogos(pdv_id) {
     $("#contenido_modal2").html("Cargando recursos... por favor espere.");

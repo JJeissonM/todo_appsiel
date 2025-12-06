@@ -3,13 +3,14 @@
 namespace App\VentasPos;
 
 use App\Core\Empresa;
+use App\Core\ModeloEavValor;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvBodega;
 use App\Tesoreria\TesoCaja;
 use App\Ventas\Cliente;
 use App\Core\TipoDocApp;
-
+use App\Inventarios\InvGrupo;
 use Illuminate\Support\Facades\DB;
 
 class Pdv extends Model
@@ -81,6 +82,27 @@ class Pdv extends Model
         }
         
         return $this->direccion;
+    }
+
+
+    public function grupos_inventario()
+    {
+        $registros_grupos = ModeloEavValor::where([
+            ['modelo_padre_id','=',227], // 227 = Pdv
+            ['registro_modelo_padre_id','=',$this->id],
+            ['modelo_entidad_id','=',24], // 24 = InvGrupo
+        ])->get();
+
+        $vec_grupos = [];
+        foreach ( $registros_grupos as $registro_grupo )
+        {
+            $grupo_inventario = InvGrupo::find( $registro_grupo->registro_modelo_entidad_id );
+            if ( $grupo_inventario != null )
+            {
+                $vec_grupos[] = $grupo_inventario;
+            }
+        }
+        return $vec_grupos;
     }
 
 

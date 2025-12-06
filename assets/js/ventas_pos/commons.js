@@ -1,15 +1,7 @@
 var hay_productos = 0;
 var url_raiz, redondear_centena, numero_linea;
-var productos,
-  precios,
-  descuentos,
-  clientes,
-  cliente_default,
-  forma_pago_default,
-  fecha_vencimiento_default,
-  inv_producto_id,
-  doc_encabezado, puede_continuar, vlr_efectivo_recibido;
-  var locked = false;
+var inv_producto_id, doc_encabezado, puede_continuar, vlr_efectivo_recibido;
+var locked = false;
 
 $("#btn_nuevo").hide();
 $("#btn_cancelar").hide();

@@ -52,12 +52,17 @@ class FacturaRestauranteController extends TransaccionController
         /**
          * Validar resolución de Facturación
          */
-        $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );        
-        if ( $msj_resolucion_facturacion->status == 'error' )
+        $msj_resolucion_facturacion = '';
+        if( (int)config('ventas_pos.modulo_fe_activo') )
         {
-            return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
+            $msj_resolucion_facturacion = $factura_pos_service->get_msj_resolucion_facturacion( $pdv );
+        
+            if ( $msj_resolucion_facturacion->status == 'error' )
+            {
+                return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', $msj_resolucion_facturacion->message );
+            }
+            $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
         }
-        $msj_resolucion_facturacion = $msj_resolucion_facturacion->message;
 
         /**
          * Asignar campos por defecto
@@ -103,8 +108,12 @@ class FacturaRestauranteController extends TransaccionController
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         $productos = $productos->sortBy('precio_venta');
         
-        $productosTemp = $factura_pos_service->get_productos($pdv,$productos);
+        $arr_ids_grupos = $factura_pos_service->get_ids_grupos_pdv( $pdv ); 
+
+
+        $productosTemp = $factura_pos_service->get_productos_por_grupo( $productos, $arr_ids_grupos );
         
+        //dd($productosTemp);
         $vista_categorias_productos = View::make('ventas_pos.componentes.tactil.lista_items', compact('productosTemp'))->render();
         
         // Para visualizar el listado de productos

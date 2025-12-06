@@ -72,11 +72,15 @@ function update_lista_items_contorno_ids(object_button)
     return lista;
 }
 
+/**
+ * 
+ * @param {*} object_button 
+ */
 function cambiar_descripcion_item_ingresado(object_button)
 {
     var fila = object_button.closest("tr");
 
-    var descripcion_item = fila.find('.lbl_producto_descripcion').text();
+    var descripcion_item = fila.find('.lbl_producto_descripcion').text().replace(/\s+/g, ' ').trim();
 
     var list_object = $('#lista_contornos li');
 
@@ -86,6 +90,26 @@ function cambiar_descripcion_item_ingresado(object_button)
     });
 
     fila.find('.lbl_producto_descripcion').text( descripcion_item );
+}
+
+/**
+ * 
+ * @param {*} object_button 
+ */
+function cambiar_precio_item_ingresado(object_button)
+{
+    var fila = object_button.closest("tr");
+
+    var descripcion_item = fila.find('.lbl_producto_descripcion').text().replace(/\s+/g, ' ').trim();
+
+    var producto = productos.find(item => item.descripcion === descripcion_item );
+
+    console.log(descripcion_item,producto );
+
+    fila.find('.precio_unitario').text( producto.precio_venta );
+
+    calcular_precio_total_lbl_quantity(fila);
+    calcular_totales();
 }
 
 function reset_component_items_contorno()
@@ -177,6 +201,8 @@ $(document).ready(function () {
 
     $(document).on('click', '.btn_confirm_contornos', function () {
         cambiar_descripcion_item_ingresado($(this));
+
+        cambiar_precio_item_ingresado( $(this) );
         
         update_lista_items_contorno_ids($(this));
 
