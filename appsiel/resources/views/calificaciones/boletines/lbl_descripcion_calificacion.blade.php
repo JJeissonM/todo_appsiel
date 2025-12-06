@@ -42,6 +42,14 @@
 	        break;
 	}
 
+	// 169 = FASE MILITAR
+	if ( $linea->calificacion->id_asignatura == 169) {
+		$lbl_nota_original = 'APROBÓ';
+		if ( (float)$calificacion_nota_original < 5) {
+			$lbl_nota_original = 'REPROBÓ';
+		}
+	}
+
 	switch ( $mostrar_nota_nivelacion )
 	{
 		case 'solo_nota_nivelacion_con_etiqueta':

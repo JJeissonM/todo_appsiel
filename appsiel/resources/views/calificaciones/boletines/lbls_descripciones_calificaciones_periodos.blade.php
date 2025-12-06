@@ -10,6 +10,7 @@
 
 	$sumatoria_calificaciones_peridos = 0;
 	$n = 0;
+	$value_cali_last_period = 0;
 	foreach($periodos as $periodo_lista)
 	{
 		$calificacion_nota_original = $periodo_lista->get_calificacion( $curso->id, $registro->estudiante->id, $linea->asignatura_id );
@@ -29,6 +30,9 @@
 			}
 
 			$sumatoria_calificaciones_peridos += $cali_periodo;
+			
+			$value_cali_last_period = $cali_periodo;
+
 			$n++;
 		}
 
@@ -38,13 +42,17 @@
 			//$lbl_cali_periodo = '-';
 		}
 
-		echo '<td style="text-align: center; width: ' . $width_columnas . 'px;"> ' . $lbl_cali_periodo . ' </td>';
+		// 169 = FASE MILITAR
+		if ( $linea->asignatura_id != 169) {
+			echo '<td style="text-align: center; width: ' . $width_columnas . 'px;"> ' . $lbl_cali_periodo . ' </td>';
+		}
 	}
 
 	$lbl_cali_prom = '&nbsp;';
 	if( $n != 0 )
 	{
 		$lbl_cali_prom = number_format( $sumatoria_calificaciones_peridos / $n, $decimales, ',', '.' );
+		$value_cali_prom = $sumatoria_calificaciones_peridos / $n;
 	}
 
 	$lbl_calificacion = $lbl_cali_prom;
@@ -89,7 +97,18 @@
 		}
 	}
 	
-	echo '<td style="text-align: center; width: ' . $width_columnas . 'px;"> ' . $lbl_calificacion. ' </td>';
+	// 169 = FASE MILITAR
+	if ( $linea->asignatura_id != 169) {
+		echo '<td style="text-align: center; width: ' . $width_columnas . 'px;"> ' . $lbl_calificacion. ' </td>';
+	}else{
+		$lbl_nota_original = 'APROBÓ';
+		if ( (float)$value_cali_last_period < 5) {
+			$lbl_nota_original = 'REPROBÓ';
+		}
+		echo '<td style="text-align: center; background: #ddd;" colspan="' . ($n + 1) . '"> ' . $lbl_nota_original. ' </td>';
+	}
+
+	
 
 ?>
 

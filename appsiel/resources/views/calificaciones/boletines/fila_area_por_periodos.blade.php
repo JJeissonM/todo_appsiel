@@ -21,7 +21,7 @@
             <b> {{ $area_descripcion }}</b>
         </td>
     </tr>
-    @if( $mostrar_calificacion_media_areas && $curso->maneja_calificacion == 1)
+    @if( $mostrar_calificacion_media_areas && $curso->maneja_calificacion == 1 && $linea->area->get_valor_eav( 122, $linea->area_id, 947) != 'No')
         <tr style="background-color: {{config('configuracion.color_principal_empresa')}}50;">
             <td style="text-align: right; font-size:0.7em;"><i>Promedio del área >></i></td>
 
