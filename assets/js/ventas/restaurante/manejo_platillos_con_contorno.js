@@ -104,8 +104,6 @@ function cambiar_precio_item_ingresado(object_button)
 
     var producto = productos.find(item => item.descripcion === descripcion_item );
 
-    console.log(descripcion_item,producto );
-
     fila.find('.precio_unitario').text( producto.precio_venta );
 
     calcular_precio_total_lbl_quantity(fila);

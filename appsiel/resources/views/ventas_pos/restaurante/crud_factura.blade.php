@@ -170,6 +170,10 @@
 
     <script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
 
+    <script src="{{ asset( 'assets/js/ventas_pos/restaurante/doble_click.js?aux=' . uniqid() )}}"></script>
+    
+    <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?aux=' . uniqid() )}}"></script>
+
     @if( (int)config('ventas_pos.manejar_propinas') )
         <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/propinas.js?aux=' . uniqid())}}"></script>
     @endif

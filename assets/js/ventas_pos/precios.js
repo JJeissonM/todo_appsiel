@@ -500,7 +500,9 @@ function calcular_totales_quantity()
  */
 function calcular_precio_total_lbl_quantity(fila) 
 {
-    precio_unitario = parseFloat(fila.find('.precio_unitario').text());
+    //precio_unitario = parseFloat(fila.find('.precio_unitario').text());
+    precio_unitario = parseFloat(fila.find(".elemento_modificar").eq(0).text());
+    
     //base_impuesto_unitario = parseFloat(fila.find('.base_impuesto').text());
     tasa_descuento = parseFloat( fila.find('.tasa_descuento').text() );
     cantidad = parseFloat( fila.find('.quantity').val() );

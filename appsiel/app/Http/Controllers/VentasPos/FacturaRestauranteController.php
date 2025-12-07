@@ -106,7 +106,7 @@ class FacturaRestauranteController extends TransaccionController
         $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Punto de ventas: ' . $pdv->descripcion);
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
-        $productos = $productos->sortBy('precio_venta');
+        $productos = $productos->sortByDesc('precio_venta');
         
         $arr_ids_grupos = $factura_pos_service->get_ids_grupos_pdv( $pdv ); 
 
