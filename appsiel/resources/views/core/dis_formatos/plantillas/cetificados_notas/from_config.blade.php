@@ -103,7 +103,7 @@
 	</style>
 </head>
 
-<body id="body" style="font-size: 15px;">
+<body id="body" style="font-size: 13px;">
 
 	<?php    
 	    $colegio = App\Core\Colegio::where('empresa_id',Auth::user()->empresa_id)->get()->first();
@@ -133,7 +133,7 @@
 		
         $ma_encabezado_2 = $parametros['ma_encabezado_2'];
 		$label_consecutivo = str_pad($consecutivo, 4 - strlen($consecutivo), '0', STR_PAD_LEFT);
-        $ma_encabezado_2 = str_replace('__field__consecutivo_cecrtificado', '24-' . $label_consecutivo, $ma_encabezado_2);
+        $ma_encabezado_2 = str_replace('__field__consecutivo_cecrtificado', substr($array_fecha[2], 2, 2) . '-' . $label_consecutivo, $ma_encabezado_2);
 		$consecutivo++;
         $ma_encabezado_2 = str_replace('__field__mes', $array_fecha[1], $ma_encabezado_2);
         $ma_encabezado_2 = str_replace('__field__dia', $array_fecha[0], $ma_encabezado_2);
@@ -146,7 +146,7 @@
 
 		<table width="100%">
             <tr>
-                <td colspan="6" style="text-align: center; font-size: 1em;">
+                <td colspan="6" style="text-align: center; font-size: 0.9em;">
 					@if($parametros['columnas_encabezado'] == 3)
 						<table style="width:99%; height: 60px;">
 							<tr>
@@ -175,7 +175,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td colspan="6" style="text-align: center; font-size: 0.9em;">
+				<td colspan="6" style="text-align: center; font-size: 0.8em;">
                     {!! $parametros['ma_introduccion'] !!}
 				</td>
 			</tr>
@@ -201,7 +201,7 @@
 			</tr>
 		</table>
 
-		<br><br><br><br><br><br><br><br>
+		<br><br><br><br>
 		<div style="border: none; font-size: 0.8em;">
 			<?php
         		$ma_contenido_pie_pagina = $parametros['ma_contenido_pie_pagina'];

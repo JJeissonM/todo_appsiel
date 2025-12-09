@@ -1,6 +1,6 @@
 <table class="table table-bordered">
     <thead>
-        <tr style="font-size: 15px;">
+        <tr style="font-size: 13px;">
             <th style="text-align: center;">AREAS (ASIGNATURAS)</th>
             <th style="text-align: center">CALIFICACION CUANTITATIVA</th>
             <th style="text-align: center">CALIFICACION CUALITATIVA</th>
@@ -18,6 +18,7 @@
 
             $cantidad_asignaturas = 0;
             $sumatoria_calificaciones = 0;
+            $arr_cali = [];
         ?>
         @foreach($areas as $asignaturas)
             <?php
@@ -46,10 +47,10 @@
                     }else{
                         $detalle .= ', ' . $asignatura->descripcion;
                     }
-
                             
                     $cantidad_asignaturas++;
-                    $sumatoria_calificaciones += $valor_calificacion;
+                    $sumatoria_calificaciones += $calificacion->valor;
+                    $arr_cali[] = $calificacion->valor;
                 }
 
                 $prom = 0;
@@ -68,7 +69,7 @@
                 $detalle .= ')';
                 
             ?>
-            <tr style="font-size: 14px;">
+            <tr style="font-size: 13px;">
                 <td style="width:400px;">
                     {{ $asignaturas->first()->area }}
                     @if($cantidad > 0)
@@ -76,7 +77,18 @@
                     @endif
                 </td>
                 <td align="center">
-                    {{ number_format( $prom, 1, ',', '.' ) }}
+                    <?php
+                    // 169 = FASE MILITAR
+                    if ( $asignaturas->first()->id != 169) {
+                        echo number_format( $prom, 1, ',', '.' );
+                    }else{
+                        $lbl_nota_original = 'APROBÓ';
+                        if ( (float)$prom < 5) {
+                            $lbl_nota_original = 'REPROBÓ';
+                        }
+                        echo '<span style="text-align: center; background: #ddd;"> ' . $lbl_nota_original. ' </span>';
+                    }
+                    ?>
                 </td>
                 <td align="center">
                     {{ $escala_nacional }}
@@ -89,6 +101,10 @@
                 @endif
             </tr>
         @endforeach
+
+        <?php 
+            //dd($arr_cali, $cantidad_asignaturas, $sumatoria_calificaciones);
+        ?>
     </tbody>
 </table>
 
