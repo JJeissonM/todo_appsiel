@@ -34,8 +34,20 @@ class RegistroTurnoImportController extends Controller
         $path = $request->file('archivo')->getRealPath();
         $sheet = IOFactory::load($path)->getActiveSheet();
 
-        $tiposTurno = TipoTurno::where('estado', 'Activo')
+        $tiposTurnoActivos = TipoTurno::where('estado', 'Activo')
+            ->with('cargos:id')
             ->get(['id', 'valor', 'checkin_time_1', 'checkout_time_1', 'checkin_time_2', 'checkout_time_2']);
+
+        $turnosPorCargo = [];
+        foreach ($tiposTurnoActivos as $turno) {
+            if ($turno->cargos->isEmpty()) {
+                $turnosPorCargo[0][] = $turno; // turnos globales (sin cargo)
+            }
+
+            foreach ($turno->cargos as $cargo) {
+                $turnosPorCargo[$cargo->id][] = $turno;
+            }
+        }
 
         $cacheContratos = []; // fingerprint_reader_id => modelo contrato
         $dedup = [];          // contrato|Y-m-d H:i:s
@@ -64,7 +76,8 @@ class RegistroTurnoImportController extends Controller
 
             if (!isset($cacheContratos[$fingerId])) {
                     $cacheContratos[$fingerId] = NomContrato::where('fingerprint_reader_id', 'like', '%'.$fingerId.'%')
-                        ->select('id', 'turno_default_id')
+                        ->select('id', 'cargo_id', 'turno_default_id')
+                        ->with('turno_default')
                         ->first();
             }
             
@@ -131,7 +144,9 @@ class RegistroTurnoImportController extends Controller
             $mejorTurno = null;
             $mejorDiff = null;
 
-            foreach ($tiposTurno as $turno) {
+            $turnosDisponibles = $turnosPorCargo[$contrato->cargo_id] ?? ($turnosPorCargo[0] ?? []);
+
+            foreach ($turnosDisponibles as $turno) {
                 $esperados = array_values(array_filter([
                     $turno->checkin_time_1,
                     $turno->checkout_time_1,

@@ -19,7 +19,7 @@ class Pdv extends Model
 
     // usar_complemento_JSPrintManager = Impresion directa en cocina (Comanda)
     // imprimir_factura_automaticamente = Impresion directa en Caja (Factura)
-	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'impresora_cocina_por_defecto', 'imprimir_factura_automaticamente', 'impresora_principal_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado'];
+	protected $fillable = ['core_empresa_id', 'descripcion', 'bodega_default_id', 'caja_default_id', 'cajero_default_id', 'cliente_default_id', 'tipo_doc_app_default_id', 'detalle', 'plantilla_factura_pos_default', 'direccion', 'telefono', 'email', 'usar_complemento_JSPrintManager', 'impresora_cocina_por_defecto', 'imprimir_factura_automaticamente', 'impresora_principal_por_defecto', 'serial_maquina', 'creado_por', 'modificado_por', 'estado', 'maneja_impoconsumo'];
 
     public function empresa()
     {

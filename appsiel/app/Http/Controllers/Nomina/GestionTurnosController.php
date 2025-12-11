@@ -4,28 +4,14 @@ namespace App\Http\Controllers\Nomina;
 
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
 
 
-// Modelos
-use App\Core\TipoDocApp;
-use App\Sistema\Modelo;
-use App\Core\Empresa;
-
-use App\Nomina\NomConcepto;
-use App\Nomina\NomDocEncabezado;
-use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 
-use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\RegistroTurno;
 use App\Nomina\TipoTurno;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\View;
 
 class GestionTurnosController extends TransaccionController
 {
@@ -54,6 +40,26 @@ class GestionTurnosController extends TransaccionController
                                             ['clase_contrato','=','por_turnos']
                                         ])
                                 ->get();
+
+        $turnos_activos = TipoTurno::where('estado', 'Activo')
+                            ->with('cargos:id')
+                            ->orderBy('descripcion')
+                            ->get();
+
+        $opciones_generales = ['' => ''];
+        $turnos_por_cargo = [];
+        foreach ($turnos_activos as $turno)
+        {
+            $label = $turno->descripcion . ' ($' . number_format($turno->valor, 0, ',', '.') . ')';
+
+            if ($turno->cargos->isEmpty()) {
+                $opciones_generales[$turno->id] = $label;
+            }
+
+            foreach ($turno->cargos as $cargo) {
+                $turnos_por_cargo[$cargo->id][$turno->id] = $label;
+            }
+        }
 
         $fecha = date('Y-m-d');
         if ( Input::get('fecha') != null )
@@ -95,6 +101,8 @@ class GestionTurnosController extends TransaccionController
 
             $empleado->anotacion = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->anotacion ?? null;
             $empleado->estado_turno = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->estado ?? null;
+
+            $empleado->tipos_turno_options = ['' => ''] + ($turnos_por_cargo[$empleado->cargo_id] ?? $opciones_generales);
         }
 
         $miga_pan = [
@@ -103,7 +111,7 @@ class GestionTurnosController extends TransaccionController
                         ['url'=> 'NO','etiqueta'=>'Registrar datos']
                     ];
          
-        $tipos_turnos = TipoTurno::opciones_campo_select();
+        $tipos_turnos = $opciones_generales;
         return view( 'nomina.turnos.create_registros', compact('miga_pan', 'empleados', 'tipos_turnos', 'fecha', 'action') );
     }
 

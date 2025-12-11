@@ -5,6 +5,7 @@ namespace App\Nomina;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use App\Nomina\NomCargo;
 
 class TipoTurno extends Model
 {
@@ -58,7 +59,7 @@ class TipoTurno extends Model
             ]);
         }
 
-        //obtenemos el numero de la página actual, por defecto 1
+        //obtenemos el numero de la p\u30b7gina actual, por defecto 1
         $page = 1;
         if (isset($_GET['page'])) {
             $page = $_GET['page'];
@@ -117,7 +118,7 @@ class TipoTurno extends Model
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 
-    //Titulo para la exportación en PDF y EXCEL
+    //Titulo para la exportaci\u041an en PDF y EXCEL
     public static function tituloExport()
     {
         return "LISTADO DE TIPOS DE TURNOS";
@@ -136,6 +137,11 @@ class TipoTurno extends Model
         }
 
         return $vec;
+    }
+
+    public function cargos()
+    {
+        return $this->belongsToMany(NomCargo::class, 'nom_cargo_tipo_turno', 'tipo_turno_id', 'cargo_id');
     }
 
     public function store_adicional($datos, $registro)
@@ -191,7 +197,7 @@ class TipoTurno extends Model
                             "0":{
                                     "tabla":"nom_turnos_registros",
                                     "llave_foranea":"tipo_turno_id",
-                                    "mensaje":"Está asignado en registros de turnos."
+                                    "mensaje":"Estケ asignado en registros de turnos."
                                 }
                         }';
 
@@ -210,3 +216,4 @@ class TipoTurno extends Model
         return 'ok';
     } 
 }
+

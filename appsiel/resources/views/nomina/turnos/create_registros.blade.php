@@ -102,10 +102,10 @@ $fechaSiguiente = \Carbon\Carbon::parse($fecha)->addDay()->format('Y-m-d');
 										{{ Form::time('checkout_time_2[]', $empleado->checkout_time_2, [ 'class' =>
 										'form-control', 'style' => 'font-size:0.9em; width: 110px;' ] ) }}
 									</td>
-									<td>
-										{{ Form::select('tipo_turno_id[]', $tipos_turnos, $empleado->tipo_turno_id, [
-										'class' => 'combobox' ] ) }}
-									</td>
+                                    <td>
+                                        {{ Form::select('tipo_turno_id[]', $empleado->tipos_turno_options ?? $tipos_turnos, $empleado->tipo_turno_id, [
+                                        'class' => 'combobox' ] ) }}
+                                    </td>
 
 									<td>
 										{{ Form::textarea('anotacion[]', $empleado->anotacion, [ 'rows' => '3', 'cols' => '10' ] ) }}
