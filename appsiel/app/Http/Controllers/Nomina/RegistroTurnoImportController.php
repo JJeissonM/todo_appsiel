@@ -35,7 +35,7 @@ class RegistroTurnoImportController extends Controller
         $sheet = IOFactory::load($path)->getActiveSheet();
 
         $tiposTurnoActivos = TipoTurno::where('estado', 'Activo')
-            ->with('cargos:id')
+            ->with('cargos')
             ->get(['id', 'valor', 'checkin_time_1', 'checkout_time_1', 'checkin_time_2', 'checkout_time_2']);
 
         $turnosPorCargo = [];

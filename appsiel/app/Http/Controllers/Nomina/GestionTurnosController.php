@@ -42,7 +42,7 @@ class GestionTurnosController extends TransaccionController
                                 ->get();
 
         $turnos_activos = TipoTurno::where('estado', 'Activo')
-                            ->with('cargos:id')
+                            ->with('cargos')
                             ->orderBy('descripcion')
                             ->get();
 
