@@ -283,6 +283,21 @@ class TesoMovimiento extends Model
 
                 $id_doc_encabezado = $doc_encabezado->id;
                 break;
+
+            case '43':
+                $url = 'tesoreria/traslado_efectivo/';
+                $doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
         
             case '47':
                 $url = 'pos_factura/';
