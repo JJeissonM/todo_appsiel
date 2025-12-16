@@ -223,8 +223,6 @@ Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_rese
 Route::get('config_password_resets/{role_id}/{password_mode}', 'Sistema\ProcesoController@config_password_resets');
 
 
-// https://tremendochuzo.com/enlace_show_documento/8/3/3496 
-
 // Para transacciones
 Route::get('enlace_show_documento/{app_id}/{core_tipo_transaccion_id}/{core_tipo_doc_app_id}/{consecutivo}', 'Core\TransaccionController@enlace_show_documento');
 Route::resource('transaction', 'Core\TransaccionController');
