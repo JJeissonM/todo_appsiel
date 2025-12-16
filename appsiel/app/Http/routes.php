@@ -41,6 +41,8 @@ Route::get('a_i/{id_registro}', 'Sistema\ModeloController@activar_inactivar');
 
 Route::get('core_create_registro_modelo/{modelo_id}', 'Sistema\ModeloController@create_registro_modelo');
 
+
+
 Route::auth();
 
 //          C O R E
@@ -221,6 +223,8 @@ Route::get('form_password_resets', 'Sistema\ProcesoController@form_password_rese
 Route::get('config_password_resets/{role_id}/{password_mode}', 'Sistema\ProcesoController@config_password_resets');
 
 
+// Para transacciones
+Route::get('enlace_show_documento/{core_tipo_transaccion_id}/{core_tipo_doc_app_id}/{consecutivo}', 'Core\TransaccionController@enlace_show_documento');
 Route::resource('transaction', 'Core\TransaccionController');
 
 

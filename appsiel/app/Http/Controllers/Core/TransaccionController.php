@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Core;
 
+use App\Compras\ComprasDocEncabezado;
 use App\Tesoreria\TesoMotivo;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,9 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Core\Transactions\TransactionDocument;
+use App\Tesoreria\TesoDocEncabezado;
+use App\Ventas\VtasDocEncabezado;
+use App\VentasPos\FacturaPos;
 use Collective\Html\FormFacade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -292,5 +296,260 @@ class TransaccionController extends Controller
         //$transaction_name = ; 32// Recaudos de CxC. Por ahora se maneja el ID
         $transaction_doc = new TransactionDocument($request->transaction_name,$data);
         $transaction_doc->create( $data );
+    }
+
+    public function enlace_show_documento( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
+    {
+        switch ( $core_tipo_transaccion_id )
+        {
+            case '8':
+                $url = 'tesoreria/recaudos/';
+                $doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+            
+            case '17':
+                $url = 'tesoreria/pagos/';
+                $doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '23':
+                $url = 'ventas/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+            
+            case '25':
+                $url = 'compras/';
+                $doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+
+            case '32':
+                $url = 'tesoreria/recaudos_cxc/';
+                $doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+
+            case '33':
+                $url = 'tesoreria/pagos_cxp/';
+                $doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+
+            case '36': // Nota credito compras
+                $url = 'compras/';
+                $doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '38': // Nota crédito cliente
+                $url = 'ventas/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;        
+        
+            case '41': // Nota crédito directa
+                $url = 'ventas/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+
+            case '43':
+                $url = 'tesoreria/traslado_efectivo/';
+                $doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '47':
+                $url = 'pos_factura/';
+                $doc_encabezado = FacturaPos::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '49': // Factura de estudiantes
+                $url = 'ventas/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '52':
+                $url = 'fe_factura/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '53': // Nota Crédito Electrónica de Ventas
+                $url = 'fe_nota_credito/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        
+            case '61': // Nota crédito por valor en compras
+                $url = 'compras/';
+                $doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+            
+            default:
+                $url = 'ventas/';
+                $doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+        }
+
+        $tipo_documento_app = $doc_encabezado->tipo_documento_app;
+        
+        if( $tipo_documento_app == null )
+        {
+            dd('Error en Tipo de Documento (tipo_documento_app)', $this);
+        }
+        
+        return redirect( url( $url . $id_doc_encabezado . '?id=' . Input::get('id') . '&id_modelo=' . $doc_encabezado->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $core_tipo_transaccion_id ) );
     }
 }
