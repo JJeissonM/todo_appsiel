@@ -163,6 +163,12 @@ class CustomerServices
             $descripcion .=  ' ('. $linea->razon_social . ')';
         }
 
+        $vendedor = $linea->vendedor;
+            $vendedor_descripcion = 'Sin vendedor';
+        if ( !is_null( $vendedor ) ) {
+            $vendedor_descripcion = $vendedor->tercero->descripcion;
+        }
+
         $html = '<a class="list-group-item list-group-item-cliente '.$clase.'" data-cliente_id="'.$linea->cliente_id.
                                 '" data-primer_item="'.$primer_item.
                                 '" data-accion="na" '.
@@ -177,7 +183,7 @@ class CustomerServices
                             '" data-telefono1="'.$linea->telefono1.
                             '" data-numero_identificacion="'.$linea->numero_identificacion.
                             '" data-vendedor_id="'.$linea->vendedor_id.
-                            '" data-vendedor_descripcion="'.$linea->vendedor->tercero->descripcion.
+                            '" data-vendedor_descripcion="' . $vendedor_descripcion.
                             '" data-equipo_ventas_id="0'.
                             '" data-inv_bodega_id="'.$linea->inv_bodega_id.
                             '" data-email="'.$linea->email.

@@ -2,12 +2,16 @@
 
 namespace App\Tesoreria;
 
+use App\Compras\ComprasDocEncabezado;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoDocRegistro;
+use App\Ventas\VtasDocEncabezado;
+use App\VentasPos\FacturaPos;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class TesoMovimiento extends Model
 {
@@ -137,6 +141,158 @@ class TesoMovimiento extends Model
         }
 
         return (object)['etiqueta'=>$etiqueta,'valor'=>$valor];
+    }
+
+    
+
+    public function enlace_show_documento()
+    {
+        switch ( $this->core_tipo_transaccion_id )
+        {
+            case '8':
+                $url = 'tesoreria/recaudos/';
+                $id_doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+            
+            case '17':
+                $url = 'tesoreria/pagos/';
+                $id_doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '23':
+                $url = 'ventas/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+            
+            case '25':
+                $url = 'compras/';
+                $id_doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+
+            case '32':
+                $url = 'tesoreria/recaudos_cxc/';
+                $id_doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+
+            case '33':
+                $url = 'tesoreria/pagos_cxp/';
+                $id_doc_encabezado = TesoDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+
+            case '36': // Nota credito compras
+                $url = 'compras/';
+                $id_doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '38': // Nota crédito cliente
+                $url = 'ventas/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;        
+        
+            case '41': // Nota crédito directa
+                $url = 'ventas/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '47':
+                $url = 'pos_factura/';
+                $id_doc_encabezado = FacturaPos::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '49': // Factura de estudiantes
+                $url = 'ventas/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '52':
+                $url = 'fe_factura/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '53': // Nota Crédito Electrónica de Ventas
+                $url = 'fe_nota_credito/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        
+            case '61': // Nota crédito por valor en compras
+                $url = 'compras/';
+                $id_doc_encabezado = ComprasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+            
+            default:
+                $url = 'ventas/';
+                $id_doc_encabezado = VtasDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $this->core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $this->core_tipo_doc_app_id,
+                                                        'consecutivo' => $this->consecutivo
+                                                    ] )->first()->id;
+                break;
+        }
+        
+        if( $this->tipo_documento_app == null )
+        {
+            dd('Error en Tipo de Documento (tipo_documento_app)', $this);
+        }            
+
+        $enlace = '<a href="' . url( $url . $id_doc_encabezado . '?id=' . Input::get('id') . '&id_modelo=' . $this->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $this->core_tipo_transaccion_id ) . '" target="_blank">' . $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo . '</a>';
+
+        return $enlace;
     }
 
     public static function consultar_registros($nro_registros, $search)
@@ -364,6 +520,7 @@ class TesoMovimiento extends Model
                                         'teso_motivos.descripcion AS motivo_descripcion',
                                         'teso_movimientos.fecha',
                                         'teso_movimientos.valor_movimiento',
+                                        'teso_movimientos.id',
                                         'teso_movimientos.teso_motivo_id',
                                         'teso_movimientos.descripcion',
                                         'teso_movimientos.codigo_referencia_tercero',

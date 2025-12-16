@@ -75,7 +75,7 @@
             ?>
                 <tr>
                     <td> {{ $fila->fecha }}</td>
-                    <td> {{ $fila->documento_transaccion_prefijo_consecutivo }} </td>
+                    <td> {!! $fila->enlace_show_documento() !!} </td>
                     <td> 
                         {{ $fila->tercero_descripcion }}
                         <?php 
