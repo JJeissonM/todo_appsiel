@@ -29,6 +29,7 @@ class RegistroTurnoImportController extends Controller
         // validar archivo
         $this->validate($request, [
             'archivo' => 'required|file|mimes:xlsx,xls|max:5120',
+            'fecha_primer_dia' => 'required|date',
         ]);
 
         $path = $request->file('archivo')->getRealPath();
@@ -96,7 +97,7 @@ class RegistroTurnoImportController extends Controller
             // Si se pasa al dia siguiente (después de la medianoche), se asigna a la fecha anterior y la hora del final de la jornada
             $fechaBase = $dt->toDateString();
             $horaBase = $dt->format('H:i:s');
-            if ($horaBase < '04:00:00') {
+            if ($horaBase < '02:00:00') {
                 $fechaBase = $dt->copy()->subDay()->toDateString();
                 $horaBase = '23:30:00';
             }
@@ -105,6 +106,15 @@ class RegistroTurnoImportController extends Controller
             if (is_null($fechaPrimerDia) || $fechaBase < $fechaPrimerDia) {
                 $fechaPrimerDia = $fechaBase;
             }
+
+            if ( $fechaPrimerDia < $request->fecha_primer_dia ) {
+                $fechaPrimerDia = $request->fecha_primer_dia;
+                continue; // omitir marcas antes del primer día
+            }
+
+            if ( $fechaBase > $request->fecha_corte_final ) {
+                continue; // omitir marcas después del corte final
+            }            
 
             $grupoKey = $contrato->id . '|' . $fechaBase;
             $marcas[$grupoKey][] = $horaBase;
@@ -125,26 +135,46 @@ class RegistroTurnoImportController extends Controller
 
             if ($existe) {
                 return redirect( url( '/nomina/turnos/importar' ) . '?id=' . $request->app_id . '&id_modelo=' . $request->modelo_id )
-                            ->withErrors(['archivo' => 'El archivo contiene fechas que ya tienen registros de turno; no se importó.']);
+                            ->withErrors(['archivo' => 'El archivo No pudo ser importado: contiene fechas que ya tienen registros de turnos.']);
             }
         }
-
 
         foreach ($marcas as $grupoKey => $horas) {
             [$contratoId, $fecha] = explode('|', $grupoKey);
 
             sort($horas, SORT_STRING);
             $horas = array_values(array_unique($horas)); // dedup en el día
+
+            // descartar marcas muy cercanas (menos de 30 minutos) para evitar duplicados accidentales
+            $horasFiltradas = [];
+            foreach ($horas as $hora) {
+                if (empty($horasFiltradas)) {
+                    $horasFiltradas[] = $hora;
+                    continue;
+                }
+
+                $prev = Carbon::createFromFormat('H:i:s', end($horasFiltradas));
+                $curr = Carbon::createFromFormat('H:i:s', $hora);
+
+                if ($prev->diffInMinutes($curr) >= 30) {
+                    $horasFiltradas[] = $hora;
+                }
+            }
+
+            $horas = $horasFiltradas;
+
             if (count($horas) > 4) {
                 $horas = array_slice($horas, 0, 4); // descarta extras
             }
 
-            // Match contra TipoTurno por cercanía de horarios (tolerancia 60 min)
-            $tolerancia = 60;
+            // Match contra TipoTurno por cercanía de horarios (tolerancia 40 min)
+            $tolerancia = 40;
             $mejorTurno = null;
             $mejorDiff = null;
-
-            $turnosDisponibles = $turnosPorCargo[$contrato->cargo_id] ?? ($turnosPorCargo[0] ?? []);
+            $contratoActual = $cacheContratosPorId[$contratoId]
+                ?? NomContrato::select('id','cargo_id','turno_default_id')->with('turno_default')->find($contratoId);
+            $cargoId = $contratoActual->cargo_id ?? 0;
+            $turnosDisponibles = $turnosPorCargo[$cargoId] ?? ($turnosPorCargo[0] ?? []);
 
             foreach ($turnosDisponibles as $turno) {
                 $esperados = array_values(array_filter([
