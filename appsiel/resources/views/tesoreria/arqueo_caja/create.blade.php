@@ -384,8 +384,6 @@
 
                 $('#total_sistema').val(total_sistema);
                 $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(lbl_total_sistema) + '</span>');
-
-                //$('#lbl_total_sistema').text( '$' + new Intl.NumberFormat("de-DE").format( total_sistema ) );
             }
 
 

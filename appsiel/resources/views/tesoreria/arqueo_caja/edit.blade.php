@@ -354,10 +354,11 @@
                 var color_fondo = 'transparent';
                 var color_letra = '#444444';
                 var signo = '$';
+                var lbl_total_sistema = total_sistema;
                 if (total_sistema < 0) {
                     color_letra = 'red';
                     signo = '-$';
-                    total_sistema = total_sistema * -1; // para una mejor visualización del signo
+                    lbl_total_sistema = total_sistema * -1; // para una mejor visualización del signo
                 } else {
                     if (total_sistema > 0) {
                         color_letra = 'green';
@@ -366,7 +367,7 @@
 
 
                 $('#total_sistema').val(total_sistema);
-                $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(total_sistema) + '</span>');
+                $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(lbl_total_sistema) + '</span>');
             }
 
 
