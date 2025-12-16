@@ -374,7 +374,7 @@
                 var total_saldo;
 
 
-                total_saldo = parseFloat($('#total_efectivo').val()) - Math.abs(parseFloat($('#total_sistema').val()));
+                total_saldo = parseFloat($('#total_efectivo').val()) - parseFloat($('#total_sistema').val());
 
                 $('#total_saldo').val(total_saldo);
 
