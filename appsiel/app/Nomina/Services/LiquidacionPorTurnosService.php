@@ -20,8 +20,12 @@ class LiquidacionPorTurnosService
             ->get();
 
         $devengo_turnos = 0;
-        foreach ($registros_turnos as $registro_turno) {
+        $cantidad_horas = 0;
+        $horas_dia_laboral = (float)config('nomina.horas_dia_laboral');
+        foreach ($registros_turnos as $registro_turno)
+        {
             $devengo_turnos += $registro_turno->valor;
+            $cantidad_horas += $horas_dia_laboral;
             // Actualizamos el estado del registro de turno a 'Liquidado'
             $registro_turno->estado = 'Liquidado';
             $registro_turno->save();
@@ -38,6 +42,7 @@ class LiquidacionPorTurnosService
                     ['estado' => 'Activo'] +
                     ['creado_por' => $usuario->email] +
                     ['modificado_por' => ''] +
+                    ['cantidad_horas' => $cantidad_horas] +
                     [
                         'valor_devengo' => $devengo_turnos,
                         'valor_deduccion' => 0
