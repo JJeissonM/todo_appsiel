@@ -374,21 +374,16 @@
                 var color_fondo = 'transparent';
                 var color_letra = '#444444';
                 var signo = '$';
+                var lbl_total_sistema = total_sistema;
                 if (total_sistema < 0) {
                     //color_fondo = 'red';
                     //color_letra = 'white';
                     signo = '-$';
-                    total_sistema = total_sistema * -1; // para una mejor visualización del signo
-                } else {
-                    if (total_sistema > 0) {
-                        //color_fondo = 'green';
-                        //color_letra = 'white';
-                    }
+                    lbl_total_sistema = total_sistema * -1; // para una mejor visualización del signo
                 }
 
-
                 $('#total_sistema').val(total_sistema);
-                $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(total_sistema) + '</span>');
+                $('#lbl_total_sistema').html('<span style=" color:' + color_fondo + '; color:' + color_letra + '">' + signo + new Intl.NumberFormat("de-DE").format(lbl_total_sistema) + '</span>');
 
                 //$('#lbl_total_sistema').text( '$' + new Intl.NumberFormat("de-DE").format( total_sistema ) );
             }
@@ -398,7 +393,7 @@
                 var total_saldo;
 
 
-                total_saldo = parseFloat($('#total_efectivo').val()) - Math.abs(parseFloat($('#total_sistema').val()));
+                total_saldo = parseFloat( $('#total_efectivo').val() ) - parseFloat( $('#total_sistema').val() );
 
                 $('#total_saldo').val(total_saldo);
 

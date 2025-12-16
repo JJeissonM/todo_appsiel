@@ -94,7 +94,7 @@ class ArqueoCaja extends Model
             $arqueocaja->total_mov_salidas = $datos['total_mov_salidas'];
             $arqueocaja->lbl_total_sistema = $datos['lbl_total_sistema'];
             $arqueocaja->total_saldo = $datos['total_saldo'];
-        }        
+        }
 
         $arqueocaja->billetes_contados = json_encode($datos['billetes']);
         $arqueocaja->monedas_contadas = json_encode($datos['monedas']);
