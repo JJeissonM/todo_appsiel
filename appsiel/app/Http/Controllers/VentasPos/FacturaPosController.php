@@ -156,7 +156,7 @@ class FacturaPosController extends TransaccionController
         $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
+        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') || $user->hasRole('Cajero Canchas') ) {
             $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
         }else{
             $cajas =  TesoCaja::opciones_campo_select();
