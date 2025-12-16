@@ -160,6 +160,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
             
             case '17':
@@ -173,6 +175,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '23':
@@ -186,6 +190,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
             
             case '25':
@@ -199,6 +205,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
 
             case '32':
@@ -212,6 +220,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
 
             case '33':
@@ -225,6 +235,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
 
             case '36': // Nota credito compras
@@ -238,6 +250,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '38': // Nota crédito cliente
@@ -251,6 +265,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;        
         
             case '41': // Nota crédito directa
@@ -264,6 +280,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '47':
@@ -277,6 +295,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '49': // Factura de estudiantes
@@ -290,6 +310,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '52':
@@ -303,6 +325,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '53': // Nota Crédito Electrónica de Ventas
@@ -316,6 +340,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         
             case '61': // Nota crédito por valor en compras
@@ -329,6 +355,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
             
             default:
@@ -342,6 +370,8 @@ class TesoMovimiento extends Model
                 {
                     dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
+
+                $id_doc_encabezado = $doc_encabezado->id;
                 break;
         }
         
