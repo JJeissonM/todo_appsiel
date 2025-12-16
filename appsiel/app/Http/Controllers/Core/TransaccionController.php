@@ -298,7 +298,7 @@ class TransaccionController extends Controller
         $transaction_doc->create( $data );
     }
 
-    public function enlace_show_documento( $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
+    public function enlace_show_documento( $app_id, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo )
     {
         switch ( $core_tipo_transaccion_id )
         {
@@ -550,6 +550,6 @@ class TransaccionController extends Controller
             dd('Error en Tipo de Documento (tipo_documento_app)', $this);
         }
         
-        return redirect( url( $url . $id_doc_encabezado . '?id=' . Input::get('id') . '&id_modelo=' . $doc_encabezado->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $core_tipo_transaccion_id ) );
+        return redirect( url( $url . $id_doc_encabezado . '?id=' . $app_id . '&id_modelo=' . $doc_encabezado->tipo_transaccion->core_modelo_id . '&id_transaccion=' . $core_tipo_transaccion_id ) );
     }
 }
