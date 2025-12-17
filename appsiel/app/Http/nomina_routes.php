@@ -46,6 +46,8 @@ Route::resource('nom_turnos_registros', 'Nomina\GestionTurnosController');
 Route::get('nomina/turnos/importar', 'Nomina\\RegistroTurnoImportController@create')->name('nomina.turnos.import.create');
 Route::post('nomina/turnos/importar', 'Nomina\\RegistroTurnoImportController@store')->name('nomina.turnos.import.store');
 
+Route::get('nomina/turnos/borrar_registros/{fecha_primer_dia}/{fecha_corte_final}', 'Nomina\\RegistroTurnoImportController@borrar_registros')->name('nomina.turnos.borrar_registros');
+
 
 // LIQUIDACION DE PRESTACIONES SOCIALES
 Route::post('nom_liquidar_prestaciones_sociales', 'Nomina\PrestacionesSocialesController@liquidacion');

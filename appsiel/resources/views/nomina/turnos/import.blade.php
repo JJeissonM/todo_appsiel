@@ -22,7 +22,7 @@
 	<div class="row" id="div_formulario">		
         
 		<div class="container-fluid">
-            <form action="{{ route('nomina.turnos.import.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="form_turnos_import" action="{{ route('nomina.turnos.import.store') }}" method="POST" enctype="multipart/form-data">
                 {{ csrf_field() }}
 
                 <div class="row">
@@ -68,7 +68,57 @@
                 {{ Form::hidden('modelo_id',Input::get('id_modelo')) }}
                     
                 <button type="submit" class="btn btn-primary">Subir e importar</button>
+                <button type="button" id="btn_borrar_registros" class="btn btn-danger" title="Borrar registros entre las fechas">Borrar registros entre fechas</button>
             </form>
+
+            <script>
+                (function(){
+                    var form = document.getElementById('form_turnos_import');
+                    var deleteBtn = document.getElementById('btn_borrar_registros');
+                    var submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+
+                    if(deleteBtn){
+                        deleteBtn.addEventListener('click', function(e){
+                            var fechaInicio = document.querySelector('input[name="fecha_primer_dia"]').value;
+                            var fechaFin = document.querySelector('input[name="fecha_corte_final"]').value;
+
+                            if(!fechaInicio || !fechaFin){
+                                alert('Por favor ingrese ambas fechas antes de borrar los registros.');
+                                return;
+                            }
+
+                            var mensaje = '¿Está seguro que desea borrar los registros entre ' + fechaInicio + ' y ' + fechaFin + '? Esta acción no se puede deshacer.';
+                            if(!confirm(mensaje)){
+                                return;
+                            }
+
+                            // Deshabilitar el botón y mostrar estado mientras se redirige
+                            deleteBtn.disabled = true;
+                            deleteBtn.setAttribute('aria-busy', 'true');
+                            deleteBtn.innerHTML = 'Procesando...';
+
+                            var base = '{{ url("nomina/turnos/borrar_registros") }}';
+                            var url = base + '/' + encodeURIComponent(fechaInicio) + '/' + encodeURIComponent(fechaFin);
+                            window.location.href = url;
+                        });
+                    }
+
+                    if(form && submitBtn){
+                        // Handle form submit to disable button after validation passes
+                        form.addEventListener('submit', function(e){
+                            if(!form.checkValidity()){
+                                // Let browser show validation errors and do not disable
+                                return;
+                            }
+
+                            // Disable submit button to prevent double submits
+                            submitBtn.disabled = true;
+                            submitBtn.setAttribute('aria-busy', 'true');
+                            submitBtn.innerHTML = 'Procesando...';
+                        });
+                    }
+                })();
+            </script>
         </div>
     </div>
 

@@ -255,4 +255,14 @@ class RegistroTurnoImportController extends Controller
         return redirect( 'nom_turnos_registros/create?id=' . $request->app_id . '&id_modelo=' . $request->modelo_id . '&fecha=' . $fechaPrimerDia )->with( 'flash_message','Turnos importados correctamente. Fecha primer día: ' . $fechaPrimerDia );
     }
 
+    public function borrar_registros($fecha_primer_dia, $fecha_corte_final)
+    {
+        RegistroTurno::where('fecha', '>=', $fecha_primer_dia)
+            ->where('fecha', '<=', $fecha_corte_final)
+            ->where('estado', '=', 'Pendiente')
+            ->delete();
+
+        return redirect()->back()->with('flash_message', 'Registros de turnos borrados correctamente.');
+    }
+
 }
