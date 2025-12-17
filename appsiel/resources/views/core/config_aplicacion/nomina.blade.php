@@ -216,6 +216,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$tolerancia_minutos_turnos_importacion = 80; 
+								if( isset($parametros['tolerancia_minutos_turnos_importacion'] ) )
+								{
+									$tolerancia_minutos_turnos_importacion = $parametros['tolerancia_minutos_turnos_importacion'];
+								}
+							?>
+							{{ Form::bsText('tolerancia_minutos_turnos_importacion', $tolerancia_minutos_turnos_importacion, 'Tolerancia en minutos para asignar marcación de entrada/salida', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros liquidación de prestaciones sociales  </h4>
 				<hr>
 				<div class="row">

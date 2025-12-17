@@ -58,6 +58,8 @@ class RegistroTurnoImportController extends Controller
         $fechasArchivo = [];      // set de fechas ajustadas (Y-m-d)
         $contratosArchivo = [];   // set de contratos presentes en el archivo
 
+        $tolerancia = (int)config('nomina.tolerancia_minutos_turnos_importacion');
+
         foreach ($sheet->getRowIterator(2) as $row) {
             $r = $row->getRowIndex();
             $cells = array_first($sheet->rangeToArray("A{$r}:L{$r}", null, true, true, true));
@@ -167,8 +169,7 @@ class RegistroTurnoImportController extends Controller
                 $horas = array_slice($horas, 0, 4); // descarta extras
             }
 
-            // Match contra TipoTurno por cercanía de horarios (tolerancia 40 min)
-            $tolerancia = 40;
+            // Match contra TipoTurno por cercanía de horarios (según tolerancia)
             $mejorTurno = null;
             $mejorDiff = null;
             $contratoActual = $cacheContratosPorId[$contratoId]
