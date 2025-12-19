@@ -101,12 +101,12 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="3">
+                <td colspan="2">
                     &nbsp;
                 </td>
             </tr>
             <tr>
-                <td colspan="3">
+                <td colspan="2">
                     <b> Cantidad de items&nbsp;: </b> {{ $cantidad_total_productos }}
                 </td>
             </tr>
