@@ -74,8 +74,8 @@
     <table style="width: 100%;" class="table-bordered">
         <thead>
             <tr>
-                <th width="10%">Item</th>
-                <th width="89%">Cant. pedida</th>
+                <th width="70%">Item</th>
+                <th width="30%">Cant. pedida</th>
                 <!-- <th width="30px">Cant. <br> despachada</th> -->
             </tr>
         </thead>
