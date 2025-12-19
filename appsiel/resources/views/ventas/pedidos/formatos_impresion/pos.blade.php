@@ -53,15 +53,16 @@
 
     <div class="subheadp" >
         <b>Cliente</b> {{ $doc_encabezado->tercero_nombre_completo }} <br>
-        <b>{{ config("configuracion.tipo_identificador") }}: </b>
-            @if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif<br>
-        <b>Dirección:</b> {{ $doc_encabezado->direccion1 }} <br>
-        <b>Teléfono:</b> {{ $doc_encabezado->telefono1 }}
+        <!-- <b>{ { config("configuracion.tipo_identificador") }}: </b>
+            @ if( config("configuracion.tipo_identificador") == 'NIT') { { number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@ else { { $doc_encabezado->numero_identificacion}} @ endif<br>
+        <b>Dirección:</b> { { $doc_encabezado->direccion1 }} <br>
+        <b>Teléfono:</b> { { $doc_encabezado->telefono1 }}
+        -->
         <br>
         <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
         <br>
-        <b>Estado: &nbsp;&nbsp;</b> {{ $doc_encabezado->estado }}
-        <br>
+        <!-- <b>Estado: &nbsp;&nbsp;</b> { { $doc_encabezado->estado }}
+        <br> -->
         
     </div>
     @if($doc_encabezado->estado == 'Anulado')
@@ -87,7 +88,7 @@
                 <tr>
                     <td> {{ $linea->item->get_value_to_show( true ) }} </td>
                     <td align="center"> 
-                        {{ number_format( $linea->cantidad, 2, ',', '.') }}
+                        {{ number_format( $linea->cantidad, 0, ',', '.') }}
                     </td>
                     <!-- 
                     <td> &nbsp; <br> ____________ </td>
