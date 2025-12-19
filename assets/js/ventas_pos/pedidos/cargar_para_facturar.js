@@ -17,7 +17,7 @@ $(document).ready(function () {
 
                 hay_productos = data.numero_lineas;
                 $('#numero_lineas').text(hay_productos);
-                console.log('Hay productos: ' + hay_productos);
+                
                 set_cantidades_ingresadas();
 
 				$("#myModal2").modal("hide");
@@ -37,6 +37,7 @@ $(document).ready(function () {
 
                 reset_tabla_ingreso_medios_pago();
 
+                $("#efectivo_recibido").removeAttr("readonly");
                 $("#efectivo_recibido").focus();
             });
 
