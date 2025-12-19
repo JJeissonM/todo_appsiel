@@ -60,7 +60,7 @@
 
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux']) }}
 
-				<input type="hidden" name="forma_pago" id="forma_pago" value="" required="required">
+				<input type="hidden" name="forma_pago" id="forma_pago" value="contado" required="required">
 				<input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="" required="required">
 				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="1" required="required">
 
