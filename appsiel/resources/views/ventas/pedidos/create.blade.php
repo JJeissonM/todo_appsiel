@@ -60,19 +60,19 @@
 
 				{{ Form::hidden('inv_bodega_id_aux',null,['id'=>'inv_bodega_id_aux']) }}
 
-				<input type="hidden" name="forma_pago" id="forma_pago" value="contado" required="required">
-				<input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="" required="required">
-				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="1" required="required">
+				<input type="hidden" name="forma_pago" id="forma_pago" value="contado">
+				<input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="">
+				<input type="hidden" name="inv_bodega_id" id="inv_bodega_id" value="1">
 
-				<input type="hidden" name="cliente_id" id="cliente_id" value="" required="required">
-				<input type="hidden" name="zona_id" id="zona_id" value="" required="required">
-				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="" required="required">
-				<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="" required="required">
+				<input type="hidden" name="cliente_id" id="cliente_id" value="">
+				<input type="hidden" name="zona_id" id="zona_id" value="">
+				<input type="hidden" name="clase_cliente_id" id="clase_cliente_id" value="">
+				<input type="hidden" name="equipo_ventas_id" id="equipo_ventas_id" value="">
 
-				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="" required="required">
-				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="" required="required">
-				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="" required="required">
-				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="" required="required">
+				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="">
+				<input type="hidden" name="lista_precios_id" id="lista_precios_id" value="">
+				<input type="hidden" name="lista_descuentos_id" id="lista_descuentos_id" value="">
+				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="">
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">
