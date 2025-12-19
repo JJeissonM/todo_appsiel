@@ -74,9 +74,9 @@
     <table style="width: 100%;" class="table-bordered">
         <thead>
             <tr>
-                <th width="100px">Item</th>
-                <th width="40px">Cant. pedida</th>
-                <th width="30px">Cant. <br> despachada</th>
+                <th width="10%">Item</th>
+                <th width="89%">Cant. pedida</th>
+                <!-- <th width="30px">Cant. <br> despachada</th> -->
             </tr>
         </thead>
         <tbody>
@@ -85,11 +85,13 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td> {{ $linea->item->get_value_to_show() }} </td>
+                    <td> {{ $linea->item->get_value_to_show( true ) }} </td>
                     <td> 
                         {{ number_format( $linea->cantidad, 2, ',', '.') }} {{ $linea->item->get_unidad_medida1() }}
                     </td>
+                    <!-- 
                     <td> &nbsp; <br> ____________ </td>
+                    -->
                 </tr>
                 <?php 
                     $cantidad_total_productos++;
@@ -107,11 +109,13 @@
                     <b> Cantidad de items&nbsp;: </b> {{ $cantidad_total_productos }}
                 </td>
             </tr>
+            <!--
             <tr>
                 <td colspan="3">
                     <b> Despachado por &nbsp;&nbsp;&nbsp;: </b> _____________________
                 </td>
             </tr>
+        -->
         </tfoot>
     </table>
     
