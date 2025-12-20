@@ -75,7 +75,8 @@ $(document).ready(function () {
                     
                 }
                 
-                fila.remove(); 
+                fila.remove();
+                resetear_ventana2();
 
                 Swal.fire({
                     icon: 'info',
