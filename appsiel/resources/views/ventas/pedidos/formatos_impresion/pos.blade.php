@@ -73,13 +73,11 @@
     <br>
 
     <table style="width: 100%;">
-        <thead>
             <tr>
                 <th width="70%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Item</th>
                 <th width="30%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Cant. pedida</th>
                 <!-- <th width="30px">Cant. <br> despachada</th> -->
             </tr>
-        </thead>
         <tbody>
             <?php 
                 $cantidad_total_productos = 0;
