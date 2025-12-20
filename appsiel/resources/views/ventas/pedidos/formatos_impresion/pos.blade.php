@@ -72,11 +72,11 @@
     @endif
     <br>
 
-    <table style="width: 100%;" class="table-bordered">
+    <table style="width: 100%;">
         <thead>
             <tr>
-                <th width="70%">Item</th>
-                <th width="30%">Cant. pedida</th>
+                <th width="70%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Item</th>
+                <th width="30%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Cant. pedida</th>
                 <!-- <th width="30px">Cant. <br> despachada</th> -->
             </tr>
         </thead>
@@ -86,8 +86,8 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td> {{ $linea->item->get_value_to_show( true ) }} </td>
-                    <td align="center"> 
+                    <td style="border: 1px solid #ddd;"> {{ $linea->item->get_value_to_show( true ) }} </td>
+                    <td  style="border: 1px solid #ddd; text-align: center;"> 
                         {{ number_format( $linea->cantidad, 0, ',', '.') }}
                     </td>
                     <!-- 
@@ -121,7 +121,9 @@
     </table>
     
     <br>
-    <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+    <span style="font-size: 14px;">
+        <b>Detalle: &nbsp;&nbsp;</b> {{ $doc_encabezado->descripcion }}
+    </span>
 
     <p style="text-align: right;">
         Generado: {{ $doc_encabezado->created_at }}
