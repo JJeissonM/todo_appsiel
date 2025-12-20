@@ -41,7 +41,9 @@
                 <div class="headdocp" style="text-align: center;">
                     <b>{{ $doc_encabezado->documento_transaccion_descripcion }} 
                     <br>
-                    No.</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+                    <span style="font-size: 14px;">
+                        No.</b> {{ $doc_encabezado->documento_transaccion_prefijo_consecutivo }}
+                    </span>
                     <br>
                     <b>Fecha:</b> {{ $doc_encabezado->fecha }}
                 </div>
@@ -52,14 +54,20 @@
     
 
     <div class="subheadp" >
-        <b>Cliente</b> {{ $doc_encabezado->tercero_nombre_completo }} <br>
+        <span style="font-size: 14px;">
+            <b>Cliente</b> {{ $doc_encabezado->tercero_nombre_completo }} 
+        </span>
+        <br>
         <!-- <b>{ { config("configuracion.tipo_identificador") }}: </b>
             @ if( config("configuracion.tipo_identificador") == 'NIT') { { number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@ else { { $doc_encabezado->numero_identificacion}} @ endif<br>
         <b>Dirección:</b> { { $doc_encabezado->direccion1 }} <br>
         <b>Teléfono:</b> { { $doc_encabezado->telefono1 }}
         -->
         <br>
-        <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
+        
+        <span style="font-size: 14px;">
+            <b>Atendido por: &nbsp;&nbsp;</b> {{ $doc_encabezado->vendedor->tercero->descripcion }}
+        </span>
         <br>
         <!-- <b>Estado: &nbsp;&nbsp;</b> { { $doc_encabezado->estado }}
         <br> -->
@@ -75,7 +83,7 @@
     <table style="width: 100%;">
             <tr>
                 <th width="70%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Item</th>
-                <th width="30%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Cant. pedida</th>
+                <th width="30%" style="border: 1px solid #ddd; color: black; font-weight: bold;">Cant.</th>
                 <!-- <th width="30px">Cant. <br> despachada</th> -->
             </tr>
         <tbody>
@@ -84,7 +92,9 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td style="border: 1px solid #ddd;"> {{ $linea->item->get_value_to_show( true ) }} </td>
+                    <td style="border: 1px solid #ddd;"> 
+                        {{ str_replace('(UND)', '', $linea->item->get_value_to_show( true ) ) }}
+                    </td>
                     <td  style="border: 1px solid #ddd; text-align: center;"> 
                         {{ number_format( $linea->cantidad, 0, ',', '.') }}
                     </td>
