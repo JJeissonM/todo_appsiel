@@ -685,7 +685,7 @@ class PedidosPosController extends TransaccionController
         $html .= (new CustomerServices())->get_linea_item_sugerencia( $cliente, 'active', true, 1 );
         $html .= '</div>';
 
-        $pedido->descripcion = '';
+        //$pedido->descripcion = '';
 
         return response()->json([
             'pedido' => $pedido,
