@@ -92,10 +92,10 @@
             ?>
             @foreach($doc_registros as $linea )
                 <tr>
-                    <td style="border: 1px solid #ddd;"> 
+                    <td style="border: 1px solid #ddd; font-size: 1.15em; padding: 4px;"> 
                         {{ str_replace('(UND)', '', $linea->item->get_value_to_show( true ) ) }}
                     </td>
-                    <td  style="border: 1px solid #ddd; text-align: center;"> 
+                    <td  style="border: 1px solid #ddd; text-align: center; font-size: 1.15em; padding: 4px;"> 
                         {{ number_format( $linea->cantidad, 0, ',', '.') }}
                     </td>
                     <!-- 
