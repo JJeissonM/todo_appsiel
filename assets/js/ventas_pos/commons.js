@@ -1290,10 +1290,10 @@ $(document).ready(function () {
                 }
                 
                 if ( server_error_code != 500 ) { // Error Interno del Servidor
-                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Por favor, comuníquese con soporte.';
+                  var error_label = 'Cód. de respuesta ' + server_error_code + '. La solicitud no pudo ser procesada.';
                   Swal.fire({
                     icon: 'error',
-                    title: '3. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
+                    title: '3. FACTURA NO GUARDADA. POR FAVOR, ACTUALIZAR LA PÁGINA E INTENTAR NUEVAMENTE.',
                     text: error_label 
                   });
                   
