@@ -195,5 +195,46 @@ class PrintServices
 
         return [ 'encabezado' => $encabezado, 'pie_pagina' => $pie_pagina ];
     }
+
+    public function get_etiquetas_for_osei()
+    {
+        $parametros = config('ventas');
+
+        $encabezado = [];
+
+        if (isset($parametros['encabezado_linea_1']))
+        {
+            $encabezado['slogan'] = $parametros['encabezado_linea_1'];
+        }
+
+        if (isset($parametros['encabezado_linea_2']))
+        {
+            $encabezado['header_text_1'] = $parametros['encabezado_linea_2'];
+        }
+
+        if (isset($parametros['encabezado_linea_3']))
+        {
+            $encabezado['header_text_2'] = $parametros['encabezado_linea_3'];
+        }
+
+        $pie_pagina = [];
+
+        if (isset($parametros['pie_pagina_linea_1']))
+        {
+            $pie_pagina['footer_text_1'] = $parametros['pie_pagina_linea_1'];
+        }
+
+        if (isset($parametros['pie_pagina_linea_2']))
+        {
+            $pie_pagina['footer_text_2'] = $parametros['pie_pagina_linea_2'];
+        }
+
+        if (isset($parametros['pie_pagina_linea_3']))
+        {
+            $pie_pagina['footer_text_3'] = $parametros['pie_pagina_linea_3'];
+        }
+
+        return [ 'headers_text' => $encabezado, 'footers_text' => $pie_pagina ];
+    }
         
 }

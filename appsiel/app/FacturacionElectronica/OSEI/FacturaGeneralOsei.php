@@ -3,7 +3,7 @@
 namespace App\FacturacionElectronica\OSEI;
 
 use App\FacturacionElectronica\Services\DocumentHeaderService;
-
+use App\Ventas\Services\PrintServices;
 use Illuminate\Support\Facades\Log;
 
 class FacturaGeneralOsei
@@ -208,10 +208,8 @@ class FacturaGeneralOsei
             );
         }
 
-
         return json_decode(json_encode($mensaje));
     }
-
 
 
     public function preparar_cadena_json_factura($auth_token)
@@ -224,7 +222,7 @@ class FacturaGeneralOsei
             $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
         }
 
-        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}},"aditional_info": {' . $this->get_aditional_info() . '}}';
     }
 
     public function preparar_cadena_json_nota_credito($auth_token, $factura_doc_encabezado)
@@ -258,7 +256,14 @@ class FacturaGeneralOsei
             $billing_reference_issue_date = $response_dian['contenido']['issue_date'];
         }
 
-        return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"credit_note": {' . $this->get_encabezado_nota_credito($auth_token, $invoice_id, $prefixFE, $numberFE, $billing_reference_issue_date) . ',"customer": ' . $this->get_datos_cliente() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}}';
+        return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"credit_note": {' . $this->get_encabezado_nota_credito($auth_token, $invoice_id, $prefixFE, $numberFE, $billing_reference_issue_date) . ',"customer": ' . $this->get_datos_cliente() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}},"aditional_info": {' . $this->get_aditional_info() . '}}';
+    }
+
+    public function get_aditional_info()
+    {
+        $info_adicional = (new PrintServices())->get_etiquetas_for_osei();
+
+        return $info_adicional;
     }
 
     public function get_encabezado_factura($auth_token)
@@ -350,8 +355,6 @@ class FacturaGeneralOsei
                 }
             }
         }
-
-
 
         return '"env": "' . $this->env . '","anotation":"' . $notes2 . '","type":"' . $type . '","authorization_token": "' . $auth_token . '","issue_date": "' . $issue_date . '","payment_means_type": "' . $payment_means_type . '","payment_means": "' . $payment_means . '","payment_date": "' . $payment_date . '","reason": "' . $reason . '","purpose_code": "' . $purpose_code . '","number":' . $this->doc_encabezado->consecutivo . ',"currency":"' . $currency . '","related_invoice":{"cufe":"' . $invoice_id . '","number":"' . $numberFE . '","prefix":"' . $prefixFE . '","issue_date":"' . $billing_reference_issue_date . '"}' . ',"resolution":{"prefix":"' . $this->doc_encabezado->tipo_documento_app->prefijo . '"}';
     }

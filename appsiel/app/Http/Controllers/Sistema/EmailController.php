@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Sistema;
 use App\Http\Controllers\Controller;
 use App\Nomina\NomContrato;
 use App\Nomina\NomDocEncabezado;
+use App\Ventas\Services\PrintServices;
 use Exception;
 use Illuminate\Contracts\Mail\Mailer;
 // Modelos
@@ -103,6 +104,7 @@ class EmailController extends Controller
 
   public function test_email()
   {    
+    /*
     $doc_encabezado_id = 34;
     $empleado_id = 2;
     $documento = NomDocEncabezado::find( $doc_encabezado_id );
@@ -128,5 +130,10 @@ class EmailController extends Controller
     }
 
     return $enviado . $empleado->tercero->descripcion;
+    */
+
+    $info_adicional = (new PrintServices())->get_etiquetas_for_osei();
+
+      return '"aditional_info": {' . json_encode($info_adicional) . '}';
   }
 }

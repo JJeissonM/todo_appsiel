@@ -630,7 +630,7 @@
 									$encabezado_linea_1 = $parametros['encabezado_linea_1'];
 								}
 							?>
-							{{ Form::bsText('encabezado_linea_1', $encabezado_linea_1, 'Encabezado línea 1', ['class'=>'form-control']) }}
+							{{ Form::bsText('encabezado_linea_1', $encabezado_linea_1, 'Encabezado línea 1 (Slogan)', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
