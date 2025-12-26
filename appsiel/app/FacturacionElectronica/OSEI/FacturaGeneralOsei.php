@@ -222,7 +222,7 @@ class FacturaGeneralOsei
             $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
         }
 
-        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []}},"aditional_info": {' . $this->get_aditional_info() . '}}';
+        return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": "' . $lista_emails . '"},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []},"aditional_info": {' . $this->get_aditional_info() . '}}';
     }
 
     public function preparar_cadena_json_nota_credito($auth_token, $factura_doc_encabezado)
