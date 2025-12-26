@@ -261,9 +261,7 @@ class FacturaGeneralOsei
 
     public function get_aditional_info()
     {
-        $info_adicional = (new PrintServices())->get_etiquetas_for_osei();
-
-        return $info_adicional;
+        return (new PrintServices())->get_etiquetas_for_osei();
     }
 
     public function get_encabezado_factura($auth_token)

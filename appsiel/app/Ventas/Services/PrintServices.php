@@ -234,7 +234,7 @@ class PrintServices
             $pie_pagina['footer_text_3'] = $parametros['pie_pagina_linea_3'];
         }
 
-        return [ 'headers_text' => $encabezado, 'footers_text' => $pie_pagina ];
+        return json_encode([ 'headers_text' => $encabezado, 'footers_text' => $pie_pagina ]);
     }
         
 }

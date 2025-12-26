@@ -55,7 +55,7 @@ class ReporteController extends Controller
         $lineas_movimientos = $this->get_lista_movimientos_caja_pdv($fecha_desde, $fecha_hasta, $pdv->caja_default_id, $lista_por_medios_recaudos);
 
         //$vista_movimiento = View::make('ventas_pos.incluir.movimiento_caja_bancos', compact('fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje'));
-//dd($lineas_movimientos);
+        
         return View::make('ventas_pos.incluir.vista_estado_pdv', compact('total_efectivo', 'total_bancos', 'total_credito', 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje'))->render();
         //return $resumen_ventas . '<br><br>' . $vista_movimiento;
     }
