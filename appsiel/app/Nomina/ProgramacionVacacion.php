@@ -4,10 +4,9 @@ namespace App\Nomina;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-
 use App\Nomina\ParametroLiquidacionPrestacionesSociales;
 use App\Nomina\LibroVacacion;
+use Illuminate\Support\Facades\DB;
 
 class ProgramacionVacacion extends Model
 {
@@ -47,6 +46,7 @@ class ProgramacionVacacion extends Model
                 'nom_novedades_tnl.estado AS campo7',
                 'nom_novedades_tnl.id AS campo8'
             )
+			->orderBy('nom_novedades_tnl.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
