@@ -4,16 +4,12 @@ namespace App\Contabilidad;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Inventarios\InvProducto;
-use App\Compras\Proveedor;
-use App\Contabilidad\Services\TraitImpuestoService;
-use App\Ventas\Cliente;
+use App\Contabilidad\Services\ImpuestoService;
+
 use Illuminate\Support\Facades\DB;
 
 class Impuesto extends Model
 {
-    use TraitImpuestoService;
-
     protected $table = 'contab_impuestos';
     
     protected $fillable = ['descripcion', 'tasa_impuesto', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'tax_category', 'estado'];
@@ -92,11 +88,11 @@ class Impuesto extends Model
 
     public static function get_tasa($producto_id, $proveedor_id, $cliente_id)
     {
-        return self::get_tasa_item($producto_id, $proveedor_id, $cliente_id);
+        return (new ImpuestoService())->get_tasa_item($producto_id, $proveedor_id, $cliente_id);
     }
 
     public function get_tasa2($producto_id, $proveedor_id, $cliente_id)
     {
-        return $this->get_tasa_item($producto_id, $proveedor_id, $cliente_id);
+        return (new ImpuestoService())->get_tasa_item($producto_id, $proveedor_id, $cliente_id);
     }
 }

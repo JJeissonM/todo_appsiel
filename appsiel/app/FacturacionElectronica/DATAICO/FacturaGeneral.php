@@ -283,8 +283,13 @@ class FacturaGeneral
          }
 
          $tax_category = config('ventas.etiqueta_impuesto_principal');
-         if ( $linea->impuesto->tax_category != null && $linea->impuesto->tax_category != '' ) {
-            $tax_category = $linea->impuesto->tax_category;
+         $impuesto = $linea->impuesto;
+
+         if ( $impuesto == null ) {
+            $impuesto = $linea->item->impuesto;
+         }
+         if ( $impuesto->tax_category != null && $impuesto->tax_category != '' ) {
+            $tax_category = $impuesto->tax_category;
          }
 
          $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"tax_category": "' . $tax_category . '"}]}';

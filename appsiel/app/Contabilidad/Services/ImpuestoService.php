@@ -6,9 +6,8 @@ use App\Compras\Proveedor;
 use App\Inventarios\InvProducto;
 use App\Ventas\Cliente;
 
-trait TraitImpuestoService
-{    
-
+class ImpuestoService
+{
     public function get_tasa_item($producto_id, $proveedor_id, $cliente_id)
     {
         $tasa_impuesto = 0;
