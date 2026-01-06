@@ -9,7 +9,7 @@ use App\Sistema\Html\TablaIngresoLineaRegistros;
 use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
-use App\Tesoreria\TesoMotivo;
+
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\Vendedor;
 use App\VentasPos\Pdv;

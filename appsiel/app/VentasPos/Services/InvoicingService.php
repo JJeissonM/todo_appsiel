@@ -81,6 +81,7 @@ class InvoicingService
             
             $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
                             ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
+                            ['impuesto_id' => (int)$lineas_registros[$i]->impuesto_id] +
                             ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
                             ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
                             ['precio_total' => (float)$lineas_registros[$i]->precio_total] +

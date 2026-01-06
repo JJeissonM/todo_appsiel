@@ -4,6 +4,14 @@
     $total_impuestos = 0;
     $total_factura = 0;
     $array_tasas = [];
+
+    $lbl_IVA = 'IVA';
+    if ( Input::get('id') == 20) {
+        if($doc_registros->first()->doc_encabezado->pdv->maneja_impoconsumo)
+        {
+            $lbl_IVA = 'INC';
+        }
+    }
 ?>
 @foreach($doc_registros as $linea )
     <?php 
@@ -16,7 +24,7 @@
         if ( !isset( $array_tasas[$linea->tasa_impuesto] ) )
         {
             // Clasificar el impuesto
-            $array_tasas[$linea->tasa_impuesto]['tipo'] = 'IVA='.$linea->tasa_impuesto.'%';
+            $array_tasas[$linea->tasa_impuesto]['tipo'] = $lbl_IVA.'='.$linea->tasa_impuesto.'%';
             if ( $linea->tasa_impuesto == 0)
             {
                 $array_tasas[$linea->tasa_impuesto]['tipo'] = 'EX=0%';
@@ -47,8 +55,8 @@
         <tr>
             <th>Tipo producto</th>
             <th>Vlr. Compra</th>
-            <th>Base IVA</th>
-            <th>Vlr. IVA</th>
+            <th>Base</th>
+            <th>Valor</th>
         </tr>
     </thead>
     <tbody>

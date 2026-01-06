@@ -207,6 +207,7 @@ Route::post('carga_imagen_ckeditor', 'Sistema\ImagenController@carga_imagen_cked
 
 // PROCESOS
 Route::get('index_procesos/{vista_proceso}', 'Core\ProcesoController@principal');
+Route::get('core_procesos/set_impuesto_id', 'Core\ProcesoController@set_impuesto_id');
 
 // ************************ Exportar/Importar registros tablas BD a través de archivo de configuración
 Route::get('form_exportar_importar_tablas_bd', 'Sistema\ProcesoController@form_exportar_importar_tablas_bd');

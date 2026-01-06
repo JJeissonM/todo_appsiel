@@ -30,9 +30,8 @@ function set_catalogos(pdv_id) {
     $("#myModal2 .btn_save_modal").hide();
     $("#myModal2 .close").hide();
   
-    $.get(url_raiz + "/ventas_pos_set_catalogos" + "/" + pdv_id).done(function (
-      datos
-    ) {
+    $.get(url_raiz + "/ventas_pos_set_catalogos" + "/" + pdv_id)
+    .done(function ( datos ) {
       redondear_centena = datos.redondear_centena;
   
       productos = datos.productos;
@@ -58,5 +57,32 @@ function set_catalogos(pdv_id) {
       $("#contenido_modal2").removeAttr("style");
       $("#myModal2 .close").show();
       $("#myModal2").modal("hide");
+    })
+    .fail(function( jqXHR, textStatus, errorThrown ) {
+
+
+      // If the server returned HTML, you can parse it and find elements by class
+      if (jqXHR.responseText) {
+        try {
+          // Create a temporary DOM from the response
+          var responseDOM = $("<div>").html(jqXHR.responseText);
+
+          // Find elements by class in the error HTML
+          var errorMessages = responseDOM.find(".block_exception.clear_fix").map(function () {
+            return $(this).text().trim();
+          }).get();
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar los catálogos!',
+            text: errorMessages
+          });
+
+        } catch (e) {
+          alert("Error parsing response:", e);
+        }
+      }
+
+
     });
   }

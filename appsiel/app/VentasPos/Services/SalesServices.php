@@ -27,7 +27,7 @@ class SalesServices
         $valor_total_impuesto = 0;
         if ( $data_invoice_line['tasa_impuesto'] > 0 )
         {
-            $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $data_invoice_line['inv_producto_id'] );
+            $cta_impuesto_ventas_id = InvProducto::get_cuenta_impuesto_ventas( $data_invoice_line['inv_producto_id'], $data_invoice_line['impuesto_id'] );
             $valor_total_impuesto = abs( $data_invoice_line['valor_impuesto'] * $data_invoice_line['cantidad'] );
 
             $obj_accou_serv->contabilizar_registro( $data_invoice_line, $cta_impuesto_ventas_id, 'Reg. de Impuesto. ' . $detalle_operacion, 0, abs($valor_total_impuesto) );

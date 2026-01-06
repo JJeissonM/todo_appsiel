@@ -1160,7 +1160,8 @@ class ContabReportesController extends Controller
                     ->whereIn('contab_cuenta_id',$report->campo_filtrar_ctas)
                     ->select( 
                             DB::raw( 'CAST(tasa_impuesto AS CHAR) as tasa_impuesto','' ),
-                            'valor_saldo'
+                            'valor_saldo',
+                            'impuesto_id'
                         )
                     ->get();
 
@@ -1273,10 +1274,10 @@ class ContabReportesController extends Controller
         $grouped_data = $lines->groupBy($column_to_group)->map(function ($row) use ($column_method_name) {
             return  [
                 'group' => $row->first()->$column_method_name,
-                'valor_impuesto' => $row->sum('valor_saldo')
+                'valor_impuesto' => $row->sum('valor_saldo'),
+                'impuesto' => $row->first()->impuesto
             ];
         });
-
 
         $arr_grouped_data = [];
         foreach ($grouped_data as $line) {
@@ -1291,9 +1292,9 @@ class ContabReportesController extends Controller
             if ($tasa != 0) {
                 $base_impuesto = $valor_impuesto / $tasa;
             }
-
+            
             $arr_grouped_data[] = [
-                'group' => 'IVA ' . $line['group'] . '%',
+                'group' => $line['impuesto']->tax_category . ' ' . $line['group'] . '%',
                 'base_impuesto' => $base_impuesto,
                 'valor_impuesto' => $valor_impuesto
             ];

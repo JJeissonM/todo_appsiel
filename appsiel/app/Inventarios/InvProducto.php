@@ -562,12 +562,8 @@ class InvProducto extends Model
             }
             $item->tasa_impuesto = $tasa_impuesto;
 
-            $costo_prom = $item->precio_compra;
             $existencia_actual = 0;
-            if ( $bodega_id != null )
-            {
-                $costo_prom = $item->get_costo_promedio( $bodega_id );
-            }
+            $costo_prom = $item->get_costo_promedio( $bodega_id );
 
             $item->costo_promedio = $costo_prom;
             $item->costo_promedio_mas_iva = $costo_prom * (1 + $tasa_impuesto / 100);
@@ -664,13 +660,8 @@ class InvProducto extends Model
             }
             $item->tasa_impuesto = $tasa_impuesto;
 
-            $costo_prom = $item->precio_compra;
             $existencia_actual = 0;
-            if ( $bodega_id != null )
-            {
-                $costo_prom = $item->get_costo_promedio( $bodega_id );
-                //$existencia_actual = $item->get_existencia_actual( $bodega_id, date('Y-m-d') );
-            }
+            $costo_prom = $item->get_costo_promedio( $bodega_id );
 
             $item->costo_promedio = $costo_prom;
             $item->existencia_actual = $existencia_actual;
@@ -863,10 +854,13 @@ class InvProducto extends Model
     }
 
     // get_cuenta_impuesto_ventas
-    public static function get_cuenta_impuesto_ventas( $producto_id )
+    public static function get_cuenta_impuesto_ventas( $producto_id, $impuesto_id = null )
     {
-        $impuesto_id = InvProducto::where( 'id', $producto_id )->value( 'impuesto_id' );
-        return Impuesto::where( 'id', $impuesto_id )->value( 'cta_ventas_id' );
+        if ( $impuesto_id == null ) {
+            $impuesto_id = InvProducto::where( 'id', $producto_id )->value( 'impuesto_id' );
+        }
+        
+        return Impuesto::find( $impuesto_id )->cta_ventas_id;
     }
 
     // get_cuenta_impuesto_devolucion_ventas

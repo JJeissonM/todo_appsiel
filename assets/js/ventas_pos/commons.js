@@ -98,6 +98,26 @@ function get_json_registros_medios_recaudo() {
   return json_table2;
 }
 
+function add_impuesto_id_to_table_lines(table) {
+  return table.map(function (line, index) {
+    var invId = line.inv_producto_id;
+
+    if (invId === undefined || invId === "") {
+      invId = $("#ingreso_registros tbody tr")
+        .eq(index)
+        .find(".inv_producto_id")
+        .text();
+    }
+
+    var producto = productos.find(function (item) {
+      return item.id === parseInt(invId, 10);
+    });
+
+    line.impuesto_id = producto ? producto.impuesto_id : 0;
+
+    return line;
+  });
+}
 /**
  * 
  * @param {*} con_medios_recaudos 
@@ -331,6 +351,9 @@ function llenar_resumen_impuestos() {
         array_tasas[linea.tasa_impuesto]['tipo'] = 'IVA=' + linea.tasa_impuesto + '%';
         if (parseFloat(linea.tasa_impuesto) === 0) {
             array_tasas[linea.tasa_impuesto]['tipo'] = 'EX=0%';
+        }
+        if (parseFloat(linea.tasa_impuesto) === 8) {
+            array_tasas[linea.tasa_impuesto]['tipo'] = 'INC=' + linea.tasa_impuesto + '%';
         }
         // Guardar la tasa en el array
         array_tasas[linea.tasa_impuesto]['tasa'] = linea.tasa_impuesto;
@@ -1169,7 +1192,8 @@ $(document).ready(function () {
         $("#linea_ingreso_default").remove();
 
         var table = $("#ingreso_registros").tableToJSON();
-
+        table = add_impuesto_id_to_table_lines(table);
+        
         json_table2 = get_json_registros_medios_recaudo();
 
         if ($("#manejar_propinas").val() == 1) {
@@ -1665,3 +1689,4 @@ $(document).ready(function () {
   });
   
 });
+

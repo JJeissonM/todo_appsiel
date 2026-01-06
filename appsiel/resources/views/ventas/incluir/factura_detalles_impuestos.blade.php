@@ -8,8 +8,8 @@
                 <tr>
                     <td>Tipo</td>
                     <td>Vlr. Compra</td>
-                    <td>Base IVA</td>
-                    <td>Vlr. IVA</td>
+                    <td>Base</td>
+                    <td>Valor</td>
                 </tr> 
                 @foreach( $array_tasas as $key => $value )
                     <tr>

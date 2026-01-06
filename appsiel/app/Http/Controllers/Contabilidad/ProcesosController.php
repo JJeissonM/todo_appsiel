@@ -10,30 +10,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Input;
-use DB;
-use Auth;
-use Form;
-use View;
-
-use App\Sistema\Aplicacion;
-use App\Sistema\Modelo;
-use App\Sistema\TipoTransaccion;
-use App\Core\TipoDocApp;
-use App\Core\Tercero;
-use App\Core\Empresa;
-
 use App\Contabilidad\ContabCuenta;
-use App\Contabilidad\ContabDocEncabezado;
-use App\Contabilidad\ContabDocRegistro;
+
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\ContabPeriodoEjercicio;
-
-use App\CxP\CxpMovimiento;
-use App\CxP\CxpAbono;
-
-use App\CxC\CxcMovimiento;
-use App\CxC\CxcAbono;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\View;
 
 class ProcesosController extends Controller
 {

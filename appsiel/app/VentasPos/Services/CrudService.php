@@ -2,6 +2,7 @@
 
 namespace App\VentasPos\Services;
 
+use App\Contabilidad\Impuesto;
 use App\Inventarios\InvProducto;
 use App\Inventarios\Services\RecipeServices;
 use App\Sistema\Services\CrudService as SystemCrudService;
@@ -102,9 +103,28 @@ class CrudService
         
         $model_id = 138; // Cliente
         
+        $productos = InvProducto::get_datos_basicos('', 'Activo', null, null);
+        if ( $pdv->maneja_impoconsumo )
+        {
+            $impuesto_id = (int)config('contabilidad.impoconsumo_default_id');
+            $impoconsumo_default = Impuesto::find($impuesto_id);
+            foreach ($productos as $item)
+            {
+                if ($item->tasa_impuesto == 0) {
+                    continue;
+                }
+
+                $tasa_impuesto = $impoconsumo_default->tasa_impuesto;
+                $item->tasa_impuesto = $tasa_impuesto;
+                $item->impuesto_id = $impuesto_id;
+
+                $item->costo_promedio_mas_iva = $item->costo_promedio * (1 + $tasa_impuesto / 100);
+            }
+        }
+
         $datos = [
                     'redondear_centena' => config('ventas_pos.redondear_centena'),
-                    'productos' => InvProducto::get_datos_basicos('', 'Activo', null, null),
+                    'productos' => $productos,
                     'precios' => ListaPrecioDetalle::get_precios_productos_de_la_lista( $pdv->cliente->lista_precios_id ),
                     'todos_los_precios' => ListaPrecioDetalle::get_precios_para_catalogos_pos(),
                     'descuentos' => ListaDctoDetalle::get_descuentos_productos_de_la_lista( $pdv->cliente->lista_descuentos_id ),

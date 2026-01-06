@@ -393,8 +393,8 @@ class FacturaGeneralOsei
             }
 
             $tax_category = config('ventas.etiqueta_impuesto_principal');
-            if ($linea->item->impuesto->tax_category != null && $linea->item->impuesto->tax_category != '') {
-                $tax_category = $linea->item->impuesto->tax_category;
+            if ($linea->impuesto->tax_category != null && $linea->impuesto->tax_category != '') {
+                $tax_category = $linea->impuesto->tax_category;
             }
             $vlor_total_desc = $linea->valor_total_descuento;
 

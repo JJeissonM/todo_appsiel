@@ -27,8 +27,8 @@
                     <tr>
                         <th>Tipo producto</th>
                         <th>Vlr. Compra</th>
-                        <th>Base IVA</th>
-                        <th>Vlr. IVA</th>
+                        <th>Base</th>
+                        <th>Valor</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class Movimiento extends Model
 {
     protected $table = 'vtas_pos_movimientos';
-	protected $fillable = ['pdv_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'cajero_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_producto_id', 'inv_bodega_id', 'vtas_motivo_id', 'inv_motivo_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'estado', 'creado_por', 'modificado_por'];
+	protected $fillable = ['pdv_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'remision_doc_encabezado_id', 'cliente_id', 'vendedor_id', 'cajero_id', 'zona_id', 'clase_cliente_id', 'equipo_ventas_id', 'forma_pago', 'fecha_vencimiento', 'orden_compras', 'inv_producto_id', 'impuesto_id', 'inv_bodega_id', 'vtas_motivo_id', 'inv_motivo_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'estado', 'creado_por', 'modificado_por'];
 
 	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Producto', 'Precio Unit.', 'Cantidad', 'Precio total', 'Estado'];
     
@@ -25,6 +25,11 @@ class Movimiento extends Model
     public function empresa()
     {
         return $this->belongsTo( Empresa::class, 'core_empresa_id' );
+    }
+
+    public function impuesto()
+    {
+        return $this->belongsTo('App\Contabilidad\Impuesto', 'impuesto_id');
     }
     
     public function tipo_documento_app()
@@ -300,6 +305,7 @@ class Movimiento extends Model
                                         'vtas_pos_movimientos.tasa_impuesto AS tasa_impuesto',
                                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
                                         'vtas_pos_movimientos.pdv_id',
+                                        'vtas_pos_movimientos.impuesto_id',
                                         'vtas_pos_movimientos.forma_pago',
                                         'vtas_pos_movimientos.vendedor_id',
                                         'vtas_pos_movimientos.cantidad',
@@ -364,6 +370,7 @@ class Movimiento extends Model
                                         'vtas_pos_movimientos.tasa_impuesto AS tasa_impuesto',
                                         'sys_tipos_transacciones.descripcion AS descripcion_tipo_transaccion',
                                         'vtas_pos_movimientos.pdv_id',
+                                        'vtas_pos_movimientos.impuesto_id',
                                         'vtas_pos_movimientos.forma_pago',
                                         'vtas_pos_movimientos.vendedor_id',
                                         'vtas_pos_movimientos.cantidad',

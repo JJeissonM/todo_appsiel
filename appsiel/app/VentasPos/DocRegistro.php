@@ -13,10 +13,15 @@ class DocRegistro extends Model
 
     // valor_impuesto es del precio_unitario
     // base_impuesto es del precio_unitario
-    protected $fillable = ['vtas_pos_doc_encabezado_id', 'vtas_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
+    protected $fillable = ['vtas_pos_doc_encabezado_id', 'vtas_motivo_id', 'inv_producto_id', 'impuesto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'base_impuesto_total', 'tasa_descuento', 'valor_total_descuento', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
 
     public $campos_invisibles_linea_registro = ['inv_producto_id','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','precio_total', 'tasa_descuento', 'valor_total_descuento', 'lista_oculta_items_contorno_ids']; // 11 campos
 
+    public function doc_encabezado()
+    {
+        return $this->belongsTo( 'App\VentasPos\FacturaPos','vtas_pos_doc_encabezado_id');
+    }
+    
     public function item()
     {
         return $this->belongsTo( 'App\Inventarios\InvProducto','inv_producto_id');
@@ -25,6 +30,11 @@ class DocRegistro extends Model
     public function producto()
     {
         return $this->belongsTo('App\Inventarios\InvProducto','inv_producto_id');
+    }
+
+    public function impuesto()
+    {
+        return $this->belongsTo('App\Contabilidad\Impuesto', 'impuesto_id');
     }
 
     public function motivo()
@@ -52,6 +62,7 @@ class DocRegistro extends Model
                     ->leftJoin('inv_motivos', 'inv_motivos.id', '=', 'vtas_pos_doc_registros.vtas_motivo_id')
                     ->select(
                                 'vtas_pos_doc_registros.id',
+                                'vtas_pos_doc_registros.vtas_pos_doc_encabezado_id',
                                 'vtas_pos_doc_registros.estado',
                                 'vtas_pos_doc_registros.creado_por',
                                 'vtas_pos_doc_registros.modificado_por',
@@ -61,6 +72,7 @@ class DocRegistro extends Model
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
                                 'vtas_pos_doc_registros.inv_producto_id',
+                                'vtas_pos_doc_registros.impuesto_id',
                                 'vtas_pos_doc_registros.precio_unitario',
                                 'vtas_pos_doc_registros.cantidad',
                                 'vtas_pos_doc_registros.precio_total',
@@ -95,6 +107,7 @@ class DocRegistro extends Model
                                 'inv_productos.referencia',
                                 'inv_productos.codigo_barras',
                                 'vtas_pos_doc_registros.inv_producto_id',
+                                'vtas_pos_doc_registros.impuesto_id',
                                 'vtas_pos_doc_registros.precio_unitario',
                                 'vtas_pos_doc_registros.cantidad',
                                 'vtas_pos_doc_registros.precio_total',

@@ -1,6 +1,18 @@
 <div class="table-responsive">
     <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
+
+        <?php  
+
+            $lbl_IVA = 'IVA';
+            if ( Input::get('id') == 20) {
+                if($doc_registros->first()->doc_encabezado->pdv->maneja_impoconsumo)
+                {
+                    $lbl_IVA = 'INC';
+                }
+            }
+        ?>
+
+        {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.',$lbl_IVA,'Total ' . $lbl_IVA,'Total','Acción']) }}
         <tbody>
             <?php 
             

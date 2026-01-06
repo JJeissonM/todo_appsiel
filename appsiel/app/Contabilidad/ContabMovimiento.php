@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 class ContabMovimiento extends Model
 {
     // tipo_transaccion se refiere al tipo de transacción de la línea
-    protected $fillable = [ 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'id_registro_doc_tipo_transaccion', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'documento_soporte', 'contab_cuenta_id', 'valor_operacion', 'valor_debito', 'valor_credito', 'valor_saldo', 'detalle_operacion', 'tipo_transaccion', 'inv_producto_id', 'cantidad', 'tasa_impuesto', 'base_impuesto', 'valor_impuesto', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'estado', 'creado_por', 'modificado_por', 'fecha_vencimiento', 'inv_bodega_id'];
+    protected $fillable = [ 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'id_registro_doc_tipo_transaccion', 'fecha', 'core_empresa_id', 'core_tercero_id', 'codigo_referencia_tercero', 'documento_soporte', 'contab_cuenta_id', 'valor_operacion', 'valor_debito', 'valor_credito', 'valor_saldo', 'detalle_operacion', 'tipo_transaccion', 'inv_producto_id', 'impuesto_id', 'cantidad', 'tasa_impuesto', 'base_impuesto', 'valor_impuesto', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'estado', 'creado_por', 'modificado_por', 'fecha_vencimiento', 'inv_bodega_id'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Tercero', 'Producto', 'Detalle', 'Cuenta', 'Tasa impuesto', 'Base impuesto', 'Débito', 'Crédito'];
 
@@ -30,6 +30,11 @@ class ContabMovimiento extends Model
     public function cuenta()
     {
         return $this->belongsTo(ContabCuenta::class, 'contab_cuenta_id');
+    }
+
+    public function impuesto()
+    {
+        return $this->belongsTo('App\Contabilidad\Impuesto', 'impuesto_id');
     }
 
     public function tipo_transaccion()
@@ -339,6 +344,7 @@ class ContabMovimiento extends Model
                 'contab_movimientos.codigo_referencia_tercero',
                 'contab_movimientos.core_tercero_id',
                 'contab_movimientos.core_empresa_id',
+                'contab_movimientos.impuesto_id',
                 'contab_movimientos.core_tipo_transaccion_id',
                 'contab_movimientos.core_tipo_doc_app_id',
                 'contab_movimientos.consecutivo',
@@ -371,7 +377,16 @@ class ContabMovimiento extends Model
                     ->where('contab_movimientos.fecha', '<=', $fecha_final)
                     ->where('contab_arbol_grupos_cuentas.abuelo_id', $grupo_abuelo_id)
                     ->groupBy('contab_movimientos.contab_cuenta_id')
-                    ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo, contab_arbol_grupos_cuentas.abuelo_descripcion, contab_arbol_grupos_cuentas.padre_descripcion, contab_arbol_grupos_cuentas.hijo_descripcion, contab_arbol_grupos_cuentas.abuelo_id, contab_arbol_grupos_cuentas.padre_id, contab_arbol_grupos_cuentas.hijo_id, contab_cuentas.descripcion AS cuenta_descripcion, contab_cuentas.id AS cuenta_id, contab_cuentas.codigo AS cuenta_codigo')
+                    ->selectRaw('sum(contab_movimientos.valor_saldo) AS valor_saldo,
+                                contab_arbol_grupos_cuentas.abuelo_descripcion,
+                                contab_arbol_grupos_cuentas.padre_descripcion,
+                                contab_arbol_grupos_cuentas.hijo_descripcion,
+                                contab_arbol_grupos_cuentas.abuelo_id,
+                                contab_arbol_grupos_cuentas.padre_id,
+                                contab_arbol_grupos_cuentas.hijo_id,
+                                contab_cuentas.descripcion AS cuenta_descripcion,
+                                contab_cuentas.id AS cuenta_id,
+                                contab_cuentas.codigo AS cuenta_codigo')
                     ->get()
                     ->toArray();
     }
@@ -425,6 +440,7 @@ class ContabMovimiento extends Model
                 'sys_tipos_transacciones.descripcion AS transaccion_descripcion,
                                 contab_impuestos.descripcion AS impuesto_descripcion,
                                 contab_impuestos.tasa_impuesto AS impuesto_tasa,
+                                contab_movimientos.impuesto_id,
                                 contab_cuentas.descripcion AS cuenta_descripcion,
                                 contab_cuentas.codigo AS cuenta_codigo,
                                 inv_productos.descripcion AS producto_descripcion,

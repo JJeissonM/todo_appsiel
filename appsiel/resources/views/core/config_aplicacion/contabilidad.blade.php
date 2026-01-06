@@ -281,7 +281,7 @@
 				</div>
 
 				<br>
-				<h5> Liquidación de Retenciones </h5>
+				<h5> Liquidación de Impuestos y Retenciones </h5>
 				<div class="row">
 
 					<div class="col-md-6">
@@ -299,7 +299,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$impoconsumo_default_id = 1;
+
+								if( isset($parametros['impoconsumo_default_id'] ) )
+								{
+									$impoconsumo_default_id = $parametros['impoconsumo_default_id'];
+								}
+							?>
+							{{ Form::bsSelect('impoconsumo_default_id', $impoconsumo_default_id, 'Impuesto de impoconsumo por defecto', \App\Contabilidad\Impuesto::opciones_campo_select(), ['class'=>'combobox']) }}
 						</div>
 					</div>
 

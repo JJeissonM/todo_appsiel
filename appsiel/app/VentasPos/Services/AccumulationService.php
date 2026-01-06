@@ -14,10 +14,9 @@ use App\VentasPos\Services\SalesServices;
 use App\Ventas\VtasMovimiento;
 
 use App\CxC\DocumentosPendientes;
-use App\Inventarios\InvProducto;
+
 use App\Inventarios\Services\InvDocumentsService;
 use App\Tesoreria\TesoMovimiento;
-use App\VentasPos\DocRegistro;
 
 class AccumulationService
 {

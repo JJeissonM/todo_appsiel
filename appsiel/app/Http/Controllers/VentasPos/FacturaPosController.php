@@ -55,7 +55,6 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
-use App\Contabilidad\ContabMovimiento;
 use App\Sistema\Services\ModeloService;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Ventas\Services\CxCServices;
@@ -67,6 +66,7 @@ use App\VentasPos\Services\DatafonoService;
 use App\VentasPos\Services\RecipeServices;
 use App\VentasPos\Services\TipService;
 use App\VentasPos\Services\FacturaPosService;
+use App\VentasPos\Services\InvoicingService;
 use App\VentasPos\Services\TreasuryService;
 
 class FacturaPosController extends TransaccionController
@@ -106,8 +106,10 @@ class FacturaPosController extends TransaccionController
 
         if (is_null($tabla)) {
             $tabla = '';
+        }else{
+            $tabla_dibujada = $tabla->dibujar();
         }
-
+        
         $user = Auth::user();
 
         /**
@@ -190,6 +192,11 @@ class FacturaPosController extends TransaccionController
 
         $plantilla_factura = $factura_pos_service->generar_plantilla_factura($pdv, $this->empresa);
 
+        if ( $pdv->maneja_impoconsumo ) {
+            $tabla_dibujada = str_replace('IVA','INC',$tabla_dibujada);
+            $plantilla_factura = str_replace('IVA','INC',$plantilla_factura);
+        }
+
         $pedido_id = 0;
 
         $lineas_registros = '<tbody></tbody>';
@@ -225,7 +232,7 @@ class FacturaPosController extends TransaccionController
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'valor_ajuste_al_peso', 'valor_total_cambio', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla_dibujada', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'valor_ajuste_al_peso', 'valor_total_cambio', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
     }
 
     /**
@@ -513,6 +520,8 @@ class FacturaPosController extends TransaccionController
 
         if (is_null($tabla)) {
             $tabla = '';
+        }else{
+            $tabla_dibujada = $tabla->dibujar();
         }
 
         $id_transaccion = 8; // 8 = Recaudo cartera
@@ -551,7 +560,12 @@ class FacturaPosController extends TransaccionController
         
         $contenido_modal = View::make('ventas_pos.lista_items', compact('productos'))->render();
 
-        $plantilla_factura = $factura_pos_service->generar_plantilla_factura($pdv, $this->empresa);
+        $plantilla_factura = $factura_pos_service->generar_plantilla_factura($pdv, $this->empresa);        
+
+        if ( $pdv->maneja_impoconsumo ) {
+            $tabla_dibujada = str_replace('IVA','INC',$tabla_dibujada);
+            $plantilla_factura = str_replace('IVA','INC',$plantilla_factura);
+        }
 
         $redondear_centena = config('ventas_pos.redondear_centena');
         
@@ -588,7 +602,7 @@ class FacturaPosController extends TransaccionController
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla_dibujada', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
     }
 
     /**
@@ -1212,49 +1226,16 @@ class FacturaPosController extends TransaccionController
     */
     public static function crear_registros_documento(Request $request, $doc_encabezado, array $lineas_registros)
     {
-        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        $datos = $request->all();
+        $invoicing_service = new InvoicingService();
 
-        $total_documento = 0;
-
-        $cantidad_registros = count($lineas_registros);
-
-        for ($i = 0; $i < $cantidad_registros; $i++)
-        {
-            if ( (int)$lineas_registros[$i]->inv_producto_id == 0)
-            {
-                continue; // Evitar guardar registros con productos NO validos
-            }
-            
-            $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
-                            ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
-                            ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
-                            ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
-                            ['precio_total' => (float)$lineas_registros[$i]->precio_total] +
-                            ['base_impuesto' => (float)$lineas_registros[$i]->base_impuesto] +
-                            ['tasa_impuesto' => (float)$lineas_registros[$i]->tasa_impuesto] +
-                            ['valor_impuesto' => (float)$lineas_registros[$i]->valor_impuesto] +
-                            ['base_impuesto_total' => (float)$lineas_registros[$i]->base_impuesto_total] +
-                            ['tasa_descuento' => (float)$lineas_registros[$i]->tasa_descuento] +
-                            ['valor_total_descuento' => (float)$lineas_registros[$i]->valor_total_descuento] +
-                            ['creado_por' => Auth::user()->email] +
-                            ['estado' => 'Pendiente'] +
-                            ['vtas_pos_doc_encabezado_id' => $doc_encabezado->id];
-
-            DocRegistro::create($linea_datos);
-
-            $datos['consecutivo'] = $doc_encabezado->consecutivo;
-
-            Movimiento::create(
-                                $datos +
-                                $linea_datos
-                            );
-
-            $total_documento += (float)$lineas_registros[$i]->precio_total;
-        } // Fin por cada registro
-
-        $doc_encabezado->valor_total = $total_documento;
+        // Lineas de registros
+        $invoicing_service->crear_registros_documento_pos($request, $doc_encabezado, $lineas_registros);  
+        
+        $doc_encabezado->valor_total = $doc_encabezado->lineas_registros->sum('precio_total');
         $doc_encabezado->save();
+
+        // Movimiento
+        $invoicing_service->crear_movimiento_pos($doc_encabezado);
 
         return 0;
     }

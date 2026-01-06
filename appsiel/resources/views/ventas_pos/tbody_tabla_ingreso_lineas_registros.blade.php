@@ -10,7 +10,7 @@
             <div class="base_impuesto">{{$linea->precio_unitario}}</div>
         </td>
         <td style="display: none;">
-            <div class="tasa_impuesto">0</div> <!-- { {$linea->articulo->impuesto->tasa_impuesto}} -->
+            <div class="tasa_impuesto">0</div>
         </td>
         <td style="display: none;">
             <div class="valor_impuesto">0</div>
@@ -51,7 +51,7 @@
             0% ( $<div class="lbl_valor_total_descuento" style="display: inline;">0</div> )
         </td>
         <td>
-            <div class="lbl_tasa_impuesto" style="display: inline;">0%</div> <!-- { {$linea->articulo->impuesto->tasa_impuesto}} -->
+            <div class="lbl_tasa_impuesto" style="display: inline;">0%</div>
         </td>
         <td> 
             <div class="lbl_precio_total" style="display: inline;">$ {{ number_format( $precio_total, 0, ',', '.') }} </div> 

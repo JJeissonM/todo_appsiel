@@ -77,7 +77,7 @@
     <div class="marco_formulario">
                         {!! str_replace("<tbody>
                 
-            </tbody>", $lineas_registros, $tabla->dibujar() ) !!}
+            </tbody>", $lineas_registros, $tabla_dibujada ) !!}
 
                     @include('core.componentes.productos_y_cantidades_ingresadas')
                     <br/><br/>

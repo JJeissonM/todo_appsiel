@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Inventarios\InvProducto;
 use App\Compras\Proveedor;
+use App\Contabilidad\Services\TraitImpuestoService;
 use App\Ventas\Cliente;
 use Illuminate\Support\Facades\DB;
 
 class Impuesto extends Model
 {
+    use TraitImpuestoService;
+
     protected $table = 'contab_impuestos';
     
     protected $fillable = ['descripcion', 'tasa_impuesto', 'cta_ventas_id', 'cta_ventas_devol_id', 'cta_compras_id', 'cta_compras_devol_id', 'tax_category', 'estado'];
@@ -89,69 +92,11 @@ class Impuesto extends Model
 
     public static function get_tasa($producto_id, $proveedor_id, $cliente_id)
     {
-        $tasa_impuesto = 0;
-
-        // SI LA EMPRESA NO LIQUIDA IMPUESTOS
-        if (!config('configuracion')['liquidacion_impuestos']) {
-            return 0;
-        }
-
-        // SI EL PRODUCTO NO LIQUIDA IMPUESTOS
-        $tasa_impuesto = InvProducto::get_tasa_impuesto($producto_id);
-        if ($tasa_impuesto == 0) {
-            return 0;
-        }
-
-
-        if ($proveedor_id != 0) {
-            $liquida_impuestos = Proveedor::find($proveedor_id)->liquida_impuestos;
-            if (!$liquida_impuestos) {
-                return 0;
-            }
-        }
-
-
-        if ($cliente_id != 0) {
-            $liquida_impuestos = Cliente::find($cliente_id)->liquida_impuestos;
-            if (!$liquida_impuestos) {
-                return 0;
-            }
-        }
-
-        return $tasa_impuesto;
+        return self::get_tasa_item($producto_id, $proveedor_id, $cliente_id);
     }
 
     public function get_tasa2($producto_id, $proveedor_id, $cliente_id)
     {
-        $tasa_impuesto = 0;
-
-        // SI LA EMPRESA NO LIQUIDA IMPUESTOS
-        if (!config('configuracion')['liquidacion_impuestos']) {
-            return 0;
-        }
-
-        // SI EL PRODUCTO NO LIQUIDA IMPUESTOS
-        $tasa_impuesto = InvProducto::get_tasa_impuesto($producto_id);
-        if ($tasa_impuesto == 0) {
-            return 0;
-        }
-
-
-        if ($proveedor_id != 0) {
-            $liquida_impuestos = Proveedor::find($proveedor_id)->liquida_impuestos;
-            if (!$liquida_impuestos) {
-                return 0;
-            }
-        }
-
-
-        if ($cliente_id != 0) {
-            $liquida_impuestos = Cliente::find($cliente_id)->liquida_impuestos;
-            if (!$liquida_impuestos) {
-                return 0;
-            }
-        }
-
-        return $tasa_impuesto;
+        return $this->get_tasa_item($producto_id, $proveedor_id, $cliente_id);
     }
 }
