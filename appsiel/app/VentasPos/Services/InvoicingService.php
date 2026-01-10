@@ -3,6 +3,7 @@
 namespace App\VentasPos\Services;
 
 use App\Core\EncabezadoDocumentoTransaccion;
+use App\Contabilidad\Impuesto;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Inventarios\Services\InvDocumentsService;
 use App\Ventas\VtasMovimiento;
@@ -79,9 +80,19 @@ class InvoicingService
                 continue; // Evitar guardar registros con productos NO validos
             }
             
+            $impuesto_id = 0;
+            if (property_exists($lineas_registros[$i], 'impuesto_id')) {
+                $impuesto_id = (int)$lineas_registros[$i]->impuesto_id;
+            } elseif (property_exists($lineas_registros[$i], 'tasa_impuesto')) {
+                $tasa_impuesto = (float)$lineas_registros[$i]->tasa_impuesto;
+                if ($tasa_impuesto > 0) {
+                    $impuesto_id = (int)Impuesto::where('tasa_impuesto', $tasa_impuesto)->min('id');
+                }
+            }
+
             $linea_datos = ['vtas_motivo_id' => (int)$request->inv_motivo_id] +
                             ['inv_producto_id' => (int)$lineas_registros[$i]->inv_producto_id] +
-                            ['impuesto_id' => (int)$lineas_registros[$i]->impuesto_id] +
+                            ['impuesto_id' => $impuesto_id] +
                             ['precio_unitario' => (float)$lineas_registros[$i]->precio_unitario] +
                             ['cantidad' => (float)$lineas_registros[$i]->cantidad] +
                             ['precio_total' => (float)$lineas_registros[$i]->precio_total] +
