@@ -22,6 +22,7 @@ use App\VentasPos\FacturaPos;
 use App\VentasPos\Movimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DocumentHeaderService
 {
@@ -153,6 +154,15 @@ class DocumentHeaderService
             //$line_vtas_movim->update( $new_data );
         }
 
+        $this->actualizar_impuesto_id_por_tasa(
+            $original_document_header->core_empresa_id,
+            $fe_transaction_type_id_default,
+            $fe_document_type_id_default,
+            $new_consecutivo,
+            $vtas_document_header->id,
+            $original_document_header->id
+        );
+
         return (object)[
             'status'=>'flash_message',
             'message'=>'El documento ' . $original_document_label  . ' fue convertido en Factura electrónica exitosamente.',
@@ -238,6 +248,46 @@ class DocumentHeaderService
         }
 
         return $cliente;
+    }
+
+    protected function actualizar_impuesto_id_por_tasa(
+        int $core_empresa_id,
+        int $core_tipo_transaccion_id,
+        int $core_tipo_doc_app_id,
+        int $consecutivo,
+        int $vtas_doc_encabezado_id,
+        int $vtas_pos_doc_encabezado_id
+    )
+    {
+        $sql_impuesto = '(SELECT tasa_impuesto, MIN(id) AS impuesto_id FROM contab_impuestos GROUP BY tasa_impuesto) AS imp';
+
+        $sql = "UPDATE vtas_doc_registros t JOIN {$sql_impuesto} ON imp.tasa_impuesto = t.tasa_impuesto " .
+               "SET t.impuesto_id = imp.impuesto_id " .
+               "WHERE t.vtas_doc_encabezado_id = ? AND (t.impuesto_id IS NULL OR t.impuesto_id = 0)";
+        DB::update($sql, [$vtas_doc_encabezado_id]);
+
+        $sql = "UPDATE vtas_movimientos t JOIN {$sql_impuesto} ON imp.tasa_impuesto = t.tasa_impuesto " .
+               "SET t.impuesto_id = imp.impuesto_id " .
+               "WHERE t.core_empresa_id = ? AND t.core_tipo_transaccion_id = ? AND t.core_tipo_doc_app_id = ? AND t.consecutivo = ? " .
+               "AND (t.impuesto_id IS NULL OR t.impuesto_id = 0)";
+        DB::update($sql, [$core_empresa_id, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo]);
+
+        $sql = "UPDATE contab_movimientos t JOIN {$sql_impuesto} ON imp.tasa_impuesto = t.tasa_impuesto " .
+               "SET t.impuesto_id = imp.impuesto_id " .
+               "WHERE t.core_empresa_id = ? AND t.core_tipo_transaccion_id = ? AND t.core_tipo_doc_app_id = ? AND t.consecutivo = ? " .
+               "AND (t.impuesto_id IS NULL OR t.impuesto_id = 0)";
+        DB::update($sql, [$core_empresa_id, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo]);
+
+        $sql = "UPDATE vtas_pos_doc_registros t JOIN {$sql_impuesto} ON imp.tasa_impuesto = t.tasa_impuesto " .
+               "SET t.impuesto_id = imp.impuesto_id " .
+               "WHERE t.vtas_pos_doc_encabezado_id = ? AND (t.impuesto_id IS NULL OR t.impuesto_id = 0)";
+        DB::update($sql, [$vtas_pos_doc_encabezado_id]);
+
+        $sql = "UPDATE vtas_pos_movimientos t JOIN {$sql_impuesto} ON imp.tasa_impuesto = t.tasa_impuesto " .
+               "SET t.impuesto_id = imp.impuesto_id " .
+               "WHERE t.core_empresa_id = ? AND t.core_tipo_transaccion_id = ? AND t.core_tipo_doc_app_id = ? AND t.consecutivo = ? " .
+               "AND (t.impuesto_id IS NULL OR t.impuesto_id = 0)";
+        DB::update($sql, [$core_empresa_id, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo]);
     }
         
 }
