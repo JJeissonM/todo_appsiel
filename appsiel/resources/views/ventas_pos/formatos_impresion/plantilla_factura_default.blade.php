@@ -175,7 +175,7 @@
         $tax_category_default = null;
         $tax_category_impoconsumo = null;
 
-        foreach ($doc_registros as $linea) {
+        foreach ($datos_factura->obj_lineas_registros as $linea) {
             if (!is_null($linea->impuesto)) {
                 if ((int) $linea->impuesto_id === $impuesto_impoconsumo_id) {
                     $tax_category_impoconsumo = 'INC';

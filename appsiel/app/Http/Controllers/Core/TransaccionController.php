@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Core;
 
 use App\Compras\ComprasDocEncabezado;
+use App\Contabilidad\ContabDocEncabezado;
 use App\Tesoreria\TesoMotivo;
 use Illuminate\Http\Request;
 
@@ -311,7 +312,21 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en TesoDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                }
+
+                $id_doc_encabezado = $doc_encabezado->id;
+                break;
+            case '9': // contabilidad/1?id=14&id_modelo=47&id_transaccion=9
+                $url = 'contabilidad/';
+                $doc_encabezado = ContabDocEncabezado::where( [ 
+                                                        'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+                                                        'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+                                                        'consecutivo' => $consecutivo
+                                                    ] )->first();
+                if( is_null( $doc_encabezado ) )
+                {
+                    dd('Error en ContabDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -326,7 +341,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en TesoDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -341,7 +356,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en VtasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -356,7 +371,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en ComprasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -371,7 +386,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en TesoDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -386,7 +401,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en TesoDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -401,7 +416,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en ComprasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -416,7 +431,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en VtasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -431,7 +446,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en VtasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -446,7 +461,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en TesoDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -461,7 +476,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en FacturaPos::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -476,7 +491,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en VtasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -491,7 +506,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en VtasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -506,7 +521,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en VtasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -521,7 +536,7 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    dd('Error en ComprasDocEncabezado::enlace_show_documento. No se encontró el documento de recaudo', $this );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;
@@ -536,7 +551,9 @@ class TransaccionController extends Controller
                                                     ] )->first();
                 if( is_null( $doc_encabezado ) )
                 {
-                    dd('Error en TesoMovimiento::enlace_show_documento. No se encontró el documento de recaudo', $this );
+                    $core_tipo_transaccion = TipoTransaccion::find( $core_tipo_transaccion_id );
+                    
+                    dd('Error. No se encontró el documento para el tipo de transacción', $core_tipo_transaccion->descripcion. ' (ID=' . $core_tipo_transaccion_id . ')' );
                 }
 
                 $id_doc_encabezado = $doc_encabezado->id;

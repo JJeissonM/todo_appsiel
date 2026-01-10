@@ -88,7 +88,7 @@
                 <tr>
                     <td> {{ $linea->tercero_nombre_completo }} </td>
                     <td class="text-center">
-                        {{ $linea->documento_prefijo_consecutivo }}
+                        {!! enlace_show_documento( Input::get('id'), $linea->doc_cxc_transacc_id, $linea->doc_cxc_tipo_doc_id, $linea->doc_cxc_consecutivo, $linea->documento_prefijo_consecutivo ) !!}
                     </td>
                     <td> {{ $fecha_doc_pagado }} </td>
                     <td> {{ $descripcion_doc_pagado }} </td>

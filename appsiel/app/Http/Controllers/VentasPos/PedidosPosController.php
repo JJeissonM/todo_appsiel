@@ -488,6 +488,7 @@ class PedidosPosController extends TransaccionController
             'lbl_valor_total_bolsas' => '',
             'lbl_creado_por_fecha_y_hora' => '',
             'lineas_registros' => '',
+            'obj_lineas_registros' => [],
             'lineas_impuesto' => ''
         ];
 

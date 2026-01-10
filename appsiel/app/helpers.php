@@ -130,3 +130,11 @@ if (! function_exists('restar_dias_calendario_a_fecha'))
     }
 }
 
+if (! function_exists('enlace_show_documento'))
+{
+    function enlace_show_documento( $app_id, $core_tipo_transaccion_id, $core_tipo_doc_app_id, $consecutivo, $label )
+    {
+        return '<a href="' . url( 'enlace_show_documento/' . $app_id . '/' . $core_tipo_transaccion_id . '/' . $core_tipo_doc_app_id . '/' . $consecutivo ) . '" target="_blank">' . $label . '</a>';
+    }
+}
+
