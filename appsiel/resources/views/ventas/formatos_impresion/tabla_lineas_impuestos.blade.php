@@ -5,13 +5,25 @@
     $total_factura = 0;
     $array_tasas = [];
 
-    $lbl_IVA = 'IVA';
-    if ( Input::get('id') == 20) {
-        if($doc_registros->first()->doc_encabezado->pdv->maneja_impoconsumo)
-        {
-            $lbl_IVA = 'INC';
+    $lbl_impuesto = config('ventas.etiqueta_impuesto_principal');
+    $impuesto_impoconsumo_id = (int) config('contabilidad.impoconsumo_default_id');
+    $tax_category_default = null;
+    $tax_category_impoconsumo = null;
+
+    foreach ($doc_registros as $linea) {
+        if (!is_null($linea->impuesto)) {
+            if ((int) $linea->impuesto_id === $impuesto_impoconsumo_id) {
+                $tax_category_impoconsumo = 'INC';
+                break;
+            }
+
+            if ($tax_category_default === null) {
+                $tax_category_default = $linea->impuesto->tax_category;
+            }
         }
     }
+
+    $lbl_impuesto = $tax_category_impoconsumo ?? $tax_category_default ?? $lbl_impuesto;
 ?>
 @foreach($doc_registros as $linea )
     <?php 
@@ -24,7 +36,7 @@
         if ( !isset( $array_tasas[$linea->tasa_impuesto] ) )
         {
             // Clasificar el impuesto
-            $array_tasas[$linea->tasa_impuesto]['tipo'] = $lbl_IVA.'='.$linea->tasa_impuesto.'%';
+            $array_tasas[$linea->tasa_impuesto]['tipo'] = $lbl_impuesto.'='.$linea->tasa_impuesto.'%';
             if ( $linea->tasa_impuesto == 0)
             {
                 $array_tasas[$linea->tasa_impuesto]['tipo'] = 'EX=0%';

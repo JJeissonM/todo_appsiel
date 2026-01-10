@@ -169,8 +169,29 @@
         </table>        
     </div>
 
+    <?php
+        $lbl_impuesto = config('ventas.etiqueta_impuesto_principal');
+        $impuesto_impoconsumo_id = (int) config('contabilidad.impoconsumo_default_id');
+        $tax_category_default = null;
+        $tax_category_impoconsumo = null;
+
+        foreach ($doc_registros as $linea) {
+            if (!is_null($linea->impuesto)) {
+                if ((int) $linea->impuesto_id === $impuesto_impoconsumo_id) {
+                    $tax_category_impoconsumo = 'INC';
+                    break;
+                }
+
+                if ($tax_category_default === null) {
+                    $tax_category_default = $linea->impuesto->tax_category;
+                }
+            }
+        }
+
+        $lbl_impuesto = $tax_category_impoconsumo ?? $tax_category_default ?? $lbl_impuesto;
+    ?>
     <table style="width: 100%; font-size: {{ $tamanino_fuente_2 }};" id="tabla_productos_facturados">
-        {{ Form::bsTableHeader(['Producto (U.M.)','Cant. (Precio)','%'.config('ventas.etiqueta_impuesto_principal'),'Total']) }}
+        {{ Form::bsTableHeader(['Producto (U.M.)','Cant. (Precio)','%'.$lbl_impuesto,'Total']) }}
         <tbody>
             {!! $datos_factura->lineas_registros !!}
         </tbody>

@@ -130,7 +130,7 @@ class FacturaElectronicaController extends TransaccionController
     {
         $lineas_registros_pedido = $encabezado_pedido->lineas_registros;
         foreach( $lineas_registros_pedido AS $linea_pedido )
-        {            
+        {
             if ( $operacion == 'restar' )
             {
                 $linea_pedido->cantidad_pendiente = 0;

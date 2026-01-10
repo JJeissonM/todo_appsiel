@@ -18,8 +18,11 @@
             <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> - $ &nbsp;{{ number_format($total_descuentos, 2, ',', '.') }} </td>
         </tr>
         @if(config('ventas.detallar_iva_cotizaciones'))
+            <?php
+                $lbl_impuesto_total = isset($lbl_impuesto) && $lbl_impuesto !== '' ? $lbl_impuesto : config('ventas.etiqueta_impuesto_principal');
+            ?>
             <tr>
-                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> Total {{ config('ventas.etiqueta_impuesto_principal') }}: &nbsp; </td>
+                <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> Total {{ $lbl_impuesto_total }}: &nbsp; </td>
                 <td style="text-align: right; font-weight: bold;padding-right: 3px" class="totl-mid"> + $ &nbsp;{{ number_format($total_impuestos, 2, ',', '.') }} </td>
             </tr>
         @endif
