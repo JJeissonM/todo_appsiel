@@ -33,7 +33,18 @@ function create_btns_for_print_barcodes()
     var items_per_page = $('#items_per_page').val();
 
     $('#div_btns_barcodes').html('');
-    var data = JSON.parse( $('#data_for_print').text() );
+    var data_for_print = $('#data_for_print').text().trim();
+    if ( data_for_print == '' ) {
+        return;
+    }
+
+    var data;
+    try {
+        data = JSON.parse( data_for_print );
+    }catch(error){
+        console.error('Invalid barcode payload', error);
+        return;
+    }
 
     var quantity = data.stickers_quantity;
     var pages = Math.trunc( quantity / items_per_page );
