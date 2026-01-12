@@ -437,12 +437,17 @@ class ReporteController extends Controller
                 
         $items = $this->get_etiquetas_items( $grupo_inventario_id, $estado, $items_a_mostrar, $cantidad_etiquetas_x_item, $cantidad_etiquetas_fijas, $inv_producto_id, $fecha_desde, $fecha_hasta, $tipo_prenda_id );
 
+        $items_without_barcode = collect( $items )->filter( function( $item ) {
+            $barcode = trim( (string)( $item->codigo_barras ?? '' ) );
+            return $barcode === '';
+        })->count();
+
         $route = 'inventarios.reportes.etiquetas_codigos_barra';
         if ( $request->tam_hoja == 'pos_80mm' ) {
             $route = 'inventarios.reportes.pos_80mm.etiquetas_codigos_barra';
         }
 
-        $vista = View::make( $route, compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto', 'tamanio_letra') )->render();
+        $vista = View::make( $route, compact('items', 'numero_columnas', 'mostrar_descripcion', 'etiqueta', 'items_a_mostrar','cantidad_etiquetas_x_item','ancho','alto', 'tamanio_letra', 'items_without_barcode') )->render();
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    

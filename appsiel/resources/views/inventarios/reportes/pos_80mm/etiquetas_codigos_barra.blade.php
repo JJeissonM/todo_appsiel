@@ -34,6 +34,12 @@
 
 <h5>Se generaron {{ $cantidad_total }} etiquetas <small> <br> Cada página tiene {{ config('inventarios.items_per_page') }} etiquetas y se deben imprimir página por página. <br> <span style="color: brown;">Recuerde que debe acomodar el papel antes de imprimir cada página. </span></small></h5>
      
+@if( $items_without_barcode > 0 )
+    <div class="alert alert-warning" style="margin: 0 10px 10px; font-size: 0.85em;">
+        Hay {{ $items_without_barcode }} artículo{{ $items_without_barcode > 1 ? 's' : '' }} sin código de barras; se usará su identificador interno hasta que registre uno.
+    </div>
+@endif
+
 @foreach($items as $fila)
 
     <?php 

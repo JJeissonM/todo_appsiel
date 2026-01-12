@@ -10,6 +10,13 @@ VER EL SIGUIENTE VIDEO PARA CONTINUAR CON LA IMPRESIÓN DEL CÓDIGO DE BARRAS; S
 <a href="https://youtu.be/e9KWVpHbLzc" target="_blank" style="font-size: 1.2em;">📹 VIDEO TUTORIAL</a>
 
 <hr>
+
+@if( $items_without_barcode > 0 )
+    <div class="alert alert-warning" style="margin: 0 0 10px;">
+        Hay {{ $items_without_barcode }} artículo{{ $items_without_barcode > 1 ? 's' : '' }} sin código de barras; se imprimirá su identificador interno hasta que se registre uno.
+    </div>
+@endif
+
 <div class="container-fluid">
     
     <?php
