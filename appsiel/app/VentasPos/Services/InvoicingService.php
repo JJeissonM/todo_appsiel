@@ -85,7 +85,7 @@ class InvoicingService
                 $impuesto_id = (int)$lineas_registros[$i]->impuesto_id;
             } elseif (property_exists($lineas_registros[$i], 'tasa_impuesto')) {
                 $tasa_impuesto = (float)$lineas_registros[$i]->tasa_impuesto;
-                if ($tasa_impuesto > 0) {
+                if ($tasa_impuesto >= 0) {
                     $impuesto_id = (int)Impuesto::where('tasa_impuesto', $tasa_impuesto)->min('id');
                 }
             }
