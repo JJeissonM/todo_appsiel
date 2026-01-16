@@ -969,24 +969,21 @@ $(document).ready(function(){
     			break;
 
     		default :
-	    		// Se determina el campo de busqueda
-	    		if( $.isNumeric( $(this).val() ) )
-	    		{
-	    			if( $('#modo_ingreso').is(':checked') )
-			    	{
-			    		// Manejo códigos de barra
-			    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
-			    	}else{
-			    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
-			    	}
-		    	}else{
-		    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
+    			var texto_busqueda = $.trim( $(this).val() );
 
-		    		// Si la longitud es menor a tres, todavía no busca
-		    		if ( $(this).val().length < 2 ) { return false; }
-		    	}
+    			if ( texto_busqueda === '' ) {
+    				return false;
+    			}
 
-		    	terminar = 0;
+    			var es_numerico = $.isNumeric( texto_busqueda );
+
+    			if ( !es_numerico && texto_busqueda.length < 2 ) {
+    				return false;
+    			}
+
+    			var campo_busqueda = es_numerico && texto_busqueda.length < 6 ? 'id' : 'general';
+
+    			terminar = 0;
 
 		    	// Realizar consulta y mostar sugerencias
 		    	var url = '../inv_consultar_productos';
@@ -996,7 +993,7 @@ $(document).ready(function(){
 
 				var url_id = $('#url_id').val();
 
-				$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
+				$.get( url, { texto_busqueda: texto_busqueda, campo_busqueda: campo_busqueda, url_id:url_id } )
 					.done(function( data ) {
 						//Escribimos las sugerencias que nos manda la consulta
 		                $('#suggestions').show().html(data);

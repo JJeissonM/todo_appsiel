@@ -71,7 +71,7 @@ class VtasTransaccion
         }
 
         // Controles (Inputs)
-        $fila_controles_formulario .= '<td> <label class="checkbox-inline" title="Activar ingreso por código de barras"><input type="checkbox" id="modo_ingreso" name="modo_ingreso" value="true" checked="checked"><i class="fa fa-barcode"></i></label> </td>
+        $fila_controles_formulario .= '<td> </td>
                         <td> 
                             '.Form::text('inv_producto_id', null, ['id'=>'inv_producto_id', 'data-toggle'=>'tooltip', 'autocomplete'=>'off', 'title'=>'Presione dos veces ESC para terminar.']) . Form::hidden('tipo_producto', null, ['id'=>'tipo_producto']) .'
                             <div id="suggestions"></div>
@@ -113,3 +113,4 @@ class VtasTransaccion
     }
     
 }
+

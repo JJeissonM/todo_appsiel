@@ -994,6 +994,30 @@ class InventarioController extends TransaccionController
                                     ->take($cantidad_a_mostrar);
                 break;
 
+            case 'general':
+                $texto_busqueda = trim( Input::get('texto_busqueda') );
+                $texto_busqueda_like = '%' . str_replace( ' ', '%', $texto_busqueda ) . '%';
+
+                $producto = InvProducto::where( $array_wheres )
+                                    ->where(function( $query ) use ( $texto_busqueda, $texto_busqueda_like ) {
+                                        $query->where( 'id', 'LIKE', $texto_busqueda . '%' )
+                                              ->orWhere( 'descripcion', 'LIKE', $texto_busqueda_like )
+                                              ->orWhere( 'referencia', 'LIKE', $texto_busqueda_like )
+                                              ->orWhere( 'codigo_barras', '=', $texto_busqueda );
+                                    })
+                                    ->select( 
+                                            DB::raw('CONCAT( descripcion, " ", referencia ) AS nueva_cadena'),
+                                            'id',
+                                            'categoria_id',
+                                            'referencia',
+                                            'codigo_barras',
+                                            'descripcion',
+                                            'unidad_medida1',
+                                            'unidad_medida2' )
+                                    ->get()
+                                    ->take($cantidad_a_mostrar);
+                break;
+
             default:
                 # code...
                 break;

@@ -18,8 +18,8 @@ class VtasDocRegistro extends Model
     public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','base_impuesto_total','cantidad','costo_total','precio_total', 'tasa_descuento', 'valor_total_descuento']; // 13 campos
 
     public $campos_visibles_linea_registro = [ 
-    											['&nbsp;','10px'],
-    											['ITEM','280px'],
+                                            ['&nbsp;','10px'],
+                                            ['ITEM','280px'],
     											['MOTIVO','200px'],
     											['STOCK','35px'],
                                                 ['CANT.',''],

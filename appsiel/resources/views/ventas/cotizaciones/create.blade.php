@@ -108,11 +108,9 @@
 
 		var hay_productos = 0;
 
-		$(document).ready(function(){
+        $(document).ready(function(){
 
-			checkCookie();
-			
-			$('#fecha').val( get_fecha_hoy() );
+            $('#fecha').val( get_fecha_hoy() );
 
 			$('#cliente_input').focus( );
 
@@ -221,21 +219,6 @@
 
 			});
 
-
-		    // Al Activar/Inactivar modo de ingreso
-		    $('#modo_ingreso').on('click',function(){
-
-		    	if( $(this).val() == "true" ){
-	        		$(this).val( "false" );
-	        		setCookie("modo_ingreso_codigo_de_barra", "false", 365);
-	        	}else{
-	        		$(this).val( "true" );
-	        		setCookie("modo_ingreso_codigo_de_barra", "true", 365);
-	        	}
-		    	
-		    	reset_linea_ingreso_default();
-		    });
-
 		    $('[data-toggle="tooltip"]').tooltip();
 		    var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botón guardar
 
@@ -319,22 +302,19 @@
 		    			break;
 
 		    		default :
-			    		// Se determina el campo de busqueda
-			    		if( $.isNumeric( $(this).val() ) )
-			    		{
-			    			if( $('#modo_ingreso').is(':checked') )
-					    	{
-					    		// Manejo códigos de barra
-					    		var campo_busqueda = 'codigo_barras'; // Busqueda por CÓDIGO DE BARRA
-					    	}else{
-					    		var campo_busqueda = 'id'; // Busqueda por CODIGO (ID en base de datos)
-					    	}
-				    	}else{
-				    		var campo_busqueda = 'descripcion'; // Busqueda por NOMBRE
+		    			var texto_busqueda = $.trim( $(this).val() );
 
-				    		// Si la longitud es menor a tres, todavía no busca
-				    		if ( $(this).val().length < 2 ) { return false; }
-				    	}
+		    			if ( texto_busqueda === '' ) {
+		    				return false;
+		    			}
+
+		    			var es_numerico = $.isNumeric( texto_busqueda );
+
+		    			if ( !es_numerico && texto_busqueda.length < 2 ) {
+		    				return false;
+		    			}
+
+		    			var campo_busqueda = es_numerico && texto_busqueda.length < 6 ? 'id' : 'general';
 
 				    	terminar = 0;
 
@@ -343,7 +323,7 @@
 
 						var url_id = $('#url_id').val();
 
-						$.get( url, { texto_busqueda: $(this).val(), campo_busqueda: campo_busqueda, url_id:url_id } )
+						$.get( url, { texto_busqueda: texto_busqueda, campo_busqueda: campo_busqueda, url_id:url_id } )
 							.done(function( data ) {
 								//Escribimos las sugerencias que nos manda la consulta
 				                $('#suggestions').show().html(data);
@@ -1037,42 +1017,6 @@
 				$('#cliente_input').removeAttr('disabled');
 				$('#fecha').removeAttr('disabled');
 				$('#inv_bodega_id').removeAttr('disabled');
-			}
-
-
-			function setCookie(cname, cvalue, exdays) {
-			  var d = new Date();
-			  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-			  var expires = "expires="+d.toUTCString();
-			  document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-			}
-
-			function getCookie(cname) {
-			  var name = cname + "=";
-			  var ca = document.cookie.split(';');
-			  for(var i = 0; i < ca.length; i++) {
-			    var c = ca[i];
-			    while (c.charAt(0) == ' ') {
-			      c = c.substring(1);
-			    }
-			    if (c.indexOf(name) == 0) {
-			      return c.substring(name.length, c.length);
-			    }
-			  }
-			  return "";
-			}
-
-			function checkCookie() {
-			  var modo_ingreso_codigo_de_barra = getCookie("modo_ingreso_codigo_de_barra");
-
-			  if (modo_ingreso_codigo_de_barra == "true" || modo_ingreso_codigo_de_barra == "")
-			  {
-		        $('#modo_ingreso').attr('checked','checked');
-		        $('#modo_ingreso').val( "true" );
-			  }else{
-			  	$('#modo_ingreso').removeAttr('checked');
-		        $('#modo_ingreso').val( "false" );
-			  }
 			}
 
 			var valor_actual, elemento_modificar, elemento_padre;
