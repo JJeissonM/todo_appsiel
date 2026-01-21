@@ -128,6 +128,11 @@ Route::get('nom_listado_vacaciones_pendientes','Nomina\ReporteController@listado
 Route::post('nom_ajax_listado_vacaciones_pendientes','Nomina\ReporteController@ajax_listado_vacaciones_pendientes');
 Route::get('nomina_pdf_listado_vacaciones_pendientes','Nomina\ReporteController@pdf_listado_vacaciones_pendientes');
 
+Route::group(['middleware' => ['auth', 'role:Empleado']], function () {
+    Route::get('nomina/empleado', 'Nomina\EmpleadoController@index');
+    Route::get('nomina/empleado/desprendible/{nom_doc_encabezado_id}', 'Nomina\EmpleadoController@desprendible');
+});
+
 //PROCESOS
 Route::post('nom_procesar_archivo_plano','Nomina\ProcesosController@procesar_archivo_plano');
 Route::post('nom_almacenar_registros_via_interface','Nomina\ProcesosController@almacenar_registros_via_interface');

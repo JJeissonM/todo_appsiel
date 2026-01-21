@@ -55,15 +55,29 @@
                 
                 <!-- No muestra el menú en entorno demo para las aplicaciones del array -->
                 @if( app()->environment() != 'demo' || !in_array( Input::get('id'), $aplicaciones_inactivas_demo ) )
-                    <ul class="nav navbar-nav">
-                        @foreach ($menus as $key => $item)
-                            @if ($item['parent'] != 0)
-                                @break
-                            @endif
-                            @include('layouts.menu-item', ['item' => $item])
-                        @endforeach
-                        {!! $item_reporte !!}
-                    </ul>
+                <ul class="nav navbar-nav">
+                    @foreach ($menus as $key => $item)
+                        @if ($item['parent'] != 0)
+                            @break
+                        @endif
+                        @include('layouts.menu-item', ['item' => $item])
+                    @endforeach
+                    @if (Auth::check() && Auth::user()->hasRole('Empleado'))
+                        <?php
+                            $empleadoUrl = url('nomina/empleado');
+                            if ( Input::get('id') )
+                            {
+                                $empleadoUrl .= '?id=' . Input::get('id');
+                            }
+                        ?>
+                        <li>
+                            <a href="{{ $empleadoUrl }}" style="color: #FFFFFF !important;">
+                                <i class="fa fa-user-circle"></i> Mi nómina
+                            </a>
+                        </li>
+                    @endif
+                    {!! $item_reporte !!}
+                </ul>
                 @endif
 
                 <!-- Right Side Of Navbar -->
