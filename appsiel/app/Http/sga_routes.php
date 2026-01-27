@@ -22,6 +22,10 @@ Route::get('remover_archivo_adjunto/{respuesta_id}', 'ActividadesEscolares\Activ
 
 Route::resource('actividades_escolares', 'ActividadesEscolares\ActividadesEscolaresController');
 
+Route::get('cuestionarios/revision', 'Cuestionarios\CuestionariosRevisionController@index')->name('cuestionarios.revision');
+Route::post('cuestionarios/duplicar/{cuestionario_id}', 'Cuestionarios\CuestionariosRevisionController@duplicar')->name('cuestionarios.duplicar');
+Route::get('cuestionarios/previsualizar/{cuestionario_id}', 'Cuestionarios\CuestionariosRevisionController@preview')->name('cuestionarios.preview');
+
 // FOROS
 Route::get('foros/{curso_id}/{asignatura_id}/{periodo_lectivo_id}/inicio', 'Core\ForoController@index')->name('foros.index');
 Route::post('foros/inicio/crearnuevo', 'Core\ForoController@store')->name('foros.store');

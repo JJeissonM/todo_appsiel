@@ -73,7 +73,7 @@ class AcademicoDocenteController extends Controller
             $modelo_plan_clases_id = Modelo::where('modelo', 'PlanClaseEncabezado')->get()->first()->id;
             $modelo_guia_academica_id = Modelo::where('modelo', 'sga_guias_academicas')->get()->first()->id;
 
-            return view('academico_docente.index', compact('listado', 'miga_pan', 'modelo_logros_id', 'periodo_lectivo', 'modelo_plan_clases_id', 'modelo_guia_academica_id', 'modelo_logros_adicionales_id'));
+            return view('academico_docente.index', compact('listado', 'miga_pan', 'modelo_logros_id', 'periodo_lectivo', 'modelo_plan_clases_id', 'modelo_guia_academica_id', 'modelo_logros_adicionales_id', 'usuario'));
         } else {
             echo "La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.";
         }

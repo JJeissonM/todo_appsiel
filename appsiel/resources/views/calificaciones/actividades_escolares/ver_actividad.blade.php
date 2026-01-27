@@ -33,6 +33,152 @@
 	<hr>
 
 	@include('layouts.mensajes')
+
+	<style>
+		.actividad-card {
+			background: #fff;
+			border-radius: 1rem;
+			box-shadow: 0 12px 38px rgba(15, 32, 92, 0.15);
+			border: none;
+			margin-bottom: 1.8rem;
+		}
+
+		.actividad-card-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: flex-start;
+			padding: 1.4rem 1.8rem;
+			border-bottom: 1px solid #edf2f9;
+			border-radius: 1rem 1rem 0 0;
+		}
+
+		.actividad-card-body {
+			padding: 1.35rem 1.8rem 1.8rem;
+		}
+
+		.actividad-card--hero .actividad-card-header {
+			background: linear-gradient(135deg, #4260ff, #7c53ff);
+			color: #fff;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+		}
+
+		.actividad-card--hero .hero-subtitle {
+			color: rgba(255, 255, 255, 0.85);
+		}
+
+		.hero-label {
+			letter-spacing: 0.2em;
+			font-size: 0.7rem;
+			text-transform: uppercase;
+			margin-bottom: 0.35rem;
+			opacity: 0.9;
+		}
+
+		.hero-title {
+			margin-bottom: 0.35rem;
+			font-size: 2rem;
+			font-weight: 600;
+		}
+
+		.hero-actions {
+			margin-top: 1rem;
+		}
+
+		.actividad-status-group {
+			display: flex;
+			gap: 0.5rem;
+			align-items: center;
+			flex-wrap: wrap;
+			text-align: right;
+		}
+
+		.actividad-badge {
+			padding: 0.35rem 0.9rem;
+			border-radius: 999px;
+			font-size: 0.75rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			color: #fff;
+		}
+
+		.actividad-badge--success {
+			background: linear-gradient(135deg, #20c997, #4ad994);
+		}
+
+		.actividad-badge--danger {
+			background: linear-gradient(135deg, #ff5d57, #ff8a70);
+		}
+
+		.actividad-badge--info {
+			background: linear-gradient(135deg, #6c757d, #23272b);
+		}
+
+		.actividad-meta-grid {
+			display: flex;
+			gap: 2rem;
+			flex-wrap: wrap;
+			margin-bottom: 0.5rem;
+		}
+
+		.actividad-meta {
+			min-width: 160px;
+		}
+
+		.meta-label {
+			text-transform: uppercase;
+			font-size: 0.75rem;
+			letter-spacing: 0.15em;
+			margin-bottom: 0.35rem;
+			color: #8491a5;
+		}
+
+		.meta-value {
+			font-weight: 600;
+			font-size: 1rem;
+			color: #1f2b44;
+			margin: 0;
+		}
+
+		.activity-summary-list {
+			line-height: 1.7;
+		}
+
+		.activity-summary-list strong {
+			font-size: 0.9rem;
+			color: #2f3b57;
+		}
+
+		.tabs-card-nav {
+			border-bottom: 1px solid #edf2f9;
+		}
+
+		.tabs-card-nav > li > a {
+			color: #495057;
+			font-weight: 600;
+		}
+
+		.tabs-card-nav > li.active > a,
+		.tabs-card-nav > li > a:hover,
+		.tabs-card-nav > li > a:focus {
+			color: #4260ff;
+		}
+
+		.activity-tab-content {
+			margin-top: 1rem;
+		}
+
+		@media (max-width: 768px) {
+			.actividad-card-header {
+				flex-direction: column;
+				align-items: flex-start;
+				row-gap: 0.75rem;
+			}
+			.actividad-status-group {
+				text-align: left;
+			}
+		}
+	</style>
 	
 	<div class="container-fluid">
 		<div class="marco_formulario">
@@ -45,6 +191,13 @@
 			
 		    <h4>{{$actividad->descripcion}}</h4>
 		    <hr>
+
+		    @php $user = Auth::user(); @endphp
+		    @if( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+		    	<div class="text-right" style="margin-bottom: 15px;">
+            		<a href="{{ route('cuestionarios.revision', ['id' => Input::get('id'), 'id_modelo' => Input::get('id_modelo')]) }}" class="btn btn-info btn-sm">Ver todos los cuestionarios</a>
+            	</div>
+            @endif
 
 		    	<?php 
 

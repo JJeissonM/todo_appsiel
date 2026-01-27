@@ -4,11 +4,6 @@ namespace App\Cuestionarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Input;
-use Auth;
-
-use App\Cuestionarios\Pregunta;
 use App\Calificaciones\CursoTieneAsignatura;
 
 use App\Matriculas\PeriodoLectivo;
@@ -16,6 +11,7 @@ use App\Calificaciones\Periodo;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class ActividadEscolar extends Model
 {
@@ -29,6 +25,31 @@ class ActividadEscolar extends Model
 
     // El archivo js debe estar en la carpeta public
     public $archivo_js = 'assets/js/calificaciones/actividades_escolares/actividades.js';
+
+    public function cuestionario()
+    {
+        return $this->belongsTo('App\Cuestionarios\Cuestionario','cuestionario_id');
+    }
+
+    public function curso()
+    {
+        return $this->belongsTo('App\Calificaciones\Curso','curso_id');
+    }
+
+    public function asignatura()
+    {
+        return $this->belongsTo('App\Calificaciones\Asignatura','asignatura_id');
+    }
+
+    public function periodo()
+    {
+        return $this->belongsTo('App\Calificaciones\Periodo','periodo_id');
+    }    
+
+    public function estudiantes()
+    {
+        return $this->belongsToMany('App\Matriculas\Estudiante','estudiante_tiene_actividades_escolares','actividad_escolar_id','estudiante_id');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -192,11 +213,6 @@ class ActividadEscolar extends Model
         return "LISTADO DE ACTIVIDADES ESCOLARES";
     }
 
-
-    public function estudiantes()
-    {
-        return $this->belongsToMany('App\Matriculas\Estudiante','estudiante_tiene_actividades_escolares','actividad_escolar_id','estudiante_id');
-    }
 
 
     // PADRE = CURSO, HIJO = ASIGNATURAS

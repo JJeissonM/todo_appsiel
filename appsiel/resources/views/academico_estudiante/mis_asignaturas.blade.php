@@ -2,6 +2,87 @@
 
 @section('estilos_1')
 <link rel="stylesheet" href="{{asset('assets/css/fullcalendar.min.css')}}">
+<style>
+	.mis-asignaturas-page {
+		padding-top: 30px;
+	}
+
+	.mis-asignaturas-hero {
+		background: linear-gradient(135deg, #1d3c78, #516de7);
+		color: #fff !important;
+		border-radius: 1rem;
+		padding: 1.6rem 2rem;
+		box-shadow: 0 14px 40px rgba(15, 32, 92, 0.2);
+		margin-bottom: 1.5rem;
+	}
+
+	.mis-asignaturas-hero h2 {
+		margin: 0;
+		font-weight: 600;
+		color: #ffffff;
+		text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+	}
+
+	.mis-asignaturas-hero p {
+		margin: 0.35rem 0 0;
+		color: rgba(255, 255, 255, 0.85);
+	}
+
+	.mis-asignaturas-table-card {
+		border-radius: 1.1rem;
+		box-shadow: 0 20px 45px rgba(20, 33, 86, 0.08);
+		border: none;
+		overflow: hidden;
+	}
+
+	.mis-asignaturas-table-card .card-body {
+		padding: 2rem;
+	}
+
+	.mis-asignaturas-table-card .table {
+		background: #fff;
+		border-radius: 0.8rem;
+		overflow: hidden;
+		box-shadow: 0 8px 20px rgba(15, 32, 92, 0.05);
+	}
+
+	.mis-asignaturas-table-card .table thead th {
+		background: #f5f6fb;
+		color: #d5e2ff;
+		text-transform: uppercase;
+		font-size: 0.8rem;
+		letter-spacing: 0.12em;
+		font-weight: 600;
+		border: none;
+	}
+
+	.mis-asignaturas-table-card .table thead th:first-child {
+		border-top-left-radius: 0.8rem;
+	}
+
+	.mis-asignaturas-table-card .table thead th:last-child {
+		border-top-right-radius: 0.8rem;
+	}
+
+	.mis-asignaturas-table-card .table tbody td {
+		vertical-align: middle;
+		border-color: #edf2f7;
+	}
+
+	.mis-asignaturas-table-card .table tbody tr:hover {
+		background: #f8f9ff;
+	}
+
+	.mis-asignaturas-table-card .btn {
+		border-radius: 0.6rem;
+	}
+
+	@media (max-width: 768px) {
+		.mis-asignaturas-table-card .card-body {
+			padding: 1.2rem;
+		}
+	}
+</style>
 @endsection
 
 @section('content')
@@ -9,10 +90,15 @@
 @include('layouts.mensajes')
 
 
-<div class="container-fluid">
-	<div class="marco_formulario">
-		<div class="table-responsive" id="table_content">
-			<table class="table table-bordered table-striped" id="myTable">
+<div class="container-fluid mis-asignaturas-page">
+	<div class="mis-asignaturas-hero">
+		<h2>Mis asignaturas</h2>
+		<p>Explora tus actividades escolares, guías académicas y foros disponibles para este curso.</p>
+	</div>
+	<div class="card mis-asignaturas-table-card">
+		<div class="card-body">
+			<div class="table-responsive" id="table_content">
+			<table class="table table-striped" id="myTable">
 				{{ Form::bsTableHeader(['Asignatura','Enlaces']) }}
 				<tbody>
 
@@ -47,6 +133,7 @@
 
 				</tbody>
 			</table>
+			</div>
 		</div>
 	</div>
 </div>

@@ -3,21 +3,12 @@
 namespace App\Http\Controllers\ActividadesEscolares;
 
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
-use App\Http\Controllers\Controller;
-
+use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Sistema\ImagenController;
-
-use Auth;
-use DB;
-use Hash;
-use Mail;
-use View;
-use Input;
-use Storage;
-use App\User;
 
 use App\Matriculas\Matricula;
 use App\Matriculas\PeriodoLectivo;
@@ -30,17 +21,9 @@ use App\Cuestionarios\ActividadEscolar;
 use App\Cuestionarios\Cuestionario;
 use App\Cuestionarios\RespuestaCuestionario;
 
-use App\Core\Colegio;
 use App\Sistema\Aplicacion;
 use App\Sistema\Modelo;
 use App\Core\Acl;
-
-//Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
-//Enables us to output flash messaging
-use Session;
 
 class ActividadesEscolaresController extends ModeloController
 {
@@ -296,7 +279,7 @@ class ActividadesEscolaresController extends ModeloController
             $respuestas->save();
         }   
 
-        return redirect('actividades_escolares/hacer_actividad/'.$request->actividad_id)->with('flash_message','Respuestas guardadas correctamente.');
+        return redirect('actividades_escolares/hacer_actividad/'.$request->actividad_id.'?id=6')->with('flash_message','Respuestas guardadas correctamente.');
         
     }
 

@@ -1,6 +1,11 @@
+@php
+	$respondidos = 0;
+	$promedio_total = 0;
+	$total_estudiantes = count($estudiantes);
+@endphp
 <div class="row">
 	<div class="col-md-12">
-        <div>
+        <div class="table-responsive">
             <table class="table table-striped table-bordered" id="ingreso_registros">
                 <thead>
                     <tr>
@@ -97,12 +102,21 @@
 				  			?>
 						@endforeach <!-- Por cada pregunta -->
 
+						@php
+							$porcentaje = $total_preguntas > 0 ? round( $total_correctas / $total_preguntas * 100, 2 ) : 0;
+							$tiene_respuesta = isset($respuestas->respuesta_enviada) && trim($respuestas->respuesta_enviada) != '';
+							if ( $tiene_respuesta )
+							{
+								$respondidos++;
+								$promedio_total += $porcentaje;
+							}
+						@endphp
 						<tr>
 							<td> 
 								{{ $estudiante->nombre_completo }}
 							</td>
 							<td> 
-								<b> {{ $total_correctas }} de {{ round( $total_preguntas ) }} &nbsp;&nbsp;  - &nbsp;&nbsp;  {{ round( $total_correctas / $total_preguntas * 100, 2 ) }}%  </b>
+								<b> {{ $total_correctas }} de {{ round( $total_preguntas ) }} &nbsp;&nbsp;  - &nbsp;&nbsp;  {{ $porcentaje }}%  </b>
 							</td>
 							<td> 
 								<button type="button" class="btn btn-primary btn-xs btn_ver_respuestas" data-estudiante_id="{{ $estudiante->id }}"><i class="fa fa-eye"> </i></button>
@@ -112,6 +126,25 @@
 					@endforeach <!-- Por cada estudiante -->
                 </tbody>
             </table>
+		</div>
+
+		<div class="panel panel-success">
+			<div class="panel-body">
+				<div class="row">
+					<div class="col-sm-4">
+						<strong>Total estudiantes</strong><br>
+						{{ $total_estudiantes }}
+					</div>
+					<div class="col-sm-4">
+						<strong>Respuestas registradas</strong><br>
+						{{ $respondidos }}
+					</div>
+					<div class="col-sm-4">
+						<strong>Promedio (%)</strong><br>
+						{{ $respondidos > 0 ? round( $promedio_total / $respondidos, 2 ) : 0 }}%
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

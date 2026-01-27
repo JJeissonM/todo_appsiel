@@ -178,7 +178,7 @@ class CrudController extends Controller
     public function eliminar_registro($id)
     {
         $this->set_variables_globales();
-
+        
         if( method_exists( app($this->modelo->name_space), 'validar_eliminacion') )
         {
             $mensaje = app($this->modelo->name_space)->validar_eliminacion($id);
@@ -243,7 +243,7 @@ class CrudController extends Controller
 
         $lista_campos = $this->get_campos_modelo($modelo,$registro,$accion);
         
-        $url_action = 'web_ajax/'.$id;
+        $url_action = 'web_ajax/' . $registro_id;
 
 
         $form_create = [
@@ -254,7 +254,7 @@ class CrudController extends Controller
         
         if ($modelo->url_form_create != '')
         {
-            $url_action = $modelo->url_form_create.'/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
+            $url_action = $modelo->url_form_create.'/'.$registro_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo');
         }
 
         return view('layouts.formulario_ajax_modelo',compact('form_create','miga_pan','registro','archivo_js','url_action'));        

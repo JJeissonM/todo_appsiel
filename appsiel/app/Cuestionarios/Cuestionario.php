@@ -4,23 +4,34 @@ namespace App\Cuestionarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Input;
-use Auth;
-
 use App\Cuestionarios\Pregunta;
 use App\Cuestionarios\CuestionarioTienePregunta;
-
+use App\Sistema\Services\CrudService;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class Cuestionario extends Model
 {
     protected $table = 'sga_cuestionarios'; 
 
-    protected $fillable = ['colegio_id','descripcion','detalle','activar_resultados','estado','created_by'];
+    protected $fillable = ['colegio_id','descripcion','detalle','activar_resultados','estado','tipo_icfes','created_by'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nombre', 'Resultados activados (Bloqueado al estudiante)', 'Estado'];
+
+    public const ICFES_TYPES = [
+        'saber_3' => 'Saber 3° (ICFES)',
+        'saber_5' => 'Saber 5° (ICFES)',
+        'saber_9' => 'Saber 9° (ICFES)',
+        'pre_saber_11' => 'Pre Saber 11° (ICFES)',
+        'saber_11' => 'Saber 11° (ICFES)',
+    ];
+
+    public function created_by_user()
+    {
+        return $this->belongsTo('App\User','created_by');
+    }
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -217,6 +228,20 @@ class Cuestionario extends Model
         return compact('nombre_tabla','nombre_columna1','registro_modelo_padre_id','registro_modelo_hijo_id');
     }
 
+    public static function tiposIcfes()
+    {
+        return self::ICFES_TYPES;
+    }
+
+    public function getTipoIcfesLabelAttribute()
+    {
+        if (empty($this->tipo_icfes)) {
+            return '';
+        }
+
+        return self::ICFES_TYPES[$this->tipo_icfes] ?? $this->tipo_icfes;
+    }
+
     
     public static function opciones_campo_select()
     {
@@ -229,5 +254,31 @@ class Cuestionario extends Model
         }
 
         return $vec;
+    }
+
+    
+
+    public function validar_eliminacion($id, $eliminar_precios = true )
+    {
+        $cantidad_actividades = DB::table('sga_actividades_escolares')
+                                ->where('cuestionario_id', $id)
+                                ->count();
+
+        if ( $cantidad_actividades > 0 )
+        {
+            return 'El cuestionario no se puede eliminar porque está asignado a actividades escolares.';
+        }
+
+        $cantidad_respuestas = DB::table('sga_respuestas_cuestionarios')
+                                ->where('cuestionario_id', $id)
+                                ->count();
+        if ( $cantidad_respuestas > 0 )
+        {
+            return 'El cuestionario no se puede eliminar porque tiene respuestas de estudiantes asociadas.';
+        }
+
+        DB::table('sga_cuestionario_tiene_preguntas')->where('cuestionario_id', $id)->delete();
+
+        return 'ok';
     }
 }

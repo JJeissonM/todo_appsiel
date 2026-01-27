@@ -267,9 +267,19 @@
 
 	function botonElement(url) {
 		let elementos = getElementos();
-		if (elementos.length > 0) {
+
+		var cantidad_elementos = elementos.length;
+
+		const isCuestionario = url.indexOf('cuestionarios/revision') !== -1;
+
+		if (isCuestionario) {
+			location.href = "{{url('').'/'}}" + url;
+			return;
+		}
+
+		if (cantidad_elementos > 0) {
 			var url = "{{url('').'/'}}" + url;
-			if (elementos.length == 1) {
+			if (cantidad_elementos == 1) {
 				//ver uno
 				location.href = url.replace('id_fila', elementos[0]);
 			} else {

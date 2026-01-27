@@ -82,7 +82,12 @@ class SecuenciaCodigo extends Model
             case '(anio)(consecutivo)-(grado)':
 
                 $grado = Grado::find($otros_datos->grado_id);
-                $codigo = $secuencia->anio . str_repeat('0', $largo_consecutivo - $largo) . $consecutivo . '-' . $grado->codigo;
+
+                $ceros = '';
+                if ($largo_consecutivo > $largo) {
+                    $ceros = str_repeat('0', $largo_consecutivo - $largo);
+                }
+                $codigo = $secuencia->anio . $ceros . $consecutivo . '-' . $grado->codigo;
                 break;
 
             default:

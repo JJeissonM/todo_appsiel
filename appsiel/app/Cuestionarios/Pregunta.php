@@ -4,13 +4,8 @@ namespace App\Cuestionarios;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
-use App\Cuestionarios\Cuestionario;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class Pregunta extends Model
 {

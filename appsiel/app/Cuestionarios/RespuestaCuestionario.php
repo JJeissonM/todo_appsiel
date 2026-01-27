@@ -13,15 +13,18 @@ class RespuestaCuestionario extends Model
 
     protected $fillable = ['estudiante_id','actividad_id','cuestionario_id','respuesta_enviada','calificacion','adjunto'];
 
-    //public $encabezado_tabla = ['Nombre','Detalle','Estado','Acción'];
-
-    /*public static function consultar_registros()
+    public function estudiante()
     {
-        $registros = RespuestaCuestionario::select(sga_cuestionarios.name AS campo1',sga_cuestionarios.descripcion AS campo2',sga_cuestionarios.estado AS campo3',sga_cuestionarios.id AS campo4')
-                    ->get()
-                    ->toArray();
-
-        return $registros;
+        return $this->belongsTo('App\Matriculas\Estudiante','estudiante_id');
     }
-    */
+
+    public function actividad_escolar()
+    {
+        return $this->belongsTo('App\Cuestionarios\ActividadEscolar','actividad_id');
+    }
+
+    public function cuestionario()
+    {
+        return $this->belongsTo('App\Cuestionarios\Cuestionario','cuestionario_id');
+    }
 }

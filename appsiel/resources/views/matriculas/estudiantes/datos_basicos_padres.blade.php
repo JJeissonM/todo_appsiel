@@ -1,49 +1,41 @@
-<?php 
+@php
+    $responsables = collect();
+    if ($estudiante != null) {
+        $responsables = $estudiante->responsableestudiantes->unique('tercero_id');
+    }
+@endphp
 
-	$tiene_reponsables = false;
-	$listado_responsableestudiantes = [];
-	if ($estudiante != null) {
-		$listado_responsableestudiantes = $estudiante->responsableestudiantes;
-	}
-?>
-	<table width="100%">
-			<?php 
-				$arr_responsables_terceros_ids = [];
-			?>
-			@foreach( $listado_responsableestudiantes AS $responsable )
-				<?php 
-					$tiene_reponsables = true;
-					if(in_array($responsable->tercero_id,$arr_responsables_terceros_ids))
-					{
-						continue;
-					}
-				?>
-				<tr>
-					<td>
-						<table class="table table-bordered">
-							<tr>
-								<td colspan="3" style="background-color: #ddd;"><strong>DATOS {{ $responsable->tiporesponsable->descripcion }}</strong></td>
-							</tr>
-							<tr>
-								<td><strong>Nombre: </strong> <br> {{ $responsable->tercero->descripcion }}</td>
-								<td><strong>Cédula: </strong> <br> {{ number_format($responsable->tercero->numero_identificacion,0,',','.') }}</td>
-								<td><strong>Ocupación: </strong> <br> {{ $responsable->ocupacion }}</td>
-							</tr>
-							<tr>
-								<td><strong>Teléfono: </strong> <br> {{ $responsable->tercero->telefono1 }}</td>
-								<td colspan="2"><strong>E-mail: </strong> <br> {{ $responsable->tercero->email }}</td>
-							</tr>
-						</table>
-					</td>
-					<?php 
-						$tiene_reponsables = true;
-						$arr_responsables_terceros_ids[] = $responsable->tercero_id;
-					?>
-				</tr>	
-			@endforeach
-	</table>
-@if( !$tiene_reponsables )
-	<span class="text-danger"> <i class="fa fa-warning"></i> Sin datos de padres ni acudiente.</span>
-	<br><br>
-@endif
-	
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+        <strong class="pull-left">Responsables</strong>
+        <span class="pull-right text-muted small">{{ $responsables->count() }} registrados</span>
+    </div>
+    <div class="panel-body">
+        @if($responsables->isEmpty())
+            <p class="text-danger"><i class="fa fa-warning"></i> Sin datos de padres ni acudiente.</p>
+        @else
+            <div class="row">
+                @foreach($responsables as $responsable)
+                    <div class="col-sm-6 col-lg-4" style="margin-bottom: 15px;">
+                        <div class="panel panel-default" style="margin-bottom: 0;">
+                            <div class="panel-heading text-center" style="font-weight: 600;">
+                                {{ $responsable->tiporesponsable->descripcion }}
+                            </div>
+                            <div class="panel-body" style="padding: 10px 15px;">
+                                <p><strong>Nombre:</strong> {{ $responsable->tercero->descripcion }}</p>
+                                <p><strong>Cedula:</strong> {{ number_format($responsable->tercero->numero_identificacion, 0, ',', '.') }}</p>
+                                <p><strong>Ocupacion:</strong> {{ $responsable->ocupacion ?: 'Sin dato' }}</p>
+                                <p><strong>Telefono:</strong> {{ $responsable->tercero->telefono1 ?: 'Sin dato' }}</p>
+                                <p><strong>Email:</strong> {{ $responsable->tercero->email ?: 'Sin dato' }}</p>
+                                @if($responsable->tiporesponsable_id == 3)
+                                    <p><strong>Empresa:</strong> {{ $responsable->empresa_labora ?: 'Sin dato' }}</p>
+                                    <p><strong>Telefono trabajo:</strong> {{ $responsable->telefono_trabajo ?: 'Sin dato' }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
+</div>
