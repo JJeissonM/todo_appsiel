@@ -832,6 +832,63 @@
 
 				</div>
 
+				
+
+				<h4> Académico Docentes  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$maneja_evaluacionAspectos = '';
+								if( isset($parametros['maneja_evaluacionAspectos'] ) )
+								{
+									$maneja_evaluacionAspectos = $parametros['maneja_evaluacionAspectos'];
+								}
+							?>
+							{{ Form::bsSelect('maneja_evaluacionAspectos', $maneja_evaluacionAspectos, 'Maneja evaluación por aspectos', [''=>'','No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$activar_aula_virtual = '';
+								if( isset($parametros['activar_aula_virtual'] ) )
+								{
+									$activar_aula_virtual = $parametros['activar_aula_virtual'];
+								}
+							?>
+							{{ Form::bsSelect('activar_aula_virtual', $activar_aula_virtual, 'Activar Aula Virtual', [''=>'','0'=>'No','1'=>'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$url_correo_institucional = 'https://gmail.com'; 
+								if( isset($parametros['url_correo_institucional'] ) )
+								{
+									$url_correo_institucional = $parametros['url_correo_institucional'];
+								}
+							?>
+							{{ Form::bsText('url_correo_institucional', $url_correo_institucional, 'URL Correo institucional', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
 				<br><br>
 				<h4> Certificado de Notas  </h4>
 				<hr>

@@ -193,6 +193,7 @@
 	$manejarDesempenios = config('calificaciones.manejar_calificaciones_por_niveles_de_desempenios') === 'Si';
 	$manejarPreinformes = config('calificaciones.manejar_preinformes_academicos') === 'Si';
 	$manejarMetas = config('calificaciones.colegio_maneja_metas') === 'Si';
+	$maneja_evaluacionAspectos = config('calificaciones.maneja_evaluacionAspectos') === 'Si';
 @endphp
 
 <div class="row docente-summary">
@@ -307,22 +308,22 @@
 									<ul class="action-card__list">
 										<li>
 											<button type="button" class="action-card__btn" onclick="planClaseCrear()" title="Ingresar plan de clases">
-												Ingresar plan de clases <i class="fa fa-plus"></i>
+												Ingresar {{ $modelo_plan_clases->descripcion }} <i class="fa fa-plus"></i>
 											</button>
 										</li>
 										<li>
-											<a class="action-card__btn" href="{{ url('web') }}?id={{ Input::get('id') }}&id_modelo={{ $modelo_plan_clases_id }}" title="Consultar planes">
-												Consultar planes de clases <i class="fa fa-search"></i>
+											<a class="action-card__btn" href="{{ url('web') }}?id={{ Input::get('id') }}&id_modelo={{ $modelo_plan_clases->id }}" title="Consultar planes">
+												Consultar {{ $modelo_plan_clases->descripcion }} <i class="fa fa-search"></i>
 											</a>
 										</li>
 										<li>
 											<button type="button" class="action-card__btn" onclick="guiaCrear()" title="Ingresar guía académica">
-												Ingresar guía académica <i class="fa fa-book"></i>
+												Ingresar {{ $modelo_guia_academica->descripcion }} <i class="fa fa-book"></i>
 											</button>
 										</li>
 										<li>
-											<a class="action-card__btn" href="{{ url('web') }}?id={{ Input::get('id') }}&id_modelo={{ $modelo_guia_academica_id }}" title="Consultar guía">
-												Consultar guía académica <i class="fa fa-search"></i>
+											<a class="action-card__btn" href="{{ url('web') }}?id={{ Input::get('id') }}&id_modelo={{ $modelo_guia_academica->id }}" title="Consultar guía">
+												Consultar {{ $modelo_guia_academica->descripcion }} <i class="fa fa-search"></i>
 											</a>
 										</li>
 									</ul>
@@ -498,45 +499,47 @@
 								</div>
 							</div>
 
-							<div class="action-card">
-								<div class="action-card__header">
-									<span>Evaluación por aspectos</span>
-									<i class="fa fa-sitemap"></i>
+							@if ($maneja_evaluacionAspectos)
+								<div class="action-card">
+									<div class="action-card__header">
+										<span>Evaluación por aspectos</span>
+										<i class="fa fa-sitemap"></i>
+									</div>
+									<div class="action-card__body">
+										<p>Planee observaciones y genere consolidados por curso.</p>
+										<ul class="action-card__list">
+											<li>
+												{{ Form::date('fecha_valoracion', date('Y-m-d'), ['class' => 'form-control', 'id' => 'fecha_valoracion']) }}
+											</li>
+											<li>
+												<button type="button" class="action-card__btn" onclick="evaluacionAspectosCrear()">
+													Ingresar evaluación <i class="fa fa-users"></i>
+												</button>
+											</li>
+											<li>
+												<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=' . Input::get('id')) }}">
+													Generar consolidados <i class="fa fa-users"></i>
+												</a>
+											</li>
+											<li>
+												<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.reporte_consolidados_evaluacion_por_aspectos?id=' . Input::get('id')) }}">
+													Reporte de consolidados <i class="fa fa-file-pdf-o"></i>
+												</a>
+											</li>
+											<li>
+												<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.listado_congratulations?id=' . Input::get('id')) }}">
+													Listado de Congratulations <i class="fa fa-list"></i>
+												</a>
+											</li>
+											<li>
+												<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.generar_estadisticas_evaluacion_aspectos_por_curso?id=' . Input::get('id')) }}">
+													Estadísticas por curso <i class="fa fa-pie-chart"></i>
+												</a>
+											</li>
+										</ul>
+									</div>
 								</div>
-								<div class="action-card__body">
-									<p>Planee observaciones y genere consolidados por curso.</p>
-									<ul class="action-card__list">
-										<li>
-											{{ Form::date('fecha_valoracion', date('Y-m-d'), ['class' => 'form-control', 'id' => 'fecha_valoracion']) }}
-										</li>
-										<li>
-											<button type="button" class="action-card__btn" onclick="evaluacionAspectosCrear()">
-												Ingresar evaluación <i class="fa fa-users"></i>
-											</button>
-										</li>
-										<li>
-											<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.consolidado_evaluacion_por_aspectos?id=' . Input::get('id')) }}">
-												Generar consolidados <i class="fa fa-users"></i>
-											</a>
-										</li>
-										<li>
-											<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.reporte_consolidados_evaluacion_por_aspectos?id=' . Input::get('id')) }}">
-												Reporte de consolidados <i class="fa fa-file-pdf-o"></i>
-											</a>
-										</li>
-										<li>
-											<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.listado_congratulations?id=' . Input::get('id')) }}">
-												Listado de Congratulations <i class="fa fa-list"></i>
-											</a>
-										</li>
-										<li>
-											<a class="action-card__btn" href="{{ url('/index_procesos/matriculas.procesos.generar_estadisticas_evaluacion_aspectos_por_curso?id=' . Input::get('id')) }}">
-												Estadísticas por curso <i class="fa fa-pie-chart"></i>
-											</a>
-										</li>
-									</ul>
-								</div>
-							</div>
+							@endif
 						</div>
 					</div>
 				</div>
@@ -554,8 +557,8 @@
 	const urlWeb = "{{ url('web/create') }}";
 	const fechaHoy = "{{ date('Y-m-d') }}";
 	const modeloIds = {
-		planClases: {{ $modelo_plan_clases_id ?? 0 }},
-		guiaAcademica: {{ $modelo_guia_academica_id ?? 0 }},
+		planClases: {{ $modelo_plan_clases->id ?? 0 }},
+		guiaAcademica: {{ $modelo_guia_academica->id ?? 0 }},
 		logros: {{ $modelo_logros_id ?? 0 }},
 		logrosAdicionales: {{ $modelo_logros_adicionales_id ?? 0 }}
 	};
