@@ -24,7 +24,9 @@ use App\Core\Colegio;
 use App\Sistema\Aplicacion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 use Khill\Lavacharts\Laravel\LavachartsFacade as Lava;
+use Carbon\Carbon;
 
 class CalificacionController extends Controller
 {
@@ -198,7 +200,7 @@ class CalificacionController extends Controller
         ];
 
         return view('calificaciones.create', compact('cursos', 'periodos', 'miga_pan', 'periodo_lectivo_id', 'curso_id', 'asignatura_id', 'asignaturas'));
-        // Lo datos del formulario create se envía vía post al método calificar2
+        // Los datos del formulario create se envía vía post al método calificar2
     }
 
     /**
@@ -307,6 +309,7 @@ class CalificacionController extends Controller
         }
 
         $escala_min_max = EscalaValoracion::get_min_max($periodo->periodo_lectivo_id);
+        $modo_ingreso_calificaciones = config('calificaciones.modo_ingreso_calificaciones', 'teclado');
 
         if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
             return view('calificaciones.encabezados_fijos.lineal.calificar2', [
@@ -321,7 +324,8 @@ class CalificacionController extends Controller
                 'escala_min_max' => $escala_min_max,
                 'creado_por' => $creado_por,
                 'modificado_por' => $modificado_por,
-                'id_colegio' => $this->colegio->id
+                'id_colegio' => $this->colegio->id,
+                'modo_ingreso_calificaciones' => $modo_ingreso_calificaciones
             ]);
         }
 
@@ -359,7 +363,8 @@ class CalificacionController extends Controller
             'suma_porcentajes' => $suma_porcentajes,
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por,
-            'id_colegio' => $this->colegio->id
+            'id_colegio' => $this->colegio->id,
+            'modo_ingreso_calificaciones' => $modo_ingreso_calificaciones
         ]);
     }
 
@@ -372,98 +377,139 @@ class CalificacionController extends Controller
 
     public function store_calificacion(array $json_fila)
     {
-        $id_calificacion = (int)$json_fila['id_calificacion'];
-        $calificacion_texto = (float)$json_fila['calificacion'];
-        $id_calificacion_aux = (int)$json_fila['id_calificacion_aux'];
+        $id_calificacion = isset($json_fila['id_calificacion']) ? (int)$json_fila['id_calificacion'] : 0;
+        $calificacion_texto = isset($json_fila['calificacion']) ? (float)$json_fila['calificacion'] : 0;
 
         $user = Auth::user();
 
-        $json_fila["creado_por"] = $user->email;
-        $json_fila["modificado_por"] = "0";
+        $json_fila['creado_por'] = $json_fila['creado_por'] ?? $user->email;
+        $json_fila['modificado_por'] = $user->email;
+        $json_fila['id_colegio'] = $this->colegio->id;
 
-        $json_fila["id_colegio"] = $this->colegio->id;
+        $identificador = $this->buildCalificacionIdentificador($json_fila);
 
-        $linea_datos = ['id_colegio' => (int)$json_fila['id_colegio']] +
-            ['anio' => (int)$json_fila['anio']] +
-            ['id_periodo' => (int)$json_fila['id_periodo']] +
-            ['curso_id' => (int)$json_fila['curso_id']] +
-            ['id_asignatura' => (int)$json_fila['asignatura_id']] +
-            ['codigo_matricula' => $json_fila['codigo_matricula']] +
-            ['id_estudiante' => (int)$json_fila['id_estudiante']] +
-            ['calificacion' => $calificacion_texto] +
-            ['logros' => $json_fila['logros']] +
-            ['creado_por' => $json_fila['creado_por']];
+        $linea_datos = $identificador + [
+            'calificacion' => $calificacion_texto,
+            'logros' => $json_fila['logros'] ?? '',
+            'creado_por' => $json_fila['creado_por'],
+            'modificado_por' => $json_fila['modificado_por']
+        ];
 
-        $cantidad_calificaciones = 16;
-        if (isset( $json_fila['cantidad_calificaciones'] ) ) {
-            $cantidad_calificaciones = (int)$json_fila['cantidad_calificaciones'];
-        }
+        $cantidad_calificaciones = isset($json_fila['cantidad_calificaciones']) ? (int)$json_fila['cantidad_calificaciones'] : 16;
         for ($k = 1; $k < $cantidad_calificaciones; $k++) {
-            $variable_columna = 'C' . $k;
-            $linea_datos += [$variable_columna => (float)$json_fila[$variable_columna]];
+            $columna = 'C' . $k;
+            $linea_datos[$columna] = isset($json_fila[$columna]) ? (float)$json_fila[$columna] : 0;
         }
 
-        // Se verifica si la calificación y las calificaciones auxiliares ya existen
-        $calificacion = Calificacion::find($id_calificacion);
+        $request_time = $this->getRequestTimestamp($json_fila);
+        $should_delete = $calificacion_texto == 0 && trim($linea_datos['logros']) === '';
+        $fila_id = $json_fila['fila_id'] ?? null;
 
-        if ($calificacion == null) {
-            // Crear nuevos registros
-            if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
-                $calificacion_creada = Calificacion::create($linea_datos);
+        return DB::transaction(function () use ($id_calificacion, $linea_datos, $json_fila, $identificador, $request_time, $should_delete, $fila_id) {
+            $calificacion = Calificacion::find($id_calificacion);
 
-                $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
-
-                $id_calificacion = $calificacion_creada->id;
-                $calificacion_texto = $calificacion_creada->calificacion;
-                $id_calificacion_aux = $calificacion_aux_creada->id;
-            }
-        } else {
-
-            // Actualizar registros existentes
-            $calificacion_aux = CalificacionAuxiliar::find($id_calificacion_aux);
-
-            // Si la calificación ENVIADA es cero y no tiene logros se borran de la BD los registros almacenados
-            if ($calificacion_texto == 0 &&  $linea_datos['logros'] == '') {
-                $calificacion->delete();
-                $calificacion_aux->delete();
-
-                $id_calificacion = 'no';
-                $calificacion_texto = 0;
-                $id_calificacion_aux = 'no';
-            } else {
-
-                if ($calificacion_texto != 0 || $linea_datos['logros'] != '') {
-                    // Si no, se actualizan la calificación y las auxiliares
-                    $calificacion->fill($linea_datos);
-                    $calificacion->save();
-
-                    if ($calificacion_aux == null) {
-                        $calificacion_creada = Calificacion::create($linea_datos);
-
-                        $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
-
-                        $id_calificacion = $calificacion_creada->id;
-                        $calificacion_texto = $calificacion_creada->calificacion;
-                        $id_calificacion_aux = $calificacion_aux_creada->id;
-
-                        $calificacion_aux_creada = CalificacionAuxiliar::create($linea_datos);
-                        $id_calificacion_aux = $calificacion_aux_creada->id;
-                    } else {
-                        $calificacion_aux->fill($linea_datos);
-                        $calificacion_aux->save();
-                    }
+            if ($calificacion !== null) {
+                if ($this->shouldSkipRequest($calificacion, $request_time)) {
+                    $aux_id = $this->findCalificacionAuxId($json_fila, $identificador);
+                    return $this->responseLinea($fila_id, $calificacion->id, $calificacion->calificacion, $aux_id);
                 }
+
+                if ($should_delete) {
+                    $this->removeCalificacionLinea($calificacion, $json_fila, $identificador);
+                    return $this->responseLinea($fila_id, 'no', 0, 'no');
+                }
+
+                $calificacion->fill($linea_datos);
+                $calificacion->save();
+
+                $calificacion_aux = CalificacionAuxiliar::updateOrCreate($identificador, $linea_datos);
+
+                return $this->responseLinea($fila_id, $calificacion->id, $calificacion->calificacion, $calificacion_aux->id);
             }
+
+            if ($should_delete) {
+                return $this->responseLinea($fila_id, 'no', 0, 'no');
+            }
+
+            $calificacion_creada = Calificacion::create($linea_datos);
+            $calificacion_aux = CalificacionAuxiliar::updateOrCreate($identificador, $linea_datos);
+
+            return $this->responseLinea($fila_id, $calificacion_creada->id, $calificacion_creada->calificacion, $calificacion_aux->id);
+        });
+    }
+
+    protected function buildCalificacionIdentificador(array $json_fila)
+    {
+        $asignatura = $json_fila['asignatura_id'] ?? $json_fila['id_asignatura'] ?? 0;
+        return [
+            'id_colegio' => (int)($json_fila['id_colegio'] ?? 0),
+            'anio' => (int)($json_fila['anio'] ?? 0),
+            'id_periodo' => (int)($json_fila['id_periodo'] ?? 0),
+            'curso_id' => (int)($json_fila['curso_id'] ?? 0),
+            'id_asignatura' => (int)$asignatura,
+            'id_estudiante' => (int)($json_fila['id_estudiante'] ?? 0),
+            'codigo_matricula' => $json_fila['codigo_matricula'] ?? ''
+        ];
+    }
+
+    protected function getRequestTimestamp(array $json_fila)
+    {
+        if (!empty($json_fila['fila_timestamp'])) {
+            $milliseconds = (int)$json_fila['fila_timestamp'];
+            return Carbon::createFromTimestamp($milliseconds / 1000);
         }
 
+        return Carbon::now();
+    }
+
+    protected function shouldSkipRequest(Calificacion $calificacion, Carbon $request_time)
+    {
+        if ($calificacion->updated_at === null) {
+            return false;
+        }
+
+        return $request_time->lt($calificacion->updated_at);
+    }
+
+    protected function findCalificacionAuxId(array $json_fila, array $identificador)
+    {
+        if (!empty($json_fila['id_calificacion_aux'])) {
+            return (int)$json_fila['id_calificacion_aux'];
+        }
+
+        $calificacion_aux = CalificacionAuxiliar::where($identificador)->first();
+        return $calificacion_aux ? $calificacion_aux->id : 'no';
+    }
+
+    protected function removeCalificacionLinea(Calificacion $calificacion, array $json_fila, array $identificador)
+    {
+        $calificacion_aux_id = isset($json_fila['id_calificacion_aux']) ? (int)$json_fila['id_calificacion_aux'] : 0;
+        $calificacion->delete();
+
+        $calificacion_aux = null;
+        if ($calificacion_aux_id > 0) {
+            $calificacion_aux = CalificacionAuxiliar::find($calificacion_aux_id);
+        }
+
+        if ($calificacion_aux === null) {
+            $calificacion_aux = CalificacionAuxiliar::where($identificador)->first();
+        }
+
+        if ($calificacion_aux !== null) {
+            $calificacion_aux->delete();
+        }
+    }
+
+    protected function responseLinea($fila_id, $id_calificacion, $calificacion_texto, $id_calificacion_aux)
+    {
         return [
-                (object)[
-                    'numero_fila' => $json_fila['fila_id'],
-                    'id_calificacion' => $id_calificacion,
-                    'calificacion_texto' => $calificacion_texto,
-                    'id_calificacion_aux' => $id_calificacion_aux
-                ]
-            ];
+            (object)[
+                'numero_fila' => $fila_id,
+                'id_calificacion' => $id_calificacion,
+                'calificacion_texto' => $calificacion_texto,
+                'id_calificacion_aux' => $id_calificacion_aux
+            ]
+        ];
     }
 
     /**
@@ -602,3 +648,4 @@ class CalificacionController extends Controller
         return Periodo::find($periodo_id)->periodo_lectivo_id;
     }
 }
+

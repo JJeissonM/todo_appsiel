@@ -76,7 +76,7 @@
 		<div style="text-align: center; width: 100%;">
 			<button class="btn btn-primary btn-xs" id="bs_boton_guardar" disabled="disabled"> <i class="fa fa-save"></i> Guardar</button>
 
-			<span id="counter" style="color:#9c27b0"></span>
+			<span class="counter" style="color:#9c27b0"></span>
 
 		</div>
 
@@ -96,10 +96,12 @@
 					{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
 					{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
 
-					{{ Form::hidden('id_app',Input::get('id')) }} 
-					{{ Form::hidden('return', $ruta ) }}
+{{ Form::hidden('id_app',Input::get('id')) }} 
+{{ Form::hidden('return', $ruta ) }}
 
-					{{ Form::bsHidden( 'hay_pesos', $hay_pesos ) }}
+@include('calificaciones.partials.selector_popup')
+
+{{ Form::bsHidden( 'hay_pesos', $hay_pesos ) }}
 
 					{{ Form::bsHidden( 'lineas_registros_calificaciones', 0 ) }}
 				{{Form::close()}}

@@ -97,11 +97,13 @@
 					{{ Form::hidden('id_asignatura', $datos_asignatura->id, ['id' =>'id_asignatura']) }}
 					{{ Form::hidden('cantidad_estudiantes', $cantidad_estudiantes, ['id' =>'cantidad_estudiantes']) }}
 
-					{{ Form::hidden('id_app',Input::get('id')) }} 
-					{{ Form::hidden('return', $ruta ) }}
+{{ Form::hidden('id_app',Input::get('id')) }} 
+{{ Form::hidden('return', $ruta ) }}
 
-					{{ Form::bsHidden( 'hay_pesos', true ) }}
-					{{ Form::bsHidden( 'cantidad_calificaciones', $cantidad_calificaciones ) }}
+@include('calificaciones.partials.selector_popup')
+
+{{ Form::bsHidden( 'hay_pesos', true ) }}
+{{ Form::bsHidden( 'cantidad_calificaciones', $cantidad_calificaciones ) }}
 
 					{{ Form::bsHidden( 'lineas_registros_calificaciones', 0 ) }}
 				{{Form::close()}}

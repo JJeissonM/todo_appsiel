@@ -65,6 +65,13 @@
 			{{ csrf_field() }}
 			<a class="btn-gmail btn-pdf" id="btnPdf" onclick="exportPdf()" title="Exportar en PDF"><i class="fa fa-file-pdf-o"></i></a>
 			<a class="btn-gmail btn-excel" id="btnExcel" onclick="exportExcel()" title="Exportar en Excel"><i class="fa fa-file-excel-o"></i></a>
+
+			<!-- 159 = Fact. de compras -->
+			@if(Input::get('id_modelo') == 159)
+				@can('abrir_bot_osei')
+					<a class="btn-gmail" title="Abrir Bot" href="{{ config('facturacion_electronica.url_bot_osei') }}" target="_blank"><i class="fa fa-reddit-alien"></i></a>
+				@endcan
+			@endif
 		</form>
 		<div class="search">
 			<?php

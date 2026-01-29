@@ -141,7 +141,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$modo_ingreso_calificaciones = 'teclado';
+								if( isset($parametros['modo_ingreso_calificaciones'] ) )
+								{
+									$modo_ingreso_calificaciones = $parametros['modo_ingreso_calificaciones'];
+								}
+							?>
+							{{ Form::bsSelect('modo_ingreso_calificaciones', $modo_ingreso_calificaciones, 'Modo de ingreso de calificaciones', ['teclado'=>'Teclado','botones'=>'Botones'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

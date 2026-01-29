@@ -97,6 +97,7 @@ Route::get('calificaciones/pesos/{curso}/{periodo}/{asignatura}/{celda}/listar',
 
 
 // ENCABEZADOS CALIFICACIONES
+Route::get('calificaciones_encabezados/verificar_unicidad', 'Calificaciones\EncabezadoCalificacionController@verificarUnicidad');
 Route::resource('calificaciones_encabezados', 'Calificaciones\EncabezadoCalificacionController');
 
 

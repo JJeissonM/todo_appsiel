@@ -11,10 +11,11 @@
 
       <div class="modal-body">
       	{{ Form::Spin(64) }}
-        <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="alert_mensaje">
-          <strong>{{$texto_mensaje}}</strong>
-        </div>
-      	<div id="contenido_modal">
+       <div class="alert alert-success alert-dismissible fade in" style="display: none;" id="alert_mensaje">
+         <strong>{{$texto_mensaje}}</strong>
+       </div>
+        <span class="counter" style="color:#9c27b0"></span>
+     	<div id="contenido_modal">
           @if( isset($contenido_modal) )
             {!! $contenido_modal !!}
           @endif

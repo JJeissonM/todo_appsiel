@@ -363,6 +363,33 @@
 
 				<br><br>
 
+				<h4> Parámetros OSEI </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$url_bot_osei = 'https://bot.osei.com.co/';
+								if( isset($parametros['url_bot_osei'] ) )
+								{
+									$url_bot_osei = $parametros['url_bot_osei'];
+								}
+							?>
+							{{ Form::bsText('url_bot_osei', $url_bot_osei, 'URL Bot OSEI', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<br><br>
+
 				<div style="width: 100%; text-align: center;">
 					<div class="row" style="margin: 5px;"> {{ Form::bsButtonsForm( url()->previous() ) }} </div>
 

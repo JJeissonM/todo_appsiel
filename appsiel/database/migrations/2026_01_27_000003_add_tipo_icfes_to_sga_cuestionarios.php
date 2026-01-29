@@ -13,6 +13,10 @@ class AddTipoIcfesToSgaCuestionarios extends Migration
      */
     public function up()
     {
+        if (!Schema::hasTable('sga_cuestionarios')) {
+            return;
+        }
+
         Schema::table('sga_cuestionarios', function (Blueprint $table) {
             $table->string('tipo_icfes')->nullable()->after('detalle')->index();
         });
@@ -25,6 +29,10 @@ class AddTipoIcfesToSgaCuestionarios extends Migration
      */
     public function down()
     {
+        if (!Schema::hasTable('sga_cuestionarios')) {
+            return;
+        }
+
         Schema::table('sga_cuestionarios', function (Blueprint $table) {
             $table->dropColumn('tipo_icfes');
         });

@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Calificaciones\EncabezadoCalificacion;
-use Collective\Html\FormFacade;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -142,5 +141,23 @@ class EncabezadoCalificacionController extends Controller
         }
 
         return $cerrar_modal;
+    }
+
+    public function verificarUnicidad(Request $request)
+    {
+        $idExcluido = (int) $request->input('id_encabezado_calificacion', 0);
+
+        $query = EncabezadoCalificacion::where('columna_calificacion', $request->input('columna_calificacion'))
+            ->where('periodo_id', $request->input('periodo_id'))
+            ->where('curso_id', $request->input('curso_id'))
+            ->where('asignatura_id', $request->input('asignatura_id'));
+
+        if ($idExcluido > 0) {
+            $query->where('id', '<>', $idExcluido);
+        }
+
+        $duplicate = $query->exists();
+
+        return response()->json(['duplicate' => $duplicate]);
     }
 }

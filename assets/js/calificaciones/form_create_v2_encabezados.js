@@ -1,4 +1,6 @@
 
+var guardando_encabezados = false;
+
 function get_pesos_totales() {
     var totalPesos = 0;
     $(".encabezado_calificacion").each(function () {
@@ -97,6 +99,28 @@ function recalcular_definitivas() {
     } else {
         calcular_definitivas_promedio_simple();
     }
+    if (typeof marcarTodasFilasDesdeEncabezados === "function") {
+        marcarTodasFilasDesdeEncabezados();
+    }
+}
+
+function obtenerDatosEncabezado() {
+    return {
+        columna_calificacion: $("#columna_calificacion").val(),
+        periodo_id: $("#periodo_id").val(),
+        curso_id: $("#curso_id").val(),
+        asignatura_id: $("#asignatura_id").val(),
+        id_encabezado_calificacion: $("#id_encabezado_calificacion").val(),
+    };
+}
+
+function verificarUnicidadEncabezado(onSuccess, onError) {
+    $.get(
+        url_raiz + "/calificaciones_encabezados/verificar_unicidad",
+        obtenerDatosEncabezado()
+    )
+        .done(onSuccess)
+        .fail(onError);
 }
 
 function get_valor_peso_columna(obj_input_text) {
@@ -175,9 +199,13 @@ $(document).ready(function () {
     $(document).on("click", ".btn_save_modal", function (e) {
         e.preventDefault();
 
-        $("#alert_mensaje").hide();
+        if (guardando_encabezados) {
+            return;
+        }
 
-        // Para un nuevo registro de encabezado que se le quiera almacenar un peso sin descripcion
+        $("#alert_mensaje").hide();
+        $(".btn_save_modal").attr("disabled", "disabled");
+
         if (
             $("#id_encabezado_calificacion").val() == 0 &&
             $("#descripcion").val() == ""
@@ -190,62 +218,94 @@ $(document).ready(function () {
                 text: "Debe ingresar una descripción para la actividad.",
             });
 
+            $(".btn_save_modal").removeAttr("disabled");
             return false;
         }
 
         $("#div_spin").fadeIn();
+        guardando_encabezados = true;
 
-        // Este formulario se genera al hacer click en el botón Cn (n=1,2,3,4,5,6,...,15) del encabezado
         var url = $("#formulario_modal").attr("action");
         var data = $("#formulario_modal").serialize();
 
-        $.post(url, data,)
-            .done( function (respuesta) {
-
-                if (respuesta == "pesos") {
+        verificarUnicidadEncabezado(
+            function (response) {
+                if (response.duplicate) {
                     $("#div_spin").hide();
-
                     Swal.fire({
                         icon: "error",
                         title: "Alerta!",
-                        text: "El peso total sobrepasa 100%, debe indicar un peso menor.",
+                        text: "Ya existe un encabezado con la misma columna, período, curso y asignatura.",
                     });
-                } else {
-
-                    // Si la Descripcion de la actividad esta vacia entonces, fue eliminada.
-                    if ($("#descripcion").val() == "") {
-                        cambiar_datos_boton(0);
-                    } else {
-                        cambiar_datos_boton($("#peso").val());
-                    }
-
-                    if (verificar_hay_pesos()) {
-                        $("#nota_hay_pesos").show();
-                        $("#lbl_suma_pesos").html( get_pesos_totales() + '%' );
-                        $("#warning_pesos").html( '' );
-                        
-                    } else {
-                        $("#nota_hay_pesos").hide();
-                    }
-
-                    recalcular_definitivas();
-
-                    $(".btn_close_modal").attr('disabled','disabled');
-                    $(".btn_save_modal").attr('disabled','disabled');
-
-                    guardar_calificaciones( true );
+                    $(".btn_save_modal").removeAttr("disabled");
+                    $(".btn_close_modal").removeAttr("disabled");
+                    guardando_encabezados = false;
+                    return;
                 }
-            })
-            .fail(function(xhr, status, error) {
-                
-                if ( xhr.status == 401 ) { //
-                    Swal.fire({
-                        icon: "error",
-                        title: "Alerta! Datos no almaceados.",
-                        text: "La sesión se cerró de manera insperada. Por favor actualice la página y vuelva a iniciar sesión.",
+
+                $.post(url, data)
+                    .done(function (respuesta) {
+                        if (respuesta == "pesos") {
+                            $("#div_spin").hide();
+
+                            Swal.fire({
+                                icon: "error",
+                                title: "Alerta!",
+                                text: "El peso total sobrepasa 100%, debe indicar un peso menor.",
+                            });
+                            $(".btn_save_modal").removeAttr("disabled");
+                            $(".btn_close_modal").removeAttr("disabled");
+                            guardando_encabezados = false;
+                        } else {
+                            if ($("#descripcion").val() == "") {
+                                cambiar_datos_boton(0);
+                            } else {
+                                cambiar_datos_boton($("#peso").val());
+                            }
+
+                            if (verificar_hay_pesos()) {
+                                $("#nota_hay_pesos").show();
+                                $("#lbl_suma_pesos").html(get_pesos_totales() + "%");
+                                $("#warning_pesos").html("");
+                            } else {
+                                $("#nota_hay_pesos").hide();
+                                $("#lbl_suma_pesos").html("");
+                                $("#warning_pesos").html("");
+                            }
+
+                            recalcular_definitivas();
+
+                            $(".btn_close_modal").attr("disabled", "disabled");
+                            $(".btn_save_modal").attr("disabled", "disabled");
+
+                            guardar_calificaciones(true);
+                            guardando_encabezados = false;
+                        }
+                    })
+                    .fail(function (xhr, status, error) {
+                        if (xhr.status == 401) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Alerta! Datos no almaceados.",
+                                text: "La sesión se cerró de manera insperada. Por favor actualice la página y vuelva a iniciar sesión.",
+                            });
+                        }
+                        $(".btn_save_modal").removeAttr("disabled");
+                        $(".btn_close_modal").removeAttr("disabled");
+                        guardando_encabezados = false;
                     });
-                }
-                
-            });
+            },
+            function () {
+                $("#div_spin").hide();
+                Swal.fire({
+                    icon: "error",
+                    title: "Alerta!",
+                    text: "No fue posible verificar la unicidad. Intente de nuevo.",
+                });
+                $(".btn_save_modal").removeAttr("disabled");
+                $(".btn_close_modal").removeAttr("disabled");
+                guardando_encabezados = false;
+            }
+        );
     });
 });
