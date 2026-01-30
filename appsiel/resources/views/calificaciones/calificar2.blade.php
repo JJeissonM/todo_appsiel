@@ -17,14 +17,14 @@
 	<div class="table-responsive">
 		<p style="color: #ff4d4d; display: {{$display}}" id="nota_hay_pesos">
 			<span style="background-color: #50B794; color: #454b44;">Nota:</span> Algunos encabezados tienen un Peso asignado. La definitiva será calculada con base en la ponderación de estos pesos; si algún encabezado no tiene un peso, esa calificación NO se tendrá en cuenta para la definitiva.
-			<p style="color: #50B794">
-				<b>Suma de porcentajes:</b> <span id="lbl_suma_pesos">{{$suma_porcentajes}}%</span> 
-				<span id="warning_pesos">
-					@if($suma_porcentajes > 100) 
-						<i class="fa fa-warning" style="color: red;" title="La suma de porcentajes es mayor a la permitida. Por favor, comunicar al administrador del sistema."></i>
-					@endif
-				</span>
-			</p>
+				<p style="color: #50B794">
+					<b>Suma de porcentajes:</b> <span id="lbl_suma_pesos">{{$suma_porcentajes}}%</span> 
+					<span id="warning_pesos" class="text-danger" style="display: block;">
+						@if($suma_porcentajes > 100) 
+							<i class="fa fa-warning" style="color: red;" title="La suma de porcentajes es mayor a la permitida. Por favor, comunicar al administrador del sistema."></i>
+						@endif
+					</span>
+				</p>
 		</p>
 		<table class="table table-striped" id="tabla_registros">
 			<thead>

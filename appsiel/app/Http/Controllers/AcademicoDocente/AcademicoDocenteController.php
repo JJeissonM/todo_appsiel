@@ -519,6 +519,83 @@ class AcademicoDocenteController extends Controller
         return view('academico_docente.nivelaciones.formulario_precreate', compact('periodos', 'asignatura', 'curso', 'vec_estudiantes', 'miga_pan'));
     }
 
+    public function estudiantes_sugerencias($curso_id)
+    {
+        $periodo_lectivo = PeriodoLectivo::get_actual();
+        if (is_null($periodo_lectivo)) {
+            return '';
+        }
+
+        $raw_nombre_completo = 'CONCAT(core_terceros.apellido1," ",core_terceros.apellido2," ",core_terceros.nombre1," ",core_terceros.otros_nombres) AS nombre_completo';
+        $order_by = 'core_terceros.apellido1';
+        if (config('matriculas.modo_visualizacion_nombre_completo_estudiante') == 'nombres_apellidos') {
+            $raw_nombre_completo = 'CONCAT(core_terceros.nombre1," ",core_terceros.otros_nombres," ",core_terceros.apellido1," ",core_terceros.apellido2) AS nombre_completo';
+            $order_by = 'core_terceros.nombre1';
+        }
+
+        $texto_busqueda = trim(Input::get('texto_busqueda'));
+        $texto_like = '%' . str_replace(' ', '%', $texto_busqueda) . '%';
+        $texto_identificacion = $texto_busqueda . '%';
+
+        $consulta = Matricula::where('sga_matriculas.curso_id', $curso_id)
+            ->where('sga_matriculas.periodo_lectivo_id', $periodo_lectivo->id)
+            ->where('sga_matriculas.estado', 'Activo')
+            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
+            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'sga_estudiantes.core_tercero_id')
+            ->select(
+                DB::raw($raw_nombre_completo),
+                'core_terceros.numero_identificacion',
+                'sga_matriculas.id_estudiante'
+            )
+            ->orderBy($order_by, 'ASC');
+
+        if ($texto_busqueda != '') {
+            $consulta->where(function ($query) use ($texto_like, $texto_identificacion) {
+                $query->where('core_terceros.nombre1', 'LIKE', $texto_like)
+                    ->orWhere('core_terceros.otros_nombres', 'LIKE', $texto_like)
+                    ->orWhere('core_terceros.apellido1', 'LIKE', $texto_like)
+                    ->orWhere('core_terceros.apellido2', 'LIKE', $texto_like)
+                    ->orWhere('core_terceros.numero_identificacion', 'LIKE', $texto_identificacion);
+            });
+        }
+
+        $estudiantes = $consulta->take(12)->get();
+
+        $html = '<div class="list-group">';
+        $cantidad = $estudiantes->count();
+        if ($cantidad === 0) {
+            $html .= '<a class="list-group-item list-group-item-sugerencia list-group-item-warning">Sin coincidencias</a>';
+        } else {
+            $contador = 1;
+            $primero = true;
+            foreach ($estudiantes as $estudiante) {
+                $clase = '';
+                $primer_item = 0;
+                $ultimo_item = 0;
+                if ($primero) {
+                    $clase = 'active';
+                    $primer_item = 1;
+                    $primero = false;
+                }
+                if ($contador === $cantidad) {
+                    $ultimo_item = 1;
+                }
+
+                $label = trim($estudiante->nombre_completo);
+                if ($label === '') {
+                    $label = $estudiante->numero_identificacion;
+                }
+
+                $html .= '<a class="list-group-item list-group-item-sugerencia ' . $clase . '" data-registro_id="' . $estudiante->id_estudiante . '" data-primer_item="' . $primer_item . '" data-ultimo_item="' . $ultimo_item . '">' . e($label) . '</a>';
+
+                $contador++;
+            }
+        }
+        $html .= '</div>';
+
+        return $html;
+    }
+
     public function notas_nivelaciones_cargar_estudiante(Request $request)
     {
         $estudiante = Estudiante::find($request->estudiante_id);

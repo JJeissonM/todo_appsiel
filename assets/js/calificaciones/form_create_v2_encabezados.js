@@ -19,6 +19,82 @@ function verificar_hay_pesos() {
     return false;
 }
 
+function hay_columnas_sin_peso_con_notas() {
+    var hay = false;
+
+    $(".encabezado_calificacion").each(function () {
+        var peso = parseFloat($(this).attr("data-peso")) || 0;
+
+        if (peso !== 0) {
+            return true;
+        }
+
+        var columna = $(this).val();
+
+        $("input[name='" + columna + "[]']").each(function () {
+            var valor = $.trim($(this).val());
+
+            if (valor === "") {
+                return true;
+            }
+
+            if ($.isNumeric(valor) && parseFloat(valor) !== 0) {
+                hay = true;
+                return false;
+            }
+
+            return true;
+        });
+
+        if (hay) {
+            return false;
+        }
+    });
+
+    return hay;
+}
+
+function mostrarAdvertenciasPesos() {
+    if (!verificar_hay_pesos()) {
+        $("#warning_pesos").html("");
+        return;
+    }
+
+    var totalPesos = parseFloat(get_pesos_totales()) || 0;
+    var mensaje = "";
+    var diferencia = Math.abs(totalPesos - 100);
+
+    if (diferencia > 0.001) {
+        mensaje +=
+            "<i class='fa fa-exclamation-circle' style='color:#ff9800'></i> La suma de pesos es " +
+            totalPesos.toFixed(2) +
+            "% y debe llegar a 100%. Mientras tanto la definitiva no se calcula correctamente.";
+    }
+
+    if (hay_columnas_sin_peso_con_notas()) {
+        if (mensaje !== "") {
+            mensaje += "<br>";
+        }
+
+        mensaje +=
+            "<i class='fa fa-exclamation-triangle' style='color:#d32f2f'></i> Hay columnas sin peso que ya tienen notas; como la definitiva se calcula sólo con encabezados ponderados, esa columna quedará en cero y sus calificaciones auxiliares se eliminan al guardar.";
+    }
+
+    $("#warning_pesos").html(mensaje);
+}
+
+function actualizarIndicadoresPesos() {
+    if (verificar_hay_pesos()) {
+        $("#nota_hay_pesos").show();
+        $("#lbl_suma_pesos").html(get_pesos_totales() + "%");
+    } else {
+        $("#nota_hay_pesos").hide();
+        $("#lbl_suma_pesos").html("");
+    }
+
+    mostrarAdvertenciasPesos();
+}
+
 function calcular_definitivas_promedio_poderado() {
     var numero_fila = 1;
     // Por cada fila de la tabla
@@ -263,15 +339,7 @@ $(document).ready(function () {
                                 cambiar_datos_boton($("#peso").val());
                             }
 
-                            if (verificar_hay_pesos()) {
-                                $("#nota_hay_pesos").show();
-                                $("#lbl_suma_pesos").html(get_pesos_totales() + "%");
-                                $("#warning_pesos").html("");
-                            } else {
-                                $("#nota_hay_pesos").hide();
-                                $("#lbl_suma_pesos").html("");
-                                $("#warning_pesos").html("");
-                            }
+                            actualizarIndicadoresPesos();
 
                             recalcular_definitivas();
 
@@ -308,4 +376,6 @@ $(document).ready(function () {
             }
         );
     });
+
+    actualizarIndicadoresPesos();
 });

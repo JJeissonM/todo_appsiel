@@ -22,7 +22,16 @@
 		    		{{ Form::open( [ 'url' => 'sga_notas_nivelaciones_cargar_estudiante', 'id' => 'form_consulta' ] ) }}
 
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('estudiante_id','','Seleccionar estudiante',$vec_estudiantes,['required'=>'required']) }}
+							{{ Form::bsInputListaSugerencias(
+								'estudiante_id',
+								['', ''],
+								'Seleccionar estudiante',
+								[
+									'required' => 'required',
+									'class' => 'form-control text_input_sugerencias',
+									'data-url_busqueda' => url('academico_docente/nivelaciones/estudiantes_sugerencias/' . $curso->id)
+								]
+							) }}
 						</div>
 
 						<div class="row" style="padding:5px;">

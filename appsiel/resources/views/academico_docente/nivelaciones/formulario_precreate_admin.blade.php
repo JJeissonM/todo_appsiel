@@ -25,7 +25,7 @@
 		    <hr>
 
 		    <div class="row" style="padding:5px;">
-				<a class="btn btn-danger btn-sm" href="{{ url('academico_docente') . '?id=' . Input::get('id') }}"><i class="fa fa-arrow-left"></i> Volver </a>
+				<a class="btn btn-danger btn-sm" href="{{ url('web') . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') }}"><i class="fa fa-arrow-left"></i> Volver </a>
 			</div>
 
 		    <div class="row">
@@ -35,7 +35,7 @@
 		    		{{ Form::open( [ 'url' => 'sga_notas_nivelaciones_cargar_estudiante', 'id' => 'form_consulta' ] ) }}
 
 						<div class="row" style="padding:5px;">
-							{{ Form::bsSelect('estudiante_id','','Seleccionar estudiante',$vec_estudiantes,['required'=>'required']) }}
+							{{ Form::bsSelect('estudiante_id','','Seleccionar estudiante',$vec_estudiantes,['required'=>'required','class' => 'combobox']) }}
 						</div>
 
 						<div class="row" style="padding:5px;">

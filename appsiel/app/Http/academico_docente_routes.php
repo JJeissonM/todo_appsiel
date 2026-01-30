@@ -52,6 +52,7 @@ Route::post('academico_docente/calificar_desempenios2', 'AcademicoDocente\Califi
 
 // NOTAS DE NIVELACIONES
 Route::get('sga_ingresar_notas_nivelaciones/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@ingresar_notas_nivelaciones');
+Route::get('academico_docente/nivelaciones/estudiantes_sugerencias/{curso_id}','AcademicoDocente\AcademicoDocenteController@estudiantes_sugerencias');
 Route::post('sga_notas_nivelaciones_cargar_estudiante', 'AcademicoDocente\AcademicoDocenteController@notas_nivelaciones_cargar_estudiante'); 
 Route::post('sga_notas_nivelaciones_actualizar', 'AcademicoDocente\AcademicoDocenteController@notas_nivelaciones_actualizar'); 
 Route::get('sga_notas_nivelaciones_revisar/{curso_id}/{asignatura_id}','AcademicoDocente\AcademicoDocenteController@revisar_notas_nivelaciones');
