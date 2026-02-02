@@ -16,6 +16,7 @@ Route::get('academico_estudiante/guias_planes_clases/{curso_id}/{asignatura_id}'
 Route::get('academico_estudiante/ver_guia_plan_clases/{curso_id}/{asignatura_id}/{plan_id}', 'AcademicoEstudianteController@ver_guia_plan_clases');
 
 Route::get('academico_estudiante', 'AcademicoEstudianteController@index');
+Route::post('academico_estudiante/tutor/seleccionar', 'AcademicoEstudianteController@seleccionarEstudianteTutor');
 
 Route::get('academico_estudiante/mi_plan_de_pagos/{libreta_id}', 'AcademicoEstudianteController@mi_plan_de_pagos');
 

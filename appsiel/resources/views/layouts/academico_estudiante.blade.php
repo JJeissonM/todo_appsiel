@@ -92,14 +92,19 @@
 			font-display: swap;
 		}
 
-		body {
-			font-family: 'Gotham-Narrow-Medium';
+        body {
+            font-family: 'Gotham-Narrow-Medium';
             background-position: bottom;
             background-attachment: fixed;
             background-size: cover;
-            background-image: url({{asset('assets/img/academico_estudiante/fondo-estudiante.png')}})
-			/*width: 98%;*/
-		}
+            background-image: url({{asset('assets/img/academico_estudiante/fondo-estudiante.png')}});
+            /*width: 98%;*/
+            overflow-x: hidden;
+        }
+
+        html {
+            overflow-x: hidden;
+        }
 
         body,
         html {
@@ -159,7 +164,7 @@
         /*Remove rounded coners*/
 
         nav.sidebar.navbar {
-            border-radius: 0px;
+            border-radius: 12px;
         }
 
         nav.sidebar,
@@ -249,14 +254,15 @@
             }
 
             /*gives sidebar width/height*/
-            nav.sidebar {
-                width: 200px;
-                height: 100%;
-                margin-left: -160px;
-                float: left;
-                z-index: 8000;
-                margin-bottom: 0px;
-            }
+        nav.sidebar {
+            width: 200px;
+            height: 100%;
+            margin-left: -160px;
+            float: left;
+            z-index: 8000;
+            margin-bottom: 0px;
+            transition: margin 220ms ease-out;
+        }
 
             /*give sidebar 100% width;*/
             nav.sidebar li {
@@ -268,9 +274,9 @@
             }
 
             /* Move nav to full on mouse over*/
-            nav.sidebar:hover {
-                margin-left: 0px;
-            }
+        nav.sidebar:hover {
+            margin-left: 0px;
+        }
 
             /*for hiden things when navbar hidden*/
             .forAnimate {
@@ -314,6 +320,126 @@
         section {
             padding-left: 15px;
         }
+        /* Gmail-inspired navigation */
+        .navbar-gmail {
+            background: rgb(87, 70, 150) !important;
+            border: none;
+            box-shadow: 0 2px 10px rgba(60, 64, 67, 0.15);
+            border-bottom: 1px solid rgba(60, 64, 67, 0.08);
+            padding: 0.75rem 1.25rem;
+            border-end-start-radius: 12px;
+            border-end-end-radius: 12px;
+            position: relative;
+            overflow: visible;
+            z-index: 1100;
+        }
+
+        .navbar-gmail .navbar-brand {
+            padding: 0;
+        }
+
+        .navbar-gmail .navbar-brand img {
+            height: 40px;
+            width: auto;
+            margin-top: 4px;
+        }
+
+        .navbar-gmail .navbar-nav>li>a {
+            color: #ffffff !important;
+            font-weight: 500;
+            padding: 10px 12px;
+            text-transform: capitalize;
+        }
+
+        .navbar-gmail .navbar-nav>li>a:hover,
+        .navbar-gmail .dropdown-menu>li>a:hover {
+            background-color: rgba(60, 64, 67, 0.08);
+            color: #1a73e8 !important;
+        }
+
+        .navbar-gmail .navbar-toggle .icon-bar {
+            background-color: #5f6368;
+        }
+
+        .navbar-gmail .dropdown-menu {
+            position: absolute;
+            border-radius: 0.6rem;
+            box-shadow: 0 8px 20px rgba(60, 64, 67, 0.2);
+            border: 0;
+            padding: 0.5rem 0;
+            background: rgb(87, 70, 150);
+            min-width: 220px;
+            right: 10px;
+            left: auto;
+            top: calc(100% + 8px);
+            border: 1px solid rgba(60, 64, 67, 0.1);
+        }
+
+        .navbar-gmail-dropdown {
+            padding: 0;
+        }
+
+        .navbar-gmail-dropdown>li>a {
+            color: #ffffff !important;
+            padding: 8px 16px;
+        }
+
+        .main-content-wrapper {
+            padding: 20px 0 35px;
+            width: calc(100% - 200px);
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+            margin-left: 200px;
+            box-sizing: border-box;
+        }
+
+
+        .main-box {
+            width: 100%;
+            max-width: 1180px;
+            padding: 0 15px;
+        }
+
+        .gmail-nav-right > li > a {
+            color: #ffffff !important;
+            font-weight: 500;
+            padding: 6px 12px;
+        }
+
+        .gmail-nav-right > li > a:hover,
+        .gmail-nav-right > .dropdown > a:focus {
+            background-color: rgba(60, 64, 67, 0.08);
+            color: #1a73e8 !important;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                background-attachment: scroll;
+            }
+
+            nav.sidebar {
+                position: relative;
+                width: 100%;
+                margin-left: 0;
+                height: auto;
+            }
+
+            nav.sidebar:hover {
+                margin-left: 0;
+            }
+            .main-content-wrapper {
+                margin-left: 0;
+            }
+            .main-content-wrapper {
+                width: 100%;
+                padding: 0 10px;
+            }
+            .main-box {
+                max-width: 100%;
+                padding: 0;
+            }
+        }
     </style>
 
     @yield('webstyle')
@@ -349,7 +475,7 @@
         
         <div id="div_cargando">Cargando...</div>
 
-        <nav class="navbar navbar-inverse navbar-static-top" style="background: rgb(87, 70, 150) !important;">
+        <nav class="navbar navbar-gmail navbar-static-top" style="background: rgb(87, 70, 150) !important;">
             <div class="container-fluid">
                 <div class="navbar-header">
 
@@ -369,33 +495,33 @@
     
                 <div class="collapse navbar-collapse" id="app-navbar-collapse">    
                     <!-- Right Side Of Navbar -->
-                    <ul class="nav navbar-nav navbar-right">
+                    <ul class="nav navbar-nav navbar-right gmail-nav-right">
                         <!-- Authentication Links -->
                         @if (Auth::guest())
-                            <li><a style="color: #FFFFFF !important;" href="{{ url('/login') }}">Ingresar</a></li>
+                            <li><a href="{{ url('/login') }}">Ingresar</a></li>
                         @else
                             
                             @if( config('configuracion.usar_mensajes_internos') )
-                                <li>
-                                    <a title="Mis Mensajes" style="color: #FFFFFF !important;" href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
-                                </li>
+                                    <li>
+                                        <a title="Mis Mensajes" href="{{url('/messages')}}"><i class="fa fa-btn fa-envelope"></i>  @include('core.messenger.unread-count')</a>
+                                    </li>
                             @endif
     
                             <li class="dropdown">
-                                <a style="color: #FFFFFF !important;" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
     
-                                <ul class="dropdown-menu" role="menu" style="background-color: #42A3DC !important;">
+                                <ul class="dropdown-menu navbar-gmail-dropdown" role="menu">
                                     <!-- <li><a href="{ { url('/dashboard?id='.Input::get('id')) }}"><i class="fa fa-btn fa-dashboard"></i>DashBoard</a></li> -->
     
                                     @if( !is_null( Input::get('id') ) )
-                                        <li><a style="color: #FFFFFF !important;" href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
+                                        <li><a href="{{ url('/core/usuario/perfil/?id='.Input::get('id')) }}"><i class="fa fa-btn fa-user"></i> Perfil</a></li>
                                     @else
                                         <li><i>(Ingrese a una aplicación para ver su perfil)</i></li>
                                     @endif
     
-                                    <li><a style="color: #FFFFFF !important;" href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i> Cerrar sesión</a></li>
+                                        <li><a href="{{ url('/logout') }}"><i class="fa fa-btn fa-sign-out"></i> Cerrar sesión</a></li>
                                 </ul>
                             </li>
                         @endif
@@ -426,82 +552,129 @@
                     <ul class="nav navbar-nav">
                         
                         @if( (int)config('calificaciones.activar_horario'))
-                        <li>
-                            <a href="{{url('academico_estudiante/horario?id='.Input::get('id'))}}">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity glyphicon glyphicon-calendar"></span>
-                                &nbsp; Horario
-                            </a>
-                        </li>
+                            @can('academico_estudiante.horario')
+                                <li>
+                                    <a href="{{url('academico_estudiante/horario?id='.Input::get('id'))}}">
+                                        <span style="font-size:16px;"
+                                            class="pull-left hidden-xs showopacity glyphicon glyphicon-calendar"></span>
+                                        &nbsp; Horario
+                                    </a>
+                                </li>
+                            @endcan
                         @endif
 
-                        <li>
-                            <a href="{{url('academico_estudiante/calificaciones?id='.Input::get('id'))}}">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity fa fa-sort-numeric-desc"></span>
-                                    &nbsp; Calificaciones
-                            </a>
-                        </li>
+                        @can('academico_estudiante.calificaciones')
+                            <li>
+                                <a href="{{url('academico_estudiante/calificaciones?id='.Input::get('id'))}}">
+                                    <span style="font-size:16px;"
+                                        class="pull-left hidden-xs showopacity fa fa-sort-numeric-desc"></span>
+                                        &nbsp; Calificaciones
+                                </a>
+                            </li>
+                        @endcan
 
                         @if( (int)config('calificaciones.activar_aula_virtual') )
-                        <li>
-                            <a
-                                href="{{ url( 'academico_estudiante_aula_virtual/'.$curso->id.'?id='.Input::get('id') . '&fecha=' . date('Y-m-d') ) }}">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity glyphicon glyphicon-blackboard"></span>
-                                    &nbsp; Aula Virtual
-                            </a>
-                        </li>
+                            @can('academico_estudiante.aula_virtual')
+                                <li>
+                                    <a
+                                        href="{{ url( 'academico_estudiante_aula_virtual/'.$curso->id.'?id='.Input::get('id') . '&fecha=' . date('Y-m-d') ) }}">
+                                        <span style="font-size:16px;"
+                                            class="pull-left hidden-xs showopacity glyphicon glyphicon-blackboard"></span>
+                                            &nbsp; Aula Virtual
+                                    </a>
+                                </li>
+                            @endcan
                         @endif
 
-                        <li>
-                            <a href="{{ url( 'mis_asignaturas/'.$curso->id.'?id='.Input::get('id') ) }}">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity glyphicon glyphicon-book"></span>
-                                    &nbsp; Mis Asignaturas
-                            </a>
-                        </li>
+                        @can('academico_estudiante.mis_asignaturas')
+                            <li>
+                                <a href="{{ url( 'mis_asignaturas/'.$curso->id.'?id='.Input::get('id') ) }}">
+                                    <span style="font-size:16px;"
+                                        class="pull-left hidden-xs showopacity glyphicon glyphicon-book"></span>
+                                        &nbsp; Mis Asignaturas
+                                </a>
+                            </li>
+                        @endcan
 
                         @if( (int)config('calificaciones.activar_libreta_pagos') )
-                        <li>
-                            <a
-                                href="{{ url('academico_estudiante/mi_plan_de_pagos/'.$libreta_id.'?id='.Input::get('id'))}}">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity fa fa-dollar"></span>
-                                    &nbsp; Libreta de pagos
-                            </a>
-                        </li>
+                            @can('academico_estudiante.libreta_pagos')
+                                <li>
+                                    <a
+                                        href="{{ url('academico_estudiante/mi_plan_de_pagos/'.$libreta_id.'?id='.Input::get('id'))}}">
+                                        <span style="font-size:16px;"
+                                            class="pull-left hidden-xs showopacity fa fa-dollar"></span>
+                                            &nbsp; Libreta de pagos
+                                    </a>
+                                </li>
+                            @endcan
                         @endif
 
                         @if( config('calificaciones.url_correo_institucional') != '')
-                        <li>
-                            <a href="{{ config('calificaicones.url_correo_institucional') }}" target="_blank">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity glyphicon glyphicon-envelope"></span>
-                                    &nbsp; Correo institucional
-                            </a>
-                        </li>
+                            @can('academico_estudiante.correo_institucional')
+                                <li>
+                                    <a href="{{ config('calificaicones.url_correo_institucional') }}" target="_blank">
+                                        <span style="font-size:16px;"
+                                            class="pull-left hidden-xs showopacity glyphicon glyphicon-envelope"></span>
+                                            &nbsp; Correo institucional
+                                    </a>
+                                </li>
+                            @endcan
                         @endif
 
-                        
                         @if( (int)config('calificaciones.activar_reconocimientos') )
-                        <li>
-                            <a href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
-                                <span style="font-size:16px;"
-                                    class="pull-left hidden-xs showopacity glyphicon glyphicon-envelope"></span>
-                                    &nbsp; Reconocimientos
-                            </a>
-                        </li>
+                            @can('academico_estudiante.reconocimientos')
+                                <li>
+                                    <a href="{{ url('academico_estudiante/reconocimientos?id=' . Input::get('id') ) }}">
+                                        <span style="font-size:16px;"
+                                            class="pull-left hidden-xs showopacity glyphicon glyphicon-envelope"></span>
+                                            &nbsp; Reconocimientos
+                                    </a>
+                                </li>
+                            @endcan
                         @endif
                     </ul>
                 </div>
             </div>
         </nav>
         
-        <div class="main">
+        @if(Auth::check() && Auth::user()->hasRole('Tutor de estudiante'))
+            @php
+                $tutorService = app(\App\Matriculas\Services\TutorAcademicoService::class);
+                $tutorEstudiantes = $tutorService->obtenerEstudiantesParaTutor(Auth::user());
+                $selectedId = session(\App\Matriculas\Services\TutorAcademicoService::SESSION_KEY);
+                $selectedStudent = null;
+                if ($selectedId) {
+                    $selectedStudent = $tutorEstudiantes->filter(function ($item) use ($selectedId) {
+                        return $item->id == (int)$selectedId;
+                    })->first();
+                }
+            @endphp
+            @if(!$tutorEstudiantes->isEmpty())
+                <div class="tutor-selector" style="margin: 1rem 1.5rem; padding: 0.85rem 1.2rem; background: #f6f7fb; border-radius: 0.8rem; border: 1px solid rgba(0,0,0,0.05); display:flex; flex-wrap:wrap; align-items:center; gap:0.8rem;">
+                    <form method="POST" action="{{ url('academico_estudiante/tutor/seleccionar?id='.Input::get('id')) }}" class="form-inline" style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
+                        {{ csrf_field() }}
+                        <label class="sr-only" for="tutor_estudiante_id">Estudiante</label>
+                        <select name="tutor_estudiante_id" id="tutor_estudiante_id" class="form-control input-sm" style="min-width:220px;">
+                            @foreach($tutorEstudiantes as $tutorEstudiante)
+                                <option value="{{ $tutorEstudiante->id }}" {{ (!is_null($selectedStudent) && $selectedStudent->id == $tutorEstudiante->id) ? 'selected' : '' }}>
+                                    {{ $tutorEstudiante->tercero->descripcion ?? ($tutorEstudiante->nombre_completo ?: $tutorEstudiante->descripcion) }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="redirect_to" value="{{ url()->full() }}">
+                        <button type="submit" class="btn btn-primary btn-sm">Cambiar estudiante</button>
+                    </form>
+                    @if(!is_null($selectedStudent))
+                        <span class="text-muted" style="margin-left:auto; white-space:nowrap;">Estudiante actual: <strong>{{ $selectedStudent->nombre_completo ?: $selectedStudent->descripcion }}</strong></span>
+                    @endif
+                </div>
+            @endif
+        @endif
 
-            @yield('content')
-
+        <div class="main main-content-wrapper">
+            <div class="main-box">
+                @yield('content')
+            </div>
         </div>
 
         <a href="{{route('ayuda.videos')}}">

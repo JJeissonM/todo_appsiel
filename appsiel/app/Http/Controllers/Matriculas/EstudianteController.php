@@ -24,6 +24,8 @@ use App\Core\TipoDocumentoId;
 use App\Matriculas\Responsableestudiante;
 use App\Matriculas\Tiporesponsable;
 
+use App\Matriculas\Services\TutorAcademicoService;
+
 use App\Ventas\Cliente;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -180,6 +182,39 @@ class EstudianteController extends ModeloController
         }        
 
         return view('matriculas.estudiantes.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'estudiante','curso_label'));
+    }
+
+    public function asignarUsuario(Request $request, $estudiante_id)
+    {
+        $estudiante = Estudiante::find($estudiante_id);
+        $id_url = $request->query('id');
+        $id_modelo = $request->query('id_modelo');
+        $url_redirect = 'matriculas/estudiantes/show/' . $estudiante_id . '?id=' . $id_url . '&id_modelo=' . $id_modelo;
+
+        if (!$estudiante) {
+            return redirect($url_redirect)->with('mensaje_error', 'Estudiante no encontrado.');
+        }
+
+        if (!empty($estudiante->user_id)) {
+            return redirect($url_redirect)->with('flash_message', 'El estudiante ya tiene un usuario asignado.');
+        }
+
+        $tercero = $estudiante->tercero;
+        if (!$tercero || empty($tercero->email)) {
+            return redirect($url_redirect)->with('mensaje_error', 'El estudiante no tiene un email asociado para buscar el usuario.');
+        }
+
+        $usuario = User::where('email', $tercero->email)->first();
+        if (!$usuario) {
+            return redirect($url_redirect)->with('mensaje_error', 'No se encontró un usuario con el correo ' . $tercero->email . '.');
+        }
+
+        $estudiante->user_id = $usuario->id;
+        if ($estudiante->save()) {
+            return redirect($url_redirect)->with('flash_message', 'Usuario asignado correctamente al estudiante.');
+        }
+
+        return redirect($url_redirect)->with('mensaje_error', 'No se pudo asignar el usuario, intente nuevamente.');
     }
 
     /**
@@ -620,5 +655,24 @@ class EstudianteController extends ModeloController
         } else {
             return "null";
         }
+    }
+
+    public function crearTutor(Request $request, $responsable_id)
+    {
+        $responsable = Responsableestudiante::find($responsable_id);
+        $fallback = url('matriculas/estudiantes/listar');
+        if (!is_null($responsable)) {
+            $fallback = url('matriculas/estudiantes/show/'.$responsable->estudiante_id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'));
+        }
+
+        $redirect = $request->input('redirect_to') ?: $fallback;
+        $service = app(TutorAcademicoService::class);
+        $resultado = $service->crearUsuarioDesdeResponsable($responsable);
+
+        if ($resultado['success']) {
+            return redirect($redirect)->with('flash_message', $resultado['message']);
+        }
+
+        return redirect($redirect)->with('mensaje_error', $resultado['message']);
     }
 }

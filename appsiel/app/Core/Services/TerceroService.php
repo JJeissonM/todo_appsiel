@@ -8,6 +8,7 @@ use App\Core\Tercero;
 use App\Ventas\Cliente;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class TerceroService
 {
@@ -95,42 +96,47 @@ class TerceroService
 
     public function crear_tercero_como_cliente_y_proveedor($tercero_id)
     {
-        $cliente = Cliente::where('core_tercero_id', $tercero_id)->get()->first();
 
-        if ( $cliente == null ) {
-            $data = [
-                'core_tercero_id' => $tercero_id,
-                'encabezado_dcto_pp_id' => 0,
-                'clase_cliente_id' => config('ventas.clase_cliente_id'),
-                'lista_precios_id' => config('ventas.lista_precios_id'),
-                'lista_descuentos_id' => config('ventas.lista_descuentos_id'),
-                'vendedor_id' => config('ventas.vendedor_id'),
-                'inv_bodega_id' => config('ventas.inv_bodega_id'),
-                'zona_id' => config('ventas.zona_id'),
-                'liquida_impuestos' => 1,
-                'condicion_pago_id' => 1,
-                'cupo_credito' => 0,
-                'bloquea_por_cupo' => 0,
-                'bloquea_por_mora' => 0,
-                'estado' => 'Activo'
-            ];
+        if (!Schema::hasTable('vtas_clientes')) {
+            $cliente = Cliente::where('core_tercero_id', $tercero_id)->get()->first();
 
-            Cliente::create( $data );
+            if ( $cliente == null ) {
+                $data = [
+                    'core_tercero_id' => $tercero_id,
+                    'encabezado_dcto_pp_id' => 0,
+                    'clase_cliente_id' => config('ventas.clase_cliente_id'),
+                    'lista_precios_id' => config('ventas.lista_precios_id'),
+                    'lista_descuentos_id' => config('ventas.lista_descuentos_id'),
+                    'vendedor_id' => config('ventas.vendedor_id'),
+                    'inv_bodega_id' => config('ventas.inv_bodega_id'),
+                    'zona_id' => config('ventas.zona_id'),
+                    'liquida_impuestos' => 1,
+                    'condicion_pago_id' => 1,
+                    'cupo_credito' => 0,
+                    'bloquea_por_cupo' => 0,
+                    'bloquea_por_mora' => 0,
+                    'estado' => 'Activo'
+                ];
+
+                Cliente::create( $data );
+            }
         }
-        
-        $proveedor = Proveedor::where('core_tercero_id', $tercero_id)->get()->first();
 
-        if ( $proveedor == null ) {
-            $data = [
-                'core_tercero_id' => $tercero_id,
-                'clase_proveedor_id' => 1,
-                'inv_bodega_id' => 1,
-                'liquida_impuestos' => 1,
-                'condicion_pago_id' => 1,
-                'estado' => 'Activo'
-            ];
-    
-            Proveedor::create( $data );
+        if (!Schema::hasTable('compras_proveedores')) {
+            $proveedor = Proveedor::where('core_tercero_id', $tercero_id)->get()->first();
+
+            if ( $proveedor == null ) {
+                $data = [
+                    'core_tercero_id' => $tercero_id,
+                    'clase_proveedor_id' => 1,
+                    'inv_bodega_id' => 1,
+                    'liquida_impuestos' => 1,
+                    'condicion_pago_id' => 1,
+                    'estado' => 'Activo'
+                ];
+        
+                Proveedor::create( $data );
+            }
         }
         
     }

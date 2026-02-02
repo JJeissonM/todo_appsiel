@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 use Carbon\Carbon;
 
-use App\Http\Controllers\Matriculas\ObservadorEstudianteController;
-
 use App\Core\Colegio;
 use App\Matriculas\Estudiante;
 use App\Matriculas\Matricula;
@@ -40,14 +38,19 @@ use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\AcademicoEstudiante\ProgramacionAulaVirtual;
 use App\Calificaciones\Services\CalificacionesService;
 use App\Matriculas\Services\ObservadorEstudianteService;
+use App\Matriculas\Services\TutorAcademicoService;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 
 class AcademicoEstudianteController extends Controller
 {
 
     protected $colegio;
     protected $estudiante;
+    protected $esTutor = false;
+    protected $tutorService;
+    protected $estudianteActual;
 
     /**
      * Create a new controller instance.
@@ -62,15 +65,37 @@ class AcademicoEstudianteController extends Controller
             $this->colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
             $this->estudiante = Estudiante::where('user_id', Auth::user()->id)->get()->first();
         }
+        $this->tutorService = app(TutorAcademicoService::class);
+        $this->esTutor = Auth::check() && Auth::user()->hasRole('Tutor de estudiante');
+    }
+
+    protected function getEstudianteActual()
+    {
+        if (!is_null($this->estudianteActual)) {
+            return $this->estudianteActual;
+        }
+
+        if ($this->esTutor) {
+            $this->estudianteActual = $this->tutorService->resolverEstudianteParaTutor(
+                Auth::user(),
+                request()->query('tutor_estudiante_id')
+            );
+            return $this->estudianteActual;
+        }
+
+        $this->estudianteActual = $this->estudiante;
+        return $this->estudianteActual;
     }
 
     public function index()
     {
-        if (is_null($this->estudiante)) {
-            return redirect('inicio')->with('mensaje_error', 'El usuario actual no tiene perfil de estudiante.');
+        $estudiante = $this->getEstudianteActual();
+        if (is_null($estudiante)) {
+            $mensaje = $this->esTutor ? 'No tiene estudiantes asignados.' : 'El usuario actual no tiene perfil de estudiante.';
+            return redirect('inicio')->with('mensaje_error', $mensaje);
         }
 
-        $matricula = Matricula::get_matricula_activa_un_estudiante($this->estudiante->id);
+        $matricula = Matricula::get_matricula_activa_un_estudiante($estudiante->id);
 
         if (is_null($matricula)) {
             return redirect('inicio')->with('mensaje_error', 'El estudiante no tiene alguna matrícua activa.');
@@ -82,8 +107,6 @@ class AcademicoEstudianteController extends Controller
 
         $curso = Curso::find($matricula->curso_id);
 
-        $estudiante = $this->estudiante;
-
         $miga_pan = [
             ['url' => 'NO', 'etiqueta' => 'Académico estudiante']
         ];
@@ -93,7 +116,11 @@ class AcademicoEstudianteController extends Controller
 
     public function index_restringido()
     {
-        $estudiante = $this->estudiante;
+        $estudiante = $this->getEstudianteActual();
+        if (is_null($estudiante)) {
+            $mensaje = $this->esTutor ? 'No tiene estudiantes asignados.' : 'El usuario actual no tiene perfil de estudiante.';
+            return redirect('inicio')->with('mensaje_error', $mensaje);
+        }
 
         $mensaje_facturas_vencidas = (object)[ 'mensaje' => '', 'enlace_libreta' => ''];
 
@@ -155,7 +182,13 @@ class AcademicoEstudianteController extends Controller
                         ['url' => 'NO', 'etiqueta' => 'Horario']
                     ];
 
-        $matricula = Matricula::get_matricula_activa_un_estudiante($this->estudiante->id);
+        $estudiante = $this->getEstudianteActual();
+        if (is_null($estudiante)) {
+            $mensaje = $this->esTutor ? 'No tiene estudiantes asignados.' : 'El usuario actual no tiene perfil de estudiante.';
+            return redirect('inicio')->with('mensaje_error', $mensaje);
+        }
+
+        $matricula = Matricula::get_matricula_activa_un_estudiante($estudiante->id);
         
         $curso = Curso::find($matricula->curso_id);
 
@@ -184,7 +217,11 @@ class AcademicoEstudianteController extends Controller
 
     public function calificaciones()
     {
-        $estudiante = $this->estudiante;
+        $estudiante = $this->getEstudianteActual();
+        if (is_null($estudiante)) {
+            $mensaje = $this->esTutor ? 'No tiene estudiantes asignados.' : 'El usuario actual no tiene perfil de estudiante.';
+            return redirect('inicio')->with('mensaje_error', $mensaje);
+        }
 
         $mensaje_facturas_vencidas = (object)[ 'mensaje' => '', 'enlace_libreta' => ''];
 
@@ -239,27 +276,32 @@ class AcademicoEstudianteController extends Controller
         $periodo = Periodo::find($request->periodo_id);
         $curso = Curso::find($request->curso_id);
 
+        $estudiante = $this->getEstudianteActual();
+        if (is_null($estudiante)) {
+            abort(403, 'No hay estudiante seleccionado.');
+        }
+
         if ($periodo->periodo_de_promedios) {
             $periodos_del_anio_lectivo = Periodo::where('periodo_lectivo_id', $periodo->periodo_lectivo_id)
                 ->where('estado', 'Activo')
                 ->orderBy('periodo_de_promedios')
                 ->get();
 
-            $registros = $this->get_registros_tabla_datos($this->estudiante, $periodos_del_anio_lectivo, $periodo, $curso);
+            $registros = $this->get_registros_tabla_datos($estudiante, $periodos_del_anio_lectivo, $periodo, $curso);
         } else {
-            $registros = CalificacionAuxiliar::get_todas_un_estudiante_periodo($this->estudiante->id, $request->periodo_id);
+            $registros = CalificacionAuxiliar::get_todas_un_estudiante_periodo($estudiante->id, $request->periodo_id);
         }
 
         $periodo_id = $request->periodo_id;
         $curso_id = $request->curso_id;
 
-        $observacion_boletin = ObservacionesBoletin::get_x_estudiante($periodo_id, $curso_id, $this->estudiante->id);
+        $observacion_boletin = ObservacionesBoletin::get_x_estudiante($periodo_id, $curso_id, $estudiante->id);
  
         if ($observacion_boletin == null) {
             $observacion_boletin = (object)['puesto' => '', 'observacion' => ''];
         }
 
-        $estudiante = Estudiante::get_datos_basicos($this->estudiante->id);
+        $estudiante = Estudiante::get_datos_basicos($estudiante->id);
 
         $lbl_calificaciones_aux = (new CalificacionesService())->get_object_calificaciones_auxiliares($periodo_id, $curso_id);
 
@@ -423,7 +465,11 @@ class AcademicoEstudianteController extends Controller
         $libreta = TesoLibretasPago::find($id_libreta);
         if ($libreta != null) {
 
-            $estudiante = $this->estudiante;
+            $estudiante = $this->getEstudianteActual();
+            if (is_null($estudiante)) {
+                $mensaje = $this->esTutor ? 'No tiene estudiantes asignados.' : 'El usuario actual no tiene perfil de estudiante.';
+                return redirect('inicio')->with('mensaje_error', $mensaje);
+            }
 
             $cartera = TesoPlanPagosEstudiante::where('id_libreta', $id_libreta)->get();
 
@@ -442,6 +488,30 @@ class AcademicoEstudianteController extends Controller
         } else {
             return redirect('academico_estudiante' . '?id=' . Input::get('id'))->with('mensaje_error', 'La libreta de pagos no existe');
         }
+    }
+
+    public function seleccionarEstudianteTutor(Request $request)
+    {
+        if (!Auth::user()->hasRole('Tutor de estudiante')) {
+            abort(403);
+        }
+
+        $estudiante = $this->tutorService->resolverEstudianteParaTutor(
+            Auth::user(),
+            $request->input('tutor_estudiante_id')
+        );
+
+        $aplicacionId = $request->query('id', 6);
+        $baseUrl = url('academico_estudiante?id=' . $aplicacionId);
+        $redirectTo = $request->input('redirect_to');
+
+        $redirectTarget = (!empty($redirectTo) && Str::startsWith($redirectTo, url('/'))) ? $redirectTo : $baseUrl;
+
+        if (is_null($estudiante)) {
+            return redirect($redirectTarget)->with('mensaje_error', 'No tiene estudiantes asignados.');
+        }
+
+        return redirect($redirectTarget);
     }
 
     /**
@@ -467,7 +537,13 @@ class AcademicoEstudianteController extends Controller
      */
     public function reconocimientos()
     {
-        $reconocimientos = SgaEstudianteReconocimiento::where('estudiante_id', $this->estudiante->id)
+        $estudiante = $this->getEstudianteActual();
+        if (is_null($estudiante)) {
+            $mensaje = $this->esTutor ? 'No tiene estudiantes asignados.' : 'El usuario actual no tiene perfil de estudiante.';
+            return redirect('inicio')->with('mensaje_error', $mensaje);
+        }
+
+        $reconocimientos = SgaEstudianteReconocimiento::where('estudiante_id', $estudiante->id)
             ->where('estado', 'Activo')
             ->get();
 

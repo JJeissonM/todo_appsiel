@@ -26,7 +26,9 @@
 						<p><b>Eps:</b> {{$estudiante->eps}}</p>
 					</div>
 				</div>
-				<a onclick="addPersona()" class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> Agregar Persona Responsable</a>
+				<a href="{{ url('matriculas/estudiantes/show/' . $estudiante->id) . '?id=' . request()->get('id') . '&id_modelo=' . request()->get('id_modelo') . '&id_transaccion=' . request()->get('id_transaccion') }}" class="btn-gmail" style="margin-bottom: 10px;" title="Volver al estudiante"><i class="fa fa-arrow-left"></i></a>
+				&nbsp;&nbsp;
+				<a onclick="addPersona()" class="btn-gmail" title="Agregar Persona Responsable"><i class="fa fa-user-plus"></i></a>
 				<table id="tbPersonas" class="table table-hover table-dark table-responsive" style="margin-top: 20px;">
 					<thead>
 						<tr>

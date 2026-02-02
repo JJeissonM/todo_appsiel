@@ -7,18 +7,23 @@ use Illuminate\Http\Request;
 use App\User;
 
 use App\Matriculas\Curso;
+use App\Matriculas\PeriodoLectivo;
 use App\Calificaciones\Periodo;
+use App\Calificaciones\Asignatura;
+use App\Calificaciones\CursoTieneAsignatura;
 
 use App\Cuestionarios\ActividadEscolar;
 
 use App\AcademicoDocente\PlanClaseEstrucPlantilla;
 use App\AcademicoDocente\PlanClaseEncabezado;
 use App\AcademicoDocente\PlanClaseRegistro;
+use App\AcademicoDocente\GuiaAcademica;
 
 use App\AcademicoDocente\AsignacionProfesor;
 use App\Calificaciones\Logro;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
 class ReportesController extends ModeloController
@@ -242,6 +247,170 @@ class ReportesController extends ModeloController
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
         return $vista;
+    }
+
+    /**
+     * Reporte de cumplimiento de guías académicas
+     */
+    public function cumplimiento_guias( Request $request )
+    {
+        $user = Auth::user();
+
+        if ( $user->hasRole('Profesor') || $user->hasRole('Director de grupo') )
+        {
+            return '<h2>Su perfil de usuario no tiene permiso para generar reportes.</h2>';
+        }
+
+        $periodoLectivoId = $request->periodo_lectivo_id ?: PeriodoLectivo::get_actual()->id;
+        $periodoSeleccionado = $request->periodo_id ? Periodo::find($request->periodo_id) : null;
+
+        $asignaturasQuery = CursoTieneAsignatura::leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_curso_tiene_asignaturas.curso_id')
+            ->leftJoin('sga_asignaturas', 'sga_asignaturas.id', '=', 'sga_curso_tiene_asignaturas.asignatura_id')
+            ->leftJoin('sga_asignaciones_profesores', function ($join) {
+                $join->on('sga_asignaciones_profesores.curso_id', '=', 'sga_curso_tiene_asignaturas.curso_id')
+                    ->on('sga_asignaciones_profesores.id_asignatura', '=', 'sga_curso_tiene_asignaturas.asignatura_id')
+                    ->on('sga_asignaciones_profesores.periodo_lectivo_id', '=', 'sga_curso_tiene_asignaturas.periodo_lectivo_id');
+            })
+            ->leftJoin('users', 'users.id', '=', 'sga_asignaciones_profesores.id_user')
+            ->where('sga_curso_tiene_asignaturas.periodo_lectivo_id', $periodoLectivoId)
+            ->where('sga_asignaturas.estado', 'Activo');
+
+        if ($request->curso_id) {
+            $asignaturasQuery->where('sga_curso_tiene_asignaturas.curso_id', $request->curso_id);
+        }
+
+        if ($request->asignatura_id) {
+            $asignaturasQuery->where('sga_curso_tiene_asignaturas.asignatura_id', $request->asignatura_id);
+        }
+
+        if ($request->user_id) {
+            $asignaturasQuery->where('sga_asignaciones_profesores.id_user', $request->user_id);
+        }
+
+        $asignaturas = $asignaturasQuery
+            ->groupBy(
+                'sga_curso_tiene_asignaturas.curso_id',
+                'sga_curso_tiene_asignaturas.asignatura_id',
+                'sga_cursos.descripcion',
+                'sga_asignaturas.descripcion',
+                'sga_asignaciones_profesores.id_user',
+                'users.name'
+            )
+            ->select(
+                'sga_curso_tiene_asignaturas.curso_id',
+                'sga_curso_tiene_asignaturas.asignatura_id',
+                'sga_cursos.descripcion AS curso',
+                'sga_asignaturas.descripcion AS asignatura',
+                'sga_asignaciones_profesores.id_user AS user_id',
+                'users.name AS profesor'
+            )
+            ->get();
+
+        $guiasQuery = GuiaAcademica::leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+            ->where('sga_plan_clases_encabezados.plantilla_plan_clases_id', GuiaAcademica::PLANTILLA_GUIA_ACADEMICA_ID)
+            ->where('sga_periodos.periodo_lectivo_id', $periodoLectivoId);
+
+        if ($request->periodo_id) {
+            $guiasQuery->where('sga_plan_clases_encabezados.periodo_id', $request->periodo_id);
+        }
+
+        if ($request->curso_id) {
+            $guiasQuery->where('sga_plan_clases_encabezados.curso_id', $request->curso_id);
+        }
+
+        if ($request->asignatura_id) {
+            $guiasQuery->where('sga_plan_clases_encabezados.asignatura_id', $request->asignatura_id);
+        }
+
+        if ($request->user_id) {
+            $guiasQuery->where('sga_plan_clases_encabezados.user_id', $request->user_id);
+        }
+
+        $registrosGuias = $guiasQuery
+            ->groupBy(
+                'sga_plan_clases_encabezados.curso_id',
+                'sga_plan_clases_encabezados.asignatura_id',
+                'sga_plan_clases_encabezados.user_id'
+            )
+            ->select(
+                'sga_plan_clases_encabezados.curso_id',
+                'sga_plan_clases_encabezados.asignatura_id',
+                'sga_plan_clases_encabezados.user_id',
+                DB::raw('COUNT(*) AS guias_elaboradas')
+            )
+            ->get()
+            ->keyBy(function ($registro) {
+                return implode('-', [
+                    $registro->curso_id,
+                    $registro->asignatura_id,
+                    $registro->user_id ?: 0
+                ]);
+            });
+
+        $periodoLabel = $periodoSeleccionado ? $periodoSeleccionado->descripcion : 'Todos los periodos';
+
+        $lineas = $asignaturas->map(function ($registro) use ($registrosGuias, $periodoLabel) {
+            $key = implode('-', [
+                $registro->curso_id,
+                $registro->asignatura_id,
+                $registro->user_id ?: 0
+            ]);
+            $guiasElaboradas = $registrosGuias->has($key) ? $registrosGuias->get($key)->guias_elaboradas : 0;
+            $requeridas = self::obtenerCantidadGuiasRequeridas($registro->curso_id, $registro->asignatura_id);
+            $cumplimiento = $requeridas > 0
+                ? round(($guiasElaboradas / $requeridas) * 100, 2)
+                : ($guiasElaboradas ? 100 : 0);
+
+            return (object)[
+                'curso' => $registro->curso,
+                'asignatura' => $registro->asignatura,
+                'profesor' => $registro->profesor ?? 'Sin asignar',
+                'periodo' => $periodoLabel,
+                'guias_elaboradas' => $guiasElaboradas,
+                'guias_requeridas' => $requeridas,
+                'excedente' => max(0, $guiasElaboradas - $requeridas),
+                'cumplimiento' => $cumplimiento,
+            ];
+        });
+
+        $totales = [
+            'elaboradas' => $lineas->sum('guias_elaboradas'),
+            'requeridas' => $lineas->sum('guias_requeridas'),
+        ];
+
+        $periodo = $periodoSeleccionado;
+        $curso = $request->curso_id ? Curso::find($request->curso_id) : null;
+        $asignatura = $request->asignatura_id ? Asignatura::find($request->asignatura_id) : null;
+        $profesor = $request->user_id ? User::find($request->user_id) : null;
+
+        $vista = View::make('academico_docente.reportes.cumplimiento_guias', compact('lineas', 'periodo', 'curso', 'asignatura', 'profesor', 'totales'))->render();
+
+        Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
+
+        return $vista;
+    }
+
+    private static function obtenerCantidadGuiasRequeridas($curso_id, $asignatura_id)
+    {
+        $config = config('guias_academicas');
+        $cantidadPorDefecto = (int) data_get($config, 'cantidad_por_defecto', 0);
+        $cantidadPorCurso = data_get($config, 'cantidad_por_curso', []);
+        $cantidadPorCursoAsignatura = data_get($config, 'cantidad_por_curso_asignatura', []);
+
+        $cursoKey = (string) $curso_id;
+        $asignaturaKey = (string) $asignatura_id;
+
+        $valorEspecifico = data_get($cantidadPorCursoAsignatura, "$cursoKey.$asignaturaKey");
+        if ($valorEspecifico !== null) {
+            return (int) $valorEspecifico;
+        }
+
+        $valorCurso = data_get($cantidadPorCurso, $cursoKey);
+        if ($valorCurso !== null) {
+            return (int) $valorCurso;
+        }
+
+        return $cantidadPorDefecto;
     }
 
 }

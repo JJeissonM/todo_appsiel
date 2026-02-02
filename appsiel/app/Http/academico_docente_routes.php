@@ -109,6 +109,7 @@ Route::resource('sga_planes_clases', 'AcademicoDocente\PlanClasesController');
 Route::post( 'sga_resumen_planes_clases', 'AcademicoDocente\ReportesController@resumen_planes_clases');
 Route::post( 'sga_resumen_actividades_academicas', 'AcademicoDocente\ReportesController@resumen_actividades_academicas');
 Route::post( 'sga_logros_ingresados_x_periodo', 'AcademicoDocente\ReportesController@logros_ingresados_x_periodo');
+Route::post( 'sga_cumplimiento_guias', 'AcademicoDocente\ReportesController@cumplimiento_guias');
 
 
 

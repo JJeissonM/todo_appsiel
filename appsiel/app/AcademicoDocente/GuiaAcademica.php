@@ -6,22 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 
 use App\Calificaciones\CursoTieneAsignatura;
 
-use App\AcademicoDocente\PlanClaseEstrucElemento;
 use App\AcademicoDocente\PlanClaseRegistro;
-
-use Form;
-use Input;
-use Auth;
 
 use App\Matriculas\Curso;
 use App\Matriculas\PeriodoLectivo;
 
 use App\Calificaciones\Asignatura;
+use App\Calificaciones\Periodo;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
 
 class GuiaAcademica extends Model
 {
+    const PLANTILLA_GUIA_ACADEMICA_ID = 99999;
+
     protected $table = 'sga_plan_clases_encabezados';
 
     protected $fillable = ['plantilla_plan_clases_id', 'fecha', 'semana_calendario_id', 'periodo_id', 'curso_id', 'asignatura_id', 'user_id', 'archivo_adjunto', 'descripcion', 'estado'];
@@ -37,12 +36,14 @@ class GuiaAcademica extends Model
     {
         $user = Auth::user();
 
-        $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+        //$periodo_lectivo_actual = PeriodoLectivo::get_actual();
 
-        $periodos = $periodo_lectivo_actual->periodos->pluck('id')->toArray();
+        //$periodos = $periodo_lectivo_actual->periodos->pluck('id')->toArray();
+
+        $periodos = Periodo::all()->pluck('id')->toArray();
 
         $array_wheres = [
-            ['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]
+            ['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', self::PLANTILLA_GUIA_ACADEMICA_ID]
         ];
 
         if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo'))
@@ -136,7 +137,7 @@ class GuiaAcademica extends Model
     {
         $user = Auth::user();
 
-        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', 99999]];
+        $array_wheres = [['sga_plan_clases_encabezados.plantilla_plan_clases_id', '=', self::PLANTILLA_GUIA_ACADEMICA_ID]];
 
         if ($user->hasRole('Profesor') || $user->hasRole('Director de grupo')) {
             $array_wheres = array_merge($array_wheres, ['sga_plan_clases_encabezados.user_id' => $user->id]);
@@ -262,7 +263,7 @@ class GuiaAcademica extends Model
             Agregar nuevos campos
         */
 
-        $plantilla_id = 99999; // Se usará este ID de plantilla para las guías académicas
+        $plantilla_id = self::PLANTILLA_GUIA_ACADEMICA_ID; // Se usará este ID de plantilla para las guías académicas
 
         array_push($lista_campos, [
             "id" => 0,
@@ -323,7 +324,7 @@ class GuiaAcademica extends Model
             PlanClaseRegistro::create(
                 [
                     'plan_clase_encabezado_id' => $registro->id,
-                    'plan_clase_estruc_elemento_id' => 99999,
+                    'plan_clase_estruc_elemento_id' => self::PLANTILLA_GUIA_ACADEMICA_ID,
                     'contenido' => $value,
                     'estado' => 'Activo'
                 ]
@@ -363,7 +364,7 @@ class GuiaAcademica extends Model
         /*
             Agregar nuevos campos
         */
-        $elemento_id = 99999; // Se usará este ID de plantilla para las guías académicas
+        $elemento_id = self::PLANTILLA_GUIA_ACADEMICA_ID; // Se usará este ID de plantilla para las guías académicas
 
         $registro_elemento = PlanClaseRegistro::where('plan_clase_encabezado_id', $registro->id)
             ->where('plan_clase_estruc_elemento_id', $elemento_id)
@@ -394,7 +395,7 @@ class GuiaAcademica extends Model
 
     public static function update_adicional($datos, $plan_clase_encabezado_id)
     {
-        $elemento_id = 99999; // Se usará este ID de plantilla para las guías académicas
+        $elemento_id = self::PLANTILLA_GUIA_ACADEMICA_ID; // Se usará este ID de plantilla para las guías académicas
 
         foreach ($datos['elemento_descripcion'] as $key => $value) {
 

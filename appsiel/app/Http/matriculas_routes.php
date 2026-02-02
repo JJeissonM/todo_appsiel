@@ -27,6 +27,7 @@ Route::get('matriculas/estudiantes/nuevo/{documento?}/{matriculando?}', 'Matricu
 Route::get('matriculas/estudiantes/modificar/{id}', 'Matriculas\EstudianteController@modificar');
 Route::get('matriculas/estudiantes/listar', 'Matriculas\EstudianteController@listar');
 Route::get('matriculas/estudiantes/show/{estudiante_id}', 'Matriculas\EstudianteController@show');
+Route::get('matriculas/estudiantes/asignar_usuario/{estudiante_id}', 'Matriculas\EstudianteController@asignarUsuario');
 Route::get('get_todos_estudiantes_matriculados/{periodo_lectivo_id}/{curso_id}', 'Matriculas\EstudianteController@get_todos_estudiantes_matriculados');
 Route::get('get_estudiantes_matriculados/{periodo_lectivo_id}/{curso_id}', 'Matriculas\EstudianteController@get_estudiantes_matriculados');
 Route::get('matriculas/estudiantes/gestionresponsables/estudiante_id', 'Matriculas\EstudianteController@gestionresponsables')->name('responsables.index');
@@ -34,6 +35,7 @@ Route::post('matriculas/estudiantes/gestionresponsables/store', 'Matriculas\Estu
 Route::get('matriculas/estudiantes/gestionresponsables/{id}/delete', 'Matriculas\EstudianteController@gestionresponsables_delete')->name('gestionresponsables_delete');
 Route::post('matriculas/estudiantes/gestionresponsables/update', 'Matriculas\EstudianteController@gestionresponsables_update');
 Route::get('matriculas/estudiantes/gestionresponsables/consultar/{id}/tercero', 'Matriculas\EstudianteController@gestionresponsables_tercero');
+Route::post('matriculas/estudiantes/responsables/{responsable}/crear_tutor', 'Matriculas\EstudianteController@crearTutor');
 
 // Importar de Excel
 Route::get('matriculas/estudiantes/importar_excel', 'Matriculas\EstudianteController@importar_excel');

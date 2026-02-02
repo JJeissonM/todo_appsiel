@@ -94,6 +94,8 @@ class Estudiante extends Model
             )->where("sga_estudiantes.genero", "LIKE", "%$search%")
             ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
             ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
             ->orderBy('sga_estudiantes.id', 'desc')
@@ -123,10 +125,13 @@ class Estudiante extends Model
             ->where("sga_estudiantes.genero", "LIKE", "%$search%")
             ->orWhere("sga_estudiantes.fecha_nacimiento", "LIKE", "%$search%")
             ->orWhere("core_terceros.telefono1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.direccion1", "LIKE", "%$search%")
+            ->orWhere("core_terceros.email", "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_terceros.apellido1,' ',core_terceros.apellido2,' ',core_terceros.nombre1,' ',core_terceros.otros_nombres)"), "LIKE", "%$search%")
             ->orWhere(DB::raw("CONCAT(core_tipos_docs_id.abreviatura,' ',core_terceros.numero_identificacion)"), "LIKE", "%$search%")
             ->orderBy('sga_estudiantes.id', 'desc')
             ->toSql();
+
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 
