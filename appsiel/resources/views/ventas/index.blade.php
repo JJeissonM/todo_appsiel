@@ -92,7 +92,7 @@
 				@can('vtas_pedidos_restaurante')
 					@include('ventas.pedidos.restaurante.mesero.index_cocinas')
 				@else
-					@include('ventas.index_vendeor')
+					@include('ventas.index_vendedor')
 				@endcan
 			</div>
 		</div>

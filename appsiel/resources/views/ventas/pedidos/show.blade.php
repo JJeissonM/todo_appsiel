@@ -18,7 +18,9 @@
 		{{ Form::bsBtnCreate( 'vtas_pedidos/create'.$variables_url ) }}
 
 		@if( $doc_encabezado->estado == 'Pendiente')
-			{{ Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
+			@can('ventas.pedidos.show.editar')
+				{{ Form::bsBtnEdit2( 'vtas_pedidos/' . $id . '/edit' . $variables_url . '&action=edit' ,'Editar') }}
+			@endcan
 		@endif
 
 	@endif
@@ -32,7 +34,9 @@
 @endsection
 
 @section('botones_imprimir_email')
-	@include('ventas.pedidos.formatos_impresion.botones_imprimir_email')
+	@can('ventas.pedidos.show.imprimir')
+		@include('ventas.pedidos.formatos_impresion.botones_imprimir_email')
+	@endcan
 @endsection
 
 @section('botones_anterior_siguiente')
@@ -154,7 +158,7 @@
 							<span class="precio_total" style="display: none;">{{$linea->precio_total}}</span>
 						</td>
 	                    <td>
-	                        @if( $doc_encabezado->estado == 'Pendiente' && !$user->hasRole('SupervisorCajas') )
+	                        @if( $doc_encabezado->estado == 'Pendiente' && $user->hasPermissionTo('ventas.documento.modificar') )
 	                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
 
 	                            @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
@@ -212,9 +216,9 @@
 @section('footer')
 	@if( $doc_encabezado->lineas_registros->sum('cantidad_pendiente') > 0 && $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Facturado' )
 
-		@if( !$user->hasRole('SupervisorCajas') && !$user->hasRole('Vendedor'))
+		@can('ventas.pedidos.show.generar_factura')
 			@include('ventas.pedidos.formulario_vista_show_pedidos')
-		@endif
+		@endcan
 		
 	@endif
 @endsection

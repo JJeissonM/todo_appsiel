@@ -3,11 +3,13 @@
 namespace App\Ventas;
 
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class VtasPedido extends VtasDocEncabezado
 {
+    use FiltraRegistrosPorUsuario;
     protected $table = 'vtas_doc_encabezados';
 
     // ventas_doc_relacionado_id: la factura que se facturó con base en el pedido.
@@ -78,20 +80,8 @@ class VtasPedido extends VtasDocEncabezado
             ['vtas_doc_encabezados.core_empresa_id','=', Auth::user()->empresa_id],
             ['vtas_doc_encabezados.core_tipo_transaccion_id', '=', $core_tipo_transaccion_id]
         ];
-        $user = Auth::user();
 
-        if ( $user->hasRole('Vendedor') )
-        {
-            $vendedor = Vendedor::where([
-                ['user_id', '=', $user->id]
-            ])->get()->first();
-
-            if ($vendedor != null) {
-                $array_wheres = array_merge($array_wheres,[['vtas_doc_encabezados.vendedor_id','=', $vendedor->id]]);
-            }            
-        }
-
-        $collection = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+        $query = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
                 ->leftJoin('vtas_vendedores', 'vtas_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
                 ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_vendedores.core_tercero_id')
@@ -104,9 +94,11 @@ class VtasPedido extends VtasDocEncabezado
                     'terceros_vendedores.descripcion AS campo5',
                     'vtas_doc_encabezados.estado AS campo6',
                     'vtas_doc_encabezados.id AS campo7'
-                )
-                ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
-                ->get();
+                );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
+
+        $collection = $query->orderBy('vtas_doc_encabezados.created_at', 'DESC')->get();
 
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
@@ -174,12 +166,11 @@ class VtasPedido extends VtasDocEncabezado
         
         $texto_busqueda = '%' . str_replace( " ", "%", $search ) . '%';
 
-        $string = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+        $query = VtasPedido::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
             ->leftJoin('core_terceros as terceros_vendedores', 'terceros_vendedores.id', '=', 'vtas_doc_encabezados.vendedor_id')
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
-            ->having('nueva_cadena', 'LIKE', $texto_busqueda)
             ->select(
                 DB::raw('CONCAT( vtas_doc_encabezados.fecha, " ", core_tipos_docs_apps.prefijo," ",vtas_doc_encabezados.consecutivo, " ", core_terceros.descripcion, " ", vtas_doc_encabezados.descripcion, " ", vtas_doc_encabezados.valor_total, " ", vtas_doc_encabezados.forma_pago, " ", vtas_doc_encabezados.estado) AS nueva_cadena'),
                 'vtas_doc_encabezados.fecha AS FECHA',
@@ -190,9 +181,11 @@ class VtasPedido extends VtasDocEncabezado
                 'terceros_vendedores.descripcion AS VENDEDOR',
                 'vtas_doc_encabezados.descripcion AS DETALLE',
                 'vtas_doc_encabezados.estado AS ESTADO'
-            )
-            ->orderBy('vtas_doc_encabezados.created_at', 'DESC')
-            ->toSql();
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
+
+        $string = $query->orderBy('vtas_doc_encabezados.created_at', 'DESC')->toSql();
             
         $string = str_replace('`vtas_doc_encabezados`.`core_empresa_id` = ?', '`vtas_doc_encabezados`.`core_empresa_id` = ' . Auth::user()->empresa_id, $string);
         

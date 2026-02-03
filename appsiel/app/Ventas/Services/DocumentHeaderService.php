@@ -127,23 +127,26 @@ class DocumentHeaderService
 
         $actions = [];
 
-        switch ($doc_encabezado-> core_tipo_transaccion_id) {
-            case '23':
+        switch ($doc_encabezado->core_tipo_transaccion_id) {
+            case '23': // Facturas de ventas
                 if( $doc_encabezado->estado != 'Anulado' && $doc_encabezado->estado != 'Pendiente' )
                 {
+
                     if( !$docs_relacionados[1] )
                     {
-
-                        $actions[] = (object)[
-                            'tag_html' => 'a',
-                            'target' => null,
-                            'id' => null,
-                            'url' => url( 'ventas/' . $doc_encabezado->id . '/edit' . $variables_url ),
-                            'title' => 'Modificar',
-                            'color_bootstrap' => null,
-                            'faicon' => 'edit',
-                            'size' => null,
-                        ];
+                        
+                        if ( Auth::user()->hasPermissionTo('ventas.documento.modificar') ) {
+                            $actions[] = (object)[
+                                'tag_html' => 'a',
+                                'target' => null,
+                                'id' => null,
+                                'url' => url( 'ventas/' . $doc_encabezado->id . '/edit' . $variables_url ),
+                                'title' => 'Modificar',
+                                'color_bootstrap' => null,
+                                'faicon' => 'edit',
+                                'size' => null,
+                            ];
+                        }
                         
                         $actions[] = (object)[
                             'tag_html' => 'a',
@@ -157,27 +160,32 @@ class DocumentHeaderService
                         ];
                     }
                     
-                    $actions[] = (object)[
-                        'tag_html' => 'a',
-                        'target' => '_blank',
-                        'id' => null,
-                        'url' => url('tesoreria/recaudos_cxc/create?id=' . Input::get('id') . '&id_modelo=153&id_transaccion=32'),
-                        'title' => 'Hacer abono',
-                        'color_bootstrap' => null,
-                        'faicon' => 'money',
-                        'size' => null,
-                    ];
+                    if ( Auth::user()->hasPermissionTo('ventas.recaudo_cxc.crear') ) {
+                        $actions[] = (object)[
+                            'tag_html' => 'a',
+                            'target' => '_blank',
+                            'id' => null,
+                            'url' => url('tesoreria/recaudos_cxc/create?id=' . Input::get('id') . '&id_modelo=153&id_transaccion=32'),
+                            'title' => 'Hacer abono',
+                            'color_bootstrap' => null,
+                            'faicon' => 'money',
+                            'size' => null,
+                        ];
+                    }
                     
-                    $actions[] = (object)[
-                        'tag_html' => 'button',
-                        'target' => null,
-                        'id' => 'btn_anular',
-                        'url' => url('tesoreria/recaudos_cxc/create?id=' . Input::get('id') . '&id_modelo=153&id_transaccion=32'),
-                        'title' => 'Anular',
-                        'color_bootstrap' => null,
-                        'faicon' => 'close',
-                        'size' => null,
-                    ];
+                    
+                    if ( Auth::user()->hasPermissionTo('ventas.factura.anular') ) {
+                        $actions[] = (object)[
+                            'tag_html' => 'button',
+                            'target' => null,
+                            'id' => 'btn_anular',
+                            'url' => null,
+                            'title' => 'Anular',
+                            'color_bootstrap' => null,
+                            'faicon' => 'close',
+                            'size' => null,
+                        ];
+                    }
                     
                     if ( Auth::user()->hasPermissionTo('vtas_recontabilizar') ) {
                         $actions[] = (object)[

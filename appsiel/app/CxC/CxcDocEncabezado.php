@@ -4,11 +4,13 @@ namespace App\CxC;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Traits\FiltraRegistrosPorUsuario;
 use DB;
 use Auth;
 
 class CxcDocEncabezado extends Model
 {
+    use FiltraRegistrosPorUsuario;
     //protected $table = 'cxc_doc_encabezados'; 
 
     protected $fillable = ['core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','fecha_vencimiento','core_empresa_id','core_tercero_id','tipo_documento','documento_soporte','descripcion','valor_total','estado','creado_por','modificado_por','codigo_referencia_tercero'];
@@ -41,7 +43,7 @@ class CxcDocEncabezado extends Model
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo) AS campo1';
 
-        return CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
+        $query = CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_doc_encabezados.core_tercero_id')
             ->where('cxc_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->whereIn('cxc_doc_encabezados.core_tipo_transaccion_id', [5, 15, 7, 9, 10, 12])
@@ -51,20 +53,25 @@ class CxcDocEncabezado extends Model
                 'core_terceros.descripcion as campo3',
                 'cxc_doc_encabezados.descripcion AS campo4',
                 'cxc_doc_encabezados.id AS campo5'
-            )
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
-            ->paginate($nro_registros);
+            );
+
+        $query = $query->where(function ($subquery) use ($search) {
+            $subquery->where(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+                ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
+                ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+                ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%");
+        });
+
+        $query = self::aplicarFiltroCreadoPor($query, 'cxc_doc_encabezados.creado_por');
+
+        return $query->orderBy('cxc_doc_encabezados.created_at', 'DESC')->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
         $select_raw = 'CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo) AS DOCUMENTO';
 
-        $string = CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
+        $query = CxcDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'cxc_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'cxc_doc_encabezados.core_tercero_id')
             ->where('cxc_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->whereIn('cxc_doc_encabezados.core_tipo_transaccion_id', [5, 15, 7, 9, 10, 12])
@@ -73,13 +80,18 @@ class CxcDocEncabezado extends Model
                 'cxc_doc_encabezados.fecha AS FECHA',
                 'core_terceros.descripcion as TERCERO',
                 'cxc_doc_encabezados.descripcion AS DETALLE'
-            )
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
-            ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orderBy('cxc_doc_encabezados.created_at', 'DESC')
-            ->toSql();
+            );
+
+        $query = $query->where(function ($subquery) use ($search) {
+            $subquery->where(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",cxc_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+                ->orWhere("cxc_doc_encabezados.fecha", "LIKE", "%$search%")
+                ->orWhere("core_terceros.descripcion", "LIKE", "%$search%")
+                ->orWhere("cxc_doc_encabezados.descripcion", "LIKE", "%$search%");
+        });
+
+        $query = self::aplicarFiltroCreadoPor($query, 'cxc_doc_encabezados.creado_por');
+
+        $string = $query->orderBy('cxc_doc_encabezados.created_at', 'DESC')->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

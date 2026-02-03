@@ -16,6 +16,7 @@ use App\Ventas\CondicionPago;
 use App\VentasPos\FacturaPos;
 
 use App\Matriculas\FacturaAuxEstudiante;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -23,9 +24,10 @@ use Illuminate\Support\Facades\Schema;
 
 class VtasDocEncabezado extends Model
 {
+    use FiltraRegistrosPorUsuario;
     //protected $table = 'vtas_doc_encabezados'; 
 
-    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'hora_entrega', 'plazo_entrega_id', 'fecha_vencimiento', 'orden_compras', 'valor_total', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas'];
+    protected $fillable = [ 'core_empresa_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'fecha', 'core_tercero_id', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'remision_doc_encabezado_id', 'ventas_doc_relacionado_id', 'cliente_id', 'contacto_cliente_id', 'vendedor_id', 'forma_pago', 'fecha_entrega', 'hora_entrega', 'plazo_entrega_id', 'fecha_vencimiento', 'orden_compras', 'valor_total', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio', 'valor_total_bolsas', 'updated_at'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Cliente', 'Valor ingresos (sin iva)', 'Total factura', 'Forma de pago', 'Estado'];
 
@@ -360,7 +362,7 @@ class VtasDocEncabezado extends Model
         
         $texto_busqueda = '%' . str_replace( " ", "%", $search ) . '%';
 
-        $string = VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+        $query = VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
@@ -375,9 +377,11 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.valor_total AS VALOR_TOTAL',
                 'vtas_doc_encabezados.forma_pago AS FORMA_DE_PAGO',
                 'vtas_doc_encabezados.estado AS ESTADO'
-            )
-            ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
-            ->toSql();
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query);
+
+        $string = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')->toSql();
             
         $string = str_replace('`vtas_doc_encabezados`.`core_empresa_id` = ?', '`vtas_doc_encabezados`.`core_empresa_id` = ' . Auth::user()->empresa_id, $string);
         
@@ -396,7 +400,7 @@ class VtasDocEncabezado extends Model
     {
         $core_tipo_transaccion_id = 23; // Facturas
 
-        $collection = VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
+        $query = VtasDocEncabezado::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'vtas_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'vtas_doc_encabezados.core_tercero_id')
             ->where('vtas_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('vtas_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
@@ -409,8 +413,11 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.forma_pago AS campo6',
                 'vtas_doc_encabezados.estado AS campo7',
                 'vtas_doc_encabezados.id AS campo8'
-            )
-            ->orderBy('vtas_doc_encabezados.fecha', 'DESC')
+            );
+
+        $query = self::aplicarFiltroCreadoPor($query);
+
+        $collection = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')
             ->orderBy('vtas_doc_encabezados.created_at')
             ->get();
 

@@ -24,10 +24,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\View;
 use Khill\Lavacharts\Laravel\LavachartsFacade;
-use PhpParser\Node\Stmt\Switch_;
+
+use App\Traits\ValidaPermisosReportes;
 
 class ReportesController extends Controller
 {
+    use ValidaPermisosReportes;
 
     public function __construct()
     {
@@ -74,11 +76,9 @@ class ReportesController extends Controller
 
     public function precio_venta_por_producto(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_precio_venta_por_producto') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -112,11 +112,9 @@ class ReportesController extends Controller
 
     public function vtas_reporte_ventas(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_reporte_ventas') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -145,11 +143,9 @@ class ReportesController extends Controller
 
     public function vtas_reporte_rentabilidad(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_reporte_rentabilidad') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -375,11 +371,9 @@ class ReportesController extends Controller
 
     public function remisiones_estado_facturadas_sin_factura_real(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_remisiones_sin_factura_real') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -415,6 +409,11 @@ class ReportesController extends Controller
 
     public function ventas_por_vendedor(Request $request)
     {
+        if ( !$this->usuarioTienePermisoReporte('vtas_reporte_ventas_por_vendedor') )
+        {
+            return $this->respuestaSinPermiso();
+        }
+
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
@@ -440,11 +439,9 @@ class ReportesController extends Controller
 
     public function lineas_de_movimiento_repetidas(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') )
+        if ( !$this->usuarioTienePermisoReporte('vtas_lineas_de_movimiento_repetidas') )
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -503,11 +500,9 @@ class ReportesController extends Controller
 
     public function reporte_pedidos(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_reporte_pedidos') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -533,11 +528,9 @@ class ReportesController extends Controller
 
     public function movimientos(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_reporte_movimientos') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
 
         $fecha_desde = $request->fecha_desde;
@@ -554,11 +547,9 @@ class ReportesController extends Controller
 
     public function documentos_facturacion(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') ) 
+        if ( !$this->usuarioTienePermisoReporte('vtas_documentos_facturacion') ) 
         {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+            return $this->respuestaSinPermiso();
         }
         
         $fecha_desde = $request->fecha_desde;

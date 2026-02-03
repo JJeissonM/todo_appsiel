@@ -31,6 +31,29 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
+								$pdv_id_default = '1';
+								if( isset($parametros['pdv_id_default'] ) )
+								{
+									$pdv_id_default = $parametros['pdv_id_default'];
+								}else{
+								}
+							?>
+							{{ Form::bsSelect('pdv_id_default', $pdv_id_default, 'Punto de ventas principal', App\VentasPos\Pdv::opciones_campo_select(), ['class'=>'form-control', 'required'=>'required']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
 								$activar_ingreso_tactil_productos = '';
 								if( isset($parametros['activar_ingreso_tactil_productos'] ) )
 								{

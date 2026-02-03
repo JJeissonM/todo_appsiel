@@ -16,21 +16,25 @@
 <div class="row">
 	
 	<div class="col-sm-4">
-		<a href="{{url( 'web/create?id=13&id_modelo=216' )}}">
-			<div class="boton">
-					<h1> <i class="fa fa-smile-o"> </i> </h1>
-					Crear cliente
-			</div>
-		</a>
+		@can('ventas.index.crear_cliente')
+			<a href="{{url( 'web/create?id=13&id_modelo=216' )}}">
+				<div class="boton">
+						<h1> <i class="fa fa-smile-o"> </i> </h1>
+						Crear cliente
+				</div>
+			</a>
+		@endcan
 	</div>
 
 	<div class="col-sm-4">
-		<a href="{{url( 'vtas_cotizacion/create?id=13&id_modelo=155&id_transaccion=30' )}}">
-			<div class="boton">
-					<h1> <i class="fa fa-file"> </i> </h1>
-					Crear cotización
-			</div>
-		</a>
+		@can('ventas.index.crear_cotizacion')
+			<a href="{{url( 'vtas_cotizacion/create?id=13&id_modelo=155&id_transaccion=30' )}}">
+				<div class="boton">
+						<h1> <i class="fa fa-file"> </i> </h1>
+						Crear cotización
+				</div>
+			</a>
+		@endcan
 	</div>
 
 	<div class="col-sm-4">

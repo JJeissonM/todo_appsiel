@@ -20,6 +20,7 @@ class EncabezadoDocumentoTransaccion
 
 	public function crear_nuevo( array $datos )
 	{
+		$datos['updated_at'] = NULL;
 		$this->almacenar( $datos );
 		$this->asignar_consecutivo();
 		$this->incrementar_consecutivo_tipo_documento();

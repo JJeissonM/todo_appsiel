@@ -3,7 +3,7 @@
 
 <div class="container-fluid">
     <div class="marco_formulario">
-        {{ Form::open(['url' => 'vtas_crear_remision_y_factura_desde_doc_venta?id=13&id_modelo=164&id_transaccion=24&remision_y_factura_desde_pedido=yes&doc_ventas_id=' . $doc_encabezado->id,'id'=>'form_create','files' => true]) }}
+        {{ Form::open(['url' => 'vtas_crear_remision_y_factura_desde_doc_venta','id'=>'form_create','files' => true]) }}
             <input type="hidden" name="url" value="vtas_pedidos/{{$doc_encabezado->id.$variables_url}}" />
             <input type="hidden" name="doc_encabezado_id" value="{{$doc_encabezado->id}}" />
             <input type="hidden" name="doc_encabezado_cotizacion_id" id="doc_encabezado_cotizacion_id" value="{{$doc_encabezado->ventas_doc_relacionado_id}}" />

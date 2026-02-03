@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CxC;
 use Illuminate\Http\Request;
 
 use App\Http\Controllers\Controller;
+use App\Traits\ValidaPermisosReportes;
 
 use App\CxC\Services\DocumentosPendientesCxC;
 
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\View;
 
 class ReportesController extends Controller
 {
+    use ValidaPermisosReportes;
 
     public function __construct() {
         $this->middleware('auth');
@@ -25,11 +27,8 @@ class ReportesController extends Controller
 
     public function documentos_pendientes(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') )
-        {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        if (!$this->usuarioTienePermisoReporte('cxc_documentos_pendientes')) {
+            return $this->respuestaSinPermiso();
         }
         
         $core_tercero_id = $request->core_tercero_id;
@@ -110,11 +109,8 @@ class ReportesController extends Controller
 
     public function estado_de_cuenta(Request $request)
     {
-        $user = Auth::user();
-
-        if ( $user->hasRole('SupervisorCajas') || $user->hasRole('Vendedor') )
-        {
-            return '<h2>Su perfil de usuario no tiene permiso para generar este reporte.</h2>';
+        if (!$this->usuarioTienePermisoReporte('cxc_estado_de_cuenta')) {
+            return $this->respuestaSinPermiso();
         }
 
         $core_tercero_id = $request->core_tercero_id;

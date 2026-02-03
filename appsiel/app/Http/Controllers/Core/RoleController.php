@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Core;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-
-use Auth;
-use Input;
+use Illuminate\Support\Facades\Input;
 //Importing laravel-permission models
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -101,6 +99,7 @@ class RoleController extends Controller {
         $role = Role::findOrFail($id);
         $permissions = Permission::leftJoin('sys_aplicaciones','sys_aplicaciones.id','=','permissions.core_app_id')
                             ->orderBy('permissions.core_app_id','ASC')
+                            ->orderBy('permissions.id','ASC')
                             ->select('permissions.id','permissions.name','sys_aplicaciones.descripcion')
                             ->get()
                             ->toArray();

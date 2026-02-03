@@ -18,6 +18,7 @@ use App\Core\Transactions\TransactionMovements;
 
 use App\Tesoreria\Services\AccountsReceivableServices;
 use App\Tesoreria\Services\FacturaEstudiantesService;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Schema;
 
 class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
 {
+    use FiltraRegistrosPorUsuario;
     use TraitTransactionDocument;
 
     // Apunta a la misma tabla del modelo de Recaudos
@@ -36,7 +38,7 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
     {
         $transaccion_id = 32;
 
-        $collection = TesoDocEncabezadoRecaudoCxc::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+        $query = TesoDocEncabezadoRecaudoCxc::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
                                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
                                     ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
                                     ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
@@ -48,9 +50,11 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
                                         'teso_doc_encabezados.valor_total AS campo5',
                                         'teso_doc_encabezados.estado AS campo6',
                                         'teso_doc_encabezados.id AS campo7'
-                                    )
-                                    ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-                                    ->get();
+                                    );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_doc_encabezados.creado_por');
+
+        $collection = $query->orderBy('teso_doc_encabezados.created_at', 'DESC')->get();
 
         
         if (config('tesoreria.buscar_por_estudiante_en_inputs')) {
@@ -133,7 +137,8 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
     public static function sqlString($search)
     {
         $transaccion_id = 32;
-        $string = TesoDocEncabezadoRecaudoCxc::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
+
+        $query = TesoDocEncabezadoRecaudoCxc::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_doc_encabezados.core_tipo_doc_app_id')
             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_doc_encabezados.core_tercero_id')
             ->where('teso_doc_encabezados.core_empresa_id', Auth::user()->empresa_id)
             ->where('teso_doc_encabezados.core_tipo_transaccion_id', $transaccion_id)
@@ -144,15 +149,20 @@ class TesoDocEncabezadoRecaudoCxc extends TesoDocEncabezado
                 'teso_doc_encabezados.descripcion AS DETALLE',
                 'teso_doc_encabezados.valor_total AS VALOR_DOCUMENTO',
                 'teso_doc_encabezados.estado AS ESTADO'
-            )
-            ->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
-            ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
-            ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%")
-            ->orderBy('teso_doc_encabezados.created_at', 'DESC')
-            ->toSql();
+            );
+
+        $query = $query->where(function ($subquery) use ($search) {
+            $subquery->where("teso_doc_encabezados.fecha", "LIKE", "%$search%")
+                ->orWhere(DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_doc_encabezados.consecutivo)'), "LIKE", "%$search%")
+                ->orWhere(DB::raw('CONCAT(core_terceros.descripcion," (",core_terceros.razon_social,")")'), "LIKE", "%$search%")
+                ->orWhere("teso_doc_encabezados.descripcion", "LIKE", "%$search%")
+                ->orWhere("teso_doc_encabezados.valor_total", "LIKE", "%$search%")
+                ->orWhere("teso_doc_encabezados.estado", "LIKE", "%$search%");
+        });
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_doc_encabezados.creado_por');
+
+        $string = $query->orderBy('teso_doc_encabezados.created_at', 'DESC')->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
 

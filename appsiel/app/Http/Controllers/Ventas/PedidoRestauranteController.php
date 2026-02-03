@@ -44,7 +44,7 @@ class PedidoRestauranteController extends TransaccionController
 
     public function create()
     {
-        $pdv_id = 1;
+        $pdv_id = config('ventas_pos.pdv_id_default',1);
         $pdv = Pdv::find($pdv_id);        
         
         $validar = $this->verificar_datos_por_defecto( $pdv );
@@ -141,8 +141,16 @@ class PedidoRestauranteController extends TransaccionController
         $medios_recaudo = RecaudoController::get_medios_recaudo();
         $cajas = RecaudoController::get_cajas();
         $cuentas_bancarias = RecaudoController::get_cuentas_bancarias();
+        
+        $url_index = 'ventas?id=' . Input::get('id');
+        
+        $cocinas = config('pedidos_restaurante.cocinas');
 
-        $miga_pan = $this->get_array_miga_pan($this->app, $this->modelo, 'Pedidos');
+        $miga_pan = [
+            ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
+            ['url' => $url_index, 'etiqueta' => 'Cocinas'],
+            ['url' => 'NO', 'etiqueta' => $cocinas[Input::get('cocina_index')]['label']]
+        ];
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
         
@@ -208,7 +216,11 @@ class PedidoRestauranteController extends TransaccionController
     }
 
     public function verificar_datos_por_defecto( $pdv )
-    {
+    {        
+        if ( $pdv->estado != 'Abierto' ) {
+            return $pdv->descripcion . ' debe estar "Abierto" para poder crear pedidos.';
+        }
+
         $cliente = Cliente::find(config('pedidos_restaurante.cliente_default_id'));
 
         if ( $cliente == null ) {
@@ -252,7 +264,7 @@ class PedidoRestauranteController extends TransaccionController
 
         // Crear documento de Ventas
         $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-
+        
         if ((int)config('inventarios.manejar_platillos_con_contorno')) {
             $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
         }
@@ -301,6 +313,9 @@ class PedidoRestauranteController extends TransaccionController
         return response()->json( $this->build_json_pedido($pedido), 200);
     }
 
+    /**
+     * ANULA PEDIDO - ES LLAMADO VÍA AJAX
+     */
     public function cancel($id, $user_email)
     {
         $pedido = VtasPedido::find($id);
@@ -321,11 +336,13 @@ class PedidoRestauranteController extends TransaccionController
 
     public function build_json_pedido($doc_encabezado)
     {
+        $hora_creacion = $doc_encabezado->created_at;
+
         return [
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
             'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo,
             'doc_encabezado_fecha' => $doc_encabezado->fecha,
-            'doc_encabezado_hora_creacion' => $doc_encabezado->created_at->format('H:i a'),
+            'doc_encabezado_hora_creacion' => $hora_creacion ? $hora_creacion->format('H:i a') : '',
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
@@ -377,7 +394,10 @@ class PedidoRestauranteController extends TransaccionController
         } // Fin por cada registro
 
         $doc_encabezado->valor_total = $total_documento;
+        $doc_encabezado->updated_at = NULL;
+        $doc_encabezado->timestamps = false;
         $doc_encabezado->save();
+        $doc_encabezado->timestamps = true;
 
         return 0;
     }

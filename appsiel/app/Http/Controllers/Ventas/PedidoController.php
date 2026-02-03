@@ -368,9 +368,16 @@ class PedidoController extends TransaccionController
         $id_transaccion = $this->transaccion->id;
         $registros_contabilidad = [];
         $cliente = Cliente::find($doc_encabezado->cliente_id);
+
+        $url_index = 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo');
+
+        if ( Input::get('id_transaccion') == 60 ) {
+            $url_index = 'NO';
+        }
+        
         $miga_pan = [
             ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
-            ['url' => 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo'), 'etiqueta' => $this->modelo->descripcion],
+            ['url' => $url_index, 'etiqueta' => $this->modelo->descripcion],
             ['url' => 'NO', 'etiqueta' => $this->doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
 
