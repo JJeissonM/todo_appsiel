@@ -12,7 +12,7 @@ class AddUniqueConstraintToSgaCalificacionesAuxiliar extends Migration
         if (!Schema::hasTable('sga_calificaciones_auxiliares')) {
             return;
         }
-
+/*
         DB::statement(
             'DELETE t1 FROM sga_calificaciones_auxiliares t1
              INNER JOIN sga_calificaciones_auxiliares t2
@@ -24,7 +24,7 @@ class AddUniqueConstraintToSgaCalificacionesAuxiliar extends Migration
              AND t1.id_estudiante = t2.id_estudiante
              AND t1.codigo_matricula = t2.codigo_matricula
              AND t1.id > t2.id'
-        );
+        );*/
 
         Schema::table('sga_calificaciones_auxiliares', function (Blueprint $table) {
             $table->unique(
