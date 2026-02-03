@@ -11,7 +11,7 @@ trait FiltraRegistrosPorUsuario
     {
         $column = $columna ?: 'creado_por';
         $user = Auth::user();
-        $roles_sin_filtro = ['SuperAdmin', 'Administrador'];
+        $roles_sin_filtro = self::rolesSinFiltro();
 
         if (is_null($user) || empty($user->email)) {
             return $query;
@@ -46,5 +46,11 @@ trait FiltraRegistrosPorUsuario
 
         $roles = $user->roles ?? [];
         return collect($roles)->pluck('name');
+    }
+
+    protected static function rolesSinFiltro(): array
+    {
+        $roles = config('filtrado_registros.roles_sin_filtro', []);
+        return array_map('trim', (array)$roles);
     }
 }
