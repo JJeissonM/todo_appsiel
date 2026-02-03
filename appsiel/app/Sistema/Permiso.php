@@ -52,7 +52,7 @@ class Permiso extends Permission
                                 ->orWhere("permissions.orden", "LIKE", "%$search%")
                                 ->orWhere("permissions.enabled", "LIKE", "%$search%")
                                 ->orWhere("permissions.fa_icon", "LIKE", "%$search%")
-                                ->orderBy('permissions.created_at', 'DESC')
+                                ->orderBy('permissions.id', 'DESC')
                                 ->paginate($nro_registros);
     }
 
