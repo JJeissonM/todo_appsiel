@@ -3,6 +3,17 @@
         Envío Nómina Eectrónica &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <b>Desde: </b>{{ $lapso->fecha_inicial }} &nbsp;&nbsp;&nbsp; <b>Hasta:</b> {{ $lapso->fecha_final }}
     </h5>
 
+    @if (!empty($empleados_excluidos))
+        <div class="alert alert-info">
+            <strong>Empleados excluidos de la generación/envío:</strong>
+            <ul style="margin-bottom: 0;">
+                @foreach ($empleados_excluidos as $excluido)
+                    <li>{{ $excluido }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     @foreach ($datos_vista as $comprobante)
 
         <?php 

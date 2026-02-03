@@ -18,7 +18,11 @@ class NomContrato extends Model
     /**
      * clase_contrato = { normal | labor_contratada | por_turnos }
      */
-    protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'clase_riesgo_laboral_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id','genera_planilla_integrada','tipo_cotizante','turno_default_id', 'fingerprint_reader_id'];
+    protected $fillable = ['core_tercero_id', 'clase_contrato', 'cargo_id', 'clase_riesgo_laboral_id', 'horas_laborales', 'sueldo', 'salario_integral', 'fecha_ingreso', 'contrato_hasta', 'entidad_salud_id', 'entidad_pension_id', 'entidad_arl_id', 'estado', 'liquida_subsidio_transporte', 'planilla_pila_id', 'es_pasante_sena', 'entidad_cesantias_id', 'entidad_caja_compensacion_id', 'grupo_empleado_id','genera_planilla_integrada','tipo_cotizante','excluir_documentos_nomina_electronica','turno_default_id', 'fingerprint_reader_id'];
+
+    protected $casts = [
+        'excluir_documentos_nomina_electronica' => 'boolean'
+    ];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Grupo Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado'];
 
@@ -397,7 +401,36 @@ class NomContrato extends Model
             ]];
         }
 
+        $lista_campos[] = $this->get_campo_excluir_documentos($registro->excluir_documentos_nomina_electronica);
+
         return $lista_campos;
+    }
+
+    public function get_campos_adicionales_create($lista_campos)
+    {
+        $lista_campos[] = $this->get_campo_excluir_documentos(false);
+
+        return $lista_campos;
+    }
+
+    protected function get_campo_excluir_documentos($valor)
+    {
+        return [
+            "id" => 998,
+            "descripcion" => "Excluir del documento soporte de nómina electrónica",
+            "tipo" => "bsSelect",
+            "name" => "excluir_documentos_nomina_electronica",
+            "opciones" => [
+                '0' => 'No',
+                '1' => 'Sí'
+            ],
+            "value" => $valor ? '1' : '0',
+            "atributos" => [ 'class' => 'form-control' ],
+            "definicion" => "",
+            "requerido" => 0,
+            "editable" => 1,
+            "unico" => 0
+        ];
     }
 
     public static function update_adicional($datos, $registro_id)

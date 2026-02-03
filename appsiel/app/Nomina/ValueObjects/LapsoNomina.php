@@ -34,10 +34,13 @@ class LapsoNomina
 
     public function get_empleados_con_movimiento()
     {
-        return NomDocRegistro::whereBetween( 
-                                                'fecha', 
-                                                [ $this->fecha_inicial, $this->fecha_final ] 
-                                            )
+        return NomDocRegistro::whereBetween(
+                                        'fecha',
+                                        [ $this->fecha_inicial, $this->fecha_final ]
+                                    )
+                                ->whereHas('contrato', function ($query) {
+                                    $query->where('excluir_documentos_nomina_electronica', false);
+                                })
                                 ->distinct('nom_contrato_id')
                                 ->get()
                                 ->unique('nom_contrato_id')

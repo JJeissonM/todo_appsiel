@@ -3,10 +3,9 @@
 namespace App\Http\Controllers\Nomina;
 
 use App\Core\Services\CompanyService;
-use App\FacturacionElectronica\DATAICO\ResultadoEnvio;
+
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Core\TransaccionController;
 use App\Sistema\Services\AppModel;
 use App\Sistema\TipoTransaccion;
@@ -17,10 +16,10 @@ use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\DATAICO\Services\DocumentoSoporteService;
 use App\Sistema\Html\BotonesAnteriorSiguiente;
 use GuzzleHttp\Client;
-use Illuminate\Support\Facades\App;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\Redirect;
+
 use Illuminate\Support\Facades\View;
 
 class NominaElectronicaController extends TransaccionController
@@ -29,6 +28,7 @@ class NominaElectronicaController extends TransaccionController
     public $lapso;
     public $datos_vista = [];
     public $arr_ids_docs_generados = [];
+    public $empleados_excluidos = [];
 
     public function index()
     {
@@ -106,6 +106,10 @@ class NominaElectronicaController extends TransaccionController
         $lapso = new LapsoNomina( $request->fecha_final_periodo );
         $this->lapso = $lapso;
 
+        $this->datos_vista = [];
+        $this->arr_ids_docs_generados = [];
+        $this->empleados_excluidos = [];
+
         $data = [
             'core_empresa_id' => $company_serv->company->id,
             'core_tipo_transaccion_id' => self::CORE_TIPO_TRANSACCION_ID,
@@ -127,11 +131,20 @@ class NominaElectronicaController extends TransaccionController
         // Un "Documento de soporte de nómina electrónica" por cada empleado
         foreach ( $empleados_con_movimiento as $registro_empleado )
         {
+
             if ( in_array($registro_empleado->contrato->id, $ids_contratos_all_docs_generados) ) {
                 continue;
             }
 
             $empleado = $registro_empleado->contrato;
+
+            if ( $empleado->excluir_documentos_nomina_electronica )
+            {
+                $nombre_empleado = isset($empleado->tercero) && $empleado->tercero ? $empleado->tercero->descripcion : 'Contrato #' . $empleado->id;
+                $identificacion = isset($empleado->tercero) && $empleado->tercero ? $empleado->tercero->numero_identificacion : null;
+                $this->empleados_excluidos[] = trim( $nombre_empleado . ( $identificacion ? ' (' . $identificacion . ')' : '' ) );
+                continue;
+            }
 
             $datos_doc_soporte = $doc_soporte_service->get_data_for_json( $empleado, $lapso, $almacenar_registros );
             
@@ -202,7 +215,8 @@ class NominaElectronicaController extends TransaccionController
         return View::make('nomina.nomina_electronica.tabla_visualizacion_envio', [
             'datos_vista' => $this->datos_vista,
             'lapso' => $this->lapso,
-            'arr_ids_docs_generados' => json_encode($this->arr_ids_docs_generados)
+            'arr_ids_docs_generados' => json_encode($this->arr_ids_docs_generados),
+            'empleados_excluidos' => $this->empleados_excluidos
             ] )
             ->render();
     }
