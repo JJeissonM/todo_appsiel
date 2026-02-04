@@ -379,7 +379,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.estado AS ESTADO'
             );
 
-        $query = self::aplicarFiltroCreadoPor($query);
+        $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
 
         $string = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')->toSql();
             
@@ -415,7 +415,7 @@ class VtasDocEncabezado extends Model
                 'vtas_doc_encabezados.id AS campo8'
             );
 
-        $query = self::aplicarFiltroCreadoPor($query);
+        $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
 
         $collection = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')
             ->orderBy('vtas_doc_encabezados.created_at')

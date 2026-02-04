@@ -16,10 +16,10 @@ class CreateComprasPivotItemsXmlTable extends Migration
         Schema::create('compras_pivot_items_xml', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('inv_producto_id');
+            $table->unsignedInteger('inv_producto_id');
             $table->string('codigo_item_xml');
             $table->string('nombre_item_xml');
-            $table->unsignedBigInteger('proveedor_id');
+            $table->unsignedInteger('proveedor_id');
             $table->timestamps();
 
             $table->foreign('inv_producto_id')

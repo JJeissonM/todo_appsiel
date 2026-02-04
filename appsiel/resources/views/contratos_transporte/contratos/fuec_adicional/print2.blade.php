@@ -151,10 +151,25 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
 			page-break-after: always;
 		}
 
+		.lbl_doc_anulado {
+			position: fixed;
+			top: 40%;
+			left: 0;
+			right: 0;
+			text-align: center;
+			font-size: 48px;
+			color: rgba(220, 0, 0, 0.35);
+			transform: rotate(-20deg);
+			z-index: 9999;
+		}
+
 	</style>
 </head>
 
 <body id="app-layout">
+	@if($fuec_adicional->estado == 'ANULADO')
+		<div class="lbl_doc_anulado">ANULADO</div>
+	@endif
 	<div class="container-fluid">
 		<div class="row" style="font-size: 13px; line-height: 1.1;">			
 			<div class="col-md-12">

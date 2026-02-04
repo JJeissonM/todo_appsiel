@@ -9,7 +9,7 @@ class FuecAdicional extends Model
 {
     protected $table = 'cte_fuec_adicionales';
 
-    protected $fillable = ['id', 'contrato_id', 'vehiculo_id', 'conductor1_id', 'conductor2_id', 'conductor3_id', 'estado', 'codigo', 'version', 'fecha', 'numero_fuec', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_fuec', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_fuec', 'mes_fuec', 'anio_fuec', 'tipo_servicio', 'nro_personas', 'disponibilidad', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'created_at', 'updated_at','descripcion_recorrido'];
+    protected $fillable = ['id', 'contrato_id', 'vehiculo_id', 'conductor1_id', 'conductor2_id', 'conductor3_id', 'estado', 'codigo', 'version', 'fecha', 'numero_fuec', 'origen', 'destino', 'fecha_inicio', 'fecha_fin', 'valor_fuec', 'valor_empresa', 'valor_propietario', 'direccion_notificacion', 'telefono_notificacion', 'dia_fuec', 'mes_fuec', 'anio_fuec', 'tipo_servicio', 'nro_personas', 'disponibilidad', 'pie_uno', 'pie_dos', 'pie_tres', 'pie_cuatro', 'anulacion_motivo', 'anulado_por', 'anulado_el', 'created_at', 'updated_at','descripcion_recorrido'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Nro.', 'Objeto', 'Fecha Celebrado', 'Origen - Destino', 'Vigencia', 'Contratante', 'Vehículo', 'Propietario', 'Estado'];
 

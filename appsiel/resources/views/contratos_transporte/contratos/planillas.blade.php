@@ -55,7 +55,7 @@
 								<th>Nro. FUEC</th>
 								<th>Título Plantilla</th>
 								<th>Fecha Generada</th>
-								<th>Imprimir FUEC</th>
+								<th>Acciones</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -69,11 +69,18 @@
 									<tr>
 										<td>{{$c->numero_fuec}}</td>
 										<td>{{$p->plantilla->titulo}}</td>
-										<td>{{$p->created_at}}</td>
-										<td>
-											<a target="_blank" href="{{ url('/cte_contratos/planillas/' . $p->id . '/imprimir')}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
-										</td>
-									</tr>
+									<td>{{$p->created_at}}</td>
+									<td>
+										<a target="_blank" href="{{ url('/cte_contratos/planillas/' . $p->id . '/imprimir')}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
+										@if(Auth::user()->can('cte_fuec.anular'))
+											@if($c->estado == 'ANULADO')
+												<span class="label label-danger">ANULADO</span>
+											@else
+												<button type="button" class="btn btn-danger btn-xs btn-anular-fuec" data-action="{{ route('cte_contratos.anular_fuec', $c->id).$variables_url }}" data-fuec="{{ $c->numero_fuec }}" title="ANULAR FUEC">Anular</button>
+											@endif
+										@endif
+									</td>
+								</tr>
 								@endforeach
 							@endif
 							@if(count($fuec_adicionales)>0)
@@ -84,6 +91,13 @@
 									<td>{{$fuec_adicional->created_at}}</td>
 									<td>
 										<a target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$fuec_adicional->id)}}" class="btn-gmail" title="IMPRIMIR FUEC"><i class="fa fa-print"></i></a>
+										@if(Auth::user()->can('cte_fuec.anular'))
+											@if($fuec_adicional->estado == 'ANULADO')
+												<span class="label label-danger">ANULADO</span>
+											@else
+												<button type="button" class="btn btn-danger btn-xs btn-anular-fuec" data-action="{{ route('cte_contratos_fuec_adicional.anular_fuec', $fuec_adicional->id).$variables_url }}" data-fuec="{{ $fuec_adicional->numero_fuec }}" title="ANULAR FUEC">Anular</button>
+											@endif
+										@endif
 									</td>
 								</tr>
 								@endforeach
@@ -100,6 +114,31 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade" id="modal_anular_fuec" tabindex="-1" role="dialog" aria-labelledby="modalAnularFuecLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="modalAnularFuecLabel">Anular FUEC <span id="modal_fuec_numero"></span></h4>
+			</div>
+			<div class="modal-body">
+				<p>Indique el motivo de la anulacion. Esta accion no se puede deshacer.</p>
+				<form method="POST" id="form_anular_fuec">
+					{{ csrf_field() }}
+					<div class="form-group">
+						<label for="motivo_anulacion">Motivo</label>
+						<textarea class="form-control" name="motivo_anulacion" id="motivo_anulacion" rows="3" required></textarea>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+				<button type="button" class="btn btn-danger" id="btn_confirmar_anulacion">Anular</button>
+			</div>
+		</div>
+	</div>
+</div>
 @endsection
 
 
@@ -107,6 +146,19 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		//$('.select2').select2();
+
+		$('.btn-anular-fuec').on('click', function() {
+			var action = $(this).data('action');
+			var fuec = $(this).data('fuec');
+			$('#form_anular_fuec').attr('action', action);
+			$('#modal_fuec_numero').text('#' + fuec);
+			$('#motivo_anulacion').val('');
+			$('#modal_anular_fuec').modal('show');
+		});
+
+		$('#btn_confirmar_anulacion').on('click', function() {
+			$('#form_anular_fuec').submit();
+		});
 	});
 </script>
 @endsection

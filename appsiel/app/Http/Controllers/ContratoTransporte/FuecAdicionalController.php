@@ -11,6 +11,7 @@ use App\Contratotransporte\FuecAdicional;
 use App\Contratotransporte\Planillac;
 
 use App\Contratotransporte\Plantilla;
+use App\Contratotransporte\Services\FuecAnulacionService;
 use App\Contratotransporte\Services\FuecServices;
 use App\Contratotransporte\Vehiculo;
 use App\Core\Empresa;
@@ -188,10 +189,6 @@ class FuecAdicionalController extends Controller
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
         $transaccion = Input::get('id_transaccion');
-        if ($fuec_adicional->estado == 'ANULADO') {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
-        }
-
         $vehiculo = $fuec_adicional->vehiculo;
         $p = Planillac::where('contrato_id', $fuec_adicional->contrato_id)->first();
 
@@ -299,6 +296,10 @@ class FuecAdicionalController extends Controller
     //permite anular un Fuec Adicional por su id
     public function anular($id)
     {
+        if (!Auth::user()->can('cte_fuec.anular')) {
+            return redirect()->back()->with('mensaje_error', 'No tiene permiso para anular FUEC.');
+        }
+
         $contrato = FuecAdicional::find($id);
         $idapp = Input::get('id');
         $modelo = Input::get('id_modelo');
@@ -306,14 +307,43 @@ class FuecAdicionalController extends Controller
         if ($contrato->estado == 'ANULADO') {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
-        $contrato->estado = "ANULADO";
-        if ($contrato->save()) {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('flash_message', 'Contrato ANULADO con éxito.');
+        $motivo = 'Anulacion sin motivo (ruta legacy)';
+        $anulado = (new FuecAnulacionService())->anularFuecAdicional($contrato, $motivo, (int) Auth::id());
+        if ($anulado) {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('flash_message', 'Contrato ANULADO con exito.');
         } else {
             return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no pudo ser ANULADO.');
         }
     }
 
+    public function anularFuec(Request $request, $id)
+    {
+        if (!Auth::user()->can('cte_fuec.anular')) {
+            return redirect()->back()->with('mensaje_error', 'No tiene permiso para anular FUEC.');
+        }
+
+        $request->validate([
+            'motivo_anulacion' => 'required|string|min:3'
+        ]);
+
+        $fuecAdicional = FuecAdicional::find($id);
+        if (is_null($fuecAdicional)) {
+            return redirect()->back()->with('mensaje_error', 'No se encontro el FUEC adicional.');
+        }
+
+        if ($fuecAdicional->estado == 'ANULADO') {
+            return redirect()->back()->with('mensaje_error', 'El FUEC ya esta ANULADO.');
+        }
+
+        $motivo = trim($request->motivo_anulacion);
+        $anulado = (new FuecAnulacionService())->anularFuecAdicional($fuecAdicional, $motivo, (int) Auth::id());
+
+        if ($anulado) {
+            return redirect()->back()->with('flash_message', 'FUEC ANULADO con exito.');
+        }
+
+        return redirect()->back()->with('mensaje_error', 'El FUEC no pudo ser ANULADO.');
+    }
     //verificar planilla pública (Con el QR)
     public function verificarPlanilla($id)
     {
