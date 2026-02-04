@@ -13,6 +13,7 @@ use App\Contabilidad\Services\DocumentHeaderService;
 use App\Contabilidad\Services\DocumentLinesService;
 use App\Contabilidad\Services\AccountingMovingService;
 use App\Contabilidad\Services\AccountingMovement;
+use App\Contabilidad\Services\Concerns\AppliesContabMovementDefaults;
 use App\Contabilidad\ContabDocEncabezado;
 use App\Contabilidad\ContabMovimiento;
 
@@ -20,6 +21,8 @@ use App\CxP\CxpMovimiento;
 
 class AccountingServices
 {
+    use AppliesContabMovementDefaults;
+
     const CONTAB_DOC_HEADER_MODEL_ID = 47;
 
     public function create_accounting_note_doc( $tabla_documentos_a_cancelar, $fecha, $core_tercero_id )
@@ -175,22 +178,7 @@ class AccountingServices
         $data['valor_saldo'] = $valor_debito + $valor_credito;
         $data['detalle_operacion'] = 'Abono factura de cliente';
         $data['tipo_transaccion'] = 'pago_cxp'; // Nuevo en contabilidad
-        $data['inv_producto_id'] = 0;
-        $data['cantidad'] = 0;
-        $data['tasa_impuesto'] = 0;
-        $data['base_impuesto'] = 0;
-        $data['valor_impuesto'] = 0;
-        $data['fecha_vencimiento'] = '0000-00-00';
-        $data['inv_bodega_id'] = 0;
-
-        $data['teso_caja_id'] = 0;
-        $data['teso_cuenta_bancaria_id'] = 0;
-
-        $data['codigo_referencia_tercero'] = 0;
-        $data['documento_soporte'] = 0;
-        $data['estado'] = 'Activo';
-
-        return $data;
+        return $this->apply_contab_movement_defaults($data);
     }
 
     public function get_main_account($movement)

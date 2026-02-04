@@ -6,10 +6,13 @@ use App\Sistema\ValueObjects\TransactionPrimaryKeyVO;
 
 use App\Contabilidad\Services\AccountingMovingService;
 use App\Contabilidad\Services\AccountingMovement;
+use App\Contabilidad\Services\Concerns\AppliesContabMovementDefaults;
 use App\Contabilidad\ContabMovimiento;
 
 class AccountingServices
 {
+    use AppliesContabMovementDefaults;
+
     public function create_accounting_movement( $treasury_movement )
     {
         $obj_acco_move = new AccountingMovement();
@@ -65,16 +68,7 @@ class AccountingServices
         $data['valor_saldo'] = $valor_debito + $valor_credito;
         $data['detalle_operacion'] = $movement->descripcion;
         $data['tipo_transaccion'] = $movement->motivo->teso_tipo_motivo; // Deberia ser el mismo modo de operacion
-        $data['inv_producto_id'] = 0;
-        $data['impuesto_id'] = null;
-        $data['cantidad'] = 0;
-        $data['tasa_impuesto'] = 0;
-        $data['base_impuesto'] = 0;
-        $data['valor_impuesto'] = 0;
-        $data['fecha_vencimiento'] = '0000-00-00';
-        $data['inv_bodega_id'] = 0;
-
-        return $data;
+        return $this->apply_contab_movement_defaults($data);
     }
 
     public function set_data_contra($movement,$data)
