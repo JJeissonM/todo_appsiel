@@ -66,6 +66,7 @@ class AccountingServices
         $data['detalle_operacion'] = $movement->descripcion;
         $data['tipo_transaccion'] = $movement->motivo->teso_tipo_motivo; // Deberia ser el mismo modo de operacion
         $data['inv_producto_id'] = 0;
+        $data['impuesto_id'] = 0;
         $data['cantidad'] = 0;
         $data['tasa_impuesto'] = 0;
         $data['base_impuesto'] = 0;
