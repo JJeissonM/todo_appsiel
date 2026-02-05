@@ -72,11 +72,14 @@
 									<td>{{$p->created_at}}</td>
 									<td>
 										<a target="_blank" href="{{ url('/cte_contratos/planillas/' . $p->id . '/imprimir')}}" class="btn-gmail" title="IMPRIMIR CONTRATO"><i class="fa fa-print"></i></a>
-										@if(Auth::user()->can('cte_fuec.anular'))
 											@if($c->estado == 'ANULADO')
 												<span class="label label-danger">ANULADO</span>
+											@endif
+										@if(Auth::user()->can('cte_fuec.anular'))
+											@if($c->estado == 'ANULADO')
+												&nbsp;
 											@else
-												<button type="button" class="btn btn-danger btn-xs btn-anular-fuec" data-action="{{ route('cte_contratos.anular_fuec', $c->id).$variables_url }}" data-fuec="{{ $c->numero_fuec }}" title="ANULAR FUEC">Anular</button>
+												<a href="#" class="btn-gmail btn-anular-fuec" data-action="{{ route('cte_contratos.anular_fuec', $c->id).$variables_url }}" data-fuec="{{ $c->numero_fuec }}" title="ANULAR FUEC"><i class="fa fa-times"></i></a>
 											@endif
 										@endif
 									</td>
@@ -91,11 +94,16 @@
 									<td>{{$fuec_adicional->created_at}}</td>
 									<td>
 										<a target="_blank" href="{{route('cte_contratos_fuec_adicional.imprimir',$fuec_adicional->id)}}" class="btn-gmail" title="IMPRIMIR FUEC"><i class="fa fa-print"></i></a>
+
+										@if($fuec_adicional->estado == 'ANULADO')
+												<span class="label label-danger">ANULADO</span>
+											@endif
+
 										@if(Auth::user()->can('cte_fuec.anular'))
 											@if($fuec_adicional->estado == 'ANULADO')
-												<span class="label label-danger">ANULADO</span>
+												&nbsp;
 											@else
-												<button type="button" class="btn btn-danger btn-xs btn-anular-fuec" data-action="{{ route('cte_contratos_fuec_adicional.anular_fuec', $fuec_adicional->id).$variables_url }}" data-fuec="{{ $fuec_adicional->numero_fuec }}" title="ANULAR FUEC">Anular</button>
+												<a href="#" class="btn-gmail btn-anular-fuec" data-action="{{ route('cte_contratos_fuec_adicional.anular_fuec', $fuec_adicional->id).$variables_url }}" data-fuec="{{ $fuec_adicional->numero_fuec }}" title="ANULAR FUEC"><i class="fa fa-times"></i></a>
 											@endif
 										@endif
 									</td>
@@ -157,6 +165,12 @@
 		});
 
 		$('#btn_confirmar_anulacion').on('click', function() {
+			var motivo = $.trim($('#motivo_anulacion').val());
+			if (motivo.length === 0) {
+				alert('El campo motivo anulacion es obligatorio.');
+				$('#motivo_anulacion').focus();
+				return;
+			}
 			$('#form_anular_fuec').submit();
 		});
 	});

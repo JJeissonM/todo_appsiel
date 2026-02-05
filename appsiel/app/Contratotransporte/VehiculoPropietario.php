@@ -17,7 +17,7 @@ class VehiculoPropietario extends Vehiculo
     public static function consultar_registros2($nro_registros, $search)
     {
     	$placa = Auth::user()->email;
-    	$vehiculo = Vehiculo::where('placa',$placa)->get()->first();
+    	$vehiculo = Vehiculo::where('placa', 'LIKE', '%' . $placa . '%')->get()->first();
     	$propietario_id = 0;
     	if (!is_null($vehiculo) )
     	{

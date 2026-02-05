@@ -24,6 +24,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
 class ContratoTransporteController extends Controller
@@ -58,12 +59,11 @@ class ContratoTransporteController extends Controller
 
     public function get_documentos_vencidos_condutores($user)
     {
-        
         $docs = Documentosconductor::all();
 
         //valido documentos vencidos
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
-            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            $vehiculo = Vehiculo::where('placa', 'LIKE', '%' . $user->email . '%')->get()->first();
             if ( $vehiculo != null ) {
                 $conductoresDelVehiculo = Vehiculoconductor::where('vehiculo_id', $vehiculo->id)->get()->pluck('conductor_id')->toArray();
                 $docs = Documentosconductor::whereIn('conductor_id', $conductoresDelVehiculo)->get();
@@ -94,7 +94,7 @@ class ContratoTransporteController extends Controller
         
         //valido documentos vencidos
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
-            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            $vehiculo = Vehiculo::where('placa', 'LIKE', '%' . $user->email . '%')->get()->first();
             if ( $vehiculo != null ) {
                 $docs = Documentosvehiculo::where('vehiculo_id', $vehiculo->id)->get();
             }
@@ -128,11 +128,17 @@ class ContratoTransporteController extends Controller
         $emp = null;
         $emp = Empresa::find(1);
         $contratantes = null;
-        $cont = Contratante::all();
+        $cont = Contratante::whereNotNull('cte_contratantes.id')
+            ->filtrarPorUsuario()
+            ->get();
         if (count($cont) > 0) {
             foreach ($cont as $c) {
                 
                 if ($c->estado == 'Inactivo') {
+                    continue;
+                }
+
+                if (is_null($c->tercero)) {
                     continue;
                 }
                 
@@ -147,7 +153,7 @@ class ContratoTransporteController extends Controller
         $lista_vehiculos = null;
         if ($source == 'MISCONTRATOS') {
             $u = Auth::user();
-            $lista_vehiculos = Vehiculo::where('placa', $u->email)->where('estado','Activo')->get();
+            $lista_vehiculos = Vehiculo::where('placa', 'LIKE', '%' . $u->email . '%')->where('estado','Activo')->get();
         } else {
             $lista_vehiculos = Vehiculo::where('estado','Activo')->get();
         }
@@ -554,7 +560,8 @@ class ContratoTransporteController extends Controller
     public function miscontratos()
     {
         $u = Auth::user();
-        $v = Vehiculo::where('placa', $u->email)->first();
+        $v = Vehiculo::where('placa','LIKE', '%' . $u->email . '%')->first();
+
         if ($v != null) {
             $contratos = null;
             $cont = $v->contratos->sortByDesc('created_at');
@@ -924,9 +931,12 @@ class ContratoTransporteController extends Controller
             return redirect()->back()->with('mensaje_error', 'No tiene permiso para anular FUEC.');
         }
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'motivo_anulacion' => 'required|string|min:3'
         ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         $contrato = Contrato::find($id);
         if (is_null($contrato)) {

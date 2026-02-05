@@ -137,13 +137,14 @@
 <br><br><br>
 	<?php
 		$url_firma = '';
+		$ruta_firma = '';
 		if ( $firma_autorizada_1->imagen != '' )
 		{
+			$ruta_firma = storage_path('app/firmas_autorizadas/'.$firma_autorizada_1->imagen);
 			$url_firma = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/firmas_autorizadas/'.$firma_autorizada_1->imagen;
-			$img = getimagesize($url_firma);
 		}
 	?>
-	@if( $url_firma != '')
+	@if( $url_firma != '' && file_exists($ruta_firma))
 	<div style="position: relative;">
 		<img src="{{ $url_firma }}" width="250px" style="margin: 0; padding: 0"/>
 	</div>

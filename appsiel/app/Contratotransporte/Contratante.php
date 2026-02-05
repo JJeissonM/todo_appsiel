@@ -4,11 +4,13 @@ namespace App\Contratotransporte;
 
 use App\Core\Tercero;
 use App\Sistema\Services\CrudService;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class Contratante extends Model
 {
+    use FiltraRegistrosPorUsuario;
     protected $table = 'cte_contratantes';
     protected $fillable = ['id', 'tercero_id', 'estado', 'created_at', 'updated_at'];
 
@@ -32,7 +34,7 @@ class Contratante extends Model
 
     public static function consultar_registros2($nro_registros, $search)
     {
-        return Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
+        $query = Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
                 'core_tipos_docs_id.abreviatura AS campo1',
@@ -40,28 +42,42 @@ class Contratante extends Model
                 DB::raw('core_terceros.descripcion AS campo3'),
                 'cte_contratantes.estado AS campo4',
                 'cte_contratantes.id AS campo5'
-            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
-            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
-            ->orWhere("cte_contratantes.estado", "LIKE", "%$search%")
-            ->orderBy('cte_contratantes.created_at', 'DESC')
+            );
+
+        $query = $query->where(function ($q) use ($search) {
+            $q->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+                ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+                ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
+                ->orWhere("cte_contratantes.estado", "LIKE", "%$search%");
+        });
+
+        $query = self::aplicarFiltroCreadoPor($query, 'core_terceros.creado_por');
+
+        return $query->orderBy('cte_contratantes.created_at', 'DESC')
             ->paginate($nro_registros);
     }
 
     public static function sqlString($search)
     {
-        $string = Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
+        $query = Contratante::leftJoin('core_terceros', 'core_terceros.id', '=', 'cte_contratantes.tercero_id')
             ->leftJoin('core_tipos_docs_id', 'core_tipos_docs_id.id', '=', 'core_terceros.id_tipo_documento_id')
             ->select(
                 'core_tipos_docs_id.abreviatura AS TIPO_DOCUMENTO',
                 'core_terceros.numero_identificacion AS NÚMERO_DOCUMENTO',
                 'core_terceros.descripcion AS CONTRATANTE',
                 'cte_contratantes.estado AS ESTADO'
-            )->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
-            ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
-            ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
-            ->orWhere("cte_contratantes.estado", "LIKE", "%$search%")
-            ->orderBy('cte_contratantes.created_at', 'DESC')
+            );
+
+        $query = $query->where(function ($q) use ($search) {
+            $q->where("core_tipos_docs_id.abreviatura", "LIKE", "%$search%")
+                ->orWhere("core_terceros.numero_identificacion", "LIKE", "%$search%")
+                ->orWhere('core_terceros.descripcion', "LIKE", "%$search%")
+                ->orWhere("cte_contratantes.estado", "LIKE", "%$search%");
+        });
+
+        $query = self::aplicarFiltroCreadoPor($query, 'core_terceros.creado_por');
+
+        $string = $query->orderBy('cte_contratantes.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
     }
@@ -80,6 +96,16 @@ class Contratante extends Model
     public function contratos()
     {
         return $this->hasMany(Contrato::class);
+    }
+
+    public function scopeFiltrarPorUsuario($query)
+    {
+        return $query->whereIn('cte_contratantes.tercero_id', function ($sub) {
+            $sub->from('core_terceros')
+                ->select('core_terceros.id');
+
+            self::aplicarFiltroCreadoPor($sub, 'core_terceros.creado_por');
+        });
     }
 
     public function validar_eliminacion($id)

@@ -21,6 +21,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
 class FuecAdicionalController extends Controller
@@ -49,7 +50,7 @@ class FuecAdicionalController extends Controller
         $lista_vehiculos = null;
         if ($source == 'MISCONTRATOS') {
             $u = Auth::user();
-            $lista_vehiculos = Vehiculo::where('placa', $u->email)->get();
+            $lista_vehiculos = Vehiculo::where('placa', 'LIKE', '%' . $u->email . '%')->get();
         } else {
             $lista_vehiculos = Vehiculo::where('estado','Activo')->get();
         }
@@ -322,9 +323,12 @@ class FuecAdicionalController extends Controller
             return redirect()->back()->with('mensaje_error', 'No tiene permiso para anular FUEC.');
         }
 
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'motivo_anulacion' => 'required|string|min:3'
         ]);
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         $fuecAdicional = FuecAdicional::find($id);
         if (is_null($fuecAdicional)) {

@@ -205,18 +205,13 @@ class UserController extends ModeloController
     // Formulario para cambiar contraseña Modelo Vehiculo
     public function form_cambiar_passwd_vehiculo( $vehiculo_id )
     {
-        /**
-         *                  PENDING
-         * 
-         */
         $vehiculo = Vehiculo::find($vehiculo_id);
-        
         $registro = User::where([
-            ['email','=',$vehiculo->placa]
+            ['email','LIKE','%'.trim($vehiculo->placa).'%']
             ])
             ->get()
             ->first();
-            
+
         if ( $registro == null )
         {
             return redirect( 'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo') )->with('mensaje_error','Usuario no ha sido creado. Debe comunicarse con el administrador del sistema.');

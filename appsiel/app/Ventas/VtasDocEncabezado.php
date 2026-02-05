@@ -418,7 +418,7 @@ class VtasDocEncabezado extends Model
         $query = self::aplicarFiltroCreadoPor($query, 'vtas_doc_encabezados.creado_por');
 
         $collection = $query->orderBy('vtas_doc_encabezados.fecha', 'DESC')
-            ->orderBy('vtas_doc_encabezados.created_at')
+            ->orderBy('vtas_doc_encabezados.consecutivo', 'DESC')
             ->get();
 
         //hacemos el filtro de $search si $search tiene contenido

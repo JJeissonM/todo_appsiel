@@ -112,11 +112,13 @@ class FuecServices
 
         $cont = [];
         if ($user->hasRole('Vehículo (FUEC)') || $user->hasRole('Agencia')) {
-            $vehiculo = Vehiculo::where('placa', $user->email)->get()->first();
+            $vehiculo = Vehiculo::where('placa', 'LIKE', '%' . $user->email . '%')->get()->first();
             if (!is_null($vehiculo)) {
                 $array_wheres[] = ['vehiculo_id', '=', $vehiculo->id];
             }
         }
+
+        
 
         $cont = Contrato::where( $array_wheres )->orderBy('created_at', 'DESC')->get();
 

@@ -13,5 +13,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(IcfesQuestionBankSeeder::class);
         $this->call(CumplimientoGuiasReporteSeeder::class);
+        $this->call(SiesaListasDescuentosSeeder::class);
+        $this->call(SiesaClientesSeeder::class);
+        $this->call(SiesaEncabezadosListasDescuentosSeeder::class);
     }
 }

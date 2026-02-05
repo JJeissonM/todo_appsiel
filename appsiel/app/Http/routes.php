@@ -297,6 +297,9 @@ include __DIR__ . '/sga_routes.php';
 // Aplicación CONTRATO TRANSPORTE
 include __DIR__ . '/contratotransporte_routes.php';
 
+// AplicaciÃ³n SIESA
+include __DIR__ . '/siesa_routes.php';
+
 // Esta línea debe ir de última porque ya hay rutas específicas para /{slug}
 // Ejemplo, /inicio, /ventas, /configuracion, etc. 
 // Cada ruta de estas llama a sus propios controladores
