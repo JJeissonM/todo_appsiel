@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -33,10 +33,10 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
         $headers = $headerRow[0];
 
         $map = [
-            'Código' => 'codigo',
-            'Razón social' => 'razon_social',
+            'Codigo' => 'codigo',
+            'Razon social' => 'razon_social',
             'Sucursal' => 'sucursal',
-            'Razón social sucursal' => 'razon_social_sucursal',
+            'Razon social sucursal' => 'razon_social_sucursal',
             'Moneda' => 'moneda',
             'Desc. moneda' => 'desc_moneda',
             'Fecha ingreso' => 'fecha_ingreso',
@@ -46,7 +46,7 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
             'Condicion de pago' => 'condicion_de_pago',
             'Desc. condicion de pago' => 'desc_condicion_de_pago',
             'Dias gracia' => 'dias_gracia',
-            'Cupo de crédito' => 'cupo_de_credito',
+            'Cupo de credito' => 'cupo_de_credito',
             'Tipo proveedor' => 'tipo_proveedor',
             'Desc. tipo proveedor' => 'desc_tipo_proveedor',
             'SUJETO O NO INTERP' => 'sujeto_o_no_interp',
@@ -70,7 +70,7 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
             'ICUI' => 'icui',
             'ICINDUST' => 'icindust',
             'ICD' => 'icd',
-            'FEDEGAN ' => 'fedegan',
+            'FEDEGAN' => 'fedegan',
             'ICASER' => 'icaser',
             'LLAVE-ICASER' => 'llave_icaser',
             'ICACOMER' => 'icacomer',
@@ -80,7 +80,7 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
             'Tipo_cuenta' => 'tipo_cuenta',
             'Tipo de pago' => 'tipo_de_pago',
             'Tipo de tercero' => 'tipo_de_tercero',
-            'Tipo de identificación' => 'tipo_de_identificacion',
+            'Tipo de identificacion' => 'tipo_de_identificacion',
             'NOTA' => 'nota',
         ];
 
@@ -208,3 +208,4 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+

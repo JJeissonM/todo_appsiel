@@ -85,3 +85,16 @@ class CreateSiesaProveedoresEnterpriseTable extends Migration
 
 // CodProveedor, SucurProveedor, DescripSucursal, ClaseProveedor, CondPago, TipoProveedor, FormaPagoProveedores, Observaciones, Contacto, Direccion1, Direccion2, Direccion3, Pais, Departamento, Ciudad, Barrio, Telefono, CorreoElectronico, FechaDeIngreso, MontoAnualDeCompra, IndDelMontoAnual, IndCotizDeCompra, IndOrdenDeCompraEDI, GrupoCentroOperacion, TelefonoCelular, IndSucPagosElectronicos
 
+
+/*
+- TipoRegistro campo calculado de acuerdo al CodClaseImpRetencion: Impuestos = 49, Retención = 50
+
+- CodClienteProveedor, SucurClienteProveedor vienen de la tabla siesa_proveedores_enterprise, el CodClienteProveedor es el campo Codigo y el SucurClienteProveedor es el campo Sucursal. Estos campos se deben repetir en cada fila que se cree para ese proveedor dependiendo de la cantidad de siglas de impuestos y retenciones que tenga el proveedor en las columnas de impuestos y retenciones. Por ejemplo, si el proveedor tiene 3 siglas de impuestos y 2 siglas de retenciones, se deben crear 5 filas para ese proveedor con el mismo CodClienteProveedor y SucurClienteProveedor pero con diferente CodClaseImpRetencion (49 para impuestos y 50 para retenciones) y diferente Llave (según la sigla del impuesto o retención).
+
+- CodClaseImpRetencion es el campo Clase de la tabla siesa_retenciones o de la tabla siesa_impuestos dependiendo de la Sigla que el proveedor tenga en al alguna columna. Debe haber n filas segun la cantidad de siglas que tenga el proveedor en las columnas de impuestos y retenciones. Por ejemplo, si el proveedor tiene 3 siglas de impuestos y 2 siglas de retenciones, se deben crear 5 filas para ese proveedor con el mismo CodClienteProveedor y SucurClienteProveedor pero con diferente CodClaseImpRetencion y TipoRegistro (49 para impuestos y 50 para retenciones).
+
+- ConfTercero (si es tipo IVA: 0=NO APLICA, 1=APLICA), si es RET (0=NO APLICA, 1=APLICA, 2=AUTORETENEDOR)
+
+- Llave es el campo Llave de la tabla siesa_retenciones o de la tabla siesa_impuestos dependiendo de la Sigla que el proveedor tenga en al alguna columna. Debe haber n filas segun la cantidad de siglas que tenga el proveedor en las columnas de impuestos y retenciones. Por ejemplo, si el proveedor tiene 3 siglas de impuestos y 2 siglas de retenciones, se deben crear 5 filas para ese proveedor con el mismo CodClienteProveedor y SucurClienteProveedor pero con diferente Llave y CodClaseImpRetencion (49 para impuestos y 50 para retenciones).
+*/
+
