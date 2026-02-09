@@ -19,5 +19,6 @@ class DatabaseSeeder extends Seeder
         $this->call(SiesaProveedoresEnterpriseSeeder::class);
         $this->call(SiesaImpuestosSeeder::class);
         $this->call(SiesaRetencionesSeeder::class);
+        $this->call(NominaActualizacionSueldosSeeder::class);
     }
 }

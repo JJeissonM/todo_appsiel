@@ -141,6 +141,11 @@ Route::post('nom_calcular_acumulados_seguridad_social_parafiscales','Nomina\Proc
 Route::post('nom_almacenar_acumulados_seguridad_social_parafiscales','Nomina\ProcesosController@almacenar_acumulados_seguridad_social_parafiscales');
 Route::post('nom_generar_archivo_consignar_cesantias','Nomina\ProcesosController@generar_archivo_consignar_cesantias');
 
+// Actualización de sueldos en contratos
+Route::post('nomina/procesos/actualizar_sueldos/preview', 'Nomina\ActualizacionSueldosController@cargar_empleados');
+Route::post('nomina/procesos/actualizar_sueldos/guardar', 'Nomina\ActualizacionSueldosController@guardar');
+Route::post('nomina/procesos/actualizar_sueldos/revertir/{proceso_id}', 'Nomina\ActualizacionSueldosController@revertir');
+
 
 // PLANILLA INTEGRADA
 //Route::post('nom_generar_planilla_integrada/{planilla_id}','Nomina\PlanillaIntegradaController@generar_planilla_integrada');

@@ -28,14 +28,21 @@
                 <b>Documento:</b> {{ $encabezado_doc->documento_app }}
                 <br/>
 
-                @php 
-                    $fecha = explode("-",$encabezado_doc->fecha) 
+                @php
+                    $fecha = explode("-", (string) $encabezado_doc->fecha);
+                    if (count($fecha) === 3) {
+                        $fecha_texto = $fecha[2].' de '.Form::NombreMes([$fecha[1]]).' de '.$fecha[0];
+                    } else {
+                        $fecha_texto = $encabezado_doc->fecha;
+                    }
+                    $tiempo_key = (string) intval($encabezado_doc->tiempo_a_liquidar);
+                    $tiempo_texto = $tiempo_a_liquidar[$tiempo_key] ?? $encabezado_doc->tiempo_a_liquidar;
                 @endphp
 
-                <b>Fecha: </b> &nbsp; {{ $fecha[2] }} de {{ Form::NombreMes([$fecha[1]]) }} de {{ $fecha[0] }}
+                <b>Fecha: </b> &nbsp; {{ $fecha_texto }}
 
                 <br/>
-                <b>Liquidación:</b> {{ $tiempo_a_liquidar[ intval($encabezado_doc->tiempo_a_liquidar) ] }}
+                <b>Liquidación:</b> {{ $tiempo_texto }}
 
                 <div>
                     <b> Estado: </b> <i class="fa fa-circle" style="color: {{$color}}"> </i> {{ $encabezado_doc->estado }}

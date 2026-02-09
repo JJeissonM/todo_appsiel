@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class ContabCuentaGrupo extends Model
 {
-    protected $fillable = ['core_empresa_id', 'contab_cuenta_clase_id', 'grupo_padre_id', 'descripcion', 'mostrar_en_reporte', 'creado_por', 'modificado_por'];
+    protected $fillable = ['core_empresa_id', 'contab_cuenta_clase_id', 'grupo_padre_id', 'descripcion', 'codigo', 'mostrar_en_reporte', 'creado_por', 'modificado_por'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Clase', 'Padre', 'Descripción'];
 
