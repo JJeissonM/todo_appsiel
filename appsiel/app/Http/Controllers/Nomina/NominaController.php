@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use Maatwebsite\Excel\Facades\Excel as Excel;
 
 class NominaController extends TransaccionController
 {
@@ -231,9 +232,14 @@ class NominaController extends TransaccionController
         
         $encabezado_doc =  NomDocEncabezado::get_un_registro( $encabezado_doc_id );
 
-        $empleados = $encabezado_doc->empleados;
+        $empleados = $encabezado_doc->empleados()->with('tercero')->get();
 
         $conceptos = $encabezado_doc->conceptos_liquidados();
+
+        $totales = $this->construir_totales_documento($encabezado_doc_id);
+        $totales_por_empleado_concepto = $totales['totales_por_empleado_concepto'];
+        $totales_por_empleado = $totales['totales_por_empleado'];
+        $totales_por_concepto = $totales['totales_por_concepto'];
 
         $miga_pan = [
                   ['url'=>'nomina?id='.Input::get('id'),'etiqueta'=>'Nómina'],
@@ -257,7 +263,7 @@ class NominaController extends TransaccionController
 
         $registros_contabilidad = $encabezado_doc->get_movimiento_contable();
 
-        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad' ) ); 
+        return view( 'nomina.show', compact( 'reg_anterior', 'reg_siguiente', 'miga_pan', 'empleados', 'conceptos', 'encabezado_doc', 'encabezado_doc_id', 'tabla', 'opciones', 'registro_modelo_padre_id', 'titulo_tab', 'empresa', 'ciudad', 'descripcion_transaccion', 'registros_contabilidad', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto' ) ); 
 
     }
 
@@ -279,11 +285,16 @@ class NominaController extends TransaccionController
     {
         $this->encabezado_doc =  NomDocEncabezado::get_un_registro($encabezado_doc_id);
 
-        $empleados = $this->encabezado_doc->empleados;
+        $empleados = $this->encabezado_doc->empleados()->with('tercero')->get();
 
         $conceptos = $this->encabezado_doc->conceptos_liquidados();
 
-        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id' ) )->render();
+        $totales = $this->construir_totales_documento($encabezado_doc_id);
+        $totales_por_empleado_concepto = $totales['totales_por_empleado_concepto'];
+        $totales_por_empleado = $totales['totales_por_empleado'];
+        $totales_por_concepto = $totales['totales_por_concepto'];
+
+        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto' ) )->render();
 
         // DATOS ADICIONALES
         $tipo_doc_app = TipoDocApp::find($this->encabezado_doc->core_tipo_doc_app_id);
@@ -352,6 +363,86 @@ class NominaController extends TransaccionController
         $documento->save();
     }
 
+    protected function construir_totales_documento($encabezado_doc_id)
+    {
+        $totales_agrupados = NomDocRegistro::select(
+                                    'nom_contrato_id',
+                                    'nom_concepto_id',
+                                    DB::raw('SUM(valor_devengo) as sum_devengos'),
+                                    DB::raw('SUM(valor_deduccion) as sum_deducciones')
+                                )
+                                ->where('nom_doc_encabezado_id', $encabezado_doc_id)
+                                ->groupBy('nom_contrato_id', 'nom_concepto_id')
+                                ->get();
+
+        $totales_por_empleado_concepto = [];
+        $totales_por_empleado = [];
+        $totales_por_concepto = [];
+
+        if ($totales_agrupados->isEmpty()) {
+            $registros = NomDocRegistro::where('nom_doc_encabezado_id', $encabezado_doc_id)
+                            ->get(['nom_contrato_id', 'nom_concepto_id', 'valor_devengo', 'valor_deduccion']);
+
+            foreach ($registros as $registro) {
+                $nom_contrato_id = $registro->nom_contrato_id;
+                $nom_concepto_id = $registro->nom_concepto_id;
+                $sum_dev = (float)$registro->valor_devengo;
+                $sum_ded = (float)$registro->valor_deduccion;
+
+                if (!isset($totales_por_empleado_concepto[$nom_contrato_id])) {
+                    $totales_por_empleado_concepto[$nom_contrato_id] = [];
+                }
+
+                if (!isset($totales_por_empleado_concepto[$nom_contrato_id][$nom_concepto_id])) {
+                    $totales_por_empleado_concepto[$nom_contrato_id][$nom_concepto_id] = [ 'dev' => 0, 'ded' => 0 ];
+                }
+
+                $totales_por_empleado_concepto[$nom_contrato_id][$nom_concepto_id]['dev'] += $sum_dev;
+                $totales_por_empleado_concepto[$nom_contrato_id][$nom_concepto_id]['ded'] += $sum_ded;
+
+                if (!isset($totales_por_empleado[$nom_contrato_id])) {
+                    $totales_por_empleado[$nom_contrato_id] = [ 'dev' => 0, 'ded' => 0 ];
+                }
+
+                $totales_por_empleado[$nom_contrato_id]['dev'] += $sum_dev;
+                $totales_por_empleado[$nom_contrato_id]['ded'] += $sum_ded;
+
+                if (!isset($totales_por_concepto[$nom_concepto_id])) {
+                    $totales_por_concepto[$nom_concepto_id] = 0;
+                }
+
+                $totales_por_concepto[$nom_concepto_id] += ($sum_dev + $sum_ded);
+            }
+        } else {
+            foreach ($totales_agrupados as $fila)
+            {
+                if (!isset($totales_por_empleado_concepto[$fila->nom_contrato_id])) {
+                    $totales_por_empleado_concepto[$fila->nom_contrato_id] = [];
+                }
+
+                $totales_por_empleado_concepto[$fila->nom_contrato_id][$fila->nom_concepto_id] = [
+                    'dev' => (float)$fila->sum_devengos,
+                    'ded' => (float)$fila->sum_deducciones
+                ];
+
+                if (!isset($totales_por_empleado[$fila->nom_contrato_id])) {
+                    $totales_por_empleado[$fila->nom_contrato_id] = [ 'dev' => 0, 'ded' => 0 ];
+                }
+
+                $totales_por_empleado[$fila->nom_contrato_id]['dev'] += (float)$fila->sum_devengos;
+                $totales_por_empleado[$fila->nom_contrato_id]['ded'] += (float)$fila->sum_deducciones;
+
+                if (!isset($totales_por_concepto[$fila->nom_concepto_id])) {
+                    $totales_por_concepto[$fila->nom_concepto_id] = 0;
+                }
+
+                $totales_por_concepto[$fila->nom_concepto_id] += ((float)$fila->sum_devengos + (float)$fila->sum_deducciones);
+            }
+        }
+
+        return compact('totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto');
+    }
+
     public function get_datos_contrato( $contrato_id )
     {
         return NomContrato::find( $contrato_id );
@@ -412,6 +503,86 @@ class NominaController extends TransaccionController
             ->delete();
 
         return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('flash_message', 'Empleado RETIRADO correctamente del documento.');
+    }
+
+    public function export_registros_xlsx($encabezado_doc_id)
+    {
+        $encabezado_doc = NomDocEncabezado::find($encabezado_doc_id);
+        if (is_null($encabezado_doc)) {
+            return redirect('nomina')->with('mensaje_error', 'Documento no encontrado.');
+        }
+
+        $empleados = $encabezado_doc->empleados()->with('tercero')->get();
+        $conceptos = $encabezado_doc->conceptos_liquidados();
+
+        $totales = $this->construir_totales_documento($encabezado_doc_id);
+        $totales_por_empleado_concepto = $totales['totales_por_empleado_concepto'];
+        $totales_por_empleado = $totales['totales_por_empleado'];
+        $totales_por_concepto = $totales['totales_por_concepto'];
+
+        $cabeceras = ['No.', 'EMPLEADO', 'C.C.'];
+        foreach ($conceptos as $concepto) {
+            $cabeceras[] = $concepto->abreviatura;
+        }
+        $cabeceras[] = 'T. DEVEN.';
+        $cabeceras[] = 'T. DEDUCC.';
+        $cabeceras[] = 'T. A PAGAR';
+
+        $filas = [];
+        $i = 1;
+        $total_dev_doc = 0;
+        $total_ded_doc = 0;
+
+        foreach ($empleados as $empleado) {
+            $fila = [
+                $i,
+                $empleado->tercero->descripcion,
+                $empleado->tercero->numero_identificacion
+            ];
+
+            foreach ($conceptos as $concepto) {
+                $cell = $totales_por_empleado_concepto[$empleado->id][$concepto->id] ?? ['dev' => 0, 'ded' => 0];
+                $fila[] = $cell['dev'] + $cell['ded'];
+            }
+
+            $total_dev = $totales_por_empleado[$empleado->id]['dev'] ?? 0;
+            $total_ded = $totales_por_empleado[$empleado->id]['ded'] ?? 0;
+
+            $fila[] = $total_dev;
+            $fila[] = $total_ded;
+            $fila[] = $total_dev - $total_ded;
+
+            $total_dev_doc += $total_dev;
+            $total_ded_doc += $total_ded;
+
+            $filas[] = $fila;
+            $i++;
+        }
+
+        $fila_totales = ['', '', ''];
+        foreach ($conceptos as $concepto) {
+            $fila_totales[] = $totales_por_concepto[$concepto->id] ?? 0;
+        }
+        $fila_totales[] = $total_dev_doc;
+        $fila_totales[] = $total_ded_doc;
+        $fila_totales[] = $total_dev_doc - $total_ded_doc;
+        $filas[] = $fila_totales;
+
+        $nombre_archivo = 'registros_liquidacion_' . $encabezado_doc->get_label_documento();
+        $nombre_archivo = preg_replace('/[^A-Za-z0-9_\-]/', '_', $nombre_archivo);
+
+        if (ob_get_length()) {
+            ob_end_clean();
+        }
+
+        return Excel::create($nombre_archivo, function ($excel) use ($cabeceras, $filas) {
+            $excel->setTitle('Registros de Liquidacion');
+            $excel->sheet('Registros', function ($sheet) use ($cabeceras, $filas) {
+                $sheet->setAutoSize(true);
+                $sheet->row(1, $cabeceras);
+                $sheet->rows($filas);
+            });
+        })->download('xlsx');
     }
     
 }

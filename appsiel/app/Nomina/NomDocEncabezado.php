@@ -371,19 +371,20 @@ class NomDocEncabezado extends Model
         }
         $tabla .= '</tr></thead>
                     <tbody>';
-        foreach ($registros_asignados as $fila) {
-            $orden = DB::table('nom_empleados_del_documento')
-                ->where('nom_doc_encabezado_id', '=', $registro_modelo_padre->id)
-                ->where('nom_contrato_id', '=', $fila['id'])
-                ->value('orden');
+        $empleados_documento = DB::table('nom_empleados_del_documento AS ned')
+                                ->join('nom_contratos AS nc', 'nc.id', '=', 'ned.nom_contrato_id')
+                                ->join('core_terceros AS ct', 'ct.id', '=', 'nc.core_tercero_id')
+                                ->where('ned.nom_doc_encabezado_id', $registro_modelo_padre->id)
+                                ->orderBy('ned.orden')
+                                ->get(['ned.orden', 'nc.id AS contrato_id', 'ct.numero_identificacion', 'ct.descripcion']);
 
-            $empleado = NomContrato::where('core_tercero_id', $fila['core_tercero_id'])->get()->first();
+        foreach ($empleados_documento as $fila) {
             $tabla .= '<tr>';
-            $tabla .= '<td>' . $orden . '</td>';
-            $tabla .= '<td>' . $empleado->tercero->numero_identificacion . '</td>';
-            $tabla .= '<td>' . $empleado->tercero->descripcion . '</td>';
+            $tabla .= '<td>' . $fila->orden . '</td>';
+            $tabla .= '<td>' . $fila->numero_identificacion . '</td>';
+            $tabla .= '<td>' . $fila->descripcion . '</td>';
             $tabla .= '<td>
-                                        <a class="btn btn-danger btn-sm" href="' . url( 'nom_eliminar_asignacion/registro_modelo_hijo_id/' . $fila['id'] . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') ) . '"><i class="fa fa-btn fa-trash"></i> </a>
+                                        <a class="btn btn-danger btn-sm js-eliminar-empleado" data-contrato-id="' . $fila->contrato_id . '" data-empleado-nombre="' . $fila->descripcion . '" href="' . url( 'nom_eliminar_asignacion/registro_modelo_hijo_id/' . $fila->contrato_id . '/registro_modelo_padre_id/' . $registro_modelo_padre->id . '/id_app/' . Input::get('id') . '/id_modelo_padre/' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') ) . '"><i class="fa fa-btn fa-trash"></i> </a>
                                         </td>
                             </tr>';
         }
@@ -396,12 +397,22 @@ class NomDocEncabezado extends Model
     public static function get_opciones_modelo_relacionado($nom_doc_encabezado_id)
     {
         $vec[''] = '';
-        $opciones = NomContrato::where('estado', 'Activo')->get();
+        $asignados = DB::table('nom_empleados_del_documento')
+                        ->where('nom_doc_encabezado_id', $nom_doc_encabezado_id)
+                        ->pluck('nom_contrato_id');
+        if ($asignados instanceof \Illuminate\Support\Collection) {
+            $asignados = $asignados->toArray();
+        } else {
+            $asignados = (array)$asignados;
+        }
+
+        $opciones = NomContrato::where('estado', 'Activo')
+                                ->whereNotIn('id', $asignados)
+                                ->with('tercero')
+                                ->get();
+
         foreach ($opciones as $opcion) {
-            $esta = DB::table('nom_empleados_del_documento')->where('nom_doc_encabezado_id', $nom_doc_encabezado_id)->where('nom_contrato_id', $opcion->id)->get();
-            if (empty($esta)) {
-                $vec[$opcion->id] = $opcion->tercero->numero_identificacion . ' ' . $opcion->tercero->descripcion;
-            }
+            $vec[$opcion->id] = $opcion->tercero->numero_identificacion . ' ' . $opcion->tercero->descripcion;
         }
 
         return $vec;

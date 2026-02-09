@@ -323,6 +323,7 @@ UPDATE `sys_modelos` SET `url_eliminar` = 'web_eliminar/id_fila' WHERE `sys_mode
 
 
 -- Actualizar tabla migrations 4 diciembre
+-- Se debe asignar el ultimo consecutivo de id a la tabla migrations para evitar conflictos con futuras migraciones
 ALTER TABLE `migrations` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL;
 ALTER TABLE `migrations` CHANGE `id` `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 

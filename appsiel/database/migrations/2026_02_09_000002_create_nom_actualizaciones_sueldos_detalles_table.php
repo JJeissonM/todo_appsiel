@@ -22,8 +22,8 @@ class CreateNomActualizacionesSueldosDetallesTable extends Migration
             $table->tinyInteger('revertido')->default(0);
             $table->timestamps();
 
-            $table->index('nom_actualizacion_sueldo_id');
-            $table->index('nom_contrato_id');
+            $table->index('nom_actualizacion_sueldo_id', 'idx_nom_act_sueldo_id');
+            $table->index('nom_contrato_id', 'idx_nom_act_contrato_id');
         });
     }
 

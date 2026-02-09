@@ -371,7 +371,7 @@ class NomContrato extends Model
 
         if ($registro->contrato_hasta == '')
         {
-            $registro->contrato_hasta = date('2099-12-31');
+            $registro->contrato_hasta = date('2099-12-30');
             $registro->save();
         }
     }

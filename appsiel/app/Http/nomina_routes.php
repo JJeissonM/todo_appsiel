@@ -27,6 +27,7 @@ Route::get('nomina/liquidacion/{id}', 'Nomina\NominaController@liquidacion');
 Route::get('nomina/liquidacion_sp/{id}', 'Nomina\NominaController@liquidacion_sp');
 Route::get('nomina/retirar_liquidacion/{id}', 'Nomina\NominaController@retirar_liquidacion');
 Route::get('nomina_print/{id}', 'Nomina\NominaController@nomina_print');
+Route::get('nomina_export_registros_xlsx/{id}', 'Nomina\NominaController@export_registros_xlsx');
 
 // 			LIQUIDACIONES INDIVIDUALES
 Route::get('nom_liquidar_prima_antiguedad/{nom_doc_encabezado_id}', 'Nomina\LiquidacionPorModosController@liquidar_prima_antiguedad');
