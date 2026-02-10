@@ -29,6 +29,53 @@
 
 	$titulo .= ' - APPSIEL';
 
+	$expected_config_files = [
+		'app.php',
+		'auth.php',
+		'ayuda.php',
+		'barcode.php',
+		'broadcasting.php',
+		'cache.php',
+		'calificaciones.php',
+		'compile.php',
+		'compras.php',
+		'configuracion.php',
+		'contabilidad.php',
+		'contratos_transporte.php',
+		'database.php',
+		'datatables.php',
+		'dompdf.php',
+		'excel.php',
+		'facturacion_electronica.php',
+		'filesystems.php',
+		'filtrado_registros.php',
+		'guias_academicas.php',
+		'inventarios.php',
+		'javascript.php',
+		'laravel-permission.php',
+		'logviewer.php',
+		'mail.php',
+		'matriculas.php',
+		'messenger.php',
+		'nomina.php',
+		'pedidos_restaurante.php',
+		'queue.php',
+		'registros_tablas_bd.php',
+		'services.php',
+		'session.php',
+		'tesoreria.php',
+		'ventas.php',
+		'ventas_pos.php',
+		'view.php'
+	];
+	$missing_config_files = [];
+	$config_dir = base_path('config');
+	foreach ($expected_config_files as $config_file) {
+		if (!file_exists($config_dir . DIRECTORY_SEPARATOR . $config_file)) {
+			$missing_config_files[] = $config_file;
+		}
+	}
+
 	?>
 
 	<title>
@@ -249,6 +296,17 @@
 	<div id="popup_alerta_success"> </div>
 
 	@include('layouts.menu_principal')
+
+	@if(!empty($missing_config_files))
+		<div class="alert alert-danger" style="margin: 10px;">
+			<strong>Archivos config faltantes:</strong>
+			<ul style="margin-bottom: 0;">
+				@foreach($missing_config_files as $missing_config_file)
+					<li>{{ $missing_config_file }}</li>
+				@endforeach
+			</ul>
+		</div>
+	@endif
 
 	@include('layouts.cartel_morosidad')
 

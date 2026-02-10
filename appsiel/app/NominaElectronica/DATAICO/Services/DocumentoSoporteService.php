@@ -89,6 +89,22 @@ class DocumentoSoporteService
          }
       }
 
+      $has_basico = false;
+      foreach ($line_accruals as $line) {
+         if (isset($line['code']) && $line['code'] === 'BASICO') {
+            $has_basico = true;
+            break;
+         }
+      }
+
+      if (!$has_basico) {
+         $line_accruals[] = [
+            'code' => 'BASICO',
+            'amount' => 0,
+            'days' => 0
+         ];
+      }
+
       return [
          'accruals' => $line_accruals,
          'deductions' => $line_deductions
@@ -114,7 +130,7 @@ class DocumentoSoporteService
       $skip = false;   
       if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías. Se agrega como subconcepto de las Cesantías
          foreach ($registros as $registro) {
-            if ($registro->concepto->modo_liquidacion_id == 17) { // Intereses de cesantías
+            if ($registro->concepto->modo_liquidacion_id == 17) { // Cesantías pagadas
                $skip = true;   
             }
          }
@@ -124,7 +140,7 @@ class DocumentoSoporteService
 
          $one_line['percentage'] = 12;
          $one_line['cesantias-interest'] = $registro->valor_devengo;
-         $amount = 0;
+         $amount = $registro->valor_devengo;
          $codigo_cpto_dian = 'CESANTIAS';
       }
       
@@ -146,7 +162,7 @@ class DocumentoSoporteService
          $one_line['description'] = $concepto->descripcion;
       }
       
-      if($concepto->modo_liquidacion_id == 17) // Cesantias
+      if($concepto->modo_liquidacion_id == 17) // Cesantías pagadas
       {
          foreach ($registros as $registro) {
             if ($registro->concepto->modo_liquidacion_id == 16) { // Intereses de cesantías
@@ -163,16 +179,15 @@ class DocumentoSoporteService
             $one_line['medical-leave-type'] = strtoupper($registro_concepto->first()->novedad_tnl->origen_incapacidad);
          }
       }
+
+      if ($amount <= 0) {
+         return [];
+      }
       
+      $one_line['amount'] = $amount;
       if ( $concepto->cpto_dian->tipo_concepto == 'amount-ns') {
          $one_line['amount-ns'] = $amount;
          unset($one_line['amount']);
-      }else{
-         $one_line['amount'] = $amount;
-      }
-
-      if ( $concepto->id == 78 ) {
-         //dd( $concepto->cpto_dian->tipo_concepto, $concepto->cpto_dian, $one_line);
       }
 
       return $one_line;

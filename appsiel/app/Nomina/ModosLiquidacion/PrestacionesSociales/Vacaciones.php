@@ -40,15 +40,7 @@ class Vacaciones implements Estrategia
         if( is_null( $parametros_prestacion ) )
         {
             $this->tabla_resumen['mensaje_error'] = 'No están configurados los parámetros de Vacaciones para el grupo de empleado ' . $liquidacion['empleado']->grupo_empleado->descripcion;
-
-            return [
-                        [
-                            'cantidad_horas' => 0,
-                            'valor_devengo' => 0,
-                            'valor_deduccion' => 0,
-                            'tabla_resumen' => $this->tabla_resumen
-                        ]
-                    ];
+            return $this->respuesta_error();
         }
 
         $registro_concepto = NomDocRegistro::where(
@@ -61,15 +53,7 @@ class Vacaciones implements Estrategia
         if ( !is_null($registro_concepto) )
         {
             $this->tabla_resumen['mensaje_error'] = '<br>Vacaciones. La prestación ya está liquidada en el documento.';
-
-            return [
-                        [
-                            'cantidad_horas' => 0,
-                            'valor_devengo' => 0,
-                            'valor_deduccion' => 0,
-                            'tabla_resumen' => $this->tabla_resumen
-                        ]
-                    ];
+            return $this->respuesta_error();
         }
 
         $this->historial_vacaciones = LibroVacacion::where( 'nom_contrato_id', $liquidacion['empleado']->id )
@@ -103,10 +87,11 @@ class Vacaciones implements Estrategia
             }
 
             $valores = get_valores_devengo_deduccion( 'devengo',  $valor_total_vacaciones );
+            $cantidad_horas = $dias_pendientes * (float)config('nomina.horas_dia_laboral');
 
             return [ 
                         [
-                            'cantidad_horas' => 0, // No disfruta vacaciones
+                            'cantidad_horas' => $cantidad_horas, // Se pagan vacaciones pendientes
                             'valor_devengo' => $valores->devengo,
                             'valor_deduccion' => $valores->deduccion,
                             'tabla_resumen' => $this->tabla_resumen  
@@ -125,14 +110,7 @@ class Vacaciones implements Estrategia
         if ( is_null($programacion_vacaciones) )
         {
             $this->tabla_resumen['mensaje_error'] = '<br>Empleado ' . $liquidacion['empleado']->tercero->descripcion  . ' no tiene vacaciones programadas pendientes por liquidar.';
-            return [ 
-                        [
-                            'cantidad_horas' => 0,
-                            'valor_devengo' => 0,
-                            'valor_deduccion' => 0,
-                            'tabla_resumen' => $this->tabla_resumen
-                        ]
-                    ];
+            return $this->respuesta_error();
         }
 
         $this->novedad_id = $programacion_vacaciones->id;
@@ -437,7 +415,17 @@ class Vacaciones implements Estrategia
             $libro_vacaciones->save();
         }
     }
-
+    private function respuesta_error()
+    {
+        return [
+                    [
+                        'cantidad_horas' => 0,
+                        'valor_devengo' => 0,
+                        'valor_deduccion' => 0,
+                        'tabla_resumen' => $this->tabla_resumen
+                    ]
+                ];
+    }
 
     public function get_valor_acumulado_provision()
     {
