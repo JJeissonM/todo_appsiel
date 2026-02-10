@@ -436,19 +436,7 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							<?php 
-								$usar_complemento_JSPrintManager = '0';
-								if( isset($parametros['usar_complemento_JSPrintManager'] ) )
-								{
-									$usar_complemento_JSPrintManager = $parametros['usar_complemento_JSPrintManager'];
-								}
-							?>
-							{{ Form::bsSelect('usar_complemento_JSPrintManager', $usar_complemento_JSPrintManager, 'Mostrar aviso para imprimir pedidos de meseros', ['No','Si'], ['class'=>'form-control']) }}
-							
-							@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
-								<br>
-								{{ Form::bsSelect('lista_impresoras_equipo_local', null, 'Lista impresoras equipo local (Usar estos nombres para la config. de abajo)', [], ['class'=>'form-control']) }}
-							@endif
+							&nbsp;
 						</div>
 					</div>
 
@@ -847,11 +835,6 @@
 		});
 	</script>
 	
-	@if(config('ventas_pos.usar_complemento_JSPrintManager') == 1)
-		<script src="{{ asset( 'assets/js/ventas_pos/JSPrintManager.js' )}}"></script>
-		<script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
-	@endif
-
 	@if( isset($archivo_js) )
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif

@@ -51,7 +51,7 @@
 					</div>
 
 				</div>
-				
+
 				<div class="row">
 
 					<div class="col-md-6">
@@ -160,6 +160,122 @@
 								}
 							?>
 							{{ Form::bsText('etiqueta_impuesto_principal', $etiqueta_impuesto_principal, 'Etiqueta impuesto principal (TaxCategory FE)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Método de impresión (APM) </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_ws_url = 'ws://localhost:7000/websocket/';
+								if( isset($parametros['apm_ws_url'] ) )
+								{
+									$apm_ws_url = $parametros['apm_ws_url'];
+								}
+							?>
+							{{ Form::bsText('apm_ws_url', $apm_ws_url, 'APM WebSocket URL', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$metodo_impresion_pedido_ventas = 'normal';
+								if( isset($parametros['metodo_impresion_pedido_ventas'] ) )
+								{
+									$metodo_impresion_pedido_ventas = $parametros['metodo_impresion_pedido_ventas'];
+								}
+							?>
+							{{ Form::bsSelect('metodo_impresion_pedido_ventas', $metodo_impresion_pedido_ventas, 'Método impresión pedidos de ventas', ['normal' => 'Normal', 'apm' => 'Appsiel Print Manager (APM)'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_printer_id_pedidos_ventas = '';
+								if( isset($parametros['apm_printer_id_pedidos_ventas'] ) )
+								{
+									$apm_printer_id_pedidos_ventas = $parametros['apm_printer_id_pedidos_ventas'];
+								}
+							?>
+							{{ Form::bsText('apm_printer_id_pedidos_ventas', $apm_printer_id_pedidos_ventas, 'APM PrinterId pedidos de ventas', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$metodo_impresion_pedido_restaurante = 'normal';
+								if( isset($parametros['metodo_impresion_pedido_restaurante'] ) )
+								{
+									$metodo_impresion_pedido_restaurante = $parametros['metodo_impresion_pedido_restaurante'];
+								}
+							?>
+							{{ Form::bsSelect('metodo_impresion_pedido_restaurante', $metodo_impresion_pedido_restaurante, 'Método impresión pedidos restaurante', ['normal' => 'Normal', 'apm' => 'Appsiel Print Manager (APM)'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_printer_id_pedidos_restaurante = '';
+								if( isset($parametros['apm_printer_id_pedidos_restaurante'] ) )
+								{
+									$apm_printer_id_pedidos_restaurante = $parametros['apm_printer_id_pedidos_restaurante'];
+								}
+							?>
+							{{ Form::bsText('apm_printer_id_pedidos_restaurante', $apm_printer_id_pedidos_restaurante, 'APM PrinterId pedidos restaurante', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$metodo_impresion_factura_pos = 'normal';
+								if( isset($parametros['metodo_impresion_factura_pos'] ) )
+								{
+									$metodo_impresion_factura_pos = $parametros['metodo_impresion_factura_pos'];
+								}
+							?>
+							{{ Form::bsSelect('metodo_impresion_factura_pos', $metodo_impresion_factura_pos, 'Método impresión facturas POS', ['normal' => 'Normal', 'apm' => 'Appsiel Print Manager (APM)'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_printer_id_factura_pos = '';
+								if( isset($parametros['apm_printer_id_factura_pos'] ) )
+								{
+									$apm_printer_id_factura_pos = $parametros['apm_printer_id_factura_pos'];
+								}
+							?>
+							{{ Form::bsText('apm_printer_id_factura_pos', $apm_printer_id_factura_pos, 'APM PrinterId facturas POS', ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -506,7 +622,6 @@
 					</div>
 
 				</div>
-
 
 
 				<br>

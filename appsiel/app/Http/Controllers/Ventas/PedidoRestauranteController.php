@@ -32,6 +32,8 @@ use App\Inventarios\InvGrupo;
 use App\Ventas\Services\PedidosRestauranteServices;
 use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\RecipeServices;
+use App\Ventas\ResolucionFacturacion;
+use App\Ventas\Services\PrintServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -70,6 +72,17 @@ class PedidoRestauranteController extends TransaccionController
         
         $cliente = Cliente::find(config('pedidos_restaurante.cliente_default_id'));
         $vendedor = $cliente->vendedor;
+
+        $user = Auth::user();
+        if ( $user->hasRole('Mesero') )
+        {
+            $vendedor_asociado = Vendedor::where('user_id', $user->id)->get()->first();
+            if ( is_null($vendedor_asociado) )
+            {
+                return redirect( 'ventas?id=' . Input::get('id') )->with('mensaje_error', 'El usuario no esta asociado a un vendedor (mesero). Consulte con el administrador.' );
+            }
+            $vendedor = $vendedor_asociado;
+        }
 
         $lista_campos = ModeloController::get_campos_modelo($this->modelo, '', 'create');
         $cantidad_campos = count($lista_campos);
@@ -337,6 +350,33 @@ class PedidoRestauranteController extends TransaccionController
     public function build_json_pedido($doc_encabezado)
     {
         $hora_creacion = $doc_encabezado->created_at;
+        $empresa = $doc_encabezado->empresa ?? null;
+        $pdv = $doc_encabezado->pdv ?? null;
+
+        $arr_resolucion = [];
+        if ( !is_null($pdv) ) {
+            $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)
+                                                ->where('estado', 'Activo')
+                                                ->get()
+                                                ->last();
+            if ( $resolucion != null ) {
+                $arr_resolucion = $resolucion->toArray();
+            }
+        }
+
+        if ( !is_null($empresa) ) {
+            if ( !is_null($pdv) && $pdv->direccion != '' )
+            {
+                $empresa->direccion1 = $pdv->direccion;
+                $empresa->telefono1 = $pdv->telefono;
+                $empresa->email = $pdv->email;
+            }
+
+            $empresa->url_logo = asset( config('configuracion.url_instancia_cliente') ).'/storage/app/logos_empresas/' . $empresa->imagen;
+        }
+
+        $etiquetas = (new PrintServices())->get_etiquetas();
+        $cliente = $doc_encabezado->cliente->tercero ?? null;
 
         return [
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
@@ -346,7 +386,17 @@ class PedidoRestauranteController extends TransaccionController
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
-            'doc_encabezado_descripcion' => $doc_encabezado->descripcion
+            'doc_encabezado_descripcion' => $doc_encabezado->descripcion,
+            'empresa' => is_null($empresa) ? [] : array_merge($empresa->toArray(),[
+                'descripcion_tipo_documento_identidad' => ( !is_null($empresa->tipo_doc_identidad) ? $empresa->tipo_doc_identidad->abreviatura : '' ),
+                'descripcion_ciudad' => ( !is_null($empresa->ciudad) ? $empresa->ciudad->descripcion : '' ),
+            ]),
+            'etiquetas' => $etiquetas,
+            'resolucion' => $arr_resolucion,
+            'cliente_info' => is_null($cliente) ? [] : array_merge( $cliente->toArray(), [
+                'descripcion_tipo_documento_identidad' => ( !is_null($cliente->tipo_doc_identidad) ? $cliente->tipo_doc_identidad->abreviatura : '' ),
+                'descripcion_ciudad' => ( !is_null($cliente->ciudad) ? $cliente->ciudad->descripcion : '' ),
+            ])
         ];
         
     }

@@ -545,7 +545,8 @@ $(document).ready(function () {
 
                 llenar_tabla_productos_facturados();
 
-                if ( $('#usar_complemento_JSPrintManager').val() == 3 )
+                var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
+                if ( metodo_impresion_pedido == 'apm' && typeof print_comanda === 'function' )
                 {
                     print_comanda();
                 }

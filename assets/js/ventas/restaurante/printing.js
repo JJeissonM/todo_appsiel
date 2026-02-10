@@ -1,6 +1,7 @@
 
 function enviar_impresion( doc_encabezado )
 {
+    var metodo_impresion = $('#metodo_impresion_pedido_restaurante').val() || 'normal';
     if ( $('#mostrar_mensaje_impresion_delegada').val() == 1 ) { 
         $('.btn_vendedor').first().focus();
         Swal.fire({
@@ -9,6 +10,16 @@ function enviar_impresion( doc_encabezado )
             text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. RECUERDA: Debes informar al responsable para su impresión.'
         });
     }else{
+
+        if ( metodo_impresion == 'apm' ) {
+            apm_imprimir_pedido_restaurante( doc_encabezado );
+
+            Swal.fire({
+                icon: 'info',
+                title: 'Muy bien!',
+                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresion enviada via APM.'
+            });
+        }else{
         
         if ( $('#usar_servidor_de_impresion').val() == 1 ) {
 
@@ -66,6 +77,7 @@ function enviar_impresion( doc_encabezado )
 
             ventana_imprimir();
         }
+        }
     }
 
     reset_componente_meseros();
@@ -80,6 +92,102 @@ function enviar_impresion( doc_encabezado )
     reset_datos_pedido();
     
     resetear_ventana();
+}
+
+function apm_imprimir_pedido_restaurante( doc_encabezado )
+{
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.send !== 'function' ) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: 'APM no esta disponible en este navegador.'
+        });
+        return false;
+    }
+
+    var payload = crear_payload_apm_comanda( doc_encabezado );
+    window.APM_CLIENT.send(payload);
+    return true;
+}
+
+function crear_payload_apm_comanda( doc_encabezado )
+{
+    var printer_id = $('#apm_printer_id_pedidos_restaurante').val();
+    if ( typeof printer_id === 'undefined' || printer_id === '' ) {
+        printer_id = $('#printer_ip').val();
+    }
+    if ( typeof printer_id === 'undefined' || printer_id === '' ) {
+        printer_id = $('#impresora_cocina_por_defecto').val();
+    }
+
+    var station_id = $('#pdv_label').val();
+    if ( typeof station_id === 'undefined' || station_id === '' ) {
+        station_id = $('#pdv_id').val();
+    }
+
+    var items = [];
+    $('.linea_registro').each(function(){
+        var notes = '';
+        var notes_field = $(this).find('.lbl_observaciones');
+        if ( notes_field.length ) {
+            notes = notes_field.text();
+        }
+
+        items.push({
+            'Name': $(this).find('.lbl_producto_descripcion').text(),
+            'Qty': $(this).find('.cantidad').text(),
+            'Notes': notes
+        });
+    });
+
+    var mesa = $('#lbl_mesa_seleccionada').text();
+    var mesero = $('#lbl_vendedor_mesero').text();
+    var detalle = doc_encabezado.doc_encabezado_descripcion || $('#descripcion').val() || '';
+
+    var cliente_nombre = doc_encabezado.doc_encabezado_tercero_nombre_completo || $('#cliente_input').val() || '';
+
+    var empresa = doc_encabezado.empresa || {};
+    var company = {
+        'Name': empresa.descripcion || empresa.razon_social || station_id || '',
+        'Nit': empresa.numero_identificacion || empresa.nit || '',
+        'Address': empresa.direccion1 || empresa.direccion || '',
+        'Phone': empresa.telefono1 || empresa.telefono || ''
+    };
+
+    return {
+        'JobId': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || ('PEDIDO-' + Date.now()),
+        'StationId': station_id || '',
+        'PrinterId': printer_id || '',
+        'DocumentType': 'comanda',
+        'Document': {
+            'header': {
+                'Transaction': doc_encabezado.doc_encabezado_documento_transaccion_descripcion || '',
+                'Date': doc_encabezado.doc_encabezado_fecha || '',
+                'Time': doc_encabezado.doc_encabezado_hora_creacion || '',
+                'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
+                'Customer': cliente_nombre,
+                'Seller': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
+            },
+            'company': company,
+            'order': {
+                'COPY': 'ORIGINAL',
+                'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
+                'Table': mesa || '',
+                'Waiter': mesero || '',
+                'Date': new Date().toISOString(),
+                'RestaurantName': station_id || '',
+                'Items': items,
+                'GeneratedDate': new Date().toISOString(),
+                'CreatedBy': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
+            },
+            'Detail': detalle,
+            'customer': {
+                'Name': cliente_nombre
+            },
+            'labels': doc_encabezado.etiquetas || {},
+            'resolution': doc_encabezado.resolucion || {}
+        }
+    };
 }
 
 

@@ -63,6 +63,9 @@
                 <br><br>
                                 
                 <input type="hidden" id="impresora_cocina_por_defecto" name="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
+                <input type="hidden" id="metodo_impresion_pedido_ventas" value="{{ config('ventas.metodo_impresion_pedido_ventas') }}">
+                <input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
+                <input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
     
                 <input type="hidden" id="tamanio_letra_impresion_items_cocina" name="tamanio_letra_impresion_items_cocina" value="{{ config('ventas_pos.tamanio_letra_impresion_items_cocina') }}">
     
@@ -85,13 +88,8 @@
 
 @section('scripts')
 
-    @if( (int)config('ventas_pos.imprimir_pedidos_en_cocina') )
-        <script src="{{ asset( 'assets/js/ventas_pos/external_print/cptable.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/external_print/cputils.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/external_print/JSESCPOSBuilder.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas_pos/external_print/JSPrintManager.js' )}}"></script>
-        <script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
-    @endif
+    <script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
 	<script type="text/javascript">
         $(".btn_imprimir_en_cocina").on('click',function(event){
@@ -112,7 +110,12 @@
                 $('#tabla_lineas_registros tbody').append('<tr class="linea_registro"><td>' + (parseInt(i) + 1) + '</td><td class="lbl_producto_descripcion">' + linea.lbl_producto_descripcion + '</td><td class="cantidad">' + linea.cantidad + '</td><td>' + linea.cantidad_pendiente + '</td><td>' + linea.precio_unitario + '</td><td>' + linea.tasa_impuesto + '</td><td>' + linea.precio_subtotal + '</td><td>' + linea.valor_total_descuento + '</td><td>' + linea.precio_total + '</td></tr>');
             });
 
-            print_comanda();
+            var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
+            if ( metodo_impresion_pedido == 'apm' ) {
+                print_comanda_apm();
+            } else {
+                window.print();
+            }
             
             $('#tabla_lineas_registros tbody').empty();
 

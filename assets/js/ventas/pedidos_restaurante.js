@@ -231,6 +231,81 @@ function item_is_in_group( item_id, name_grupo_id )
 
 $(document).ready(function () {
 
+    var apm_modal_instance = null;
+    function show_apm_modal()
+    {
+        if ( apm_modal_instance ) {
+            return;
+        }
+        apm_modal_instance = Swal.fire({
+            icon: 'error',
+            title: 'APM no conectado',
+            text: 'No se puede tomar pedidos porque Appsiel Print Manager (APM) no esta conectado.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false
+        });
+    }
+
+    function close_apm_modal()
+    {
+        if ( apm_modal_instance ) {
+            Swal.close();
+            apm_modal_instance = null;
+        }
+    }
+
+    function set_apm_blocked_state( blocked )
+    {
+        if ( blocked ) {
+            $('#btn_guardar_factura').attr('disabled', 'disabled');
+            $('#inv_producto_id').attr('disabled', 'disabled');
+            $('#cantidad').attr('disabled', 'disabled');
+            $('#precio_unitario').attr('disabled', 'disabled');
+            $('#tasa_descuento').attr('disabled', 'disabled');
+            $('#tasa_impuesto').attr('disabled', 'disabled');
+            $('#precio_total').attr('disabled', 'disabled');
+            $('#accordionExample').find('button').attr('disabled', 'disabled');
+            show_apm_modal();
+        } else {
+            $('#btn_guardar_factura').removeAttr('disabled');
+            $('#inv_producto_id').removeAttr('disabled');
+            $('#cantidad').removeAttr('disabled');
+            $('#precio_unitario').removeAttr('disabled');
+            $('#tasa_descuento').removeAttr('disabled');
+            $('#tasa_impuesto').removeAttr('disabled');
+            $('#precio_total').removeAttr('disabled');
+            $('#accordionExample').find('button').removeAttr('disabled');
+            close_apm_modal();
+        }
+    }
+
+    function asegurar_apm_conectado()
+    {
+        var metodo_impresion = $('#metodo_impresion_pedido_restaurante').val() || 'normal';
+        if ( metodo_impresion != 'apm' ) {
+            set_apm_blocked_state(false);
+            return true;
+        }
+
+        if ( !window.APM_CLIENT || typeof window.APM_CLIENT.isConnected !== 'function' ) {
+            set_apm_blocked_state(true);
+            return false;
+        }
+
+        if ( !window.APM_CLIENT.isConnected() ) {
+            set_apm_blocked_state(true);
+            return false;
+        }
+
+        set_apm_blocked_state(false);
+        return true;
+    }
+
+    // Validar APM al cargar y luego cada 5 segundos
+    asegurar_apm_conectado();
+    setInterval(asegurar_apm_conectado, 5000);
+
     if ( $('#action').val() != 'create' )
     {
         reset_efectivo_recibido();

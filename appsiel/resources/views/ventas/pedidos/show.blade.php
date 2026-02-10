@@ -225,13 +225,13 @@
 
 @section('otros_scripts')
 
-	@if( (int)config('ventas_pos.imprimir_pedidos_en_cocina') )
-		<script src="{{ asset( 'assets/js/ventas_pos/external_print/cptable.js' )}}"></script>
-		<script src="{{ asset( 'assets/js/ventas_pos/external_print/cputils.js' )}}"></script>
-		<script src="{{ asset( 'assets/js/ventas_pos/external_print/JSESCPOSBuilder.js' )}}"></script>
-		<script src="{{ asset( 'assets/js/ventas_pos/external_print/JSPrintManager.js' )}}"></script>
-		<script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
-    @endif
+	<input type="hidden" id="metodo_impresion_pedido_ventas" value="{{ config('ventas.metodo_impresion_pedido_ventas') }}">
+	<input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
+	<input type="hidden" id="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
+	<input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
+
+	<script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+	<script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
 	<script type="text/javascript">
 		var array_registros = [];

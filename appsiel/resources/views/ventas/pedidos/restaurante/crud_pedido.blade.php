@@ -253,6 +253,10 @@ input[type=number]::-webkit-outer-spin-button {
     <input type="hidden" id="mostrar_mensaje_impresion_delegada" value="{{ (int)config('ventas.mostrar_mensaje_impresion_delegada') }}">
     <input type="hidden" id="usar_servidor_de_impresion" value="{{ (int)config('ventas.usar_servidor_de_impresion') }}">
     <input type="hidden" id="url_post_servidor_impresion" value="{{ config('ventas.url_post_servidor_impresion') }}">
+    <input type="hidden" id="metodo_impresion_pedido_restaurante" value="{{ config('ventas.metodo_impresion_pedido_restaurante') }}">
+    <input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
+    <input type="hidden" id="apm_printer_id_pedidos_restaurante" value="{{ config('ventas.apm_printer_id_pedidos_restaurante') }}">
+
 
     <?php 
         $cocinas = config('pedidos_restaurante.cocinas');
@@ -286,6 +290,7 @@ input[type=number]::-webkit-outer-spin-button {
     
     <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante_ventanas_modales.js?aux=' . uniqid() )}}"></script>
 
+    <script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas/restaurante/printing.js?aux=' . uniqid() )}}"></script>
 
 

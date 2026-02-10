@@ -87,6 +87,16 @@ function reset_componente_meseros()
 }
 
 $(document).ready(function () {
+
+    if ($('.btn_vendedor').length === 0) {
+        var vendedorId = $('#vendedor_default_id').val() || $('#vendedor_id').val();
+        if (vendedorId !== undefined && vendedorId !== null && vendedorId !== '') {
+            $('#vendedor_id').val(vendedorId);
+            $('#lbl_vendedor_mesero').text($('#vendedor_id').attr('data-vendedor_descripcion'));
+            hay_error_password = false;
+            activar_mesas_disponibles_mesero();
+        }
+    }
 	
     $('.btn_vendedor').on('click', function (e) {
 		e.preventDefault();

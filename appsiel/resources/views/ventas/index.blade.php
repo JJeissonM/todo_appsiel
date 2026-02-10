@@ -85,6 +85,12 @@
 	@include('layouts.mensajes')
 
 	<input type="hidden" name="user_rol" id="user_rol" value="{{ $user->roles()->first()->name }}">
+	<input type="hidden" id="metodo_impresion_pedido_restaurante" value="{{ config('ventas.metodo_impresion_pedido_restaurante') }}">
+	<input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
+
+	<div id="apm_status_banner" class="alert alert-danger" style="display:block; margin: 10px 0;">
+		APM no conectado. Appsiel Print Manager (APM) debe estar en lÃ­nea para tomar pedidos de restaurante.
+	</div>
 
 	@can('vtas_bloquear_vista_index')
 		<div class="container-fluid">
@@ -322,5 +328,32 @@
 		{
 			$('.nav').attr('display','none');
 		}
+	</script>
+@endsection
+
+@section('scripts')
+	@parent
+	<script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+	<script type="text/javascript">
+		(function () {
+			function set_apm_banner(visible) {
+				var banner = document.getElementById('apm_status_banner');
+				if (!banner) {
+					return;
+				}
+				banner.style.display = visible ? 'block' : 'none';
+			}
+
+			function validar_apm() {
+				if (!window.APM_CLIENT || typeof window.APM_CLIENT.isConnected !== 'function') {
+					set_apm_banner(true);
+					return;
+				}
+				set_apm_banner(!window.APM_CLIENT.isConnected());
+			}
+
+			validar_apm();
+			setInterval(validar_apm, 5000);
+		})();
 	</script>
 @endsection
