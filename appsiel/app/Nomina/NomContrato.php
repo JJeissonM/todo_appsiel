@@ -26,7 +26,8 @@ class NomContrato extends Model
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Núm. identificación', 'Empleado', 'Grupo Empleado', 'Cargo', 'Sueldo', 'Fecha ingreso', 'Contrato hasta', 'Estado'];
 
-    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila"}';
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"web/id_fila","otros_enlaces":"[{\"url\":\"nomina/duplicar_contrato_retirado/id_fila?id=17&id_modelo=83\",\"title\":\"Duplicar contrato retirado\",\"color_bootstrap\":\"\",\"faicon\":\"copy\",\"size\":\"\",\"tag_html\":\"a\"}]"}';
+    public $archivo_js = 'js/nomina/nom_contratos.js';
 
     public function tercero()
     {

@@ -448,6 +448,35 @@ class NominaController extends TransaccionController
         return NomContrato::find( $contrato_id );
     }
 
+    public function duplicar_contrato_retirado( $contrato_id )
+    {
+        $id_app = Input::get('id');
+        $id_modelo = Input::get('id_modelo');
+
+        $contrato = NomContrato::find( (int)$contrato_id );
+
+        if ( is_null( $contrato ) )
+        {
+            return redirect('web?id=' . $id_app . '&id_modelo=' . $id_modelo)->with('mensaje_error', 'No se encontro el contrato.');
+        }
+
+        if ( $contrato->estado != 'Retirado' )
+        {
+            return redirect('web?id=' . $id_app . '&id_modelo=' . $id_modelo)->with('mensaje_error', 'Solo se pueden duplicar contratos en estado Retirado.');
+        }
+
+        $nuevo_contrato = $contrato->replicate();
+        $nuevo_contrato->estado = 'Activo';
+        $nuevo_contrato->save();
+
+        if ( method_exists( $nuevo_contrato, 'store_adicional' ) )
+        {
+            $nuevo_contrato->store_adicional( [], $nuevo_contrato );
+        }
+
+        return redirect('web/' . $nuevo_contrato->id . '/edit?id=' . $id_app . '&id_modelo=' . $id_modelo)->with('flash_message', 'Contrato DUPLICADO correctamente.');
+    }
+
     // ASIGNACIÓN DE EMPLEADO A UN DOCUMENTO DE LIQUIDACION
     public function guardar_asignacion(Request $request)
     {

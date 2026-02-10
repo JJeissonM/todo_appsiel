@@ -36,6 +36,7 @@ Route::get('nom_retirar_prima_antiguedad/{nom_doc_encabezado_id}', 'Nomina\Liqui
 
 // 			TRANSACCIONES VARIAS 
 Route::get('get_datos_contrato/{contrato_id}', 'Nomina\NominaController@get_datos_contrato');
+Route::get('nomina/duplicar_contrato_retirado/{contrato_id}', 'Nomina\NominaController@duplicar_contrato_retirado');
 Route::get('get_fecha_final_vacaciones/{grupo_empleado_id}/{fecha_inicial_tnl}/{cantidad_dias_tomados}/{dias_compensados}', 'Nomina\PrestacionesSocialesController@get_fecha_final_vacaciones');
 
 Route::get('validar_fecha_otras_novedades/{fecha_inicial_tnl}/{fecha_final_tnl}/{contrato_id}/{novedad_id}', 'Nomina\NovedadesTnlController@validar_fecha_otras_novedades');
