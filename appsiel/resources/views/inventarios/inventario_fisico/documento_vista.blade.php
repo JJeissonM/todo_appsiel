@@ -1,6 +1,6 @@
 <div>
 
-    IF = Inventario Físico <a class="btn btn-success btn-xs" id="btn_excel_v2" title="inventario_fisico"><i class="fa fa-file-excel-o"></i></a>
+    IF = Inventario Físico <a class="btn-gmail" id="btn_excel_v2" title="Exportar Inventario Físico"><i class="fa fa-file-excel-o"></i></a>
 
     <div class="table-responsive">
         <table class="table table-bordered table-striped" id="tbDatos">
@@ -18,7 +18,7 @@
                 @foreach($doc_registros as $linea )
                     <?php
 
-                        $descripcion_item = $linea->item->get_value_to_show(true);
+                        $descripcion_item = $linea->descripcion_item ?? $linea->producto_descripcion;
 
                         $diferencia = round( $linea->cantidad - $linea->cantidad_sistema , 2);
 

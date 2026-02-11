@@ -47,6 +47,7 @@ Route::get('inv_get_item_stock/{item_id}/{bodega_id}/{fecha}','Inventarios\Inven
 
 Route::get('inv_fisico_imprimir/{id}','Inventarios\InvFisicoController@imprimir');
 Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajuste');
+Route::post('inv_fisico_unificar_registros/{id}','Inventarios\InvFisicoController@unificar_registros');
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
 Route::get('inv_cargar_lista_ingredientes_fabricacion/{item_producir_id}/{cantidad_fabricar}','Inventarios\InvFisicoController@cargar_lista_ingredientes_fabricacion');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');

@@ -25,10 +25,13 @@ use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\RecetaCocina;
+use App\Compras\Proveedor;
+use App\Sistema\Campo;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 
 class InvFisicoController extends TransaccionController
@@ -188,13 +191,7 @@ class InvFisicoController extends TransaccionController
         
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        foreach ($doc_registros as $fila)
-        {
-            $existencia = InvMovimiento::get_existencia_actual($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha );
-
-            $fila->cantidad_sistema = $existencia;
-            $fila->costo_total_sistema = $existencia * $fila->item->get_costo_promedio(0);
-        }
+        $this->preparar_lineas_para_vista( $doc_registros, $doc_encabezado->fecha );
 
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
@@ -222,12 +219,7 @@ class InvFisicoController extends TransaccionController
         
         $doc_registros = InvDocRegistro::get_registros_impresion( $doc_encabezado->id );
 
-        foreach ($doc_registros as $fila)
-        {
-            $existencia = InvMovimiento::get_existencia_producto($fila->producto_id, $fila->inv_bodega_id, $doc_encabezado->fecha );
-            $fila->cantidad_sistema = $existencia->Cantidad;
-            $fila->costo_total_sistema = $existencia->Costo;
-        }
+        $this->preparar_lineas_para_vista( $doc_registros, $doc_encabezado->fecha );
 
         $empresa = $this->empresa;
 
@@ -540,6 +532,200 @@ class InvFisicoController extends TransaccionController
         return $lista_items;
     }
 
+    /**
+     * Preparar datos de lineas para vistas show y imprimir sin N+1 queries.
+     */
+    private function preparar_lineas_para_vista( $doc_registros, $fecha_corte )
+    {
+        if ( $doc_registros->count() == 0 )
+        {
+            return;
+        }
+
+        $item_ids = $doc_registros->pluck('inv_producto_id')->unique()->filter()->values()->all();
+        $bodega_ids = $doc_registros->pluck('inv_bodega_id')->unique()->filter()->values()->all();
+
+        $items = InvProducto::whereIn('id', $item_ids)
+                            ->get(['id','descripcion','unidad_medida1','unidad_medida2','referencia','categoria_id','precio_compra']);
+
+        $items_map = $items->keyBy('id');
+        $precio_compra_map = $items->pluck('precio_compra','id')->all();
+
+        // Mapa de unidades de medida (se consulta una sola vez)
+        $unidad_map = [];
+        $campo = Campo::find(79);
+        if ( $campo != null )
+        {
+            $unidad_map = json_decode( $campo->opciones, true );
+            if ( !is_array($unidad_map) )
+            {
+                $unidad_map = [];
+            }
+        }
+
+        // Colores por item (si aplica)
+        $color_map = [];
+        if ( !empty( $item_ids )
+            && Schema::hasTable('inv_mandatario_tiene_items')
+            && Schema::hasTable('inv_items_mandatarios')
+            && Schema::hasTable('inv_indum_paletas_colores')
+            && Schema::hasColumn('inv_items_mandatarios', 'paleta_color_id') )
+        {
+            $colores = DB::table('inv_mandatario_tiene_items as mti')
+                        ->leftJoin('inv_items_mandatarios as im', 'im.id', '=', 'mti.mandatario_id')
+                        ->leftJoin('inv_indum_paletas_colores as pc', 'pc.id', '=', 'im.paleta_color_id')
+                        ->whereIn('mti.item_id', $item_ids)
+                        ->select('mti.item_id', 'pc.descripcion as color')
+                        ->get();
+
+            foreach ( $colores as $row )
+            {
+                if ( $row->color != null && $row->color != '' )
+                {
+                    $color_map[$row->item_id] = $row->color;
+                }
+            }
+        }
+
+        // Codigos de proveedor por categoria (si aplica)
+        $proveedor_codigos = [];
+        if ( (int)config('inventarios.items_mandatarios_por_proveedor') && Schema::hasTable('compras_proveedores') )
+        {
+            $categoria_ids = $items->pluck('categoria_id')->unique()->filter()->values()->all();
+            if ( !empty( $categoria_ids ) )
+            {
+                $proveedor_codigos = Proveedor::whereIn('id', $categoria_ids)->pluck('codigo','id')->all();
+            }
+        }
+
+        $mostrar_referencia = (int)config('inventarios.mostrar_referencia_en_descripcion_items');
+        $codigo_principal = config('inventarios.codigo_principal_manejo_productos');
+
+        // Existencias por item y bodega (una sola consulta)
+        $exist_map = [];
+        if ( !empty( $item_ids ) && !empty( $bodega_ids ) )
+        {
+            $fecha_corte = \Carbon\Carbon::parse( $fecha_corte )->format('Y-m-d');
+            $existencias = InvMovimiento::where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->where('inv_movimientos.fecha', '<=', $fecha_corte)
+                                ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
+                                ->whereIn('inv_movimientos.inv_bodega_id', $bodega_ids)
+                                ->select(
+                                        'inv_movimientos.inv_producto_id',
+                                        'inv_movimientos.inv_bodega_id',
+                                        DB::raw('sum(inv_movimientos.cantidad) as cantidad')
+                                    )
+                                ->groupBy('inv_movimientos.inv_producto_id')
+                                ->groupBy('inv_movimientos.inv_bodega_id')
+                                ->get();
+
+            foreach ( $existencias as $row )
+            {
+                $exist_map[$row->inv_producto_id . ':' . $row->inv_bodega_id] = round( (float)$row->cantidad, 2 );
+            }
+        }
+
+        // Costos promedio por item (una sola consulta)
+        $cost_map = [];
+        $maneja_bodegas = (int)config('inventarios.maneja_costo_promedio_por_bodegas');
+        $cost_bodegas = $maneja_bodegas ? $bodega_ids : [0];
+
+        if ( !empty( $item_ids ) && !empty( $cost_bodegas ) )
+        {
+            $costos = InvCostoPromProducto::whereIn('inv_producto_id', $item_ids)
+                        ->whereIn('inv_bodega_id', $cost_bodegas)
+                        ->get(['inv_producto_id','inv_bodega_id','costo_promedio']);
+
+            foreach ( $costos as $row )
+            {
+                $cost_map[$row->inv_producto_id . ':' . $row->inv_bodega_id] = (float)$row->costo_promedio;
+            }
+        }
+
+        foreach ( $doc_registros as $fila )
+        {
+            $item_id = $fila->inv_producto_id;
+            $bodega_id = $fila->inv_bodega_id;
+
+            $existencia = $exist_map[$item_id . ':' . $bodega_id] ?? 0;
+            $bodega_key = $maneja_bodegas ? $bodega_id : 0;
+            $costo_prom = $cost_map[$item_id . ':' . $bodega_key] ?? ( $precio_compra_map[$item_id] ?? 0 );
+
+            $fila->cantidad_sistema = $existencia;
+            $fila->costo_total_sistema = $existencia * $costo_prom;
+
+            $item = $items_map[$item_id] ?? null;
+            if ( $item != null )
+            {
+                $fila->descripcion_item = $this->build_descripcion_item(
+                    $item,
+                    $color_map,
+                    $unidad_map,
+                    $proveedor_codigos,
+                    $mostrar_referencia,
+                    $codigo_principal,
+                    true
+                );
+            }else{
+                $fila->descripcion_item = $fila->producto_descripcion ?? '';
+            }
+        }
+    }
+
+    /**
+     * Genera la descripcion del item sin consultas adicionales.
+     */
+    private function build_descripcion_item( $item, $color_map, $unidad_map, $proveedor_codigos, $mostrar_referencia, $codigo_principal, $ocultar_id = true )
+    {
+        $descripcion_item = $item->descripcion;
+
+        $color = $color_map[$item->id] ?? '';
+        if ( $color != '' )
+        {
+            $descripcion_item .= ' ' . $color;
+        }
+
+        $talla = '';
+        if ( $item->unidad_medida2 != '' )
+        {
+            $talla = ' - ' . $item->unidad_medida2;
+        }
+
+        $referencia = '';
+        if ( $mostrar_referencia && $item->referencia != '' )
+        {
+            $referencia = ' - ' . $item->referencia;
+        }
+
+        $codigo_proveedor = '';
+        if ( (int)config('inventarios.items_mandatarios_por_proveedor') )
+        {
+            $codigo = $proveedor_codigos[$item->categoria_id] ?? '';
+            if ( $codigo != '' )
+            {
+                $codigo_proveedor = ' - ' . $codigo;
+            }
+        }
+
+        $prefijo = $item->id . ' ';
+        if ( $ocultar_id )
+        {
+            $prefijo = '';
+        }
+
+        if ( $codigo_principal == 'referencia' && $mostrar_referencia )
+        {
+            $prefijo = $item->referencia . ' ';
+            $referencia = '';
+        }
+
+        $unidad = $unidad_map[$item->unidad_medida1] ?? $item->unidad_medida1;
+
+        $descripcion_item .= $talla . $referencia . $codigo_proveedor . ' (' . $unidad . ')';
+
+        return $prefijo . $descripcion_item;
+    }
+
     public function cargar_lista_ingredientes_fabricacion($item_platillo_id,$cantidad_fabricar)
     {
         $motivo_salida = InvMotivo::find( (int)config('inventarios.motivo_salida_id') );
@@ -561,6 +747,85 @@ class InvFisicoController extends TransaccionController
             $lineas_desarme .= '<tr id="' . $ingrediente['ingrediente']->id . '"> <td style="display:none;">0</td> <td class="text-center">' . $ingrediente['ingrediente']->id . '</td> <td class="nom_prod">' . $ingrediente['ingrediente']->descripcion . ' (' . $ingrediente['ingrediente']->get_unidad_medida1() . ')' . '</td> <td><span style="color:white;">' . $motivo_salida->id . '-</span><span style="color:red;">' . $motivo_salida->descripcion . '</span><input type="hidden" class="movimiento" value="' . $motivo_salida->movimiento . '"></td><td>$' . $costo_unitario_ingrediente . '</td><td class="text-center cantidad">' . $cantidad_a_sacar . ' ' . $ingrediente['ingrediente']->get_unidad_medida1() . '</td><td class="costo_total">$' . ($cantidad_a_sacar * $costo_unitario_ingrediente) . '</td><td><button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-btn fa-trash"></i></button></td></tr>';
         }
         return $lineas_desarme;
+    }
+
+    /**
+     * Unificar lineas repetidas por inv_producto_id en un documento.
+     */
+    public function unificar_registros(Request $request, $id)
+    {
+        $doc_encabezado = InvDocEncabezado::findOrFail($id);
+
+        $lineas = InvDocRegistro::where('inv_doc_encabezado_id', $doc_encabezado->id)
+                    ->orderBy('id')
+                    ->get();
+
+        if ( $lineas->count() < 2 )
+        {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'No hay líneas para unificar.');
+        }
+
+        $grupos = $lineas->groupBy('inv_producto_id');
+
+        $unificados = 0;
+        $eliminadas = 0;
+
+        DB::beginTransaction();
+        try {
+            foreach ( $grupos as $grupo )
+            {
+                if ( $grupo->count() < 2 )
+                {
+                    continue;
+                }
+
+                $principal = $grupo->first();
+
+                $cantidad_total = (float)$grupo->sum('cantidad');
+                $costo_total = (float)$grupo->sum('costo_total');
+                $costo_unitario = 0;
+                if ( $cantidad_total != 0 )
+                {
+                    $costo_unitario = $costo_total / $cantidad_total;
+                }
+
+                $principal->cantidad = $cantidad_total;
+                $principal->costo_total = $costo_total;
+                $principal->costo_unitario = $costo_unitario;
+                $principal->modificado_por = Auth::user()->email;
+                $principal->save();
+
+                foreach ( $grupo as $linea )
+                {
+                    if ( $linea->id == $principal->id )
+                    {
+                        continue;
+                    }
+                    $linea->delete();
+                    $eliminadas++;
+                }
+
+                $unificados++;
+            }
+
+            DB::commit();
+        } catch ( \Exception $e ) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                ->with('flash_message', 'Se unificaron ' . $unificados . ' ítems. Líneas eliminadas: ' . $eliminadas . '.');
+    }
+
+    private function build_variables_url(Request $request)
+    {
+        $id_app = $request->get('url_id', Input::get('id'));
+        $id_modelo = $request->get('url_id_modelo', Input::get('id_modelo'));
+        $id_transaccion = $request->get('url_id_transaccion', Input::get('id_transaccion'));
+
+        return '?id=' . $id_app . '&id_modelo=' . $id_modelo . '&id_transaccion=' . $id_transaccion;
     }
 
 }

@@ -73,7 +73,7 @@ $(document).ready(function () {
 	$(document).on('blur', '#numero_identificacion', function () {
 		var documento = $("#numero_identificacion").val();
 
-		/* Cuando el javascript está dentro de una vista blade se puede llamar la url de la siguiente forma:
+		/* Cuando el javascript esta dentro de una vista blade se puede llamar la url de la siguiente forma:
 		url = "{{ url('core/validar_numero_identificacion/') }}";*/
 
 
@@ -92,7 +92,7 @@ $(document).ready(function () {
 				} else {
 					$('#bs_boton_guardar').hide();
 					$('#email').hide();
-					alert("Ya existe una persona con ese número de documento de identidad. Cambié el número o no podrá guardar el registro.");
+					alert("Ya existe una persona con ese número de documento de identidad. Cambie el número o no podrá guardar el registro.");
 					//$('#numero_identificacion').focus();
 				}
 
@@ -257,7 +257,7 @@ $(document).ready(function () {
 		let tableExport = new TableExport($tabla, {
 			exportButtons: false, // No queremos botones
 			filename: nombre_listado, //Nombre del archivo de Excel
-			sheetname: nombre_listado, //Título de la hoja
+			sheetname: nombre_listado, //Titulo de la hoja
 		});
 		let datos = tableExport.getExportData();
 		let preferenciasDocumento = datos.tbDatos.xlsx;
@@ -273,8 +273,27 @@ $(document).ready(function () {
 		let tableExport = new TableExport($tabla, {
 			exportButtons: false, // No queremos botones
 			filename: nombre_listado.substring(0,30), //Nombre del archivo de Excel
-			sheetname: nombre_listado.substring(0,30), //Título de la hoja
-		});
+			sheetname: nombre_listado.substring(0,30), //Ti­tulo de la hoja
+			formatValue: function(value) {
+				if (value === null || value === undefined) {
+					return '';
+				}
+				var v = String(value).trim();
+				if (v === '') {
+					return v;
+				}
+
+				// Normalizar valores numericos para evitar que Excel los interprete como fechas.
+				if (/^-?\$?\s*[\d\.,]+$/.test(v)) {
+					v = v.replace(/\$/g, '').replace(/\s+/g, '');
+					if (v.indexOf(',') > -1 && v.indexOf('.') > -1) {
+						v = v.replace(/\./g, '').replace(',', '.');
+					} else if (v.indexOf(',') > -1 && v.indexOf('.') === -1) {
+						v = v.replace(',', '.');
+					}
+				}
+				return v;
+			}		});
 		let datos = tableExport.getExportData();
 		let preferenciasDocumento = datos.tbDatos.xlsx;
 		tableExport.export2file(preferenciasDocumento.data, preferenciasDocumento.mimeType, preferenciasDocumento.filename, preferenciasDocumento.fileExtension, preferenciasDocumento.merges, preferenciasDocumento.RTL, preferenciasDocumento.sheetname);
@@ -320,3 +339,4 @@ $(document).ready(function () {
 		}
 	});
 });
+

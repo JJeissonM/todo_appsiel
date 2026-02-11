@@ -31,6 +31,8 @@
                 <br/>
                 <b>{{ config("configuracion.tipo_identificador") }}: &nbsp;&nbsp;</b>
 			@if( config("configuracion.tipo_identificador") == 'NIT') {{ number_format( $doc_encabezado->numero_identificacion, 0, ',', '.') }}	@else {{ $doc_encabezado->numero_identificacion}} @endif  
+                <br/>
+                <b>Bodega:</b> {{ $doc_encabezado->bodega_descripcion }}
             </div>
             
         </td>
@@ -43,9 +45,9 @@
                     
                 </td>
                 <td>
-                    <b>Hora inicio:</b> {{ $doc_encabezado->hora_incio }}
+                    <b>Hora inicio:</b> {{ $doc_encabezado->hora_inicio ? date('g:i a', strtotime($doc_encabezado->hora_inicio)) : '' }}
                     <br/>
-                    <b>Hora finalización:</b> {{ $doc_encabezado->hora_finalizacion }}
+                    <b>Hora finalización:</b> {{ $doc_encabezado->hora_finalizacion ? date('g:i a', strtotime($doc_encabezado->hora_finalizacion)) : '' }}
                 </td>        
             </tr>
         </table>
@@ -87,7 +89,7 @@
             ?>
             <tr>
                 <td class="text-center"> {{ $linea->producto_id }} </td>
-                <td> {{ $linea->item->get_value_to_show(true)}} </td> 
+                <td> {{ $linea->descripcion_item ?? $linea->producto_descripcion }} </td> 
 
                 <!-- Datos del conteo físico -->
                 <td class="text-center"> {{ number_format( $linea->cantidad, 2, ',', '.') }}  </td>
@@ -140,12 +142,12 @@
                 }
             ?>
             <td colspan="2">&nbsp;</td>
-            <td class="text-center"> {{ number_format($total_cantidad, 0, ',', '.') }} </td>
+            <td class="text-center"> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
             <td class="text-right"> &nbsp; </td>
             <td class="text-right"> {{ '$ '.number_format($total_documento, 0, ',', '.') }} </td>
-            <td class="text-center"> {{ number_format($total_cantidad_sistema, 0, ',', '.') }} </td>
+            <td class="text-center"> {{ number_format($total_cantidad_sistema, 2, ',', '.') }} </td>
             <td class="text-right"> {{ '$ '.number_format($total_documento_sistema, 0, ',', '.') }} </td>
-            <td class="text-center"> {{ number_format($total_cantidad_dif, 0, ',', '.') }} </td>
+            <td class="text-center"> {{ number_format($total_cantidad_dif, 2, ',', '.') }} </td>
             <td class="text-right"> {{ '$ '.number_format($total_documento_dif, 0, ',', '.') }} </td>
                 <td> 
                     <?php 

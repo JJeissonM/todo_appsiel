@@ -334,6 +334,7 @@ class InvDocEncabezado extends Model
         return InvDocEncabezado::where('inv_doc_encabezados.id',$id)
                     ->leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'inv_doc_encabezados.core_tipo_doc_app_id')
                     ->leftJoin('core_terceros', 'core_terceros.id', '=', 'inv_doc_encabezados.core_tercero_id')
+                    ->leftJoin('inv_bodegas', 'inv_bodegas.id', '=', 'inv_doc_encabezados.inv_bodega_id')
                     ->select(
                                 'inv_doc_encabezados.id',
                                 'inv_doc_encabezados.core_empresa_id',
@@ -359,7 +360,8 @@ class InvDocEncabezado extends Model
                                 'core_terceros.digito_verificacion',
                                 'core_terceros.direccion1',
                                 'core_terceros.codigo_ciudad',
-                                'core_terceros.telefono1'
+                                'core_terceros.telefono1',
+                                'inv_bodegas.descripcion AS bodega_descripcion'
                             )
                     ->get()
                     ->first();
