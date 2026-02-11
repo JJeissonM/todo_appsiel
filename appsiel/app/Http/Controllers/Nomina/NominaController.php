@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Nomina;
 
@@ -487,9 +487,33 @@ class NominaController extends TransaccionController
 
         $this->validate($request, ['registro_modelo_hijo_id' => 'required']);
 
+        $ya_asignado = DB::table($datos['nombre_tabla'])
+                        ->where($datos['registro_modelo_padre_id'], $request->registro_modelo_padre_id)
+                        ->where($datos['registro_modelo_hijo_id'], $request->registro_modelo_hijo_id)
+                        ->exists();
+        if ($ya_asignado) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje_error' => 'El empleado ya estÃ¡ asignado a este documento.'
+                ], 422);
+            }
+
+            return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )
+                ->with('mensaje_error', 'El empleado ya está asignado a este documento.');
+        }
+
+        $orden = $request->nombre_columna1;
+        if ($orden === null || $orden === '') {
+            $orden = DB::table($datos['nombre_tabla'])
+                    ->where($datos['registro_modelo_padre_id'], $request->registro_modelo_padre_id)
+                    ->max($datos['nombre_columna1']);
+            $orden = is_null($orden) ? 1 : ((int)$orden + 1);
+        }
+
         DB::table($datos['nombre_tabla'])
             ->insert([
-                $datos['nombre_columna1'] => $request->nombre_columna1,
+                $datos['nombre_columna1'] => $orden,
                 $datos['registro_modelo_padre_id'] => $request->registro_modelo_padre_id,
                 $datos['registro_modelo_hijo_id'] => $request->registro_modelo_hijo_id
             ]);
@@ -503,6 +527,16 @@ class NominaController extends TransaccionController
             $empleado->save();
         }            
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return $this->respuesta_tabla_empleados(
+                $request->registro_modelo_padre_id,
+                $request->url_id_modelo,
+                $request->url_id,
+                $request->url_id_transaccion,
+                'Empleado AGREGADO correctamente al documento.'
+            );
+        }
+
         return redirect( 'nomina/' . $request->registro_modelo_padre_id . '?id=' . $request->url_id . '&id_modelo=' . $request->url_id_modelo . '&id_transaccion=' . $request->url_id_transaccion )->with('flash_message', 'Empleado AGREGADO correctamente al documento.');
     }
 
@@ -513,6 +547,13 @@ class NominaController extends TransaccionController
 
         if( !empty( $documento_nomina->registros_liquidacion->where('nom_contrato_id',(int)$nom_contrato_id)->all() ) )
         {
+            if (request()->ajax() || request()->wantsJson()) {
+                return response()->json([
+                    'ok' => false,
+                    'mensaje_error' => 'El empleado no puede ser RETIRADO del documento. Ya tiene registros de conceptos.'
+                ], 422);
+            }
+
             return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('mensaje_error', 'El empleado no puede ser RETIRADO del documento. Ya tiene registros de conceptos.');
         }
 
@@ -531,7 +572,39 @@ class NominaController extends TransaccionController
             ->where($datos['registro_modelo_padre_id'], '=', $nom_doc_encabezado_id)
             ->delete();
 
+        if (request()->ajax() || request()->wantsJson()) {
+            return $this->respuesta_tabla_empleados(
+                $nom_doc_encabezado_id,
+                $id_modelo_padre,
+                $id_app,
+                request()->get('id_transaccion'),
+                'Empleado RETIRADO correctamente del documento.'
+            );
+        }
+
         return redirect( 'nomina/' . $nom_doc_encabezado_id . '?id=' . $id_app . '&id_modelo=' . $id_modelo_padre)->with('flash_message', 'Empleado RETIRADO correctamente del documento.');
+    }
+
+    protected function respuesta_tabla_empleados($nom_doc_encabezado_id, $id_modelo_padre, $id_app, $id_transaccion, $mensaje)
+    {
+        request()->merge([
+            'id' => $id_app,
+            'id_modelo' => $id_modelo_padre,
+            'id_transaccion' => $id_transaccion
+        ]);
+
+        $modelo = Modelo::find($id_modelo_padre);
+        $documento_nomina = NomDocEncabezado::find((int)$nom_doc_encabezado_id);
+
+        $modelo_crud = new ModeloController;
+        $respuesta = $modelo_crud->get_tabla_relacionada($modelo, $documento_nomina);
+
+        return response()->json([
+            'ok' => true,
+            'mensaje' => $mensaje,
+            'tabla' => $respuesta['tabla'],
+            'opciones' => $respuesta['opciones']
+        ]);
     }
 
     public function export_registros_xlsx($encabezado_doc_id)
