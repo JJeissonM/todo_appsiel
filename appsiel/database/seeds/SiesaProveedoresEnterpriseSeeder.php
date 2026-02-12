@@ -32,7 +32,7 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
         $highestColumn = $sheet->getHighestColumn();
         $highestRow = $sheet->getHighestRow();
 
-        $headerRow = $sheet->rangeToArray('A1:' . $highestColumn . '1', null, true, false);
+        $headerRow = $sheet->rangeToArray('A1:' . $highestColumn . '1', null, false, false);
         $headers = $headerRow[0];
 
         $map = [
@@ -109,7 +109,7 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
             DB::table('siesa_proveedores_enterprise')->truncate();
 
             for ($row = 2; $row <= $highestRow; $row++) {
-                $rowValues = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, true, false);
+                $rowValues = $sheet->rangeToArray('A' . $row . ':' . $highestColumn . $row, null, false, false);
                 $rowValues = $rowValues[0];
 
                 if ($this->isRowEmpty($rowValues)) {

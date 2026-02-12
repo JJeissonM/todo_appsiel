@@ -145,11 +145,10 @@ class ProveedoresEnterpriseController extends Controller
 
     private function buildQuery($semaforo)
     {
-        $groupBy = $semaforo === 'codigo' ? 'codigo' : 'codigo, sucursal';
-        $subquery = DB::table('siesa_datos_completos_proveedores')
+        $subCodigoSucursal = DB::table('siesa_datos_completos_proveedores')
             ->selectRaw(
                 "codigo,
-                " . ($semaforo === 'codigo' ? "'' as sucursal," : "sucursal,") . "
+                sucursal,
                 MIN(razon_social_sucursal) as razon_social_sucursal,
                 MIN(clase_de_proveedor) as clase_de_proveedor,
                 MIN(condicion_de_pago) as condicion_de_pago,
@@ -173,50 +172,118 @@ class ProveedoresEnterpriseController extends Controller
                 MIN(celular) as celular,
                 MIN(suc_defecto_pe) as suc_defecto_pe"
             )
-            ->groupBy(DB::raw($groupBy));
+            ->groupBy(DB::raw('codigo, sucursal'));
+
+        $subCodigo = DB::table('siesa_datos_completos_proveedores')
+            ->selectRaw(
+                "codigo,
+                MIN(razon_social_sucursal) as razon_social_sucursal,
+                MIN(clase_de_proveedor) as clase_de_proveedor,
+                MIN(condicion_de_pago) as condicion_de_pago,
+                MIN(tipo_proveedor) as tipo_proveedor,
+                MIN(forma_de_pago) as forma_de_pago,
+                MIN(notas) as notas,
+                MIN(contacto) as contacto,
+                MIN(direccion_1) as direccion_1,
+                MIN(direccion_2) as direccion_2,
+                MIN(direccion_3) as direccion_3,
+                MIN(cod_depto) as cod_depto,
+                MIN(cod_ciudad) as cod_ciudad,
+                MIN(barrio) as barrio,
+                MIN(telefono) as telefono,
+                MIN(email) as email,
+                MIN(fecha_ingreso) as fecha_ingreso,
+                MIN(monto_anual_compras) as monto_anual_compras,
+                MIN(exige_cotizacion_en_oc_y_entrada) as exige_cotizacion_en_oc_y_entrada,
+                MIN(exige_oc_en_entrada_de_almacen) as exige_oc_en_entrada_de_almacen,
+                MIN(grupo_co) as grupo_co,
+                MIN(celular) as celular,
+                MIN(suc_defecto_pe) as suc_defecto_pe"
+            )
+            ->groupBy('codigo');
 
         $query = DB::table('siesa_proveedores_enterprise as p')
-            ->leftJoin(DB::raw('(' . $subquery->toSql() . ') as d'), function ($join) use ($semaforo) {
-                $join->on('d.codigo', '=', 'p.codigo');
-                if ($semaforo !== 'codigo') {
-                    $join->on('d.sucursal', '=', 'p.sucursal');
-                }
+            ->leftJoin(DB::raw('(' . $subCodigo->toSql() . ') as dc'), function ($join) {
+                $join->on('dc.codigo', '=', 'p.codigo');
             })
-            ->mergeBindings($subquery)
-            ->select([
+            ->mergeBindings($subCodigo);
+
+        if ($semaforo !== 'codigo') {
+            $query->leftJoin(DB::raw('(' . $subCodigoSucursal->toSql() . ') as dcs'), function ($join) {
+                $join->on('dcs.codigo', '=', 'p.codigo')
+                    ->on('dcs.sucursal', '=', 'p.sucursal');
+            })->mergeBindings($subCodigoSucursal);
+
+            $query->select([
                 'p.codigo as cod_proveedor',
                 'p.sucursal as sucur_proveedor',
-                DB::raw("COALESCE(p.razon_social_sucursal, d.razon_social_sucursal) as descrip_sucursal"),
-                DB::raw("COALESCE(p.clase_de_proveedor, d.clase_de_proveedor) as clase_proveedor"),
-                DB::raw("COALESCE(p.condicion_de_pago, d.condicion_de_pago) as cond_pago"),
-                DB::raw("COALESCE(p.tipo_proveedor, d.tipo_proveedor) as tipo_proveedor"),
+                DB::raw("COALESCE(p.razon_social_sucursal, dcs.razon_social_sucursal, dc.razon_social_sucursal) as descrip_sucursal"),
+                DB::raw("COALESCE(p.clase_de_proveedor, dcs.clase_de_proveedor, dc.clase_de_proveedor) as clase_proveedor"),
+                DB::raw("COALESCE(p.condicion_de_pago, dcs.condicion_de_pago, dc.condicion_de_pago) as cond_pago"),
+                DB::raw("COALESCE(p.tipo_proveedor, dcs.tipo_proveedor, dc.tipo_proveedor) as tipo_proveedor"),
                 DB::raw("CASE
-                    WHEN d.forma_de_pago IS NULL OR d.forma_de_pago = '' THEN ''
-                    WHEN LOWER(d.forma_de_pago) LIKE '%cheque%' THEN 0
-                    WHEN LOWER(d.forma_de_pago) LIKE '%electron%' OR LOWER(d.forma_de_pago) LIKE '%consign%' OR LOWER(d.forma_de_pago) LIKE '%transfer%' THEN 1
-                    WHEN LOWER(d.forma_de_pago) LIKE '%efectivo%' THEN 2
+                    WHEN COALESCE(dcs.forma_de_pago, dc.forma_de_pago) IS NULL OR COALESCE(dcs.forma_de_pago, dc.forma_de_pago) = '' THEN ''
+                    WHEN LOWER(COALESCE(dcs.forma_de_pago, dc.forma_de_pago)) LIKE '%cheque%' THEN 0
+                    WHEN LOWER(COALESCE(dcs.forma_de_pago, dc.forma_de_pago)) LIKE '%electron%' OR LOWER(COALESCE(dcs.forma_de_pago, dc.forma_de_pago)) LIKE '%consign%' OR LOWER(COALESCE(dcs.forma_de_pago, dc.forma_de_pago)) LIKE '%transfer%' THEN 1
+                    WHEN LOWER(COALESCE(dcs.forma_de_pago, dc.forma_de_pago)) LIKE '%efectivo%' THEN 2
                     ELSE '' END as forma_pago_proveedores"),
-                DB::raw("COALESCE(p.nota, d.notas) as observaciones"),
-                DB::raw("COALESCE(d.contacto, '') as contacto"),
-                DB::raw("COALESCE(d.direccion_1, '') as direccion1"),
-                DB::raw("COALESCE(d.direccion_2, '') as direccion2"),
-                DB::raw("COALESCE(d.direccion_3, '') as direccion3"),
+                DB::raw("COALESCE(p.nota, dcs.notas, dc.notas) as observaciones"),
+                DB::raw("COALESCE(dcs.contacto, dc.contacto, '') as contacto"),
+                DB::raw("COALESCE(dcs.direccion_1, dc.direccion_1, '') as direccion1"),
+                DB::raw("COALESCE(dcs.direccion_2, dc.direccion_2, '') as direccion2"),
+                DB::raw("COALESCE(dcs.direccion_3, dc.direccion_3, '') as direccion3"),
                 DB::raw("169 as pais"),
-                DB::raw("COALESCE(d.cod_depto, '') as departamento"),
-                DB::raw("COALESCE(d.cod_ciudad, '') as ciudad"),
-                DB::raw("COALESCE(d.barrio, '') as barrio"),
-                DB::raw("COALESCE(d.telefono, '') as telefono"),
-                DB::raw("COALESCE(d.email, '') as correo_electronico"),
-                DB::raw("COALESCE(p.fecha_ingreso, d.fecha_ingreso) as fecha_de_ingreso"),
-                DB::raw("COALESCE(d.monto_anual_compras, '') as monto_anual_de_compra"),
+                DB::raw("COALESCE(dcs.cod_depto, dc.cod_depto, '') as departamento"),
+                DB::raw("COALESCE(dcs.cod_ciudad, dc.cod_ciudad, '') as ciudad"),
+                DB::raw("COALESCE(dcs.barrio, dc.barrio, '') as barrio"),
+                DB::raw("COALESCE(dcs.telefono, dc.telefono, '') as telefono"),
+                DB::raw("COALESCE(dcs.email, dc.email, '') as correo_electronico"),
+                DB::raw("COALESCE(p.fecha_ingreso, dcs.fecha_ingreso, dc.fecha_ingreso) as fecha_de_ingreso"),
+                DB::raw("COALESCE(dcs.monto_anual_compras, dc.monto_anual_compras, '') as monto_anual_de_compra"),
                 DB::raw("0 as ind_del_monto_anual"),
                 DB::raw("0 as ind_cotiz_de_compra"),
-                DB::raw("CASE WHEN d.exige_oc_en_entrada_de_almacen = 'Si' THEN 1 WHEN d.exige_oc_en_entrada_de_almacen = 'No' THEN 0 ELSE '' END as ind_orden_de_compra_edi"),
-                DB::raw("COALESCE(d.grupo_co, '') as grupo_centro_operacion"),
-                DB::raw("COALESCE(d.celular, '') as telefono_celular"),
-                DB::raw("CASE WHEN d.suc_defecto_pe = 'Si' THEN 1 WHEN d.suc_defecto_pe = 'No' THEN 0 ELSE '' END as ind_suc_pagos_electronicos"),
-            ])
-            ->orderBy('p.codigo');
+                DB::raw("CASE WHEN COALESCE(dcs.exige_oc_en_entrada_de_almacen, dc.exige_oc_en_entrada_de_almacen) = 'Si' THEN 1 WHEN COALESCE(dcs.exige_oc_en_entrada_de_almacen, dc.exige_oc_en_entrada_de_almacen) = 'No' THEN 0 ELSE '' END as ind_orden_de_compra_edi"),
+                DB::raw("COALESCE(dcs.grupo_co, dc.grupo_co, '') as grupo_centro_operacion"),
+                DB::raw("COALESCE(dcs.celular, dc.celular, '') as telefono_celular"),
+                DB::raw("CASE WHEN COALESCE(dcs.suc_defecto_pe, dc.suc_defecto_pe) = 'Si' THEN 1 WHEN COALESCE(dcs.suc_defecto_pe, dc.suc_defecto_pe) = 'No' THEN 0 ELSE '' END as ind_suc_pagos_electronicos"),
+            ]);
+        } else {
+            $query->select([
+                'p.codigo as cod_proveedor',
+                'p.sucursal as sucur_proveedor',
+                DB::raw("COALESCE(p.razon_social_sucursal, dc.razon_social_sucursal) as descrip_sucursal"),
+                DB::raw("COALESCE(p.clase_de_proveedor, dc.clase_de_proveedor) as clase_proveedor"),
+                DB::raw("COALESCE(p.condicion_de_pago, dc.condicion_de_pago) as cond_pago"),
+                DB::raw("COALESCE(p.tipo_proveedor, dc.tipo_proveedor) as tipo_proveedor"),
+                DB::raw("CASE
+                    WHEN dc.forma_de_pago IS NULL OR dc.forma_de_pago = '' THEN ''
+                    WHEN LOWER(dc.forma_de_pago) LIKE '%cheque%' THEN 0
+                    WHEN LOWER(dc.forma_de_pago) LIKE '%electron%' OR LOWER(dc.forma_de_pago) LIKE '%consign%' OR LOWER(dc.forma_de_pago) LIKE '%transfer%' THEN 1
+                    WHEN LOWER(dc.forma_de_pago) LIKE '%efectivo%' THEN 2
+                    ELSE '' END as forma_pago_proveedores"),
+                DB::raw("COALESCE(p.nota, dc.notas) as observaciones"),
+                DB::raw("COALESCE(dc.contacto, '') as contacto"),
+                DB::raw("COALESCE(dc.direccion_1, '') as direccion1"),
+                DB::raw("COALESCE(dc.direccion_2, '') as direccion2"),
+                DB::raw("COALESCE(dc.direccion_3, '') as direccion3"),
+                DB::raw("169 as pais"),
+                DB::raw("COALESCE(dc.cod_depto, '') as departamento"),
+                DB::raw("COALESCE(dc.cod_ciudad, '') as ciudad"),
+                DB::raw("COALESCE(dc.barrio, '') as barrio"),
+                DB::raw("COALESCE(dc.telefono, '') as telefono"),
+                DB::raw("COALESCE(dc.email, '') as correo_electronico"),
+                DB::raw("COALESCE(p.fecha_ingreso, dc.fecha_ingreso) as fecha_de_ingreso"),
+                DB::raw("COALESCE(dc.monto_anual_compras, '') as monto_anual_de_compra"),
+                DB::raw("0 as ind_del_monto_anual"),
+                DB::raw("0 as ind_cotiz_de_compra"),
+                DB::raw("CASE WHEN dc.exige_oc_en_entrada_de_almacen = 'Si' THEN 1 WHEN dc.exige_oc_en_entrada_de_almacen = 'No' THEN 0 ELSE '' END as ind_orden_de_compra_edi"),
+                DB::raw("COALESCE(dc.grupo_co, '') as grupo_centro_operacion"),
+                DB::raw("COALESCE(dc.celular, '') as telefono_celular"),
+                DB::raw("CASE WHEN dc.suc_defecto_pe = 'Si' THEN 1 WHEN dc.suc_defecto_pe = 'No' THEN 0 ELSE '' END as ind_suc_pagos_electronicos"),
+            ]);
+        }
+
+        $query->orderBy('p.codigo');
 
         return $query;
     }
@@ -253,4 +320,3 @@ class ProveedoresEnterpriseController extends Controller
         return $value;
     }
 }
-

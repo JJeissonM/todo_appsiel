@@ -74,18 +74,26 @@ class ProveedoresImpuestosRetencionesController extends Controller
 
             foreach ($query->cursor() as $row) {
                 fputcsv($handle, [
-                    $row->tipo_registro,
-                    $row->cod_cliente_proveedor,
-                    $row->sucur_cliente_proveedor,
-                    $row->razon_social,
-                    $row->cod_clase_imp_retencion,
-                    $row->conf_tercero,
-                    $row->llave,
+                    $this->asText($row->tipo_registro),
+                    $this->asText($row->cod_cliente_proveedor),
+                    $this->asText($row->sucur_cliente_proveedor),
+                    $this->asText($row->razon_social),
+                    $this->asText($row->cod_clase_imp_retencion),
+                    $this->asText($row->conf_tercero),
+                    $this->asText($row->llave),
                 ]);
             }
 
             fclose($handle);
         }, 200, $headers);
+    }
+
+    private function asText($value)
+    {
+        $value = is_null($value) ? '' : (string)$value;
+        $value = str_replace('"', '""', $value);
+
+        return '="' . $value . '"';
     }
 
     private function getQuery()
@@ -140,12 +148,12 @@ class ProveedoresImpuestosRetencionesController extends Controller
             $llaveSelect = "'' as llave";
 
             if (!empty($def['is_iva'])) {
-                $confExpr = "CASE WHEN p.{$col} = 'Responsable de IVA' THEN 1 ELSE 0 END";
+                $confExpr = "CASE WHEN p.{$col} = 'No Responsable de IVA' THEN 1 ELSE 0 END";
                 $q = DB::table('siesa_proveedores_enterprise as p')
                     ->join('siesa_impuestos as i', function ($join) use ($def) {
                         $join->where('i.sigla', '=', $def['sigla']);
                     })
-                    ->where($col, '=', 'Responsable de IVA')
+                    ->where($col, '=', 'No Responsable de IVA')
                     ->selectRaw(
                         "49 as tipo_registro, p.codigo as cod_cliente_proveedor, p.sucursal as sucur_cliente_proveedor, p.razon_social as razon_social, i.clase as cod_clase_imp_retencion, {$confExpr} as conf_tercero, {$llaveSelect}"
                     );
@@ -177,4 +185,3 @@ class ProveedoresImpuestosRetencionesController extends Controller
             ->orderBy('tipo_registro');
     }
 }
-

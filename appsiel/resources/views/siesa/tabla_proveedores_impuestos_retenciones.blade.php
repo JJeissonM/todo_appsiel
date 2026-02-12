@@ -40,24 +40,24 @@
             <div class="table-responsive">
                 <table class="table table-bordered" id="myTable">
                     {{ Form::bsTableHeader([
-                        'TipoRegistro (Impuestos cliente = 46, retenciÃ³n cliente = 47, Impuestos proveedor = 49, retenciÃ³n proveedor = 50)',
+                        'TipoRegistro (Impuestos cliente = 46, retención cliente = 47, Impuestos proveedor = 49, retención proveedor = 50)',
                         'CodClienteProveedor',
                         'SucurClienteProveedor',
+                        'RazonSocial',
                         'CodClaseImpRetencion',
                         'ConfTercero (IVA 0 NO APLICA, 1 APLICA) RET (0 NO RT, 1 RT, 2 AUTORETENEDOR)',
-                        'Llave',
-                        'RazonSocial'
+                        'Llave'
                     ]) }}
                     <tbody>
                         @foreach ($rows as $row)
                             <tr>
-                                <td class="text-center">{{ $row->tipo_registro }}</td>
-                                <td class="text-center">{{ $row->cod_cliente_proveedor }}</td>
-                                <td class="text-center">{{ $row->sucur_cliente_proveedor }}</td>
-                                <td class="text-center">{{ $row->cod_clase_imp_retencion }}</td>
-                                <td class="text-center">{{ $row->conf_tercero }}</td>
-                                <td class="text-center">{{ $row->llave }}</td>
-                                <td class="text-center">{{ $row->razon_social }}</td>
+                                <td class="text-center">{{ (string)$row->tipo_registro }}</td>
+                                <td class="text-center">{{ (string)$row->cod_cliente_proveedor }}</td>
+                                <td class="text-center">{{ (string)$row->sucur_cliente_proveedor }}</td>
+                                <td class="text-center">{{ (string)$row->razon_social }}</td>
+                                <td class="text-center">{{ (string)$row->cod_clase_imp_retencion }}</td>
+                                <td class="text-center">{{ (string)$row->conf_tercero }}</td>
+                                <td class="text-center">{{ (string)$row->llave }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -71,4 +71,3 @@
     </div>
     <br/><br/>
 @endsection
-
