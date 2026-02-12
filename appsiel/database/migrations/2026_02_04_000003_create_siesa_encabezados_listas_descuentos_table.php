@@ -13,6 +13,9 @@ class CreateSiesaEncabezadosListasDescuentosTable extends Migration
      */
     public function up()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (!Schema::hasTable('siesa_encabezados_listas_descuentos')) {
             Schema::create('siesa_encabezados_listas_descuentos', function (Blueprint $table) {
                 $table->increments('id');
@@ -38,8 +41,13 @@ class CreateSiesaEncabezadosListasDescuentosTable extends Migration
      */
     public function down()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (Schema::hasTable('siesa_encabezados_listas_descuentos')) {
             Schema::drop('siesa_encabezados_listas_descuentos');
         }
     }
 }
+
+

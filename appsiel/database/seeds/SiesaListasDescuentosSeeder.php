@@ -16,6 +16,9 @@ class SiesaListasDescuentosSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_listas_de_descuentos.xlsx');
 
         if (!file_exists($path)) {
@@ -186,3 +189,5 @@ class SiesaListasDescuentosSeeder extends Seeder
         return is_numeric($value) ? (float)$value : null;
     }
 }
+
+

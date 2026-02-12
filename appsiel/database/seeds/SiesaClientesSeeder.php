@@ -15,6 +15,9 @@ class SiesaClientesSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_clientes.xlsx');
 
         if (!file_exists($path)) {
@@ -128,3 +131,5 @@ class SiesaClientesSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+
+

@@ -13,6 +13,9 @@ class CreateSiesaImpuestosTable extends Migration
      */
     public function up()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (!Schema::hasTable('siesa_impuestos')) {
             Schema::create('siesa_impuestos', function (Blueprint $table) {
                 $table->increments('id');
@@ -32,8 +35,13 @@ class CreateSiesaImpuestosTable extends Migration
      */
     public function down()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (Schema::hasTable('siesa_impuestos')) {
             Schema::drop('siesa_impuestos');
         }
     }
 }
+
+

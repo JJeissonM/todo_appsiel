@@ -8,3 +8,4 @@ Route::get('siesa/tabla_proveedores_enterprise', 'Siesa\\ProveedoresEnterpriseCo
 Route::get('siesa/tabla_proveedores_enterprise/excel', 'Siesa\\ProveedoresEnterpriseController@tabla_excel');
 Route::get('siesa/tabla_proveedores_impuestos_retenciones', 'Siesa\\ProveedoresImpuestosRetencionesController@tabla');
 Route::get('siesa/tabla_proveedores_impuestos_retenciones/excel', 'Siesa\\ProveedoresImpuestosRetencionesController@tabla_excel');
+

@@ -15,6 +15,9 @@ class SiesaImpuestosSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_impuestos.xlsx');
 
         if (!file_exists($path)) {
@@ -118,3 +121,5 @@ class SiesaImpuestosSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+
+

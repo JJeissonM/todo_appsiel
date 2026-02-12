@@ -1,5 +1,6 @@
 <?php
-    use App\Core\Menu; 
+    use App\Core\Menu;
+    use Spatie\Permission\Models\Permission;
     $menus = Menu::menus(Input::get('id'));
 
     $item_reporte = "";
@@ -8,7 +9,10 @@
     
     if( $user != null)
     {
-        if ( !$user->hasPermissionTo('core_bloquear_menu_reportes') )
+        $permiso_bloquear_reportes = 'core_bloquear_menu_reportes';
+        $existe_permiso = Permission::where('name', $permiso_bloquear_reportes)->exists();
+
+        if ( !$existe_permiso || !$user->hasPermissionTo($permiso_bloquear_reportes) )
         {
             $reportes = App\Sistema\Reporte::where( ['core_app_id' => Input::get('id'), 'estado' => 'Activo'] )->get();
             

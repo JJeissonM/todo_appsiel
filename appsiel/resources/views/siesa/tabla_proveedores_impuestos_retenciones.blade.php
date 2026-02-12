@@ -40,7 +40,7 @@
             <div class="table-responsive">
                 <table class="table table-bordered" id="myTable">
                     {{ Form::bsTableHeader([
-                        'TipoRegistro (Impuestos cliente = 46, retención cliente = 47, Impuestos proveedor = 49, retención proveedor = 50)',
+                        'TipoRegistro (Impuestos cliente = 46, retenciÃ³n cliente = 47, Impuestos proveedor = 49, retenciÃ³n proveedor = 50)',
                         'CodClienteProveedor',
                         'SucurClienteProveedor',
                         'CodClaseImpRetencion',
@@ -71,3 +71,4 @@
     </div>
     <br/><br/>
 @endsection
+

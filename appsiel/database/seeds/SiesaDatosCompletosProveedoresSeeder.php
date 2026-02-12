@@ -15,6 +15,9 @@ class SiesaDatosCompletosProveedoresSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_datos_completos_proveedores.xls');
 
         if (!file_exists($path)) {
@@ -158,3 +161,5 @@ class SiesaDatosCompletosProveedoresSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+
+

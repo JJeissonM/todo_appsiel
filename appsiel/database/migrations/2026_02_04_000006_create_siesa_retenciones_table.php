@@ -13,6 +13,9 @@ class CreateSiesaRetencionesTable extends Migration
      */
     public function up()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (!Schema::hasTable('siesa_retenciones')) {
             Schema::create('siesa_retenciones', function (Blueprint $table) {
                 $table->increments('id');
@@ -34,8 +37,13 @@ class CreateSiesaRetencionesTable extends Migration
      */
     public function down()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (Schema::hasTable('siesa_retenciones')) {
             Schema::drop('siesa_retenciones');
         }
     }
 }
+
+

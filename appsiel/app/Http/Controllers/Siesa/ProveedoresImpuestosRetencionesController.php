@@ -177,3 +177,4 @@ class ProveedoresImpuestosRetencionesController extends Controller
             ->orderBy('tipo_registro');
     }
 }
+

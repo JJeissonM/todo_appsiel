@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +15,9 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_proveedores_enterprise.xlsx');
 
         if (!file_exists($path)) {
@@ -208,4 +211,6 @@ class SiesaProveedoresEnterpriseSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+
+
 

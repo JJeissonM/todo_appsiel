@@ -15,6 +15,9 @@ class SiesaRetencionesSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_retenciones.xlsx');
 
         if (!file_exists($path)) {
@@ -122,3 +125,5 @@ class SiesaRetencionesSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+
+

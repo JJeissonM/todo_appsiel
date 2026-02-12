@@ -13,6 +13,9 @@ class CreateSiesaDatosCompletosProveedoresTable extends Migration
      */
     public function up()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (!Schema::hasTable('siesa_datos_completos_proveedores')) {
             Schema::create('siesa_datos_completos_proveedores', function (Blueprint $table) {
                 $table->increments('id');
@@ -52,8 +55,13 @@ class CreateSiesaDatosCompletosProveedoresTable extends Migration
      */
     public function down()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (Schema::hasTable('siesa_datos_completos_proveedores')) {
             Schema::drop('siesa_datos_completos_proveedores');
         }
     }
 }
+
+

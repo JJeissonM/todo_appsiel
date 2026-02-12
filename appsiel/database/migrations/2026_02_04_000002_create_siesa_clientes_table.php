@@ -13,6 +13,9 @@ class CreateSiesaClientesTable extends Migration
      */
     public function up()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (!Schema::hasTable('siesa_clientes')) {
             Schema::create('siesa_clientes', function (Blueprint $table) {
                 $table->increments('id');
@@ -37,8 +40,13 @@ class CreateSiesaClientesTable extends Migration
      */
     public function down()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (Schema::hasTable('siesa_clientes')) {
             Schema::drop('siesa_clientes');
         }
     }
 }
+
+

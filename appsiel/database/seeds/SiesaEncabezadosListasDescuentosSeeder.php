@@ -15,6 +15,9 @@ class SiesaEncabezadosListasDescuentosSeeder extends Seeder
      */
     public function run()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         $path = base_path('database/seeds/data/siesa_encabezados_listas_descuentos.xlsx');
 
         if (!file_exists($path)) {
@@ -35,7 +38,7 @@ class SiesaEncabezadosListasDescuentosSeeder extends Seeder
         $map = [
             'ID_entreprise' => 'id_entreprise',
             'LP' => 'lp',
-            'Descripción dscto/promoción' => 'descripcion_dscto_promocion',
+            'DescripciÃƒÂ³n dscto/promociÃƒÂ³n' => 'descripcion_dscto_promocion',
             'Fecha inicial' => 'fecha_inicial',
             'Fecha final' => 'fecha_final',
             'Estado' => 'estado',
@@ -130,3 +133,5 @@ class SiesaEncabezadosListasDescuentosSeeder extends Seeder
         return $value === '' ? null : $value;
     }
 }
+
+

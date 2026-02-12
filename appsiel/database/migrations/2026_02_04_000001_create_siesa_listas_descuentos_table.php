@@ -13,6 +13,9 @@ class CreateSiesaListasDescuentosTable extends Migration
      */
     public function up()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (!Schema::hasTable('siesa_listas_descuentos')) {
             Schema::create('siesa_listas_descuentos', function (Blueprint $table) {
                 $table->increments('id');
@@ -39,8 +42,13 @@ class CreateSiesaListasDescuentosTable extends Migration
      */
     public function down()
     {
+        if (env('APPSIEL_CLIENTE') !== 'SIESA') {
+            return;
+        }
         if (Schema::hasTable('siesa_listas_descuentos')) {
             Schema::drop('siesa_listas_descuentos');
         }
     }
 }
+
+

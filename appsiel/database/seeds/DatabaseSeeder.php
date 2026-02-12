@@ -13,13 +13,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(IcfesQuestionBankSeeder::class);
         $this->call(CumplimientoGuiasReporteSeeder::class);
-        $this->call(SiesaListasDescuentosSeeder::class);
-        $this->call(SiesaClientesSeeder::class);
-        $this->call(SiesaEncabezadosListasDescuentosSeeder::class);
-        $this->call(SiesaProveedoresEnterpriseSeeder::class);
-        $this->call(SiesaImpuestosSeeder::class);
-        $this->call(SiesaRetencionesSeeder::class);
-        $this->call(SiesaDatosCompletosProveedoresSeeder::class);
+        if (env('APPSIEL_CLIENTE') === 'SIESA') {
+            $this->call(SiesaListasDescuentosSeeder::class);
+            $this->call(SiesaClientesSeeder::class);
+            $this->call(SiesaEncabezadosListasDescuentosSeeder::class);
+            $this->call(SiesaProveedoresEnterpriseSeeder::class);
+            $this->call(SiesaImpuestosSeeder::class);
+            $this->call(SiesaRetencionesSeeder::class);
+            $this->call(SiesaDatosCompletosProveedoresSeeder::class);
+        }
         $this->call(NominaActualizacionSueldosSeeder::class);
     }
 }
+

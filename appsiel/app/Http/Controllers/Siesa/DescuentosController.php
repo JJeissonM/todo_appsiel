@@ -153,3 +153,4 @@ class DescuentosController extends Controller
             ->orderBy('orden_desc');
     }
 }
+
