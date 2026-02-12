@@ -17,7 +17,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <a class="btn btn-success btn-sm" href="{{ url('siesa/tabla_proveedores_enterprise/excel') }}" target="_blank">
+                    <a class="btn btn-success btn-sm" href="{{ url('siesa/tabla_proveedores_enterprise/excel?semaforo=' . $semaforo) }}" target="_blank">
                         <i class="fa fa-file-excel-o"></i> Exportar Excel
                     </a>
                 </div>
@@ -26,6 +26,11 @@
             <div class="row">
                 <div class="col-md-12">
                     <form method="GET" action="{{ url('siesa/tabla_proveedores_enterprise') }}" class="form-inline">
+                        <label for="semaforo">Sem&aacute;foro:</label>
+                        <select name="semaforo" id="semaforo" class="form-control input-sm" onchange="this.form.submit()">
+                            <option value="codigo_sucursal" {{ $semaforo == 'codigo_sucursal' ? 'selected' : '' }}>Codigo + Sucursal</option>
+                            <option value="codigo" {{ $semaforo == 'codigo' ? 'selected' : '' }}>Solo Codigo</option>
+                        </select>
                         <label for="per_page">Filas por p&aacute;gina:</label>
                         <select name="per_page" id="per_page" class="form-control input-sm" onchange="this.form.submit()">
                             @foreach ([100,200,500,1000,2000] as $size)
@@ -103,7 +108,7 @@
             </div>
 
             <div class="text-center">
-                {{ $rows->appends(['per_page' => $perPage])->links() }}
+                {{ $rows->appends(['per_page' => $perPage, 'semaforo' => $semaforo])->links() }}
             </div>
         </div>
     </div>
