@@ -24,6 +24,7 @@ use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
+use App\Inventarios\InvProducto;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -56,7 +57,7 @@ class ReporteController extends TesoreriaController
                                         ->get();
 
 
-        // Crear array temporal para luego llenar el array de la gráfica
+        // Crear array temporal para luego llenar el array de la grÃƒÂ¡fica
         $registros = [];
         $begin = new \DateTime($fecha_desde);
         $end   = new \DateTime($fecha_hasta);
@@ -102,7 +103,7 @@ class ReporteController extends TesoreriaController
             $i++;
         }
 
-        // Se almacena la gráfica en movimiento_tesoreria, luego se llama en la vista [ como mágia :) ]
+        // Se almacena la grÃƒÂ¡fica en movimiento_tesoreria, luego se llama en la vista [ como mÃƒÂ¡gia :) ]
         LavachartsFacade::BarChart('movimiento_tesoreria', $stocksTable1, [
             'is3D' => True,
             'orientation' => 'horizontal',
@@ -148,13 +149,13 @@ class ReporteController extends TesoreriaController
         }
 
 
-        // Creación de gráfico de Torta MATRICULAS
+        // CreaciÃƒÂ³n de grÃƒÂ¡fico de Torta MATRICULAS
         $stocksTable1 = LavachartsFacade::DataTable();
 
         $stocksTable1->addStringColumn('Meses')
             ->addNumberColumn('Valor');
 
-        // Obtención de datos
+        // ObtenciÃƒÂ³n de datos
         $concepto = config('matriculas.inv_producto_id_default_matricula');
         $num_mes = "01";
         $cartera_matriculas = array();
@@ -186,13 +187,13 @@ class ReporteController extends TesoreriaController
         ]);
 
 
-        // Creación de gráfico de Torta PENSIONES
+        // CreaciÃƒÂ³n de grÃƒÂ¡fico de Torta PENSIONES
         $stocksTable = LavachartsFacade::DataTable();
 
         $stocksTable->addStringColumn('Meses')
             ->addNumberColumn('Valor');
 
-        // Obtención de datos
+        // ObtenciÃƒÂ³n de datos
         $concepto = config('matriculas.inv_producto_id_default_pension');
         $num_mes = "01";
         $cartera_pensiones = array();
@@ -247,7 +248,7 @@ class ReporteController extends TesoreriaController
         }
 
         $miga_pan = [
-            ['url' => 'tesoreria?id=' . Input::get('id'), 'etiqueta' => 'Tesorería'],
+            ['url' => 'tesoreria?id=' . Input::get('id'), 'etiqueta' => 'TesorerÃƒÂ­a'],
             ['url' => 'NO', 'etiqueta' => 'Informes y listados'],
             ['url' => 'NO', 'etiqueta' => 'Flujo de efectivo']
         ];
@@ -299,7 +300,7 @@ class ReporteController extends TesoreriaController
         $i = 0;
 
         /*
-            Se debe cambiar la $tabla2 por una vista que ya está creada, solo falta terminarla
+            Se debe cambiar la $tabla2 por una vista que ya estÃƒÂ¡ creada, solo falta terminarla
             View::make('tesoreria.incluir.flujo_efectivo_tabla', compact( variables requeridas por la vista))
         */
         $tabla2 = '<h3> Flujo de efectivo </h3><hr><table class="table table-striped tabla_registros" style="margin-top: -4px;">
@@ -564,12 +565,49 @@ class ReporteController extends TesoreriaController
     {
         $this->actualizar_estado_cartera();
 
+        $concepto_matricula_id = config('matriculas.inv_producto_id_default_matricula');
+        $concepto_pension_id = config('matriculas.inv_producto_id_default_pension');
+
+        $errores_config = [];
+
+        if ( empty($concepto_matricula_id) )
+        {
+            $errores_config[] = 'inv_producto_id_default_matricula';
+        } else {
+            if ( is_null( InvProducto::find($concepto_matricula_id) ) )
+            {
+                $errores_config[] = 'inv_producto_id_default_matricula (no existe producto ' . $concepto_matricula_id . ')';
+            }
+        }
+
+        if ( empty($concepto_pension_id) )
+        {
+            $errores_config[] = 'inv_producto_id_default_pension';
+        } else {
+            if ( is_null( InvProducto::find($concepto_pension_id) ) )
+            {
+                $errores_config[] = 'inv_producto_id_default_pension (no existe producto ' . $concepto_pension_id . ')';
+            }
+        }
+
+        if ( count($errores_config) > 0 )
+        {
+            return '<div class="alert alert-danger">' .
+                    'Configuraci&oacute;n incompleta: <b>' . implode(', ', $errores_config) . '</b>.' .
+                    ' Por favor config&uacute;relos en <b>Configuraciones &gt; Matr&iacute;culas</b>.' .
+                '</div>';
+        }
+
         $todas_las_matriculas_del_curso = Matricula::estudiantes_matriculados($curso_id, $periodo_lectivo_id, null);
+
+        $format_money = function ($valor) {
+            return '$' . number_format($valor, 0, ',', '.');
+        };
 
         switch ($tipo_reporte) {
             case '0':
-                $titulo = 'Resumen de recaudos de matrículas y pensiones';
-                $lbl_total = '';
+                $titulo = 'Resumen de recaudos de matr&iacute;culas y pensiones';
+                $lbl_total = 'Pagado/Cartera';
                 break;
             case '1':
                 $titulo = 'Cartera Vencida Mes a Mes';
@@ -582,89 +620,83 @@ class ReporteController extends TesoreriaController
 
         $curso = Curso::find($curso_id);
 
-        $tabla = '<p style="text-align: center; font-size: 15px; font-weight: bold;">' . $titulo . ' <br/> Curso ' . $curso->descripcion . '</p><table class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>  </th>
-                            <th> Estudiante </th>
-                            <th> MAT </th>
-                            <th> FEB </th>
-                            <th> MAR </th>
-                            <th> ABR </th>
-                            <th> MAY </th>
-                            <th> JUN </th>
-                            <th> JUL </th>
-                            <th> AGO </th>
-                            <th> SEP </th>
-                            <th> OCT </th>
-                            <th> NOV </th>
-                            <th> ' . $lbl_total . ' </th>
-                        </tr> 
-                            </thead>
-                                <tbody>';
-
-        $fila=1;
-
-        $tabla.='';
-
+        $filas = [];
+        $fila = 1;
         $total_columna = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $total_columna_valor_cartera = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $total_columna_valor_pagado = [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $total_valor_cartera = 0;
+        $total_valor_pagado = 0;
 
         $config_campo_visualizar_en_reporte_cartera = config('tesoreria.campo_visualizar_en_reporte_cartera');
 
         foreach ( $todas_las_matriculas_del_curso as $una_matricula ) 
         {
             $total_linea = 0;
+            $total_cartera_linea = 0;
             $num_columna = 0;
+            $fila_data = [
+                'num' => $fila,
+                'estudiante' => '',
+                'matricula' => '',
+                'meses' => [],
+                'total_linea' => ''
+            ];
 
             $campo_visualizar_en_reporte_cartera = ' ('.$una_matricula->codigo .')';
             if ($config_campo_visualizar_en_reporte_cartera == 'anio_lectivo') {
                 $campo_visualizar_en_reporte_cartera = ' ('.$una_matricula->periodo_lectivo->descripcion .')';
             }
 
-            // Se obtiene la libreta Activa de ese estudiante para el año de la matríula activa
+            // Se obtiene la libreta Activa de ese estudiante para el anio de la matricula activa
             $libreta_pagos = TesoLibretasPago::where('estado','Activo')
                                                 ->where('matricula_id', $una_matricula->matricula_id )
                                                 ->get()
                                                 ->first();
 
-            // Se obtiene la cartera de ese estudiante para el año de la matríula activa
-            if ( !is_null($libreta_pagos) ) 
+            // Se obtiene la cartera de ese estudiante para el aÃƒÂ±o de la matrÃƒÂ­ula activa
+            if ( !is_null($libreta_pagos) )
             {
                 // PRIMERAS DOS COLUMNAS DE LA TABLA
-                $tabla.='<tr>
-                            <td>'.$fila.'</td>
-                            <td>'.$una_matricula->nombre_completo . $campo_visualizar_en_reporte_cartera .'</td>';
+                $fila_data['estudiante'] = $una_matricula->nombre_completo . $campo_visualizar_en_reporte_cartera;
 
-                //Matrícula
+                //Matri­cula
 
-                $concepto_matricula_id = config('matriculas.inv_producto_id_default_matricula');               
                 $cartera_matricula = TesoPlanPagosEstudiante::where('id_libreta', $libreta_pagos->id)
-                											->where('inv_producto_id', $concepto_matricula_id)
-                											->get();
+                                            ->where('inv_producto_id', $concepto_matricula_id)
+                                            ->get();
 
                 if ( count($cartera_matricula) > 0 ) 
                 {
                     $linea_cartera = $cartera_matricula[0];
+                    $valor_pagado_linea = $linea_cartera->valor_cartera - $linea_cartera->saldo_pendiente;
+                    if ( $valor_pagado_linea < 0 ) { $valor_pagado_linea = 0; }
+                    $total_valor_cartera += $linea_cartera->valor_cartera;
+                    $total_valor_pagado += $valor_pagado_linea;
+                    $total_columna_valor_cartera[$num_columna] += $linea_cartera->valor_cartera;
+                    $total_columna_valor_pagado[$num_columna] += $valor_pagado_linea;
+                    $total_cartera_linea += $linea_cartera->valor_cartera;
 
                     switch ($tipo_reporte) {
                         case '0': // Resumen de recaudos
                         	$saldo_pendiente = $linea_cartera->saldo_pendiente;
                             $subtabla = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
+                            $total_linea += $valor_pagado_linea;
 
                             break;
-                        
+
                         case '1': // Cartera Vencida
-                            if ( $linea_cartera->estado == 'Vencida') 
+                            if ( $linea_cartera->estado == 'Vencida')
                             {
                                 $saldo_pendiente = $linea_cartera->saldo_pendiente;
                                 $total_linea+=$saldo_pendiente;
                             }else{
                                 $saldo_pendiente = 0;
                             }
-                            
-                            $subtabla = '$'.number_format( $saldo_pendiente, 0, ',', '.');
+
+                            $subtabla = $format_money($saldo_pendiente);
                             break;
-                        
+
                         default:
                             # code...
                             break;
@@ -672,123 +704,136 @@ class ReporteController extends TesoreriaController
 
                     if ( $subtabla == '$0') {
                                    $subtabla = '';
-                               } 
-                      
-                    $tabla.='<td align="center">'.$subtabla.'</td>';
+                               }
+
+                    $fila_data['matricula'] = $subtabla;
                     $total_columna[$num_columna] += $saldo_pendiente;
                     $num_columna++;
                 }
 
-                //Pensión
-                $concepto_pension_id = config('matriculas.inv_producto_id_default_pension');
+                //Pension
                 $cartera_pension = TesoPlanPagosEstudiante::where('id_libreta',$libreta_pagos->id)
                                                             ->where('inv_producto_id', $concepto_pension_id)
                                                             ->orderBy('fecha_vencimiento','ASC')
                                                             ->get();
-                
-                for ($i=2; $i < 12; $i++) 
-                { 
-                    $aplico_mes = false; // aplicó mes, es decir, si hay valor de pensión en ese mes
+
+                for ($i=2; $i < 12; $i++)
+                {
+                    $aplico_mes = false; // aplicó mes, es decir, si hay valor de pension en ese mes
                     $mes_columna = str_repeat(0, 2-strlen($i) ).$i;
 
-                    foreach ( $cartera_pension as $linea_cartera ) 
+                    foreach ( $cartera_pension as $linea_cartera )
                     {
                         $mes_libreta =explode("-", $linea_cartera->fecha_vencimiento)[1];
 
                         if ( $mes_columna == $mes_libreta ) 
                         {
+                            $valor_pagado_linea = $linea_cartera->valor_cartera - $linea_cartera->saldo_pendiente;
+                            if ( $valor_pagado_linea < 0 ) { $valor_pagado_linea = 0; }
+                            $total_valor_cartera += $linea_cartera->valor_cartera;
+                            $total_valor_pagado += $valor_pagado_linea;
+                            $total_columna_valor_cartera[$num_columna] += $linea_cartera->valor_cartera;
+                            $total_columna_valor_pagado[$num_columna] += $valor_pagado_linea;
+                            $total_cartera_linea += $linea_cartera->valor_cartera;
+
                             switch ($tipo_reporte) {
                                 case '0':
                                 	$saldo_pendiente = $linea_cartera->saldo_pendiente;
                                     $subtabla = $this->get_tabla_anidada($linea_cartera->id, $saldo_pendiente, $linea_cartera->valor_cartera, $linea_cartera->concepto);
+                                    $total_linea += $valor_pagado_linea;
 
                                     break;
-                                
+
                                 case '1':
-                                    if ( $linea_cartera->estado == 'Vencida') 
+                                    if ( $linea_cartera->estado == 'Vencida')
                                     {
                                         $saldo_pendiente = $linea_cartera->saldo_pendiente;
                                         $total_linea+=$saldo_pendiente;
                                     }else{
                                         $saldo_pendiente = 0;
                                     }
-                                    $subtabla = '$'.number_format( $saldo_pendiente, 0, ',', '.');
+                                    $subtabla = $format_money($saldo_pendiente);
                                     break;
-                                
+
                                 default:
                                     # code...
                                     break;
                             }
-                            
+
                             if ( $subtabla == '$0') {
                                    $subtabla = '';
-                               }   
+                               }
 
-                            $tabla.='<td align="center">'.$subtabla.'</td>';
+                            $fila_data['meses'][] = $subtabla;
                             $aplico_mes = true;
 
                             if ( !isset( $total_columna[$num_columna] ) )
                             {
                                 dd( [ 'No existe datos para la columna: ' . $num_columna, $linea_cartera, $linea_cartera->estudiante->tercero->descripcion ] );
                             }
-		                    $total_columna[$num_columna] += $saldo_pendiente;
-		                    $num_columna++;
+                            $total_columna[$num_columna] += $saldo_pendiente;
+                            $num_columna++;
                         }
                     }
 
-                    if ( !$aplico_mes) 
+                    if ( !$aplico_mes)
                     {
-                        $tabla.='<td align="center">&nbsp;</td>';
+                        $fila_data['meses'][] = '';
 
                         $total_columna[$num_columna] += 0;
                         $num_columna++;
                     }
                 }
-            
 
-                if ( $total_linea == 0) 
+
+                if ( $total_linea == 0)
                 {
                     $total_linea = '';
                 }else{
-                    $total_linea = '$'.number_format( $total_linea, 0, ',', '.');
+                    if ($tipo_reporte == '0') {
+                        $total_linea = $format_money($total_linea) . ' / ' . $format_money($total_cartera_linea);
+                    } else {
+                        $total_linea = $format_money($total_linea);
+                    }
                 }
 
-                $tabla.='<td>'.$total_linea.'</td></tr>';
+                $fila_data['total_linea'] = $total_linea;
+                $filas[] = $fila_data;
                 $fila++;
 
             }else{
-                // Para Descomentar abajo, se debe validar que la matricula no sea de un año lectivo anterior
+                // Para Descomentar abajo, se debe validar que la matricula no sea de un aÃƒÂ±o lectivo anterior
                 //$tabla.='<tr><td colspan="14">El estudiante no tiene libreta de pagos Activa.</td></tr>';
             }
 
         } // Fin foreach $todas_las_matriculas_del_curso
 
-        $tabla.='</tbody>
-        			<tfoot>
-        			<tr>
-        				<td colspan="2">
-        				</td>
-        			';
-
         $gran_total = 0;
         for ($i=0; $i < 11; $i++)
         {
-            $tabla.='<td>$'.number_format( $total_columna[$i], 0, ',', '.').'</td>';
-        	$gran_total += $total_columna[$i];
+            $gran_total += $total_columna[$i];
         }
 
-        $tabla.='<td>$'.number_format( $gran_total, 0, ',', '.').'</td>
-        			</tr>
-        				</tfoot>
-                    		</table>';
-
-        return $tabla;
+        return View::make(
+            'tesoreria.partials.reporte_cartera_por_curso_tabla',
+            [
+                'titulo' => $titulo,
+                'lbl_total' => $lbl_total,
+                'curso' => $curso,
+                'filas' => $filas,
+                'total_columna' => $total_columna,
+                'total_columna_valor_cartera' => $total_columna_valor_cartera,
+                'total_columna_valor_pagado' => $total_columna_valor_pagado,
+                'gran_total' => $gran_total,
+                'total_valor_cartera' => $total_valor_cartera,
+                'total_valor_pagado' => $total_valor_pagado
+            ]
+        )->render();
     }
-
     public function get_tabla_anidada($id_cartera, $saldo_pendiente, $valor_cartera, $concepto)
     {
-        // CREACIÓN TABLA anidada
-        // El primer concepto de la cartera es matrícula
+        // CREACION TABLA anidada
+        // El primer concepto de la cartera es matrÃƒÂ­cula
 
         // --------------------
         // |  $valor_cartera  |
@@ -805,23 +850,39 @@ class ReporteController extends TesoreriaController
                 ->select(DB::raw('sum(valor_recaudo) AS valor_recaudo'),'teso_medio_recaudo_id','fecha_recaudo')
                 ->get();
 
+        $valor_pagado = 0;
+
+        // Si no pagÃ³
+        $fecha_recaudo = ' - ';
+        $color_b = '#FFFFFF';
+        $color_c = '#FFFFFF';
+        $color_f = '#FFFFFF';
+
         // se hizo recaudo para el concepto de la cartera del estudiante
         if ( count($recaudos_libreta) > 0 ) 
         {
             $medio_recaudo = TesoMedioRecaudo::find($recaudos_libreta[0]->teso_medio_recaudo_id);
 
             $fecha_recaudo = $recaudos_libreta[0]->fecha_recaudo;
+            $meses_abrev = [1 => 'ene', 2 => 'feb', 3 => 'mar', 4 => 'abr', 5 => 'may', 6 => 'jun', 7 => 'jul', 8 => 'ago', 9 => 'sep', 10 => 'oct', 11 => 'nov', 12 => 'dic'];
+            $timestamp_recaudo = strtotime($fecha_recaudo);
+            if ( $timestamp_recaudo !== false ) {
+                $dia = date('j', $timestamp_recaudo);
+                $mes_num = (int) date('n', $timestamp_recaudo);
+                $mes_abrev = isset($meses_abrev[$mes_num]) ? $meses_abrev[$mes_num] : '';
+                $fecha_recaudo = $dia . ' de ' . $mes_abrev . '.';
+            }
+            $valor_pagado = $recaudos_libreta[0]->valor_recaudo;
 
-            // Si pagó completo o no
+            // Si pago completo o no
+            $color_f = '#F7CE13';
             if ( $saldo_pendiente == 0) 
             {
                 $color_f = '#33FFC1';
-            }else{
-                $color_f = '#F7CE13';
             }
 
             if($medio_recaudo== null){
-                $medio_recaudo = TesoMedioRecaudo::find(1);
+                //$medio_recaudo = TesoMedioRecaudo::find(1);
             }
 
             // Si pago en banco o en efectivo
@@ -834,24 +895,18 @@ class ReporteController extends TesoreriaController
                 $color_c = '#33FFC1';
             }
 
-        }else{
-            // Si no pagó
-            $fecha_recaudo = ' - ';
-            $color_b = '#FFFFFF';
-            $color_c = '#FFFFFF';
-            $color_f = '#FFFFFF';
         }
 
         $subtabla = '<table style="border: 1px solid; border-collapse: collapse;">
                         <tr>
-                            <td colspan="2" align="center" >$' . number_format($valor_cartera, 0, ',', '.') . '</td>
+                            <td colspan="2" align="center" title="Pagado / Cartera" >$' . number_format($valor_pagado, 0, ',', '.') . ' / $' . number_format($valor_cartera, 0, ',', '.') . '</td>
                         </tr>
                         <tr>
-                            <td style="background-color:' . $color_b . ';" align="center">B</td>
-                            <td style="background-color:' . $color_c . ';" align="center">C</td>
+                            <td style="background-color:' . $color_b . ';" align="center" title="Banco">B</td>
+                            <td style="background-color:' . $color_c . ';" align="center" title="Caja">C</td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="background-color:' . $color_f . ';" align="center">' . $fecha_recaudo . '</td>
+                            <td colspan="2" style="background-color:' . $color_f . ';" align="center" title="Fecha último abono">' . $fecha_recaudo . '</td>
                         </tr>
                     </table>';
 
@@ -1158,3 +1213,5 @@ class ReporteController extends TesoreriaController
         return $vista;
     }
 }
+
+

@@ -4,10 +4,10 @@ namespace App\Tesoreria;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
 use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoLibretasPago;
+use Illuminate\Support\Facades\DB;
 
 class TesoRecaudosLibreta extends Model
 {
