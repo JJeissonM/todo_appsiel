@@ -49,10 +49,18 @@
                     if ($col_valor_cartera > 0) {
                         $porcentaje_col = ($col_valor_pagado / $col_valor_cartera) * 100;
                     }
+                    $badge_color = '#5cb85c';
+                    if ($porcentaje_col < 60) {
+                        $badge_color = '#d9534f';
+                    } elseif ($porcentaje_col < 90) {
+                        $badge_color = '#f0ad4e';
+                    }
                 @endphp
                 <td>
                     ${{ number_format($col_valor_pagado, 0, ',', '.') }} / ${{ number_format($col_valor_cartera, 0, ',', '.') }}
-                    ({{ number_format($porcentaje_col, 2, ',', '.') }}%)
+                    <span class="label" style="background-color: {{ $badge_color }}; font-size: 16px;" title="Porcentaje de recaudo">
+                        {{ number_format($porcentaje_col, 2, ',', '.') }}%
+                    </span>
                     <br/>
                     <b>Pend.</b> ${{ number_format($total, 0, ',', '.') }}<br/>
                 </td>
@@ -62,11 +70,20 @@
                 if ($total_valor_cartera > 0) {
                     $porcentaje_recaudo = ($total_valor_pagado / $total_valor_cartera) * 100;
                 }
+                $badge_color_total = '#5cb85c';
+                if ($porcentaje_recaudo < 60) {
+                    $badge_color_total = '#d9534f';
+                } elseif ($porcentaje_recaudo < 90) {
+                    $badge_color_total = '#f0ad4e';
+                }
             @endphp
             <td>
-                ${{ number_format($gran_total, 0, ',', '.') }}<br/>
                 ${{ number_format($total_valor_pagado, 0, ',', '.') }} / ${{ number_format($total_valor_cartera, 0, ',', '.') }}
-                ({{ number_format($porcentaje_recaudo, 2, ',', '.') }}%)
+                <span class="label" style="background-color: {{ $badge_color_total }}; font-size: 16px;" title="Porcentaje de recaudo">
+                    {{ number_format($porcentaje_recaudo, 2, ',', '.') }}%
+                </span>
+                <br/>
+                <b>Pend.</b> ${{ number_format($gran_total, 0, ',', '.') }}
             </td>
         </tr>
     </tfoot>
