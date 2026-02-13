@@ -17,7 +17,7 @@
 
             <div class="row">
                 <div class="col-md-12">
-                    <a class="btn btn-success btn-sm" href="{{ url('siesa/tabla_proveedores_impuestos_retenciones/excel') }}" target="_blank">
+                    <a class="btn btn-success btn-sm" href="{{ url('siesa/tabla_proveedores_impuestos_retenciones/excel?columna=' . $columna) }}" target="_blank">
                         <i class="fa fa-file-excel-o"></i> Exportar Excel
                     </a>
                 </div>
@@ -26,6 +26,12 @@
             <div class="row">
                 <div class="col-md-12">
                     <form method="GET" action="{{ url('siesa/tabla_proveedores_impuestos_retenciones') }}" class="form-inline">
+                        <label for="columna">Columna:</label>
+                        <select name="columna" id="columna" class="form-control input-sm" onchange="this.form.submit()">
+                            @foreach ($columnas as $key => $label)
+                                <option value="{{ $key }}" {{ $columna == $key ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
                         <label for="per_page">Filas por p&aacute;gina:</label>
                         <select name="per_page" id="per_page" class="form-control input-sm" onchange="this.form.submit()">
                             @foreach ([100,200,500,1000,2000] as $size)
@@ -65,7 +71,7 @@
             </div>
 
             <div class="text-center">
-                {{ $rows->appends(['per_page' => $perPage])->links() }}
+                {{ $rows->appends(['per_page' => $perPage, 'columna' => $columna])->links() }}
             </div>
         </div>
     </div>

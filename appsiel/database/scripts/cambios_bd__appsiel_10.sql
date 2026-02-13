@@ -49,7 +49,48 @@ UPDATE `sys_campos` SET `opciones` = '{\"01\":\"1 - Dependiente\",\"12\":\"12 - 
 ALTER TABLE `sga_escala_valoracion` ADD `descripcion` TEXT NULL AFTER `escala_nacional`;
 INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '6', '13', '8');
 
--- Cargar el archivo SQL --- sga_calificaciones_desempenio (1).sql --- para crear la tabla de calificaciones de desempeño y cargar los datos de la tabla sga_calificaciones_desempenio
+--
+-- Estructura de tabla para la tabla `sga_calificaciones_desempenio`
+--
+CREATE TABLE `sga_calificaciones_desempenio` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `matricula_id` int(10) UNSIGNED NOT NULL,
+  `periodo_id` int(10) UNSIGNED NOT NULL,
+  `curso_id` int(10) UNSIGNED NOT NULL,
+  `asignatura_id` int(10) UNSIGNED NOT NULL,
+  `logro_id` int(10) UNSIGNED NOT NULL,
+  `escala_valoracion_id` int(10) UNSIGNED NOT NULL,
+  `calificacion` double(8,2) DEFAULT NULL,
+  `anotacion` varchar(255) DEFAULT NULL,
+  `creado_por` varchar(100) NOT NULL,
+  `modificado_por` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
+--
+-- Indices de la tabla `sga_calificaciones_desempenio`
+--
+ALTER TABLE `sga_calificaciones_desempenio`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `matricula_id` (`matricula_id`),
+  ADD KEY `periodo_id` (`periodo_id`),
+  ADD KEY `curso_id` (`curso_id`),
+  ADD KEY `asignatura_id` (`asignatura_id`),
+  ADD KEY `logro_id` (`logro_id`),
+  ADD KEY `escala_valoracion_id` (`escala_valoracion_id`);
+--
+-- AUTO_INCREMENT de la tabla `sga_calificaciones_desempenio`
+--
+ALTER TABLE `sga_calificaciones_desempenio`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+--
+ALTER TABLE `sga_calificaciones_desempenio`
+  ADD CONSTRAINT `sga_calificaciones_desempenio_ibfk_1` FOREIGN KEY (`matricula_id`) REFERENCES `sga_matriculas` (`id`),
+  ADD CONSTRAINT `sga_calificaciones_desempenio_ibfk_2` FOREIGN KEY (`curso_id`) REFERENCES `sga_cursos` (`id`),
+  ADD CONSTRAINT `sga_calificaciones_desempenio_ibfk_3` FOREIGN KEY (`periodo_id`) REFERENCES `sga_periodos` (`id`),
+  ADD CONSTRAINT `sga_calificaciones_desempenio_ibfk_4` FOREIGN KEY (`asignatura_id`) REFERENCES `sga_asignaturas` (`id`),
+  ADD CONSTRAINT `sga_calificaciones_desempenio_ibfk_5` FOREIGN KEY (`logro_id`) REFERENCES `sga_logros` (`id`),
+  ADD CONSTRAINT `sga_calificaciones_desempenio_ibfk_6` FOREIGN KEY (`escala_valoracion_id`) REFERENCES `sga_escala_valoracion` (`id`);
 
 
 -- 24 abril - Tesoreria - todos los clientes

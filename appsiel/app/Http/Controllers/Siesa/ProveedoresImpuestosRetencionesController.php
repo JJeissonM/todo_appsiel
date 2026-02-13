@@ -29,14 +29,36 @@ class ProveedoresImpuestosRetencionesController extends Controller
             ['url' => 'siesa/tabla_proveedores_impuestos_retenciones', 'etiqueta' => 'Impuestos y retenciones proveedores'],
         ];
 
+        $columna = trim((string)request()->get('columna', ''));
         $perPage = (int)request()->get('per_page', 200);
         if ($perPage <= 0 || $perPage > 2000) {
             $perPage = 200;
         }
 
-        $rows = $this->getQuery()->simplePaginate($perPage);
+        $rows = $this->getQuery($columna)->simplePaginate($perPage);
 
-        return view('siesa.tabla_proveedores_impuestos_retenciones', compact('miga_pan', 'rows', 'perPage'));
+        $columnas = [
+            '' => 'Todas',
+            'IVA_INTERP' => 'IVA INTERP',
+            'RTSERVIC' => 'RTSERVIC',
+            'RTSALARI' => 'RTSALARI',
+            'RTIVA1' => 'RTIVA1',
+            'RTHONORA' => 'RTHONORA',
+            'RTCOMISI' => 'RTCOMISI',
+            'RTBIENES' => 'RTBIENES',
+            'RTARREND' => 'RTARREND',
+            'RIVAGRAN' => 'RIVAGRAN',
+            'ICASER' => 'ICASER',
+            'ICACOMER' => 'ICACOMER',
+            'INCBolsa' => 'INCBolsa',
+            'ICUI' => 'ICUI',
+            'ICINDUST' => 'ICINDUST',
+            'ICD' => 'ICD',
+            'FEDEGAN' => 'FEDEGAN',
+            'IBUA' => 'IBUA',
+        ];
+
+        return view('siesa.tabla_proveedores_impuestos_retenciones', compact('miga_pan', 'rows', 'perPage', 'columnas', 'columna'));
     }
 
     /**
@@ -46,6 +68,7 @@ class ProveedoresImpuestosRetencionesController extends Controller
      */
     public function tabla_excel()
     {
+        $columna = trim((string)request()->get('columna', ''));
         $filename = 'siesa_proveedores_impuestos_retenciones_' . date('Ymd_His') . '.csv';
 
         $headers = [
@@ -53,7 +76,7 @@ class ProveedoresImpuestosRetencionesController extends Controller
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $query = $this->getQuery();
+        $query = $this->getQuery($columna);
 
         return response()->stream(function () use ($query) {
             $handle = fopen('php://output', 'w');
@@ -96,7 +119,7 @@ class ProveedoresImpuestosRetencionesController extends Controller
         return '="' . $value . '"';
     }
 
-    private function getQuery()
+    private function getQuery($columna = '')
     {
         $retenciones = [
             ['sigla' => 'RTSERVIC', 'col' => 'rtservic', 'llave_col' => 'llave_rtservic'],
@@ -124,6 +147,9 @@ class ProveedoresImpuestosRetencionesController extends Controller
         $queries = [];
 
         foreach ($retenciones as $def) {
+            if ($columna !== '' && $columna !== $def['sigla']) {
+                continue;
+            }
             $col = $def['col'];
             $llaveSelect = isset($def['llave_col']) ? "p.{$def['llave_col']} as llave" : "'' as llave";
             $confExpr = "CASE WHEN p.{$col} LIKE '%Autoretenedor%' THEN 2 WHEN p.{$col} LIKE '%Sujeto a retenci%' THEN 1 ELSE 0 END";
@@ -132,10 +158,9 @@ class ProveedoresImpuestosRetencionesController extends Controller
                 ->join('siesa_retenciones as r', function ($join) use ($def) {
                     $join->where('r.sigla', '=', $def['sigla']);
                 })
-                ->where(function ($query) use ($col) {
-                    $query->where($col, 'like', '%Sujeto a retenci%')
-                        ->orWhere($col, 'like', '%Autoretenedor%');
-                })
+                ->whereNotNull($col)
+                ->where($col, '!=', '')
+                ->where($col, '!=', '<No definido>')
                 ->selectRaw(
                     "50 as tipo_registro, p.codigo as cod_cliente_proveedor, p.sucursal as sucur_cliente_proveedor, p.razon_social as razon_social, r.clase as cod_clase_imp_retencion, {$confExpr} as conf_tercero, {$llaveSelect}"
                 );
@@ -144,16 +169,18 @@ class ProveedoresImpuestosRetencionesController extends Controller
         }
 
         foreach ($impuestos as $def) {
+            if ($columna !== '' && $columna !== $def['sigla'] && !($def['is_iva'] ?? false && $columna === 'IVA_INTERP')) {
+                continue;
+            }
             $col = $def['col'];
             $llaveSelect = "'' as llave";
 
             if (!empty($def['is_iva'])) {
-                $confExpr = "CASE WHEN p.{$col} = 'No Responsable de IVA' THEN 1 ELSE 0 END";
+                $confExpr = "CASE WHEN p.{$col} = 'Responsable de IVA' THEN 1 WHEN p.{$col} = 'No Responsable de IVA' THEN 0 ELSE 0 END";
                 $q = DB::table('siesa_proveedores_enterprise as p')
                     ->join('siesa_impuestos as i', function ($join) use ($def) {
                         $join->where('i.sigla', '=', $def['sigla']);
                     })
-                    ->where($col, '=', 'No Responsable de IVA')
                     ->selectRaw(
                         "49 as tipo_registro, p.codigo as cod_cliente_proveedor, p.sucursal as sucur_cliente_proveedor, p.razon_social as razon_social, i.clase as cod_clase_imp_retencion, {$confExpr} as conf_tercero, {$llaveSelect}"
                     );
