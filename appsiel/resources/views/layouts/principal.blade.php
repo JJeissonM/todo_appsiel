@@ -140,10 +140,35 @@
 			font-display: swap;
 		}
 
+		html, body {
+			margin: 0 !important;
+			padding: 0 !important;
+		}
 		body {
 			font-family: 'Gotham-Narrow-Medium';
 			background-color: #FAFAFA !important;
 			/*width: 98%;*/
+		}
+
+		body#app-layout {
+			margin-top: 0 !important;
+			padding-top: 0 !important;
+		}
+
+		#app-layout > .navbar.navbar-static-top {
+			margin-top: 0 !important;
+		}
+
+		/* Evita franjas por contenedores vacios al inicio del body */
+		#app-layout > div:empty {
+			display: none !important;
+			margin: 0 !important;
+			padding: 0 !important;
+			border: 0 !important;
+			height: 0 !important;
+			min-height: 0 !important;
+			line-height: 0 !important;
+			overflow: hidden !important;
 		}
 
 		#suggestions {
@@ -289,12 +314,6 @@
 
 <body id="app-layout">
 
-	<div id="div_cargando">Cargando...</div>
-
-	<div id="popup_alerta_danger"> </div>
-
-	<div id="popup_alerta_success"> </div>
-
 	@include('layouts.menu_principal')
 
 	@if(!empty($missing_config_files))
@@ -319,6 +338,14 @@
 		@else
 			@include('layouts.demo_pagina_bloqueo_aplicaciones')
 		@endif
+
+		
+		<div id="div_cargando" style="display: none !important;"></div>
+
+		<div id="popup_alerta_danger" style="display: none !important;"></div>
+
+		<div id="popup_alerta_success" style="display: none !important;"></div>
+		
 	</div>
 	<a href="{{route('ayuda.videos')}}">
 		<div id="paula" style="background-size: 100% 100%; background-image: url('{{asset('assets/images/ayuda.png')}}'); height: 160px; width: 174px">

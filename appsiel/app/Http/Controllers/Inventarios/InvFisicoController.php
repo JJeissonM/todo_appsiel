@@ -25,6 +25,7 @@ use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\RecetaCocina;
+use App\Inventarios\Services\AjustarSaldosBodegaService;
 use App\Compras\Proveedor;
 use App\Sistema\Campo;
 use Illuminate\Support\Facades\App;
@@ -39,7 +40,7 @@ class InvFisicoController extends TransaccionController
 
     /**
      * Show the form for creating a new resource.
-     * Este método create() es llamado desde un botón-select en el index de inventarios
+     * Este mÃ©todo create() es llamado desde un botÃ³n-select en el index de inventarios
      *
      * @return \Illuminate\Http\Response
      */
@@ -48,7 +49,7 @@ class InvFisicoController extends TransaccionController
 
         $id_transaccion = Input::get('id_transaccion');
 
-        // Se obtiene el modelo según la variable modelo_id  de la url
+        // Se obtiene el modelo segÃºn la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
@@ -106,7 +107,7 @@ class InvFisicoController extends TransaccionController
     {
         $lineas_registros = json_decode( $request_registros );
 
-        // Quitar las dos últimas líneas
+        // Quitar las dos Ãºltimas lÃ­neas
         array_pop($lineas_registros);
         array_pop($lineas_registros);
 
@@ -124,7 +125,7 @@ class InvFisicoController extends TransaccionController
 
 
     /*
-        Crea un documento completo: encabezados, registros, movimiento y contabilización
+        Crea un documento completo: encabezados, registros, movimiento y contabilizaciÃ³n
         Devuelve en ID del documento creado
     */
     public static function crear_documento( Request $request, array $lineas_registros, $modelo_id )
@@ -148,7 +149,7 @@ class InvFisicoController extends TransaccionController
         $tipo_transferencia = 2;
 
         // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        // Ahora mismo el campo inv_bodega_id se envía en el request, pero se debe tomar de cada línea de registro
+        // Ahora mismo el campo inv_bodega_id se envÃ­a en el request, pero se debe tomar de cada lÃ­nea de registro
         $datos = $request->all();
 
         $cantidad_registros = count($lineas_registros);
@@ -200,7 +201,7 @@ class InvFisicoController extends TransaccionController
 
         $miga_pan = [
                 ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
-                ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=>'Inventarios físico'],
+                ['url'=>'web?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo'),'etiqueta'=>'Inventarios fÃ­sico'],
                 ['url'=>'NO','etiqueta'=> $doc_encabezado->documento_transaccion_prefijo_consecutivo ]
             ];
         
@@ -241,7 +242,7 @@ class InvFisicoController extends TransaccionController
 
         $id_transaccion = Input::get('id_transaccion');
 
-        // Se obtiene el modelo según la variable modelo_id  de la url
+        // Se obtiene el modelo segÃºn la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','create');
@@ -288,7 +289,7 @@ class InvFisicoController extends TransaccionController
 
             if ($value['name'] == 'descripcion')
             {
-                $lista_campos[$key]['value'] = 'Hecho con base en Inventario Físico: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
+                $lista_campos[$key]['value'] = 'Hecho con base en Inventario FÃ­sico: '.$doc_encabezado->documento_transaccion_prefijo_consecutivo;
             }
 
             if ($value['name'] == 'core_tercero_id')
@@ -320,7 +321,7 @@ class InvFisicoController extends TransaccionController
 
         $id_transaccion = Input::get('id_transaccion');
 
-        // Se obtiene el modelo según la variable modelo_id  de la url
+        // Se obtiene el modelo segÃºn la variable modelo_id  de la url
         $modelo = Modelo::find(Input::get('id_modelo'));
 
         $lista_campos = ModeloController::get_campos_modelo($modelo,'','edit');
@@ -370,7 +371,7 @@ class InvFisicoController extends TransaccionController
             $lineas_registros .= '<tr id="' . $linea->inv_producto_id . '">' . 
                                                                 '<td class="text-center">' . $linea->inv_producto_id . '</td>' . 
                                                                 '<td class="nom_prod">' . $descripcion_item . '</td>' . 
-                                                                '<td><span style="color:white;">12-</span><span style="color:green;">Inventario Físico</span><input type="hidden" class="movimiento" value="entrada"></td>' . 
+                                                                '<td><span style="color:white;">12-</span><span style="color:green;">Inventario FÃ­sico</span><input type="hidden" class="movimiento" value="entrada"></td>' . 
                                                                 '<td class="lbl_costo_unitario">' . $linea->costo_unitario . '</td>' . 
                                                                 '<td class="lbl_cantidad"> <div style="display: inline;"> <div class="elemento_modificar" title="Doble click para modificar."> '.$linea->cantidad.'</div> </div> </td>' . 
                                                                 '<td class="lbl_costo_total">' . $linea->costo_total . '</td>' . 
@@ -427,10 +428,10 @@ class InvFisicoController extends TransaccionController
         $doc_encabezado->modificado_por = Auth::user()->email;
         $doc_encabezado->save();
 
-        // Borrar líneas de registros anteriores
+        // Borrar lÃ­neas de registros anteriores
         InvDocRegistro::where('inv_doc_encabezado_id',$doc_encabezado->id)->delete();
 
-        // Crear nuevamente las líneas de registros
+        // Crear nuevamente las lÃ­neas de registros
         $request['creado_por'] = $doc_encabezado->creado_por;
         $request['modificado_por'] = Auth::user()->email;
         InvFisicoController::crear_registros_documento( $request, $doc_encabezado, $lineas_registros );
@@ -449,7 +450,7 @@ class InvFisicoController extends TransaccionController
         //
     }
     
-    // Parámetro enviados por GET
+    // ParÃ¡metro enviados por GET
     public function consultar_productos()
     {
         $campo_busqueda = Input::get('campo_busqueda');
@@ -763,7 +764,7 @@ class InvFisicoController extends TransaccionController
         if ( $lineas->count() < 2 )
         {
             return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
-                    ->with('flash_message', 'No hay líneas para unificar.');
+                    ->with('flash_message', 'No hay lÃ­neas para unificar.');
         }
 
         $grupos = $lineas->groupBy('inv_producto_id');
@@ -816,9 +817,23 @@ class InvFisicoController extends TransaccionController
         }
 
         return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
-                ->with('flash_message', 'Se unificaron ' . $unificados . ' ítems. Líneas eliminadas: ' . $eliminadas . '.');
+                ->with('flash_message', 'Se unificaron ' . $unificados . ' Ã­tems. LÃ­neas eliminadas: ' . $eliminadas . '.');
     }
 
+
+    public function ajustar_saldos_bodega(Request $request, $id)
+    {
+        try {
+            $service = new AjustarSaldosBodegaService();
+            $response = $service->ejecutar($id);
+        } catch (\Exception $e) {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'Error al ajustar saldos: ' . $e->getMessage());
+        }
+
+        return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                ->with('flash_message', 'Proceso finalizado. Lineas agregadas: ' . $response->agregadas . '.');
+    }
     private function build_variables_url(Request $request)
     {
         $id_app = $request->get('url_id', Input::get('id'));
@@ -829,3 +844,4 @@ class InvFisicoController extends TransaccionController
     }
 
 }
+

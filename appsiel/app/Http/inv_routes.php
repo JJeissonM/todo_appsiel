@@ -17,7 +17,7 @@ Route::post('inv_doc_registro_guardar','Inventarios\InventarioController@doc_reg
 
 Route::get('inv_get_tipo_material/{tipo_material_id}', 'Inventarios\ItemMandatarioController@get_tipo_material');
 
-//ficha técnica
+//ficha tÃ©cnica
 Route::get('ficha_tecnica/{id}','Inventarios\ProductoController@create_ficha');
 Route::post('producto/store/ficha','Inventarios\ProductoController@store_ficha')->name('ficha.store');
 Route::get('producto/delete/ficha/{id}','Inventarios\ProductoController@delete_ficha')->name('ficha.delete');
@@ -31,7 +31,7 @@ Route::get('inv_get_items_contorno', 'Inventarios\RecetasController@get_items_co
 
 Route::get('get_ajax','Inventarios\InventarioController@get_ajax');
 
-// AL cambiar la selección de un producto en el formulario de ingreso_productos_2.blade.php
+// AL cambiar la seleccion de un producto en el formulario de ingreso_productos_2.blade.php
 Route::post('post_ajax','Inventarios\InventarioController@post_ajax');
 
 
@@ -47,7 +47,8 @@ Route::get('inv_get_item_stock/{item_id}/{bodega_id}/{fecha}','Inventarios\Inven
 
 Route::get('inv_fisico_imprimir/{id}','Inventarios\InvFisicoController@imprimir');
 Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajuste');
-Route::post('inv_fisico_unificar_registros/{id}','Inventarios\InvFisicoController@unificar_registros');
+Route::post('inv_fisico_unificar_registros/{id}','Inventarios\\InvFisicoController@unificar_registros');
+Route::post('inv_fisico_ajustar_saldos_bodega/{id}','Inventarios\\InvFisicoController@ajustar_saldos_bodega');
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
 Route::get('inv_cargar_lista_ingredientes_fabricacion/{item_producir_id}/{cantidad_fabricar}','Inventarios\InvFisicoController@cargar_lista_ingredientes_fabricacion');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');
@@ -113,3 +114,4 @@ Route::get('inv_corregir_cantidades', 'Inventarios\ProcesoController@corregir_ca
 Route::get('inv_asignar_codigos_barras_desde_id', 'Inventarios\ProcesoController@asignar_codigos_barras_desde_id');
 
 Route::get('inv_unificar_ids_items_repetidos_en_lineas_registros/{inv_document_header_id}', 'Inventarios\ProcesoController@unificar_ids_items_repetidos_en_lineas_registros');
+

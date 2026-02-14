@@ -16,12 +16,14 @@ var direccion = location.href;
 function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input )
 {
 	reset_form_producto();
-	$('#spin').show();
+	var $spin = $('#spin');
+	$spin.show();
+	var $inv_producto_id = $('#inv_producto_id');
 
-	// Si no se seleccionÃ³ un producto, salir
-	if ( $('#inv_producto_id').val() === '' || $('#inv_producto_id').val() === undefined )
+	// Si no se seleccionó un producto, salir
+	if ( $inv_producto_id.val() === '' || $inv_producto_id.val() === undefined )
 	{
-		$('#spin').hide();
+		$spin.hide();
 		return false;
 	}
 
@@ -31,27 +33,30 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 	$('#id_bodega').val($('#inv_bodega_id').val());
 	var datos = form_producto.serialize();
 
+	function aplicar_respuesta_producto(respuesta)
+	{
+		if ( !respuesta || typeof respuesta !== 'object' )
+		{
+			alert('Respuesta inválida del servidor.');
+			return false;
+		}
 
-	// Enviar formulario de ingreso de productos vÃ­a POST (InventarioController > post_ajax)
-	$.post(url,datos,function(respuesta){
-		
-		var mov = $('#motivo').val().split('-');
-		$('#spin').hide();
-		
+		var mov = ($('#motivo').val() || '').split('-');
+		var tipo_movimiento = mov.length > 1 ? mov[1] : '';
+		var permitir_inventarios_negativos = parseInt($('#permitir_inventarios_negativos').val(),10) || 0;
+
 		// Se valida la existencia actual
 		$('#existencia_actual').val(respuesta.existencia_actual);
 		$('#saldo_original').val(respuesta.existencia_actual);
-
 		$('#tipo_producto').val(respuesta.tipo);
 
-		if ( respuesta.existencia_actual >= 0 && $('#permitir_inventarios_negativos') == 0) {
+		if ( parseFloat(respuesta.existencia_actual) >= 0 && permitir_inventarios_negativos === 0 ) {
 			$('#existencia_actual').attr('style','background-color:#97D897;'); // Color Verde
 		}else{
-			
 			$('#existencia_actual').attr('style','background-color:#FF8C8C;'); // Color Rojo
 			
 			// Si el tipo de producto es "producto" y el movimiento NO es de entrada, no se permite seguir con existencia 0
-			if ( respuesta.tipo == 'producto' && mov[1] != 'entrada' && $('#permitir_inventarios_negativos') == 0)
+			if ( respuesta.tipo == 'producto' && tipo_movimiento != 'entrada' && permitir_inventarios_negativos === 0 )
 			{
 				$('#btn_agregar').hide(500);
 				return false;
@@ -59,13 +64,12 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 		}
 		
 		// Asignar datos a los controles
-		$('#costo_unitario').val(parseFloat(respuesta.precio_compra).toFixed(2));
+		var precio_compra = parseFloat(respuesta.precio_compra);
+		$('#costo_unitario').val( isNaN(precio_compra) ? '' : precio_compra.toFixed(2) );
 		$('#unidad_medida1').val(respuesta.unidad_medida1);
-
 		$('#inv_producto_id_aux').val( respuesta.descripcion );
 
-		
-		// Si la TRANSACCIÃ“N es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario			
+		// Si la TRANSACCIÓN es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario
 		if ( $('#id_transaccion').val() == 1 || $('#id_transaccion').val() == 35 || respuesta.tipo == 'servicio' )
 		{
 			$('#costo_unitario').removeAttr('disabled');
@@ -76,10 +80,35 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 			$('#cantidad').removeAttr('disabled');
 			$('#cantidad').attr('style','background-color:white;');
 			$('#cantidad').select();
-		}			
+		}
+
+		return true;
+	}
+
+	// Enviar formulario de ingreso de productos vía POST (InventarioController > post_ajax)
+	$.ajax({
+		url: url,
+		type: 'POST',
+		data: datos,
+		dataType: 'text'
+	}).done(function(respuesta){
+		var respuesta_texto = (typeof respuesta === 'string') ? respuesta : JSON.stringify(respuesta || {});
+		respuesta_texto = respuesta_texto.replace(/^\uFEFF/, '').replace(/^\xef\xbb\xbf/, '').trim();
+
+		try {
+			var respuesta_json = JSON.parse(respuesta_texto);
+			aplicar_respuesta_producto(respuesta_json);
+		} catch (e) {
+			alert('No se pudo interpretar la respuesta del servidor.');
+			console.error('JSON parse error:', e, respuesta_texto);
+		}
+	}).fail(function(jqXHR, textStatus, errorThrown){
+		console.error('post_ajax error:', textStatus, errorThrown, jqXHR.responseText);
+		alert('Error consultando el producto. Revise la consola del navegador.');
+	}).always(function(){
+		$spin.hide();
 	});
 }
-
 function reset_form_producto()
 {
 	$('#form_producto input[type="text"]').val('');
