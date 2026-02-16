@@ -12,7 +12,7 @@
         <br>
         <b>Columna I:</b> Fecha y hora de Entrada/Salida.
         <br><br>
-        ✅ Debe cargar información de la <b>fecha del día siguiente</b> al corte final para los registros de salidas.
+        ✅ El archivo de Excel debe incluir información correspondiente a la <b>fecha del día siguiente</b> al corte final, con el fin de poder obtener correctamente los registros de salidas.<br> Es decir, si el corte final es el 31 de enero, el Excel debe contener registros hasta el 1 de febrero.
         <br><br>
         ✅ Al presionar el botón "Subir e importar", el sistema procesará el archivo y creará o actualizará los registros de turnos correspondientes.
 	</p>

@@ -114,8 +114,22 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+        $message = $this->get_message( $this->registros_procesados );
+
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', $message );
     }
+
+    public function get_message( $registros_procesados )
+    {
+        if ( $registros_procesados > 0 )
+        {
+            return 'Liquidación realizada. Se procesaron '.$this->registros_procesados.' registros. Debe ejecutar NUEVAMENTE hasta llegar a cero (0).';
+        }
+
+        return 'Liquidación Finalizada correctamente. No hay más registros por procesar.';
+        
+    }
+    
 
     /*
         Recibe doc. de nómina, al empleado y el modo de liquidación para calcular el valor de devengo o deducción de cada concepto
@@ -201,7 +215,9 @@ class NominaController extends TransaccionController
 
         $this->actualizar_totales_documento($id);
 
-        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message','Liquidación realizada correctamente. Se procesaron '.$this->registros_procesados.' registros.' );
+        $message = $this->get_message( $this->registros_procesados );
+
+        return redirect( 'nomina/'.$id.'?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with( 'flash_message', $message );
     }
 
     public function almacenar_linea_registro_documento($documento_nomina, $empleado, $concepto, $registro, $usuario)
