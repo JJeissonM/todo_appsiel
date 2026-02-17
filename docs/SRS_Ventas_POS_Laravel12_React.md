@@ -416,3 +416,191 @@ Fase 3:
 - Manejo avanzado de conflictos.
 - Mejoras de seguridad/cifrado local.
 - Telemetria operacional completa.
+
+## 14. Backlog tecnico estimable por sprint
+
+Escala sugerida:
+- SP 1: cambio pequeno
+- SP 2: cambio simple
+- SP 3: cambio medio
+- SP 5: cambio complejo
+- SP 8: cambio muy complejo
+
+### 14.1 Sprint 1 - Base offline (MVP)
+
+Backend (Laravel 12):
+- T-BE-001 (SP 5): Crear endpoint `POST /api/v1/pos/offline/sync-batch` con validacion de payload y respuesta por item.
+- T-BE-002 (SP 3): Implementar idempotencia por `uniqid` en guardado de factura POS.
+- T-BE-003 (SP 3): Exponer endpoint de catalogos minimos para offline (`products`, `prices`, `customers`, `taxes`, `payment_reasons`).
+
+Frontend (React):
+- T-FE-001 (SP 5): Implementar IndexedDB (Dexie) y repositorios locales de factura, lineas y pagos.
+- T-FE-002 (SP 3): Implementar detector online/offline y banner de estado.
+- T-FE-003 (SP 5): Guardado offline de factura con estados `Pendiente/Error`.
+- T-FE-004 (SP 3): Vista de cola offline con contador de pendientes.
+
+QA:
+- T-QA-001 (SP 3): Casos E2E de guardado offline sin red.
+- T-QA-002 (SP 2): Prueba de persistencia tras cierre de navegador.
+- T-QA-003 (SP 2): Validar no duplicidad en reintentos manuales.
+
+Definicion de terminado (Sprint 1):
+- Se pueden crear facturas offline y quedan persistidas localmente.
+- Existe endpoint de sync por lote funcionando en ambiente de pruebas.
+- Se visualiza estado de conectividad y cantidad de pendientes.
+
+### 14.2 Sprint 2 - Sincronizacion automatica y catalogos
+
+Backend (Laravel 12):
+- T-BE-010 (SP 3): Endpoint de confirmacion de estado por `local_id/uniqid`.
+- T-BE-011 (SP 5): Descarga incremental de catalogos por `updated_at`.
+- T-BE-012 (SP 3): Estandarizar codigos de error de sync (`duplicate`, `rejected`, `retry`).
+
+Frontend (React):
+- T-FE-010 (SP 5): Sync Engine automatico con FIFO + lotes + backoff exponencial.
+- T-FE-011 (SP 3): Validacion de frescura de catalogos y bloqueo operativo si falta catalogo critico.
+- T-FE-012 (SP 3): Pantalla de detalle de error por documento y reintento manual.
+- T-FE-013 (SP 2): Mapeo `local_id -> remote_id/consecutivo` en UI.
+
+QA:
+- T-QA-010 (SP 3): Pruebas de reconexion y sincronizacion automatica.
+- T-QA-011 (SP 2): Pruebas de catalogo expirado/incompleto.
+- T-QA-012 (SP 2): Pruebas de idempotencia (reenvios repetidos del mismo lote).
+
+Definicion de terminado (Sprint 2):
+- La sincronizacion automatica funciona al recuperar red.
+- Se evita duplicidad documental por reintentos.
+- Errores quedan trazables y reintentables por usuario.
+
+### 14.3 Sprint 3 - Conflictos, seguridad y observabilidad
+
+Backend (Laravel 12):
+- T-BE-020 (SP 5): Politicas de resolucion de conflictos con respuesta deterministica por item.
+- T-BE-021 (SP 3): Auditoria detallada de sync (usuario, PDV, hash payload, timestamps).
+- T-BE-022 (SP 3): Endpoints de metricas operativas de sincronizacion.
+
+Frontend (React):
+- T-FE-020 (SP 5): Consola de diagnostico offline (filtros por estado/error_code).
+- T-FE-021 (SP 3): Cifrado/obfuscacion de datos locales sensibles (segun capacidad tecnica).
+- T-FE-022 (SP 3): Politica de retencion y limpieza de documentos sincronizados.
+- T-FE-023 (SP 2): Export de log tecnico para soporte.
+
+QA:
+- T-QA-020 (SP 3): Matriz de conflictos (duplicado, validacion, catalogo desactualizado).
+- T-QA-021 (SP 3): Pruebas de seguridad local y aislamiento por usuario.
+- T-QA-022 (SP 2): Pruebas de rendimiento de cola con volumen alto.
+
+Definicion de terminado (Sprint 3):
+- Conflictos se gestionan con reglas claras y mensajes accionables.
+- Existe trazabilidad completa de ciclo offline->sync.
+- Operacion estable con volumen de facturacion esperado.
+
+### 14.4 Dependencias y orden de ejecucion
+
+1. `T-BE-001` + `T-BE-002` deben completarse antes de `T-FE-010`.
+2. `T-FE-001` debe completarse antes de `T-FE-003` y `T-FE-010`.
+3. `T-BE-011` y `T-FE-011` deben implementarse en paralelo.
+4. QA E2E de cada sprint debe ejecutarse antes de promover a produccion.
+
+### 14.5 Capacidad sugerida por sprint
+
+Recomendacion para equipo mediano:
+- Backend: 8 a 13 SP por sprint.
+- Frontend: 10 a 15 SP por sprint.
+- QA: 5 a 8 SP por sprint.
+
+Con esta capacidad, el modo offline completo puede entregarse en 3 sprints.
+
+## 15. Roadmap de sprints del proyecto completo
+
+Supuesto de planificacion:
+- Duracion de sprint: 2 semanas.
+- Horizonte total: 10 sprints (20 semanas).
+- Equipo base: Backend, Frontend, QA, apoyo funcional.
+
+### 15.1 Plan maestro por sprint
+
+Sprint 0 - Descubrimiento y base:
+- Cierre de alcance funcional contra sistema legado.
+- Arquitectura objetivo Laravel 12 + React + Offline.
+- Ambientes DEV/QA y pipeline CI/CD base.
+- Backlog refinado y criterios de aceptacion por modulo.
+
+Sprint 1 - Fundaciones tecnicas:
+- Estructura de proyecto, autenticacion y autorizacion.
+- Base de UI POS React (layout, estado global, rutas).
+- API base con manejo estandar de errores y validaciones.
+- Feature flags iniciales.
+
+Sprint 2 - Catalogos y reglas comerciales:
+- Catalogos de productos/clientes/precios/descuentos/impuestos.
+- Motor de calculo comercial en frontend y backend (consistencia).
+- Validaciones de venta (precio, costo, impuestos, stock base).
+
+Sprint 3 - Facturacion POS core (online):
+- Flujo completo de creacion de factura POS.
+- Gestion de lineas de item, edicion en linea y totales.
+- Guardado transaccional online con idempotencia.
+- Flujo de vendedor, cliente y condiciones de pago.
+
+Sprint 4 - Medios de pago y caja:
+- Multiples medios de pago con motivo/caja/banco.
+- Cuadre de total factura vs pagos.
+- Anticipos/saldos a favor en la factura.
+- Ingresos/salidas y consultas operativas de PDV.
+
+Sprint 5 - Pedidos y operacion restaurante:
+- Revision de pedidos pendientes y cargar para facturar.
+- Cancelacion/anulacion de pedido en flujo POS.
+- Prefactura operativa y mejoras de flujo de atajos.
+
+Sprint 6 - Impresion e integraciones:
+- Impresion navegador.
+- Impresion via servidor externo.
+- Integracion APM para comanda y factura.
+- Politicas de impresion automatica/pregunta/manual.
+
+Sprint 7 - Modulos opcionales de negocio:
+- Propinas.
+- Comision de datafono.
+- Facturacion de bolsas.
+- Cargue por archivo plano.
+- Permisos avanzados de cambio de precio/descuento.
+
+Sprint 8 - Factura Electronica:
+- Flujo de guardar FE desde POS.
+- Validaciones de tercero y resolucion.
+- Manejo de errores FE y trazabilidad.
+
+Sprint 9 - Offline end-to-end:
+- Cola local, guardado offline, sync manual/automatico.
+- Resolucion de conflictos e idempotencia de sincronizacion.
+- Catalogos incrementales y manejo de expiracion.
+- Diagnostico de errores de sync y soporte operativo.
+
+Sprint 10 - Hardening, UAT y salida a produccion:
+- Pruebas de regresion completas y performance.
+- Seguridad, auditoria y observabilidad final.
+- Piloto controlado y correcciones de estabilizacion.
+- Go-Live y plan de soporte post-produccion.
+
+### 15.2 Hitos de control
+
+1. Hito A (fin Sprint 3): POS online facturable en ambiente QA.
+2. Hito B (fin Sprint 7): Paridad funcional alta con modulo legado.
+3. Hito C (fin Sprint 9): Offline operativo con sincronizacion robusta.
+4. Hito D (fin Sprint 10): Produccion estabilizada.
+
+### 15.3 Dependencias criticas
+
+1. El motor de calculo comercial debe cerrarse antes de FE y Offline.
+2. Idempotencia backend es prerequisito para sincronizacion offline.
+3. Integraciones de impresion deben validarse antes de piloto.
+4. FE requiere definicion y pruebas de resoluciones activas.
+
+### 15.4 Riesgos de calendario
+
+- Deriva de alcance por cambios funcionales no priorizados.
+- Retrasos por integraciones externas (impresion/FE).
+- Gaps de datos maestros para operacion POS y offline.
+- Cobertura de pruebas insuficiente en escenarios de reconexion.

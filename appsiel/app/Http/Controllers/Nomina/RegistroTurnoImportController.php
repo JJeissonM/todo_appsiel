@@ -9,7 +9,7 @@ use App\Nomina\TipoTurno;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
-use PhpOffice\PhpSpreadsheet\IOFactory;
+use PHPExcel_IOFactory;
 
 class RegistroTurnoImportController extends Controller
 {
@@ -33,7 +33,7 @@ class RegistroTurnoImportController extends Controller
         ]);
 
         $path = $request->file('archivo')->getRealPath();
-        $sheet = IOFactory::load($path)->getActiveSheet();
+        $sheet = PHPExcel_IOFactory::load($path)->getActiveSheet();
 
         $tiposTurnoActivos = TipoTurno::where('estado', 'Activo')
             ->with('cargos')

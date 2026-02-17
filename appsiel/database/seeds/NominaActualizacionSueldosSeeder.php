@@ -35,7 +35,7 @@ class NominaActualizacionSueldosSeeder extends Seeder
         $permission->modelo_id = 0;
         $permission->descripcion = 'Actualizar sueldos en contratos';
         $permission->url = 'index_procesos/nomina.procesos.actualizar_sueldos_contratos';
-        $permission->parent = 0;
+        $permission->parent = 448; // ID del permiso padre "Procesos"
         $permission->orden = 0;
         $permission->enabled = 1;
         $permission->fa_icon = 'fa fa-money';
