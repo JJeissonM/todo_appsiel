@@ -163,23 +163,52 @@ class MovementService
     public function build_array_of_stocks_new( $filters )
     {
         $productos = [];
+        $mostrar_items_sin_movimiento = isset($filters->mostrar_items_sin_movimiento) && (int)$filters->mostrar_items_sin_movimiento === 1;
 
         $obj = new ItemsFiltersServices();
 
-        $lista_items = $obj->get_listado_de_items( $filters );
+        $lista_items = $obj->get_listado_de_items( $filters, $mostrar_items_sin_movimiento );
 
         if ( empty( $lista_items->toArray() ) ) {
             $this->descripcion_bodega = "NINGUNA";
             return $productos;
         }
 
-        $movin_filtrado = (new FiltroMovimientos())->items_con_movimientos( $filters->fecha_corte,$filters->mov_bodega_id, $lista_items->pluck('id')->toArray() );
-        
-        $lista_bodegas = array_keys($movin_filtrado->groupBy('inv_bodega_id')->toArray() );
+        $items_ids = $lista_items->pluck('id')->toArray();
+
+        $movimientos = InvMovimiento::where('fecha', '<=', $filters->fecha_corte)
+                                    ->whereIn('inv_producto_id', $items_ids);
+
+        if ( $filters->mov_bodega_id != '' )
+        {
+            $movimientos->where('inv_bodega_id', (int)$filters->mov_bodega_id);
+        }
+
+        $saldos = $movimientos->selectRaw('inv_bodega_id, inv_producto_id, SUM(cantidad) as cantidad, SUM(costo_total) as costo_total')
+                                ->groupBy('inv_bodega_id', 'inv_producto_id')
+                                ->get();
+
+        $saldos_indexados = [];
+        foreach ($saldos as $linea)
+        {
+            $saldos_indexados[$linea->inv_bodega_id][$linea->inv_producto_id] = [
+                'cantidad' => (float)$linea->cantidad,
+                'costo_total' => (float)$linea->costo_total
+            ];
+        }
+
+        $lista_bodegas = array_keys($saldos_indexados);
+        if ( $mostrar_items_sin_movimiento )
+        {
+            if ( $filters->mov_bodega_id != '' )
+            {
+                $lista_bodegas = [ (int)$filters->mov_bodega_id ];
+            }else{
+                $lista_bodegas = InvBodega::orderBy('id')->pluck('id')->toArray();
+            }
+        }
 
         $bodegas = InvBodega::all();
-        
-        $stock_serv = new StockAmountService();
 
         $i = 0;
         foreach ( $lista_items as $item )
@@ -191,9 +220,10 @@ class MovementService
             $descripcion_bodega = '';
             foreach ( $lista_bodegas as $key2 => $bodega_id )
             {
-                $cantidad = $stock_serv->get_stock_amount_item($bodega_id, $item->id, $filters->fecha_corte);
+                $saldo_item = $saldos_indexados[$bodega_id][$item->id] ?? [ 'cantidad' => 0, 'costo_total' => 0 ];
+                $cantidad = (float)$saldo_item['cantidad'];
 
-                if ( $cantidad == 0)
+                if ( !$mostrar_items_sin_movimiento && $cantidad == 0 )
                 {
                     continue;
                 }
@@ -217,11 +247,13 @@ class MovementService
                 $productos[$i]['CostoPromedio'] = 0;
 
                 if ($productos[$i]['Cantidad'] == 0) {
-                    continue;
+                    if ( !$mostrar_items_sin_movimiento ) {
+                        continue;
+                    }
                 }
 
                 // Costo total del movimiento de inventarios del item
-                $productos[$i]['Costo'] = $stock_serv->get_total_cost_amount_item($bodega_id, $item->id, $filters->fecha_corte);
+                $productos[$i]['Costo'] = (float)$saldo_item['costo_total'];
 
                 $total_cantidad_item += $productos[$i]['Cantidad'];
                 $total_costo_item += $productos[$i]['Costo'];
@@ -240,7 +272,7 @@ class MovementService
                 $this->cantidad_registros++;
             }
             
-            if ($total_cantidad_item == 0)
+            if ( !$mostrar_items_sin_movimiento && $total_cantidad_item == 0 )
             {
                 continue;
             }

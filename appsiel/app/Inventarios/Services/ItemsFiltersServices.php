@@ -8,16 +8,27 @@ use App\VentasPos\Movimiento;
 
 class ItemsFiltersServices
 {
-	public function get_listado_de_items( $filters )
+	public function get_listado_de_items( $filters, $solo_activos = false )
 	{
         if ( $filters->item_id != '' )
         {
-            return InvProducto::where('id', (int)$filters->item_id )->get();
+            $query = InvProducto::where('id', (int)$filters->item_id );
+
+            if ( $solo_activos ) {
+                $query->where('estado', 'Activo');
+            }
+
+            return $query->get();
         }
 
         $array_wheres = [
 			['inv_productos.id', '>', 0]
 		];
+
+        if ( $solo_activos )
+        {
+            $array_wheres = array_merge( $array_wheres, [ 'inv_productos.estado' => 'Activo' ] );
+        }
 
         if ( $filters->grupo_inventario_id != '' )
         {

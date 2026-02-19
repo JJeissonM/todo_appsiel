@@ -41,10 +41,9 @@
 		{{ Form::label('detallar_bodega','Detallar bodega',['class'=>'form-control','style' => 'display:none']) }}
 		{{ Form::select('detallar_bodega',["No","Si"],null,['class'=>'form-control','id'=>'detallar_bodega', 'style' => 'display:none']) }}
 <br>
-<!--
-		{ { Form::label('mostrar_sin_existencia','Mostar producto sin existencias') }}
-		{ { Form::select('mostrar_sin_existencia',["No","Si"],null,['class'=>'form-control','id'=>'mostrar_sin_existencia']) }}
--->
+		{{ Form::label('mostrar_items_sin_movimiento','Mostrar productos sin movimientos') }}
+		{{ Form::select('mostrar_items_sin_movimiento',[0=>"No",1=>"Si"],0,['class'=>'form-control','id'=>'mostrar_items_sin_movimiento']) }}
+
 		{{ Form::label('mostrar_costo','Mostar costo') }}
 		{{ Form::select('mostrar_costo',[true=>"Si",false=>"No"],null,['class'=>'form-control','id'=>'mostrar_costo']) }}
 
