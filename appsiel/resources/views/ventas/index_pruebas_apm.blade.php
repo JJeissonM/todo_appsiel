@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Conexión APM WebSocket</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        #status { font-weight: bold; margin-top: 10px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 200px; overflow-y: scroll; margin-top: 20px; background-color: #f9f9f9; }
+        .log-info { color: blue; }
+        .log-success { color: green; }
+        .log-error { color: red; }
+        
+        /* Estilos para las pestañas */
+        .tab-container { margin-top: 20px; }
+        .tab-button { padding: 10px 20px; cursor: pointer; background-color: #ddd; border: none; outline: none; font-weight: bold; }
+        .tab-button.active { background-color: #333; color: white; }
+        .tab-content { display: none; width: 100%; box-sizing: border-box; }
+        .tab-content.active { display: block; }
+
+        /* Estilos para la tabla de facturación */
+        #invoiceTable { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        #invoiceTable th, #invoiceTable td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        #invoiceTable th { background-color: #f2f2f2; }
+        .row-input { width: 100%; padding: 5px; box-sizing: border-box; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>Cliente de Prueba APM WebSocket</h1>
+    <p>Estado de la conexión: <span id="status">Desconectado</span></p>
+    <button id="reconnectButton" style="margin-top: 10px; padding: 5px 10px;">Reconectar</button>
+    <p>Mensajes del Cliente:</p>
+    <div id="messages"></div>
+
+    <hr style="margin: 30px 0;">
+
+    <h2>Prueba de Báscula (Scale Listener)</h2>
+    <div style="background-color: #eef; padding: 15px; border-radius: 5px;">
+        <label for="scaleIdInput" style="font-weight: bold;">ID Báscula:</label>
+        <input type="text" id="scaleIdInput" placeholder="Ej: bascula001" value="bascula001" style="padding: 5px;">
+        
+        <button id="toggleListeningButton" style="margin-left: 10px; padding: 5px 15px; cursor: pointer; background-color: #4CAF50; color: white; border: none;">Empezar a Escuchar</button>
+        
+        <div style="margin-top: 15px;">
+            <strong>Datos Recibidos:</strong>
+            <pre id="scaleDataDisplay" style="background: #fff; border: 1px solid #ccc; padding: 10px; min-height: 50px; font-size: 24px;">Esperando datos...</pre>
+        </div>
+    </div>
+    <hr style="margin: 30px 0;">
+
+    <h2>Enviar Mensaje de Prueba (PrintJobRequest)</h2>
+    
+    <div class="tab-container">
+        <button class="tab-button" data-tab="ticket">Ticket Venta</button>
+        <button class="tab-button" data-tab="comanda">Comanda</button>
+        <button class="tab-button" data-tab="factura">Factura Electrónica</button>
+        <button class="tab-button" data-tab="sticker">Sticker Códigos</button> <!-- Nuevo botón -->
+    </div>
+
+    <div style="margin-top: 10px;">
+        <textarea id="payloadTicket" class="tab-content" rows="15" cols="80"></textarea>
+        <textarea id="payloadComanda" class="tab-content" rows="15" cols="80"></textarea>
+        <textarea id="payloadFactura" class="tab-content" rows="15" cols="80"></textarea>
+        <textarea id="payloadSticker" class="tab-content" rows="15" cols="80"></textarea> <!-- Nuevo textarea -->
+    </div>
+
+    <button id="sendPayloadButton" style="margin-top: 10px; padding: 10px 20px; font-size: 16px; background-color: #007bff; color: white; border: none; cursor: pointer;">Enviar JSON Seleccionado</button>
+
+    <hr style="margin: 30px 0;">
+
+    <h2>Actualización Remota de Plantillas</h2>
+    <p>Envía una nueva definición de plantilla al APM. Requiere confirmación en el dispositivo.</p>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="sendUpdateTemplate('comanda1')" style="padding: 10px; background-color: #6f42c1; color: white; border: none; cursor: pointer;">Comanda (Minimalista)</button>
+        <button onclick="sendUpdateTemplate('comanda2')" style="padding: 10px; background-color: #6f42c1; color: white; border: none; cursor: pointer;">Comanda (Detallada)</button>
+        <button onclick="sendUpdateTemplate('factura1')" style="padding: 10px; background-color: #e83e8c; color: white; border: none; cursor: pointer;">Factura (Clásica)</button>
+        <button onclick="sendUpdateTemplate('factura2')" style="padding: 10px; background-color: #e83e8c; color: white; border: none; cursor: pointer;">Factura (Moderno)</button>
+    </div>
+
+    <hr style="margin: 30px 0;">
+
+    <h2>Simulación de Facturación</h2>
+    <p>Ingrese códigos (Ej: 1001, 1002, 1003) y haga clic en Cantidad para leer de la báscula.</p>
+    
+    <button id="addInvoiceRowBtn" style="background-color: #28a745; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 4px;">+ Agregar Producto</button>
+    
+    <table id="invoiceTable">
+        <thead>
+            <tr>
+                <th style="width: 15%;">Código</th>
+                <th style="width: 30%;">Descripción</th>
+                <th style="width: 15%;">Cantidad</th>
+                <th style="width: 20%;">Precio Unit.</th>
+                <th style="width: 20%;">Total</th>
+                <th style="width: 50px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Filas generadas dinámicamente -->
+        </tbody>
+    </table>
+
+    
+
+    <script src="../../../../assets/js/apm/main_pruebas.js"></script>
+</body>
+</html>

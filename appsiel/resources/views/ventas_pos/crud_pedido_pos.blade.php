@@ -271,7 +271,7 @@
 
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/commons.js?aux=' . uniqid() )}}"></script>
 
-    <script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas_pos/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
     <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/facturas.js?aux=' . uniqid() )}}"></script>

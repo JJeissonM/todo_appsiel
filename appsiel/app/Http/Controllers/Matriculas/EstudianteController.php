@@ -195,26 +195,139 @@ class EstudianteController extends ModeloController
             return redirect($url_redirect)->with('mensaje_error', 'Estudiante no encontrado.');
         }
 
-        if (!empty($estudiante->user_id)) {
-            return redirect($url_redirect)->with('flash_message', 'El estudiante ya tiene un usuario asignado.');
+        $resultado = $this->procesarAsignacionUsuario($estudiante, false);
+        if ($resultado['success']) {
+            return redirect($url_redirect)->with('flash_message', $resultado['message']);
         }
 
+        return redirect($url_redirect)->with('mensaje_error', $resultado['message']);
+    }
+
+    public function asignarUsuarioMasivo(Request $request)
+    {
+        $colegios_ids = Colegio::where('empresa_id', Auth::user()->empresa_id)->pluck('id')->toArray();
+
+        $estudiantes_ids = Matricula::where('estado', 'Activo')
+            ->whereIn('id_colegio', $colegios_ids)
+            ->distinct()
+            ->pluck('id_estudiante');
+
+        $total = $estudiantes_ids->count();
+        $url_redirect = 'matriculas/estudiantes/listar?id=' . $request->query('id') . '&id_modelo=' . $request->query('id_modelo');
+
+        if ($total == 0) {
+            return redirect($url_redirect)->with('mensaje_error', 'No hay estudiantes con matrícula activa para procesar.');
+        }
+
+        $conteo = [
+            'procesados' => 0,
+            'asignados' => 0,
+            'corregidos' => 0,
+            'sin_cambios' => 0,
+            'sin_email' => 0,
+            'sin_usuario' => 0,
+            'errores' => 0
+        ];
+
+        $estudiantes_ids->chunk(200)->each(function ($ids_chunk) use (&$conteo) {
+            $estudiantes = Estudiante::with('tercero')->whereIn('id', $ids_chunk->all())->get()->keyBy('id');
+
+            foreach ($ids_chunk as $estudiante_id) {
+                if (!isset($estudiantes[$estudiante_id])) {
+                    $conteo['errores']++;
+                    continue;
+                }
+
+                $resultado = $this->procesarAsignacionUsuario($estudiantes[$estudiante_id], true);
+                $conteo['procesados']++;
+
+                switch ($resultado['status']) {
+                    case 'asignado':
+                        $conteo['asignados']++;
+                        break;
+                    case 'corregido':
+                        $conteo['corregidos']++;
+                        break;
+                    case 'sin_cambios':
+                        $conteo['sin_cambios']++;
+                        break;
+                    case 'sin_email':
+                        $conteo['sin_email']++;
+                        break;
+                    case 'sin_usuario':
+                        $conteo['sin_usuario']++;
+                        break;
+                    default:
+                        $conteo['errores']++;
+                        break;
+                }
+            }
+        });
+
+        $mensaje = 'Proceso masivo finalizado. Estudiantes activos: ' . $total .
+            '. Procesados: ' . $conteo['procesados'] .
+            '. Asignados: ' . $conteo['asignados'] .
+            '. Corregidos: ' . $conteo['corregidos'] .
+            '. Sin cambios: ' . $conteo['sin_cambios'] .
+            '. Sin email: ' . $conteo['sin_email'] .
+            '. Usuario no encontrado: ' . $conteo['sin_usuario'] .
+            '. Errores: ' . $conteo['errores'] . '.';
+
+        return redirect($url_redirect)->with('flash_message', $mensaje);
+    }
+
+    private function procesarAsignacionUsuario(Estudiante $estudiante, $forzarCorreccion = false)
+    {
         $tercero = $estudiante->tercero;
         if (!$tercero || empty($tercero->email)) {
-            return redirect($url_redirect)->with('mensaje_error', 'El estudiante no tiene un email asociado para buscar el usuario.');
+            return [
+                'success' => false,
+                'status' => 'sin_email',
+                'message' => 'El estudiante no tiene un email asociado para buscar el usuario.'
+            ];
         }
 
         $usuario = User::where('email', $tercero->email)->first();
         if (!$usuario) {
-            return redirect($url_redirect)->with('mensaje_error', 'No se encontró un usuario con el correo ' . $tercero->email . '.');
+            return [
+                'success' => false,
+                'status' => 'sin_usuario',
+                'message' => 'No se encontr� un usuario con el correo ' . $tercero->email . '.'
+            ];
         }
 
+        if (!$forzarCorreccion && !empty($estudiante->user_id)) {
+            return [
+                'success' => true,
+                'status' => 'sin_cambios',
+                'message' => 'El estudiante ya tiene un usuario asignado.'
+            ];
+        }
+
+        if ((int)$estudiante->user_id === (int)$usuario->id) {
+            return [
+                'success' => true,
+                'status' => 'sin_cambios',
+                'message' => 'La asignaci�n del usuario ya est� correcta.'
+            ];
+        }
+
+        $era_vacio = empty($estudiante->user_id);
         $estudiante->user_id = $usuario->id;
-        if ($estudiante->save()) {
-            return redirect($url_redirect)->with('flash_message', 'Usuario asignado correctamente al estudiante.');
+
+        if (!$estudiante->save()) {
+            return [
+                'success' => false,
+                'status' => 'error',
+                'message' => 'No se pudo asignar el usuario, intente nuevamente.'
+            ];
         }
 
-        return redirect($url_redirect)->with('mensaje_error', 'No se pudo asignar el usuario, intente nuevamente.');
+        return [
+            'success' => true,
+            'status' => $era_vacio ? 'asignado' : 'corregido',
+            'message' => 'Usuario asignado correctamente al estudiante.'
+        ];
     }
 
     /**
@@ -676,3 +789,4 @@ class EstudianteController extends ModeloController
         return redirect($redirect)->with('mensaje_error', $resultado['message']);
     }
 }
+

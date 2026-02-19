@@ -12,13 +12,35 @@ function enviar_impresion( doc_encabezado )
     }else{
 
         if ( metodo_impresion == 'apm' ) {
-            apm_imprimir_pedido_restaurante( doc_encabezado );
-
             Swal.fire({
-                icon: 'info',
-                title: 'Muy bien!',
-                text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresion enviada via APM.'
+                title: 'Enviando a APM...',
+                text: 'Por favor espere.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: function () {
+                    Swal.showLoading();
+                }
             });
+
+            apm_imprimir_pedido_restaurante( doc_encabezado )
+                .then(function () {
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Muy bien!',
+                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + '. Solicitud enviada a APM.'
+                    });
+                })
+                .catch(function (apm_error) {
+                    Swal.close();
+                    var errorMessage = apm_error && apm_error.ErrorMessage ? apm_error.ErrorMessage : 'Error desconocido al imprimir con APM.';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente, pero no se pudo enviar a APM: ' + errorMessage
+                    });
+                });
         }else{
         
         if ( $('#usar_servidor_de_impresion').val() == 1 ) {
@@ -96,18 +118,22 @@ function enviar_impresion( doc_encabezado )
 
 function apm_imprimir_pedido_restaurante( doc_encabezado )
 {
-    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.send !== 'function' ) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error!',
-            text: 'APM no esta disponible en este navegador.'
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.sendAndWait !== 'function' ) {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'APM no esta disponible en este navegador.'
         });
-        return false;
     }
 
     var payload = crear_payload_apm_comanda( doc_encabezado );
-    window.APM_CLIENT.send(payload);
-    return true;
+    if ( !payload.PrinterId ) {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'No hay impresora APM configurada para pedidos de restaurante.'
+        });
+    }
+
+    return window.APM_CLIENT.sendAndWait(payload, 30000);
 }
 
 function crear_payload_apm_comanda( doc_encabezado )
@@ -135,7 +161,7 @@ function crear_payload_apm_comanda( doc_encabezado )
 
         items.push({
             'Name': $(this).find('.lbl_producto_descripcion').text(),
-            'Qty': $(this).find('.cantidad').text(),
+            'Qty': (parseInt($(this).find('.cantidad').text(), 10) || 1),
             'Notes': notes
         });
     });
@@ -225,8 +251,12 @@ function crear_string_json_para_envio_servidor_impresion( doc_encabezado )
 
 function restablecer_btn_guardar_factura()
 {
-    $('#btn_guardar_factura_no').children('.fa-spinner').attr('class','fa fa-save');
-    $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');
-                
+    var btn = $('#btn_guardar_factura_no');
+    if ( btn.length ) {
+        btn.find('i').first().attr('class','fa fa-check');
+        btn.prop('id','btn_guardar_factura');
+    }
+
+    $('#btn_guardar_factura').find('i').first().attr('class','fa fa-check');
     $('#btn_guardar_factura').removeAttr('disabled');
 }

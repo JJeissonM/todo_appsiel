@@ -20,6 +20,11 @@
 
 	$remisiones = ReportesController::remisiones_pendientes_por_facturar();
 	$facturas = ReportesController::facturas_electronicas_pendientes_por_enviar();
+	$apm_activo_en_alguna_config = in_array('apm', [
+		config('ventas.metodo_impresion_pedido_ventas'),
+		config('ventas.metodo_impresion_pedido_restaurante'),
+		config('ventas.metodo_impresion_factura_pos')
+	]);
 
 	$user = \Illuminate\Support\Facades\Auth::user();
 ?>
@@ -85,11 +90,12 @@
 	@include('layouts.mensajes')
 
 	<input type="hidden" name="user_rol" id="user_rol" value="{{ $user->roles()->first()->name }}">
+	<input type="hidden" id="apm_activo_en_alguna_config" value="{{ $apm_activo_en_alguna_config ? 1 : 0 }}">
 	<input type="hidden" id="metodo_impresion_pedido_restaurante" value="{{ config('ventas.metodo_impresion_pedido_restaurante') }}">
 	<input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
 
-	<div id="apm_status_banner" class="alert alert-danger" style="display:block; margin: 10px 0;">
-		APM no conectado. Appsiel Print Manager (APM) debe estar en lÃ­nea para tomar pedidos de restaurante.
+	<div id="apm_status_banner" class="alert alert-danger" style="display:{{ $apm_activo_en_alguna_config ? 'block' : 'none' }}; margin: 10px 0;">
+		APM no conectado. Appsiel Print Manager (APM) debe estar en linea para tomar pedidos de restaurante.
 	</div>
 
 	@can('vtas_bloquear_vista_index')
@@ -322,20 +328,15 @@
 @endsection
 
 @section('scripts')
-	<script type="text/javascript">
-			
-		if( $('#user_rol').val() == 'SupervisorCajas')
-		{
-			$('.nav').attr('display','none');
-		}
-	</script>
-@endsection
-
-@section('scripts')
 	@parent
-	<script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+	<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
 	<script type="text/javascript">
 		(function () {
+			if( $('#user_rol').val() == 'SupervisorCajas')
+			{
+				$('.nav').attr('display','none');
+			}
+
 			function set_apm_banner(visible) {
 				var banner = document.getElementById('apm_status_banner');
 				if (!banner) {
@@ -344,16 +345,30 @@
 				banner.style.display = visible ? 'block' : 'none';
 			}
 
+			function is_apm_required() {
+				return parseInt((document.getElementById('apm_activo_en_alguna_config') || {}).value || '0', 10) === 1;
+			}
+
 			function validar_apm() {
+				if (!is_apm_required()) {
+					set_apm_banner(false);
+					return;
+				}
+
 				if (!window.APM_CLIENT || typeof window.APM_CLIENT.isConnected !== 'function') {
 					set_apm_banner(true);
 					return;
 				}
+
 				set_apm_banner(!window.APM_CLIENT.isConnected());
 			}
 
+			if (is_apm_required() && window.APM_CLIENT && typeof window.APM_CLIENT.connect === 'function') {
+				window.APM_CLIENT.connect();
+			}
+
 			validar_apm();
-			setInterval(validar_apm, 5000);
+			setInterval(validar_apm, 2000);
 		})();
 	</script>
 @endsection

@@ -13,7 +13,7 @@
     {{ Form::bsBtnPrint( 'vtas_pedidos_imprimir/'.$id.$variables_url.'&formato_impresion_id=' . $default_key ) }}
     {{ Form::bsBtnEmail( 'vtas_pedidos_enviar_por_email/'.$id.$variables_url.'&formato_impresion_id=' . $default_key ) }}
 
-    @if( (int)config('ventas_pos.imprimir_pedidos_en_cocina') )
+    @if( config('ventas.metodo_impresion_pedido_ventas') == 'apm' )
         <div class="col">
             <br><br>
             <button class="btn btn-success btn-sm" id="btn_imprimir_en_cocina"><i class="fa fa-btn fa-print"></i> Imprimir en Cocina </button>

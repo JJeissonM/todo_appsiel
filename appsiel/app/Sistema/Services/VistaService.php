@@ -4,6 +4,8 @@ namespace App\Sistema\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 class VistaService
 {
@@ -35,6 +37,10 @@ class VistaService
                 // Cuando en opciones está la cadena table_[nombre_tabla_bd]
                 $tabla = substr($texto_opciones,6,strlen($texto_opciones)-1);
             
+                if ( !Schema::hasTable($tabla) ) {
+                    return $vec;
+                }
+
                 $opciones = DB::table($tabla)->get();
                 
                 // Mostar solo los registros de la empresa del usuario, si aplica
@@ -88,7 +94,11 @@ class VistaService
 
                 $model = substr($texto_opciones,6,strlen($texto_opciones)-1);
 
-                $vec = app($model)->opciones_campo_select();
+                try {
+                    $vec = app($model)->opciones_campo_select();
+                } catch (Throwable $e) {
+                    $vec = ['' => ''];
+                }
 
                 break;
 

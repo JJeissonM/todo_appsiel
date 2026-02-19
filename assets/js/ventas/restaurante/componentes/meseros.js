@@ -80,22 +80,41 @@ function activar_mesas_disponibles_mesero()
     });
 }
 
+function aplicar_vendedor_por_defecto()
+{
+    var vendedorId = $('#vendedor_default_id').val() || $('#vendedor_id').val();
+    if (vendedorId === undefined || vendedorId === null || vendedorId === '') {
+        $('#lbl_vendedor_mesero').text('');
+        return;
+    }
+
+    var vendedorDescripcion = $('#vendedor_default_id').attr('data-vendedor_descripcion') || $('#vendedor_id').attr('data-vendedor_descripcion') || '';
+    var vendedorUserId = $('#vendedor_default_id').attr('data-user_id') || $('#vendedor_id').attr('data-user_id') || 0;
+
+    $('#vendedor_id').val(vendedorId);
+    $('#vendedor_id').attr('data-vendedor_descripcion', vendedorDescripcion);
+    $('#vendedor_id').attr('data-user_id', vendedorUserId);
+    $('#lbl_vendedor_mesero').text(vendedorDescripcion);
+
+    var btnDefault = $('#vendedor_default');
+    if (btnDefault.length) {
+        btnDefault.attr('class','btn btn-default btn_vendedor vendedor_activo');
+    }
+
+    hay_error_password = false;
+    activar_mesas_disponibles_mesero();
+}
+
 function reset_componente_meseros()
 {
     $('.vendedor_activo').attr('class','btn btn-default btn_vendedor');
-    $('#lbl_vendedor_mesero').text( '' );
+    aplicar_vendedor_por_defecto();
 }
 
 $(document).ready(function () {
 
     if ($('.btn_vendedor').length === 0) {
-        var vendedorId = $('#vendedor_default_id').val() || $('#vendedor_id').val();
-        if (vendedorId !== undefined && vendedorId !== null && vendedorId !== '') {
-            $('#vendedor_id').val(vendedorId);
-            $('#lbl_vendedor_mesero').text($('#vendedor_id').attr('data-vendedor_descripcion'));
-            hay_error_password = false;
-            activar_mesas_disponibles_mesero();
-        }
+        aplicar_vendedor_por_defecto();
     }
 	
     $('.btn_vendedor').on('click', function (e) {

@@ -1,6 +1,8 @@
 var hay_productos = 0;
 var url_raiz, redondear_centena, numero_linea;
 var productos, precios, descuentos, clientes, cliente_default, forma_pago_default, fecha_vencimiento_default;
+var productos_index_por_id = {};
+var productos_index_por_codigo_barras = {};
 
 $('#btn_nuevo').hide();
 $('#btnPaula').hide();
@@ -15,6 +17,107 @@ function mostrar_botones_productos()
     $('#accordionExample').find('button').each(function () {
         $(this).parent().show();
     });
+}
+
+function construir_indices_productos()
+{
+    productos_index_por_id = {};
+    productos_index_por_codigo_barras = {};
+
+    if (!Array.isArray(productos)) {
+        return;
+    }
+
+    productos.forEach(function (producto) {
+        var product_id = parseInt(producto.id);
+        if (!isNaN(product_id)) {
+            productos_index_por_id[product_id] = producto;
+        }
+
+        if (producto.codigo_barras) {
+            productos_index_por_codigo_barras[String(producto.codigo_barras)] = producto;
+        }
+    });
+}
+
+function get_producto_por_id(item_id)
+{
+    var id = parseInt(item_id);
+    if (isNaN(id)) {
+        return undefined;
+    }
+
+    if (!productos_index_por_id[id] && Array.isArray(productos) && productos.length) {
+        construir_indices_productos();
+    }
+
+    if (productos_index_por_id[id]) {
+        return productos_index_por_id[id];
+    }
+
+    if (!Array.isArray(productos)) {
+        return undefined;
+    }
+
+    return productos.find(function (item) {
+        return item.id === id || parseInt(item.id) === id;
+    });
+}
+
+function get_producto_desde_busqueda(valor_busqueda)
+{
+    var valor_limpio = String(valor_busqueda || '').trim();
+    if (valor_limpio === '') {
+        return { producto: undefined, campo_busqueda: '' };
+    }
+
+    if (valor_limpio.length > 5) {
+        if (!productos_index_por_codigo_barras[valor_limpio] && Array.isArray(productos) && productos.length) {
+            construir_indices_productos();
+        }
+
+        var producto_por_codigo = productos_index_por_codigo_barras[valor_limpio];
+        if (!producto_por_codigo && Array.isArray(productos)) {
+            producto_por_codigo = productos.find(function (item) {
+                return String(item.codigo_barras || '') === valor_limpio;
+            });
+        }
+
+        return {
+            producto: producto_por_codigo,
+            campo_busqueda: 'codigo_barras'
+        };
+    }
+
+    return {
+        producto: get_producto_por_id(valor_limpio),
+        campo_busqueda: 'id'
+    };
+}
+
+function cargar_producto_en_linea(producto)
+{
+    tasa_impuesto = producto.tasa_impuesto;
+    inv_producto_id = producto.id;
+    unidad_medida = producto.unidad_medida1;
+    costo_unitario = producto.costo_promedio;
+
+    $('#inv_producto_id').val(producto.descripcion);
+    $('#precio_unitario').val(get_precio(producto.id));
+    $('#tasa_descuento').val(get_descuento(producto.id));
+}
+
+function preparar_lineas_registros_para_envio()
+{
+    $('#linea_ingreso_default').remove();
+
+    var table = $('#ingreso_registros').tableToJSON();
+    $('#lineas_registros').val(JSON.stringify(table));
+
+    // No se puede enviar controles disabled
+    $('#cliente_input').removeAttr('disabled');
+    $('#fecha').removeAttr('disabled');
+    $('#inv_bodega_id').removeAttr('disabled');
 }
 
 
@@ -167,7 +270,7 @@ function activar_boton_guardar_factura() {
 
 };
 
-function mandar_codigo2(item_id) {
+function mandar_codigo2(item_id, numero_linea_param) {
 	
 	if ( $('#lbl_vendedor_mesero').text() == '') {
 		alert('Debe seleccionar un MESERO.');
@@ -179,16 +282,15 @@ function mandar_codigo2(item_id) {
 		return false;
 	}
 		
-	var producto = productos.find(item => item.id === parseInt(item_id));
+	var producto = get_producto_por_id(item_id);
+    if (producto === undefined) {
+        $('#popup_alerta').show();
+        $('#popup_alerta').css('background-color', 'red');
+        $('#popup_alerta').text('Producto no encontrado.');
+        return false;
+    }
 
-	tasa_impuesto = producto.tasa_impuesto;
-	inv_producto_id = producto.id;
-	unidad_medida = producto.unidad_medida1;
-	costo_unitario = producto.costo_promedio;
-
-	$('#inv_producto_id').val(producto.descripcion);
-	$('#precio_unitario').val(get_precio(producto.id));
-	$('#tasa_descuento').val(get_descuento(producto.id));
+	cargar_producto_en_linea(producto);
 	cantidad = 1;
 	$('#cantidad').val(cantidad);
 	calcular_valor_descuento();
@@ -218,7 +320,10 @@ function mandar_codigo2(item_id) {
  */
 function item_is_in_group( item_id, name_grupo_id )
 {
-    var producto = productos.find((item) => item.id === parseInt( item_id ) );
+    var producto = get_producto_por_id(item_id);
+    if (typeof producto === 'undefined') {
+        return false;
+    }
 
     var arr_grupos = $('#' + name_grupo_id).val().split(',').map(Number);
 	
@@ -230,8 +335,16 @@ function item_is_in_group( item_id, name_grupo_id )
 }
 
 $(document).ready(function () {
+    construir_indices_productos();
 
-    var apm_modal_instance = null;
+        var apm_modal_instance = null;
+    var apm_first_check_deadline = Date.now() + 5000;
+
+    function is_apm_mode()
+    {
+        return ($('#metodo_impresion_pedido_restaurante').val() || 'normal') === 'apm';
+    }
+
     function show_apm_modal()
     {
         if ( apm_modal_instance ) {
@@ -255,7 +368,7 @@ $(document).ready(function () {
         }
     }
 
-    function set_apm_blocked_state( blocked )
+    function set_apm_blocked_state( blocked, silent )
     {
         if ( blocked ) {
             $('#btn_guardar_factura').attr('disabled', 'disabled');
@@ -266,7 +379,9 @@ $(document).ready(function () {
             $('#tasa_impuesto').attr('disabled', 'disabled');
             $('#precio_total').attr('disabled', 'disabled');
             $('#accordionExample').find('button').attr('disabled', 'disabled');
-            show_apm_modal();
+            if ( !silent ) {
+                show_apm_modal();
+            }
         } else {
             $('#btn_guardar_factura').removeAttr('disabled');
             $('#inv_producto_id').removeAttr('disabled');
@@ -280,31 +395,55 @@ $(document).ready(function () {
         }
     }
 
+    function request_apm_connection()
+    {
+        if ( window.APM_CLIENT && typeof window.APM_CLIENT.connect === 'function' ) {
+            window.APM_CLIENT.connect();
+        }
+    }
+
+    function apm_is_open()
+    {
+        return !!(window.APM_CLIENT && window.APM_CLIENT.socket && window.APM_CLIENT.socket.readyState === WebSocket.OPEN);
+    }
+
     function asegurar_apm_conectado()
     {
-        var metodo_impresion = $('#metodo_impresion_pedido_restaurante').val() || 'normal';
-        if ( metodo_impresion != 'apm' ) {
-            set_apm_blocked_state(false);
+        if ( !is_apm_mode() ) {
+            set_apm_blocked_state(false, true);
             return true;
         }
 
-        if ( !window.APM_CLIENT || typeof window.APM_CLIENT.isConnected !== 'function' ) {
-            set_apm_blocked_state(true);
-            return false;
+        request_apm_connection();
+
+        if ( apm_is_open() ) {
+            set_apm_blocked_state(false, true);
+            return true;
         }
 
-        if ( !window.APM_CLIENT.isConnected() ) {
-            set_apm_blocked_state(true);
-            return false;
-        }
-
-        set_apm_blocked_state(false);
-        return true;
+        var still_connecting = Date.now() < apm_first_check_deadline || (window.APM_CLIENT && window.APM_CLIENT.socket && window.APM_CLIENT.socket.readyState === WebSocket.CONNECTING);
+        set_apm_blocked_state(true, still_connecting);
+        return false;
     }
 
-    // Validar APM al cargar y luego cada 5 segundos
+    if ( window.APM_CLIENT && typeof window.APM_CLIENT.setLogger === 'function' ) {
+        window.APM_CLIENT.setLogger(function(message, type) {
+            if ( !is_apm_mode() ) {
+                return;
+            }
+            if ( type === 'success' ) {
+                set_apm_blocked_state(false, true);
+            }
+            if ( type === 'warning' || type === 'error' ) {
+                set_apm_blocked_state(true, false);
+            }
+        });
+    }
+
+    // Validar APM al cargar y luego cada 2 segundos
+    request_apm_connection();
     asegurar_apm_conectado();
-    setInterval(asegurar_apm_conectado, 5000);
+    setInterval(asegurar_apm_conectado, 2000);
 
     if ( $('#action').val() != 'create' )
     {
@@ -358,25 +497,12 @@ $(document).ready(function () {
 
                 // Si la longitud del codigo ingresado es mayor que 5
                 // se supone que es un código de barras
-                var campo_busqueda = '';
-                if ($(this).val().length > 5) {
-                    var producto = productos.find(item => item.codigo_barras === $(this).val());
-                    campo_busqueda = 'codigo_barras';
-                } else {
-                    var producto = productos.find(item => item.id === parseInt($(this).val()));
-                    campo_busqueda = 'id';
-                }
+                var resultado_busqueda = get_producto_desde_busqueda($(this).val());
+                var producto = resultado_busqueda.producto;
+                var campo_busqueda = resultado_busqueda.campo_busqueda;
 
                 if (producto !== undefined) {
-
-                    tasa_impuesto = producto.tasa_impuesto;
-                    inv_producto_id = producto.id;
-                    unidad_medida = producto.unidad_medida1;
-                    costo_unitario = producto.costo_promedio;
-
-                    $(this).val(producto.descripcion);
-                    $('#precio_unitario').val(get_precio(producto.id));
-                    $('#tasa_descuento').val(get_descuento(producto.id));
+                    cargar_producto_en_linea(producto);
 
                     if (campo_busqueda == 'id') {
                         $('#cantidad').select();
@@ -665,26 +791,25 @@ $(document).ready(function () {
         return false;
     });
 
-    // GUARDAR EL FORMULARIO
+        // GUARDAR EL FORMULARIO
     $('#btn_guardar_factura').click(function (event){
         event.preventDefault();
-        $('#btn_guardar_factura').children('.fa-check').attr('class','fa fa-spinner fa-spin');
-        
+        $('#btn_guardar_factura').find('i').first().attr('class','fa fa-spinner fa-spin');
+
         $('#btn_guardar_factura').prop('id','btn_guardar_factura_no');
 
         if( hay_productos == 0 )
         {
-            $('#btn_guardar_factura_no').prop('id','btn_guardar_factura');  
             Swal.fire({
                 icon: 'warning',
-                title: 'Advertencia!',
+                title: 'G1 Advertencia!',
                 text: 'No ha ingresado productos.'
+            }).then(function () {
+                restablecer_btn_guardar_factura();
             });
             reset_linea_ingreso_default();
             reset_efectivo_recibido();
             $('#btn_nuevo').hide();
-
-            restablecer_btn_guardar_factura()
 
             return false;
         }
@@ -694,36 +819,35 @@ $(document).ready(function () {
                 icon: 'warning',
                 title: 'Advertencia!',
                 text: 'Ha ingresado productos que requieren Contorno, pero NO ha agregado el Contorno.'
+            }).then(function () {
+                restablecer_btn_guardar_factura();
             });
-            
-            restablecer_btn_guardar_factura()
 
             return false;
         }
 
         $( this ).attr( 'disabled', 'disabled' );
 
-        $('#linea_ingreso_default').remove();
-
-        var table = $('#ingreso_registros').tableToJSON();               
-
-        // Se asigna el objeto JSON a un campo oculto del formulario
-        $('#lineas_registros').val( JSON.stringify( table ) );
-
-        // No se puede enviar controles disabled
-        habilitar_campos_encabezado();
+        preparar_lineas_registros_para_envio();
 
         var url = $("#form_create").attr('action');
         var data = $("#form_create").serialize() + "&descripcion=" + $('#descripcion').val();
-        
+
         $.post(url, data , function (doc_encabezado) {// Almacenar el pedido
-            
+
             enviar_impresion( doc_encabezado )
 
+        }).fail(function () {
+            restablecer_btn_guardar_factura();
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo guardar el pedido. Verifique la conexión e intente nuevamente.'
+            });
         });
-        
+
     });
-    
+
     $('#btn_imprimir_pedido').click(function (event){
         event.preventDefault();
 
@@ -752,15 +876,7 @@ $(document).ready(function () {
         // Desactivar el click del botón
         //$( this ).attr( 'disabled', 'disabled' );
 
-        $('#linea_ingreso_default').remove();
-
-        var table = $('#ingreso_registros').tableToJSON();               
-
-        // Se asigna el objeto JSON a un campo oculto del formulario
-        $('#lineas_registros').val( JSON.stringify( table ) );
-
-        // No se puede enviar controles disabled
-        habilitar_campos_encabezado();
+        preparar_lineas_registros_para_envio();
         
         $("#form_create").attr('method','PUT');
 

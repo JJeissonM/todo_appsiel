@@ -166,6 +166,9 @@ class PedidoRestauranteController extends TransaccionController
         ];
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
+        $grupos_inventario = InvGrupo::whereIn('id', collect($productos)->pluck('inv_grupo_id')->unique()->values()->all())
+                                        ->get()
+                                        ->keyBy('id');
         
         $categoria_cocina = InvGrupo::find((int)Input::get('grupo_inventarios_id'));
         
@@ -178,15 +181,15 @@ class PedidoRestauranteController extends TransaccionController
                 }
             }
             
-            $grupo_inventario = InvGrupo::find($pr->inv_grupo_id);
-
-            if (!$grupo_inventario->mostrar_en_pagina_web) {
-                continue;
-            }
+            $grupo_inventario = $grupos_inventario->get($pr->inv_grupo_id);
 
             if ( $grupo_inventario == null )
             {
                 return redirect( 'ventas_pos?id=' . Input::get('id') )->with('mensaje_error', 'El producto ' . $pr->descripcion . ' no tiene un grupo de inventario válido.' );
+            }
+
+            if (!$grupo_inventario->mostrar_en_pagina_web) {
+                continue;
             }
 
             $pr->categoria = $grupo_inventario->descripcion;

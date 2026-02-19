@@ -88,7 +88,7 @@
 
 @section('scripts')
 
-    <script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
     <script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
 	<script type="text/javascript">

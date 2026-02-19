@@ -1,4 +1,4 @@
-﻿<div class="container-fluid">
+<div class="container-fluid">
 
     <?php
         $user = Auth::user();
@@ -43,15 +43,21 @@
     @endif
 </div>
 
-<script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
 <script type="text/javascript">
     (function () {
-        var apm_modal_instance = null;
+        var apm_modal_open = false;
+
+        function metodo_apm_activo() {
+            return ((document.getElementById('metodo_impresion_pedido_restaurante') || {}).value || 'normal') === 'apm';
+        }
+
         function show_apm_modal() {
-            if (apm_modal_instance) {
+            if (apm_modal_open) {
                 return;
             }
-            apm_modal_instance = Swal.fire({
+            apm_modal_open = true;
+            Swal.fire({
                 icon: 'error',
                 title: 'APM no conectado',
                 text: 'No se puede seleccionar cocina hasta que Appsiel Print Manager (APM) este en linea.',
@@ -62,10 +68,11 @@
         }
 
         function close_apm_modal() {
-            if (apm_modal_instance) {
-                Swal.close();
-                apm_modal_instance = null;
+            if (!apm_modal_open) {
+                return;
             }
+            Swal.close();
+            apm_modal_open = false;
         }
 
         function set_apm_cocina_blocked(blocked) {
@@ -78,24 +85,47 @@
                     el.removeAttribute('aria-disabled');
                 }
             });
+
             if (blocked) {
                 show_apm_modal();
-            } else {
-                close_apm_modal();
+                return;
             }
+
+            close_apm_modal();
+        }
+
+        function conectar_apm() {
+            if (!window.APM_CLIENT || typeof window.APM_CLIENT.connect !== 'function') {
+                return;
+            }
+            window.APM_CLIENT.connect();
+        }
+
+        function apm_esta_conectado() {
+            if (!window.APM_CLIENT || !window.APM_CLIENT.socket) {
+                return false;
+            }
+            return window.APM_CLIENT.socket.readyState === WebSocket.OPEN;
         }
 
         function validar_apm() {
-            var metodo = (document.getElementById('metodo_impresion_pedido_restaurante') || {}).value || 'normal';
-            if (metodo !== 'apm') {
+            if (!metodo_apm_activo()) {
                 set_apm_cocina_blocked(false);
                 return;
             }
-            if (!window.APM_CLIENT || typeof window.APM_CLIENT.isConnected !== 'function') {
+
+            if (!window.APM_CLIENT) {
                 set_apm_cocina_blocked(true);
                 return;
             }
-            set_apm_cocina_blocked(!window.APM_CLIENT.isConnected());
+
+            if (apm_esta_conectado()) {
+                set_apm_cocina_blocked(false);
+                return;
+            }
+
+            conectar_apm();
+            set_apm_cocina_blocked(true);
         }
 
         document.addEventListener('click', function (event) {
@@ -103,14 +133,28 @@
             if (!target) {
                 return;
             }
-            var metodo = (document.getElementById('metodo_impresion_pedido_restaurante') || {}).value || 'normal';
-            if (metodo === 'apm' && (!window.APM_CLIENT || !window.APM_CLIENT.isConnected || !window.APM_CLIENT.isConnected())) {
+
+            if (target.getAttribute('aria-disabled') === 'true') {
                 event.preventDefault();
             }
         });
 
+        if (window.APM_CLIENT && typeof window.APM_CLIENT.setLogger === 'function') {
+            window.APM_CLIENT.setLogger(function (message, type) {
+                if (!metodo_apm_activo()) {
+                    return;
+                }
+                if (type === 'success') {
+                    set_apm_cocina_blocked(false);
+                }
+                if (type === 'warning' || type === 'error') {
+                    set_apm_cocina_blocked(true);
+                }
+            });
+        }
+
         validar_apm();
-        setInterval(validar_apm, 5000);
+        setInterval(validar_apm, 2000);
     })();
 </script>
 

@@ -230,7 +230,7 @@
 	<input type="hidden" id="impresora_cocina_por_defecto" value="{{ config('ventas_pos.impresora_cocina_por_defecto') }}">
 	<input type="hidden" id="apm_printer_id_pedidos_ventas" value="{{ config('ventas.apm_printer_id_pedidos_ventas') }}">
 
-	<script src="{{ asset( 'assets/js/apm/main.js?aux=' . uniqid() )}}"></script>
+	<script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
 	<script src="{{ asset( 'assets/js/ventas/pedidos/script_to_printer.js?aux=' . uniqid() )}}"></script>
 
 	<script type="text/javascript">

@@ -11,6 +11,8 @@ use DB;
 use PDF;
 use Auth;
 use View;
+use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
@@ -54,6 +56,10 @@ class RenderField
             case 'table':
                 $tabla = substr($texto_opciones,6,strlen($texto_opciones)-1);
 
+                if ( !Schema::hasTable($tabla) ) {
+                    return $value;
+                }
+
                 $registro = DB::table($tabla)->where('id', $this->field->value)->get();
                 break;
 
@@ -61,7 +67,11 @@ class RenderField
 
                 $model = substr($texto_opciones,6,strlen($texto_opciones)-1);
 
-                $registro = app($model)->where('id', $this->field->value)->get();
+                try {
+                    $registro = app($model)->where('id', $this->field->value)->get();
+                } catch (Throwable $e) {
+                    return $value;
+                }
 
                 if ( method_exists( $model, 'get_label_to_show') && count($registro) != 0 )
                 {
