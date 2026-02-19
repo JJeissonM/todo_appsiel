@@ -3,6 +3,7 @@
 namespace App\Tesoreria;
 
 use App\Compras\ComprasDocEncabezado;
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Tesoreria\TesoDocEncabezado;
@@ -15,6 +16,8 @@ use Illuminate\Support\Facades\Input;
 
 class TesoMovimiento extends Model
 {
+    use FiltraRegistrosPorUsuario;
+
     protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle'];
@@ -365,30 +368,65 @@ class TesoMovimiento extends Model
 
     public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres )
     {
-        return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
-                            ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
-                            ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
-                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                            ->where( $array_wheres )
-                            ->select(
-                                        DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
-                                        'teso_motivos.descripcion AS motivo_descripcion',
-                                        'teso_movimientos.fecha',
-                                        'teso_movimientos.valor_movimiento',
-                                        'teso_movimientos.id',
-                                        'teso_movimientos.teso_motivo_id',
-                                        'teso_movimientos.descripcion',
-                                        'teso_movimientos.codigo_referencia_tercero',
-                                        'teso_movimientos.core_tipo_transaccion_id',
-                                        'teso_movimientos.core_tipo_doc_app_id',
-                                        'teso_movimientos.consecutivo',
-                                        'teso_movimientos.teso_caja_id',
-                                        'teso_movimientos.teso_cuenta_bancaria_id',
-                                        'teso_movimientos.created_at',
-                                        'core_terceros.descripcion as tercero_descripcion' )
-                            ->orderBy('teso_movimientos.fecha')
-                            ->orderBy('teso_movimientos.created_at')
-                            ->get();
+        $query = TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
+                                ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
+                                ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
+                                ->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta])
+                                ->where( $array_wheres );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
+
+        return $query->select(
+                            DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
+                            'teso_motivos.descripcion AS motivo_descripcion',
+                            'teso_movimientos.fecha',
+                            'teso_movimientos.valor_movimiento',
+                            'teso_movimientos.id',
+                            'teso_movimientos.teso_motivo_id',
+                            'teso_movimientos.descripcion',
+                            'teso_movimientos.codigo_referencia_tercero',
+                            'teso_movimientos.core_tipo_transaccion_id',
+                            'teso_movimientos.core_tipo_doc_app_id',
+                            'teso_movimientos.consecutivo',
+                            'teso_movimientos.teso_caja_id',
+                            'teso_movimientos.teso_cuenta_bancaria_id',
+                            'teso_movimientos.creado_por',
+                            'teso_movimientos.created_at',
+                            'core_terceros.descripcion as tercero_descripcion'
+                        )
+                        ->orderBy('teso_movimientos.fecha')
+                        ->orderBy('teso_movimientos.created_at')
+                        ->get();
+    }
+
+    public static function usuario_tiene_restriccion_movimientos()
+    {
+        $user = Auth::user();
+
+        if (is_null($user) || empty($user->email)) {
+            return false;
+        }
+
+        return !self::usuarioTieneRolPrivilegiado($user, self::rolesSinFiltro());
+    }
+
+    public static function get_saldo_inicial2( $fecha_desde, $array_wheres )
+    {
+        $query = TesoMovimiento::where( $array_wheres )
+                            ->where( 'fecha', '<', $fecha_desde );
+
+        $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
+
+        $saldo_inicial = $query->select( DB::raw('sum(valor_movimiento) as valor_movimiento') )
+                            ->get()
+                            ->first();
+
+        if ( is_null( $saldo_inicial->valor_movimiento ) )
+        {
+            return 0;
+        }
+
+        return $saldo_inicial->valor_movimiento;
     }
 
     public function almacenar_registro_pago_contado( $datos, $registros_medio_pago, $movimiento, $valor_movimiento )

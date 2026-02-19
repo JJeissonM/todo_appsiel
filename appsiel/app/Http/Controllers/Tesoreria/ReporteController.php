@@ -1091,11 +1091,13 @@ class ReporteController extends TesoreriaController
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
 
-        $saldo_inicial = TesoMovimiento::get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde );
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres );
 
         $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres );
+
+        $usuario_tiene_restriccion_movimientos = TesoMovimiento::usuario_tiene_restriccion_movimientos();
         
-        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria') )->render();
+        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'usuario_tiene_restriccion_movimientos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

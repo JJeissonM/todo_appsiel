@@ -1,6 +1,11 @@
 {{ Form::bsBtnExcel('movimiento_tesoreria') }}
 <h3>Movimiento de Cajas / Bancos</h3>
 <h4> {{"Desde: ".$fecha_desde." - Hasta: ".$fecha_hasta }} </h4>
+@if( isset($usuario_tiene_restriccion_movimientos) && $usuario_tiene_restriccion_movimientos )
+    <div class="alert alert-warning" style="padding: 8px 12px; margin-bottom: 10px;">
+        Mostrando solo movimientos creados por el usuario logueado.
+    </div>
+@endif
 <div class="table-responsive">
     <table class="table table-striped table-bordered tabla_pdf">
         <thead>
@@ -11,6 +16,7 @@
                 <th>Caja/Banco</th>
                 <th>Concepto</th>
                 <th>Motivo</th>
+                <th>Creado por</th>
                 <th>Entradas</th>
                 <th>Salidas</th>
                 <th>Saldo</th>
@@ -19,6 +25,7 @@
         <tbody>
             <tr>
                 <td>{{ $fecha_desde }}</td>
+                <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
@@ -89,6 +96,7 @@
                     <td> {{ $caja }} {{ $cuenta_bancaria }} </td>
                     <td> {{ $detalle_operacion }} </td>
                     <td> {{ $fila->motivo_descripcion }} </td>
+                    <td> <span title="{{ $fila->creado_por }}">{{ substr($fila->creado_por, 0, 10) }}...</span> </td>
                     <td> {{ $entrada }} </td>
                     <td> {{ $salida}} </td>
                     <td> ${{ number_format( $saldo, 0, ',','.') }} </td>
@@ -97,13 +105,13 @@
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="6"> &nbsp; </td>
+                <td colspan="7"> &nbsp; </td>
                 <td> ${{ number_format( $total_entradas, 0, ',','.') }} </td>
                 <td> ${{ number_format( $total_salidas, 0, ',','.') }} </td>
                 <td></td>
             </tr>
             <tr>
-                <td colspan="7"> Total Diferencia </td>
+                <td colspan="8"> Total Diferencia </td>
                 <td> ${{ number_format( $total_entradas + $total_salidas, 0, ',','.') }} </td>
                 <td></td>
             </tr>
