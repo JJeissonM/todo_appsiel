@@ -97,6 +97,15 @@ class InventoriesServices
         $hay_productos = 0;
         foreach ($parametros_items_producir as $parametro_item_producir)
         {
+            $item_consumir = $parametro_item_producir->item_consumir;
+            $item_producir = $parametro_item_producir->item_producir;
+
+            // Evita error fatal cuando hay configuraciones de desarme con items eliminados.
+            if ( is_null($item_consumir) || is_null($item_producir) )
+            {
+                continue;
+            }
+
             $cantidad_facturada = $cantidades_facturadas->where('inv_producto_id', $parametro_item_producir->item_producir_id)->sum('cantidad_facturada');
 
             $existencia_item_facturado = InvMovimiento::get_existencia_producto($parametro_item_producir->item_producir_id, $bodega_default_id, $fecha)->Cantidad;
@@ -141,18 +150,18 @@ class InventoriesServices
              */
             $cantidad_a_ingresar = $cantidad_a_sacar * $cantidad_proporcional;
 
-            $costo_unitario_item_a_consumir = $parametro_item_producir->item_consumir->get_costo_promedio( $bodega_default_id );
+            $costo_unitario_item_a_consumir = $item_consumir->get_costo_promedio( $bodega_default_id );
 
             $motivo_salida = InvMotivo::find( (int)$parametros_config_inventarios['motivo_salida_id'] );
             $motivo_entrada = InvMotivo::find( (int)$parametros_config_inventarios['motivo_entrada_id'] );
 
-            $lineas_desarme .= ',{"inv_producto_id":"' . $parametro_item_producir->item_consumir->id . '","Producto":"' . $parametro_item_producir->item_consumir->id . ' ' . $parametro_item_producir->item_consumir->descripcion . ' (' . $parametro_item_producir->item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_a_consumir . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_a_consumir) . '"}';
+            $lineas_desarme .= ',{"inv_producto_id":"' . $item_consumir->id . '","Producto":"' . $item_consumir->id . ' ' . $item_consumir->descripcion . ' (' . $item_consumir->unidad_medida1 . ')","motivo":"' . $motivo_salida->id . '-' . $motivo_salida->descripcion . '","costo_unitario":"$' . $costo_unitario_item_a_consumir . '","cantidad":"' . $cantidad_a_sacar . ' UND","costo_total":"$' . ($cantidad_a_sacar * $costo_unitario_item_a_consumir) . '"}';
 
             $costo_unitario_item_producir = $costo_unitario_item_a_consumir / $cantidad_proporcional;
 
             $lineas_desarme .= ',';
 
-            $lineas_desarme .= '{"inv_producto_id":"' . $parametro_item_producir->item_producir->id . '","Producto":"' . $parametro_item_producir->item_producir->id . ' ' . $parametro_item_producir->item_producir->descripcion . ' (' . $parametro_item_producir->item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . ($cantidad_a_ingresar * $costo_unitario_item_producir) . '"}';
+            $lineas_desarme .= '{"inv_producto_id":"' . $item_producir->id . '","Producto":"' . $item_producir->id . ' ' . $item_producir->descripcion . ' (' . $item_producir->unidad_medida1 . '))","motivo":"' . $motivo_entrada->id . '-' . $motivo_entrada->descripcion . '","costo_unitario":"$' . $costo_unitario_item_producir . '","cantidad":"' . $cantidad_a_ingresar . ' UND","costo_total":"$' . ($cantidad_a_ingresar * $costo_unitario_item_producir) . '"}';
 
             $hay_productos++;
         }
