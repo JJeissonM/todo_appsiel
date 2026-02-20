@@ -1085,15 +1085,16 @@ class ReporteController extends TesoreriaController
         $teso_cuenta_bancaria_id = (int)$request->teso_cuenta_bancaria_id;
         $teso_motivo_id = (int)$request->teso_motivo_id;
         $core_tercero_id = (int)$request->core_tercero_id;
+        $user_id = (int)$request->user_id;
         
         $array_wheres = $this->preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id,$teso_motivo_id, $core_tercero_id, null );
         
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
 
-        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres );
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id );
 
-        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres );
+        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id );
 
         $usuario_tiene_restriccion_movimientos = TesoMovimiento::usuario_tiene_restriccion_movimientos();
         

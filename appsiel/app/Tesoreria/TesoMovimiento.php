@@ -4,6 +4,7 @@ namespace App\Tesoreria;
 
 use App\Compras\ComprasDocEncabezado;
 use App\Traits\FiltraRegistrosPorUsuario;
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Tesoreria\TesoDocEncabezado;
@@ -366,13 +367,21 @@ class TesoMovimiento extends Model
                             ->get();
     }
 
-    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres )
+    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id = 0 )
     {
         $query = TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                                 ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
                                 ->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta])
                                 ->where( $array_wheres );
+
+        if ( (int)$user_id != 0 )
+        {
+            $user = User::where('empresa_id', Auth::user()->empresa_id)->find( (int)$user_id );
+            if ( !is_null($user) ) {
+                $query->where('teso_movimientos.creado_por', $user->email);
+            }
+        }
 
         $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
 
@@ -410,10 +419,18 @@ class TesoMovimiento extends Model
         return !self::usuarioTieneRolPrivilegiado($user, self::rolesSinFiltro());
     }
 
-    public static function get_saldo_inicial2( $fecha_desde, $array_wheres )
+    public static function get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id = 0 )
     {
         $query = TesoMovimiento::where( $array_wheres )
                             ->where( 'fecha', '<', $fecha_desde );
+
+        if ( (int)$user_id != 0 )
+        {
+            $user = User::where('empresa_id', Auth::user()->empresa_id)->find( (int)$user_id );
+            if ( !is_null($user) ) {
+                $query->where('teso_movimientos.creado_por', $user->email);
+            }
+        }
 
         $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
 
