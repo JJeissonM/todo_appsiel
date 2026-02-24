@@ -326,6 +326,44 @@ class ReportesController extends ModeloController
             $guiasQuery->where('sga_plan_clases_encabezados.user_id', $request->user_id);
         }
 
+        $guiasDetalleQuery = GuiaAcademica::leftJoin('sga_periodos', 'sga_periodos.id', '=', 'sga_plan_clases_encabezados.periodo_id')
+            ->where('sga_plan_clases_encabezados.plantilla_plan_clases_id', GuiaAcademica::PLANTILLA_GUIA_ACADEMICA_ID)
+            ->where('sga_periodos.periodo_lectivo_id', $periodoLectivoId);
+
+        if ($request->periodo_id) {
+            $guiasDetalleQuery->where('sga_plan_clases_encabezados.periodo_id', $request->periodo_id);
+        }
+
+        if ($request->curso_id) {
+            $guiasDetalleQuery->where('sga_plan_clases_encabezados.curso_id', $request->curso_id);
+        }
+
+        if ($request->asignatura_id) {
+            $guiasDetalleQuery->where('sga_plan_clases_encabezados.asignatura_id', $request->asignatura_id);
+        }
+
+        if ($request->user_id) {
+            $guiasDetalleQuery->where('sga_plan_clases_encabezados.user_id', $request->user_id);
+        }
+
+        $guiasDetalle = $guiasDetalleQuery
+            ->select(
+                'sga_plan_clases_encabezados.id',
+                'sga_plan_clases_encabezados.curso_id',
+                'sga_plan_clases_encabezados.asignatura_id',
+                'sga_plan_clases_encabezados.user_id',
+                'sga_plan_clases_encabezados.descripcion',
+                'sga_plan_clases_encabezados.fecha'
+            )
+            ->get()
+            ->groupBy(function ($registro) {
+                return implode('-', [
+                    $registro->curso_id,
+                    $registro->asignatura_id,
+                    $registro->user_id ?: 0
+                ]);
+            });
+
         $registrosGuias = $guiasQuery
             ->groupBy(
                 'sga_plan_clases_encabezados.curso_id',
@@ -349,13 +387,23 @@ class ReportesController extends ModeloController
 
         $periodoLabel = $periodoSeleccionado ? $periodoSeleccionado->descripcion : 'Todos los periodos';
 
-        $lineas = $asignaturas->map(function ($registro) use ($registrosGuias, $periodoLabel) {
+        $lineas = $asignaturas->map(function ($registro) use ($registrosGuias, $guiasDetalle, $periodoLabel) {
             $key = implode('-', [
                 $registro->curso_id,
                 $registro->asignatura_id,
                 $registro->user_id ?: 0
             ]);
             $guiasElaboradas = $registrosGuias->has($key) ? $registrosGuias->get($key)->guias_elaboradas : 0;
+            $guiasLinks = $guiasDetalle->has($key)
+                ? $guiasDetalle->get($key)->map(function ($guia) {
+                    return [
+                        'id' => $guia->id,
+                        'descripcion' => ($guia->descripcion ?: ('Guia #' . $guia->id))
+                            . ($guia->fecha ? ' (' . $guia->fecha . ')' : ''),
+                        'url' => url('sga_planes_clases/' . $guia->id . '?id=5&id_modelo=219&id_transaccion=')
+                    ];
+                })->values()->toArray()
+                : [];
             $requeridas = self::obtenerCantidadGuiasRequeridas($registro->curso_id, $registro->asignatura_id);
             $cumplimiento = $requeridas > 0
                 ? round(($guiasElaboradas / $requeridas) * 100, 2)
@@ -370,6 +418,7 @@ class ReportesController extends ModeloController
                 'guias_requeridas' => $requeridas,
                 'excedente' => max(0, $guiasElaboradas - $requeridas),
                 'cumplimiento' => $cumplimiento,
+                'guias_links' => $guiasLinks,
             ];
         });
 
@@ -414,3 +463,12 @@ class ReportesController extends ModeloController
     }
 
 }
+
+
+
+
+
+
+
+
+

@@ -68,7 +68,9 @@ class GuiaAcademica extends Model
                 'users.name AS campo7',
                 'sga_plan_clases_encabezados.estado AS campo8',
                 'sga_plan_clases_encabezados.id AS campo9'
-            )->get();
+            )
+            ->orderBy('sga_plan_clases_encabezados.created_at', 'DESC')
+            ->get();
 
         //hacemos el filtro de $search si $search tiene contenido
         $nuevaColeccion = [];
