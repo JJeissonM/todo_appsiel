@@ -42,6 +42,8 @@
 			{{ Form::select('orientacion',['Portrait'=>'Vertical','Landscape'=>'Horizontal'],null,['id'=>'orientacion']) }}
 		@endif
 
+		{{ Form::hidden( 'debug_trace', 0 ) }}
+
 		{{ Form::hidden( 'reporte_instancia', $reporte ) }}
 		{{ Form::hidden( 'url_id',Input::get('id') ) }}
 
@@ -269,56 +271,98 @@
 					
 			});
 
-			$('#teso_medio_recaudo_id').on('change',function()
+			function get_comportamiento_medio_recaudo(callback)
 			{
+				if ( $('#teso_medio_recaudo_id').length == 0 ) { callback(''); return; }
+
+				var value = $('#teso_medio_recaudo_id').val();
+				if (value == null || value === '') { callback(''); return; }
+
+				var partes = value.split('-');
+				if (partes.length > 1) {
+					partes.shift();
+					callback(partes.join('-').trim());
+					return;
+				}
+
+				$.ajax({
+					url: "{{ url('tesoreria/get_comportamiento_medio_recaudo') }}/" + value,
+					type: 'get',
+					success: function(datos){
+						callback((datos.comportamiento || '').trim());
+					},
+					error: function(){
+						callback('');
+					}
+				});
+			}
+
+			function manejar_controles_medio_recaudo()
+			{
+				if ( $('#teso_medio_recaudo_id').length == 0 ) { return; }
+
 				$('#resultado_consulta').html('');
-				
-				$('#teso_caja_id').html('<option value=""></option>');
-				$('#teso_caja_id').removeAttr( 'required' );
 
-				$('#teso_cuenta_bancaria_id').html('<option value=""></option>');
-				$('#teso_cuenta_bancaria_id').removeAttr( 'required' );
+				var $grupoCaja = $('#teso_caja_id').closest('.form-group');
+				var $grupoCuenta = $('#teso_cuenta_bancaria_id').closest('.form-group');
 
-				if ( $(this).val() == '') { return false; }
+				$('#teso_caja_id').html('<option value=""></option>').removeAttr('required');
+				$('#teso_cuenta_bancaria_id').html('<option value=""></option>').removeAttr('required');
 
-	    		$('#div_cargando').show();
+				get_comportamiento_medio_recaudo(function(comportamiento){
+					if (comportamiento === '') {
+						$grupoCaja.show();
+						$grupoCuenta.show();
+						return;
+					}
 
-				// NOTA: El valor teso_medio_recaudo_id está Constante !!!!!!
-	    		if ( $(this).val() == 1 ) 
-	    		{
-	    			//Efectivo
-	    			var url = "{{ url('tesoreria/get_cajas_to_select') }}";
-	    			$.ajax({
-			        	url: url,
-			        	type: 'get',
-			        	success: function(datos){
+					$('#div_cargando').show();
 
-			        		$('#div_cargando').hide();
-		    				
-		    				$('#teso_caja_id').html( datos );
-		    				$('#teso_caja_id').attr( 'required', 'required' );
-		    				$('#teso_cuenta_bancaria_id').removeAttr( 'required' );
-							$('#teso_caja_id').focus();
-				        }
-				    });
-	    		}else{
-	    			var url = "{{ url('tesoreria/get_ctas_bancarias_to_select') }}";
-	    			$.ajax({
-			        	url: url,
-			        	type: 'get',
-			        	success: function(datos){
+					if (comportamiento === 'Efectivo')
+					{
+						$grupoCaja.show();
+						$grupoCuenta.hide();
 
-			        		$('#div_cargando').hide();
-		    				
-		    				$('#teso_cuenta_bancaria_id').html( datos );
-		    				$('#teso_cuenta_bancaria_id').attr( 'required', 'required' );
-		    				$('#teso_caja_id').removeAttr( 'required' );
-							$('#teso_cuenta_bancaria_id').focus();
-				        }
-				    });
-	    		}
-				
+						$.ajax({
+							url: "{{ url('tesoreria/get_cajas_to_select') }}",
+							type: 'get',
+							success: function(datos){
+								$('#div_cargando').hide();
+								$('#teso_caja_id').html(datos);
+								$('#teso_caja_id').focus();
+							}
+						});
+						return;
+					}
+
+					if (comportamiento === 'Tarjeta bancaria')
+					{
+						$grupoCaja.hide();
+						$grupoCuenta.show();
+
+						$.ajax({
+							url: "{{ url('tesoreria/get_ctas_bancarias_to_select') }}",
+							type: 'get',
+							success: function(datos){
+								$('#div_cargando').hide();
+								$('#teso_cuenta_bancaria_id').html(datos);
+								$('#teso_cuenta_bancaria_id').focus();
+							}
+						});
+						return;
+					}
+
+					$('#div_cargando').hide();
+					$grupoCaja.show();
+					$grupoCuenta.show();
+				});
+			}
+
+			$(document).on('change', '#teso_medio_recaudo_id', function() {
+				manejar_controles_medio_recaudo();
 			});
+
+			manejar_controles_medio_recaudo();
 
 			$('#nom_doc_encabezado_id').on('change',function()
 			{

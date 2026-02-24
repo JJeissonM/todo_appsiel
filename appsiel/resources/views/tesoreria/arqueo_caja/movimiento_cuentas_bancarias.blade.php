@@ -3,9 +3,7 @@
 
     $service = new ReportsServices();
 
-    $movimentos_cuentas_bancarias = $service->get_movimentos_cuentas_bancarias($registro->fecha);
-
-   //dd($movimentos_cuentas_bancarias);
+    $movimentos_cuentas_bancarias = $service->get_movimentos_cuentas_bancarias($registro->fecha, $registro->creado_por);
 ?>
 
 @if( $movimentos_cuentas_bancarias->count() > 0 )

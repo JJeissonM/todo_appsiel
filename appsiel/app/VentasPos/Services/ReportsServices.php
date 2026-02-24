@@ -442,16 +442,21 @@ class ReportsServices
     /**
      * 
      */
-    public function get_movimentos_cuentas_bancarias($fecha)
+    public function get_movimentos_cuentas_bancarias($fecha, $creado_por = null)
     {
-        return TesoMovimiento::where([
-                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
-                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
-                                    ['fecha', '=', $fecha]
-                                ])
-                                ->where('teso_caja_id', 0)
-                                ->orderBy('valor_movimiento','DESC')
-                                ->get()
-                                ->groupBy('teso_cuenta_bancaria_id');
+        $query = TesoMovimiento::where([
+                                ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
+                                ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
+                                ['fecha', '=', $fecha]
+                            ])
+                            ->where('teso_caja_id', 0);
+
+        if ( !is_null($creado_por) ) {
+            $query->where('creado_por', $creado_por);
+        }
+
+        return $query->orderBy('valor_movimiento','DESC')
+                    ->get()
+                    ->groupBy('teso_cuenta_bancaria_id');
     }
 }

@@ -403,8 +403,8 @@ class TesoMovimiento extends Model
                             'teso_movimientos.created_at',
                             'core_terceros.descripcion as tercero_descripcion'
                         )
-                        ->orderBy('teso_movimientos.fecha')
                         ->orderBy('teso_movimientos.created_at')
+                        ->orderBy('teso_movimientos.id')
                         ->get();
     }
 
@@ -422,7 +422,7 @@ class TesoMovimiento extends Model
     public static function get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id = 0 )
     {
         $query = TesoMovimiento::where( $array_wheres )
-                            ->where( 'fecha', '<', $fecha_desde );
+                            ->where( 'teso_movimientos.fecha', '<', $fecha_desde );
 
         if ( (int)$user_id != 0 )
         {

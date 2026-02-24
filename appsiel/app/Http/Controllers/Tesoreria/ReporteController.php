@@ -25,6 +25,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
 use App\Inventarios\InvProducto;
+use App\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -1081,18 +1082,80 @@ class ReporteController extends TesoreriaController
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $teso_caja_id = (int)$request->teso_caja_id;
-        $teso_cuenta_bancaria_id = (int)$request->teso_cuenta_bancaria_id;
+        $teso_caja_id = $this->get_numeric_id_from_select($request->teso_caja_id);
+        $teso_cuenta_bancaria_id = $this->get_numeric_id_from_select($request->teso_cuenta_bancaria_id);
         $teso_motivo_id = (int)$request->teso_motivo_id;
         $core_tercero_id = (int)$request->core_tercero_id;
         $user_id = (int)$request->user_id;
+
+        $teso_medio_recaudo_id = $request->teso_medio_recaudo_id;
+        $teso_medio_recaudo_comportamiento = '';
+        if ( !empty($teso_medio_recaudo_id) )
+        {
+            $vec = explode('-', $teso_medio_recaudo_id);
+            $teso_medio_recaudo_id = (int)$vec[0];
+            if ( count($vec) > 1 ) {
+                unset($vec[0]);
+                $teso_medio_recaudo_comportamiento = trim( implode('-', $vec) );
+            }
+            if ( $teso_medio_recaudo_comportamiento == '' && $teso_medio_recaudo_id != 0 ) {
+                $medio_recaudo = TesoMedioRecaudo::find($teso_medio_recaudo_id);
+                if ( !is_null($medio_recaudo) ) {
+                    $teso_medio_recaudo_comportamiento = (string)$medio_recaudo->comportamiento;
+                }
+            }
+        }else{
+            $teso_medio_recaudo_id = 0;
+        }
         
-        $array_wheres = $this->preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id,$teso_motivo_id, $core_tercero_id, null );
+        $array_wheres = $this->preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id, $teso_motivo_id, $core_tercero_id, null, $teso_medio_recaudo_id, $teso_medio_recaudo_comportamiento );
+        $array_wheres_saldo = $this->preparar_wheres_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $teso_medio_recaudo_id, $teso_medio_recaudo_comportamiento );
+
+        if ( (int)$request->debug_trace === 1 ) {
+            $qSaldo = TesoMovimiento::query()->where($array_wheres_saldo)->where('teso_movimientos.fecha', '<', $fecha_desde);
+            $qDetalle = TesoMovimiento::query()->where($array_wheres)->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
+
+            if ( (int)$user_id != 0 ) {
+                $userFiltro = User::where('empresa_id', Auth::user()->empresa_id)->find((int)$user_id);
+                if ( !is_null($userFiltro) ) {
+                    $qSaldo->where('teso_movimientos.creado_por', $userFiltro->email);
+                    $qDetalle->where('teso_movimientos.creado_por', $userFiltro->email);
+                }
+            } elseif ( TesoMovimiento::usuario_tiene_restriccion_movimientos() ) {
+                $qSaldo->where('teso_movimientos.creado_por', Auth::user()->email);
+                $qDetalle->where('teso_movimientos.creado_por', Auth::user()->email);
+            }
+
+            dd([
+                'fecha_desde' => $fecha_desde,
+                'fecha_hasta' => $fecha_hasta,
+                'teso_caja_id' => $teso_caja_id,
+                'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id,
+                'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
+                'teso_medio_recaudo_comportamiento' => $teso_medio_recaudo_comportamiento,
+                'teso_motivo_id' => $teso_motivo_id,
+                'core_tercero_id' => $core_tercero_id,
+                'user_id' => $user_id,
+                'usuario_logueado_email' => Auth::user()->email,
+                'usuario_tiene_restriccion_movimientos' => TesoMovimiento::usuario_tiene_restriccion_movimientos(),
+                'array_wheres_saldo' => $array_wheres_saldo,
+                'array_wheres_detalle' => $array_wheres,
+                'sql_saldo' => $qSaldo->toSql(),
+                'bindings_saldo' => $qSaldo->getBindings(),
+                'count_saldo_registros' => (clone $qSaldo)->count(),
+                'sum_saldo' => (clone $qSaldo)->sum('teso_movimientos.valor_movimiento'),
+                'cajas_en_saldo' => (clone $qSaldo)->select('teso_movimientos.teso_caja_id')->distinct()->pluck('teso_movimientos.teso_caja_id')->toArray(),
+                'cuentas_en_saldo' => (clone $qSaldo)->select('teso_movimientos.teso_cuenta_bancaria_id')->distinct()->pluck('teso_movimientos.teso_cuenta_bancaria_id')->toArray(),
+                'sql_detalle' => $qDetalle->toSql(),
+                'bindings_detalle' => $qDetalle->getBindings(),
+                'count_detalle_registros' => (clone $qDetalle)->count()
+            ]);
+        }
         
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
 
-        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id );
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres_saldo, 0 );
 
         $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id );
 
@@ -1105,36 +1168,99 @@ class ReporteController extends TesoreriaController
         return $vista;
     }
 
-    public function preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id,$teso_motivo_id, $core_tercero_id, $tipo_movimiento )
+    public function preparar_wheres( $teso_caja_id, $teso_cuenta_bancaria_id, $teso_motivo_id, $core_tercero_id, $tipo_movimiento, $teso_medio_recaudo_id = 0, $teso_medio_recaudo_comportamiento = '' )
     {
-        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
+        $array_wheres = [
+            ['teso_movimientos.id', '>', 0],
+            ['teso_movimientos.core_empresa_id', '=', Auth::user()->empresa_id]
+        ];
         
         if ( $tipo_movimiento != null ) 
         {
-            $array_wheres = array_merge($array_wheres, ['teso_motivos.movimiento' => $tipo_movimiento ]);
+            $array_wheres[] = ['teso_motivos.movimiento', '=', $tipo_movimiento];
         }
         
         if ( $teso_caja_id != 0 ) 
         {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
+            $array_wheres[] = ['teso_movimientos.teso_caja_id', '=', (int) $teso_caja_id];
         }
         
         if ( $teso_cuenta_bancaria_id != 0 ) 
         {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+            $array_wheres[] = ['teso_movimientos.teso_cuenta_bancaria_id', '=', (int) $teso_cuenta_bancaria_id];
         }
         
         if ( $teso_motivo_id != 0 ) 
         {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_motivo_id' => (int) $teso_motivo_id ]);
+            $array_wheres[] = ['teso_movimientos.teso_motivo_id', '=', (int) $teso_motivo_id];
         }
         
         if ( $core_tercero_id != 0 ) 
         {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.core_tercero_id' => (int) $core_tercero_id ]);
+            $array_wheres[] = ['teso_movimientos.core_tercero_id', '=', (int) $core_tercero_id];
+        }
+
+        if ( (int)$teso_medio_recaudo_id != 0 && (int)$teso_caja_id == 0 && (int)$teso_cuenta_bancaria_id == 0 )
+        {
+            $array_wheres[] = ['teso_movimientos.teso_medio_recaudo_id', '=', (int)$teso_medio_recaudo_id];
+
+            if ( $teso_medio_recaudo_comportamiento == 'Efectivo' ) {
+                $array_wheres[] = ['teso_movimientos.teso_caja_id', '>', 0];
+            }
+
+            if ( $teso_medio_recaudo_comportamiento == 'Tarjeta bancaria' ) {
+                $array_wheres[] = ['teso_movimientos.teso_cuenta_bancaria_id', '>', 0];
+            }
         }
 
         return $array_wheres;
+    }
+
+    public function preparar_wheres_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $teso_medio_recaudo_id = 0, $teso_medio_recaudo_comportamiento = '' )
+    {
+        $array_wheres = [
+            ['teso_movimientos.id', '>', 0],
+            ['teso_movimientos.core_empresa_id', '=', Auth::user()->empresa_id]
+        ];
+
+        if ( $teso_caja_id != 0 )
+        {
+            $array_wheres[] = ['teso_movimientos.teso_caja_id', '=', (int)$teso_caja_id];
+        }
+
+        if ( $teso_cuenta_bancaria_id != 0 )
+        {
+            $array_wheres[] = ['teso_movimientos.teso_cuenta_bancaria_id', '=', (int)$teso_cuenta_bancaria_id];
+        }
+
+        if ( (int)$teso_medio_recaudo_id != 0 && (int)$teso_caja_id == 0 && (int)$teso_cuenta_bancaria_id == 0 )
+        {
+            $array_wheres[] = ['teso_movimientos.teso_medio_recaudo_id', '=', (int)$teso_medio_recaudo_id];
+
+            if ( $teso_medio_recaudo_comportamiento == 'Efectivo' ) {
+                $array_wheres[] = ['teso_movimientos.teso_caja_id', '>', 0];
+            }
+
+            if ( $teso_medio_recaudo_comportamiento == 'Tarjeta bancaria' ) {
+                $array_wheres[] = ['teso_movimientos.teso_cuenta_bancaria_id', '>', 0];
+            }
+        }
+
+        return $array_wheres;
+    }
+
+    public function get_numeric_id_from_select( $value )
+    {
+        if ( is_null($value) || $value === '' ) {
+            return 0;
+        }
+
+        if ( is_numeric($value) ) {
+            return (int)$value;
+        }
+
+        $vec = explode('-', (string)$value);
+        return (int)$vec[0];
     }
 
     public function teso_resumen_movimiento_caja_bancos(Request $request)

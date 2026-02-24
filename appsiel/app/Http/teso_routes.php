@@ -33,6 +33,7 @@ Route::get('tesoreria/get_cuentas_bancarias/{empresa_id}','Tesoreria\TesoreriaCo
 
 Route::get('tesoreria/get_cajas_to_select','Tesoreria\TesoreriaController@get_cajas_to_select');
 Route::get('tesoreria/get_ctas_bancarias_to_select','Tesoreria\TesoreriaController@get_ctas_bancarias_to_select');
+Route::get('tesoreria/get_comportamiento_medio_recaudo/{teso_medio_recaudo_id}','Tesoreria\TesoreriaController@get_comportamiento_medio_recaudo');
 
 Route::get('teso_consultar_motivos', 'Tesoreria\TesoreriaController@consultar_motivos');
 Route::get('tesoreria/ajax_get_motivos/{teso_tipo_motivo}', 'Tesoreria\TesoreriaController@ajax_get_motivos');

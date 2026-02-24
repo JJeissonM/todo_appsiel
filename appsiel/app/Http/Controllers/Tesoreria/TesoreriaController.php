@@ -13,6 +13,7 @@ use App\Core\TipoDocApp;
 use App\Tesoreria\TesoPlanPagosEstudiante;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMotivo;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -214,6 +215,17 @@ class TesoreriaController extends TransaccionController
         }
 
         return $opciones;
+    }
+
+    public function get_comportamiento_medio_recaudo($teso_medio_recaudo_id)
+    {
+        $medio_recaudo = TesoMedioRecaudo::find((int)$teso_medio_recaudo_id);
+
+        if (is_null($medio_recaudo)) {
+            return response()->json(['comportamiento' => '']);
+        }
+
+        return response()->json(['comportamiento' => (string)$medio_recaudo->comportamiento]);
     }
 
     //   GET MOTIVOS DE TESORERIA
