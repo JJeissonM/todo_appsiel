@@ -381,7 +381,8 @@ class FacturaPosController extends TransaccionController
                 'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente->tercero->tipo_doc_identidad->abreviatura,
                 'descripcion_ciudad' => $doc_encabezado->cliente->tercero->ciudad->descripcion,
             ]),
-            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $doc_encabezado->fecha)
+            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $doc_encabezado->fecha),
+            'lbl_creado_por_fecha_y_hora' => explode('@', $doc_encabezado->creado_por)[0] . ' - ' . $doc_encabezado->created_at
         ];        
     }
 

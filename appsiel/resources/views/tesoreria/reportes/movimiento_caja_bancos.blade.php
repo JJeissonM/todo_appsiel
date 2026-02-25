@@ -24,7 +24,7 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ $fecha_desde }}</td>
+                <td>{{ date('Y-m-d', strtotime($fecha_desde . ' -1 day')) }}</td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>
                 <td> &nbsp; </td>

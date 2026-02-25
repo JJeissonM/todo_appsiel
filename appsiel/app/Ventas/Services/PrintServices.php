@@ -111,7 +111,7 @@ class PrintServices
                 'lbl_total_recibido' => $doc_encabezado->total_efectivo_recibido,
                 'lbl_total_cambio' => $doc_encabezado->valor_total_cambio,
                 'lbl_valor_total_bolsas' => $doc_encabezado->valor_total_bolsas,
-                'lbl_creado_por_fecha_y_hora' => $doc_encabezado->created_at,
+                'lbl_creado_por_fecha_y_hora' => 'Elaboró: ' . explode('@', $doc_encabezado->creado_por)[0] . ' - ' . $doc_encabezado->created_at,
                 'lineas_registros' => View::make( 'ventas.formatos_impresion.cuerpo_tabla_lineas_registros', compact('doc_registros') )->render(),
                 'obj_lineas_registros' => $doc_registros,
                 'lineas_impuesto' => View::make( 'ventas.formatos_impresion.tabla_lineas_impuestos', compact('doc_registros') )->render(),

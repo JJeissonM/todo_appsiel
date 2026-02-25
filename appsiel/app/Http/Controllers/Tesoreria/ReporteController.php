@@ -1088,6 +1088,11 @@ class ReporteController extends TesoreriaController
         $core_tercero_id = (int)$request->core_tercero_id;
         $user_id = (int)$request->user_id;
 
+        if ( $teso_caja_id != 0 && $teso_cuenta_bancaria_id != 0 )
+        {
+            return '<div class="alert alert-danger">Debe seleccionar solo una Caja o una Cuenta bancaria.</div>';
+        }
+
         $teso_medio_recaudo_id = $request->teso_medio_recaudo_id;
         $teso_medio_recaudo_comportamiento = '';
         if ( !empty($teso_medio_recaudo_id) )
@@ -1200,7 +1205,7 @@ class ReporteController extends TesoreriaController
             $array_wheres[] = ['teso_movimientos.core_tercero_id', '=', (int) $core_tercero_id];
         }
 
-        if ( (int)$teso_medio_recaudo_id != 0 && (int)$teso_caja_id == 0 && (int)$teso_cuenta_bancaria_id == 0 )
+        if ( (int)$teso_medio_recaudo_id != 0 )
         {
             $array_wheres[] = ['teso_movimientos.teso_medio_recaudo_id', '=', (int)$teso_medio_recaudo_id];
 

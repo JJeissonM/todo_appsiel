@@ -14,14 +14,45 @@ var productos,
 function set_catalogos(pdv_id) {
     $("#contenido_modal2").html("Cargando recursos... por favor espere.");
   
-    $("#contenido_modal2").attr("style", "text-align: center;color: #42A3DC;");
+    $("#contenido_modal2").attr(
+      "style",
+      "text-align:center;color:#fff;font-size:22px;font-weight:700;letter-spacing:.3px;text-shadow:0 2px 14px rgba(0,0,0,.95);"
+    );
+    $("#myModal2 .modal-body").attr(
+      "style",
+      "height:100%;display:flex;flex-direction:column;justify-content:center;"
+    );
     $("#myModal2 .modal-content").attr(
       "style",
-      "background: transparent;border: 0px solid;box-shadow: none;"
+      "background: rgba(0, 0, 0, 0.22);border: 1px solid rgba(255,255,255,.12);box-shadow: 0 12px 34px rgba(0,0,0,.35);height:100%;"
+    );
+    $("#myModal2 .modal-dialog").attr(
+      "style",
+      "width:90%;max-width:98vw;height:98vh;margin:1vh auto;"
+    );
+    $("#div_spin2 img").attr(
+      "style",
+      "filter: drop-shadow(0 0 16px rgba(255,255,255,.75)) drop-shadow(0 0 30px rgba(66,163,220,.7));"
     );
     $("#div_spin2").fadeIn();
-  
-    $("#myModal2").modal({ backdrop: "static" });
+    
+    $("#myModal2")
+      .data("catalogos_loading_lock", true)
+      .off("hide.bs.modal.catalogos_loading")
+      .on("hide.bs.modal.catalogos_loading", function (e) {
+        if ($(this).data("catalogos_loading_lock")) {
+          e.preventDefault();
+          return false;
+        }
+      })
+      .off("shown.bs.modal.catalogos_loading")
+      .on("shown.bs.modal.catalogos_loading", function () {
+        $(".modal-backdrop.in")
+          .last()
+          .css({ "background-color": "#000", opacity: "0.8" });
+      });
+
+    $("#myModal2").modal({ backdrop: "static", keyboard: false, show: true });
   
     $("#myModal2 .modal-title").text("");
   
@@ -53,10 +84,7 @@ function set_catalogos(pdv_id) {
         set_cantidades_ingresadas();
       }
   
-      $("#myModal2 .modal-content").removeAttr("style");
-      $("#contenido_modal2").removeAttr("style");
-      $("#myModal2 .close").show();
-      $("#myModal2").modal("hide");
+      finalizar_modal_carga_catalogos(true);
     })
     .fail(function( jqXHR, textStatus, errorThrown ) {
 
@@ -83,6 +111,30 @@ function set_catalogos(pdv_id) {
         }
       }
 
+      finalizar_modal_carga_catalogos();
 
     });
   }
+
+function finalizar_modal_carga_catalogos(enfocar_producto = false) {
+  if (enfocar_producto) {
+    $("#myModal2")
+      .off("hidden.bs.modal.catalogos_focus")
+      .one("hidden.bs.modal.catalogos_focus", function () {
+        var $campo_producto = $("#inv_producto_id");
+        $campo_producto.focus();
+        if ($campo_producto.is("input, textarea")) {
+          $campo_producto.select();
+        }
+      });
+  }
+
+  $("#myModal2").data("catalogos_loading_lock", false);
+  $("#myModal2 .modal-content").removeAttr("style");
+  $("#myModal2 .modal-dialog").removeAttr("style");
+  $("#myModal2 .modal-body").removeAttr("style");
+  $("#contenido_modal2").removeAttr("style");
+  $("#div_spin2 img").removeAttr("style");
+  $("#myModal2 .close").show();
+  $("#myModal2").modal("hide");
+}

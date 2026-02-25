@@ -104,7 +104,9 @@
                         @endcan                            
                     </td>
                     <td class="table-text">
-                        {!! formatear_medio_recaudo( $fila->lineas_registros_medios_recaudos ) !!}
+                        @if( $fila->forma_pago == 'contado' )
+                            {!! formatear_medio_recaudo( $fila->lineas_registros_medios_recaudos ) !!}
+                        @endif
                     </td>
                     <td class="table-text">
                         @if( $fila->estado == 'Anulado' )

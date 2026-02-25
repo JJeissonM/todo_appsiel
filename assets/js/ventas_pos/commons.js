@@ -1349,6 +1349,8 @@ $(document).ready(function () {
     
     llenar_tabla_productos_facturados();
 
+    $('#lbl_creado_por_fecha_y_hora').text('Elaboró: ' + doc_encabezado.lbl_creado_por_fecha_y_hora);
+
     enviar_impresion( doc_encabezado );
 
     $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');

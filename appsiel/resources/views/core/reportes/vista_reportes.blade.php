@@ -306,13 +306,38 @@
 				var $grupoCaja = $('#teso_caja_id').closest('.form-group');
 				var $grupoCuenta = $('#teso_cuenta_bancaria_id').closest('.form-group');
 
-				$('#teso_caja_id').html('<option value=""></option>').removeAttr('required');
-				$('#teso_cuenta_bancaria_id').html('<option value=""></option>').removeAttr('required');
+				$('#teso_medio_recaudo_id').removeAttr('required');
+				$('#teso_caja_id').removeAttr('required');
+				$('#teso_cuenta_bancaria_id').removeAttr('required');
+
+				function cargar_cajas() {
+					$.ajax({
+						url: "{{ url('tesoreria/get_cajas_to_select') }}",
+						type: 'get',
+						success: function(datos){
+							$('#teso_caja_id').html(datos);
+						}
+					});
+				}
+
+				function cargar_cuentas() {
+					$.ajax({
+						url: "{{ url('tesoreria/get_ctas_bancarias_to_select') }}",
+						type: 'get',
+						success: function(datos){
+							$('#teso_cuenta_bancaria_id').html(datos);
+						}
+					});
+				}
 
 				get_comportamiento_medio_recaudo(function(comportamiento){
 					if (comportamiento === '') {
 						$grupoCaja.show();
 						$grupoCuenta.show();
+						$('#teso_caja_id').prop('disabled', false);
+						$('#teso_cuenta_bancaria_id').prop('disabled', false);
+						cargar_cajas();
+						cargar_cuentas();
 						return;
 					}
 
@@ -322,6 +347,8 @@
 					{
 						$grupoCaja.show();
 						$grupoCuenta.hide();
+						$('#teso_cuenta_bancaria_id').val('').prop('disabled', true);
+						$('#teso_caja_id').prop('disabled', false);
 
 						$.ajax({
 							url: "{{ url('tesoreria/get_cajas_to_select') }}",
@@ -339,6 +366,8 @@
 					{
 						$grupoCaja.hide();
 						$grupoCuenta.show();
+						$('#teso_caja_id').val('').prop('disabled', true);
+						$('#teso_cuenta_bancaria_id').prop('disabled', false);
 
 						$.ajax({
 							url: "{{ url('tesoreria/get_ctas_bancarias_to_select') }}",
@@ -355,14 +384,49 @@
 					$('#div_cargando').hide();
 					$grupoCaja.show();
 					$grupoCuenta.show();
+					$('#teso_caja_id').prop('disabled', false);
+					$('#teso_cuenta_bancaria_id').prop('disabled', false);
 				});
+			}
+
+			function validar_exclusividad_caja_cuenta()
+			{
+				if ( $('#teso_caja_id').length == 0 || $('#teso_cuenta_bancaria_id').length == 0 ) {
+					return;
+				}
+
+				if ( !$('#teso_caja_id').closest('.form-group').is(':visible') || !$('#teso_cuenta_bancaria_id').closest('.form-group').is(':visible') ) {
+					return;
+				}
+
+				var caja = $('#teso_caja_id').val() || '';
+				var cuenta = $('#teso_cuenta_bancaria_id').val() || '';
+
+				if ( caja !== '' ) {
+					$('#teso_cuenta_bancaria_id').val('').prop('disabled', true);
+					return;
+				}
+
+				if ( cuenta !== '' ) {
+					$('#teso_caja_id').val('').prop('disabled', true);
+					return;
+				}
+
+				$('#teso_caja_id').prop('disabled', false);
+				$('#teso_cuenta_bancaria_id').prop('disabled', false);
 			}
 
 			$(document).on('change', '#teso_medio_recaudo_id', function() {
 				manejar_controles_medio_recaudo();
+				setTimeout(function(){ validar_exclusividad_caja_cuenta(); }, 50);
+			});
+
+			$(document).on('change', '#teso_caja_id, #teso_cuenta_bancaria_id', function() {
+				validar_exclusividad_caja_cuenta();
 			});
 
 			manejar_controles_medio_recaudo();
+			setTimeout(function(){ validar_exclusividad_caja_cuenta(); }, 100);
 
 			$('#nom_doc_encabezado_id').on('change',function()
 			{

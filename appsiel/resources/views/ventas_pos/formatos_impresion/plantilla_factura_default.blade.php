@@ -256,7 +256,7 @@
             </div>
         @endif
         <br>
-        <div id="lbl_creado_por_fecha_y_hora"></div>{{$datos_factura->lbl_creado_por_fecha_y_hora}}
+        <div id="lbl_creado_por_fecha_y_hora" style="text-align: right;"></div>{{$datos_factura->lbl_creado_por_fecha_y_hora}}
     </div>
         
     
