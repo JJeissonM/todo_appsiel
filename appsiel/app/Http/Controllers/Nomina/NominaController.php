@@ -310,7 +310,8 @@ class NominaController extends TransaccionController
         $totales_por_empleado = $totales['totales_por_empleado'];
         $totales_por_concepto = $totales['totales_por_concepto'];
 
-        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto' ) )->render();
+        $es_impresion = ($vista === 'imprimir');
+        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto', 'es_impresion' ) )->render();
 
         // DATOS ADICIONALES
         $tipo_doc_app = TipoDocApp::find($this->encabezado_doc->core_tipo_doc_app_id);
@@ -704,3 +705,7 @@ class NominaController extends TransaccionController
     }
     
 }
+
+
+
+

@@ -1,4 +1,4 @@
-<style> 
+﻿<style> 
     .celda_firma { 
         width: 100px;
     }
@@ -29,16 +29,17 @@
 
     .sticky-col-1 {
         left: 0;
-        width: 60px;
-        min-width: 60px;
-        max-width: 60px;
+        width: 20px;
+        min-width: 20px;
+        max-width: 20px;
+        text-align: center;
     }
 
     .sticky-col-2 {
-        left: 60px;
-        width: 180px;
-        min-width: 180px;
-        max-width: 180px;
+        left: 20px;
+        width: 110px;
+        min-width: 110px;
+        max-width: 110px;
     }
 
 .table.sticky th.sticky-col-1,
@@ -50,7 +51,7 @@
 .tabla_registros {
     width: max-content;
     min-width: 100%;
-    border-collapse: separate;
+    border-collapse: collapse;
     border-spacing: 0;
 }
 
@@ -58,13 +59,25 @@
     position: relative;
     overflow-x: auto;
 }
+@if( isset($es_impresion) && $es_impresion )
+    .tabla_registros th, .tabla_registros td {
+        font-size: 10px !important;
+        padding: 4px 2px !important;
+    }
+
+    .texto_moneda td {
+        font-size: 11px !important;
+    }
+@endif
 </style>
 <br>
+@if( !isset($es_impresion) || !$es_impresion )
 <div class="row" style="margin-bottom:10px;">
     <div class="col-md-4">
         <input type="text" id="buscar_registros_liquidacion" class="form-control" placeholder="Buscar...">
     </div>
 </div>
+@endif
 <div class="table-responsive">
     <table id="tabla_registros_documento" data-conceptos-count="{{ count($conceptos) }}" class="tabla_registros table table-bordered table-striped sticky contenido" style="margin-top: 1px; width: 100%;">
         <thead>
@@ -180,3 +193,10 @@
         </tbody>
     </table>
 </div>
+
+
+
+
+
+
+
