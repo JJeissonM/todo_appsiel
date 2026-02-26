@@ -75,16 +75,6 @@
 
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
-
-	@can('vtas_bloquear_vista_index')
-		
-	@else
-	
-		@if( !$user->hasRole('SupervisorCajas') )
-			<!-- { !! $select_crear !!} -->
-		@endif
-
-	@endcan
 	<hr>
 
 	@include('layouts.mensajes')
