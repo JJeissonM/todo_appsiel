@@ -68,6 +68,7 @@ class GestionTurnosController extends TransaccionController
         }
 
         $turnos_ingresados = RegistroTurno::where('fecha', '=', $fecha)->get();
+        $tipos_turno_info = TipoTurno::select('id', 'descripcion', 'valor')->get()->keyBy('id');
 
         $action = 'create';
         if ( $turnos_ingresados->count() > 0) {
@@ -103,6 +104,24 @@ class GestionTurnosController extends TransaccionController
             $empleado->estado_turno = $turnos_ingresados->where('contrato_id', $empleado->id)->first()->estado ?? null;
 
             $empleado->tipos_turno_options = ['' => ''] + ($turnos_por_cargo[$empleado->cargo_id] ?? $opciones_generales);
+
+            $empleado->turno_fuera_de_opciones = false;
+            $empleado->turno_asignado_descripcion = '';
+            $empleado->turno_asignado_valor = 0;
+
+            if (!empty($empleado->tipo_turno_id)) {
+                $esta_en_opciones = isset($empleado->tipos_turno_options[$empleado->tipo_turno_id]) || isset($empleado->tipos_turno_options[(string)$empleado->tipo_turno_id]);
+
+                if (!$esta_en_opciones) {
+                    $empleado->turno_fuera_de_opciones = true;
+                    $turno_asignado = $tipos_turno_info->get((int)$empleado->tipo_turno_id);
+
+                    if ($turno_asignado) {
+                        $empleado->turno_asignado_descripcion = $turno_asignado->descripcion;
+                        $empleado->turno_asignado_valor = $turno_asignado->valor;
+                    }
+                }
+            }
         }
 
         $miga_pan = [

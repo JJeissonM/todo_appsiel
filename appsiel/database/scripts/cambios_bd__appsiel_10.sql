@@ -342,7 +342,7 @@ ALTER TABLE `nom_turnos_tipos` ADD `checkin_time_1` TIME NULL AFTER `descripcion
 
 ALTER TABLE `nom_contratos` ADD FOREIGN KEY (`turno_default_id`) REFERENCES nom_turnos_tipos(id);
 
-INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (673, '17', '0', 'nomina.turnos.importar', 'Importar Turnos', 'nomina/turnos/importar', '217', '8', '1', '', '2025-11-30 00:00:00', NULL);
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (673, '17', '337', 'nomina.turnos.importar', 'Importar Turnos', 'nomina/turnos/importar', '217', '8', '1', '', '2025-11-30 00:00:00', NULL);
 INSERT INTO `role_has_permissions` (`orden`, `permission_id`, `role_id`) VALUES ('0', '673', '1');
 INSERT INTO `role_has_permissions` (`orden`, `permission_id`, `role_id`) VALUES ('0', '673', '3');
 
@@ -495,3 +495,5 @@ ALTER TABLE `contab_cuenta_grupos` CHANGE `codigo` `codigo` VARCHAR(10) CHARACTE
 
 DELETE FROM `sys_campos` WHERE `sys_campos`.`id` = 590;
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('590', 'Tiempo a liquidar', 'select', 'tiempo_a_liquidar', '{\"\":\"\",\"110\":\"Una Quincena (110 horas)\",\"220\":\"Un mes (220 horas)\",\"9999\":\"Órdenes de trabajo\"}', 'null', '', '', '1', '1', '0', '2019-12-20 00:36:57', '2025-01-21 18:08:27');
+
+UPDATE `permissions` SET `modelo_id` = '337' WHERE `name` = 'nomina.turnos.importar';

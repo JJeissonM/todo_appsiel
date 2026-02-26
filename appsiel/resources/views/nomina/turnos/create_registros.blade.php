@@ -103,8 +103,17 @@ $fechaSiguiente = \Carbon\Carbon::parse($fecha)->addDay()->format('Y-m-d');
 										'form-control', 'style' => 'font-size:0.9em; width: 110px;' ] ) }}
 									</td>
                                     <td>
-                                        {{ Form::select('tipo_turno_id[]', $empleado->tipos_turno_options ?? $tipos_turnos, $empleado->tipo_turno_id, [
-                                        'class' => 'combobox' ] ) }}
+                                        {{ Form::select('tipo_turno_id[]', $empleado->tipos_turno_options ?? $tipos_turnos, $empleado->tipo_turno_id, [] ) }}
+                                        @if($empleado->turno_fuera_de_opciones ?? false)
+                                            @php
+                                                $descripcionTurnoAsignado = $empleado->turno_asignado_descripcion ?: 'Sin descripción';
+                                                $valorTurnoAsignado = '$' . number_format((float)$empleado->turno_asignado_valor, 0, ',', '.');
+                                                $tooltipTurno = 'El turno asignado no corresponde a uno del listado de opciones. Turno asignado: ' . $descripcionTurnoAsignado . '. Valor: ' . $valorTurnoAsignado . '.';
+                                            @endphp
+                                            <span class="text-warning" data-toggle="tooltip" data-placement="top" title="{{ $tooltipTurno }}" style="margin-left:6px; cursor: help;">
+                                                <i class="fa fa-exclamation-triangle"></i>
+                                            </span>
+                                        @endif
                                     </td>
 
 									<td>
@@ -172,6 +181,8 @@ $fechaSiguiente = \Carbon\Carbon::parse($fecha)->addDay()->format('Y-m-d');
 					[0, 'asc']
 				]
 			});
+
+            $('[data-toggle="tooltip"]').tooltip();
 
 		});
 </script>

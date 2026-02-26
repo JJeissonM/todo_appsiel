@@ -236,6 +236,10 @@ class RegistroTurnoImportController extends Controller
                 $mejorTurno = TipoTurno::find( (int)config('nomina.turno_default_id') );
             }
 
+            if (is_null($mejorTurno)) {
+                continue;
+            }
+
             if ( $mejorTurno->valor != 0) {
                 RegistroTurno::create([
                     'contrato_id'     => $contratoId,
