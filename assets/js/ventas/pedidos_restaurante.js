@@ -837,12 +837,21 @@ $(document).ready(function () {
 
             enviar_impresion( doc_encabezado )
 
-        }).fail(function () {
+        }).fail(function (xhr) {
             restablecer_btn_guardar_factura();
+            var mensaje = 'No se pudo guardar el pedido. Verifique la conexión e intente nuevamente.';
+            if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
+                mensaje = xhr.responseJSON.message;
+            }
+
+            if (xhr && xhr.status === 409 && typeof activar_mesas_disponibles_mesero === 'function') {
+                activar_mesas_disponibles_mesero();
+            }
+
             Swal.fire({
                 icon: 'error',
-                title: 'Error de conexión',
-                text: 'No se pudo guardar el pedido. Verifique la conexión e intente nuevamente.'
+                title: 'Error al guardar',
+                text: mensaje
             });
         });
 
@@ -1038,3 +1047,4 @@ $(document).ready(function () {
     });
 
 });
+

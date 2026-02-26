@@ -1144,196 +1144,203 @@ $(document).ready(function () {
   $("#btn_guardar_factura").click(function (event) {
 
     event.preventDefault();
-
-    if (hay_productos == 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Alerta!",
-        text: "No ha ingresado productos.",
-      });
-      reset_linea_ingreso_default();
-      reset_efectivo_recibido();
-      $("#btn_nuevo").hide();
-      return false;
-    }
-
-    if ( !validar_producto_con_contorno() ) {
-      Swal.fire({
-          icon: 'warning',
-          title: 'Advertencia!',
-          text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
-      });
-      
-      return false;
-    }
-
-    if ($("#manejar_propinas").val() == 1) {
-      if ($("#valor_propina").val() != 0) {
-        if (!permitir_guardar_factura_con_propina()) {
-          return false;
-        }
-      }
-    }
-
-    if ($("#manejar_datafono").val() == 1) {
-      if ($("#valor_datafono").val() != 0) {
-        if (!permitir_guardar_factura_con_datafono()) {
-          return false;
-        }
-      }
-    }
     
     // Desactivar el click del botón
     $("#btn_guardar_factura").html('<i class="fa fa-spinner fa-spin"></i> Guardando');
     $("#btn_guardar_factura").attr("disabled", "disabled");
     $("#btn_guardar_factura").attr("id", "btn_guardando");
-    
+    function reset_boton_guardar_factura() {
+      $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+      $("#btn_guardando").attr("id", "btn_guardar_factura");
+      $("#btn_guardar_factura").removeAttr("disabled");
+    }
 
-        $("#linea_ingreso_default").remove();
-
-        var table = $("#ingreso_registros").tableToJSON();
-        table = add_impuesto_id_to_table_lines(table);
-        
-        json_table2 = get_json_registros_medios_recaudo();
-
-        if ($("#manejar_propinas").val() == 1) {
-          // Si hay propina, siempre va a venir una sola linea de medio de pago
-          json_table2 = separar_json_linea_medios_recaudo(json_table2);
-        }
-
-        if ($("#manejar_datafono").val() == 1) {
-          // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-          json_table2 = separar_json_linea_medios_recaudo(json_table2);
-        }
-
-        // Se asigna el objeto JSON a un campo oculto del formulario
-        $("#lineas_registros").val(JSON.stringify(table));
-        $("#lineas_registros_medios_recaudos").val(json_table2);
-
-        // Nota: No se puede enviar controles disabled
-
-        var data = $("#form_create").serialize();
-
-        if ($("#manejar_propinas").val() == 1) {
-          data += "&valor_propina=" + $("#valor_propina").val();
-        }
-
-        if ($("#manejar_datafono").val() == 1) {
-          data += "&valor_datafono=" + $("#valor_datafono").val();
-        }
-
-        var tiempo_espera_guardar_factura = 7000; // 7 segundos
-        if ( $('#tiempo_espera_guardar_factura').val() != 0 ) {
-          tiempo_espera_guardar_factura = parseInt( $('#tiempo_espera_guardar_factura').val() ) * 1000;
-        }
-
-        var url = $("#form_create").attr("action");
-      
-       //Comprobamos si el semaforo esta en verde (1)
-       if ( !locked ){
-        //No esta bloqueado aun, bloqueamos, preparamos y enviamos la peticion
-         $.ajax({
-            url: url,
-            data: data,
-            type: 'POST',
-            async: false,
-            cache: false,
-            timeout: tiempo_espera_guardar_factura,
-            beforeSend: function(){ 
-              locked = true;
-            },
-            success: function( doc_encabezado ){
-                finalizar_almacenamiento_factura( doc_encabezado );
-            },
-            error: function( xhr ){
-                $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-                $("#btn_guardando").attr("id", "btn_guardar_factura");
-                $("#btn_guardar_factura").removeAttr("disabled");
-
-                var status_text = xhr.statusText; // Respuesta siempre
-                var response_text = xhr.responseText; // Solo cuando hay respuesta del servidor
-                var server_error_code = xhr.status; // Código de error HTTP. 0 cuando no hay respuesta del servidor
-
-                let position = status_text.search("NetworkError");
-                if ( position != -1 ) {
-                  var error_label = 'Error ' + server_error_code + '. Pérdida de conexión de INTERNET.';
-                  Swal.fire({
-                    icon: 'error',
-                    title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                    text: error_label
-                  }); 
-                  
-                  puede_continuar = false;
-
-                  return false;
-                }
-
-                // Si hay respuesta del servidor, pero hay un error de Laravel
-                position = response_text.search("Duplicate entry");
-                
-                if ( position != -1 ) { // -1 la Cadena no existe
-                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
-                  Swal.fire({
-                    icon: 'warning',
-                    title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
-                    text: error_label 
-                  });
-                  
-                  puede_continuar = false;
-
-                  return false;
-                }
-
-                // Cuando se cerró la sesión del usuario
-                position = response_text.search("Trying to get property &#039;email&#039; of non-object");
-                
-                if ( position != -1 ) { // -1 la Cadena no existe
-                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Se cerró la sesión inesperadamente.';
-                  Swal.fire({
-                    icon: 'warning',
-                    title: '4. FACTURA NO GUARDADA. ¡NO CIERRES! Inicia sesión en otra pestaña y continúa con la facturación.',
-                    text: error_label 
-                  });
-                  
-                  puede_continuar = false;
-
-                  return false;
-                }
-                
-                if ( server_error_code == 500 ) { // Error Interno del Servidor
-                  var error_label = 'Error ' + server_error_code + '. Validación del servidor. Por favor, comuníquese con soporte.';
-                  Swal.fire({
-                    icon: 'error',
-                    title: '2. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
-                    text: error_label 
-                  });
-                  
-                  puede_continuar = false;
-
-                  return false;
-                }
-                
-                if ( server_error_code != 500 ) { // Error Interno del Servidor
-                  var error_label = 'Cód. de respuesta ' + server_error_code + '. La solicitud no pudo ser procesada.';
-                  Swal.fire({
-                    icon: 'error',
-                    title: '3. FACTURA NO GUARDADA. POR FAVOR, ACTUALIZAR LA PÁGINA E INTENTAR NUEVAMENTE.',
-                    text: error_label 
-                  });
-                  
-                  puede_continuar = false;
-
-                  return false;
-                }
-              },
-            complete: function(){ 
-              locked = false;  
-            }
-         });
-      }else{
-         //Bloqueado!!!
-         console.log( 'Bloqueado!!!' );
+    // Cede un ciclo al navegador para que pinte el spinner antes del trabajo pesado.
+    setTimeout(function () {
+      if (hay_productos == 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Alerta!",
+          text: "No ha ingresado productos.",
+        });
+        reset_linea_ingreso_default();
+        reset_efectivo_recibido();
+        $("#btn_nuevo").hide();
+        reset_boton_guardar_factura();
+        return false;
       }
+
+      if (!validar_producto_con_contorno()) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Advertencia!',
+            text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
+        });
+        reset_boton_guardar_factura();
+        return false;
+      }
+
+      if ($("#manejar_propinas").val() == 1) {
+        if ($("#valor_propina").val() != 0) {
+          if (!permitir_guardar_factura_con_propina()) {
+            reset_boton_guardar_factura();
+            return false;
+          }
+        }
+      }
+
+      if ($("#manejar_datafono").val() == 1) {
+        if ($("#valor_datafono").val() != 0) {
+          if (!permitir_guardar_factura_con_datafono()) {
+            reset_boton_guardar_factura();
+            return false;
+          }
+        }
+      }
+
+      $("#linea_ingreso_default").remove();
+
+      var table = $("#ingreso_registros").tableToJSON();
+      table = add_impuesto_id_to_table_lines(table);
+      
+      json_table2 = get_json_registros_medios_recaudo();
+
+      if ($("#manejar_propinas").val() == 1) {
+        // Si hay propina, siempre va a venir una sola linea de medio de pago
+        json_table2 = separar_json_linea_medios_recaudo(json_table2);
+      }
+
+      if ($("#manejar_datafono").val() == 1) {
+        // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
+        json_table2 = separar_json_linea_medios_recaudo(json_table2);
+      }
+
+      // Se asigna el objeto JSON a un campo oculto del formulario
+      $("#lineas_registros").val(JSON.stringify(table));
+      $("#lineas_registros_medios_recaudos").val(json_table2);
+
+      // Nota: No se puede enviar controles disabled
+      var data = $("#form_create").serialize();
+
+      if ($("#manejar_propinas").val() == 1) {
+        data += "&valor_propina=" + $("#valor_propina").val();
+      }
+
+      if ($("#manejar_datafono").val() == 1) {
+        data += "&valor_datafono=" + $("#valor_datafono").val();
+      }
+
+      var tiempo_espera_guardar_factura = 7000; // 7 segundos
+      if ($('#tiempo_espera_guardar_factura').val() != 0) {
+        tiempo_espera_guardar_factura = parseInt($('#tiempo_espera_guardar_factura').val()) * 1000;
+      }
+
+      var url = $("#form_create").attr("action");
+    
+      // Comprobamos si el semaforo esta en verde (1)
+      if (!locked) {
+        // No esta bloqueado aun, bloqueamos, preparamos y enviamos la peticion
+        $.ajax({
+          url: url,
+          data: data,
+          type: 'POST',
+          async: true,
+          cache: false,
+          timeout: tiempo_espera_guardar_factura,
+          beforeSend: function(){ 
+            locked = true;
+          },
+          success: function(doc_encabezado){
+            finalizar_almacenamiento_factura(doc_encabezado);
+          },
+          error: function(xhr){
+            reset_boton_guardar_factura();
+
+            var status_text = xhr.statusText; // Respuesta siempre
+            var response_text = xhr.responseText; // Solo cuando hay respuesta del servidor
+            var server_error_code = xhr.status; // Código de error HTTP. 0 cuando no hay respuesta del servidor
+
+            let position = status_text.search("NetworkError");
+            if (position != -1) {
+              var error_label = 'Error ' + server_error_code + '. Pérdida de conexión de INTERNET.';
+              Swal.fire({
+                icon: 'error',
+                title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                text: error_label
+              }); 
+              
+              puede_continuar = false;
+
+              return false;
+            }
+
+            // Si hay respuesta del servidor, pero hay un error de Laravel
+            position = response_text.search("Duplicate entry");
+            
+            if (position != -1) { // -1 la Cadena no existe
+              var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
+              Swal.fire({
+                icon: 'warning',
+                title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
+                text: error_label 
+              });
+              
+              puede_continuar = false;
+
+              return false;
+            }
+
+            // Cuando se cerró la sesión del usuario
+            position = response_text.search("Trying to get property &#039;email&#039; of non-object");
+            
+            if (position != -1) { // -1 la Cadena no existe
+              var error_label = 'Error ' + server_error_code + '. Validación del servidor. Se cerró la sesión inesperadamente.';
+              Swal.fire({
+                icon: 'warning',
+                title: '4. FACTURA NO GUARDADA. ¡NO CIERRES! Inicia sesión en otra pestaña y continúa con la facturación.',
+                text: error_label 
+              });
+              
+              puede_continuar = false;
+
+              return false;
+            }
+            
+            if (server_error_code == 500) { // Error Interno del Servidor
+              var error_label = 'Error ' + server_error_code + '. Validación del servidor. Por favor, comuníquese con soporte.';
+              Swal.fire({
+                icon: 'error',
+                title: '2. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
+                text: error_label 
+              });
+              
+              puede_continuar = false;
+
+              return false;
+            }
+            
+            if (server_error_code != 500) { // Error Interno del Servidor
+              var error_label = 'Cód. de respuesta ' + server_error_code + '. La solicitud no pudo ser procesada.';
+              Swal.fire({
+                icon: 'error',
+                title: '3. FACTURA NO GUARDADA. POR FAVOR, ACTUALIZAR LA PÁGINA E INTENTAR NUEVAMENTE.',
+                text: error_label 
+              });
+              
+              puede_continuar = false;
+
+              return false;
+            }
+          },
+          complete: function(){ 
+            locked = false;  
+          }
+        });
+      } else {
+        // Bloqueado!!!
+        console.log('Bloqueado!!!');
+      }
+    }, 0);
   });
 
   function finalizar_almacenamiento_factura( doc_encabezado )

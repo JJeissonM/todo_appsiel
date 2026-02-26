@@ -1,4 +1,5 @@
 var hay_error_password = true;
+var mesas_disponibles_loading_count = 0;
 
 function reset_datos_mesa()
 {
@@ -63,6 +64,7 @@ function validate_password()
 function activar_mesas_disponibles_mesero()
 {
     var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_disponibles_mesero" + "/" + $('#vendedor_id').val();
+    iniciar_carga_mesas_disponibles();
 
     $.get(url, function (disponibles) {
         var arr_disponibles = [];
@@ -77,11 +79,65 @@ function activar_mesas_disponibles_mesero()
                 $(this).removeAttr('disabled');
             }			
         });
+        finalizar_carga_mesas_disponibles(false);
+    }).fail(function () {
+        finalizar_carga_mesas_disponibles(true);
+    });
+}
+
+function iniciar_carga_mesas_disponibles()
+{
+    mesas_disponibles_loading_count++;
+    if (mesas_disponibles_loading_count > 1) {
+        return;
+    }
+
+    $('.btn_mesa').each(function () {
+        var btn = $(this);
+        btn.attr('data-mesa_btn_html', btn.html());
+        btn.attr('data-mesa_btn_disabled_prev', btn.is(':disabled') ? '1' : '0');
+        btn.attr('disabled','disabled');
+        btn.html('<i class="fa fa-spinner fa-spin"></i>');
+    });
+}
+
+function finalizar_carga_mesas_disponibles(restaurar_estado_anterior)
+{
+    mesas_disponibles_loading_count--;
+    if (mesas_disponibles_loading_count > 0) {
+        return;
+    }
+    if (mesas_disponibles_loading_count < 0) {
+        mesas_disponibles_loading_count = 0;
+    }
+
+    $('.btn_mesa').each(function () {
+        var btn = $(this);
+        var html_original = btn.attr('data-mesa_btn_html');
+        if (html_original !== undefined) {
+            btn.html(html_original);
+        }
+
+        if (restaurar_estado_anterior) {
+            if (btn.attr('data-mesa_btn_disabled_prev') === '1') {
+                btn.attr('disabled','disabled');
+            } else {
+                btn.removeAttr('disabled');
+            }
+        }
+
+        btn.removeAttr('data-mesa_btn_html');
+        btn.removeAttr('data-mesa_btn_disabled_prev');
     });
 }
 
 function aplicar_vendedor_por_defecto()
 {
+    if ($('#modo_mesero_logueado').val() !== '1') {
+        $('#lbl_vendedor_mesero').text('');
+        return;
+    }
+
     var vendedorId = $('#vendedor_default_id').val() || $('#vendedor_id').val();
     if (vendedorId === undefined || vendedorId === null || vendedorId === '') {
         $('#lbl_vendedor_mesero').text('');

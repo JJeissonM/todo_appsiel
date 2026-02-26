@@ -19,6 +19,7 @@
                             {{ $vendedor ? $vendedor->tercero->descripcion : 'Mesero no asociado' }}
                         </div>
                     @else
+                        <input type="hidden" id="modo_mesero_logueado" value="0">
                         <div class="btn-group componente_vendedores">
                             @foreach( $vendedores AS $un_vendedor )
                                 <?php 

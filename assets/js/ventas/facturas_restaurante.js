@@ -362,8 +362,14 @@ function deshabilitar_campos_encabezado2() {
 function bloquear_mesas_pedidos_otros_meseros()
 {
 	var url = url_raiz + "/" + "vtas_pedidos_restaurante_mesas_disponibles_mesero" + "/" + $('#vendedor_id').val();
+	var consulta_exitosa = false;
+
+	if (typeof iniciar_carga_mesas_disponibles === 'function') {
+		iniciar_carga_mesas_disponibles();
+	}
 
 	$.get(url, function (disponibles) {
+		consulta_exitosa = true;
 		var arr_disponibles = [];
 		var i = 0;
 		disponibles.forEach(disponible => {
@@ -374,8 +380,14 @@ function bloquear_mesas_pedidos_otros_meseros()
 		$('.btn_mesa').each(function () {
 			if ( !arr_disponibles.includes( parseInt($(this).attr('data-mesa_id') ) ) ) {
 				$(this).attr('disabled','disabled');
+			}else{
+				$(this).removeAttr('disabled');
 			}			
 		});
+	}).always(function () {
+		if (typeof finalizar_carga_mesas_disponibles === 'function') {
+			finalizar_carga_mesas_disponibles(!consulta_exitosa);
+		}
 	});
 }
 

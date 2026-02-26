@@ -35,6 +35,7 @@ use App\VentasPos\Services\RecipeServices;
 use App\Ventas\ResolucionFacturacion;
 use App\Ventas\Services\PrintServices;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -277,27 +278,60 @@ class PedidoRestauranteController extends TransaccionController
     public function store(Request $request)
     {
         $lineas_registros = json_decode($request->lineas_registros);
+        $cliente_id = (int)$request->cliente_id;
+        $vendedor_id = (int)$request->vendedor_id;
+        $cliente_default_id = (int)config('pedidos_restaurante.cliente_default_id');
 
-        // Crear documento de Ventas
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-        
-        if ((int)config('inventarios.manejar_platillos_con_contorno')) {
-            $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+        $db = DB::connection();
+        $lock_key = 'pedido_restaurante_mesa_' . $cliente_id;
+        $lock_row = $db->selectOne('SELECT GET_LOCK(?, 10) AS lock_acquired', [$lock_key]);
+
+        if ( is_null($lock_row) || (int)$lock_row->lock_acquired !== 1 ) {
+            return response()->json([
+                'message' => 'No fue posible validar la disponibilidad de la mesa. Intente nuevamente.'
+            ], 423);
         }
 
-        if ($doc_encabezado->core_tercero_id == 0)
-        {
-            $pdv = Pdv::find($doc_encabezado->pdv_id);
-            $doc_encabezado->core_tercero_id = $pdv->cliente->tercero->id;
-            $doc_encabezado->save();
+        try {
+            if ( $cliente_id !== $cliente_default_id ) {
+                $mesa_ocupada_por_otro_mesero = VtasPedido::where([
+                        ['estado','=','Pendiente'],
+                        ['core_tipo_transaccion_id','=',60],
+                        ['cliente_id','=',$cliente_id]
+                    ])
+                    ->where('vendedor_id', '<>', $vendedor_id)
+                    ->exists();
+
+                if ( $mesa_ocupada_por_otro_mesero ) {
+                    return response()->json([
+                        'message' => 'La mesa ya tiene pedidos pendientes de otro mesero.'
+                    ], 409);
+                }
+            }
+
+            // Crear documento de Ventas
+            $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+            
+            if ((int)config('inventarios.manejar_platillos_con_contorno')) {
+                $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+            }
+
+            if ($doc_encabezado->core_tercero_id == 0)
+            {
+                $pdv = Pdv::find($doc_encabezado->pdv_id);
+                $doc_encabezado->core_tercero_id = $pdv->cliente->tercero->id;
+                $doc_encabezado->save();
+            }
+
+            // Crear Registros del documento de ventas
+            $request['creado_por'] = Auth::user()->email;
+            self::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+
+            //return $doc_encabezado->consecutivo;
+            return response()->json( $this->build_json_pedido($doc_encabezado), 200);
+        } finally {
+            $db->selectOne('SELECT RELEASE_LOCK(?) AS lock_released', [$lock_key]);
         }
-
-        // Crear Registros del documento de ventas
-        $request['creado_por'] = Auth::user()->email;
-        self::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
-
-        //return $doc_encabezado->consecutivo;
-        return response()->json( $this->build_json_pedido($doc_encabezado), 200);
     }
 
     public function edit($id)
