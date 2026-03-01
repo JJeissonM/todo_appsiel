@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             $this->call(SiesaDatosCompletosProveedoresSeeder::class);
         }
         $this->call(NominaActualizacionSueldosSeeder::class);
+        $this->call(ProveedorCuentasBancariasSeeder::class);
+        $this->call(TesoreriaChequerasPermissionSeeder::class);
+        $this->call(ComprasRetencionesLineaSeeder::class);
     }
 }
 

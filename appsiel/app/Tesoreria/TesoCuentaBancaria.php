@@ -15,12 +15,19 @@ class TesoCuentaBancaria extends Model
     protected $table = 'teso_cuentas_bancarias';
 
     protected $fillable = ['core_empresa_id','entidad_financiera_id','tipo_cuenta','descripcion','por_defecto','estado','contab_cuenta_id'];
+    
+    public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit","show":"teso_cuentas_bancarias/id_fila","eliminar":"web_eliminar/id_fila"}';
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Entidad financiera', 'Tipo cuenta', 'Número', 'Cta. contable', 'Por defecto', 'Estado'];
 
     public function entidad_financiera()
     {
         return $this->belongsTo(TesoEntidadFinanciera::class, 'entidad_financiera_id');
+    }
+
+    public function chequeras()
+    {
+        return $this->hasMany(TesoChequera::class, 'teso_cuenta_bancaria_id');
     }
 
     public function get_value_to_show()
@@ -168,22 +175,27 @@ class TesoCuentaBancaria extends Model
                             "0":{
                                     "tabla":"contab_movimientos",
                                     "llave_foranea":"teso_cuenta_bancaria_id",
-                                    "mensaje":"Está en movimientos contables."
+                                    "mensaje":"Esta en movimientos contables."
                                 },
                             "1":{
                                     "tabla":"teso_doc_encabezados",
                                     "llave_foranea":"teso_cuenta_bancaria_id",
-                                    "mensaje":"Está en documentos de tesorería."
+                                    "mensaje":"Esta en documentos de tesoreria."
                                 },
                             "2":{
                                     "tabla":"teso_doc_registros",
                                     "llave_foranea":"teso_cuenta_bancaria_id",
-                                    "mensaje":"Está en registros de documentos de tesorería."
+                                    "mensaje":"Esta en registros de documentos de tesoreria."
                                 },
                             "3":{
                                     "tabla":"teso_movimientos",
                                     "llave_foranea":"teso_cuenta_bancaria_id",
-                                    "mensaje":"Está en movimientos de tesorería."
+                                    "mensaje":"Esta en movimientos de tesoreria."
+                                },
+                            "4":{
+                                    "tabla":"teso_chequeras",
+                                    "llave_foranea":"teso_cuenta_bancaria_id",
+                                    "mensaje":"Tiene chequeras asociadas."
                                 }
                         }';
         $tablas = json_decode( $tablas_relacionadas );

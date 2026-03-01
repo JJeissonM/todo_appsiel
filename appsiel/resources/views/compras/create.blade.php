@@ -159,18 +159,15 @@
 							 </td>
 	            		</tr>
 	            		<tr>
-	            			<td style="text-align: right; font-weight: bold;"> ReteFuente: &nbsp; </td> 
-							<td style="width: 120px;">
-								<span id="select_tasa_retefuente" style="display: none;">
-									{{ Form::bsSelect('tasa_retefuente', null, ' ', App\Contabilidad\Retencion::opciones_campo_select(), ['class'=>'form-control']) }}
-								</span>
+	            			<td style="text-align: right; font-weight: bold;"> Ret. Fuente: &nbsp; </td> 
+							<td>
+								&nbsp;
 							</td>
 							 <td> 
-								<div id="lbl_total_retefuente"> $ 0 </div>
+								<div id="lbl_total_retefuente"> -$ 0 </div>
 							 </td>
 							 <td>
-								&nbsp;&nbsp;<button class="btn btn-xs btn-success" id="btn_add_retefuente"><i class="fa fa-plus"></i> </button>
-								&nbsp;&nbsp;<button class="btn btn-xs btn-default" id="btn_cancel_retefuente" style="display: none;"><i class="fa fa-close"></i> </button>
+								&nbsp;
 							</td>
 	            		</tr>
 	            		<tr>
@@ -202,6 +199,7 @@
 		$(document).ready(function(){
 
 			checkCookie();
+			cargar_retenciones_fuente();
 
 			$('#fecha').val( get_fecha_hoy() );
 
@@ -666,7 +664,6 @@
 				fila.remove();
 
 				calcular_totales();
-				aplicar_retefuente( false );
 
 				hay_productos--;
 				$('#numero_lineas').text(hay_productos);
@@ -847,5 +844,4 @@
 		});
 	</script>
 	<script type="text/javascript" src="{{ asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid() ) }}"></script>
-	<script type="text/javascript" src="{{ asset( 'assets/js/compras/retefuente.js?aux=' . uniqid() ) }}"></script>
 @endsection

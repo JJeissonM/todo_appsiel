@@ -47,6 +47,8 @@ use App\Tesoreria\RegistrosMediosPago;
 use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Contabilidad\Impuesto;
+use App\Contabilidad\Retencion;
+use App\Compras\Services\RetencionFuenteService;
 use App\Inventarios\Services\AverageCost;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -123,17 +125,19 @@ class CompraController extends TransaccionController
         $request['creado_por'] = Auth::user()->email;
 
         $total_documento = $this->get_total_documento_desde_lineas_registros( $lineas_registros_originales );
+        $total_retenciones = $this->get_total_retenciones_desde_lineas_registros( $lineas_registros_originales );
+        $request['valor_total_retefuente'] = $total_retenciones;
 
-        if ( (float)$request->valor_total_retefuente != 0 ) {
-            $total_documento -= (float)$request->valor_total_retefuente;
+        if ( $total_retenciones != 0 ) {
+            $total_documento -= $total_retenciones;
         }
 
         $request['registros_medio_pago'] = (new RegistrosMediosPago())->get_datos_ids( $request->all()['lineas_registros_medios_recaudo'], $lineas_registros_originales, $total_documento, 'compras' );
 
         CompraController::crear_registros_documento( $request, $doc_encabezado );
 
-        if ( (float)$request->valor_total_retefuente != 0 ) {
-            (new ContabilidadService())->aplicar_retencion_factura_compras( $doc_encabezado, $request->all() );
+        if ( $total_retenciones != 0 ) {
+            (new ContabilidadService())->aplicar_retenciones_por_linea_compras( $doc_encabezado );
         }
 
         return redirect('compras/'.$doc_encabezado->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion);
@@ -151,6 +155,40 @@ class CompraController extends TransaccionController
         } // Fin por cada registro
 
         return $total_documento;        
+    }
+
+    public function get_total_retenciones_desde_lineas_registros( array $lineas_registros )
+    {
+        $total_retenciones = 0;
+        $service = new RetencionFuenteService();
+
+        foreach ($lineas_registros as $linea_registro)
+        {
+            if (!isset($linea_registro->contab_retencion_id)) {
+                continue;
+            }
+
+            $contab_retencion_id = (int)$linea_registro->contab_retencion_id;
+            if ($contab_retencion_id <= 0) {
+                continue;
+            }
+
+            $retencion = Retencion::find($contab_retencion_id);
+            if (is_null($retencion)) {
+                continue;
+            }
+
+            $datos_retencion = $service->calcular_valor_retencion_linea(
+                (float)$linea_registro->precio_unitario,
+                (float)$linea_registro->cantidad,
+                (float)$linea_registro->tasa_impuesto,
+                (float)$retencion->tasa_retencion
+            );
+
+            $total_retenciones += (float)$datos_retencion['valor_retencion'];
+        }
+
+        return round($total_retenciones, 2);
     }
 
     /*
@@ -233,6 +271,8 @@ class CompraController extends TransaccionController
     public static function crear_lineas_registros_compras( $datos, $doc_encabezado, $lineas_registros )
     {
         $total_documento = 0;
+        $total_retenciones_documento = 0;
+        $retencion_service = new RetencionFuenteService();
         // Por cada entrada de almacén pendiente
         $cantidad_registros = count( $lineas_registros );
 
@@ -267,10 +307,30 @@ class CompraController extends TransaccionController
 
                 $tasa_descuento = 0;
                 $valor_total_descuento = 0;
+                $contab_retencion_id = 0;
+                $tasa_retencion = 0;
+                $valor_retencion = 0;
                 if ( isset( $lineas_registros_originales[ $linea ]->tasa_descuento ) )
                 {
                     $tasa_descuento = $lineas_registros_originales[ $linea ]->tasa_descuento;
                     $valor_total_descuento = $lineas_registros_originales[ $linea ]->valor_total_descuento;
+                }
+
+                if ( isset( $lineas_registros_originales[ $linea ]->contab_retencion_id ) )
+                {
+                    $contab_retencion_id = (int)$lineas_registros_originales[ $linea ]->contab_retencion_id;
+                    if ( $contab_retencion_id > 0 )
+                    {
+                        $retencion = Retencion::find( $contab_retencion_id );
+                        if ( !is_null( $retencion ) )
+                        {
+                            $tasa_retencion = (float)$retencion->tasa_retencion;
+                            $datos_retencion = $retencion_service->calcular_valor_retencion_linea( $precio_unitario, $cantidad, $tasa_impuesto, $tasa_retencion );
+                            $valor_retencion = (float)$datos_retencion['valor_retencion'];
+                        }else{
+                            $contab_retencion_id = 0;
+                        }
+                    }
                 }
 
                 $valor_impuesto = $precio_total - $total_base_impuesto;
@@ -292,6 +352,9 @@ class CompraController extends TransaccionController
                                 [ 'valor_impuesto' => $valor_impuesto ] +
                                 [ 'tasa_descuento' => $tasa_descuento ] +
                                 [ 'valor_total_descuento' => $valor_total_descuento ] +
+                                [ 'contab_retencion_id' => $contab_retencion_id ] +
+                                [ 'tasa_retencion' => $tasa_retencion ] +
+                                [ 'valor_retencion' => $valor_retencion ] +
                                 [ 'creado_por' => Auth::user()->email ] +
                                 [ 'estado' => 'Activo' ];
                 
@@ -313,6 +376,7 @@ class CompraController extends TransaccionController
                 CompraController::contabilizar_movimiento_debito( $datos + $linea_datos, $detalle_operacion );
 
                 $total_documento += $precio_total;
+                $total_retenciones_documento += $valor_retencion;
 
                 $linea++;
             } // Fin por cada registro de la entrada
@@ -342,9 +406,11 @@ class CompraController extends TransaccionController
         // Un solo registro de la cuenta por pagar (CR)
         $forma_pago = $datos['forma_pago']; // esto se debe determinar de acuerdo a algún parámetro en la configuración, $datos['forma_pago']
         
-        if( (float)$datos['valor_total_retefuente'] != 0 )
+        $datos['valor_total_retefuente'] = $total_retenciones_documento;
+
+        if( $total_retenciones_documento != 0 )
         {
-            $total_documento -= (float)$datos['valor_total_retefuente'];
+            $total_documento -= $total_retenciones_documento;
         }
 
         CompraController::contabilizar_movimiento_credito( $forma_pago, $datos + $linea_datos, $total_documento, $detalle_operacion );
@@ -1121,3 +1187,4 @@ class CompraController extends TransaccionController
     }
 
 }
+

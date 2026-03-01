@@ -86,6 +86,18 @@ Route::get('teso_anular_pago_cxp/{id}', 'Tesoreria\PagoCxpController@anular_pago
 Route::get('tesoreria_pagos_cxp_imprimir/{id}', 'Tesoreria\PagoCxpController@imprimir');
 Route::resource('tesoreria/pagos_cxp', 'Tesoreria\PagoCxpController');
 
+// CUENTAS BANCARIAS (SHOW PERSONALIZADO)
+Route::resource('teso_cuentas_bancarias', 'Tesoreria\TesoCuentaBancariaController', ['only' => ['show']]);
+
+// CHEQUERAS POR CUENTA
+Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/create', 'Tesoreria\TesoChequeraController@create');
+Route::post('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras', 'Tesoreria\TesoChequeraController@store');
+Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}/edit', 'Tesoreria\TesoChequeraController@edit');
+Route::put('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}', 'Tesoreria\TesoChequeraController@update');
+Route::delete('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}', 'Tesoreria\TesoChequeraController@destroy');
+Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/get_consecutivo', 'Tesoreria\TesoChequeraController@get_consecutivo');
+Route::post('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/{id}/actualizar_consecutivo', 'Tesoreria\TesoChequeraController@actualizar_consecutivo');
+
 
 Route::resource('tesoreria', 'Tesoreria\TesoreriaController', ['except' => ['show']]);
 

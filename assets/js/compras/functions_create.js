@@ -8,10 +8,62 @@ var base_impuesto_unitario = 0;
 var valor_impuesto_unitario = 0;
 var valor_unitario_descuento = 0;
 var tasa_descuento = 0;
+var tasa_retencion = 0;
+var valor_retencion = 0;
 
 var hay_productos = 0;
 
 var ya_esta;
+
+function cargar_retenciones_fuente()
+{
+    if ($('#url_id_transaccion').val() != 25 && $('#url_id_transaccion').val() != 48) {
+        return false;
+    }
+
+    $.get('../compras_retenciones_fuente_activas')
+        .done(function (respuesta) {
+            var select = $('#contab_retencion_id');
+            if (!select.length) {
+                return false;
+            }
+
+            select.html('');
+            select.append('<option value="0" data-tasa="0">Sin retención</option>');
+
+            for (var i = 0; i < respuesta.length; i++) {
+                var item = respuesta[i];
+                var label = item.id + ' - ' + item.descripcion + ' (' + item.tasa_retencion + '%)';
+                select.append('<option value="' + item.id + '" data-tasa="' + item.tasa_retencion + '">' + label + '</option>');
+            }
+        });
+}
+
+function get_tasa_retencion_seleccionada()
+{
+    var tasa = parseFloat($('#contab_retencion_id option:selected').attr('data-tasa'));
+    if (!$.isNumeric(tasa)) {
+        tasa = 0;
+    }
+    return tasa;
+}
+
+function calcular_valor_retencion_linea(precio_unitario_linea, cantidad_linea, tasa_impuesto_linea, tasa_retencion_linea)
+{
+    var valor_bruto = parseFloat(precio_unitario_linea) * parseFloat(cantidad_linea);
+    var divisor_iva = 1 + parseFloat(tasa_impuesto_linea) / 100;
+    if (!$.isNumeric(divisor_iva) || divisor_iva <= 0) {
+        divisor_iva = 1;
+    }
+
+    var base_sin_iva = valor_bruto / divisor_iva;
+    var valor = base_sin_iva * parseFloat(tasa_retencion_linea) / 100;
+    if (!$.isNumeric(valor)) {
+        valor = 0;
+    }
+
+    return valor;
+}
 
 $.fn.actualizar_medio_recaudo = function(){
 
@@ -34,13 +86,15 @@ function calcular_totales()
     var valor_total_descuento = 0.0;
     var total_impuestos = 0.0;
     var total_factura = 0.0;
+    var total_retencion = 0.0;
     $('.linea_registro').each(function()
     {
-        cantidad += parseFloat( $(this).find('.cantidad').text() );
-        subtotal += parseFloat( $(this).find('.base_impuesto').text() );
-        valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() );
-        total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() );
-        total_factura += parseFloat( $(this).find('.precio_total').text() );
+        cantidad += parseFloat( $(this).find('.cantidad').text() ) || 0;
+        subtotal += parseFloat( $(this).find('.base_impuesto').text() ) || 0;
+        valor_total_descuento += parseFloat( $(this).find('.valor_total_descuento').text() ) || 0;
+        total_impuestos += parseFloat( $(this).find('.valor_impuesto').text() ) || 0;
+        total_factura += parseFloat( $(this).find('.precio_total').text() ) || 0;
+        total_retencion += parseFloat( $(this).find('.valor_retencion').text() ) || 0;
 
     });
     $('#total_cantidad').text( new Intl.NumberFormat("de-DE").format( cantidad ) );
@@ -54,8 +108,12 @@ function calcular_totales()
     // Total impuestos (Sumatoria de valor_impuesto por cantidad)
     $('#total_impuestos').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_impuestos.toFixed(2) ) );
 
-    // Total factura  (Sumatoria de precio_total)
-    $('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( total_factura.toFixed(2) ) );
+    $('#lbl_total_retefuente').text( '-$ ' + new Intl.NumberFormat("de-DE").format( total_retencion.toFixed(2) ) );
+    $('#valor_total_retefuente').val( total_retencion.toFixed(2) );
+    $('#retencion_id').val(0);
+
+    // Total factura neta
+    $('#total_factura').text( '$ ' + new Intl.NumberFormat("de-DE").format( (total_factura - total_retencion).toFixed(2) ) );
     
 }
 
@@ -339,7 +397,6 @@ function agregar_la_linea()
     
     // Se calculan los totales
     calcular_totales();
-    aplicar_retefuente( false );
 
     hay_productos++;
     $('#numero_lineas').text(hay_productos);
@@ -409,8 +466,38 @@ function generar_string_celdas( fila )
     num_celda++;
 
     celdas[ num_celda ] = '<td style="display: none;"><div class="valor_total_descuento">'+ valor_total_descuento +'</div></td>';
-    
+
     num_celda++;
+
+    var aplica_retencion_fuente = ($('#url_id_transaccion').val() == 25 || $('#url_id_transaccion').val() == 48);
+    var contab_retencion_id = 0;
+    tasa_retencion = 0;
+    valor_retencion = 0;
+    if (aplica_retencion_fuente) {
+        contab_retencion_id = parseInt($('#contab_retencion_id').val());
+        if (!$.isNumeric(contab_retencion_id)) {
+            contab_retencion_id = 0;
+        }
+
+        tasa_retencion = get_tasa_retencion_seleccionada();
+        if (contab_retencion_id > 0 && tasa_retencion > 0) {
+            valor_retencion = calcular_valor_retencion_linea(precio_unitario, cantidad, tasa_impuesto, tasa_retencion);
+        }
+
+        celdas[ num_celda ] = '<td style="display: none;"><div class="contab_retencion_id">'+ contab_retencion_id +'</div></td>';
+        
+        num_celda++;
+
+        celdas[ num_celda ] = '<td style="display: none;"><div class="tasa_retencion">'+ tasa_retencion +'</div></td>';
+        
+        num_celda++;
+
+        celdas[ num_celda ] = '<td style="display: none;"><div class="valor_retencion">'+ valor_retencion.toFixed(2) +'</div></td>';
+        
+        num_celda++;
+    } else {
+        valor_retencion = 0;
+    }
 
     celdas[ num_celda ] = '<td> &nbsp; </td>';
     
@@ -443,6 +530,16 @@ function generar_string_celdas( fila )
     celdas[ num_celda ] = '<td> '+ '$ ' + new Intl.NumberFormat("de-DE").format( valor_total_descuento.toFixed(2) ) + '</td>';
     
     num_celda++;
+
+    if (aplica_retencion_fuente) {
+        var texto_retencion = $('#contab_retencion_id option:selected').text();
+        if (contab_retencion_id <= 0) {
+            texto_retencion = 'Sin retención';
+        }
+        celdas[ num_celda ] = '<td>'+ texto_retencion + '</td>';
+        
+        num_celda++;
+    }
 
     celdas[ num_celda ] = '<td>'+ $('#tasa_impuesto').val() + '</td>';
     
@@ -584,6 +681,8 @@ function reset_tabla_ingreso()
 
     // Total factura  (Sumatoria de precio_total)
     $('#total_factura').text( '$ 0' );
+    $('#lbl_total_retefuente').text( '-$ 0' );
+    $('#valor_total_retefuente').val(0);
 
 
     reset_linea_ingreso_default()
@@ -620,7 +719,11 @@ function reset_linea_ingreso_default()
     $('#inv_producto_id').select();
     $("[data-toggle='tooltip']").tooltip('show');
 
-    producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;
+    if ($('#contab_retencion_id').length) {
+        $('#contab_retencion_id').val('0');
+    }
+
+    producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; tasa_retencion = 0; valor_retencion = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;
 }
 
 function calcular_precio_total()

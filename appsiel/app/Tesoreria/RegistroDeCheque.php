@@ -7,6 +7,7 @@ use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\ControlCheque;
+use App\Tesoreria\Services\ChequeraService;
 
 use App\Contabilidad\ContabMovimiento;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ class RegistroDeCheque extends TesoDocEncabezado
     public function almacenar_registros( $json_lineas_registros, $doc_encabezado, $teso_medio_recaudo_id, $estado, $fuente )
     {
         $lineas_registros = json_decode( $json_lineas_registros );
+        $chequera_service = new ChequeraService();
 
         if( is_null($lineas_registros) )
         {
@@ -27,6 +29,18 @@ class RegistroDeCheque extends TesoDocEncabezado
         $cantidad = count($lineas_registros);
         for ($i=0; $i < $cantidad; $i++) 
         {
+            $numero_cheque = (int)$lineas_registros[$i]->numero_cheque;
+            if ( $fuente == 'propio' && (int)$doc_encabezado->teso_cuenta_bancaria_id != 0 )
+            {
+                if ( $numero_cheque == 0 )
+                {
+                    $numero_cheque = $chequera_service->get_consecutivo( (int)$doc_encabezado->teso_cuenta_bancaria_id );
+                    $lineas_registros[$i]->numero_cheque = $numero_cheque;
+                }
+
+                $chequera_service->actualizar_consecutivo_por_numero( (int)$doc_encabezado->teso_cuenta_bancaria_id, $numero_cheque );
+            }
+
             $motivo = TesoMotivo::find( (int)$lineas_registros[$i]->teso_motivo_id_cheque );
 
             switch ( $motivo->movimiento )
@@ -53,7 +67,7 @@ class RegistroDeCheque extends TesoDocEncabezado
                         'tercero_id' => $doc_encabezado->core_tercero_id,
                         'fecha_emision' => $lineas_registros[$i]->fecha_emision,
                         'fecha_cobro' => $lineas_registros[$i]->fecha_cobro,
-                        'numero_cheque' => $lineas_registros[$i]->numero_cheque,
+                        'numero_cheque' => $numero_cheque,
                         'referencia_cheque' => $lineas_registros[$i]->referencia_cheque,
                         'entidad_financiera_id' => $lineas_registros[$i]->entidad_financiera_id,
                         'valor' => abs( $valor_linea ),
@@ -88,7 +102,7 @@ class RegistroDeCheque extends TesoDocEncabezado
                 
             $datos['valor_movimiento'] = $valor_linea;
             $datos['descripcion'] = $tipo_operacion;
-            $datos['documento_soporte'] = 'Cheque número ' . $lineas_registros[$i]->numero_cheque;
+            $datos['documento_soporte'] = 'Cheque número ' . $numero_cheque;
             TesoMovimiento::create( $datos );
 
             // Contabilizar

@@ -10,6 +10,7 @@ Route::get('compras_consultar_entradas_pendientes', 'Compras\CompraController@co
 Route::get('compras_consultar_proveedores', 'Compras\CompraController@consultar_proveedores');
 Route::get('compras_consultar_existencia_producto', 'Compras\CompraController@consultar_existencia_producto');
 Route::get('compras_validar_documento_proveedor', 'Compras\CompraController@validar_documento_proveedor');
+Route::get('compras_retenciones_fuente_activas', 'Compras\RetencionFuenteController@activas');
 
 
 Route::resource('factura_entrada_pendiente', 'Compras\FacturaEntradaPendienteController');
@@ -40,6 +41,9 @@ Route::get('compras_catalogos', 'Compras\CompraController@catalogos');
 Route::post('compras_proveedores_tercero_a_proveedor_store', 'Compras\ProveedorController@tercero_a_proveedor_store');
 //Route::get('compras_proveedores_tercero_a_proveedor_create', 'Compras\ProveedorController@tercero_a_proveedor_create');
 Route::resource('compras_proveedores', 'Compras\ProveedorController');
+Route::post('compras_proveedores/{proveedor_id}/cuentas_bancarias', 'Compras\ProveedorCuentaBancariaController@store');
+Route::put('compras_proveedores/{proveedor_id}/cuentas_bancarias/{cuenta_id}', 'Compras\ProveedorCuentaBancariaController@update');
+Route::delete('compras_proveedores/{proveedor_id}/cuentas_bancarias/{cuenta_id}', 'Compras\ProveedorCuentaBancariaController@destroy');
 
 
 // Anular

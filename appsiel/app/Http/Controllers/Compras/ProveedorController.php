@@ -17,8 +17,11 @@ use Storage;
 use App\Sistema\Modelo;
 use App\Sistema\Campo;
 use App\Core\Tercero;
+use App\Core\Ciudad;
 
 use App\Compras\Proveedor;
+use App\Compras\ProveedorCuentaBancaria;
+use App\Tesoreria\TesoEntidadFinanciera;
 
 
 class ProveedorController extends ModeloController
@@ -112,7 +115,25 @@ class ProveedorController extends ModeloController
 
         $tabla = '';
 
-        return view('compras.proveedores.show',compact('form_create','miga_pan','registro','url_crear','url_edit','reg_anterior','reg_siguiente','tabla') );
+        $cuentas_bancarias = ProveedorCuentaBancaria::where('tercero_id', $registro->core_tercero_id)
+            ->with('entidad_financiera', 'ciudad')
+            ->orderBy('id', 'DESC')
+            ->get();
+
+        $entidades_financieras = TesoEntidadFinanciera::where('estado', 'Activo')
+            ->orderBy('descripcion')
+            ->get();
+
+        $ciudades = Ciudad::leftJoin('core_departamentos', 'core_departamentos.id', '=', 'core_ciudades.core_departamento_id')
+            ->select(
+                'core_ciudades.id',
+                'core_ciudades.descripcion as ciudad',
+                'core_departamentos.descripcion as departamento'
+            )
+            ->orderBy('core_ciudades.descripcion')
+            ->get();
+
+        return view('compras.proveedores.show',compact('form_create','miga_pan','registro','url_crear','url_edit','reg_anterior','reg_siguiente','tabla','cuentas_bancarias','entidades_financieras','ciudades') );
     }
 
     public function cambiar_opciones_campo_vendedor( $lista_campos )

@@ -2,13 +2,9 @@
 
 namespace App\Compras;
 
-use Illuminate\Database\Eloquent\Model;
-
-use DB;
-use Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class DocumentoSoporteAdquisiciones extends ComprasDocEncabezado
 {
