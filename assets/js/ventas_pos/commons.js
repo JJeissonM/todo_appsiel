@@ -1144,7 +1144,11 @@ $(document).ready(function () {
   $("#btn_guardar_factura").click(function (event) {
 
     event.preventDefault();
-    
+    if (locked) {
+      console.log('Bloqueado!!!');
+      return false;
+    }
+
     // Desactivar el click del botón
     $("#btn_guardar_factura").html('<i class="fa fa-spinner fa-spin"></i> Guardando');
     $("#btn_guardar_factura").attr("disabled", "disabled");
@@ -1153,6 +1157,7 @@ $(document).ready(function () {
       $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
       $("#btn_guardando").attr("id", "btn_guardar_factura");
       $("#btn_guardar_factura").removeAttr("disabled");
+      locked = false;
     }
 
     // Cede un ciclo al navegador para que pinte el spinner antes del trabajo pesado.
@@ -1180,7 +1185,10 @@ $(document).ready(function () {
         return false;
       }
 
-      if ($("#manejar_propinas").val() == 1) {
+      var manejar_propinas = ($("#manejar_propinas").val() == 1);
+      var manejar_datafono = ($("#manejar_datafono").val() == 1);
+
+      if (manejar_propinas) {
         if ($("#valor_propina").val() != 0) {
           if (!permitir_guardar_factura_con_propina()) {
             reset_boton_guardar_factura();
@@ -1189,7 +1197,7 @@ $(document).ready(function () {
         }
       }
 
-      if ($("#manejar_datafono").val() == 1) {
+      if (manejar_datafono) {
         if ($("#valor_datafono").val() != 0) {
           if (!permitir_guardar_factura_con_datafono()) {
             reset_boton_guardar_factura();
@@ -1205,12 +1213,12 @@ $(document).ready(function () {
       
       json_table2 = get_json_registros_medios_recaudo();
 
-      if ($("#manejar_propinas").val() == 1) {
+      if (manejar_propinas) {
         // Si hay propina, siempre va a venir una sola linea de medio de pago
         json_table2 = separar_json_linea_medios_recaudo(json_table2);
       }
 
-      if ($("#manejar_datafono").val() == 1) {
+      if (manejar_datafono) {
         // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
         json_table2 = separar_json_linea_medios_recaudo(json_table2);
       }
@@ -1222,17 +1230,18 @@ $(document).ready(function () {
       // Nota: No se puede enviar controles disabled
       var data = $("#form_create").serialize();
 
-      if ($("#manejar_propinas").val() == 1) {
+      if (manejar_propinas) {
         data += "&valor_propina=" + $("#valor_propina").val();
       }
 
-      if ($("#manejar_datafono").val() == 1) {
+      if (manejar_datafono) {
         data += "&valor_datafono=" + $("#valor_datafono").val();
       }
 
       var tiempo_espera_guardar_factura = 7000; // 7 segundos
-      if ($('#tiempo_espera_guardar_factura').val() != 0) {
-        tiempo_espera_guardar_factura = parseInt($('#tiempo_espera_guardar_factura').val()) * 1000;
+      var tiempo_espera_config = parseInt($('#tiempo_espera_guardar_factura').val(), 10);
+      if (!isNaN(tiempo_espera_config) && tiempo_espera_config > 0) {
+        tiempo_espera_guardar_factura = tiempo_espera_config * 1000;
       }
 
       var url = $("#form_create").attr("action");
@@ -1256,9 +1265,9 @@ $(document).ready(function () {
           error: function(xhr){
             reset_boton_guardar_factura();
 
-            var status_text = xhr.statusText; // Respuesta siempre
-            var response_text = xhr.responseText; // Solo cuando hay respuesta del servidor
-            var server_error_code = xhr.status; // Código de error HTTP. 0 cuando no hay respuesta del servidor
+            var status_text = (xhr && typeof xhr.statusText === 'string') ? xhr.statusText : ''; // Respuesta siempre
+            var response_text = (xhr && typeof xhr.responseText === 'string') ? xhr.responseText : ''; // Solo cuando hay respuesta del servidor
+            var server_error_code = (xhr && typeof xhr.status !== 'undefined') ? xhr.status : 0; // Código de error HTTP. 0 cuando no hay respuesta del servidor
 
             let position = status_text.search("NetworkError");
             if (position != -1) {
@@ -1339,6 +1348,7 @@ $(document).ready(function () {
       } else {
         // Bloqueado!!!
         console.log('Bloqueado!!!');
+        reset_boton_guardar_factura();
       }
     }, 0);
   });
