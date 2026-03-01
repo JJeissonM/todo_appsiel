@@ -436,7 +436,14 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$dias_pendientes_aviso_resolucion = '7';
+								if( isset($parametros['dias_pendientes_aviso_resolucion'] ) )
+								{
+									$dias_pendientes_aviso_resolucion = $parametros['dias_pendientes_aviso_resolucion'];
+								}
+							?>
+							{{ Form::bsText('dias_pendientes_aviso_resolucion', $dias_pendientes_aviso_resolucion, 'Cant. días pendientes para aviso de vencimiento de resolución', ['class'=>'form-control']) }}
 						</div>
 					</div>
 

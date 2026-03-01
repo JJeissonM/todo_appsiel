@@ -40,7 +40,13 @@ class ResolucionFacturacionService
 
         }
         
-        if( $dias_pendientes < 7 )
+        $dias_pendientes_aviso_resolucion = (int)config('ventas_pos.dias_pendientes_aviso_resolucion');
+        if( $dias_pendientes_aviso_resolucion <= 0 )
+        {
+            $dias_pendientes_aviso_resolucion = 7;
+        }
+
+        if( $dias_pendientes <= $dias_pendientes_aviso_resolucion )
         {
             $msj_resolucion_facturacion = 'La resolución del documento de facturación electrónica ' .$tipo_doc_app->prefijo . ' está a punto de expirar. Fecha límite: ' . $resolucion_facturacion->fecha_expiracion . ' (' . $dias_pendientes . ' días restantes). Debe actualizar la resolución de facturación. Una vez vencida NO podrá seguir facturando.';
 
