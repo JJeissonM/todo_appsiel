@@ -1283,6 +1283,20 @@ $(document).ready(function () {
               return false;
             }
 
+            // jQuery devuelve código 0 en timeout, abort o cuando no hay conexión.
+            if (server_error_code === 0) {
+              var error_label = 'Error 0. No hubo respuesta del servidor (timeout o conexión interrumpida).';
+              Swal.fire({
+                icon: 'error',
+                title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
+                text: error_label
+              });
+               
+              puede_continuar = false;
+
+              return false;
+            }
+
             // Si hay respuesta del servidor, pero hay un error de Laravel
             position = response_text.search("Duplicate entry");
             
