@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Sistema\ModeloController;
 use App\Http\Controllers\Core\TransaccionController;
@@ -245,6 +246,15 @@ class FacturaPosController extends TransaccionController
     {
         $email = Auth::user()->email; // Solo para verificar que la sesión esté activa. Si se cerró la sesión, Laravel lanza una excepción
 
+        $request_uniqid = (string)$request->get('uniqid', '');
+        if ( $request_uniqid != '' )
+        {
+            $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
+            if ( $doc_existente != null ) {
+                return response()->json( $this->build_json_doc_encabezado($doc_existente), 200);
+            }
+        }
+        
         $lineas_registros = json_decode($request->lineas_registros);
 
         $acumular_factura = false;
@@ -264,7 +274,21 @@ class FacturaPosController extends TransaccionController
         }
 
         // Crear documento de Ventas
-        $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+        try {
+            $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+        } catch (QueryException $e) {
+            $is_duplicate_uniqid = ($e->getCode() == '23000') && (strpos($e->getMessage(), "for key 'uniqid'") !== false);
+
+            if ( $is_duplicate_uniqid && $request_uniqid != '' )
+            {
+                $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
+                if ( $doc_existente != null ) {
+                    return response()->json( $this->build_json_doc_encabezado($doc_existente), 200);
+                }
+            }
+
+            throw $e;
+        }
 
         if ((int)config('inventarios.manejar_platillos_con_contorno')) {
             $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
@@ -1241,3 +1265,4 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
+
