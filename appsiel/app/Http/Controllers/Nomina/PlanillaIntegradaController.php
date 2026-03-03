@@ -1322,47 +1322,25 @@ class PlanillaIntegradaController extends Controller
     */
     public function redondear_a_unidad_seguida_ceros( $numero, $valor_unidad_seguida_ceros, $tipo_redondeo)
     {
-        if ( $numero == 0 )
-        {
-            return 0;
-        }
-        
-        $valor_redondeado = $numero;
+        $numero = (float)$numero;
+        $unidad = (float)$valor_unidad_seguida_ceros;
 
-        if ( $valor_unidad_seguida_ceros != 0 )
+        if ( $numero == 0 || $unidad == 0 )
         {
-            $decimal = $numero / $valor_unidad_seguida_ceros;
-            $aux = (string) $decimal;
-            // Si, no existe el punto en el string $aux, $numero no necesita ser redondeado
-            if ( (int)strpos( $aux, "." ) == 0 )
-            {
+            return $numero;
+        }
+
+        switch ( $tipo_redondeo )
+        {
+            case 'superior':
+                return ceil($numero / $unidad) * $unidad;
+
+            case 'inferior':
+                return floor($numero / $unidad) * $unidad;
+
+            default:
                 return $numero;
-            }
-
-            // Extraer la parte decimal
-            $residuo = substr( $aux, strpos( $aux, "." ) );
-
-            $valor_residuo_tipo_unidad = $residuo * $valor_unidad_seguida_ceros;
-
-            switch ( $tipo_redondeo )
-            {
-                case 'superior':
-                    $diferecia = $valor_unidad_seguida_ceros - $valor_residuo_tipo_unidad;
-                    $valor_redondeado = $numero + $diferecia;
-                    break;
-                
-                case 'inferior':
-                    $valor_redondeado = $numero - $valor_residuo_tipo_unidad;
-                    break;
-                
-                default:
-                    $valor_redondeado = $numero;
-                    break;
-            }
-                    
         }
-
-        return $valor_redondeado;
     }
 
     public function eliminar_planilla( $planilla_id )
