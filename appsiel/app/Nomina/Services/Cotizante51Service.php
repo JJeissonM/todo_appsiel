@@ -23,6 +23,14 @@ class Cotizante51Service
             return $this->normalizarDias((int)$empleado->dias_laborados_mes);
         }
 
+        if ((float)$empleado->horas_laborales > 0) {
+            $horasDia = (float)config('nomina.horas_dia_laboral');
+            if ($horasDia > 0) {
+                $diasPorHoras = round((float)$empleado->horas_laborales / $horasDia, 0);
+                return $this->normalizarDias((int)$diasPorHoras);
+            }
+        }
+
         return $this->normalizarDias((int)$diasFallback);
     }
 
