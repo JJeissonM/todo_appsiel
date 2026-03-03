@@ -451,7 +451,7 @@ class VistaController extends Controller
             
             default:
                 $control = '<div class="alert alert-danger">
-                              <strong>¡Error!</strong> Tipo de campo (elemento input) no existe.</div>';
+                              <strong>¡Error!</strong> Tipo de campo (elemento input) no existe. Campo ID='.$campo['id'].'</div>';
                 break;
         }
 

@@ -8,6 +8,7 @@ use App\Nomina\NomDocRegistro;
 use Carbon\Carbon;
 
 use App\Nomina\ProgramacionVacacion;
+use App\Nomina\Services\Cotizante51Service;
 use Illuminate\Support\Facades\Auth;
 
 class TiempoLaborado implements Estrategia
@@ -231,7 +232,28 @@ class TiempoLaborado implements Estrategia
 			}
 		}
 		
-        $tiempo_a_liquidar = $documento_nomina->tiempo_a_liquidar - $tiempo_a_descontar_1 - $tiempo_a_descontar_2 - $horas_liquidadas_empleado;
+        $tiempo_base_documento = $documento_nomina->tiempo_a_liquidar;
+        $cotizante51Service = new Cotizante51Service();
+        if ( $cotizante51Service->esCotizante51($empleado) )
+        {
+            // Para tipo 51 se toma como base la jornada pactada en el contrato.
+            $horasMensualesPactadas = (float)$empleado->horas_laborales;
+            if ( $horasMensualesPactadas <= 0 )
+            {
+                $diasMes = $cotizante51Service->getDiasLaboradosMes($empleado, 0);
+                $horasMensualesPactadas = (float)$diasMes * self::CANTIDAD_HORAS_DIA_LABORAL;
+            }
+
+            $proporcionDocumento = (float)$documento_nomina->tiempo_a_liquidar / 240;
+            if ( $proporcionDocumento <= 0 )
+            {
+                $proporcionDocumento = 1;
+            }
+
+            $tiempo_base_documento = $horasMensualesPactadas * $proporcionDocumento;
+        }
+
+        $tiempo_a_liquidar = $tiempo_base_documento - $tiempo_a_descontar_1 - $tiempo_a_descontar_2 - $horas_liquidadas_empleado;
         
         return $tiempo_a_liquidar;
 	}

@@ -369,17 +369,25 @@ class NomContrato extends Model
                 ['creado_por' => Auth::user()->email] +
                 ['modificado_por' => '']
         );
-
-        if ($registro->contrato_hasta == '')
+        
+        if ($registro->contrato_hasta == '' || $registro->contrato_hasta == null)
         {
             $registro->contrato_hasta = date('2099-12-30');
-            $registro->save();
         }
+
+        $horas_laborales = config('nomina.horas_laborales');
+        if (isset($datos['horas_laborales']) && $datos['horas_laborales'] != '')
+        {
+            $horas_laborales = $datos['horas_laborales'];
+        }
+
+        $registro->horas_laborales = $horas_laborales;
+        
+        $registro->save();
     }
 
     public function get_campos_adicionales_edit($lista_campos, $registro)
     {
-
         if ($registro->estado == 'Retirado') {
             return [[
                 "id" => 999,
@@ -402,36 +410,7 @@ class NomContrato extends Model
             ]];
         }
 
-        $lista_campos[] = $this->get_campo_excluir_documentos($registro->excluir_documentos_nomina_electronica);
-
         return $lista_campos;
-    }
-
-    public function get_campos_adicionales_create($lista_campos)
-    {
-        $lista_campos[] = $this->get_campo_excluir_documentos(false);
-
-        return $lista_campos;
-    }
-
-    protected function get_campo_excluir_documentos($valor)
-    {
-        return [
-            "id" => 998,
-            "descripcion" => "Excluir del documento soporte de nómina electrónica",
-            "tipo" => "bsSelect",
-            "name" => "excluir_documentos_nomina_electronica",
-            "opciones" => [
-                '0' => 'No',
-                '1' => 'Sí'
-            ],
-            "value" => $valor ? '1' : '0',
-            "atributos" => [ 'class' => 'form-control' ],
-            "definicion" => "",
-            "requerido" => 0,
-            "editable" => 1,
-            "unico" => 0
-        ];
     }
 
     public static function update_adicional($datos, $registro_id)
@@ -452,5 +431,14 @@ class NomContrato extends Model
                                         [ 'modificado_por' => '']
                                 );
         }
+
+        $horas_laborales = config('nomina.horas_laborales');
+        if (isset($datos['horas_laborales']) && $datos['horas_laborales'] != '')
+        {
+            $horas_laborales = $datos['horas_laborales'];
+        }
+        $contrato->horas_laborales = $horas_laborales;
+        
+        $contrato->save();
     }
 }

@@ -497,3 +497,6 @@ DELETE FROM `sys_campos` WHERE `sys_campos`.`id` = 590;
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('590', 'Tiempo a liquidar', 'select', 'tiempo_a_liquidar', '{\"\":\"\",\"110\":\"Una Quincena (110 horas)\",\"220\":\"Un mes (220 horas)\",\"9999\":\"Órdenes de trabajo\"}', 'null', '', '', '1', '1', '0', '2019-12-20 00:36:57', '2025-01-21 18:08:27');
 
 UPDATE `permissions` SET `modelo_id` = '337' WHERE `name` = 'nomina.turnos.importar';
+
+-- 3 marzo 2026
+ALTER TABLE `nom_contratos` CHANGE `horas_laborales` `horas_laborales` DOUBLE NOT NULL DEFAULT '240';
