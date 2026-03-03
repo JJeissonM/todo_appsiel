@@ -15,8 +15,6 @@ class TiempoLaborado implements Estrategia
 {
 	protected $vacaciones_programadas;
 
-	const CANTIDAD_HORAS_DIA_LABORAL = 7.333;
-
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 		// Para salario integral
@@ -153,7 +151,7 @@ class TiempoLaborado implements Estrategia
 				return 0;
 			}
 
-			return ( $this->diferencia_en_dias_entre_fechas( $vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+			return ( $this->diferencia_en_dias_entre_fechas( $vacaciones_programadas->fecha_final_tnl, $lapso->fecha_final ) ) * $this->get_horas_dia_laboral();
 		}
 
 		// Caso 2. Hay programación de vacaciones que empiezan en el lapso pero aún no se ha liquidado la prestación social.
@@ -189,7 +187,7 @@ class TiempoLaborado implements Estrategia
 				}
 
 				$dias_a_descontar = $this->diferencia_en_dias_entre_fechas( $vacaciones_programadas->fecha_inicial_tnl, $fecha_final_dias ) + $dias_adicionales;
-				return $dias_a_descontar * self::CANTIDAD_HORAS_DIA_LABORAL;
+				return $dias_a_descontar * $this->get_horas_dia_laboral();
 			}
 		}
 
@@ -210,24 +208,24 @@ class TiempoLaborado implements Estrategia
 		$tiempo_a_descontar_1 = 0;
 		if ( $empleado->fecha_ingreso >= $fecha_inicial && $empleado->fecha_ingreso <= $fecha_final )
 		{
-			$tiempo_a_descontar_1 = $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $empleado->fecha_ingreso ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+			$tiempo_a_descontar_1 = $this->diferencia_en_dias_entre_fechas( $fecha_inicial, $empleado->fecha_ingreso ) * $this->get_horas_dia_laboral();
 		}
 
 		// Caso 2: el contrato termina dentro del lapso del documento, se restan los días después de la fecha terminación del contrato
 		$tiempo_a_descontar_2 = 0;
 		if ( $empleado->contrato_hasta >= $fecha_inicial && $empleado->contrato_hasta <= $fecha_final )
 		{
-			$tiempo_a_descontar_2 = $this->diferencia_en_dias_entre_fechas( $empleado->contrato_hasta, $fecha_final ) * self::CANTIDAD_HORAS_DIA_LABORAL;
+			$tiempo_a_descontar_2 = $this->diferencia_en_dias_entre_fechas( $empleado->contrato_hasta, $fecha_final ) * $this->get_horas_dia_laboral();
 
 			$aux_fecha = explode('-', $fecha_final);
 
 			if ( (int)$aux_fecha[1] == 2 ) // Mes de febrero, completar 30 días
 			{
-				$tiempo_a_descontar_2 += 2 * self::CANTIDAD_HORAS_DIA_LABORAL;
+				$tiempo_a_descontar_2 += 2 * $this->get_horas_dia_laboral();
 
 				if ( (int)$aux_fecha[2] == 29 ) // Año Bisiesto, solo falta un día para 30
 				{
-					$tiempo_a_descontar_2 += self::CANTIDAD_HORAS_DIA_LABORAL;
+					$tiempo_a_descontar_2 += $this->get_horas_dia_laboral();
 				}				
 			}
 		}
@@ -241,10 +239,16 @@ class TiempoLaborado implements Estrategia
             if ( $horasMensualesPactadas <= 0 )
             {
                 $diasMes = $cotizante51Service->getDiasLaboradosMes($empleado, 0);
-                $horasMensualesPactadas = (float)$diasMes * self::CANTIDAD_HORAS_DIA_LABORAL;
+                $horasMensualesPactadas = (float)$diasMes * $this->get_horas_dia_laboral();
             }
 
-            $proporcionDocumento = (float)$documento_nomina->tiempo_a_liquidar / 240;
+            $horasBaseMes = (float)config('nomina.horas_laborales');
+            if ( $horasBaseMes <= 0 )
+            {
+                $horasBaseMes = 240;
+            }
+
+            $proporcionDocumento = (float)$documento_nomina->tiempo_a_liquidar / $horasBaseMes;
             if ( $proporcionDocumento <= 0 )
             {
                 $proporcionDocumento = 1;
@@ -281,7 +285,13 @@ class TiempoLaborado implements Estrategia
 
 		// Liquidar concepto de sostenimiento y apoyo
 		$valor_devengo_mes = (float)config('nomina.SMMLV') * (float)config('nomina.porcentaje_liquidacon_pasante_sena') / 100;
-		$salario_x_hora = $valor_devengo_mes / 240;
+        $horasBaseMes = (float)config('nomina.horas_laborales');
+        if ( $horasBaseMes <= 0 )
+        {
+            $horasBaseMes = 240;
+        }
+
+		$salario_x_hora = $valor_devengo_mes / $horasBaseMes;
 		$horas_liquidadas_empleado = $this->get_horas_ya_liquidadas_en_el_lapso_del_documento( $documento_nomina, $empleado );
 		$tiempo_a_liquidar = $this->get_tiempo_a_liquidar( $empleado, $documento_nomina, $horas_liquidadas_empleado );
 		$valor_devengo = $salario_x_hora * $tiempo_a_liquidar;
@@ -306,4 +316,9 @@ class TiempoLaborado implements Estrategia
 
         return 0;
 	}
+
+    protected function get_horas_dia_laboral()
+    {
+        return (float)config('nomina.horas_dia_laboral');
+    }
 }

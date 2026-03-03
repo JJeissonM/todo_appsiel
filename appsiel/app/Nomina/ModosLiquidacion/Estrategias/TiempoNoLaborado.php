@@ -23,9 +23,6 @@ class TiempoNoLaborado implements Estrategia
 		origen_incapacidad: { comun | laboral }
 		clase_incapacidad: { enfermedad_general | licencia_maternidad | licencia_paternidad | accidente_trabajo | enfermedad_profesional}
 	*/
-
-	const CANTIDAD_HORAS_DIA_LABORAL = 7.667;
-
 	public function calcular(LiquidacionConcepto $liquidacion)
 	{
 		$lapso_documento = $liquidacion['documento_nomina']->lapso();
@@ -85,8 +82,8 @@ class TiempoNoLaborado implements Estrategia
         		$this->crear_registro_concepto_pagado_por_la_empresa( $novedad, $liquidacion['documento_nomina'], $liquidacion['empleado'], $cantidad_horas_a_liquidar );
         	}        		
 
-			$novedad->cantidad_dias_amortizados += ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
-			$novedad->cantidad_dias_pendientes_amortizar -= ($cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL);
+			$novedad->cantidad_dias_amortizados += ($cantidad_horas_a_liquidar / $this->get_horas_dia_laboral());
+			$novedad->cantidad_dias_pendientes_amortizar -= ($cantidad_horas_a_liquidar / $this->get_horas_dia_laboral());
         	$novedad->save();
             
             $novedad_id = $novedad->id;
@@ -318,7 +315,7 @@ class TiempoNoLaborado implements Estrategia
 		if ( $fecha_ini_novedad >= $fecha_ini_documento && $fecha_ini_novedad < $fecha_fin_documento && $fecha_fin_novedad > $fecha_fin_documento )
 		{
 			$diferencia_en_dias = $this->diferencia_en_dias_entre_fechas( $novedad->fecha_inicial_tnl, $lapso_documento->fecha_final );
-			return ( ( $diferencia_en_dias + $dias_incluir ) * self::CANTIDAD_HORAS_DIA_LABORAL ); 
+			return ( ( $diferencia_en_dias + $dias_incluir ) * $this->get_horas_dia_laboral() ); 
 		}
 
 		// Caso 3: La novedad es vieja; ya tiene tiempos amortizados. Se continua amortizando desde la fecha inicial del lapso
@@ -341,7 +338,7 @@ class TiempoNoLaborado implements Estrategia
 				}		
 			}
 
-			return ( ( $diferencia_en_dias + $dias_incluir ) * self::CANTIDAD_HORAS_DIA_LABORAL ); // Se suma 1, pues se debe incluir el mismo día inicial.
+			return ( ( $diferencia_en_dias + $dias_incluir ) * $this->get_horas_dia_laboral() ); // Se suma 1, pues se debe incluir el mismo día inicial.
 		}
 	}
 
@@ -437,8 +434,8 @@ class TiempoNoLaborado implements Estrategia
 		// Para todas las novedades
 		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades')  )
 		{
-			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
-			$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
+			$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
 		}
 
 		if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
@@ -452,8 +449,8 @@ class TiempoNoLaborado implements Estrategia
 			$valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
 			if ( ($this->valor_a_pagar_empresa > 0) && ($valor_registro == 0) )
 			{
-				$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
-				$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / self::CANTIDAD_HORAS_DIA_LABORAL;
+				$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
+				$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
 			}
 		
 			$novedad->valor_a_pagar_eps -= $this->valor_a_pagar_eps;
@@ -472,4 +469,8 @@ class TiempoNoLaborado implements Estrategia
 
         $registro->delete();
 	}
+protected function get_horas_dia_laboral()
+    {
+        return (float)config('nomina.horas_dia_laboral');
+    }
 }
