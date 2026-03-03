@@ -5,6 +5,7 @@ namespace App\Compras;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Compras\ClaseProveedor;
+use App\Contabilidad\ContabCuenta;
 use App\Sistema\Services\CrudService;
 
 class Proveedor extends Model
@@ -112,8 +113,12 @@ class Proveedor extends Model
 
         $cta_x_pagar_id = ClaseProveedor::where('id', $clase_proveedor_id)->value('cta_x_pagar_id');
 
-        if (is_null($cta_x_pagar_id)) {
+        if (is_null($cta_x_pagar_id) || !ContabCuenta::where('id', (int)$cta_x_pagar_id)->exists()) {
             $cta_x_pagar_id = config('configuracion.cta_por_pagar_default');
+        }
+
+        if (is_null($cta_x_pagar_id) || !ContabCuenta::where('id', (int)$cta_x_pagar_id)->exists()) {
+            throw new \Exception('No existe una cuenta por pagar válida para el proveedor seleccionado. Verifique la cuenta CxP en la clase de proveedor o en la configuración general.');
         }
 
         return $cta_x_pagar_id;
