@@ -49,8 +49,21 @@ class PensionObligatoria implements Estrategia
 
         $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
         if ($cotizante51Service->esCotizante51($liquidacion['empleado'])) {
-            $diasLaborados = round($tiempo_a_liquidar / (float)config('nomina.horas_dia_laboral'), 0);
-            $diasLaborados = $cotizante51Service->getDiasLaboradosMes($liquidacion['empleado'], $diasLaborados);
+            $diasLaborados = 0;
+            if ((float)$liquidacion['empleado']->horas_laborales > 0) {
+                $diasLaborados = round((float)$liquidacion['empleado']->horas_laborales / (float)config('nomina.horas_dia_laboral'), 0);
+                if ($diasLaborados < 0) {
+                    $diasLaborados = 0;
+                }
+                if ($diasLaborados > 30) {
+                    $diasLaborados = 30;
+                }
+            } else {
+                $diasLaborados = $cotizante51Service->getDiasLaboradosMes(
+                    $liquidacion['empleado'],
+                    round($tiempo_a_liquidar / (float)config('nomina.horas_dia_laboral'), 0)
+                );
+            }
             $total_IBC = $cotizante51Service->getIbcProporcionalPorDias($diasLaborados);
         }
 

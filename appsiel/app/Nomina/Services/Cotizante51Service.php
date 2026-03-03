@@ -31,19 +31,19 @@ class Cotizante51Service
         $dias = $this->normalizarDias((int)$diasLaborados);
         $smmlv = (float)config('nomina.SMMLV');
 
-        if ($dias <= 0) {
+        if ($dias <= 0.9) {
             return 0;
         }
 
-        if ($dias <= 7) {
+        if ($dias <= 7.9) {
             return $smmlv * 0.25;
         }
 
-        if ($dias <= 14) {
+        if ($dias <= 14.9) {
             return $smmlv * 0.5;
         }
 
-        if ($dias <= 21) {
+        if ($dias <= 21.9) {
             return $smmlv * 0.75;
         }
 
