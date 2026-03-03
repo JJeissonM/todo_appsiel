@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ProveedorCuentasBancariasSeeder::class);
         $this->call(TesoreriaChequerasPermissionSeeder::class);
         $this->call(ComprasRetencionesLineaSeeder::class);
+        $this->call(NominaCotizante51Seeder::class);
     }
 }
 

@@ -5,6 +5,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\Services\Cotizante51Service;
 
 class SaludObligatoria implements Estrategia
 {
@@ -12,7 +13,8 @@ class SaludObligatoria implements Estrategia
 	{
 
         // Para empleados con tipo contrato labor_contratada o pasantes SENA
-        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' || $liquidacion['empleado']->es_pasante_sena )
+        $cotizante51Service = new Cotizante51Service();
+        if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' || $liquidacion['empleado']->es_pasante_sena || $cotizante51Service->esCotizante51($liquidacion['empleado']) )
         {
             return [ 
                         [

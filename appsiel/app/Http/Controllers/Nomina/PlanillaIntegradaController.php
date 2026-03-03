@@ -27,6 +27,7 @@ use App\Nomina\Services\Pila\SaludService;
 use App\Nomina\Services\Pila\PensionService;
 use App\Nomina\Services\Pila\RiesgoLaboralService;
 use App\Nomina\Services\Pila\ParafiscalService;
+use App\Nomina\Services\Cotizante51Service;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -296,6 +297,19 @@ class PlanillaIntegradaController extends Controller
 
     public function calcular_ibc( $planilla, $empleado )
     {
+        $cotizante51Service = new Cotizante51Service();
+        if ( $cotizante51Service->esCotizante51($empleado) )
+        {
+            $diasCalculados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
+            $this->cantidad_dias_laborados = $cotizante51Service->getDiasLaboradosMes($empleado, $diasCalculados);
+            $this->ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_laborados);
+            $this->valor_ibc_un_dia = 0;
+
+            $this->ibc_parafiscales = $this->ibc_salud;
+            $this->cantidad_dias_parafiscales = $this->cantidad_dias_laborados;
+            return;
+        }
+
         $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final );// + 10;// $10 para que alcance la siguiente decena más cercana
 
         $this->cantidad_dias_laborados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
@@ -765,9 +779,13 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_salud($planilla, $empleado)
     {
+        $cotizante51Service = new Cotizante51Service();
+        $esCotizante51 = $cotizante51Service->esCotizante51($empleado);
+        $diasCotizadosSalud = $this->cantidad_dias_laborados;
+        $ibcSaludLiquidacion = $this->ibc_salud;
 
         // Vacaciones de liq. de contrato se tienen en cuenta en parafiscales, mas no para salud y pensión.
-        if ( $empleado->estado == 'Retirado' )
+        if ( $empleado->estado == 'Retirado' && !$esCotizante51 )
         {
             // Restar conceptos de vacaciones
             $devengo_salud_liquidacion_contrato = NomDocRegistro::where( 'nom_concepto_id', 66 )
@@ -776,24 +794,29 @@ class PlanillaIntegradaController extends Controller
                                                 ->whereBetween( 'fecha', [ $this->fecha_inicial, $this->fecha_final ] )
                                                 ->sum( 'valor_devengo' );
 
-            $this->ibc_salud -= $devengo_salud_liquidacion_contrato;
+            $ibcSaludLiquidacion -= $devengo_salud_liquidacion_contrato;
         }
 
         $porcentaje_salud = 4 / 100;
-        if ( $empleado->es_pasante_sena )
+        if ( $esCotizante51 )
+        {
+            $porcentaje_salud = 0;
+            $diasCotizadosSalud = 0;
+            $ibcSaludLiquidacion = 0;
+        }elseif ( $empleado->es_pasante_sena )
         {
             $porcentaje_salud = 12.5 / 100;
         }
-        $valor_cotizacion_salud = number_format( $this->ibc_salud * $porcentaje_salud, 0,'','');
+        $valor_cotizacion_salud = number_format( $ibcSaludLiquidacion * $porcentaje_salud, 0,'','');
         $tarifa_salud = $this->formatear_campo( $porcentaje_salud,'0','derecha',7);
         $cotizacion_salud = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_salud, 100, 'superior'),'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
-                    [ 'codigo_entidad_salud' => $this->formatear_campo($empleado->entidad_salud->codigo_nacional,' ','derecha',6) ] +
-                    [ 'dias_cotizados_salud' => $this->formatear_campo($this->cantidad_dias_laborados,'0','izquierda',2) ] +
-                    [ 'ibc_salud' => $this->formatear_campo( number_format( $this->ibc_salud,0,'',''),'0','izquierda',9) ] +
+                    [ 'codigo_entidad_salud' => $this->formatear_campo( is_null($empleado->entidad_salud) ? '' : $empleado->entidad_salud->codigo_nacional,' ','derecha',6) ] +
+                    [ 'dias_cotizados_salud' => $this->formatear_campo($diasCotizadosSalud,'0','izquierda',2) ] +
+                    [ 'ibc_salud' => $this->formatear_campo( number_format( $ibcSaludLiquidacion,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_salud' => $tarifa_salud ] +
                     [ 'cotizacion_salud' => $cotizacion_salud ] +
                     [ 'valor_upc_adicional_salud' => '000000000' ] +
@@ -805,12 +828,19 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_pension($planilla, $empleado)
     {
+        $cotizante51Service = new Cotizante51Service();
         $this->el_empleado_id = $empleado->id;
         $cantidad_dias_laborados = $this->cantidad_dias_laborados;
         $ibc_salud = $this->ibc_salud;
 
-        $codigo_entidad_pension = $this->formatear_campo( $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
+        $codigo_entidad_pension = $this->formatear_campo( is_null($empleado->entidad_pension) ? '' : $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
         $porcentaje_pension = 16 / 100;
+
+        if ( $cotizante51Service->esCotizante51($empleado) )
+        {
+            $cantidad_dias_laborados = $cotizante51Service->getDiasLaboradosMes($empleado, $cantidad_dias_laborados);
+            $ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($cantidad_dias_laborados);
+        }
 
         // 32. Cotizante miembro de la carrera diplomática o consular de un país extranjero o funcionario de organismo multilateral
         if ( $empleado->es_pasante_sena || $empleado->tipo_cotizante == 32 )
@@ -820,7 +850,7 @@ class PlanillaIntegradaController extends Controller
             $cantidad_dias_laborados = 0;
             $ibc_salud = 0;
         }
-        $valor_cotizacion_pension = number_format( $this->ibc_salud * $porcentaje_pension, 0,'','');
+        $valor_cotizacion_pension = number_format( $ibc_salud * $porcentaje_pension, 0,'','');
         $tarifa_pension = $this->formatear_campo( $porcentaje_pension,'0','derecha',7);
         $cotizacion_pension = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( (float)$valor_cotizacion_pension, 100, 'superior'),'0','izquierda',9);
 
@@ -830,7 +860,7 @@ class PlanillaIntegradaController extends Controller
         $conceptos_liquidados_mes = $this->conceptos_liquidados_mes( $empleado, $this->fecha_inicial, $this->fecha_final );
         $concepto_fsp = 75; // Fondo de Solidaridad Pensional
         
-        if ( in_array($concepto_fsp, $conceptos_liquidados_mes) )
+        if ( in_array($concepto_fsp, $conceptos_liquidados_mes) && !$cotizante51Service->esCotizante51($empleado) )
         {
             $valor_cotizacion_fsp = number_format( $this->get_valor_acumulado_concepto_entre_fechas( $empleado, $concepto_fsp, $this->fecha_inicial, $this->fecha_final ), 0,'','');
             $mitad = number_format( $valor_cotizacion_fsp / 2, 0,'','');
@@ -862,6 +892,7 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_riesgos_laborales($planilla, $empleado)
     {
+        $cotizante51Service = new Cotizante51Service();
 
         $porcentaje_riesgo_laboral = '0.0';
         $clase_de_riesgo = '000000000';
@@ -877,16 +908,23 @@ class PlanillaIntegradaController extends Controller
             $porcentaje_riesgo_laboral = '0.0';
         }
 
-        $valor_cotizacion_riesgo_laboral = number_format( $this->ibc_salud * $porcentaje_riesgo_laboral, 0,'','');
+        $diasCotizadosRiesgos = $this->cantidad_dias_laborados;
+        $ibcRiesgos = $cotizante51Service->getIbcRiesgosLaborales($empleado, $this->ibc_salud);
+        if ( $cotizante51Service->esCotizante51($empleado) )
+        {
+            $diasCotizadosRiesgos = 30;
+        }
+
+        $valor_cotizacion_riesgo_laboral = number_format( $ibcRiesgos * $porcentaje_riesgo_laboral, 0,'','');
         $tarifa_riesgo_laboral = $this->formatear_campo( $porcentaje_riesgo_laboral,'0','derecha',9);
         $cotizacion_riesgo_laboral = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_riesgo_laboral, 100, 'superior'),'0','izquierda',9);
 
         $datos = [ 'planilla_generada_id' => $planilla->id ] +
                     [ 'nom_contrato_id' => $empleado->id ] +
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
-                    [ 'codigo_arl' => $this->formatear_campo($empleado->entidad_arl->codigo_nacional,' ','derecha',6) ] +
-                    [ 'dias_cotizados_riesgos_laborales' => $this->formatear_campo($this->cantidad_dias_laborados,'0','izquierda',2) ] +
-                    [ 'ibc_riesgos_laborales' => $this->formatear_campo( number_format( $this->ibc_salud,0,'',''),'0','izquierda',9) ] +
+                    [ 'codigo_arl' => $this->formatear_campo( is_null($empleado->entidad_arl) ? '' : $empleado->entidad_arl->codigo_nacional,' ','derecha',6) ] +
+                    [ 'dias_cotizados_riesgos_laborales' => $this->formatear_campo($diasCotizadosRiesgos,'0','izquierda',2) ] +
+                    [ 'ibc_riesgos_laborales' => $this->formatear_campo( number_format( $ibcRiesgos,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_riesgos_laborales' => $tarifa_riesgo_laboral ] +
                     [ 'total_cotizacion_riesgos_laborales' => $cotizacion_riesgo_laboral ] +
                     [ 'clase_de_riesgo' => $clase_de_riesgo ] +
@@ -898,8 +936,10 @@ class PlanillaIntegradaController extends Controller
 
     public function almacenar_datos_parafiscales($planilla, $empleado)
     {
-        $codigo_entidad_ccf = $this->formatear_campo($empleado->entidad_caja_compensacion->codigo_nacional,' ','derecha',6);
+        $cotizante51Service = new Cotizante51Service();
+        $codigo_entidad_ccf = $this->formatear_campo( is_null($empleado->entidad_caja_compensacion) ? '' : $empleado->entidad_caja_compensacion->codigo_nacional,' ','derecha',6);
         $cotizante_exonerado_de_aportes_parafiscales = 'S';
+        $diasCotizadosCcf = $this->cantidad_dias_parafiscales;
         if ( $empleado->es_pasante_sena )
         {
             $cotizante_exonerado_de_aportes_parafiscales = 'N';
@@ -907,6 +947,12 @@ class PlanillaIntegradaController extends Controller
         }
 
         $porcentaje_caja_compensacion = $planilla->datos_empresa->porcentaje_caja_compensacion / 100;
+        if ( $cotizante51Service->esCotizante51($empleado) )
+        {
+            $diasCotizadosCcf = $cotizante51Service->getDiasLaboradosMes($empleado, $diasCotizadosCcf);
+            $porcentaje_caja_compensacion = 4 / 100;
+            $this->ibc_parafiscales = $cotizante51Service->getIbcProporcionalPorDias($diasCotizadosCcf);
+        }
         $valor_cotizacion_ccf = number_format( $this->ibc_parafiscales * $porcentaje_caja_compensacion, 0,'','');
         $tarifa_ccf = $this->formatear_campo( $porcentaje_caja_compensacion,'0','derecha',7);
         $cotizacion_ccf = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_ccf, 100, 'superior'),'0','izquierda',9);
@@ -947,7 +993,7 @@ class PlanillaIntegradaController extends Controller
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
                     [ 'cotizante_exonerado_de_aportes_parafiscales' => $cotizante_exonerado_de_aportes_parafiscales ] +
                     [ 'codigo_entidad_ccf' => $codigo_entidad_ccf ] +
-                    [ 'dias_cotizados' => $this->formatear_campo($this->cantidad_dias_parafiscales,'0','izquierda',2) ] +
+                    [ 'dias_cotizados' => $this->formatear_campo($diasCotizadosCcf,'0','izquierda',2) ] +
                     [ 'ibc_parafiscales' => $this->formatear_campo( number_format( $this->ibc_parafiscales,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_ccf' => $tarifa_ccf ] +
                     [ 'cotizacion_ccf' => $cotizacion_ccf ] +
@@ -1340,3 +1386,4 @@ class PlanillaIntegradaController extends Controller
     }
 
 }
+

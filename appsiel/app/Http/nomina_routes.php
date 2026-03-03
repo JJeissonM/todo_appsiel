@@ -148,6 +148,9 @@ Route::post('nomina/procesos/actualizar_sueldos/preview', 'Nomina\ActualizacionS
 Route::post('nomina/procesos/actualizar_sueldos/guardar', 'Nomina\ActualizacionSueldosController@guardar');
 Route::post('nomina/procesos/actualizar_sueldos/revertir/{proceso_id}', 'Nomina\ActualizacionSueldosController@revertir');
 
+// Cotizante 51 (tiempo parcial)
+Route::post('nomina/cotizante51/{contrato_id}/dias-laborados', 'Nomina\Cotizante51Controller@actualizar_dias_laborados');
+
 
 // PLANILLA INTEGRADA
 //Route::post('nom_generar_planilla_integrada/{planilla_id}','Nomina\PlanillaIntegradaController@generar_planilla_integrada');

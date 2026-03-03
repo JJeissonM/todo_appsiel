@@ -19,6 +19,7 @@ use App\Nomina\NomDocRegistro;
 use App\Nomina\NomContrato;
 
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
+use App\Nomina\Services\Cotizante51Service;
 use App\Nomina\Services\LiquidacionPorTurnosService;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -108,7 +109,7 @@ class NominaController extends TransaccionController
                     }
                 }else{
                     $this->liquidar_automaticos_empleado( $this->array_ids_modos_liquidacion_automaticos[$i], $empleado, $documento, $usuario);
-                }                
+                }
             }
         }
 
@@ -136,6 +137,12 @@ class NominaController extends TransaccionController
     */
     public function liquidar_automaticos_empleado( $modo_liquidacion_id, $empleado, $documento_nomina, $usuario )
     {
+        $cotizante51Service = new Cotizante51Service();
+        if ( $cotizante51Service->esCotizante51($empleado) && in_array($modo_liquidacion_id, [10, 12]) )
+        {
+            return;
+        }
+
         $conceptos_automaticos = NomConcepto::where('estado','Activo')->where('modo_liquidacion_id', $modo_liquidacion_id)->get();
 
         foreach ( $conceptos_automaticos as $concepto )

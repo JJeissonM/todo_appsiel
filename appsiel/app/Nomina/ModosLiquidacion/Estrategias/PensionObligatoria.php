@@ -5,6 +5,7 @@ namespace App\Nomina\ModosLiquidacion\Estrategias;
 use App\Nomina\ModosLiquidacion\LiquidacionConcepto;
 use App\Nomina\AgrupacionConcepto;
 use App\Nomina\NomDocRegistro;
+use App\Nomina\Services\Cotizante51Service;
 
 class PensionObligatoria implements Estrategia
 {
@@ -12,6 +13,7 @@ class PensionObligatoria implements Estrategia
 	{
 
         // Para empleados con tipo contrato labor_contratada o pasantes SENA
+        $cotizante51Service = new Cotizante51Service();
         if ( $liquidacion['empleado']->clase_contrato == 'labor_contratada' || $liquidacion['empleado']->es_pasante_sena || $liquidacion['empleado']->tipo_cotizante == 32)
         {
             return [ 
@@ -40,14 +42,19 @@ class PensionObligatoria implements Estrategia
                                             ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
                                             ->sum('valor_deduccion');
 
-        $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
-
-        $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza,  $total_IBC * $liquidacion['concepto']->porcentaje_sobre_basico / 100 );
-
         $tiempo_a_liquidar =  NomDocRegistro::whereIn( 'nom_concepto_id', $conceptos_de_la_agrupacion )
                                             ->where( 'nom_doc_encabezado_id', $liquidacion['documento_nomina']->id )
                                             ->where( 'core_tercero_id', $liquidacion['empleado']->core_tercero_id )
                                             ->sum('cantidad_horas');
+
+        $total_IBC = ($total_ibc_devengos - $total_ibc_deducciones);
+        if ($cotizante51Service->esCotizante51($liquidacion['empleado'])) {
+            $diasLaborados = round($tiempo_a_liquidar / (float)config('nomina.horas_dia_laboral'), 0);
+            $diasLaborados = $cotizante51Service->getDiasLaboradosMes($liquidacion['empleado'], $diasLaborados);
+            $total_IBC = $cotizante51Service->getIbcProporcionalPorDias($diasLaborados);
+        }
+
+        $valores = get_valores_devengo_deduccion( $liquidacion['concepto']->naturaleza,  $total_IBC * $liquidacion['concepto']->porcentaje_sobre_basico / 100 );
 
         return [ 
                     [
