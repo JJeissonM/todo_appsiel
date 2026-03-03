@@ -838,7 +838,6 @@ class PlanillaIntegradaController extends Controller
 
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
-            $cantidad_dias_laborados = $cotizante51Service->getDiasLaboradosMes($empleado, $cantidad_dias_laborados);
             $ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($cantidad_dias_laborados);
         }
 
@@ -939,7 +938,6 @@ class PlanillaIntegradaController extends Controller
         $cotizante51Service = new Cotizante51Service();
         $codigo_entidad_ccf = $this->formatear_campo( is_null($empleado->entidad_caja_compensacion) ? '' : $empleado->entidad_caja_compensacion->codigo_nacional,' ','derecha',6);
         $cotizante_exonerado_de_aportes_parafiscales = 'S';
-        $diasCotizadosCcf = $this->cantidad_dias_parafiscales;
         if ( $empleado->es_pasante_sena )
         {
             $cotizante_exonerado_de_aportes_parafiscales = 'N';
@@ -949,9 +947,8 @@ class PlanillaIntegradaController extends Controller
         $porcentaje_caja_compensacion = $planilla->datos_empresa->porcentaje_caja_compensacion / 100;
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
-            $diasCotizadosCcf = $cotizante51Service->getDiasLaboradosMes($empleado, $diasCotizadosCcf);
             $porcentaje_caja_compensacion = 4 / 100;
-            $this->ibc_parafiscales = $cotizante51Service->getIbcProporcionalPorDias($diasCotizadosCcf);
+            $this->ibc_parafiscales = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_parafiscales);
         }
         $valor_cotizacion_ccf = number_format( $this->ibc_parafiscales * $porcentaje_caja_compensacion, 0,'','');
         $tarifa_ccf = $this->formatear_campo( $porcentaje_caja_compensacion,'0','derecha',7);
@@ -993,7 +990,7 @@ class PlanillaIntegradaController extends Controller
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
                     [ 'cotizante_exonerado_de_aportes_parafiscales' => $cotizante_exonerado_de_aportes_parafiscales ] +
                     [ 'codigo_entidad_ccf' => $codigo_entidad_ccf ] +
-                    [ 'dias_cotizados' => $this->formatear_campo($diasCotizadosCcf,'0','izquierda',2) ] +
+                    [ 'dias_cotizados' => $this->formatear_campo($this->cantidad_dias_parafiscales,'0','izquierda',2) ] +
                     [ 'ibc_parafiscales' => $this->formatear_campo( number_format( $this->ibc_parafiscales,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_ccf' => $tarifa_ccf ] +
                     [ 'cotizacion_ccf' => $cotizacion_ccf ] +
@@ -1322,25 +1319,47 @@ class PlanillaIntegradaController extends Controller
     */
     public function redondear_a_unidad_seguida_ceros( $numero, $valor_unidad_seguida_ceros, $tipo_redondeo)
     {
-        $numero = (float)$numero;
-        $unidad = (float)$valor_unidad_seguida_ceros;
-
-        if ( $numero == 0 || $unidad == 0 )
+        if ( $numero == 0 )
         {
-            return $numero;
+            return 0;
         }
+        
+        $valor_redondeado = $numero;
 
-        switch ( $tipo_redondeo )
+        if ( $valor_unidad_seguida_ceros != 0 )
         {
-            case 'superior':
-                return ceil($numero / $unidad) * $unidad;
-
-            case 'inferior':
-                return floor($numero / $unidad) * $unidad;
-
-            default:
+            $decimal = $numero / $valor_unidad_seguida_ceros;
+            $aux = (string) $decimal;
+            // Si, no existe el punto en el string $aux, $numero no necesita ser redondeado
+            if ( (int)strpos( $aux, "." ) == 0 )
+            {
                 return $numero;
+            }
+
+            // Extraer la parte decimal
+            $residuo = substr( $aux, strpos( $aux, "." ) );
+
+            $valor_residuo_tipo_unidad = $residuo * $valor_unidad_seguida_ceros;
+
+            switch ( $tipo_redondeo )
+            {
+                case 'superior':
+                    $diferecia = $valor_unidad_seguida_ceros - $valor_residuo_tipo_unidad;
+                    $valor_redondeado = $numero + $diferecia;
+                    break;
+                
+                case 'inferior':
+                    $valor_redondeado = $numero - $valor_residuo_tipo_unidad;
+                    break;
+                
+                default:
+                    $valor_redondeado = $numero;
+                    break;
+            }
+                    
         }
+
+        return $valor_redondeado;
     }
 
     public function eliminar_planilla( $planilla_id )
