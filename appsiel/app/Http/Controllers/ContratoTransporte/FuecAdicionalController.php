@@ -237,11 +237,16 @@ class FuecAdicionalController extends Controller
         $representante_legal_contratante = '';
         if ( !is_null($contratante) )
         {
-            $representante_legal_contratante = $contratante->tercero->representante_legal();
-            if ( is_null($representante_legal_contratante) )
+            $representante_legal_contratante = $contratante->tercero;
+            if ( $contratante->tercero->representante_legal() != null )
             {
-                $representante_legal_contratante = $contratante->tercero;
+                $representante_legal_contratante = $contratante->tercero->representante_legal();
             }
+        }
+
+        if ( $representante_legal_contratante == '' )
+        {
+            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no tiene un representante legal asociado, no puede proceder a imprimir el contrato.');
         }
         
         $documento_vista =  View::make('contratos_transporte.contratos.fuec_adicional.print2', compact('fuec_adicional', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'empresa', 'representante_legal_contratante'))->render();

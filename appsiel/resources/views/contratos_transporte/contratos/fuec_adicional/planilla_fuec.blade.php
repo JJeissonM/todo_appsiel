@@ -174,32 +174,16 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
             <td class="border_center" style="width: 32%; font-size: 12px;">
-                @if($fuec_adicional->contrato->contratante_id==null || $fuec_adicional->contrato->contratante_id=='null') 
-                    {{$fuec_adicional->contrato->contratanteText}} 
-                @else 
-                    {{$fuec_adicional->contrato->contratante->tercero->descripcion}} 
-                @endif
+                {{ $representante_legal_contratante->descripcion }}
             </td>
             <td class="border_center" style="width: 13%; font-size: 12px;">
-                @if($fuec_adicional->contrato->contratante_id==null || $fuec_adicional->contrato->contratante_id=='null') 
-                    {{$fuec_adicional->contrato->contratanteIdentificacion}} 
-                @else 
-                    {{$fuec_adicional->contrato->contratante->tercero->numero_identificacion}} @if($fuec_adicional->contrato->contratante->tercero->tipo!='Persona natural') {{"-".$fuec_adicional->contrato->contratante->tercero->digito_verificacion}} @endif 
-                @endif
+                {{$representante_legal_contratante->numero_identificacion}} @if($representante_legal_contratante->tipo!='Persona natural') {{"-".$representante_legal_contratante->digito_verificacion}} @endif
             </td>
             <td class="border_center" style="width: 19%; font-size: 12px;">
-                @if($fuec_adicional->contrato->contratante_id==null || $fuec_adicional->contrato->contratante_id=='null') 
-                    {{$fuec_adicional->contrato->contratanteDireccion}}
-                @else 
-                    {{$fuec_adicional->contrato->contratante->tercero->direccion1}} 
-                @endif
+                {{$representante_legal_contratante->direccion1}}
             </td>
             <td class="border_center" style="width: 10%; font-size: 12px;">
-                @if($fuec_adicional->contrato->contratante_id==null || $fuec_adicional->contrato->contratante_id=='null') 
-                    {{$fuec_adicional->contrato->contratanteTelefono}}
-                @else 
-                    {{$fuec_adicional->contrato->contratante->tercero->telefono1}} 
-                @endif
+                {{$representante_legal_contratante->telefono1}}
             </td>
         </tr>
     </tbody>

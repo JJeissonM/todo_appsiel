@@ -170,32 +170,16 @@ use App\Http\Controllers\ContratoTransporte\ContratoTransporteController;
         <tr>
             <td class="border" style="width: 15%; font-weight: bold; font-size: 12px; text-align: center; border-top: none;">RESPONSABLE DEL CONTRATANTE</td>
             <td class="border_center" style="width: 32%; font-size: 12px;">
-                @if($c->contratante_id==null || $c->contratante_id=='null') 
-                    {{$c->contratanteText}} 
-                @else 
-                    {{ $c->contratante->tercero->descripcion }} 
-                @endif
+                {{ $representante_legal_contratante->descripcion }}
             </td>
             <td class="border_center" style="width: 13%; font-size: 12px;">
-                @if($c->contratante_id==null || $c->contratante_id=='null') 
-                    {{$c->contratanteIdentificacion}} 
-                @else 
-                    {{$c->contratante->tercero->numero_identificacion}} @if($c->contratante->tercero->tipo!='Persona natural') {{"-".$c->contratante->tercero->digito_verificacion}} @endif 
-                @endif
+                {{$representante_legal_contratante->numero_identificacion}} @if($representante_legal_contratante->tipo!='Persona natural') {{"-".$representante_legal_contratante->digito_verificacion}} @endif
             </td>
             <td class="border_center" style="width: 19%; font-size: 12px;">
-                @if($c->contratante_id==null || $c->contratante_id=='null') 
-                    {{$c->contratanteDireccion}}
-                @else 
-                    {{$c->contratante->tercero->direccion1}} 
-                @endif
+                {{$representante_legal_contratante->direccion1}}
             </td>
             <td class="border_center" style="width: 10%; font-size: 12px;">
-                @if($c->contratante_id==null || $c->contratante_id=='null') 
-                    {{$c->contratanteTelefono}}
-                @else 
-                    {{$c->contratante->tercero->telefono1}} 
-                @endif
+                {{$representante_legal_contratante->telefono1}}
             </td>
         </tr>
     </tbody>
