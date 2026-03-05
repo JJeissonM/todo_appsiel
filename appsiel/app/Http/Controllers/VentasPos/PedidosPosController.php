@@ -598,6 +598,10 @@ class PedidosPosController extends TransaccionController
 
     public function verificar_datos_por_defecto( $pdv )
     {
+        if ( $pdv->estado != 'Abierto' ) {
+            return $pdv->descripcion . ' debe estar "Abierto" para poder crear pedidos.';
+        }
+        
         if ( is_null( $pdv->cliente ) ) {
             return 'El punto de ventas NO tiene asociado un Cliente por defecto.';
         }

@@ -10,6 +10,7 @@
     }
     $fecha_hoy = date('Y-m-d');
 
+
     $apertura = App\VentasPos\AperturaEncabezado::where('pdv_id', $pdv->id)->get()->last();
     $cierre = App\VentasPos\CierreEncabezado::where('pdv_id', $pdv->id)->get()->last();
 

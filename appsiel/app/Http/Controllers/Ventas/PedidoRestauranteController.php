@@ -228,7 +228,7 @@ class PedidoRestauranteController extends TransaccionController
             ['estado','=','Activo'],
             ['clase_cliente_id','=',(int)config('pedidos_restaurante.clase_cliente_tipo_mesas_id')]
             ])
-            ->orWhere('id',(int)config('pedidos_restaurante.cliente_default_id'))
+            //->orWhere('id',(int)config('pedidos_restaurante.cliente_default_id'))
             ->get();
     }
 

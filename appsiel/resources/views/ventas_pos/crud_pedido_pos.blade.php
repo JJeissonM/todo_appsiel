@@ -257,7 +257,9 @@
                 <input class="form-control" id="cliente_input" autocomplete="off" required="required" name="cliente_input" type="text" value="{{ $cliente->tercero->descripcion }}"><div id="clientes_suggestions"> </div>
             </div>
         </div>
-        @include('ventas_pos.componente_vendedores')
+        <!-- 
+            @ include('ventas_pos.componente_vendedores')
+        -->
     </div>
 
 @endsection

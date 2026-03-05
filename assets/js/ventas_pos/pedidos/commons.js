@@ -602,7 +602,9 @@ $(document).ready(function () {
 
             // Para formato impresora 58mm
             if ( $('#tabla_productos_facturados thead th').length == 3) {
-                linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + ' ($' + $(this).find('.elemento_modificar').eq(1).text() + ') </td> <td> ' + $(this).find('.lbl_precio_total').text() + '  </td></tr>';
+                // En formato de pedidos (3 columnas), "Cant. pedida" solo muestra
+                // la cantidad y "Despachada" se deja vacia.
+                linea_factura = '<tr> <td> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td style="text-align: center;"> ' + $(this).find('.cantidad').text() + ' </td> <td> &nbsp; </td></tr>';
 
                 // WARNING!!! Esto esta manual, puede estar errado
                 lbl_base_impuesto_total += parseFloat( $(this).find('.base_impuesto_total').text() );
