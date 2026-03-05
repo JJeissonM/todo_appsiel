@@ -426,24 +426,25 @@ $(document).ready(function () {
         return false;
     }
 
-    if ( window.APM_CLIENT && typeof window.APM_CLIENT.setLogger === 'function' ) {
-        window.APM_CLIENT.setLogger(function(message, type) {
-            if ( !is_apm_mode() ) {
-                return;
-            }
-            if ( type === 'success' ) {
-                set_apm_blocked_state(false, true);
-            }
-            if ( type === 'warning' || type === 'error' ) {
-                set_apm_blocked_state(true, false);
-            }
-        });
-    }
+    if ( is_apm_mode() ) {
+        if ( window.APM_CLIENT && typeof window.APM_CLIENT.setLogger === 'function' ) {
+            window.APM_CLIENT.setLogger(function(message, type) {
+                if ( type === 'success' ) {
+                    set_apm_blocked_state(false, true);
+                }
+                if ( type === 'warning' || type === 'error' ) {
+                    set_apm_blocked_state(true, false);
+                }
+            });
+        }
 
-    // Validar APM al cargar y luego cada 2 segundos
-    request_apm_connection();
-    asegurar_apm_conectado();
-    setInterval(asegurar_apm_conectado, 2000);
+        // Validar APM al cargar y luego cada 2 segundos
+        request_apm_connection();
+        asegurar_apm_conectado();
+        setInterval(asegurar_apm_conectado, 2000);
+    } else {
+        set_apm_blocked_state(false, true);
+    }
 
     if ( $('#action').val() != 'create' )
     {

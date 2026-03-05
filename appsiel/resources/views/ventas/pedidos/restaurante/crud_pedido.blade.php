@@ -290,7 +290,9 @@ input[type=number]::-webkit-outer-spin-button {
     
     <script src="{{ asset( 'assets/js/ventas/pedidos_restaurante_ventanas_modales.js?aux=' . uniqid() )}}"></script>
 
-    <script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
+    @if( config('ventas.metodo_impresion_pedido_restaurante') == 'apm' )
+        <script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
+    @endif
     <script src="{{ asset( 'assets/js/ventas/restaurante/printing.js?aux=' . uniqid() )}}"></script>
 
 
