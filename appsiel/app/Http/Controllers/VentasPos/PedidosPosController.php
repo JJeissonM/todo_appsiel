@@ -514,10 +514,11 @@ class PedidosPosController extends TransaccionController
         return VtasPedido::where(
                             [
                                 ['cliente_id','=',$pedido->cliente_id],
-                                ['vendedor_id','=',$pedido->vendedor_id],
                                 ['estado','=','Pendiente']
                             ]
                         )
+                ->where('ventas_doc_relacionado_id', 0)
+                ->whereIn('core_tipo_transaccion_id', [42, 60])
                 ->get();
     }
 
@@ -651,6 +652,13 @@ class PedidosPosController extends TransaccionController
     {
         // DATOS DE LINEAS DE REGISTROS DEL PEDIDO
         $pedido = VtasPedido::find( $pedido_id );
+        if ( is_null($pedido) || $pedido->estado != 'Pendiente' || (int)$pedido->ventas_doc_relacionado_id != 0 )
+        {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'El pedido ya no está disponible para facturar. Actualice la lista de pendientes.'
+            ], 409);
+        }
 
         $pdv = Pdv::find( Input::get('pdv_id') );
 

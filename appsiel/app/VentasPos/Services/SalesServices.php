@@ -11,6 +11,7 @@ use App\VentasPos\Services\AccountingServices;
 use App\Inventarios\InvProducto;
 use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
+use App\Tesoreria\TesoMotivo;
 
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\Cliente;
@@ -68,6 +69,7 @@ class SalesServices
                 foreach ($lineas_recaudos as $linea)
                 {
                     $contab_cuenta_id = TesoCaja::find(1)->contab_cuenta_id;
+                    $valor_linea = (float)substr($linea->valor, 1);
 
                     $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
                     if ($teso_caja_id != 0) {
@@ -79,7 +81,15 @@ class SalesServices
                         $contab_cuenta_id = TesoCuentaBancaria::find($teso_cuenta_bancaria_id)->contab_cuenta_id;
                     }
 
-                    $obj_accou_serv->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, (float)substr($linea->valor, 1), 0, $teso_caja_id, $teso_cuenta_bancaria_id);
+                    $obj_accou_serv->contabilizar_registro($datos, $contab_cuenta_id, $detalle_operacion, $valor_linea, 0, $teso_caja_id, $teso_cuenta_bancaria_id);
+
+                    if ((int)config('ventas_pos.aplicar_redondeo_adicional_transferencia')) {
+                        $teso_motivo_id = (int)explode("-", $linea->teso_motivo_id)[0];
+                        $motivo = TesoMotivo::find($teso_motivo_id);
+                        if (!is_null($motivo) && $motivo->teso_tipo_motivo == 'otros-recaudos' && $motivo->movimiento == 'entrada') {
+                            $obj_accou_serv->contabilizar_registro($datos, $motivo->contab_cuenta_id, $detalle_operacion . ' - Otros recaudos', 0, $valor_linea);
+                        }
+                    }
                 }
             }
         }

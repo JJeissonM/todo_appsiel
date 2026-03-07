@@ -2,6 +2,7 @@
 
 namespace App\Inventarios;
 
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,8 @@ use App\Compras\Proveedor;
 
 class InvDocEncabezado extends Model
 {
+    use FiltraRegistrosPorUsuario;
+
     //protected $table = 'inv_doc_encabezados'; 
 
     protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id', 'vtas_doc_encabezado_origen_id', 'consecutivo','fecha','core_tercero_id', 'inv_bodega_id', 'bodega_destino_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];

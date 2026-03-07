@@ -2,11 +2,14 @@
 
 namespace App\Inventarios;
 
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class InvFabricacion extends InvDocEncabezado
 {
+    use FiltraRegistrosPorUsuario;
+
     protected $table = 'inv_doc_encabezados'; 
 
     protected $fillable = ['core_empresa_id','core_tipo_transaccion_id','core_tipo_doc_app_id','consecutivo','fecha','core_tercero_id','inv_bodega_id','documento_soporte','descripcion','estado','creado_por','modificado_por','hora_inicio','hora_finalizacion'];

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -246,6 +247,8 @@ class FacturaPosController extends TransaccionController
     {
         $email = Auth::user()->email; // Solo para verificar que la sesión esté activa. Si se cerró la sesión, Laravel lanza una excepción
 
+        $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
+
         $request_uniqid = (string)$request->get('uniqid', '');
         if ( $request_uniqid != '' )
         {
@@ -273,51 +276,89 @@ class FacturaPosController extends TransaccionController
             $crear_abonos = true; // Si hay anticipos, se crean los abonos
         }
 
-        // Crear documento de Ventas
+        $todos_los_pedidos = collect([]);
+
+        DB::beginTransaction();
         try {
-            $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
-        } catch (QueryException $e) {
-            $is_duplicate_uniqid = ($e->getCode() == '23000') && (strpos($e->getMessage(), "for key 'uniqid'") !== false);
+            if ((int)$request->pedido_id != 0) {
+                $pedido = VtasPedido::where('id', (int)$request->pedido_id)->lockForUpdate()->first();
 
-            if ( $is_duplicate_uniqid && $request_uniqid != '' )
-            {
-                $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
-                if ( $doc_existente != null ) {
-                    return response()->json( $this->build_json_doc_encabezado($doc_existente), 200);
+                if ( is_null($pedido) || $pedido->estado != 'Pendiente' || (int)$pedido->ventas_doc_relacionado_id != 0 ) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'warning',
+                        'message' => 'El pedido seleccionado ya fue facturado o no está disponible. Actualice la lista de pendientes.'
+                    ], 409);
                 }
-            }
 
-            throw $e;
-        }
-
-        if ((int)config('inventarios.manejar_platillos_con_contorno')) {
-            $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
-        }
-
-        // Crear Registros del documento de ventas
-        FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
-
-        if ( $request->pedido_id != 0) {
-            $pedido = VtasPedido::find($request->pedido_id);
-            if ( $pedido != null )
-            {
                 if ((int)config('ventas_pos.agrupar_pedidos_por_cliente') == 1) {
-                    $todos_los_pedidos = $this->get_todos_los_pedidos_mesero_para_la_mesa($pedido);
+                    $todos_los_pedidos = VtasPedido::where('cliente_id', $pedido->cliente_id)
+                        ->where('estado', 'Pendiente')
+                        ->where('ventas_doc_relacionado_id', 0)
+                        ->whereIn('core_tipo_transaccion_id', [42, 60])
+                        ->lockForUpdate()
+                        ->get();
 
-                    foreach ($todos_los_pedidos as $un_pedido) {
-                        $un_pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
-                        $un_pedido->estado = 'Facturado';
-                        $un_pedido->save(); 
-                        
-                        self::actualizar_cantidades_pendientes( $un_pedido, 'restar' );
+                    if ($todos_los_pedidos->isEmpty()) {
+                        DB::rollBack();
+                        return response()->json([
+                            'status' => 'warning',
+                            'message' => 'Los pedidos de esta mesa/cliente ya no están disponibles para facturar.'
+                        ], 409);
                     }
-                }else{
-                    $pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
-                    $pedido->estado = 'Facturado';
-                    $pedido->save();
-                    self::actualizar_cantidades_pendientes( $pedido, 'restar' );
+                } else {
+                    $todos_los_pedidos = collect([$pedido]);
+                }
+
+                $validar_cantidades = ((int)config('ventas_pos.agrupar_pedidos_por_cliente') != 1);
+                if ( !$this->lineas_factura_corresponden_a_pedidos($lineas_registros, $todos_los_pedidos, $validar_cantidades) ) {
+                    DB::rollBack();
+                    return response()->json([
+                        'status' => 'warning',
+                        'message' => 'Los productos de la factura no corresponden a los pedido(s) cargado(s). Vuelva a cargar los pedidos.'
+                    ], 409);
                 }
             }
+
+            // Crear documento de Ventas
+            try {
+                $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
+            } catch (QueryException $e) {
+                $is_duplicate_uniqid = ($e->getCode() == '23000') && (strpos($e->getMessage(), "for key 'uniqid'") !== false);
+
+                if ( $is_duplicate_uniqid && $request_uniqid != '' )
+                {
+                    $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
+                    if ( $doc_existente != null ) {
+                        DB::rollBack();
+                        return response()->json( $this->build_json_doc_encabezado($doc_existente), 200);
+                    }
+                }
+
+                throw $e;
+            }
+
+            if ((int)config('inventarios.manejar_platillos_con_contorno')) {
+                $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+            }
+
+            // Crear Registros del documento de ventas
+            FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
+
+            if ( $request->pedido_id != 0) {
+                foreach ($todos_los_pedidos as $un_pedido) {
+                    $un_pedido->ventas_doc_relacionado_id = $doc_encabezado->id;
+                    $un_pedido->estado = 'Facturado';
+                    $this->guardar_pedido_sin_tocar_updated_at($un_pedido);
+
+                    self::actualizar_cantidades_pendientes( $un_pedido, 'restar' );
+                }
+            }
+
+            DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            throw $e;
         }
         
         if($acumular_factura)
@@ -705,14 +746,14 @@ class FacturaPosController extends TransaccionController
                 foreach ($todos_los_pedidos as $un_pedido) {
                     $un_pedido->estado = "Pendiente";
                     $un_pedido->ventas_doc_relacionado_id = 0;
-                    $un_pedido->save();
+                    $this->guardar_pedido_sin_tocar_updated_at($un_pedido);
 
                     self::actualizar_cantidades_pendientes( $un_pedido, 'sumar' );
                 }
             }else{
                 $pedido->estado = "Pendiente";
                 $pedido->ventas_doc_relacionado_id = 0;
-                $pedido->save();
+                $this->guardar_pedido_sin_tocar_updated_at($pedido);
 
                 self::actualizar_cantidades_pendientes( $pedido, 'sumar' );
             }                
@@ -1219,11 +1260,73 @@ class FacturaPosController extends TransaccionController
         return VtasPedido::where(
                             [
                                 ['cliente_id','=',$pedido->cliente_id],
-                                ['vendedor_id','=',$pedido->vendedor_id],
                                 ['estado','=','Pendiente']
                             ]
                         )
+                ->where('ventas_doc_relacionado_id', 0)
+                ->whereIn('core_tipo_transaccion_id', [42, 60])
                 ->get();
+    }
+
+    protected function guardar_pedido_sin_tocar_updated_at($pedido)
+    {
+        $pedido->timestamps = false;
+        $pedido->save();
+        $pedido->timestamps = true;
+    }
+
+    protected function lineas_factura_corresponden_a_pedidos($lineas_registros, $todos_los_pedidos, $validar_cantidades = true)
+    {
+        $cantidades_pedido = [];
+        foreach ($todos_los_pedidos as $un_pedido) {
+            foreach ($un_pedido->lineas_registros as $linea_pedido) {
+                $inv_producto_id = (int)$linea_pedido->inv_producto_id;
+                $cantidad_pedido = (float)$linea_pedido->cantidad;
+                if ($inv_producto_id <= 0 || $cantidad_pedido <= 0) {
+                    continue;
+                }
+
+                if (!isset($cantidades_pedido[$inv_producto_id])) {
+                    $cantidades_pedido[$inv_producto_id] = 0;
+                }
+                $cantidades_pedido[$inv_producto_id] += $cantidad_pedido;
+            }
+        }
+
+        $cantidades_factura = [];
+        foreach ($lineas_registros as $linea_factura) {
+            if (!isset($linea_factura->inv_producto_id) || !isset($linea_factura->cantidad)) {
+                continue;
+            }
+
+            $inv_producto_id = (int)$linea_factura->inv_producto_id;
+            $cantidad_factura = (float)$linea_factura->cantidad;
+            if ($inv_producto_id <= 0 || $cantidad_factura <= 0) {
+                continue;
+            }
+
+            if (!isset($cantidades_factura[$inv_producto_id])) {
+                $cantidades_factura[$inv_producto_id] = 0;
+            }
+            $cantidades_factura[$inv_producto_id] += $cantidad_factura;
+        }
+
+        foreach ($cantidades_factura as $inv_producto_id => $cantidad_factura) {
+            if (!isset($cantidades_pedido[$inv_producto_id])) {
+                return false;
+            }
+
+            if (!$validar_cantidades) {
+                continue;
+            }
+
+            // Tolerancia para evitar falsos negativos por decimales.
+            if ($cantidad_factura > ($cantidades_pedido[$inv_producto_id] + 0.0001)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     // $request es actualizado por referencia
@@ -1240,9 +1343,82 @@ class FacturaPosController extends TransaccionController
             $pdv = Pdv::find($request_2->pdv_id);
 
             $request_2['lineas_registros_medios_recaudos'] = '[{"teso_medio_recaudo_id":"1-Efectivo","teso_motivo_id":"1-Recaudo clientes","teso_caja_id":"' . $pdv->caja_default_id . '-' . $pdv->caja->descripcion . '","teso_cuenta_bancaria_id":"0-","valor":"$' . $total_factura . '"}]';
-        } else {           
+        } else {
             $request_2['lineas_registros_medios_recaudos'] = $medios_recaudos;
         }
+    }
+
+    protected function aplicar_excedente_transferencia_como_otros_recaudos(Request &$request)
+    {
+        if (!(int)config('ventas_pos.aplicar_redondeo_adicional_transferencia')) {
+            return;
+        }
+
+        $valor_total_cambio = (float)$request->get('valor_total_cambio', 0);
+        if ($valor_total_cambio <= 0) {
+            return;
+        }
+
+        $lineas_recaudos = json_decode($request->lineas_registros_medios_recaudos, true);
+        if (!is_array($lineas_recaudos) || empty($lineas_recaudos)) {
+            return;
+        }
+
+        $motivo_otros_recaudos = TesoMotivo::where('core_empresa_id', (int)$request->core_empresa_id)
+            ->where('teso_tipo_motivo', 'otros-recaudos')
+            ->where('movimiento', 'entrada')
+            ->where('estado', 'Activo')
+            ->orderBy('id', 'ASC')
+            ->first();
+
+        if (is_null($motivo_otros_recaudos)) {
+            return;
+        }
+
+        $index_linea_transferencia = null;
+        foreach ($lineas_recaudos as $index => $linea) {
+            if (!is_array($linea)) {
+                continue;
+            }
+
+            $teso_medio_recaudo_id = isset($linea['teso_medio_recaudo_id']) ? explode('-', $linea['teso_medio_recaudo_id'])[0] : 0;
+            $teso_caja_id = isset($linea['teso_caja_id']) ? explode('-', $linea['teso_caja_id'])[0] : 0;
+            $valor_linea = isset($linea['valor']) ? (float)str_replace('$', '', $linea['valor']) : 0;
+
+            // Excluye anticipos y toma solo lineas por banco/transferencia (caja = 0)
+            if ((int)$teso_medio_recaudo_id != 0 && (int)$teso_caja_id == 0 && $valor_linea > 0) {
+                $index_linea_transferencia = $index;
+                break;
+            }
+        }
+
+        if (is_null($index_linea_transferencia)) {
+            return;
+        }
+
+        $linea_transferencia = $lineas_recaudos[$index_linea_transferencia];
+        $valor_transferencia = (float)str_replace('$', '', $linea_transferencia['valor']);
+        $excedente = min($valor_total_cambio, $valor_transferencia);
+
+        if ($excedente <= 0) {
+            return;
+        }
+
+        $lineas_recaudos[$index_linea_transferencia]['valor'] = '$' . ($valor_transferencia - $excedente);
+        if ((float)str_replace('$', '', $lineas_recaudos[$index_linea_transferencia]['valor']) <= 0) {
+            unset($lineas_recaudos[$index_linea_transferencia]);
+        }
+
+        $lineas_recaudos[] = [
+            'teso_medio_recaudo_id' => $linea_transferencia['teso_medio_recaudo_id'],
+            'teso_motivo_id' => $motivo_otros_recaudos->id . '-' . $motivo_otros_recaudos->descripcion,
+            'teso_caja_id' => $linea_transferencia['teso_caja_id'],
+            'teso_cuenta_bancaria_id' => $linea_transferencia['teso_cuenta_bancaria_id'],
+            'valor' => '$' . $excedente
+        ];
+
+        $request['lineas_registros_medios_recaudos'] = json_encode(array_values($lineas_recaudos));
+        $request['valor_total_cambio'] = 0;
     }
 
     /*
@@ -1254,8 +1430,8 @@ class FacturaPosController extends TransaccionController
         $invoicing_service = new InvoicingService();
 
         // Lineas de registros
-        $invoicing_service->crear_registros_documento_pos($request, $doc_encabezado, $lineas_registros);  
-        
+        $invoicing_service->crear_registros_documento_pos($request, $doc_encabezado, $lineas_registros);
+
         $doc_encabezado->valor_total = $doc_encabezado->lineas_registros->sum('precio_total');
         $doc_encabezado->save();
 

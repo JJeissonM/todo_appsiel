@@ -1126,6 +1126,14 @@ $(document).ready(function () {
 
     if (hay_productos == 0) {
       reset_efectivo_recibido();
+
+      if ($("#pedido_id").val() != 0) {
+        $("#pedido_id").val(0);
+        $("#btn_cancelar").show();
+        $("#btn_cancelar_pedido").hide();
+        $("#object_anticipos").val("null");
+        reset_campos_formulario();
+      }
     }
 
     $('#inv_producto_id').focus();
@@ -1294,6 +1302,23 @@ $(document).ready(function () {
                
               puede_continuar = false;
 
+              return false;
+            }
+
+            if (server_error_code === 409) {
+              var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
+              var warning_message = "Los pedidos seleccionados ya no están disponibles para facturar. Actualiza la lista de pendientes.";
+              if (response_json && typeof response_json.message === "string" && response_json.message !== "") {
+                warning_message = response_json.message;
+              }
+
+              Swal.fire({
+                icon: "warning",
+                title: "Advertencia",
+                text: warning_message
+              });
+
+              puede_continuar = false;
               return false;
             }
 

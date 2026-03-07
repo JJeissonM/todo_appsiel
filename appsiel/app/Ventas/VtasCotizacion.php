@@ -4,15 +4,13 @@ namespace App\Ventas;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
-use Auth;
-
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
 
 use App\Core\ModeloEavValor;
 use App\Traits\FiltraRegistrosPorUsuario;
 use App\Ventas\CondicionPago;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class VtasCotizacion extends Model
 {

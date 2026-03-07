@@ -52,7 +52,7 @@
 
 -->
 
-<input id="mySearchInput" onkeyup="mySearchInputFunction()" type="text" placeholder="Buscar..." style="border: none; border-color: transparent; background-color: transparent; border: 1px solid rgb(100, 98, 202); width: 100%;font-size: 16px; height: 50px; margin: 1px; border-radius: 4px;">
+<input id="mySearchInput" onkeyup="mySearchInputFunction()" type="text" placeholder="Buscar..." style="border: none; border-color: transparent; background-color: transparent; border: 1px solid rgb(100, 98, 202); width: 100%;font-size: 16px; height: 50px; margin: 1px; border-radius: 4px;" autocomplete="off">
 <br/>
 
 <div class="table-responsive">

@@ -2,12 +2,15 @@
 
 namespace App\Inventarios;
 
+use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class EntradaCompras extends InvDocEncabezado
 {
+    use FiltraRegistrosPorUsuario;
+
     protected $table = 'inv_doc_encabezados';
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Bodega', 'Tercero', 'Detalle', 'Estado'];

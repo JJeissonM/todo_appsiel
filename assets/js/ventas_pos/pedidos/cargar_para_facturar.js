@@ -39,6 +39,19 @@ $(document).ready(function () {
 
                 $("#efectivo_recibido").removeAttr("readonly");
                 $("#efectivo_recibido").focus();
+            })
+            .fail(function (xhr) {
+                var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
+                var warning_message = "El pedido ya no está disponible para facturar. Actualice la lista de pendientes.";
+                if (response_json && typeof response_json.message === "string" && response_json.message !== "") {
+                    warning_message = response_json.message;
+                }
+
+                Swal.fire({
+                    icon: "warning",
+                    title: "Advertencia",
+                    text: warning_message
+                });
             });
 
     });

@@ -4,6 +4,7 @@ namespace App\VentasPos\Services;
 
 use App\CxC\CxcMovimiento;
 use App\Http\Controllers\Tesoreria\RecaudoCxcController;
+use App\Tesoreria\TesoMotivo;
 use Illuminate\Http\Request;
 use \View;
 
@@ -91,9 +92,17 @@ class TreasuryService
                     continue;
                 }
 
+                $teso_motivo_id = (int)explode("-", $linea->teso_motivo_id)[0];
+                if ((int)config('ventas_pos.aplicar_redondeo_adicional_transferencia')) {
+                    $motivo = TesoMotivo::find($teso_motivo_id);
+                    if (!is_null($motivo) && $motivo->teso_tipo_motivo == 'otros-recaudos' && $motivo->movimiento == 'entrada') {
+                        continue;
+                    }
+                }
+
                 $teso_caja_id = explode("-", $linea->teso_caja_id)[0];
 
-                $recaudos_cxc_motivo_id = explode("-", $linea->teso_motivo_id)[0];
+                $recaudos_cxc_motivo_id = $teso_motivo_id;
 
                 if( (int)config('tesoreria.recaudos_cxc_motivo_id') != 0 )
                 {

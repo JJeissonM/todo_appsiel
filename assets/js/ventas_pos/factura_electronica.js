@@ -130,22 +130,44 @@ $(document).ready(function () {
             url.replace('pos_factura', 'pos_factura_electronica'),
             data, 
             function (url_print) {
+                $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
+                $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
+
+                $("#pedido_id").val(0);
+                $("#object_anticipos").val('null');
+                $("#uniqid").val( uniqid() );
+                
+                ventana_imprimir_fe( url_print );
+                resetear_ventana();
+
+                enfocar_tab_totales();
+
+                if ( $('#action').val() != 'create' )
+                {
+                    location.href = url_raiz + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val() + '&action=create';
+                }
+            }
+        ).fail(function (xhr) {
             $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
+            $('#btn_guardando_fe').removeAttr('disabled');
             $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
 
-            $("#pedido_id").val(0);
-            $("#object_anticipos").val('null');
-            $("#uniqid").val( uniqid() );
-            
-            ventana_imprimir_fe( url_print );
-            resetear_ventana();
+            var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
+            if (xhr && xhr.status === 409 && response_json && typeof response_json.message === "string") {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Advertencia',
+                    text: response_json.message
+                });
+                return false;
+            }
 
-            enfocar_tab_totales();
-
-            if ( $('#action').val() != 'create' )
-            {
-                location.href = url_raiz + '/pos_factura/create?id=20&id_modelo=230&id_transaccion=47&pdv_id=' + $('#pdv_id').val() + '&action=create';
-            }            
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No fue posible guardar la Factura Electrónica. Intente nuevamente.'
+            });
+            return false;
         });
         
     });
