@@ -47,8 +47,6 @@ class FacturaRestauranteController extends TransaccionController
             $tabla = '';
         }
 
-        $user = Auth::user();
-
         /**
          * Validar resolución de Facturación
          */
@@ -95,11 +93,7 @@ class FacturaRestauranteController extends TransaccionController
         $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
-            $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
-        }else{
-            $cajas =  TesoCaja::opciones_campo_select();
-        }
+        $cajas = TesoCaja::opciones_campo_select();
         
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 

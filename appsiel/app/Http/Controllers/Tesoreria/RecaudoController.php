@@ -541,11 +541,9 @@ class RecaudoController extends TransaccionController
 
     public static function get_cajas(){
         $vec_m = [];
-        $registros = TesoCaja::where([
-            ['core_empresa_id', '=', Auth::user()->empresa_id],
-            ['estado', '=', 'Activo']
-            ])
-            ->get();       
+
+        $registros = TesoCaja::get_cajas_permitidas();
+
         foreach ($registros as $fila) {
             $vec_m[$fila->id]=$fila->descripcion; 
         }

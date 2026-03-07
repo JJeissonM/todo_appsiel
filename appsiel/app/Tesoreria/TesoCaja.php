@@ -5,6 +5,7 @@ namespace App\Tesoreria;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Core\Acl;
+use App\VentasPos\Pdv;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -78,6 +79,18 @@ class TesoCaja extends Model
     public static function get_cajas_permitidas()
     {
         $user = Auth::user();
+
+        if ( self::usuario_es_administrador($user) )
+        {
+            return self::get_cajas_activas();
+        }
+
+        $cajas_asignadas_pdv = self::get_cajas_asignadas_al_usuario_en_pdv( $user->id );
+        if ( $cajas_asignadas_pdv->count() > 0 )
+        {
+            return $cajas_asignadas_pdv;
+        }
+
         if( $user->hasRole('Agencia') )
         {
             $acl = Acl::where([
@@ -93,15 +106,44 @@ class TesoCaja extends Model
                             ->where('teso_cajas.estado', 'Activo')
                             ->select('teso_cajas.id', 'teso_cajas.descripcion')
                             ->get();
+
+                return $cajas;
             }
-            
-        }else{
-            $cajas = TesoCaja::where('teso_cajas.estado', 'Activo')
-                            ->select('teso_cajas.id', 'teso_cajas.descripcion')
-                            ->get();
         }
 
-        return $cajas;
+        return self::get_cajas_activas();
+    }
+
+    public static function get_cajas_activas()
+    {
+        return TesoCaja::where('teso_cajas.estado', 'Activo')
+                        ->select('teso_cajas.id', 'teso_cajas.descripcion')
+                        ->get();
+    }
+
+    public static function get_cajas_asignadas_al_usuario_en_pdv( $user_id )
+    {
+        $ids_cajas = Pdv::where('cajero_default_id', $user_id)
+                        ->where('core_empresa_id', Auth::user()->empresa_id)
+                        ->where('estado', '<>', 'Inactivo')
+                        ->whereNotNull('caja_default_id')
+                        ->pluck('caja_default_id')
+                        ->unique()
+                        ->toArray();
+
+        if ( empty($ids_cajas) ) {
+            return collect([]);
+        }
+
+        return TesoCaja::whereIn('id', $ids_cajas)
+                        ->where('teso_cajas.estado', 'Activo')
+                        ->select('teso_cajas.id', 'teso_cajas.descripcion')
+                        ->get();
+    }
+
+    public static function usuario_es_administrador( $user )
+    {
+        return $user->hasRole('SuperAdmin') || $user->hasRole('Administrador');
     }
 
 

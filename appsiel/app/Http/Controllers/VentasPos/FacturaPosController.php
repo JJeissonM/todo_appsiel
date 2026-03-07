@@ -112,8 +112,6 @@ class FacturaPosController extends TransaccionController
             $tabla_dibujada = $tabla->dibujar();
         }
         
-        $user = Auth::user();
-
         /**
          * Validar resolución de Facturación
          */
@@ -160,11 +158,7 @@ class FacturaPosController extends TransaccionController
         $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') || $user->hasRole('Cajero Canchas') ) {
-            $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
-        }else{
-            $cajas =  TesoCaja::opciones_campo_select();
-        }
+        $cajas = TesoCaja::opciones_campo_select();
         
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
@@ -538,7 +532,6 @@ class FacturaPosController extends TransaccionController
         $factura = app($this->modelo->name_space)->find($id); // Encabezado FActura POS
 
         $pdv = Pdv::find($factura->pdv_id);
-        $user = Auth::user();
 
         $factura_pos_service = new FacturaPosService();
         
@@ -594,11 +587,7 @@ class FacturaPosController extends TransaccionController
         $motivos =  $factura_pos_service->get_motivos_tesoreria();
         $medios_recaudo = RecaudoController::get_medios_recaudo();
 
-        if ( $user->hasRole('Cajero PDV') || $user->hasRole('Cajero Junior') ) {
-            $cajas =  [ $pdv->caja->id => $pdv->caja->descripcion ];
-        }else{
-            $cajas =  TesoCaja::opciones_campo_select();
-        }  
+        $cajas = TesoCaja::opciones_campo_select();
 
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
 
@@ -1441,4 +1430,5 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
+
 
