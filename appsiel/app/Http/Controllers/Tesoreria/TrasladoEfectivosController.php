@@ -85,6 +85,7 @@ class TrasladoEfectivosController extends TransaccionController
         $medios_recaudo = TesoMedioRecaudo::opciones_campo_select();
 
         $cajas = TesoCaja::opciones_campo_select();
+        $cajas = $this->agregar_caja_default_para_traslado_efectivo($cajas);
         $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
         $motivos = TesoMotivo::where('teso_tipo_motivo', 'traslado-efectivo')->get()->pluck('descripcion', 'movimiento');
 
@@ -108,6 +109,37 @@ class TrasladoEfectivosController extends TransaccionController
                     <td> <div class="btn-group"> ' . $btn_confirmar . $btn_borrar . ' </div> </td>
                 </tr>';
         return $tr;
+    }
+
+    protected function agregar_caja_default_para_traslado_efectivo(array $cajas)
+    {
+        $user = Auth::user();
+        if (is_null($user) || TesoCaja::usuario_es_administrador($user)) {
+            return $cajas;
+        }
+
+        $cajas_pdv = TesoCaja::get_cajas_asignadas_al_usuario_en_pdv($user->id);
+        if ($cajas_pdv->isEmpty()) {
+            return $cajas;
+        }
+
+        $caja_default_id = (int)config('tesoreria.caja_default_id');
+        if ($caja_default_id <= 0) {
+            return $cajas;
+        }
+
+        $caja_default = TesoCaja::where('id', $caja_default_id)
+            ->where('estado', 'Activo')
+            ->select('id', 'descripcion')
+            ->first();
+
+        if (is_null($caja_default)) {
+            return $cajas;
+        }
+
+        $cajas[$caja_default->id] = $caja_default->descripcion;
+
+        return $cajas;
     }
 
     public function anular_traslado($id)

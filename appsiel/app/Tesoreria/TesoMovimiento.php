@@ -403,6 +403,7 @@ class TesoMovimiento extends Model
                             'teso_movimientos.created_at',
                             'core_terceros.descripcion as tercero_descripcion'
                         )
+                        ->orderBy('teso_movimientos.fecha')
                         ->orderBy('teso_movimientos.created_at')
                         ->orderBy('teso_movimientos.id')
                         ->get();
