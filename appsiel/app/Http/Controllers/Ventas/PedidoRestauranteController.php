@@ -159,11 +159,17 @@ class PedidoRestauranteController extends TransaccionController
         $url_index = 'ventas?id=' . Input::get('id');
         
         $cocinas = config('pedidos_restaurante.cocinas');
+        $cocina_index = Input::get('cocina_index');
+        $cocina_label = 'Cocina';
+        if ( isset($cocinas[$cocina_index]) )
+        {
+            $cocina_label = $cocinas[$cocina_index]['label'];
+        }
 
         $miga_pan = [
             ['url' => 'ventas?id=' . Input::get('id'), 'etiqueta' => 'Ventas'],
             ['url' => $url_index, 'etiqueta' => 'Cocinas'],
-            ['url' => 'NO', 'etiqueta' => $cocinas[Input::get('cocina_index')]['label']]
+            ['url' => 'NO', 'etiqueta' => $cocina_label]
         ];
 
         $productos = InvProducto::get_datos_basicos('', 'Activo', null, $pdv->bodega_default_id);
