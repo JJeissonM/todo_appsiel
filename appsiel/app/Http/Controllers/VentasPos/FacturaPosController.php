@@ -304,14 +304,6 @@ class FacturaPosController extends TransaccionController
                     $todos_los_pedidos = collect([$pedido]);
                 }
 
-                $validar_cantidades = ((int)config('ventas_pos.agrupar_pedidos_por_cliente') != 1);
-                if ( !$this->lineas_factura_corresponden_a_pedidos($lineas_registros, $todos_los_pedidos, $validar_cantidades) ) {
-                    DB::rollBack();
-                    return response()->json([
-                        'status' => 'warning',
-                        'message' => 'Los productos de la factura no corresponden a los pedido(s) cargado(s). Vuelva a cargar los pedidos.'
-                    ], 409);
-                }
             }
 
             // Crear documento de Ventas
@@ -1262,60 +1254,6 @@ class FacturaPosController extends TransaccionController
         $pedido->timestamps = false;
         $pedido->save();
         $pedido->timestamps = true;
-    }
-
-    protected function lineas_factura_corresponden_a_pedidos($lineas_registros, $todos_los_pedidos, $validar_cantidades = true)
-    {
-        $cantidades_pedido = [];
-        foreach ($todos_los_pedidos as $un_pedido) {
-            foreach ($un_pedido->lineas_registros as $linea_pedido) {
-                $inv_producto_id = (int)$linea_pedido->inv_producto_id;
-                $cantidad_pedido = (float)$linea_pedido->cantidad;
-                if ($inv_producto_id <= 0 || $cantidad_pedido <= 0) {
-                    continue;
-                }
-
-                if (!isset($cantidades_pedido[$inv_producto_id])) {
-                    $cantidades_pedido[$inv_producto_id] = 0;
-                }
-                $cantidades_pedido[$inv_producto_id] += $cantidad_pedido;
-            }
-        }
-
-        $cantidades_factura = [];
-        foreach ($lineas_registros as $linea_factura) {
-            if (!isset($linea_factura->inv_producto_id) || !isset($linea_factura->cantidad)) {
-                continue;
-            }
-
-            $inv_producto_id = (int)$linea_factura->inv_producto_id;
-            $cantidad_factura = (float)$linea_factura->cantidad;
-            if ($inv_producto_id <= 0 || $cantidad_factura <= 0) {
-                continue;
-            }
-
-            if (!isset($cantidades_factura[$inv_producto_id])) {
-                $cantidades_factura[$inv_producto_id] = 0;
-            }
-            $cantidades_factura[$inv_producto_id] += $cantidad_factura;
-        }
-
-        foreach ($cantidades_factura as $inv_producto_id => $cantidad_factura) {
-            if (!isset($cantidades_pedido[$inv_producto_id])) {
-                return false;
-            }
-
-            if (!$validar_cantidades) {
-                continue;
-            }
-
-            // Tolerancia para evitar falsos negativos por decimales.
-            if ($cantidad_factura > ($cantidades_pedido[$inv_producto_id] + 0.0001)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     // $request es actualizado por referencia
