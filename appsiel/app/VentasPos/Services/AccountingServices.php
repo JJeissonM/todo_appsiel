@@ -3,7 +3,7 @@
 namespace App\VentasPos\Services;
 
 use App\Contabilidad\ContabMovimiento;
-use App\Contabilidad\Impuesto;
+use App\Contabilidad\Services\ImpuestoService;
 use App\CxC\CxcMovimiento;
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\VtasMovimiento;
@@ -103,7 +103,7 @@ class AccountingServices
                 foreach ($documento->lineas_registros as $linea) {
                     $summary['lineas_procesadas']++;
 
-                    if ($this->recalcular_linea_documento($linea)) {
+                    if ($this->recalcular_linea_documento($linea, (int)$documento->cliente_id)) {
                         $summary['lineas_actualizadas']++;
                     }
                 }
@@ -189,13 +189,13 @@ class AccountingServices
         }
     }
 
-    protected function recalcular_linea_documento(DocRegistro $linea)
+    protected function recalcular_linea_documento(DocRegistro $linea, $cliente_id = 0)
     {
         $cantidad = (float)$linea->cantidad;
         $precio_unitario = (float)$linea->precio_unitario;
         $tasa_descuento = (float)$linea->tasa_descuento;
 
-        $tasa_impuesto = $this->get_tasa_impuesto_por_id($linea->impuesto_id, (float)$linea->tasa_impuesto);
+        $tasa_impuesto = $this->get_tasa_impuesto_item((int)$linea->inv_producto_id, (int)$cliente_id, (float)$linea->tasa_impuesto);
 
         $precio_bruto_total = round($precio_unitario * $cantidad, 2);
         $valor_total_descuento = (float)$linea->valor_total_descuento;
@@ -248,19 +248,19 @@ class AccountingServices
         return $linea_anterior != $linea_nueva;
     }
 
-    protected function get_tasa_impuesto_por_id($impuesto_id, $tasa_fallback = 0)
+    protected function get_tasa_impuesto_item($producto_id, $cliente_id = 0, $tasa_fallback = 0)
     {
-        $impuesto_id = (int)$impuesto_id;
-        if ($impuesto_id <= 0) {
+        $producto_id = (int)$producto_id;
+        if ($producto_id <= 0) {
             return (float)$tasa_fallback;
         }
 
-        $impuesto = Impuesto::find($impuesto_id);
-        if (is_null($impuesto)) {
+        $tasa = (new ImpuestoService())->get_tasa_item($producto_id, 0, (int)$cliente_id);
+        if ($tasa == 0 && (float)$tasa_fallback > 0) {
             return (float)$tasa_fallback;
         }
 
-        return (float)$impuesto->tasa_impuesto;
+        return (float)$tasa;
     }
         
 }
