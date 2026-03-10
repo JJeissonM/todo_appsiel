@@ -26,6 +26,7 @@
 
         @can('vtas_recontabilizar')
         	<a class="btn-gmail" href="{{ url( 'factura_pos_recontabilizar/'.$id.$variables_url ) }}" title="Recontabilizar"><i class="fa fa-cog"></i></a>
+            <button class="btn-gmail" id="btn_reconstruir_movimientos" title="Reconstruir movimientos de ventas"><i class="fa fa-refresh"></i></button>
         @endcan
     @else
 		<a class="btn-gmail" href="{{ url( 'pos_acumular_una_factura_individual/'.$id.$variables_url ) }}" title="Acumular"><i class="fa fa-cogs"></i></a>
@@ -116,6 +117,29 @@
 				{{ Form::hidden( 'factura_id', $id ) }}
 
 	{{ Form::close() }}
+
+    {{ Form::open(['url' => 'factura_pos_reconstruir_movimientos/' . $id . $variables_url, 'method' => 'post', 'id' => 'form_reconstruir_movimientos']) }}
+        <div class="modal fade" id="modal_reconstruir_movimientos" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Reconstruir movimientos de ventas</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <b>Advertencia:</b> este proceso recalcula líneas del documento y puede modificar totales de ventas, movimientos POS, movimientos de ventas, contabilidad y valores asociados de CxC o Tesorería.
+                        </div>
+                        <p>¿Desea continuar con la reconstrucción y recontabilización de la factura?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger">Sí, ejecutar proceso</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {{ Form::close() }}
 @endsection
 
 @section('documento_vista')
@@ -152,6 +176,11 @@
 		$(document).ready(function(){
 
 			$('#btn_create_general').hide();
+
+            $('#btn_reconstruir_movimientos').on('click', function(event){
+                event.preventDefault();
+                $('#modal_reconstruir_movimientos').modal('show');
+            });
 
 			$(".btn_editar_registro").click(function(event){
 		        $("#myModal").modal({backdrop: "static"});

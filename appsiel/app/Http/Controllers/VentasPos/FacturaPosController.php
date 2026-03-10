@@ -1164,6 +1164,42 @@ class FacturaPosController extends TransaccionController
         return (new CrudService())->set_catalogos( $pdv_id );
     }
 
+    public function reconstruir_movimientos_factura($documento_id)
+    {
+        if (!Auth::user()->can('vtas_recontabilizar')) {
+            abort(403, 'No autorizado.');
+        }
+
+        $result = (new AccountingServices())->reconstruir_movimientos_y_recontabilizar_factura($documento_id);
+        if ($result->status == 'error') {
+            return redirect('pos_factura/' . $documento_id . '?id=20&id_modelo=230&id_transaccion=47')->with('mensaje_error', $result->message);
+        }
+
+        $summary = $result->summary;
+
+        $mensaje = 'Proceso de reconstrucción y recontabilización ejecutado.<br>';
+        $mensaje .= 'Documento: ' . $summary['documento'] . '<br>';
+        $mensaje .= 'Líneas procesadas: ' . $summary['lineas_procesadas'] . ' (actualizadas: ' . $summary['lineas_actualizadas'] . ')<br>';
+        $mensaje .= 'Total factura: $' . number_format($summary['total_anterior'], 0, ',', '.') . ' -> $' . number_format($summary['total_nuevo'], 0, ',', '.') . '<br>';
+        $mensaje .= 'Movimientos POS: eliminados ' . $summary['mov_pos_eliminados'] . ', creados ' . $summary['mov_pos_creados'] . '<br>';
+        $mensaje .= 'Movimientos Ventas: eliminados ' . $summary['mov_vtas_eliminados'] . ', creados ' . $summary['mov_vtas_creados'] . '<br>';
+        $mensaje .= 'Contabilidad: eliminados ' . $summary['contab_eliminados'] . ', creados ' . $summary['contab_creados'] . '<br>';
+
+        if ($summary['teso_lineas_afectadas'] > 0) {
+            $mensaje .= 'Tesorería: líneas afectadas ' . $summary['teso_lineas_afectadas'] . ', valor total $' . number_format($summary['teso_valor_anterior'], 0, ',', '.') . ' -> $' . number_format($summary['teso_valor_nuevo'], 0, ',', '.') . '<br>';
+        }
+
+        if ($summary['cxc_afectado'] == 1) {
+            $mensaje .= 'CxC: valor documento $' . number_format($summary['cxc_valor_anterior'], 0, ',', '.') . ' -> $' . number_format($summary['cxc_valor_nuevo'], 0, ',', '.') . '<br>';
+        }
+
+        if (!empty($summary['observaciones'])) {
+            $mensaje .= '<br><b>Advertencias:</b><br>' . implode('<br>', $summary['observaciones']);
+        }
+
+        return redirect('pos_factura/' . $documento_id . '?id=20&id_modelo=230&id_transaccion=47')->with('flash_message', $mensaje);
+    }
+
     // Recontabilizar un documento dada su ID
     public static function recontabilizar_factura( $documento_id )
     {

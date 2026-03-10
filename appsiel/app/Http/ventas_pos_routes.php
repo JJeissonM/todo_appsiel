@@ -72,6 +72,7 @@ Route::get('pos_get_facturas_con_lineas_registros_sin_movimiento/{fecha_desde}/{
 
 // PROCESOS
 Route::get('factura_pos_recontabilizar/{id}', 'VentasPos\FacturaPosController@recontabilizar_factura');
+Route::post('factura_pos_reconstruir_movimientos/{id}', 'VentasPos\FacturaPosController@reconstruir_movimientos_factura');
 
 Route::get('ventas_pos_reconstruir_mov_ventas_documento/{documento_id}', 'VentasPos\ProcesosController@reconstruir_mov_ventas_documento');
 
