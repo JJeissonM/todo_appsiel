@@ -250,6 +250,10 @@ class AccountingServices
 
     protected function get_tasa_impuesto_item($producto_id, $cliente_id = 0, $tasa_fallback = 0)
     {
+        if (!config('configuracion.liquidacion_impuestos')) {
+            return 0;
+        }
+
         $producto_id = (int)$producto_id;
         if ($producto_id <= 0) {
             return (float)$tasa_fallback;
