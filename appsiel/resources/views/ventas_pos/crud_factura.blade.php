@@ -22,7 +22,11 @@
 
         <div class="marco_formulario">
 
-            <h4>Nuevo registro</h4>
+            @if( Input::get('action') == 'edit' )
+                <h4>Modificando factura POS: {{ $factura->tipo_documento_app->prefijo }} {{ $factura->consecutivo }}</h4>
+            @else
+                <h4>Nuevo registro</h4>
+            @endif
             <hr>
 
             @if( Input::get('action') == 'edit' )

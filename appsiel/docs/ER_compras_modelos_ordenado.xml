@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36" version="29.6.1">
+  <diagram id="flTmigdjFp-iwfkfuLQX" name="Página-1">
+    <mxGraphModel dx="1737" dy="2337" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="n1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;core_terceros&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;id_tipo_documento_id (FK)&lt;br/&gt;codigo_ciudad (FK)&lt;br/&gt;user_id (FK)&lt;br/&gt;contab_anticipo_cta_id (FK)&lt;br/&gt;contab_cartera_cta_id (FK)&lt;br/&gt;contab_cxp_cta_id (FK)&lt;br/&gt;numero_identificacion&lt;br/&gt;descripcion" vertex="1">
+          <mxGeometry height="250" width="330" x="50" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;compras_proveedores&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;core_tercero_id (FK)&lt;br/&gt;clase_proveedor_id (FK)&lt;br/&gt;condicion_pago_id (FK)&lt;br/&gt;inv_bodega_id (FK)&lt;br/&gt;codigo&lt;br/&gt;estado" vertex="1">
+          <mxGeometry height="210" width="330" x="500" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;compras_doc_encabezados&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;core_tipo_transaccion_id (FK)&lt;br/&gt;core_tipo_doc_app_id (FK)&lt;br/&gt;core_tercero_id (FK)&lt;br/&gt;proveedor_id (FK)&lt;br/&gt;entrada_almacen_id (FK)&lt;br/&gt;compras_doc_relacionado_id (FK, self)&lt;br/&gt;consecutivo&lt;br/&gt;fecha&lt;br/&gt;valor_total&lt;br/&gt;estado" vertex="1">
+          <mxGeometry height="280" width="370" x="580" y="420" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;compras_doc_registros&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;compras_doc_encabezado_id (FK)&lt;br/&gt;inv_doc_registro_id (FK?)&lt;br/&gt;inv_producto_id (FK)&lt;br/&gt;contab_retencion_id (FK?)&lt;br/&gt;inv_motivo_id (FK?)&lt;br/&gt;cantidad&lt;br/&gt;precio_unitario&lt;br/&gt;precio_total&lt;br/&gt;base_impuesto&lt;br/&gt;valor_impuesto" vertex="1">
+          <mxGeometry height="280" width="360" x="1310" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;inv_productos&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;descripcion&lt;br/&gt;referencia&lt;br/&gt;precio_compra&lt;br/&gt;impuesto_id (FK)&lt;br/&gt;estado" vertex="1">
+          <mxGeometry height="180" width="300" x="980" y="120" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;compras_pivot_items_xml&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;inv_producto_id (FK)&lt;br/&gt;proveedor_id (FK)&lt;br/&gt;codigo_item_xml&lt;br/&gt;nombre_item_xml" vertex="1">
+          <mxGeometry height="180" width="320" x="770" y="-130" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;core_tipos_docs_apps&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;prefijo&lt;br/&gt;descripcion&lt;br/&gt;estado" vertex="1">
+          <mxGeometry height="160" width="300" x="460" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="n8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;sys_tipos_transacciones&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;core_app_id (FK)&lt;br/&gt;core_modelo_id (FK)&lt;br/&gt;descripcion&lt;br/&gt;estado" vertex="1">
+          <mxGeometry height="170" width="300" x="80" y="740" as="geometry" />
+        </mxCell>
+        <mxCell id="n9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=8;" value="&lt;b&gt;inv_doc_encabezados&lt;/b&gt;&lt;hr/&gt;PK id&lt;br/&gt;core_tipo_transaccion_id (FK)&lt;br/&gt;core_tipo_doc_app_id (FK)&lt;br/&gt;core_tercero_id (FK)&lt;br/&gt;inv_bodega_id (FK)&lt;br/&gt;consecutivo&lt;br/&gt;fecha" vertex="1">
+          <mxGeometry height="190" width="340" x="980" y="760" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="n1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;" target="n2" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="n2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;" target="n3" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;" target="n4" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="n5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;" target="n4" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;" target="n1" value="N:1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;" target="n7" value="N:1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;" target="n8" value="N:1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="n3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERone;startArrow=ERmany;" target="n9" value="N:1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="n5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;" target="n6" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="n2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=ERmany;startArrow=ERone;" target="n6" value="1:N">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

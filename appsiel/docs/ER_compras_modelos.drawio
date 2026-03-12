@@ -1,0 +1,97 @@
+﻿<mxfile host="app.diagrams.net" modified="2026-03-11T12:00:00.000Z" agent="Codex" version="22.1.0">
+  <diagram id="ERCompras" name="ER Compras">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="t1" value="core_terceros&#xa;---------------------------&#xa;PK id&#xa;id_tipo_documento_id (FK)&#xa;codigo_ciudad (FK)&#xa;user_id (FK)&#xa;contab_anticipo_cta_id (FK)&#xa;contab_cartera_cta_id (FK)&#xa;contab_cxp_cta_id (FK)&#xa;numero_identificacion&#xa;descripcion" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="250" width="300" height="260" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t2" value="compras_proveedores&#xa;---------------------------&#xa;PK id&#xa;core_tercero_id (FK)&#xa;clase_proveedor_id (FK)&#xa;condicion_pago_id (FK)&#xa;inv_bodega_id (FK)&#xa;codigo&#xa;estado" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="430" y="90" width="320" height="220" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t3" value="compras_doc_encabezados&#xa;---------------------------&#xa;PK id&#xa;core_tipo_transaccion_id (FK)&#xa;core_tipo_doc_app_id (FK)&#xa;core_tercero_id (FK)&#xa;proveedor_id (FK)&#xa;entrada_almacen_id (FK)&#xa;compras_doc_relacionado_id (FK, self)&#xa;consecutivo&#xa;fecha&#xa;valor_total&#xa;estado" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="430" y="360" width="360" height="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t4" value="compras_doc_registros&#xa;---------------------------&#xa;PK id&#xa;compras_doc_encabezado_id (FK)&#xa;inv_doc_registro_id (FK?)&#xa;inv_producto_id (FK)&#xa;contab_retencion_id (FK?)&#xa;inv_motivo_id (FK?)&#xa;cantidad&#xa;precio_unitario&#xa;precio_total&#xa;base_impuesto&#xa;valor_impuesto" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="860" y="360" width="350" height="280" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t5" value="inv_productos&#xa;---------------------------&#xa;PK id&#xa;descripcion&#xa;referencia&#xa;precio_compra&#xa;impuesto_id (FK)&#xa;estado" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="870" y="60" width="300" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t6" value="compras_pivot_items_xml&#xa;---------------------------&#xa;PK id&#xa;inv_producto_id (FK)&#xa;proveedor_id (FK)&#xa;codigo_item_xml&#xa;nombre_item_xml" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="120" width="300" height="180" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t7" value="core_tipos_docs_apps&#xa;---------------------------&#xa;PK id&#xa;prefijo&#xa;descripcion&#xa;estado" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="60" y="620" width="280" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t8" value="sys_tipos_transacciones&#xa;---------------------------&#xa;PK id&#xa;core_app_id (FK)&#xa;core_modelo_id (FK)&#xa;descripcion&#xa;estado" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="360" y="690" width="320" height="170" as="geometry" />
+        </mxCell>
+
+        <mxCell id="t9" value="inv_doc_encabezados&#xa;---------------------------&#xa;PK id&#xa;core_tipo_transaccion_id (FK)&#xa;core_tipo_doc_app_id (FK)&#xa;core_tercero_id (FK)&#xa;inv_bodega_id (FK)&#xa;consecutivo&#xa;fecha" style="shape=swimlane;startSize=30;rounded=0;html=1;whiteSpace=wrap;container=0;" vertex="1" parent="1">
+          <mxGeometry x="780" y="700" width="320" height="190" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" edge="1" parent="1" source="t1" target="t2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e2" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" edge="1" parent="1" source="t2" target="t3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e3" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" edge="1" parent="1" source="t3" target="t4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e4" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" edge="1" parent="1" source="t5" target="t4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e5" value="N:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" edge="1" parent="1" source="t3" target="t1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e6" value="N:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" edge="1" parent="1" source="t3" target="t7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e7" value="N:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" edge="1" parent="1" source="t3" target="t8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e8" value="N:1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" edge="1" parent="1" source="t3" target="t9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e9" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" edge="1" parent="1" source="t5" target="t6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e10" value="1:N" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERmany;endFill=0;startArrow=ERone;startFill=0;" edge="1" parent="1" source="t2" target="t6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e11" value="self" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=ERone;endFill=0;startArrow=ERmany;startFill=0;" edge="1" parent="1" source="t3" target="t3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="650" y="320" />
+              <mxPoint x="810" y="320" />
+              <mxPoint x="810" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

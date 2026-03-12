@@ -1394,6 +1394,25 @@ $(document).ready(function () {
 
   function finalizar_almacenamiento_factura( doc_encabezado )
   {
+    if (parseInt(doc_encabezado.reused_uniqid || 0, 10) === 1) {
+      Swal.fire({
+        icon: "warning",
+        title: "Factura ya guardada",
+        text:
+          "Se recuperó una factura ya creada con este intento de guardado (" +
+          doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo +
+          "). Para evitar inconsistencias, consulta e imprime el documento desde el historial."
+      });
+
+      $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
+      $("#pedido_id").val(0);
+      $("#object_anticipos").val("null");
+      update_uniqid();
+      resetear_ventana();
+
+      return false;
+    }
+
     $('#cliente_input').css('background-color', '#eee');
 
     $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);

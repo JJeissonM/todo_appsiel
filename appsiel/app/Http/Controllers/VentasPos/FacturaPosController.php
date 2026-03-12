@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -248,7 +249,9 @@ class FacturaPosController extends TransaccionController
         {
             $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
             if ( $doc_existente != null ) {
-                return response()->json( $this->build_json_doc_encabezado($doc_existente), 200);
+                $response = $this->build_json_doc_encabezado($doc_existente);
+                $response['reused_uniqid'] = 1;
+                return response()->json( $response, 200);
             }
         }
         
@@ -317,7 +320,9 @@ class FacturaPosController extends TransaccionController
                     $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
                     if ( $doc_existente != null ) {
                         DB::rollBack();
-                        return response()->json( $this->build_json_doc_encabezado($doc_existente), 200);
+                        $response = $this->build_json_doc_encabezado($doc_existente);
+                        $response['reused_uniqid'] = 1;
+                        return response()->json( $response, 200);
                     }
                 }
 
@@ -414,10 +419,13 @@ class FacturaPosController extends TransaccionController
         $etiquetas = (new PrintServices())->get_etiquetas();
 
         return [
+            'id' => $doc_encabezado->id,
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
             'consecutivo' => $doc_encabezado->consecutivo,
             'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo,
             'doc_encabezado_fecha' => $doc_encabezado->fecha,
+            'doc_encabezado_forma_pago' => $doc_encabezado->forma_pago,
+            'doc_encabezado_valor_total' => (float)$doc_encabezado->valor_total,
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
             'doc_encabezado_vendedor_descripcion' => $doc_encabezado->vendedor->tercero->descripcion,
             'cantidad_total_productos' => count($doc_encabezado->lineas_registros),
@@ -665,7 +673,34 @@ class FacturaPosController extends TransaccionController
             $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
         }
 
-        $doc_encabezado = FacturaPos::find($id);
+        $doc_encabezado = FacturaPos::with('lineas_registros')->find($id);
+
+        $datos_antes = [
+            'fecha' => $doc_encabezado->fecha,
+            'descripcion' => $doc_encabezado->descripcion,
+            'forma_pago' => $doc_encabezado->forma_pago,
+            'fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
+            'vendedor_id' => (int)$doc_encabezado->vendedor_id,
+            'lineas_registros_medios_recaudos' => (string)$doc_encabezado->lineas_registros_medios_recaudos,
+            'valor_total' => (float)$doc_encabezado->valor_total,
+            'total_efectivo_recibido' => (float)$doc_encabezado->total_efectivo_recibido,
+            'valor_ajuste_al_peso' => (float)$doc_encabezado->valor_ajuste_al_peso,
+            'valor_total_bolsas' => (float)$doc_encabezado->valor_total_bolsas,
+            'valor_total_cambio' => (float)$doc_encabezado->valor_total_cambio
+        ];
+
+        $lineas_antes = $doc_encabezado->lineas_registros->map(function ($linea) {
+            return [
+                'inv_producto_id' => (int)$linea->inv_producto_id,
+                'cantidad' => (float)$linea->cantidad,
+                'precio_unitario' => (float)$linea->precio_unitario,
+                'precio_total' => (float)$linea->precio_total,
+                'tasa_descuento' => (float)$linea->tasa_descuento,
+                'tasa_impuesto' => (float)$linea->tasa_impuesto,
+                'base_impuesto_total' => (float)$linea->base_impuesto_total
+            ];
+        })->values()->toArray();
+
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
         $doc_encabezado->forma_pago = $request->forma_pago;
@@ -694,7 +729,82 @@ class FacturaPosController extends TransaccionController
         $request['modificado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
+        $datos_despues = [
+            'fecha' => $doc_encabezado->fecha,
+            'descripcion' => $doc_encabezado->descripcion,
+            'forma_pago' => $doc_encabezado->forma_pago,
+            'fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
+            'vendedor_id' => (int)$doc_encabezado->vendedor_id,
+            'lineas_registros_medios_recaudos' => (string)$doc_encabezado->lineas_registros_medios_recaudos,
+            'valor_total' => (float)$doc_encabezado->valor_total,
+            'total_efectivo_recibido' => (float)$doc_encabezado->total_efectivo_recibido,
+            'valor_ajuste_al_peso' => (float)$doc_encabezado->valor_ajuste_al_peso,
+            'valor_total_bolsas' => (float)$doc_encabezado->valor_total_bolsas,
+            'valor_total_cambio' => (float)$doc_encabezado->valor_total_cambio
+        ];
+
+        $lineas_despues = DocRegistro::where('vtas_pos_doc_encabezado_id', $doc_encabezado->id)
+            ->get()
+            ->map(function ($linea) {
+                return [
+                    'inv_producto_id' => (int)$linea->inv_producto_id,
+                    'cantidad' => (float)$linea->cantidad,
+                    'precio_unitario' => (float)$linea->precio_unitario,
+                    'precio_total' => (float)$linea->precio_total,
+                    'tasa_descuento' => (float)$linea->tasa_descuento,
+                    'tasa_impuesto' => (float)$linea->tasa_impuesto,
+                    'base_impuesto_total' => (float)$linea->base_impuesto_total
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        $this->registrar_auditoria_edicion($request, $doc_encabezado, $datos_antes, $datos_despues, $lineas_antes, $lineas_despues);
+
         return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
+    }
+
+    protected function registrar_auditoria_edicion(Request $request, $doc_encabezado, $datos_antes, $datos_despues, $lineas_antes, $lineas_despues)
+    {
+        if (!Schema::hasTable('vtas_pos_facturas_ediciones_auditoria')) {
+            return;
+        }
+
+        $cambios = [];
+        foreach ($datos_despues as $campo => $valor_despues) {
+            $valor_antes = isset($datos_antes[$campo]) ? $datos_antes[$campo] : null;
+
+            if ((string)$valor_antes !== (string)$valor_despues) {
+                $cambios[$campo] = [
+                    'antes' => $valor_antes,
+                    'despues' => $valor_despues
+                ];
+            }
+        }
+
+        if (json_encode($lineas_antes) !== json_encode($lineas_despues)) {
+            $cambios['lineas_registros'] = [
+                'cantidad_antes' => count($lineas_antes),
+                'cantidad_despues' => count($lineas_despues)
+            ];
+        }
+
+        DB::table('vtas_pos_facturas_ediciones_auditoria')->insert([
+            'vtas_pos_doc_encabezado_id' => $doc_encabezado->id,
+            'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+            'consecutivo' => $doc_encabezado->consecutivo,
+            'editado_por' => Auth::user()->email,
+            'editado_en' => date('Y-m-d H:i:s'),
+            'ip' => $request->ip(),
+            'user_agent' => (string)$request->header('User-Agent', ''),
+            'cambios' => json_encode($cambios, JSON_UNESCAPED_UNICODE),
+            'datos_antes' => json_encode($datos_antes, JSON_UNESCAPED_UNICODE),
+            'datos_despues' => json_encode($datos_despues, JSON_UNESCAPED_UNICODE),
+            'lineas_antes' => json_encode($lineas_antes, JSON_UNESCAPED_UNICODE),
+            'lineas_despues' => json_encode($lineas_despues, JSON_UNESCAPED_UNICODE),
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
     }
 
     /*
