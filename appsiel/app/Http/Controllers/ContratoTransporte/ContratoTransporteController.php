@@ -543,6 +543,15 @@ class ContratoTransporteController extends Controller
             {
                 $representante_legal_contratante = $contratante->tercero->representante_legal();
             }
+        } elseif ( !empty( trim( (string)$c->contratanteText ) ) ) {
+            $representante_legal_contratante = (object)[
+                'descripcion' => $c->contratanteText,
+                'numero_identificacion' => $c->contratanteIdentificacion,
+                'direccion1' => $c->contratanteDireccion,
+                'telefono1' => $c->contratanteTelefono,
+                'tipo' => 'Persona natural',
+                'digito_verificacion' => ''
+            ];
         }
 
         if ( $representante_legal_contratante == '' )

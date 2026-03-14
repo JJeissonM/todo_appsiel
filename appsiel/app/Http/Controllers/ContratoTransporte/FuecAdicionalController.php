@@ -256,6 +256,15 @@ class FuecAdicionalController extends Controller
             {
                 $representante_legal_contratante = $contratante->tercero->representante_legal();
             }
+        } elseif ( !empty( trim( (string)$fuec_adicional->contrato->contratanteText ) ) ) {
+            $representante_legal_contratante = (object)[
+                'descripcion' => $fuec_adicional->contrato->contratanteText,
+                'numero_identificacion' => $fuec_adicional->contrato->contratanteIdentificacion,
+                'direccion1' => $fuec_adicional->contrato->contratanteDireccion,
+                'telefono1' => $fuec_adicional->contrato->contratanteTelefono,
+                'tipo' => 'Persona natural',
+                'digito_verificacion' => ''
+            ];
         }
 
         if ( $representante_legal_contratante == '' )
