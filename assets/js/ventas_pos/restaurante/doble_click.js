@@ -89,8 +89,11 @@ $(document).ready(function () {
             var fila = $(this).closest("tr");
 
             var producto = productos.find( (item) => item.id === parseInt(fila.find(".inv_producto_id").text() ) );
+            var categoria_paquetes_con_materiales_ocultos = parseInt( $("#categoria_id_paquetes_con_materiales_ocultos").val() );
+            var grupo_producto = producto ? parseInt( producto.inv_grupo_id ) : NaN;
+            var es_paquete_con_materiales_ocultos = ( grupo_producto === categoria_paquetes_con_materiales_ocultos );
 
-            if ( producto.inv_grupo_id != $("#categoria_id_paquetes_con_materiales_ocultos").val() ) 
+            if ( !es_paquete_con_materiales_ocultos ) 
             {
                 $("#popup_alerta").show();
                 $("#popup_alerta").css("background-color", "red");
