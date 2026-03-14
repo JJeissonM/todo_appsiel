@@ -26,11 +26,28 @@ use Illuminate\Support\Facades\View;
 
 class FuecAdicionalController extends Controller
 {
+    private function redirectToContext(string $messageType, string $message)
+    {
+        $idapp = Input::get('id');
+        $modelo = Input::get('id_modelo');
+        $transaccion = Input::get('id_transaccion');
+
+        if (!empty($idapp) && !empty($modelo)) {
+            $url = "web?id={$idapp}&id_modelo={$modelo}";
+            if (!empty($transaccion)) {
+                $url .= "&id_transaccion={$transaccion}";
+            }
+            return redirect($url)->with($messageType, $message);
+        }
+
+        return redirect('contratos_transporte')->with($messageType, $message);
+    }
+
     //crear contrato
     public function create()
     {
         if (Input::get('contrato_id') == null) {            
-            return redirect( 'web?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') )->with('mensaje_error', 'NO fue enviado el parametro contrato_id');
+            return $this->redirectToContext('mensaje_error', 'NO fue enviado el parametro contrato_id');
         }
 
         $contrato = Contrato::find((int)Input::get('contrato_id'));
@@ -187,9 +204,6 @@ class FuecAdicionalController extends Controller
     public function imprimir($id)
     {
         $fuec_adicional = FuecAdicional::find($id);
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
         $vehiculo = $fuec_adicional->vehiculo;
         $p = Planillac::where('contrato_id', $fuec_adicional->contrato_id)->first();
 
@@ -246,7 +260,7 @@ class FuecAdicionalController extends Controller
 
         if ( $representante_legal_contratante == '' )
         {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no tiene un representante legal asociado, no puede proceder a imprimir el contrato.');
+            return $this->redirectToContext('mensaje_error', 'El contrato no tiene un representante legal asociado, no puede proceder a imprimir el contrato.');
         }
         
         $documento_vista =  View::make('contratos_transporte.contratos.fuec_adicional.print2', compact('fuec_adicional', 'conductores', 'to', 'p', 'v', 'fi', 'ff', 'contratante', 'url', 'contratante', 'vehiculo', 'empresa', 'representante_legal_contratante'))->render();
@@ -307,18 +321,15 @@ class FuecAdicionalController extends Controller
         }
 
         $contrato = FuecAdicional::find($id);
-        $idapp = Input::get('id');
-        $modelo = Input::get('id_modelo');
-        $transaccion = Input::get('id_transaccion');
         if ($contrato->estado == 'ANULADO') {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
+            return $this->redirectToContext('mensaje_error', 'El contrato se encuentra ANULADO, no puede proceder.');
         }
         $motivo = 'Anulacion sin motivo (ruta legacy)';
         $anulado = (new FuecAnulacionService())->anularFuecAdicional($contrato, $motivo, (int) Auth::id());
         if ($anulado) {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('flash_message', 'Contrato ANULADO con exito.');
+            return $this->redirectToContext('flash_message', 'Contrato ANULADO con exito.');
         } else {
-            return redirect("web?id=" . $idapp . "&id_modelo=" . $modelo . "&id_transaccion=" . $transaccion)->with('mensaje_error', 'El contrato no pudo ser ANULADO.');
+            return $this->redirectToContext('mensaje_error', 'El contrato no pudo ser ANULADO.');
         }
     }
 

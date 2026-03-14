@@ -2,6 +2,9 @@ var hay_productos = 0;
 var url_raiz, redondear_centena, numero_linea;
 var inv_producto_id, doc_encabezado, puede_continuar, vlr_efectivo_recibido;
 var locked = false;
+var guardar_factura_watchdog = null;
+var pos_tab_heartbeat_timer = null;
+var pos_tab_runtime_id = "";
 
 $("#btn_nuevo").hide();
 $("#btn_cancelar").hide();
@@ -36,6 +39,131 @@ function validar_fecha_diferente() {
 document.getElementById("btn_pruebas").addEventListener("click", function(event){
   event.preventDefault()
 });
+document.addEventListener("DOMContentLoaded", function(){
+  inicializar_contexto_pos_multitab();
+});
+
+function crear_identificador_unico_pos()
+{
+  return uniqid() + "_" + Date.now().toString(36) + "_" + Math.floor(Math.random() * 1000000).toString(36);
+}
+
+function get_pos_tab_storage_prefix()
+{
+  return "pos_tab_context_" + ( $("#pdv_id").val() || "0" ) + "_";
+}
+
+function iniciar_heartbeat_tab_pos(tab_id)
+{
+  try {
+    var key = get_pos_tab_storage_prefix() + "active_" + tab_id;
+    var payload = JSON.stringify({ heartbeat: Date.now(), runtime: pos_tab_runtime_id });
+    localStorage.setItem(key, payload);
+
+    if (pos_tab_heartbeat_timer !== null) {
+      clearInterval(pos_tab_heartbeat_timer);
+    }
+
+    pos_tab_heartbeat_timer = setInterval(function(){
+      try {
+        localStorage.setItem(key, JSON.stringify({ heartbeat: Date.now(), runtime: pos_tab_runtime_id }));
+      } catch (e) {
+        console.error(e);
+      }
+    }, 5000);
+
+    window.addEventListener("beforeunload", function(){
+      try {
+        var current = localStorage.getItem(key);
+        if (!current) { return; }
+
+        var data = JSON.parse(current);
+        if (data && data.runtime === pos_tab_runtime_id) {
+          localStorage.removeItem(key);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function inicializar_contexto_pos_multitab()
+{
+  if ($("#form_create").length === 0) {
+    return;
+  }
+
+  pos_tab_runtime_id = crear_identificador_unico_pos();
+
+  var prefix = get_pos_tab_storage_prefix();
+  var tab_key = prefix + "tab_id";
+  var draft_key = prefix + "draft_id";
+
+  var tab_id = sessionStorage.getItem(tab_key);
+  var draft_id = sessionStorage.getItem(draft_key);
+
+  var generar_nuevo_contexto = false;
+  if (!tab_id || !draft_id) {
+    generar_nuevo_contexto = true;
+  } else {
+    try {
+      var active_key = prefix + "active_" + tab_id;
+      var active_data_raw = localStorage.getItem(active_key);
+      if (active_data_raw) {
+        var active_data = JSON.parse(active_data_raw);
+        if (active_data && (Date.now() - parseInt(active_data.heartbeat || 0, 10) < 15000)) {
+          generar_nuevo_contexto = true;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  if (generar_nuevo_contexto) {
+    tab_id = crear_identificador_unico_pos();
+    draft_id = crear_identificador_unico_pos();
+    sessionStorage.setItem(tab_key, tab_id);
+    sessionStorage.setItem(draft_key, draft_id);
+  }
+
+  if ($("#tab_instance_id").length > 0) {
+    $("#tab_instance_id").val(tab_id);
+  }
+  if ($("#draft_id").length > 0) {
+    $("#draft_id").val(draft_id);
+  }
+
+  update_uniqid();
+  iniciar_heartbeat_tab_pos(tab_id);
+}
+
+function iniciar_watchdog_guardado(ms)
+{
+  limpiar_watchdog_guardado();
+
+  guardar_factura_watchdog = setTimeout(function(){
+    if ($("#btn_guardando").length > 0) {
+      reset_estado_boton_guardar_factura();
+      Swal.fire({
+        icon: "warning",
+        title: "Guardado demorado",
+        text: "La operacion tardo mas de lo esperado. Verifica en historial si la factura fue creada antes de reintentar."
+      });
+    }
+  }, ms);
+}
+
+function limpiar_watchdog_guardado()
+{
+  if (guardar_factura_watchdog !== null) {
+    clearTimeout(guardar_factura_watchdog);
+    guardar_factura_watchdog = null;
+  }
+}
 
 /**
  * 
@@ -711,6 +839,29 @@ function disable_boton_guardar_factura()
   $("#btn_guardar_factura_electronica").attr("disabled", "disabled");
 }
 
+function activar_estado_boton_guardando_factura()
+{
+  if ($("#btn_guardar_factura").length === 0) {
+    return;
+  }
+
+  $("#btn_guardar_factura").html('<i class="fa fa-spinner fa-spin"></i> Guardando');
+  $("#btn_guardar_factura").attr("disabled", "disabled");
+  $("#btn_guardar_factura").attr("id", "btn_guardando");
+}
+
+function reset_estado_boton_guardar_factura()
+{
+  if ($("#btn_guardando").length > 0) {
+    $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
+    $("#btn_guardando").attr("id", "btn_guardar_factura");
+  }
+
+  $("#btn_guardar_factura").removeAttr("disabled");
+  limpiar_watchdog_guardado();
+  locked = false;
+}
+
 /**
  * 
  * @returns 
@@ -1157,19 +1308,12 @@ $(document).ready(function () {
       return false;
     }
 
-    // Desactivar el click del botón
-    $("#btn_guardar_factura").html('<i class="fa fa-spinner fa-spin"></i> Guardando');
-    $("#btn_guardar_factura").attr("disabled", "disabled");
-    $("#btn_guardar_factura").attr("id", "btn_guardando");
-    function reset_boton_guardar_factura() {
-      $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-      $("#btn_guardando").attr("id", "btn_guardar_factura");
-      $("#btn_guardar_factura").removeAttr("disabled");
-      locked = false;
-    }
+        // Desactivar el click del bot�n
+    activar_estado_boton_guardando_factura();
 
     // Cede un ciclo al navegador para que pinte el spinner antes del trabajo pesado.
     setTimeout(function () {
+      try {
       if (hay_productos == 0) {
         Swal.fire({
           icon: "error",
@@ -1179,7 +1323,7 @@ $(document).ready(function () {
         reset_linea_ingreso_default();
         reset_efectivo_recibido();
         $("#btn_nuevo").hide();
-        reset_boton_guardar_factura();
+        reset_estado_boton_guardar_factura();
         return false;
       }
 
@@ -1189,7 +1333,7 @@ $(document).ready(function () {
             title: 'Advertencia!',
             text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
         });
-        reset_boton_guardar_factura();
+        reset_estado_boton_guardar_factura();
         return false;
       }
 
@@ -1199,7 +1343,7 @@ $(document).ready(function () {
       if (manejar_propinas) {
         if ($("#valor_propina").val() != 0) {
           if (!permitir_guardar_factura_con_propina()) {
-            reset_boton_guardar_factura();
+            reset_estado_boton_guardar_factura();
             return false;
           }
         }
@@ -1208,7 +1352,7 @@ $(document).ready(function () {
       if (manejar_datafono) {
         if ($("#valor_datafono").val() != 0) {
           if (!permitir_guardar_factura_con_datafono()) {
-            reset_boton_guardar_factura();
+            reset_estado_boton_guardar_factura();
             return false;
           }
         }
@@ -1253,10 +1397,12 @@ $(document).ready(function () {
       }
 
       var url = $("#form_create").attr("action");
+      var watchdog_guardado_ms = tiempo_espera_guardar_factura + 5000;
     
       // Comprobamos si el semaforo esta en verde (1)
       if (!locked) {
         // No esta bloqueado aun, bloqueamos, preparamos y enviamos la peticion
+        iniciar_watchdog_guardado(watchdog_guardado_ms);
         $.ajax({
           url: url,
           data: data,
@@ -1268,10 +1414,20 @@ $(document).ready(function () {
             locked = true;
           },
           success: function(doc_encabezado){
-            finalizar_almacenamiento_factura(doc_encabezado);
+            try {
+              finalizar_almacenamiento_factura(doc_encabezado);
+            } catch (e) {
+              reset_estado_boton_guardar_factura();
+              Swal.fire({
+                icon: "error",
+                title: "Factura guardada con error en pantalla",
+                text: "Se presento un error al finalizar el proceso en navegador. Verifica en el historial si la factura quedo creada."
+              });
+              console.error(e);
+            }
           },
           error: function(xhr){
-            reset_boton_guardar_factura();
+            reset_estado_boton_guardar_factura();
 
             var status_text = (xhr && typeof xhr.statusText === 'string') ? xhr.statusText : ''; // Respuesta siempre
             var response_text = (xhr && typeof xhr.responseText === 'string') ? xhr.responseText : ''; // Solo cuando hay respuesta del servidor
@@ -1381,13 +1537,23 @@ $(document).ready(function () {
             }
           },
           complete: function(){ 
+            limpiar_watchdog_guardado();
             locked = false;  
           }
         });
       } else {
         // Bloqueado!!!
         console.log('Bloqueado!!!');
-        reset_boton_guardar_factura();
+        reset_estado_boton_guardar_factura();
+      }
+      } catch (e) {
+        reset_estado_boton_guardar_factura();
+        Swal.fire({
+          icon: "error",
+          title: "Error al preparar el guardado",
+          text: "Ocurrio un error inesperado en navegador. Intenta guardar nuevamente."
+        });
+        console.error(e);
       }
     }, 0);
   });
@@ -1395,6 +1561,7 @@ $(document).ready(function () {
   function finalizar_almacenamiento_factura( doc_encabezado )
   {
     if (parseInt(doc_encabezado.reused_uniqid || 0, 10) === 1) {
+      reset_estado_boton_guardar_factura();
       Swal.fire({
         icon: "warning",
         title: "Factura ya guardada",
@@ -1426,10 +1593,8 @@ $(document).ready(function () {
 
     $('#lbl_creado_por_fecha_y_hora').text('Elaboró: ' + doc_encabezado.lbl_creado_por_fecha_y_hora);
 
+    reset_estado_boton_guardar_factura();
     enviar_impresion( doc_encabezado );
-
-    $("#btn_guardando").html('<i class="fa fa-check"></i> Guardar factura');
-    $("#btn_guardando").attr("id", "btn_guardar_factura");
     
     $("#pedido_id").val(0);
     $("#object_anticipos").val('null');
@@ -1446,6 +1611,13 @@ $(document).ready(function () {
   function update_uniqid()
   {
     $("#uniqid").val( uniqid() );
+
+    if ($("#draft_id").length > 0) {
+      $("#draft_id").val( crear_identificador_unico_pos() );
+
+      var draft_key = get_pos_tab_storage_prefix() + "draft_id";
+      sessionStorage.setItem(draft_key, $("#draft_id").val());
+    }
   }
 
   // Lupa
@@ -1766,4 +1938,5 @@ $(document).ready(function () {
   });
   
 });
+
 

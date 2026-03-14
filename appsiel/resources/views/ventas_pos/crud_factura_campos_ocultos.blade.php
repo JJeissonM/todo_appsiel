@@ -130,6 +130,8 @@ value="{{ (int)config('ventas_pos.tiempo_espera_guardar_factura') }}">
 value="{{ config('ventas_pos.formato_impresion_pedidos') }}">
 
 <input type="hidden" name="uniqid" id="uniqid" value="{{ uniqid() }}">
+<input type="hidden" name="draft_id" id="draft_id" value="">
+<input type="hidden" name="tab_instance_id" id="tab_instance_id" value="">
 
 <input type="hidden" name="object_anticipos" id="object_anticipos" value="null">
 

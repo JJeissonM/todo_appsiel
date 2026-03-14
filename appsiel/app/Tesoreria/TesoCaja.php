@@ -79,13 +79,17 @@ class TesoCaja extends Model
     public static function get_cajas_permitidas()
     {
         $user = Auth::user();
+        if ( is_null($user) )
+        {
+            return self::get_cajas_activas();
+        }
 
         if ( self::usuario_es_administrador($user) )
         {
             return self::get_cajas_activas();
         }
 
-        $cajas_asignadas_pdv = self::get_cajas_asignadas_al_usuario_en_pdv( $user->id );
+        $cajas_asignadas_pdv = self::get_cajas_asignadas_al_usuario_en_pdv( $user->id, $user->empresa_id );
         if ( $cajas_asignadas_pdv->count() > 0 )
         {
             return $cajas_asignadas_pdv;
@@ -121,10 +125,20 @@ class TesoCaja extends Model
                         ->get();
     }
 
-    public static function get_cajas_asignadas_al_usuario_en_pdv( $user_id )
+    public static function get_cajas_asignadas_al_usuario_en_pdv( $user_id, $empresa_id = null )
     {
+        if ( is_null($empresa_id) )
+        {
+            $auth_user = Auth::user();
+            if ( is_null($auth_user) )
+            {
+                return collect([]);
+            }
+            $empresa_id = $auth_user->empresa_id;
+        }
+
         $ids_cajas = Pdv::where('cajero_default_id', $user_id)
-                        ->where('core_empresa_id', Auth::user()->empresa_id)
+                        ->where('core_empresa_id', $empresa_id)
                         ->where('estado', '<>', 'Inactivo')
                         ->whereNotNull('caja_default_id')
                         ->pluck('caja_default_id')
@@ -143,6 +157,10 @@ class TesoCaja extends Model
 
     public static function usuario_es_administrador( $user )
     {
+        if ( is_null($user) ) {
+            return false;
+        }
+
         return $user->hasRole('SuperAdmin') || $user->hasRole('Administrador');
     }
 
