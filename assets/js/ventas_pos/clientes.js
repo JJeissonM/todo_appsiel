@@ -1,21 +1,40 @@
 
 var cantidad_clientes_local, numero_identificacion_existe;
 
+function validar_cambio_cliente_por_lista(nueva_lista_precios_id)
+{
+  if (hay_productos <= 0) {
+    return true;
+  }
+
+  var lista_actual_id = parseInt($("#lista_precios_id").val(), 10);
+  var lista_default_id = parseInt(cliente_default.lista_precios_id, 10);
+  var lista_nueva_id = parseInt(nueva_lista_precios_id, 10);
+
+  var lista_referencia_id = lista_actual_id;
+  if (isNaN(lista_referencia_id)) {
+    lista_referencia_id = lista_default_id;
+  }
+
+  if (isNaN(lista_nueva_id) || lista_nueva_id !== lista_referencia_id) {
+    Swal.fire({
+      icon: "error",
+      title: "Alerta!",
+      text: "No puede cambiar el cliente con productos ingresados cuando maneja una lista de precios diferente. Debe retirar los productos primero.",
+    });
+    return false;
+  }
+
+  return true;
+}
+
 /**
  *
  * @returns boolean
  */
 function set_cliente_default() 
 {
-  if (
-    $("#lista_precios_id").val() != cliente_default.lista_precios_id &&
-    hay_productos > 0
-  ) {
-    Swal.fire({
-      icon: "error",
-      title: "Alerta!",
-      text: "No puede cambiar a Consumidor Final. El cliente cliente seleccionado tiene una Lista de precios DIFERENTE para los productos ingresados. Debe retirar los productos ingresados.",
-    });
+  if ( !validar_cambio_cliente_por_lista(cliente_default.lista_precios_id) ) {
     return false;
   }
 
@@ -48,16 +67,7 @@ function set_cliente_default()
  */
 function seleccionar_cliente( item_sugerencia )
 {
-  if (
-    $("#lista_precios_id").val() !=
-    item_sugerencia.attr("data-lista_precios_id") &&
-    hay_productos > 0
-  ) {
-    Swal.fire({
-      icon: "error",
-      title: "Alerta!",
-      text: "El cliente seleccionado tiene una Lista de precios DIFERENTE para los productos ingresados. Debe retirar los productos ingresados.",
-    });
+  if ( !validar_cambio_cliente_por_lista(item_sugerencia.attr("data-lista_precios_id")) ) {
     return false;
   }
 
@@ -534,13 +544,7 @@ $(document).ready(function () {
  * @returns boolean
  */
 function seleccionar_cliente_creado( item_sugerencia ) {
-  if ( $("#lista_precios_id").val() != item_sugerencia.lista_precios_id && hay_productos > 0 )
-  {
-    Swal.fire({
-      icon: "error",
-      title: "Alerta!",
-      text: "El cliente Creado tiene una Lista de precios DIFERENTE para los productos ingresados. Debe retirar los productos ingresados.",
-    });
+  if ( !validar_cambio_cliente_por_lista(item_sugerencia.lista_precios_id) ) {
     return false;
   }
 

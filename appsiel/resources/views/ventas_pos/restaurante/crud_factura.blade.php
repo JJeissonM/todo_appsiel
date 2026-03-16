@@ -22,7 +22,23 @@
 
         <div class="marco_formulario">
 
-            <h4>Nuevo registro</h4>
+            @if( Input::get('action') == 'edit' )
+                <?php
+                    $pdv_id_cancelar = Input::get('pdv_id');
+                    if (empty($pdv_id_cancelar) && isset($factura)) {
+                        $pdv_id_cancelar = $factura->pdv_id;
+                    }
+                ?>
+                <h4>Modificando factura POS: {{ $factura->tipo_documento_app->prefijo }} {{ $factura->consecutivo }}</h4>
+                <div class="row" style="margin: 5px 0;">
+                    <a href="{{ url('pos_factura_restaurante/create?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion') . '&pdv_id=' . $pdv_id_cancelar . '&action=create') }}"
+                       class="btn btn-default btn-sm">
+                        <i class="fa fa-reply"></i> Cancelar edición
+                    </a>
+                </div>
+            @else
+                <h4>Nuevo registro</h4>
+            @endif
             <hr>
 
             @if( Input::get('action') == 'edit' )

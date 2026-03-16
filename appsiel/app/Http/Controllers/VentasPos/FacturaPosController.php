@@ -620,7 +620,10 @@ class FacturaPosController extends TransaccionController
 
         $lineas_registros = $this->armar_cuerpo_tabla_lineas_registros($factura->lineas_registros);
         
-        $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($factura);
+        $cuerpo_tabla_medios_recaudos = '';
+        if ($factura->forma_pago != 'credito') {
+            $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($factura);
+        }
 
         $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
         
@@ -703,6 +706,8 @@ class FacturaPosController extends TransaccionController
         $datos_antes = [
             'fecha' => $doc_encabezado->fecha,
             'descripcion' => $doc_encabezado->descripcion,
+            'cliente_id' => (int)$doc_encabezado->cliente_id,
+            'core_tercero_id' => (int)$doc_encabezado->core_tercero_id,
             'forma_pago' => $doc_encabezado->forma_pago,
             'fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
             'vendedor_id' => (int)$doc_encabezado->vendedor_id,
@@ -728,6 +733,8 @@ class FacturaPosController extends TransaccionController
 
         $doc_encabezado->fecha = $request->fecha;
         $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->cliente_id = (int)$request->cliente_id;
+        $doc_encabezado->core_tercero_id = (int)$request->core_tercero_id;
         $doc_encabezado->forma_pago = $request->forma_pago;
         $doc_encabezado->fecha_vencimiento = $request->fecha_vencimiento;
         $doc_encabezado->vendedor_id = $request->vendedor_id;
@@ -754,9 +761,42 @@ class FacturaPosController extends TransaccionController
         $request['modificado_por'] = Auth::user()->email;
         FacturaPosController::crear_registros_documento($request, $doc_encabezado, $lineas_registros);
 
+        if ($doc_encabezado->estado != 'Pendiente') {
+            $result = (new AccountingServices())->reconstruir_movimientos_y_recontabilizar_factura($doc_encabezado->id);
+
+            if ($result->status != 'success') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Factura actualizada, pero no se pudieron sincronizar movimientos: ' . $result->message
+                ], 422);
+            }
+        }
+
+        // Mantener consistencia de encabezado después de reconstrucción/recontabilización
+        $doc_encabezado = FacturaPos::find($doc_encabezado->id);
+        $doc_encabezado->fecha = $request->fecha;
+        $doc_encabezado->descripcion = $request->descripcion;
+        $doc_encabezado->cliente_id = (int)$request->cliente_id;
+        $doc_encabezado->core_tercero_id = (int)$request->core_tercero_id;
+        $doc_encabezado->forma_pago = $request->forma_pago;
+        $doc_encabezado->fecha_vencimiento = $request->fecha_vencimiento;
+        $doc_encabezado->vendedor_id = $request->vendedor_id;
+        $doc_encabezado->lineas_registros_medios_recaudos = $request->lineas_registros_medios_recaudos;
+        $doc_encabezado->valor_total = $total_factura;
+        $doc_encabezado->modificado_por = Auth::user()->email;
+        $doc_encabezado->total_efectivo_recibido = $request->total_efectivo_recibido;
+        $doc_encabezado->valor_ajuste_al_peso = $request->valor_ajuste_al_peso;
+        $doc_encabezado->valor_total_bolsas = $request->valor_total_bolsas;
+        $doc_encabezado->valor_total_cambio = $request->valor_total_cambio;
+        $doc_encabezado->save();
+
+        $this->sincronizar_cxc_credito_desde_encabezado($doc_encabezado);
+
         $datos_despues = [
             'fecha' => $doc_encabezado->fecha,
             'descripcion' => $doc_encabezado->descripcion,
+            'cliente_id' => (int)$doc_encabezado->cliente_id,
+            'core_tercero_id' => (int)$doc_encabezado->core_tercero_id,
             'forma_pago' => $doc_encabezado->forma_pago,
             'fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
             'vendedor_id' => (int)$doc_encabezado->vendedor_id,
@@ -789,6 +829,31 @@ class FacturaPosController extends TransaccionController
         $response = $this->build_json_doc_encabezado($doc_encabezado);
         $response['request_id'] = $this->get_request_id_from_request($request);
         return response()->json( $response, 200);
+    }
+
+    protected function sincronizar_cxc_credito_desde_encabezado($doc_encabezado)
+    {
+        if ($doc_encabezado->forma_pago != 'credito') {
+            return;
+        }
+
+        $cxc = CxcMovimiento::where('core_tipo_transaccion_id', $doc_encabezado->core_tipo_transaccion_id)
+            ->where('core_tipo_doc_app_id', $doc_encabezado->core_tipo_doc_app_id)
+            ->where('consecutivo', $doc_encabezado->consecutivo)
+            ->first();
+
+        if (is_null($cxc)) {
+            return;
+        }
+
+        $nuevo_valor_documento = (float)$doc_encabezado->valor_total + (float)$doc_encabezado->valor_ajuste_al_peso + (float)$doc_encabezado->valor_total_bolsas;
+
+        $cxc->core_tercero_id = $doc_encabezado->core_tercero_id;
+        $cxc->fecha = $doc_encabezado->fecha;
+        $cxc->fecha_vencimiento = $doc_encabezado->fecha_vencimiento;
+        $cxc->valor_documento = $nuevo_valor_documento;
+        $cxc->saldo_pendiente = $nuevo_valor_documento - (float)$cxc->valor_pagado;
+        $cxc->save();
     }
 
     protected function find_existing_doc_by_uniqid($uniqid, Request $request = null)

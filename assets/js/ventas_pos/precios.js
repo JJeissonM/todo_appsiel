@@ -406,14 +406,29 @@ function set_precios_lbl_items()
  */
 function set_lista_precios()
 {
-    var cliente_id = $("#cliente_id").val();
-    
-    var cliente = clientes.find((item) => item.id === parseInt(cliente_id) );  
+    var cliente_id = parseInt($("#cliente_id").val(), 10);
+    var cliente = clientes.find((item) => item.id === cliente_id );
+
+    var lista_precios_id = parseInt($("#lista_precios_id").val(), 10);
+    var lista_descuentos_id = parseInt($("#lista_descuentos_id").val(), 10);
+
+    if (cliente !== undefined && cliente !== null) {
+        if (!isNaN(parseInt(cliente.lista_precios_id, 10))) {
+            lista_precios_id = parseInt(cliente.lista_precios_id, 10);
+        }
+        if (!isNaN(parseInt(cliente.lista_descuentos_id, 10))) {
+            lista_descuentos_id = parseInt(cliente.lista_descuentos_id, 10);
+        }
+    }
+
+    if (isNaN(lista_precios_id) || isNaN(lista_descuentos_id)) {
+        return;
+    }
     
     var precios_list = [];
     $.each(todos_los_precios,function(key,item_lista_precios)
     {
-        if ( item_lista_precios.lista_precios_id === cliente.lista_precios_id) { 
+        if ( parseInt(item_lista_precios.lista_precios_id, 10) === lista_precios_id) { 
             precios_list.push(item_lista_precios);
         }        
     });
@@ -421,7 +436,7 @@ function set_lista_precios()
     var descuentos_list = [];
     $.each(todos_los_descuentos,function(key,item_lista_descuentos)
     {
-        if ( item_lista_descuentos.lista_descuentos_id === cliente.lista_descuentos_id) { 
+        if ( parseInt(item_lista_descuentos.lista_descuentos_id, 10) === lista_descuentos_id) { 
             descuentos_list.push(item_lista_descuentos);
         }        
     });

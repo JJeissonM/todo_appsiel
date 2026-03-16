@@ -159,6 +159,19 @@ function update_request_id()
   }
 }
 
+function update_uniqid()
+{
+  $("#uniqid").val( uniqid() );
+  update_request_id();
+
+  if ($("#draft_id").length > 0) {
+    $("#draft_id").val( crear_identificador_unico_pos() );
+
+    var draft_key = get_pos_tab_storage_prefix() + "draft_id";
+    sessionStorage.setItem(draft_key, $("#draft_id").val());
+  }
+}
+
 function iniciar_watchdog_guardado(ms)
 {
   limpiar_watchdog_guardado();
@@ -213,6 +226,9 @@ function get_json_registros_medios_recaudo() {
   var json_table2 = "";
   if (table2.length == 1) {
     // Solo tiene la linea de totales, se ingresan datos por defecto
+    if ($("#forma_pago").val() == "credito") {
+      return "[]";
+    }
      
     let teso_motivo_default_id = $( "#teso_motivo_default_id" ).val();
     let texto_motivo = get_text_from_select_for_value( teso_motivo_default_id );
@@ -1644,18 +1660,6 @@ $(document).ready(function () {
     update_uniqid();
   });  
 
-  function update_uniqid()
-  {
-    $("#uniqid").val( uniqid() );
-    update_request_id();
-
-    if ($("#draft_id").length > 0) {
-      $("#draft_id").val( crear_identificador_unico_pos() );
-
-      var draft_key = get_pos_tab_storage_prefix() + "draft_id";
-      sessionStorage.setItem(draft_key, $("#draft_id").val());
-    }
-  }
 
   // Lupa
   $("#btn_listar_items").click(function (event) {
