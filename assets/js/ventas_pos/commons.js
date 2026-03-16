@@ -2,6 +2,7 @@ var hay_productos = 0;
 var url_raiz, redondear_centena, numero_linea;
 var inv_producto_id, doc_encabezado, puede_continuar, vlr_efectivo_recibido;
 var locked = false;
+var pos_save_attempted = false;
 var guardar_factura_watchdog = null;
 var pos_tab_heartbeat_timer = null;
 var pos_tab_runtime_id = "";
@@ -42,6 +43,15 @@ document.getElementById("btn_pruebas").addEventListener("click", function(event)
 document.addEventListener("DOMContentLoaded", function(){
   inicializar_contexto_pos_multitab();
 });
+window.addEventListener("focus", function(){
+  if ($("#form_create").length > 0) {
+    activar_boton_guardar_factura();
+    if (!locked) {
+      reset_estado_boton_guardar_factura();
+    }
+  }
+});
+
 
 function crear_identificador_unico_pos()
 {
@@ -138,7 +148,15 @@ function inicializar_contexto_pos_multitab()
   }
 
   update_uniqid();
+  update_request_id();
   iniciar_heartbeat_tab_pos(tab_id);
+}
+
+function update_request_id()
+{
+  if ($("#request_id").length > 0) {
+    $("#request_id").val(crear_identificador_unico_pos());
+  }
 }
 
 function iniciar_watchdog_guardado(ms)
@@ -553,7 +571,7 @@ function llenar_resumen_medios_recaudo() {
       var lbl_medio_pago = array_celdas.eq(0).find("span").eq(1).text();
       var lbl_caja_banco =
         array_celdas.eq(2).find("span").eq(1).text() +
-        "" +
+        " - " +
         array_celdas.eq(3).find("span").eq(1).text();
       var lbl_valor_medio_pago = array_celdas.eq(4).text().substring(1);
       
@@ -573,11 +591,11 @@ function llenar_resumen_medios_recaudo() {
 }
 
 /**
- * 
  */
 function resetear_ventana() {
   $("#tabla_productos_facturados").find("tbody").html("");
   $("#tabla_productos_facturados2").find("tbody").html("");
+  $("#tabla_resumen_medios_pago").find("tbody").html("");
 
   reset_tabla_ingreso_items();
   reset_resumen_de_totales();
@@ -1378,6 +1396,7 @@ $(document).ready(function () {
       // Se asigna el objeto JSON a un campo oculto del formulario
       $("#lineas_registros").val(JSON.stringify(table));
       $("#lineas_registros_medios_recaudos").val(json_table2);
+      update_request_id();
 
       // Nota: No se puede enviar controles disabled
       var data = $("#form_create").serialize();
@@ -1398,6 +1417,12 @@ $(document).ready(function () {
 
       var url = $("#form_create").attr("action");
       var watchdog_guardado_ms = tiempo_espera_guardar_factura + 5000;
+      // Mitiga colisiones al duplicar pestanas: el primer guardado de la pestana
+      // fuerza un nuevo contexto de intento antes de enviar.
+      if (!pos_save_attempted) {
+        update_uniqid();
+        update_request_id();
+      }
     
       // Comprobamos si el semaforo esta en verde (1)
       if (!locked) {
@@ -1412,6 +1437,7 @@ $(document).ready(function () {
           timeout: tiempo_espera_guardar_factura,
           beforeSend: function(){ 
             locked = true;
+            pos_save_attempted = true;
           },
           success: function(doc_encabezado){
             try {
@@ -1432,6 +1458,12 @@ $(document).ready(function () {
             var status_text = (xhr && typeof xhr.statusText === 'string') ? xhr.statusText : ''; // Respuesta siempre
             var response_text = (xhr && typeof xhr.responseText === 'string') ? xhr.responseText : ''; // Solo cuando hay respuesta del servidor
             var server_error_code = (xhr && typeof xhr.status !== 'undefined') ? xhr.status : 0; // Código de error HTTP. 0 cuando no hay respuesta del servidor
+            var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
+            var request_id_error = $("#request_id").val() || "";
+            if (response_json && typeof response_json.request_id === "string" && response_json.request_id !== "") {
+              request_id_error = response_json.request_id;
+            }
+            var request_id_sufijo = request_id_error !== "" ? (" Ref: " + request_id_error) : "";
 
             let position = status_text.search("NetworkError");
             if (position != -1) {
@@ -1439,7 +1471,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: 'error',
                 title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                text: error_label
+                text: error_label + request_id_sufijo
               }); 
               
               puede_continuar = false;
@@ -1453,7 +1485,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: 'error',
                 title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                text: error_label
+                text: error_label + request_id_sufijo
               });
                
               puede_continuar = false;
@@ -1471,7 +1503,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: "warning",
                 title: "Advertencia",
-                text: warning_message
+                text: warning_message + request_id_sufijo
               });
 
               puede_continuar = false;
@@ -1486,7 +1518,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: 'warning',
                 title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
-                text: error_label 
+                text: error_label + request_id_sufijo 
               });
               
               puede_continuar = false;
@@ -1502,7 +1534,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: 'warning',
                 title: '4. FACTURA NO GUARDADA. ¡NO CIERRES! Inicia sesión en otra pestaña y continúa con la facturación.',
-                text: error_label 
+                text: error_label + request_id_sufijo 
               });
               
               puede_continuar = false;
@@ -1515,7 +1547,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: 'error',
                 title: '2. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
-                text: error_label 
+                text: error_label + request_id_sufijo 
               });
               
               puede_continuar = false;
@@ -1528,7 +1560,7 @@ $(document).ready(function () {
               Swal.fire({
                 icon: 'error',
                 title: '3. FACTURA NO GUARDADA. POR FAVOR, ACTUALIZAR LA PÁGINA E INTENTAR NUEVAMENTE.',
-                text: error_label 
+                text: error_label + request_id_sufijo 
               });
               
               puede_continuar = false;
@@ -1562,18 +1594,21 @@ $(document).ready(function () {
   {
     if (parseInt(doc_encabezado.reused_uniqid || 0, 10) === 1) {
       reset_estado_boton_guardar_factura();
+      var request_id_reused = (doc_encabezado.request_id || "").toString();
+      var texto_request_id = request_id_reused !== "" ? (" Ref: " + request_id_reused) : "";
       Swal.fire({
         icon: "warning",
         title: "Factura ya guardada",
         text:
           "Se recuperó una factura ya creada con este intento de guardado (" +
           doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo +
-          "). Para evitar inconsistencias, consulta e imprime el documento desde el historial."
+          "). Para evitar inconsistencias, consulta e imprime el documento desde el historial." + texto_request_id
       });
 
       $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
       $("#pedido_id").val(0);
       $("#object_anticipos").val("null");
+      pos_save_attempted = false;
       update_uniqid();
       resetear_ventana();
 
@@ -1598,6 +1633,7 @@ $(document).ready(function () {
     
     $("#pedido_id").val(0);
     $("#object_anticipos").val('null');
+    pos_save_attempted = false;
     update_uniqid();
 
     return false;
@@ -1611,6 +1647,7 @@ $(document).ready(function () {
   function update_uniqid()
   {
     $("#uniqid").val( uniqid() );
+    update_request_id();
 
     if ($("#draft_id").length > 0) {
       $("#draft_id").val( crear_identificador_unico_pos() );
@@ -1752,11 +1789,11 @@ $(document).ready(function () {
       alert("Debe ingresar un Cliente/Proveedor.");
       return false;
     }
-
     if (
       !validar_input_numerico($("#col_valor")) ||
       $("#col_valor").val() == ""
     ) {
+
       alert("No ha ingresado una valor para la transacción.");
       return false;
     }

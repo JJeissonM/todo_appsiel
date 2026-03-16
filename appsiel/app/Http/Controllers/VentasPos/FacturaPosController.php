@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\VentasPos;
 
 use App\Http\Controllers\Tesoreria\RecaudoController;
+use App\Http\Requests\VentasPos\StoreFacturaPosRequest;
+use App\Http\Requests\VentasPos\UpdateFacturaPosRequest;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +12,8 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 
 use App\Http\Controllers\Sistema\ModeloController;
@@ -244,17 +248,22 @@ class FacturaPosController extends TransaccionController
 
         $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
 
+        $request_id = $this->get_request_id_from_request($request);
         $request_uniqid = (string)$request->get('uniqid', '');
+        $log_context = $this->build_pos_log_context($request, $request_id, $request_uniqid);
+
         if ( $request_uniqid != '' )
         {
-            $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
+            $doc_existente = $this->find_existing_doc_by_uniqid($request_uniqid, $request);
             if ( $doc_existente != null ) {
                 $response = $this->build_json_doc_encabezado($doc_existente);
                 $response['reused_uniqid'] = 1;
+                $response['request_id'] = $request_id;
+                Log::warning('POS_SAVE_REUSED_UNIQID', $log_context + [ 'doc_id' => $doc_existente->id ]);
                 return response()->json( $response, 200);
             }
         }
-        
+
         $lineas_registros = json_decode($request->lineas_registros);
 
         $acumular_factura = false;
@@ -282,9 +291,11 @@ class FacturaPosController extends TransaccionController
 
                 if ( is_null($pedido) || $pedido->estado != 'Pendiente' || (int)$pedido->ventas_doc_relacionado_id != 0 ) {
                     DB::rollBack();
+                    Log::warning('POS_SAVE_PEDIDO_INVALID', $log_context + [ 'pedido_id' => (int)$request->pedido_id ]);
                     return response()->json([
                         'status' => 'warning',
-                        'message' => 'El pedido seleccionado ya fue facturado o no está disponible. Actualice la lista de pendientes.'
+                        'message' => 'El pedido ya no esta disponible para facturar.',
+                        'request_id' => $request_id
                     ], 409);
                 }
 
@@ -298,15 +309,16 @@ class FacturaPosController extends TransaccionController
 
                     if ($todos_los_pedidos->isEmpty()) {
                         DB::rollBack();
+                        Log::warning('POS_SAVE_PEDIDOS_EMPTY', $log_context + [ 'pedido_id' => (int)$request->pedido_id ]);
                         return response()->json([
                             'status' => 'warning',
-                            'message' => 'Los pedidos de esta mesa/cliente ya no están disponibles para facturar.'
+                            'message' => 'No hay pedidos pendientes para facturar en este cliente.',
+                            'request_id' => $request_id
                         ], 409);
                     }
                 } else {
                     $todos_los_pedidos = collect([$pedido]);
                 }
-
             }
 
             // Crear documento de Ventas
@@ -314,14 +326,17 @@ class FacturaPosController extends TransaccionController
                 $doc_encabezado = TransaccionController::crear_encabezado_documento($request, $request->url_id_modelo);
             } catch (QueryException $e) {
                 $is_duplicate_uniqid = ($e->getCode() == '23000') && (strpos($e->getMessage(), "for key 'uniqid'") !== false);
+                $is_duplicate_uniqid = $is_duplicate_uniqid || (($e->getCode() == '23000') && (strpos($e->getMessage(), 'Duplicate entry') !== false) && (strpos($e->getMessage(), 'uniqid') !== false));
 
                 if ( $is_duplicate_uniqid && $request_uniqid != '' )
                 {
-                    $doc_existente = FacturaPos::where('uniqid', $request_uniqid)->first();
+                    $doc_existente = $this->find_existing_doc_by_uniqid($request_uniqid, $request);
                     if ( $doc_existente != null ) {
                         DB::rollBack();
                         $response = $this->build_json_doc_encabezado($doc_existente);
                         $response['reused_uniqid'] = 1;
+                        $response['request_id'] = $request_id;
+                        Log::warning('POS_SAVE_DUPLICATE_RECOVERED', $log_context + [ 'doc_id' => $doc_existente->id ]);
                         return response()->json( $response, 200);
                     }
                 }
@@ -349,13 +364,14 @@ class FacturaPosController extends TransaccionController
             DB::commit();
         } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('POS_SAVE_EXCEPTION', $log_context + [ 'error' => $e->getMessage() ]);
             throw $e;
         }
-        
+
         if($acumular_factura)
         {
-            $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );  
-        
+            $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );
+
             // Realizar preparaciones de recetas
             $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
 
@@ -363,8 +379,8 @@ class FacturaPosController extends TransaccionController
             $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);
 
             $obj_acumm_serv->accumulate_one_invoice( $doc_encabezado->id );
-        }   
-        
+        }
+
         if( $crear_cruce_con_anticipos )
         {
             (new CxCService())->crear_cruce_con_anticipos( $doc_encabezado, $request->object_anticipos );
@@ -375,21 +391,30 @@ class FacturaPosController extends TransaccionController
             (new TreasuryService())->crear_abonos_documento( $doc_encabezado, $datos['lineas_registros_medios_recaudos'] );
         }
 
-        return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
-    }  
-    
+        $response = $this->build_json_doc_encabezado($doc_encabezado);
+        $response['request_id'] = $request_id;
+        Log::info('POS_SAVE_SUCCESS', $log_context + [ 'doc_id' => $doc_encabezado->id, 'consecutivo' => $doc_encabezado->consecutivo ]);
+        return response()->json( $response, 200);
+    }
+
     /**
      * 
      */
     public function get_doc_encabezado_por_uniqid( $uniqid )
     {
-        $doc_encabezado = FacturaPos::where('uniqid', $uniqid)->get()->first();
+        $query = FacturaPos::where('uniqid', $uniqid);
+        if ( Auth::check() ) {
+            $query->where('core_empresa_id', Auth::user()->empresa_id);
+        }
+        $doc_encabezado = $query->get()->first();
 
         if ( $doc_encabezado == null ) {
             return 'null'; // No existe. Todo Bien.
         }
-        
-        return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
+
+        $response = $this->build_json_doc_encabezado($doc_encabezado);
+        $response['request_id'] = $this->get_request_id_from_request();
+        return response()->json( $response, 200);
     }
 
     /**
@@ -761,9 +786,67 @@ class FacturaPosController extends TransaccionController
 
         $this->registrar_auditoria_edicion($request, $doc_encabezado, $datos_antes, $datos_despues, $lineas_antes, $lineas_despues);
 
-        return response()->json( $this->build_json_doc_encabezado($doc_encabezado), 200);
+        $response = $this->build_json_doc_encabezado($doc_encabezado);
+        $response['request_id'] = $this->get_request_id_from_request($request);
+        return response()->json( $response, 200);
     }
 
+    protected function find_existing_doc_by_uniqid($uniqid, Request $request = null)
+    {
+        if (trim((string)$uniqid) == '') {
+            return null;
+        }
+
+        $query = FacturaPos::where('uniqid', $uniqid);
+
+        if ( !is_null($request) ) {
+            $core_empresa_id = (int)$request->get('core_empresa_id');
+            $cajero_id = (int)$request->get('cajero_id');
+            $pdv_id = (int)$request->get('pdv_id');
+
+            if ($core_empresa_id > 0) {
+                $query->where('core_empresa_id', $core_empresa_id);
+            }
+            if ($cajero_id > 0) {
+                $query->where('cajero_id', $cajero_id);
+            }
+            if ($pdv_id > 0) {
+                $query->where('pdv_id', $pdv_id);
+            }
+        }
+
+        return $query->first();
+    }
+
+    protected function get_request_id_from_request(Request $request = null)
+    {
+        if ( is_null($request) ) {
+            $request = request();
+        }
+
+        $request_id = trim((string)$request->get('request_id', ''));
+        if ($request_id == '') {
+            $request_id = (string)Str::uuid();
+        }
+
+        return substr($request_id, 0, 120);
+    }
+
+    protected function build_pos_log_context(Request $request, $request_id, $request_uniqid)
+    {
+        return [
+            'request_id' => (string)$request_id,
+            'uniqid' => (string)$request_uniqid,
+            'draft_id' => (string)$request->get('draft_id', ''),
+            'tab_instance_id' => (string)$request->get('tab_instance_id', ''),
+            'pdv_id' => (int)$request->get('pdv_id'),
+            'cajero_id' => (int)$request->get('cajero_id'),
+            'core_empresa_id' => (int)$request->get('core_empresa_id'),
+            'user_id' => Auth::id(),
+            'ip' => (string)$request->ip(),
+            'user_agent' => substr((string)$request->header('User-Agent', ''), 0, 255)
+        ];
+    }
     protected function registrar_auditoria_edicion(Request $request, $doc_encabezado, $datos_antes, $datos_despues, $lineas_antes, $lineas_despues)
     {
         if (!Schema::hasTable('vtas_pos_facturas_ediciones_auditoria')) {
@@ -1514,5 +1597,13 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
+
+
+
+
+
+
+
+
 
 

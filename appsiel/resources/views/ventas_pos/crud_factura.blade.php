@@ -144,45 +144,46 @@
 @endsection
 
 @section('scripts')
+    @php($asset_v = config('app.asset_version', env('ASSET_VERSION', '1')))
 
-    <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/sistema/form_builder.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/precios.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/commons.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/catalogos.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/sistema/form_builder.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/precios.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/clientes.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/agregar_linea_item.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/commons.js?v=' . $asset_v )}}"></script>
 
-    <script src="{{ asset( 'assets/js/apm/client.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/apm/client.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/script_to_printer.js?v=' . $asset_v )}}"></script>
     
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?aux=' . uniqid() )}}"></script>
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/facturas.js?v=' . $asset_v )}}"></script>
 
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/cargar_para_facturar.js?aux=' . uniqid() )}}"></script>
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/pedidos/cargar_para_facturar.js?v=' . $asset_v )}}"></script>
 
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/cinta_filtro_items.js?aux=' . uniqid())}}"></script>
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/cinta_filtro_items.js?v=' . $asset_v )}}"></script>
 
-    <script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?aux=' . uniqid())}}"></script>
+    <script type="text/javascript" src="{{asset( 'assets/js/tesoreria/medios_recaudos.js?v=' . $asset_v )}}"></script>
 
-    <script src="{{ asset( 'assets/js/ventas_pos/doble_click.js?aux=' . uniqid() )}}"></script>
-    <script src="{{ asset( 'assets/js/ventas_pos/componentes/doble_click_valor_total.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/doble_click.js?v=' . $asset_v )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/componentes/doble_click_valor_total.js?v=' . $asset_v )}}"></script>
 
     @if( (int)config('ventas_pos.manejar_propinas') )
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/propinas.js?aux=' . uniqid())}}"></script>
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/propinas.js?v=' . $asset_v )}}"></script>
     @endif
 
     @if( (int)config('ventas_pos.manejar_datafono') )
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/datafono.js?aux=' . uniqid())}}"></script>
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/datafono.js?v=' . $asset_v )}}"></script>
     @endif
 
     @if ( (int)config('ventas_pos.modulo_fe_activo'))
-        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?aux=' . uniqid())}}"></script>
+        <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/factura_electronica.js?v=' . $asset_v )}}"></script>
     @endif
 
-    <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/componentes/boton_prefactura.js?v=' . $asset_v )}}"></script>
 
-    <script src="{{ asset( 'assets/js/ventas_pos/revisar_anticipos.js?aux=' . uniqid() )}}"></script>
+    <script src="{{ asset( 'assets/js/ventas_pos/revisar_anticipos.js?v=' . $asset_v )}}"></script>
 
-    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/componentes/tactil.js?aux=' . uniqid())}}"></script>
+    <script type="text/javascript" src="{{asset( 'assets/js/ventas_pos/componentes/tactil.js?v=' . $asset_v )}}"></script>
 
     <script type="text/javascript">
         
