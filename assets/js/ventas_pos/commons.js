@@ -172,6 +172,204 @@ function update_uniqid()
   }
 }
 
+
+function pos_get_manejo_recargos_flags()
+{
+  return {
+    manejar_propinas: ($("#manejar_propinas").val() == 1),
+    manejar_datafono: ($("#manejar_datafono").val() == 1)
+  };
+}
+
+function pos_preparar_payload_guardado(opciones)
+{
+  opciones = opciones || {};
+  var incluir_impuesto_id = !!opciones.incluir_impuesto_id;
+  var refrescar_identificadores = (opciones.refrescar_identificadores !== false);
+
+  var flags = pos_get_manejo_recargos_flags();
+
+  $("#linea_ingreso_default").remove();
+
+  var table = $("#ingreso_registros").tableToJSON();
+  if (incluir_impuesto_id) {
+    table = add_impuesto_id_to_table_lines(table);
+  }
+
+  var json_table2 = get_json_registros_medios_recaudo();
+  if (flags.manejar_propinas) {
+    // Si hay propina, siempre va a venir una sola linea de medio de pago
+    json_table2 = separar_json_linea_medios_recaudo(json_table2);
+  }
+
+  if (flags.manejar_datafono) {
+    // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
+    json_table2 = separar_json_linea_medios_recaudo(json_table2);
+  }
+
+  // Se asigna el objeto JSON a un campo oculto del formulario
+  $("#lineas_registros").val(JSON.stringify(table));
+  $("#lineas_registros_medios_recaudos").val(json_table2);
+
+  if (refrescar_identificadores) {
+    update_uniqid();
+    update_request_id();
+  }
+
+  // Nota: No se puede enviar controles disabled
+  var data = $("#form_create").serialize();
+  if (flags.manejar_propinas) {
+    data += "&valor_propina=" + $("#valor_propina").val();
+  }
+
+  if (flags.manejar_datafono) {
+    data += "&valor_datafono=" + $("#valor_datafono").val();
+  }
+
+  return {
+    data: data,
+    manejar_propinas: flags.manejar_propinas,
+    manejar_datafono: flags.manejar_datafono
+  };
+}
+
+function pos_reset_contexto_despues_guardado()
+{
+  $("#pedido_id").val(0);
+  $("#object_anticipos").val("null");
+  pos_save_attempted = false;
+  update_uniqid();
+}
+
+function pos_regenerar_uniqid_para_reintento()
+{
+  if (typeof update_uniqid === "function") {
+    update_uniqid();
+    return;
+  }
+
+  $("#uniqid").val( uniqid() );
+}
+
+function pos_obtener_sufijo_ref(xhr)
+{
+  return "";
+}
+
+function pos_mostrar_mensaje_error_guardado(xhr, opciones)
+{
+  opciones = opciones || {};
+  var prefijo_titulo = opciones.prefijo_titulo || "FACTURA NO GUARDADA";
+  var recargar_uniqid = (opciones.recargar_uniqid !== false);
+
+  var status_text = (xhr && typeof xhr.statusText === "string") ? xhr.statusText : "";
+  var response_text = (xhr && typeof xhr.responseText === "string") ? xhr.responseText : "";
+  var server_error_code = (xhr && typeof xhr.status !== "undefined") ? xhr.status : 0;
+  var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
+
+  if (recargar_uniqid) {
+    pos_regenerar_uniqid_para_reintento();
+  }
+
+  // Unificar errores de conectividad: jQuery suele devolver status 0 en timeout/abort/sin red.
+  var es_error_conectividad = (server_error_code === 0) || (status_text.search("NetworkError") != -1);
+  if (es_error_conectividad) {
+    Swal.fire({
+      icon: "error",
+      title: prefijo_titulo,
+      text: "No hubo respuesta del servidor (sin conexion o tiempo de espera). Intenta nuevamente."
+    });
+    return false;
+  }
+
+  if (server_error_code === 409) {
+    var warning_message = "Los pedidos seleccionados ya no estan disponibles para facturar. Actualiza la lista de pendientes.";
+    if (response_json && typeof response_json.message === "string" && response_json.message !== "") {
+      warning_message = response_json.message;
+    }
+    Swal.fire({
+      icon: "warning",
+      title: "Advertencia",
+      text: warning_message
+    });
+    return false;
+  }
+
+  if (response_text.search("Duplicate entry") != -1) {
+    Swal.fire({
+      icon: "warning",
+      title: "Advertencia",
+      text: "Se detecto un intento de guardado repetido. Presione REFRESH y continue con la facturacion."
+    });
+    return false;
+  }
+
+  if (response_text.search("Trying to get property &#039;email&#039; of non-object") != -1) {
+    Swal.fire({
+      icon: "warning",
+      title: "Sesion cerrada",
+      text: "La sesion se cerro inesperadamente. Inicie sesion en otra pestana y continue."
+    });
+    return false;
+  }
+
+  if (response_json && typeof response_json.message === "string" && response_json.message !== "") {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: response_json.message
+    });
+    return false;
+  }
+
+  if (server_error_code === 500) {
+    Swal.fire({
+      icon: "error",
+      title: "Error del servidor",
+      text: "No fue posible procesar la solicitud en el servidor. Contacte a soporte."
+    });
+    return false;
+  }
+
+  Swal.fire({
+    icon: "error",
+    title: "Error",
+    text: "Codigo de respuesta " + server_error_code + ". La solicitud no pudo ser procesada."
+  });
+  return false;
+}
+
+function pos_mostrar_mensaje_validacion_previa(tipo)
+{
+  var config = null;
+
+  if (tipo === "sin_productos") {
+    config = {
+      icon: "warning",
+      title: "Validacion pendiente",
+      text: "No hay productos cargados. Agrega al menos un producto antes de continuar."
+    };
+  }
+
+  if (tipo === "contorno_requerido") {
+    config = {
+      icon: "warning",
+      title: "Validacion pendiente",
+      text: "Hay productos que requieren contorno y aun no fue agregado. Agrega el contorno para continuar."
+    };
+  }
+
+  if (config === null) {
+    config = {
+      icon: "warning",
+      title: "Validacion pendiente",
+      text: "Revisa los datos ingresados y vuelve a intentarlo."
+    };
+  }
+
+  Swal.fire(config);
+  return false;
+}
 function iniciar_watchdog_guardado(ms)
 {
   limpiar_watchdog_guardado();
@@ -1342,18 +1540,14 @@ $(document).ready(function () {
       return false;
     }
 
-        // Desactivar el click del bot�n
+        // Desactivar el click del bot�n
     activar_estado_boton_guardando_factura();
 
     // Cede un ciclo al navegador para que pinte el spinner antes del trabajo pesado.
     setTimeout(function () {
       try {
       if (hay_productos == 0) {
-        Swal.fire({
-          icon: "error",
-          title: "Alerta!",
-          text: "No ha ingresado productos.",
-        });
+        pos_mostrar_mensaje_validacion_previa("sin_productos");
         reset_linea_ingreso_default();
         reset_efectivo_recibido();
         $("#btn_nuevo").hide();
@@ -1362,17 +1556,14 @@ $(document).ready(function () {
       }
 
       if (!validar_producto_con_contorno()) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Advertencia!',
-            text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
-        });
+        pos_mostrar_mensaje_validacion_previa("contorno_requerido");
         reset_estado_boton_guardar_factura();
         return false;
       }
 
-      var manejar_propinas = ($("#manejar_propinas").val() == 1);
-      var manejar_datafono = ($("#manejar_datafono").val() == 1);
+      var flags_recargos = pos_get_manejo_recargos_flags();
+      var manejar_propinas = flags_recargos.manejar_propinas;
+      var manejar_datafono = flags_recargos.manejar_datafono;
 
       if (manejar_propinas) {
         if ($("#valor_propina").val() != 0) {
@@ -1392,39 +1583,8 @@ $(document).ready(function () {
         }
       }
 
-      $("#linea_ingreso_default").remove();
-
-      var table = $("#ingreso_registros").tableToJSON();
-      table = add_impuesto_id_to_table_lines(table);
-      
-      json_table2 = get_json_registros_medios_recaudo();
-
-      if (manejar_propinas) {
-        // Si hay propina, siempre va a venir una sola linea de medio de pago
-        json_table2 = separar_json_linea_medios_recaudo(json_table2);
-      }
-
-      if (manejar_datafono) {
-        // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-        json_table2 = separar_json_linea_medios_recaudo(json_table2);
-      }
-
-      // Se asigna el objeto JSON a un campo oculto del formulario
-      $("#lineas_registros").val(JSON.stringify(table));
-      $("#lineas_registros_medios_recaudos").val(json_table2);
-      update_request_id();
-
-      // Nota: No se puede enviar controles disabled
-      var data = $("#form_create").serialize();
-
-      if (manejar_propinas) {
-        data += "&valor_propina=" + $("#valor_propina").val();
-      }
-
-      if (manejar_datafono) {
-        data += "&valor_datafono=" + $("#valor_datafono").val();
-      }
-
+      var payload_guardado = pos_preparar_payload_guardado({ incluir_impuesto_id: true });
+      var data = payload_guardado.data;
       var tiempo_espera_guardar_factura = 7000; // 7 segundos
       var tiempo_espera_config = parseInt($('#tiempo_espera_guardar_factura').val(), 10);
       if (!isNaN(tiempo_espera_config) && tiempo_espera_config > 0) {
@@ -1433,12 +1593,6 @@ $(document).ready(function () {
 
       var url = $("#form_create").attr("action");
       var watchdog_guardado_ms = tiempo_espera_guardar_factura + 5000;
-      // Mitiga colisiones al duplicar pestanas: el primer guardado de la pestana
-      // fuerza un nuevo contexto de intento antes de enviar.
-      if (!pos_save_attempted) {
-        update_uniqid();
-        update_request_id();
-      }
     
       // Comprobamos si el semaforo esta en verde (1)
       if (!locked) {
@@ -1470,119 +1624,10 @@ $(document).ready(function () {
           },
           error: function(xhr){
             reset_estado_boton_guardar_factura();
+            pos_mostrar_mensaje_error_guardado(xhr, { prefijo_titulo: "FACTURA NO GUARDADA. INTENTA OTRA VEZ!" });
 
-            var status_text = (xhr && typeof xhr.statusText === 'string') ? xhr.statusText : ''; // Respuesta siempre
-            var response_text = (xhr && typeof xhr.responseText === 'string') ? xhr.responseText : ''; // Solo cuando hay respuesta del servidor
-            var server_error_code = (xhr && typeof xhr.status !== 'undefined') ? xhr.status : 0; // Código de error HTTP. 0 cuando no hay respuesta del servidor
-            var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
-            var request_id_error = $("#request_id").val() || "";
-            if (response_json && typeof response_json.request_id === "string" && response_json.request_id !== "") {
-              request_id_error = response_json.request_id;
-            }
-            var request_id_sufijo = request_id_error !== "" ? (" Ref: " + request_id_error) : "";
-
-            let position = status_text.search("NetworkError");
-            if (position != -1) {
-              var error_label = 'Error ' + server_error_code + '. Pérdida de conexión de INTERNET.';
-              Swal.fire({
-                icon: 'error',
-                title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                text: error_label + request_id_sufijo
-              }); 
-              
-              puede_continuar = false;
-
-              return false;
-            }
-
-            // jQuery devuelve código 0 en timeout, abort o cuando no hay conexión.
-            if (server_error_code === 0) {
-              var error_label = 'Error 0. No hubo respuesta del servidor (timeout o conexión interrumpida).';
-              Swal.fire({
-                icon: 'error',
-                title: '1. FACTURA NO GUARDADA. INTENTA OTRA VEZ!',
-                text: error_label + request_id_sufijo
-              });
-               
-              puede_continuar = false;
-
-              return false;
-            }
-
-            if (server_error_code === 409) {
-              var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
-              var warning_message = "Los pedidos seleccionados ya no están disponibles para facturar. Actualiza la lista de pendientes.";
-              if (response_json && typeof response_json.message === "string" && response_json.message !== "") {
-                warning_message = response_json.message;
-              }
-
-              Swal.fire({
-                icon: "warning",
-                title: "Advertencia",
-                text: warning_message + request_id_sufijo
-              });
-
-              puede_continuar = false;
-              return false;
-            }
-
-            // Si hay respuesta del servidor, pero hay un error de Laravel
-            position = response_text.search("Duplicate entry");
-            
-            if (position != -1) { // -1 la Cadena no existe
-              var error_label = 'Error ' + server_error_code + '. Validación del servidor. Duplicate entry.';
-              Swal.fire({
-                icon: 'warning',
-                title: 'Validación ¡NO CIERRES! Solo haz clic en el BOTÓN NEGRO REFRESH y continúa con la facturación.',
-                text: error_label + request_id_sufijo 
-              });
-              
-              puede_continuar = false;
-
-              return false;
-            }
-
-            // Cuando se cerró la sesión del usuario
-            position = response_text.search("Trying to get property &#039;email&#039; of non-object");
-            
-            if (position != -1) { // -1 la Cadena no existe
-              var error_label = 'Error ' + server_error_code + '. Validación del servidor. Se cerró la sesión inesperadamente.';
-              Swal.fire({
-                icon: 'warning',
-                title: '4. FACTURA NO GUARDADA. ¡NO CIERRES! Inicia sesión en otra pestaña y continúa con la facturación.',
-                text: error_label + request_id_sufijo 
-              });
-              
-              puede_continuar = false;
-
-              return false;
-            }
-            
-            if (server_error_code == 500) { // Error Interno del Servidor
-              var error_label = 'Error ' + server_error_code + '. Validación del servidor. Por favor, comuníquese con soporte.';
-              Swal.fire({
-                icon: 'error',
-                title: '2. FACTURA NO GUARDADA. ERROR EN EL SERVIDOR.',
-                text: error_label + request_id_sufijo 
-              });
-              
-              puede_continuar = false;
-
-              return false;
-            }
-            
-            if (server_error_code != 500) { // Error Interno del Servidor
-              var error_label = 'Cód. de respuesta ' + server_error_code + '. La solicitud no pudo ser procesada.';
-              Swal.fire({
-                icon: 'error',
-                title: '3. FACTURA NO GUARDADA. POR FAVOR, ACTUALIZAR LA PÁGINA E INTENTAR NUEVAMENTE.',
-                text: error_label + request_id_sufijo 
-              });
-              
-              puede_continuar = false;
-
-              return false;
-            }
+            puede_continuar = false;
+            return false;
           },
           complete: function(){ 
             limpiar_watchdog_guardado();
@@ -1610,22 +1655,17 @@ $(document).ready(function () {
   {
     if (parseInt(doc_encabezado.reused_uniqid || 0, 10) === 1) {
       reset_estado_boton_guardar_factura();
-      var request_id_reused = (doc_encabezado.request_id || "").toString();
-      var texto_request_id = request_id_reused !== "" ? (" Ref: " + request_id_reused) : "";
-      Swal.fire({
+            Swal.fire({
         icon: "warning",
         title: "Factura ya guardada",
         text:
           "Se recuperó una factura ya creada con este intento de guardado (" +
           doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo +
-          "). Para evitar inconsistencias, consulta e imprime el documento desde el historial." + texto_request_id
+          "). Para evitar inconsistencias, consulta e imprime el documento desde el historial." 
       });
 
       $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
-      $("#pedido_id").val(0);
-      $("#object_anticipos").val("null");
-      pos_save_attempted = false;
-      update_uniqid();
+      pos_reset_contexto_despues_guardado();
       resetear_ventana();
 
       return false;
@@ -1647,10 +1687,7 @@ $(document).ready(function () {
     reset_estado_boton_guardar_factura();
     enviar_impresion( doc_encabezado );
     
-    $("#pedido_id").val(0);
-    $("#object_anticipos").val('null');
-    pos_save_attempted = false;
-    update_uniqid();
+      pos_reset_contexto_despues_guardado();
 
     return false;
   }
@@ -1979,5 +2016,3 @@ $(document).ready(function () {
   });
   
 });
-
-

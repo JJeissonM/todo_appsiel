@@ -3,7 +3,10 @@ function enviar_impresion( doc_encabezado )
 {
     if ( doc_encabezado == 'prefactura' ) {
         $("#msj_ventana_impresion_abierta").show();
-        ventana_imprimir();
+        var prefactura_impresa = ventana_imprimir();
+        if (!prefactura_impresa) {
+            pos_notificar_popup_bloqueado();
+        }
         return;
     }
 
@@ -50,7 +53,10 @@ function enviar_impresion( doc_encabezado )
         default:
             // Case 0 o null
             $("#msj_ventana_impresion_abierta").show();
-            ventana_imprimir();
+            var factura_impresa = ventana_imprimir();
+            if (!factura_impresa) {
+                pos_notificar_popup_bloqueado();
+            }
             break;
             break;
     }
@@ -66,6 +72,15 @@ function enviar_impresion( doc_encabezado )
             $("#pdv_id").val() +
             "&action=create";
     }
+}
+
+function pos_notificar_popup_bloqueado()
+{
+    Swal.fire({
+        icon: 'warning',
+        title: 'Ventana emergente bloqueada',
+        text: 'La factura se guardo correctamente, pero el navegador bloqueo la ventana de impresion.'
+    });
 }
 
 function print_comanda_apm( doc_encabezado )

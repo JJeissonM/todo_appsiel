@@ -433,14 +433,24 @@ function get_descuento(producto_id)
 	return descuento;
 }
 
-function ventana_imprimir()
-{
-
+function ventana_imprimir() {
+  try {
     ventana_factura = window.open("", "Impresión de factura POS", "width=400,height=600,menubar=no");
+  } catch (e) {
+    ventana_factura = null;
+  }
 
-    ventana_factura.document.write($('#div_plantilla_factura').html());
+  if (!ventana_factura || ventana_factura.closed || typeof ventana_factura.closed === "undefined") {
+    return false;
+  }
 
+  try {
+    ventana_factura.document.write($("#div_plantilla_factura").html());
     ventana_factura.print();
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 function mandar_codigo(item_id)

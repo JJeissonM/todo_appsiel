@@ -86,11 +86,34 @@ function seleccionar_cliente(item_sugerencia)
 
 function ventana_imprimir_cotizacion(url)
 {
-	ventana_factura = window.open('', "Impresión de Cotización", "width=400,height=600,menubar=no");
+    var ventana_factura = null;
 
-	ventana_factura.document.write( '<h3 style="padding: 45px;">Cargando . . . .</h3>' );
+    try {
+        ventana_factura = window.open('', "Impresión de Cotización", "width=400,height=600,menubar=no");
+    } catch (e) {
+        ventana_factura = null;
+    }
 
-    ventana_factura.location = url;
+    if (!ventana_factura || ventana_factura.closed || typeof ventana_factura.closed === 'undefined') {
+        return false;
+    }
+
+    try {
+        ventana_factura.document.write( '<h3 style="padding: 45px;">Cargando . . . .</h3>' );
+        ventana_factura.location = url;
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+function pedidos_notificar_popup_bloqueado()
+{
+    Swal.fire({
+        icon: 'warning',
+        title: 'Ventana emergente bloqueada',
+        text: 'El pedido se guardo correctamente, pero el navegador bloqueo la ventana de impresion.'
+    });
 }
 
 $(document).ready(function () {
@@ -551,13 +574,19 @@ $(document).ready(function () {
                     print_comanda();
                 }
 
-                ventana_imprimir();
+                var ventana_pedido_abierta = ventana_imprimir();
+                if (!ventana_pedido_abierta) {
+                    pedidos_notificar_popup_bloqueado();
+                }
             }else{
 
                 // Cuando el formato de de impresion es cotizacion, doc_encabezado_consecutivo en realidad es el doc_encabezado_id
                 var url = url_raiz + '/' + 'vtas_cotizacion_imprimir/' + doc_encabezado_consecutivo + '?id=13&id_modelo=155&id_transaccion=30&formato_impresion_id=3';
 
-                ventana_imprimir_cotizacion(url);
+                var ventana_cotizacion_abierta = ventana_imprimir_cotizacion(url);
+                if (!ventana_cotizacion_abierta) {
+                    pedidos_notificar_popup_bloqueado();
+                }
             }
             
             resetear_ventana();

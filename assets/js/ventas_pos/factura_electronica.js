@@ -1,9 +1,24 @@
 function ventana_imprimir_fe(url) {
-	ventana_factura = window.open('', "Impresión de Factura Electronica", "width=400,height=600,menubar=no");
+    var ventana_factura = null;
 
-	ventana_factura.document.write( '<h3 style="padding: 45px;">Cargando . . . .</h3>' );
+    try {
+        ventana_factura = window.open('', "Impresión de Factura Electronica", "width=400,height=600,menubar=no");
+    } catch (e) {
+        ventana_factura = null;
+    }
 
-    ventana_factura.location = url;
+    // Popup bloqueado por el navegador.
+    if (!ventana_factura || ventana_factura.closed || typeof ventana_factura.closed === 'undefined') {
+        return false;
+    }
+
+    try {
+        ventana_factura.document.write( '<h3 style="padding: 45px;">Cargando . . . .</h3>' );
+        ventana_factura.location = url;
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 function validar_datos_tercero()
@@ -31,11 +46,15 @@ $(document).ready(function () {
 
         if( hay_productos == 0 )
         {
-            Swal.fire({
-                icon: 'error',
-                title: 'Alerta!',
-                text: 'No ha ingresado productos.'
-            });
+            if (typeof pos_mostrar_mensaje_validacion_previa === "function") {
+                pos_mostrar_mensaje_validacion_previa("sin_productos");
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validacion pendiente',
+                    text: 'No hay productos cargados. Agrega al menos un producto antes de continuar.'
+                });
+            }
             reset_linea_ingreso_default();
             reset_efectivo_recibido();
             $('#btn_nuevo').hide();
@@ -53,11 +72,15 @@ $(document).ready(function () {
         }
 
         if ( !validar_producto_con_contorno() ) {
-          Swal.fire({
-              icon: 'warning',
-              title: 'Advertencia!',
-              text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
-          });
+          if (typeof pos_mostrar_mensaje_validacion_previa === "function") {
+              pos_mostrar_mensaje_validacion_previa("contorno_requerido");
+          } else {
+              Swal.fire({
+                  icon: 'warning',
+                  title: 'Validacion pendiente',
+                  text: 'Hay productos que requieren contorno y aun no fue agregado. Agrega el contorno para continuar.'
+              });
+          }
           
           return false;
         }
@@ -89,58 +112,87 @@ $(document).ready(function () {
         $( this ).attr( 'disabled', 'disabled' );
         $( this ).attr( 'id', 'btn_guardando_fe' );
 
-        $('#linea_ingreso_default').remove();
-
-        var table = $('#ingreso_registros').tableToJSON();        
-
-        json_table2 = get_json_registros_medios_recaudo();
-
-        if( $('#manejar_propinas').val() == 1 )
-        {
-            // Si hay propina, siempre va a venir una sola linea de medio de pago
-            json_table2 = separar_json_linea_medios_recaudo( json_table2 );
-        }
-
-        if( $('#manejar_datafono').val() == 1 )
-        {
-            // Si hay Comision por datafono, siempre va a venir una sola linea de medio de pago
-            json_table2 = separar_json_linea_medios_recaudo( json_table2 );
-        }
-
-        // Se asigna el objeto JSON a un campo oculto del formulario
-        $('#lineas_registros').val( JSON.stringify( table ) );
-        $('#lineas_registros_medios_recaudos').val( json_table2 );
-
-        // Nota: No se puede enviar controles disabled
-
         var url = $("#form_create").attr('action');
-        var data = $("#form_create").serialize();
-        
-        if( $('#manejar_propinas').val() == 1 )
-        {
-            data += '&valor_propina=' + $('#valor_propina').val();
-        }
-        
-        if( $('#manejar_datafono').val() == 1 )
-        {
-            data += '&valor_datafono=' + $('#valor_datafono').val();
+        var payload_guardado = null;
+        var data = '';
+        if (typeof pos_preparar_payload_guardado === "function") {
+            payload_guardado = pos_preparar_payload_guardado({ incluir_impuesto_id: false });
+            data = payload_guardado.data;
+        } else {
+            data = $("#form_create").serialize();
         }
         
         $.post(
             url.replace('pos_factura', 'pos_factura_electronica'),
             data, 
-            function (url_print) {
+            function (response) {
                 $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
                 $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
 
-                $("#pedido_id").val(0);
-                $("#object_anticipos").val('null');
-                $("#uniqid").val( uniqid() );
+                var url_print = response;
+                var warning_message = '';
+                if (response && typeof response === 'object') {
+                    if (typeof response.url_print === 'string') {
+                        url_print = response.url_print;
+                    }
+                    if (typeof response.message === 'string' && response.message !== '') {
+                        warning_message = response.message;
+                    }
+                }
+
+                if (typeof url_print !== 'string' || url_print === '') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'La factura se guardó, pero no se obtuvo URL de impresión.'
+                    });
+                    return false;
+                }
+
+                if (typeof pos_reset_contexto_despues_guardado === "function") {
+                    pos_reset_contexto_despues_guardado();
+                } else {
+                    $("#pedido_id").val(0);
+                    $("#object_anticipos").val('null');
+                    if (typeof update_uniqid === "function") {
+                        update_uniqid();
+                    } else {
+                        $("#uniqid").val( uniqid() );
+                    }
+                }
                 
-                ventana_imprimir_fe( url_print );
+                var ventana_impresion_abierta = ventana_imprimir_fe( url_print );
                 resetear_ventana();
 
                 enfocar_tab_totales();
+
+                if (!ventana_impresion_abierta) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Ventana emergente bloqueada',
+                        text: 'La factura se guardo correctamente, pero el navegador bloqueo la ventana de impresion.',
+                        confirmButtonText: 'Abrir factura',
+                        showCancelButton: true,
+                        cancelButtonText: 'Cerrar'
+                    }).then(function(result) {
+                        if (!result.isConfirmed) {
+                            return;
+                        }
+
+                        var nueva_ventana = window.open(url_print, '_blank');
+                        if (!nueva_ventana) {
+                            window.location.href = url_print;
+                        }
+                    });
+                }
+
+                if (warning_message !== '') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: warning_message
+                    });
+                }
 
                 if ( $('#action').val() != 'create' )
                 {
@@ -151,22 +203,17 @@ $(document).ready(function () {
             $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
             $('#btn_guardando_fe').removeAttr('disabled');
             $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
-
-            var response_json = (xhr && typeof xhr.responseJSON === "object") ? xhr.responseJSON : null;
-            if (xhr && xhr.status === 409 && response_json && typeof response_json.message === "string") {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Advertencia',
-                    text: response_json.message
+            if (typeof pos_mostrar_mensaje_error_guardado === "function") {
+                pos_mostrar_mensaje_error_guardado(xhr, {
+                    prefijo_titulo: 'FACTURA NO GUARDADA. INTENTA OTRA VEZ!'
                 });
-                return false;
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No fue posible guardar la Factura Electrónica. Intente nuevamente.'
+                });
             }
-
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No fue posible guardar la Factura Electrónica. Intente nuevamente.'
-            });
             return false;
         });
         

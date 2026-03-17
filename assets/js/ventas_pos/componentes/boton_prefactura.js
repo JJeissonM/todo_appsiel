@@ -4,20 +4,28 @@ $(document).ready(function () {
         event.preventDefault();
 
         if (hay_productos == 0) {
-            Swal.fire({
-                icon: "error",
-                title: "Alerta!",
-                text: "No ha ingresado productos.",
-            });
+            if (typeof pos_mostrar_mensaje_validacion_previa === "function") {
+                pos_mostrar_mensaje_validacion_previa("sin_productos");
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Validacion pendiente",
+                    text: "No hay productos cargados. Agrega al menos un producto antes de continuar.",
+                });
+            }
             return false;
         }
 
         if ( !validar_producto_con_contorno() ) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Advertencia!',
-                text: 'Has ingresado productos que necesitan Contorno, pero NO está agregado el Contorno.'
-            });
+            if (typeof pos_mostrar_mensaje_validacion_previa === "function") {
+                pos_mostrar_mensaje_validacion_previa("contorno_requerido");
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Validacion pendiente",
+                    text: "Hay productos que requieren contorno y aun no fue agregado. Agrega el contorno para continuar."
+                });
+            }
         
             return false;
         }
