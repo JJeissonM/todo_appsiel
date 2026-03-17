@@ -6,23 +6,37 @@
     $image = false;
     $local_path = null;
     if (is_string($url)) {
-        $path_prefix = '/storage/app/logos_empresas/';
-        $pos = strpos($url, $path_prefix);
-        if ($pos !== false) {
+        $path_prefixes = [
+            '/storage/app/logos_empresas/',
+            'storage/app/logos_empresas/'
+        ];
+
+        foreach ($path_prefixes as $path_prefix) {
+            $pos = strpos($url, $path_prefix);
+            if ($pos === false) {
+                continue;
+            }
+
             $file = substr($url, $pos + strlen($path_prefix));
             $file = strtok($file, '?#');
+
+            if ($file === false || $file === '') {
+                continue;
+            }
+
             $local_path = storage_path('app/logos_empresas/'.$file);
+            break;
         }
     }
 
     if ($local_path && file_exists($local_path)) {
         $image = @getimagesize($local_path);
-    } else {
-        $image = @getimagesize($url);
     }
 
     if ($image === false) {
-        $img = '';
+        if (!empty($url)) {
+            $img = '<img src="'.$url.'" style="margin-left: 10px; max-width: 160px; max-height: 100px;" />';
+        }
     } else {
         $ancho = $image[0];            
         $alto = $image[1];

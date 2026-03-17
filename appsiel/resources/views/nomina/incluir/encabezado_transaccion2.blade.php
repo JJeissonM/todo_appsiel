@@ -19,16 +19,7 @@ use App\Core\Tercero;
 <table class="encabezado" width="100%">
     <tr>
         <td width="70%" rowspan="2">
-            <?php
-                $image = getimagesize($url);
-                $ancho = $image[0];            
-                $alto = $image[1];   
-			 
-                $palto = (60*100)/$alto;
-				$ancho = $ancho*$palto/100;
-				echo '<img src="'.$url.'" width="'.$ancho.'" height="60" />';
-           
-			?>	
+            <img src="{{ $url }}" style="max-width: 100%; max-height: 60px;" />
             </td>
         <td>Teléfono: {{ $empresa->telefono1 }}</td>
     </tr>

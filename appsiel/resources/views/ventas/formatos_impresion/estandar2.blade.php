@@ -22,17 +22,7 @@ use App\Core\Tercero;
 <table class="encabezado" width="100%">
     <tr>
         <td width="40%" rowspan="2">
-            <?php
-                $image = getimagesize($url);
-                $ancho = $image[0];            
-                $alto = $image[1];
-
-                $heigth = 80;
-                $palto = ($heigth*100)/$alto;
-				$ancho = $ancho*$palto/100;
-				echo '<img src="'.$url.'" width="'.$ancho.'" height="'.$heigth.'" />';
-           
-			?>	
+            <img src="{{ $url }}" style="max-width: 100%; max-height: 80px;" />
         </td>
         <td> 
             <p style="text-align: right; font-size: 18px; padding-right: 30px; padding-top: 20px">
