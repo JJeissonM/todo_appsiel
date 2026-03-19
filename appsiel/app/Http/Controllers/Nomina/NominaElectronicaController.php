@@ -50,8 +50,9 @@ class NominaElectronicaController extends TransaccionController
         ];
 
         $registros = $model->get_records_filtered($array_wheres);
+        $arr_ids_documentos_sin_enviar = json_encode($registros->pluck('id')->values()->all());
 
-        $tabla_documentos_sin_enviar = View::make('nomina.nomina_electronica.tabla_documentos_sin_enviar', compact('model','encabezado_tabla','registros'))->render();
+        $tabla_documentos_sin_enviar = View::make('nomina.nomina_electronica.tabla_documentos_sin_enviar', compact('model','encabezado_tabla','registros','arr_ids_documentos_sin_enviar'))->render();
 
     	return view('nomina.nomina_electronica.index', compact('miga_pan', 'tabla_documentos_sin_enviar', 'msj_advertencia') );
     }
@@ -190,14 +191,14 @@ class NominaElectronicaController extends TransaccionController
 
         $accruals = $datos_doc_soporte['accruals'];
         foreach ($accruals as $line) {
-            if ( $line['status'] == 'error' ) {
+            if ( isset($line['status']) && $line['status'] == 'error' ) {
                 $hay_errores = true;
             }
         }
         
         $deductions = $datos_doc_soporte['deductions'];
         foreach ($deductions as $line) {
-            if ( $line['status'] == 'error' ) {
+            if ( isset($line['status']) && $line['status'] == 'error' ) {
                 $hay_errores = true;
             }
         }
@@ -223,64 +224,167 @@ class NominaElectronicaController extends TransaccionController
 
     public function enviar_documentos( $arr_ids )
     {        
-        $doc_soporte_service = new DocumentoSoporteService();
-
-        $arr_ids = json_decode($arr_ids);
-        
-        $some_error = false;
-        foreach ($arr_ids as $key => $document_id) {
-            $document_header = DocumentoSoporte::find($document_id);
-            
-            if ($document_header->estado != 'Sin enviar') {
-                continue;
-            }
-
-            $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
-
-            try {
-                $client = new Client(['base_uri' => config('nomina.url_servicio_emision')]);
-                
-                $response = $client->post( config('nomina.url_servicio_emision'), [
-                    // un array con la data de los headers como tipo de peticion, etc.
-                    'headers' => [
-                                  'content-type' => 'application/json',
-                                  'auth-token' => config('nomina.tokenPassword')
-                               ],
-                    // array de datos del formulario
-                    'json' => json_decode( $json_doc_electronico_enviado )
-                ]);
-
-
-             } catch (\GuzzleHttp\Exception\RequestException $e) {
-                 $response = $e->getResponse();
-             }
-
-            $array_respuesta = json_decode( (string) $response->getBody(), true );
-            $array_respuesta['codigo'] = $response->getStatusCode();
-
-            if (isset($array_respuesta['errors'])) {
-                $array_respuesta['dian_messages'] = $array_respuesta['errors'];
-                $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
-            }
-            
-            $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado );
-            
-            if (isset($array_respuesta['dian_status'])) {
-                if ($array_respuesta['dian_status'] == 'DIAN_RECHAZADO') {
-                    $some_error = true;
-                }else{
-                    $document_header->estado = 'Enviado';
-                    $document_header->save();
-                }
-            }
+        $arr_ids = $this->parse_arr_ids($arr_ids);
+        if (empty($arr_ids)) {
+            return redirect('nom_electronica?id=17&id_modelo=0#doc_soporte')->with('mensaje_error','No se recibieron documentos válidos para enviar.');
         }
         
-        if ($some_error) {
-            return redirect('nom_electronica?id=17&id_modelo=0')->with('mensaje_error','Algunos documentos fueron rechazados por la DIAN. Por favor revise la pestaña Docs. Soporte No enviados y los registros de envíos de documentos.');
+        $resultado_lote = $this->procesar_envio_documentos($arr_ids);
+        
+        if ($resultado_lote['some_error']) {
+            return redirect('nom_electronica?id=17&id_modelo=0#doc_soporte')->with('mensaje_error','Algunos documentos no pudieron ser enviados. Por favor revise la pestaña Docs. Soporte No enviados y los registros de envíos de documentos.');
         }
 
-        return redirect('nom_electronica?id=17&id_modelo=0')->with('flash_message','Documentos enviados correctamente.');
+        return redirect('nom_electronica?id=17&id_modelo=0#doc_soporte')->with('flash_message','Documentos enviados correctamente.');
    }
+
+    public function enviar_documento_ajax(Request $request, $documento_id)
+    {
+        $resultado = $this->procesar_envio_documento($documento_id);
+
+        return response()->json($resultado, $resultado['ok'] ? 200 : 422);
+    }
+
+    protected function procesar_envio_documentos(array $arr_ids)
+    {
+        $resultados = [];
+        $some_error = false;
+
+        foreach ($arr_ids as $document_id) {
+            $resultado = $this->procesar_envio_documento($document_id);
+            $resultados[] = $resultado;
+
+            if (!$resultado['ok']) {
+                $some_error = true;
+            }
+        }
+
+        return [
+            'some_error' => $some_error,
+            'resultados' => $resultados
+        ];
+    }
+
+    protected function procesar_envio_documento($document_id)
+    {
+        $doc_soporte_service = new DocumentoSoporteService();
+        $document_header = DocumentoSoporte::find($document_id);
+
+        if (is_null($document_header)) {
+            return [
+                'ok' => false,
+                'documento_id' => (int)$document_id,
+                'documento' => '',
+                'message' => 'Documento no encontrado.'
+            ];
+        }
+
+        if ($document_header->estado != 'Sin enviar') {
+            return [
+                'ok' => false,
+                'documento_id' => (int)$document_header->id,
+                'documento' => $document_header->get_value_to_show(),
+                'message' => 'El documento ya no está pendiente de envío.'
+            ];
+        }
+
+        $json_doc_electronico_enviado = json_encode($document_header->get_json_to_send());
+        $response = null;
+        $array_respuesta = [];
+
+        try {
+            $client = new Client();
+
+            $response = $client->post( config('nomina.url_servicio_emision'), [
+                'headers' => [
+                              'content-type' => 'application/json',
+                              'auth-token' => config('nomina.tokenPassword')
+                           ],
+                'json' => json_decode( $json_doc_electronico_enviado )
+            ]);
+
+         } catch (\GuzzleHttp\Exception\ConnectException $e) {
+             $array_respuesta = [
+                'codigo' => 0,
+                'dian_status' => 'DIAN_RECHAZADO',
+                'dian_messages' => [ 'No fue posible conectar con Dataico. Verifique DNS/salida a internet del servidor. Detalle: ' . $e->getMessage() ]
+            ];
+         } catch (\GuzzleHttp\Exception\RequestException $e) {
+             $response = $e->getResponse();
+             if ( is_null($response) )
+             {
+                $array_respuesta = [
+                    'codigo' => 0,
+                    'dian_status' => 'DIAN_RECHAZADO',
+                    'dian_messages' => [ $e->getMessage() ]
+                ];
+             }
+         }
+
+        if ( !is_null($response) )
+        {
+            $array_respuesta = json_decode( (string) $response->getBody(), true );
+            if ( !is_array($array_respuesta) )
+            {
+                $array_respuesta = [];
+            }
+            $array_respuesta['codigo'] = $response->getStatusCode();
+        }
+
+        if (isset($array_respuesta['errors'])) {
+            $array_respuesta['dian_messages'] = $array_respuesta['errors'];
+            $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
+        }
+
+        if ( !isset($array_respuesta['dian_status']) )
+        {
+            $array_respuesta['codigo'] = isset($array_respuesta['codigo']) ? $array_respuesta['codigo'] : 0;
+            $array_respuesta['dian_status'] = 'DIAN_RECHAZADO';
+            $array_respuesta['dian_messages'] = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [ 'Respuesta inválida o incompleta del proveedor tecnológico. El documento no fue confirmado como enviado.' ];
+        }
+
+        $doc_soporte_service->store_resultado_envio_documento( $document_header, $array_respuesta, $json_doc_electronico_enviado );
+
+        if ($array_respuesta['dian_status'] == 'DIAN_ACEPTADO') {
+            $document_header->estado = 'Enviado';
+            $document_header->save();
+
+            return [
+                'ok' => true,
+                'documento_id' => (int)$document_header->id,
+                'documento' => $document_header->get_value_to_show(),
+                'message' => 'Documento enviado correctamente.'
+            ];
+        }
+
+        $mensajes = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [];
+        if (is_string($mensajes)) {
+            $mensajes = json_decode($mensajes, true);
+        }
+        if (!is_array($mensajes)) {
+            $mensajes = [ (string)$mensajes ];
+        }
+
+        return [
+            'ok' => false,
+            'documento_id' => (int)$document_header->id,
+            'documento' => $document_header->get_value_to_show(),
+            'message' => implode(' | ', array_filter($mensajes))
+        ];
+    }
+
+    protected function parse_arr_ids($arr_ids)
+    {
+        $decoded = json_decode($arr_ids, true);
+
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        return array_values(array_filter($decoded, function ($id) {
+            return is_numeric($id);
+        }));
+    }
 
     public function show_doc_soporte( $id )
     {

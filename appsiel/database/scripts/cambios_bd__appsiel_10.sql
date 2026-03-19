@@ -138,12 +138,14 @@ INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_ca
 
 
 -- 6 junio - NOMINA
-INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1551', 'Concepto DIAN relacionado', 'select', 'cpto_dian_id', 'nom_elect_cat_cptos_dian', 'null', '', '', '1', '0', '0', '2025-06-06 11:01:18', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1551', 'Concepto DIAN relacionado', 'select', 'cpto_dian_id', 'table_nom_elect_cat_cptos_dian', 'null', '', '', '1', '1', '0', '2025-06-06 11:01:18', NULL);
 UPDATE `sys_modelo_tiene_campos` SET `orden` = '12' WHERE `sys_modelo_tiene_campos`.`id` = 163;
 INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '10', '84', '1551');
 ALTER TABLE `nom_elect_cat_cptos_dian` ADD `descripcion` VARCHAR(100) NOT NULL AFTER `codigo`;
 UPDATE `nom_elect_cat_cptos_dian` SET descripcion = codigo;
 UPDATE `nom_conceptos` SET `cpto_dian_id` = '33' WHERE `cpto_dian_id` = 52;
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '17', '313', 'nom_docs_soportes_nomina_electronica', 'Docs. Soporte Nómina Electrónica', 'web', '223', '2', '1', '', '2023-04-25 12:02:22', '2023-04-25 12:03:16');
+INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcion`, `url`, `parent`, `orden`, `enabled`, `fa_icon`, `created_at`, `updated_at`) VALUES (NULL, '17', '330', 'nom_resultados_envio_docs_soportes_nomina_electronica', 'Resultados de envío Docs. Nómina Electrónica', 'web', '223', '3', '1', '', '2023-04-25 12:20:03', '2023-04-25 12:30:14');
 
 
 -- 7 junio - Vtas. POS

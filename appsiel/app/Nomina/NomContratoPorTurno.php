@@ -137,6 +137,10 @@ class NomContratoPorTurno extends NomContrato
         {
             $registro->contrato_hasta = date('2099-12-31');
         }
+
+        if ( !isset($datos['excluir_documentos_nomina_electronica'])) {
+            $registro->excluir_documentos_nomina_electronica = true;
+        }
         
         $registro->save();
     }
@@ -173,11 +177,21 @@ class NomContratoPorTurno extends NomContrato
     {
         $registro = NomContratoPorTurno::find($registro_id);
 
+        $almacena_cambios = false;
         if ($registro->contrato_hasta == '' || $registro->contrato_hasta == '0000-00-00')
         {
             $registro->contrato_hasta = date('2099-12-31');
+            $almacena_cambios = true;
+        }
+
+        if ( !isset($datos['excluir_documentos_nomina_electronica'])) {
+            $registro->excluir_documentos_nomina_electronica = true;
+            $almacena_cambios = true;
+        }
+
+        if($almacena_cambios)
+        {
             $registro->save();
         }
-        
     }
 }

@@ -23,7 +23,7 @@
             $registros = $comprobante['accruals'];
             foreach ($registros as $registro )
             {
-                if ($registro['status'] == 'error') 
+                if (isset($registro['status']) && $registro['status'] == 'error') 
                 {
                     $hay_errores = true;
                 }
@@ -32,7 +32,7 @@
             $registros = $comprobante['deductions'];
             foreach ($registros as $registro )
             {
-                if ($registro['status'] == 'error') 
+                if (isset($registro['status']) && $registro['status'] == 'error') 
                 {
                     $hay_errores = true;
                 }
@@ -88,7 +88,7 @@
                         }
 
                         $class_tr = '';
-                        if ($registro['status'] == 'error') {
+                        if (isset($registro['status']) && $registro['status'] == 'error') {
                             $class_tr = 'danger';
                             $descripcion_concepto = $registro['message'];
                             $status = 'error';
@@ -137,7 +137,7 @@
                         }
 
                         $class_tr = '';
-                        if ($registro['status'] == 'error') {
+                        if (isset($registro['status']) && $registro['status'] == 'error') {
                             $class_tr = 'danger';
                             $descripcion_concepto = $registro['message'];
                             $status = 'error';

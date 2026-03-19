@@ -53,6 +53,11 @@
 	  $(".nav-tabs a").click(function(){
 	    $(this).tab('show');
 	  });
+
+	  if (window.location.hash) {
+	    $('.nav-tabs a[href="' + window.location.hash + '"]').tab('show');
+	  }
+
 	  $('.nav-tabs a').on('shown.bs.tab', function(event){
 	    var x = $(event.target).text();         // active tab
 	    var y = $(event.relatedTarget).text();  // previous tab
