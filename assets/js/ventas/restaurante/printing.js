@@ -1,5 +1,4 @@
-
-function enviar_impresion( doc_encabezado )
+﻿function enviar_impresion( doc_encabezado )
 {
     var metodo_impresion = $('#metodo_impresion_pedido_restaurante').val() || 'normal';
     if ( $('#mostrar_mensaje_impresion_delegada').val() == 1 ) { 
@@ -7,7 +6,7 @@ function enviar_impresion( doc_encabezado )
         Swal.fire({
             icon: 'info',
             title: 'Muy bien!',
-            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. RECUERDA: Debes informar al responsable para su impresión.'
+            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. RECUERDA: Debes informar al responsable para su impresion.'
         });
     }else{
 
@@ -24,21 +23,22 @@ function enviar_impresion( doc_encabezado )
             });
 
             apm_imprimir_pedido_restaurante( doc_encabezado )
-                .then(function () {
+                .then(function (response) {
                     Swal.close();
                     Swal.fire({
                         icon: 'info',
                         title: 'Muy bien!',
-                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + '. Solicitud enviada a APM.'
+                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + '. Solicitud enviada a APM. ' + (response.CopyLabel || '')
                     });
                 })
                 .catch(function (apm_error) {
                     Swal.close();
                     var errorMessage = apm_error && apm_error.ErrorMessage ? apm_error.ErrorMessage : 'Error desconocido al imprimir con APM.';
+                    var pendingMessage = apm_error && apm_error.QueueJobId ? ' Quedo pendiente en la cola APM para reimpresion manual.' : '';
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente, pero no se pudo enviar a APM: ' + errorMessage
+                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente, pero no se pudo enviar a APM: ' + errorMessage + pendingMessage
                     });
                 });
         }else{
@@ -54,7 +54,7 @@ function enviar_impresion( doc_encabezado )
 
             $('#popup_alerta_success').show();
             $('#popup_alerta_success').css('background-color', 'black');
-            $('#popup_alerta_success').text('Enviando impresión a la cocina... Por favor, espere!');
+            $('#popup_alerta_success').text('Enviando impresion a la cocina... Por favor, espere!');
 
             $.ajax({
                 url: url,
@@ -67,14 +67,14 @@ function enviar_impresion( doc_encabezado )
                         Swal.fire({
                             icon: 'info',
                             title: 'Muy bien!',
-                            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresión enviada.'
+                            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Impresion enviada.'
                         }); 
                         
                     }else{
                         Swal.fire({
                             icon: 'error',
                             title: 'Error!',
-                            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresión a la cocina!' + "\n" + response.message
+                            text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresion a la cocina!' + "\n" + response.message
                         });
                     }
                 },
@@ -83,20 +83,16 @@ function enviar_impresion( doc_encabezado )
                     Swal.fire({
                         icon: 'error',
                         title: 'Error!',
-                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresión a la cocina!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
+                        text: 'Pedido ' + doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo + ' creado correctamente. Pero No se pudo enviar la impresion a la cocina!' + "\n" + JSON.stringify(response)  + "\n" +  status  + "\n" +  JSON.stringify(jqXHR)
                     });
                 }
             });
 
         }else{
 
-            // Mostrar venta de Impresion Normal 
             $('.doc_encabezado_documento_transaccion_descripcion').append(doc_encabezado.doc_encabezado_documento_transaccion_descripcion);
-
             $('.doc_encabezado_documento_transaccion_prefijo_consecutivo').text(doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo);
-
             llenar_tabla_productos_facturados(doc_encabezado);
-
             ventana_imprimir();
         }
         }
@@ -109,16 +105,14 @@ function enviar_impresion( doc_encabezado )
     $('#ingreso_registros').find('tbody').html('');
     $('#descripcion').val('');
 
-    restablecer_btn_guardar_factura()        
-
+    restablecer_btn_guardar_factura();
     reset_datos_pedido();
-    
     resetear_ventana();
 }
 
 function apm_imprimir_pedido_restaurante( doc_encabezado )
 {
-    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.sendAndWait !== 'function' ) {
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.enqueuePrintJob !== 'function' ) {
         return Promise.reject({
             Status: 'ERROR',
             ErrorMessage: 'APM no esta disponible en este navegador.'
@@ -133,7 +127,25 @@ function apm_imprimir_pedido_restaurante( doc_encabezado )
         });
     }
 
-    return window.APM_CLIENT.sendAndWait(payload, 30000);
+    return window.APM_CLIENT.enqueuePrintJob({
+        payload: payload,
+        documentMeta: crear_meta_documento_apm_pedido_restaurante(doc_encabezado),
+        timeoutMs: 30000
+    });
+}
+
+function crear_meta_documento_apm_pedido_restaurante( doc_encabezado )
+{
+    var consecutivo = parseInt(doc_encabezado.consecutivo || doc_encabezado.doc_encabezado_consecutivo || $('#lbl_consecutivo_doc_encabezado').val() || '0', 10) || 0;
+
+    return {
+        core_empresa_id: parseInt(doc_encabezado.core_empresa_id || $('#core_empresa_id').val() || '1', 10) || 1,
+        core_tipo_transaccion_id: parseInt(doc_encabezado.core_tipo_transaccion_id || $('#core_tipo_transaccion_id').val() || '60', 10) || 60,
+        core_tipo_doc_app_id: parseInt(doc_encabezado.core_tipo_doc_app_id || $('#core_tipo_doc_app_id').val() || '0', 10) || 0,
+        consecutivo: consecutivo,
+        document_type: 'comanda',
+        document_label: doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || ('Pedido restaurante ' + consecutivo)
+    };
 }
 
 function crear_payload_apm_comanda( doc_encabezado )
@@ -169,7 +181,6 @@ function crear_payload_apm_comanda( doc_encabezado )
     var mesa = $('#lbl_mesa_seleccionada').text();
     var mesero = $('#lbl_vendedor_mesero').text();
     var detalle = doc_encabezado.doc_encabezado_descripcion || $('#descripcion').val() || '';
-
     var cliente_nombre = doc_encabezado.doc_encabezado_tercero_nombre_completo || $('#cliente_input').val() || '';
 
     var empresa = doc_encabezado.empresa || {};
@@ -192,11 +203,12 @@ function crear_payload_apm_comanda( doc_encabezado )
                 'Time': doc_encabezado.doc_encabezado_hora_creacion || '',
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Customer': cliente_nombre,
-                'Seller': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
+                'Seller': doc_encabezado.doc_encabezado_vendedor_descripcion || '',
+                'COPY': 'COPIA # 1'
             },
             'company': company,
             'order': {
-                'COPY': 'ORIGINAL',
+                'COPY': 'COPIA # 1',
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Table': mesa || '',
                 'Waiter': mesero || '',
@@ -215,7 +227,6 @@ function crear_payload_apm_comanda( doc_encabezado )
         }
     };
 }
-
 
 function crear_string_json_para_envio_servidor_impresion( doc_encabezado )
 {

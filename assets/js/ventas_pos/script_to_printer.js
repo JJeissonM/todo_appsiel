@@ -1,4 +1,4 @@
-﻿
+
 function enviar_impresion( doc_encabezado )
 {
     if ( doc_encabezado == 'prefactura' ) {
@@ -24,7 +24,7 @@ function enviar_impresion( doc_encabezado )
 
     // Preguntar para imprimir en cocina (alert)
     if ( $("#enviar_impresion_directamente_a_la_impresora").val() == 2 ) {
-        if (confirm("Â¿Quiere imprimir COMANDA en la cocina?") == true) {
+        if (confirm("¿Quiere imprimir COMANDA en la cocina?") == true) {
             if ( metodo_comanda == 'apm' ) {
                 print_comanda_apm(doc_encabezado);
             } else {
@@ -42,7 +42,7 @@ function enviar_impresion( doc_encabezado )
             }
             break;
         case '2':
-            if (confirm("Â¿Quiere enviar la FACTURA a la impresora principal?") == true) {
+            if (confirm("¿Quiere enviar la FACTURA a la impresora principal?") == true) {
                 if ( metodo_factura == 'apm' ) {
                     print_factura_apm(doc_encabezado);
                 } else {
@@ -85,18 +85,25 @@ function pos_notificar_popup_bloqueado()
 
 function print_comanda_apm( doc_encabezado )
 {
-    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.send !== 'function' ) {
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.enqueuePrintJob !== 'function' ) {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'APM no esta disponible en este navegador.'
+        });
+    }
+
+    return window.APM_CLIENT.enqueuePrintJob({
+        payload: crear_payload_apm_comanda( doc_encabezado ),
+        documentMeta: crear_meta_apm_comanda( doc_encabezado ),
+        timeoutMs: 30000
+    }).catch(function (error) {
         Swal.fire({
             icon: 'error',
             title: 'Error!',
-            text: 'APM no esta disponible en este navegador.'
+            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible enviar la comanda a APM.'
         });
-        return false;
-    }
-
-    var payload = crear_payload_apm_comanda( doc_encabezado );
-    window.APM_CLIENT.send(payload);
-    return true;
+        throw error;
+    });
 }
 
 //Do printing...
@@ -159,7 +166,7 @@ function crear_payload_apm_comanda( doc_encabezado )
 
         items.push({
             'Name': $(this).find('.lbl_producto_descripcion').text(),
-            'Qty': $(this).find('.cantidad').text(),
+            'Qty': (parseInt($(this).find('.cantidad').text(), 10) || 1),
             'Notes': notes
         });
     });
@@ -179,10 +186,11 @@ function crear_payload_apm_comanda( doc_encabezado )
                 'Date': doc_encabezado.doc_encabezado_fecha || '',
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Customer': cliente_nombre,
-                'Seller': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
+                'Seller': doc_encabezado.doc_encabezado_vendedor_descripcion || '',
+                'COPY': 'COPIA # 1'
             },
             'order': {
-                'COPY': 'ORIGINAL',
+                'COPY': 'COPIA # 1',
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Table': $('#lbl_mesa_seleccionada').text() || '',
                 'Waiter': $('#lbl_vendedor_mesero').text() || doc_encabezado.doc_encabezado_vendedor_descripcion || '',
@@ -234,18 +242,25 @@ function crear_string_json_para_envio_servidor_impresion_comanda( doc_encabezado
 
 function print_factura_apm( doc_encabezado )
 {
-    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.send !== 'function' ) {
+    if ( !window.APM_CLIENT || typeof window.APM_CLIENT.enqueuePrintJob !== 'function' ) {
+        return Promise.reject({
+            Status: 'ERROR',
+            ErrorMessage: 'APM no esta disponible en este navegador.'
+        });
+    }
+
+    return window.APM_CLIENT.enqueuePrintJob({
+        payload: crear_payload_apm_factura( doc_encabezado ),
+        documentMeta: crear_meta_apm_factura_pos( doc_encabezado ),
+        timeoutMs: 30000
+    }).catch(function (error) {
         Swal.fire({
             icon: 'error',
             title: 'Error!',
-            text: 'APM no esta disponible en este navegador.'
+            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible enviar la factura POS a APM.'
         });
-        return false;
-    }
-
-    var payload = crear_payload_apm_factura( doc_encabezado );
-    window.APM_CLIENT.send(payload);
-    return true;
+        throw error;
+    });
 }
 
 function print_factura( doc_encabezado ) 
@@ -354,7 +369,8 @@ function crear_payload_apm_factura( doc_encabezado )
                 'Items': items,
                 'Subtotal': subtotal,
                 'IVA': iva,
-                'Total': total_factura
+                'Total': total_factura,
+                'COPY': 'COPIA # 1'
             },
             'totals': get_apm_totals_from_dom(),
             'taxes': get_apm_taxes_from_dom(),
@@ -366,6 +382,33 @@ function crear_payload_apm_factura( doc_encabezado )
     };
 }
 
+function crear_meta_apm_comanda( doc_encabezado )
+{
+    var consecutivo = parseInt(doc_encabezado.consecutivo || doc_encabezado.doc_encabezado_consecutivo || $('.lbl_consecutivo_doc_encabezado').text() || '0', 10) || 0;
+
+    return {
+        core_empresa_id: parseInt(doc_encabezado.core_empresa_id || $('#core_empresa_id').val() || '1', 10) || 1,
+        core_tipo_transaccion_id: parseInt(doc_encabezado.core_tipo_transaccion_id || $('#core_tipo_transaccion_id').val() || '52', 10) || 52,
+        core_tipo_doc_app_id: parseInt(doc_encabezado.core_tipo_doc_app_id || $('#core_tipo_doc_app_id').val() || '0', 10) || 0,
+        consecutivo: consecutivo,
+        document_type: 'comanda',
+        document_label: doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || ('Comanda ' + consecutivo)
+    };
+}
+
+function crear_meta_apm_factura_pos( doc_encabezado )
+{
+    var consecutivo = parseInt(doc_encabezado.consecutivo || doc_encabezado.doc_encabezado_consecutivo || $('.lbl_consecutivo_doc_encabezado').text() || '0', 10) || 0;
+
+    return {
+        core_empresa_id: parseInt(doc_encabezado.core_empresa_id || $('#core_empresa_id').val() || '1', 10) || 1,
+        core_tipo_transaccion_id: parseInt(doc_encabezado.core_tipo_transaccion_id || $('#core_tipo_transaccion_id').val() || '47', 10) || 47,
+        core_tipo_doc_app_id: parseInt(doc_encabezado.core_tipo_doc_app_id || $('#core_tipo_doc_app_id').val() || '0', 10) || 0,
+        consecutivo: consecutivo,
+        document_type: 'ticket_venta',
+        document_label: doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || ('Factura POS ' + consecutivo)
+    };
+}
 function get_apm_totals_from_dom()
 {
     return {
@@ -449,3 +492,8 @@ function crear_string_json_para_envio_servidor_impresion_factura( doc_encabezado
 
     return json
 }
+
+
+
+
+

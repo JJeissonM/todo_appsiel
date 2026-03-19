@@ -23,6 +23,8 @@
             <input type="hidden" id="tamanio_letra_impresion_items_cocina" name="tamanio_letra_impresion_items_cocina" value="{{ config('ventas_pos.tamanio_letra_impresion_items_cocina') }}">
 
             <input type="hidden" id="lbl_consecutivo_doc_encabezado" value="{{ $doc_encabezado->consecutivo }}">
+            <input type="hidden" id="lbl_core_tipo_transaccion_id" value="{{ $doc_encabezado->core_tipo_transaccion_id }}">
+            <input type="hidden" id="lbl_core_tipo_doc_app_id" value="{{ $doc_encabezado->core_tipo_doc_app_id }}">
             <input type="hidden" id="lbl_fecha" value="{{ $doc_encabezado->fecha }}">
             <input type="hidden" id="lbl_cliente_descripcion" value="{{ $doc_encabezado->tercero_nombre_completo }}">
             <input type="hidden" id="lbl_descripcion_doc_encabezado" value="{{ $doc_encabezado->descripcion }}">

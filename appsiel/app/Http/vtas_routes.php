@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::get('apm_print_queue', 'Ventas\ApmPrintQueueController@index');
+Route::post('apm_print_queue/prepare', 'Ventas\ApmPrintQueueController@prepare');
+Route::post('apm_print_queue/{jobId}/prepare_reprint', 'Ventas\ApmPrintQueueController@prepareReprint');
+Route::post('apm_print_queue/{jobId}/mark_printed', 'Ventas\ApmPrintQueueController@markPrinted');
+Route::post('apm_print_queue/{jobId}/mark_failed', 'Ventas\ApmPrintQueueController@markFailed');
+
 Route::post('vtas_agregar_precio_lista', 'Ventas\VentaController@agregar_precio_lista');
 Route::post('vtas_doc_registro_guardar', 'Ventas\VentaController@doc_registro_guardar');
 Route::get('vtas_get_formulario_edit_registro', 'Ventas\VentaController@get_formulario_edit_registro');
@@ -131,3 +137,5 @@ Route::get('vtas_pedidos_restaurante_mesas_permitidas_para_cambiar', 'Ventas\Ped
 Route::get('vtas_pedidos_restaurante_cambiar_pedidos_de_mesa/{mesa_pedidos_id}/{nueva_mesa_id}', 'Ventas\PedidoRestauranteController@cambiar_pedidos_de_mesa');
 
 Route::get('vtas_pedidos_restaurante_pruebas', 'Ventas\PedidoRestauranteController@pruebas');
+
+

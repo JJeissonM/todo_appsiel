@@ -20,7 +20,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 	$spin.show();
 	var $inv_producto_id = $('#inv_producto_id');
 
-	// Si no se seleccionó un producto, salir
+	// Si no se seleccionÃ³ un producto, salir
 	if ( $inv_producto_id.val() === '' || $inv_producto_id.val() === undefined )
 	{
 		$spin.hide();
@@ -37,7 +37,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 	{
 		if ( !respuesta || typeof respuesta !== 'object' )
 		{
-			alert('Respuesta inválida del servidor.');
+			alert('Respuesta invï¿½lida del servidor.');
 			return false;
 		}
 
@@ -69,7 +69,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 		$('#unidad_medida1').val(respuesta.unidad_medida1);
 		$('#inv_producto_id_aux').val( respuesta.descripcion );
 
-		// Si la TRANSACCIÓN es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario
+		// Si la TRANSACCIï¿½N es una Entrada Directa o Entrada por compras o el producto es tipo servicio, se puede modificar el costo unitario
 		if ( $('#id_transaccion').val() == 1 || $('#id_transaccion').val() == 35 || respuesta.tipo == 'servicio' )
 		{
 			$('#costo_unitario').removeAttr('disabled');
@@ -85,7 +85,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 		return true;
 	}
 
-	// Enviar formulario de ingreso de productos vía POST (InventarioController > post_ajax)
+	// Enviar formulario de ingreso de productos vï¿½a POST (InventarioController > post_ajax)
 	$.ajax({
 		url: url,
 		type: 'POST',

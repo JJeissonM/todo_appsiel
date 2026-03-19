@@ -1,4 +1,4 @@
-@extends('layouts.principal')
+﻿@extends('layouts.principal')
 
 @section('estilos_2')
 	<style>
@@ -75,6 +75,8 @@
                 <input type="hidden" id="lbl_descripcion_doc_encabezado" value="">
                 <input type="hidden" id="lbl_total_factura" value="0">
                 <input type="hidden" id="nombre_vendedor" value="0">
+                <input type="hidden" id="core_tipo_transaccion_id" value="42">
+                <input type="hidden" id="core_tipo_doc_app_id" value="0">
 
                 <table class="table table-bordered table-striped" id="tabla_lineas_registros" style="display: block;">
                     <tbody>
@@ -102,6 +104,8 @@
             $('#lbl_cliente_descripcion').val( $(this).data('lbl_cliente_descripcion') );$('#lbl_descripcion_doc_encabezado').val( $(this).data('lbl_descripcion_doc_encabezado') );
             $('#lbl_total_factura').val( $(this).data('lbl_total_factura') );
             $('#nombre_vendedor').val( $(this).data('nombre_vendedor') );
+            $('#core_tipo_transaccion_id').val( $(this).data('core_tipo_transaccion_id') );
+            $('#core_tipo_doc_app_id').val( $(this).data('core_tipo_doc_app_id') );
 
             var lineas_registros = $(this).data('lineas_registros');
                 
@@ -128,3 +132,4 @@
         });
 	</script>
 @endsection
+

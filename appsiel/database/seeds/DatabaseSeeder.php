@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 use Illuminate\Database\Seeder;
 
@@ -14,6 +14,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ProveedorCuentasBancariasSeeder::class);
         $this->call(TesoreriaChequerasPermissionSeeder::class);
         $this->call(ComprasRetencionesLineaSeeder::class);
+        $this->call(ApmPrintStatusesSeeder::class);
     }
 }
-

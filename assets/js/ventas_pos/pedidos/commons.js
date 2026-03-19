@@ -1,4 +1,4 @@
-var hay_productos = 0;
+﻿var hay_productos = 0;
 var url_raiz, redondear_centena, numero_linea;
 var productos, precios, descuentos, clientes, cliente_default, forma_pago_default, fecha_vencimiento_default;
 
@@ -12,7 +12,7 @@ function ejecutar_acciones_con_item_sugerencia( item_sugerencia, obj_text_input 
 
 function seleccionar_cliente(item_sugerencia)
 {
-    // Asignar descripción al TextInput
+    // Asignar descripciÃ³n al TextInput
     $('#cliente_input').val(item_sugerencia.html());
     $('#cliente_input').css('background-color', 'transparent');
 
@@ -80,7 +80,7 @@ function seleccionar_cliente(item_sugerencia)
         });
     
     $('#inv_producto_id').select();
-    // Bajar el Scroll hasta el final de la página
+    // Bajar el Scroll hasta el final de la pÃ¡gina
     //$("html, body").animate({scrollTop: $(document).height() + "px"});
 }
 
@@ -89,7 +89,7 @@ function ventana_imprimir_cotizacion(url)
     var ventana_factura = null;
 
     try {
-        ventana_factura = window.open('', "Impresión de Cotización", "width=400,height=600,menubar=no");
+        ventana_factura = window.open('', "ImpresiÃ³n de CotizaciÃ³n", "width=400,height=600,menubar=no");
     } catch (e) {
         ventana_factura = null;
     }
@@ -136,8 +136,8 @@ $(document).ready(function () {
     });
 
     $('[data-toggle="tooltip"]').tooltip();
-    var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botón guardar
-    // Al ingresar código, descripción o código de barras del producto
+    var terminar = 0; // Al presionar ESC dos veces, se posiciona en el botÃ³n guardar
+    // Al ingresar cÃ³digo, descripciÃ³n o cÃ³digo de barras del producto
     $('#inv_producto_id').on('keyup', function (event) {
 
         $("[data-toggle='tooltip']").tooltip('hide');
@@ -165,7 +165,7 @@ $(document).ready(function () {
                 }
 
                 // Si la longitud del codigo ingresado es mayor que 5 (numero arbitrario)
-                // se supone que es un código de barras
+                // se supone que es un cÃ³digo de barras
                 var campo_busqueda = '';
                 if ($(this).val().length > 5) {
                     var barcode = $(this).val();
@@ -186,7 +186,7 @@ $(document).ready(function () {
                     campo_busqueda = 'id';
                 }
 
-                // Una segunda busqueda por Código de barras
+                // Una segunda busqueda por CÃ³digo de barras
                 if (producto === undefined && $('#forma_lectura_codigo_barras').val() == 'codigo_cantidad') {
                     var producto = productos.find(item => item.codigo_barras === $(this).val());
                 }
@@ -231,7 +231,7 @@ $(document).ready(function () {
         if (campo_busqueda == 'id' || campo_busqueda == 'referencia') {
             $('#cantidad').select();
         } else {
-            // Por código de barras, se agrega la línea con un unidad de producto
+            // Por cÃ³digo de barras, se agrega la lÃ­nea con un unidad de producto
             $('#cantidad').val(1);
             cantidad = 1;
 
@@ -303,7 +303,7 @@ $(document).ready(function () {
             if (base_impuesto_unitario < costo_unitario) {
                 $('#popup_alerta').show();
                 $('#popup_alerta').css('background-color', 'red');
-                $('#popup_alerta').text('El precio está por debajo del costo de venta del producto.' + ' $' + new Intl.NumberFormat("de-DE").format(costo_unitario.toFixed(2)) + ' + IVA');
+                $('#popup_alerta').text('El precio estÃ¡ por debajo del costo de venta del producto.' + ' $' + new Intl.NumberFormat("de-DE").format(costo_unitario.toFixed(2)) + ' + IVA');
                 ok = false;
             } else {
                 $('#popup_alerta').hide();
@@ -370,7 +370,7 @@ $(document).ready(function () {
                 return true;
             }
 
-            // máximo valor permitido = 100
+            // mÃ¡ximo valor permitido = 100
             if ($(this).val() > 100) {
                 $(this).val(100);
             }
@@ -522,7 +522,7 @@ $(document).ready(function () {
             return false;
         }
 
-        // Desactivar el click del botón
+        // Desactivar el click del botÃ³n
         //$( this ).off( event );
         $( this ).html( '<i class="fa fa-spinner fa-spin"></i> Guardando' );
         $( this ).attr( 'disabled', 'disabled' );
@@ -571,7 +571,13 @@ $(document).ready(function () {
                 var metodo_impresion_pedido = $('#metodo_impresion_pedido_ventas').val() || 'normal';
                 if ( metodo_impresion_pedido == 'apm' && typeof print_comanda === 'function' )
                 {
-                    print_comanda();
+                    print_comanda().catch(function (error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible enviar el pedido a APM.'
+                        });
+                    });
                 }
 
                 var ventana_pedido_abierta = ventana_imprimir();
@@ -647,13 +653,13 @@ $(document).ready(function () {
 
             $('#tabla_productos_facturados').find('tbody:last').append( linea_factura );
 
-            // Para El formato con Remisión
+            // Para El formato con RemisiÃ³n
             linea_factura2 = '<tr> <td style="border-bottom:solid 1px !important;"> ' + $(this).find('.lbl_producto_descripcion').text() + ' </td> <td> ' + $(this).find('.cantidad').text() + ' ' + $(this).find('.lbl_producto_unidad_medida').text() + '  </td></tr>';
             $('#tabla_productos_facturados2').find('tbody:last').append( linea_factura2 );
 
             lbl_total_factura += parseFloat( $(this).find('.precio_total').text() );
 
-            // precio_bolsa es distinto a cero cuando esta habilitada la facturación de bolsas 
+            // precio_bolsa es distinto a cero cuando esta habilitada la facturaciÃ³n de bolsas 
             if ( $("#precio_bolsa").val() != 0 && item_is_in_group( $(this).find('.inv_producto_id').text(), 'categoria_id_facturacion_bolsa' ) ) {
         
                 valor_total_bolsas += parseFloat( $("#precio_bolsa").val() );
@@ -902,7 +908,7 @@ $(document).ready(function () {
 
         var x = event.which || event.keyCode; // Capturar la tecla presionada
 
-        // Abortar la edición
+        // Abortar la ediciÃ³n
         if (x == 27) // 27 = ESC
         {
             elemento_padre.find('#valor_nuevo').remove();
@@ -946,11 +952,11 @@ $(document).ready(function () {
         }
 
         if (!validar_input_numerico($('#col_valor')) || $('#col_valor').val() == '') {
-            alert('No ha ingresado una valor para la transacción.');
+            alert('No ha ingresado una valor para la transacciÃ³n.');
             return false;
         }
         
-        // Desactivar el click del botón
+        // Desactivar el click del botÃ³n
         $( this ).hide();
         $( this ).attr( 'disabled', 'disabled' );
 
@@ -993,7 +999,7 @@ $(document).ready(function () {
     $(document).on('click', ".btn_anular_factura", function (event) {
         event.preventDefault();
 
-        var opcion = confirm('¿Seguro desea anular la factura ' + $(this).attr('data-lbl_factura') + ' ?');
+        var opcion = confirm('Â¿Seguro desea anular la factura ' + $(this).attr('data-lbl_factura') + ' ?');
 
         if (opcion) {
             fila = $(this).closest("tr");
@@ -1019,7 +1025,7 @@ $(document).ready(function () {
     {
         var valor_nuevo = document.getElementById('valor_nuevo').value;
 
-        // Si no cambió el valor_nuevo, no pasa nada
+        // Si no cambiÃ³ el valor_nuevo, no pasa nada
         if (valor_nuevo == valor_actual)
         {
             return false;
@@ -1084,3 +1090,5 @@ $(document).ready(function () {
     }
 
 });
+
+

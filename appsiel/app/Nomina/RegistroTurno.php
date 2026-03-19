@@ -172,4 +172,17 @@ class RegistroTurno extends Model
 
         return $lista_campos;
     }
+    
+
+    public function update_adicional( $datos, $id )
+    {
+        $registro = RegistroTurno::find( $id );
+
+        
+        $nuevo_turno = TipoTurno::find( $datos['tipo_turno_id'] );
+
+        $registro->valor = $nuevo_turno->valor;
+        $registro->save();
+
+    }
 }

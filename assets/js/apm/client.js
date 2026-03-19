@@ -1,7 +1,21 @@
-// client.js - Cliente WebSocket para Appsiel Print Manager (APM)
+﻿// client.js - Cliente WebSocket para Appsiel Print Manager (APM)
 
 ((global) => {
     const DEFAULT_WS_URL = 'ws://localhost:7000/websocket/';
+    const DEFAULT_TIMEOUT_MS = 12000;
+    const QUEUE_BUTTON_ID = 'apm-queue-toggle';
+    const QUEUE_BADGE_ID = 'apm-queue-badge';
+    const QUEUE_STYLE_ID = 'apm-queue-style';
+
+    const safeJsonParse = (value, fallback) => {
+        try {
+            return JSON.parse(value);
+        } catch (error) {
+            return fallback;
+        }
+    };
+
+    const cloneData = (data) => JSON.parse(JSON.stringify(data || {}));
 
     const getWsUrl = () => {
         if (global.APM_CONFIG && global.APM_CONFIG.url) {
@@ -32,12 +46,15 @@
     class APMClient {
         constructor(options = {}) {
             this.socket = null;
-            this.queue = [];
             this.logger = null;
             this.autoReconnect = options.autoReconnect !== false;
             this.reconnectTimer = null;
             this.wsUrlIndex = 0;
             this.pendingJobs = {};
+            this.queueItems = [];
+            this.queueModalOpen = false;
+            this.uiInitialized = false;
+            this.queueSyncInterval = null;
         }
 
         setLogger(loggerFn) {
@@ -48,6 +65,7 @@
             if (this.logger) {
                 this.logger(message, type);
             }
+
             if (type === 'error') {
                 console.error(message);
             }
@@ -83,7 +101,7 @@
             this.socket.onopen = () => {
                 this.wsUrlIndex = 0;
                 this.log('Conexion APM establecida.', 'success');
-                this.flushQueue();
+                this.refreshQueueUI();
             };
 
             this.socket.onmessage = (event) => {
@@ -93,6 +111,8 @@
 
             this.socket.onclose = (event) => {
                 const reason = event.reason || 'Conexion cerrada.';
+                const candidatesOnClose = getWsUrlCandidates();
+
                 this.log(`Conexion APM cerrada. Codigo: ${event.code}, Razon: ${reason}`, 'warning');
                 this.socket = null;
 
@@ -107,8 +127,10 @@
                     delete this.pendingJobs[jobId];
                 });
 
+                this.refreshQueueUI();
+
                 if (this.autoReconnect) {
-                    this.wsUrlIndex = (this.wsUrlIndex + 1) % candidates.length;
+                    this.wsUrlIndex = (this.wsUrlIndex + 1) % candidatesOnClose.length;
                     this.reconnectTimer = setTimeout(() => this.connect(), 2000);
                 }
             };
@@ -120,13 +142,7 @@
         }
 
         resolvePendingJob(rawMessage) {
-            let parsed;
-            try {
-                parsed = JSON.parse(rawMessage);
-            } catch (e) {
-                return;
-            }
-
+            const parsed = safeJsonParse(rawMessage, null);
             if (!parsed || !parsed.JobId) {
                 return;
             }
@@ -139,8 +155,7 @@
             clearTimeout(pending.timer);
             delete this.pendingJobs[parsed.JobId];
 
-            const status = String(parsed.Status || '').toUpperCase();
-            if (status === 'ERROR') {
+            if (String(parsed.Status || '').toUpperCase() === 'ERROR') {
                 pending.reject(parsed);
                 return;
             }
@@ -148,37 +163,12 @@
             pending.resolve(parsed);
         }
 
-        flushQueue() {
-            if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-                return;
-            }
-
-            while (this.queue.length > 0) {
-                const message = this.queue.shift();
-                this.socket.send(message);
-            }
-        }
-
-        send(payload) {
-            const message = typeof payload === 'string' ? payload : JSON.stringify(payload);
-
-            if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-                this.queue.push(message);
-                this.connect();
-                return false;
-            }
-
-            this.socket.send(message);
-            return true;
-        }
-
-        sendAndWait(payload, timeoutMs = 12000) {
+        sendAndWait(payload, timeoutMs = DEFAULT_TIMEOUT_MS) {
             let payloadObj = payload;
 
             if (typeof payloadObj === 'string') {
-                try {
-                    payloadObj = JSON.parse(payloadObj);
-                } catch (e) {
+                payloadObj = safeJsonParse(payloadObj, null);
+                if (!payloadObj) {
                     return Promise.reject({
                         Status: 'ERROR',
                         ErrorMessage: 'Payload JSON invalido para APM.'
@@ -240,9 +230,404 @@
 
             return this.socket.readyState === WebSocket.OPEN;
         }
+
+        getBaseUrl() {
+            if (typeof global.url_raiz !== 'undefined' && global.url_raiz) {
+                return String(global.url_raiz).replace(/\/$/, '');
+            }
+
+            return '';
+        }
+
+        getApiUrl(path) {
+            const cleanPath = String(path || '').replace(/^\//, '');
+            const baseUrl = this.getBaseUrl();
+            return baseUrl ? `${baseUrl}/${cleanPath}` : `/${cleanPath}`;
+        }
+
+        getCsrfToken() {
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            if (meta) {
+                return meta.getAttribute('content');
+            }
+
+            const input = document.querySelector('input[name="_token"]');
+            return input ? input.value : '';
+        }
+
+        request(method, path, data) {
+            const url = this.getApiUrl(path);
+            const payload = data || {};
+
+            if (global.jQuery && typeof global.jQuery.ajax === 'function') {
+                return new Promise((resolve, reject) => {
+                    const ajaxOptions = {
+                        url: url,
+                        method: method,
+                        dataType: 'json',
+                        headers: {
+                            'X-CSRF-TOKEN': this.getCsrfToken(),
+                            'Accept': 'application/json'
+                        }
+                    };
+
+                    if (method !== 'GET') {
+                        ajaxOptions.data = JSON.stringify(payload);
+                        ajaxOptions.contentType = 'application/json; charset=utf-8';
+                    }
+
+                    ajaxOptions.success = function (response) {
+                            resolve(response);
+                    };
+
+                    ajaxOptions.error = function (xhr) {
+                        const message = xhr && xhr.responseJSON && xhr.responseJSON.message
+                            ? xhr.responseJSON.message
+                            : 'No fue posible procesar la cola APM en el servidor.';
+
+                        reject({
+                            Status: 'ERROR',
+                            ErrorMessage: message,
+                            xhr: xhr
+                        });
+                    };
+
+                    global.jQuery.ajax(ajaxOptions);
+                });
+            }
+
+            return fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': this.getCsrfToken()
+                },
+                body: method === 'GET' ? undefined : JSON.stringify(payload),
+                credentials: 'same-origin'
+            }).then((response) => {
+                return response.json().then((json) => {
+                    if (!response.ok) {
+                        throw {
+                            Status: 'ERROR',
+                            ErrorMessage: json && json.message ? json.message : 'No fue posible procesar la cola APM en el servidor.'
+                        };
+                    }
+                    return json;
+                });
+            });
+        }
+
+        syncQueueItems() {
+            return this.request('GET', 'apm_print_queue')
+                .then((response) => {
+                    this.queueItems = response && response.data ? response.data : [];
+                    this.renderQueueButton();
+                    this.renderQueueModalContent();
+                    return this.queueItems;
+                })
+                .catch(() => {
+                    this.queueItems = [];
+                    this.renderQueueButton();
+                    this.renderQueueModalContent();
+                    return [];
+                });
+        }
+
+        enqueuePrintJob(options = {}) {
+            const payload = options.payload || null;
+            const documentMeta = options.documentMeta || {};
+            const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+
+            return this.request('POST', 'apm_print_queue/prepare', {
+                payload: payload,
+                document_meta: documentMeta
+            }).then((prepared) => {
+                const job = prepared.job;
+                const payloadToSend = prepared.payload;
+
+                return this.sendAndWait(payloadToSend, timeoutMs)
+                    .then((apmResponse) => {
+                        return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
+                            .then(() => {
+                                this.syncQueueItems();
+                                return Object.assign({}, apmResponse, {
+                                    QueueJobId: job.id,
+                                    CopyNumber: job.copy_number,
+                                    CopyLabel: job.copy_label
+                                });
+                            });
+                    })
+                    .catch((apmError) => {
+                        return this.request('POST', `apm_print_queue/${job.id}/mark_failed`, {
+                            error_message: apmError && apmError.ErrorMessage ? apmError.ErrorMessage : 'Error desconocido al imprimir con APM.'
+                        }).then(() => {
+                            this.syncQueueItems();
+                            throw Object.assign({}, apmError, {
+                                QueueJobId: job.id,
+                                CopyNumber: job.copy_number,
+                                CopyLabel: job.copy_label
+                            });
+                        }).catch(() => {
+                            this.syncQueueItems();
+                            throw Object.assign({}, apmError, {
+                                QueueJobId: job.id,
+                                CopyNumber: job.copy_number,
+                                CopyLabel: job.copy_label
+                            });
+                        });
+                    });
+            });
+        }
+
+        reprintQueuedJob(jobId, timeoutMs = DEFAULT_TIMEOUT_MS) {
+            return this.request('POST', `apm_print_queue/${jobId}/prepare_reprint`, {})
+                .then((prepared) => {
+                    const job = prepared.job;
+                    return this.sendAndWait(prepared.payload, timeoutMs)
+                        .then((apmResponse) => {
+                            return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
+                                .then(() => {
+                                    this.syncQueueItems();
+                                    return Object.assign({}, apmResponse, {
+                                        QueueJobId: job.id,
+                                        CopyNumber: job.copy_number,
+                                        CopyLabel: job.copy_label
+                                    });
+                                });
+                        })
+                        .catch((apmError) => {
+                            return this.request('POST', `apm_print_queue/${job.id}/mark_failed`, {
+                                error_message: apmError && apmError.ErrorMessage ? apmError.ErrorMessage : 'Error desconocido al imprimir con APM.'
+                            }).then(() => {
+                                this.syncQueueItems();
+                                throw Object.assign({}, apmError, {
+                                    QueueJobId: job.id,
+                                    CopyNumber: job.copy_number,
+                                    CopyLabel: job.copy_label
+                                });
+                            }).catch(() => {
+                                this.syncQueueItems();
+                                throw Object.assign({}, apmError, {
+                                    QueueJobId: job.id,
+                                    CopyNumber: job.copy_number,
+                                    CopyLabel: job.copy_label
+                                });
+                            });
+                        });
+                });
+        }
+
+        ensureQueueUI() {
+            if (this.uiInitialized || !document.body) {
+                return;
+            }
+
+            this.uiInitialized = true;
+
+            if (!document.getElementById(QUEUE_STYLE_ID)) {
+                const style = document.createElement('style');
+                style.id = QUEUE_STYLE_ID;
+                style.textContent = `
+                    #${QUEUE_BUTTON_ID} {
+                        position: fixed;
+                        right: 18px;
+                        bottom: 18px;
+                        z-index: 10050;
+                        border: 0;
+                        border-radius: 999px;
+                        background: #1f2d3d;
+                        color: #fff;
+                        padding: 10px 16px;
+                        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+                        display: none;
+                    }
+                    #${QUEUE_BUTTON_ID} .apm-queue-label {
+                        margin-right: 8px;
+                    }
+                    #${QUEUE_BADGE_ID} {
+                        display: inline-block;
+                        min-width: 20px;
+                        height: 20px;
+                        padding: 0 6px;
+                        border-radius: 999px;
+                        background: #d9534f;
+                        font-size: 12px;
+                        line-height: 20px;
+                        text-align: center;
+                    }
+                    .apm-queue-item {
+                        padding: 10px 0;
+                        border-bottom: 1px solid #e5e5e5;
+                        text-align: left;
+                    }
+                    .apm-queue-item:last-child {
+                        border-bottom: 0;
+                    }
+                    .apm-queue-item-title {
+                        font-weight: 600;
+                        margin-bottom: 4px;
+                    }
+                    .apm-queue-item-meta,
+                    .apm-queue-item-error {
+                        font-size: 12px;
+                        color: #666;
+                        margin-bottom: 6px;
+                    }
+                    .apm-queue-item-error {
+                        color: #b94a48;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            if (!document.getElementById(QUEUE_BUTTON_ID)) {
+                const button = document.createElement('button');
+                button.id = QUEUE_BUTTON_ID;
+                button.type = 'button';
+                button.innerHTML = '<span class="apm-queue-label">Cola APM</span><span id="' + QUEUE_BADGE_ID + '">0</span>';
+                button.addEventListener('click', () => this.openQueueModal());
+                document.body.appendChild(button);
+            }
+
+            this.renderQueueButton();
+            this.syncQueueItems();
+
+            if (!this.queueSyncInterval) {
+                this.queueSyncInterval = global.setInterval(() => this.syncQueueItems(), 15000);
+            }
+        }
+
+        renderQueueButton() {
+            const button = document.getElementById(QUEUE_BUTTON_ID);
+            const badge = document.getElementById(QUEUE_BADGE_ID);
+
+            if (!button || !badge) {
+                return;
+            }
+
+            badge.textContent = String(this.queueItems.length || 0);
+            button.style.display = this.queueItems.length ? 'inline-flex' : 'none';
+        }
+
+        buildQueueModalHtml() {
+            if (!this.queueItems.length) {
+                return '<p style="margin:0;">No hay documentos pendientes en la cola de APM.</p>';
+            }
+
+            return this.queueItems.map((item) => {
+                const label = item.document_label || `${item.document_type} ${item.consecutivo}`;
+                return `
+                    <div class="apm-queue-item">
+                        <div class="apm-queue-item-title">${label}</div>
+                        <div class="apm-queue-item-meta">
+                            Copia: ${item.copy_label}<br>
+                            Documento: ${item.core_tipo_transaccion_id}/${item.core_tipo_doc_app_id}/${item.consecutivo}
+                        </div>
+                        <div class="apm-queue-item-error">${item.last_error || 'Pendiente de reimpresion manual.'}</div>
+                        <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">Reimprimir</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        renderQueueModalContent() {
+            if (!this.queueModalOpen || !global.Swal || !global.Swal.isVisible()) {
+                return;
+            }
+
+            const container = global.Swal.getHtmlContainer();
+            if (!container) {
+                return;
+            }
+
+            container.innerHTML = this.buildQueueModalHtml();
+            this.bindQueueModalActions();
+        }
+
+        bindQueueModalActions() {
+            const buttons = document.querySelectorAll('.apm-reprint-btn');
+            buttons.forEach((button) => {
+                button.onclick = () => {
+                    this.handleManualReprint(button.getAttribute('data-job-id'), button);
+                };
+            });
+        }
+
+        handleManualReprint(jobId, button) {
+            if (!jobId) {
+                return;
+            }
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Reimprimiendo...';
+            }
+
+            this.connect();
+
+            this.reprintQueuedJob(jobId, 30000)
+                .then((response) => {
+                    if (global.Swal) {
+                        global.Swal.fire({
+                            icon: 'success',
+                            title: 'Impresion enviada',
+                            text: (response.CopyLabel || 'Copia enviada') + ' procesada por APM.'
+                        });
+                    }
+                })
+                .catch((error) => {
+                    if (global.Swal) {
+                        global.Swal.fire({
+                            icon: 'error',
+                            title: 'Error de reimpresion',
+                            text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible reimprimir el documento pendiente.'
+                        });
+                    }
+                })
+                .then(() => this.syncQueueItems())
+                .then(() => {
+                    if (this.queueModalOpen) {
+                        this.openQueueModal();
+                    }
+                });
+        }
+
+        openQueueModal() {
+            this.queueModalOpen = true;
+
+            if (!global.Swal) {
+                alert('Pendientes en cola APM: ' + this.queueItems.length);
+                return;
+            }
+
+            this.syncQueueItems().then(() => {
+                global.Swal.fire({
+                    title: 'Cola de impresion APM',
+                    html: this.buildQueueModalHtml(),
+                    width: 700,
+                    showConfirmButton: false,
+                    showCloseButton: true,
+                    didOpen: () => this.bindQueueModalActions(),
+                    willClose: () => {
+                        this.queueModalOpen = false;
+                    }
+                });
+            });
+        }
+
+        refreshQueueUI() {
+            this.syncQueueItems();
+        }
     }
 
     global.APM_CLIENT = global.APM_CLIENT || new APMClient();
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => global.APM_CLIENT.ensureQueueUI());
+    } else {
+        global.APM_CLIENT.ensureQueueUI();
+    }
 
     global.APM_TEMPLATES = global.APM_TEMPLATES || {
         ticket: {
@@ -253,6 +638,7 @@
             Document: {
                 company: { Name: 'Supermercado Demo', Nit: '900123456', Address: 'Calle Principal #123', Phone: '555-1234' },
                 sale: {
+                    COPY: 'COPIA # 1',
                     Number: 'FV-1001',
                     Date: new Date().toISOString(),
                     Items: [
@@ -273,7 +659,7 @@
             DocumentType: 'comanda',
             Document: {
                 order: {
-                    COPY: 'ORIGINAL',
+                    COPY: 'COPIA # 1',
                     Number: 'CMD-001',
                     Table: 'Mesa 5',
                     Waiter: 'Carlos',
@@ -296,7 +682,7 @@
             PrinterId: 'printHambuger',
             DocumentType: 'factura_electronica',
             Document: {
-                header: { Title: 'FACTURA ELECTRoNICA DE VENTA', Number: 'FE-2025' },
+                header: { Title: 'FACTURA ELECTRONICA DE VENTA', Number: 'FE-2025', COPY: 'COPIA # 1' },
                 customer: { Name: 'Empresa Cliente S.A.S', Nit: '800.111.222-3', Address: 'Av. Empresarial 55' },
                 totals: { Subtotal: 100000, Tax: 19000, Total: 119000 },
                 cufe: 'abc1234567890def...'
@@ -318,3 +704,5 @@
         }
     };
 })(window);
+
+
