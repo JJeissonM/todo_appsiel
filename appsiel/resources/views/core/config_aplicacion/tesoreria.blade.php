@@ -151,6 +151,38 @@
 					</div>
 				</div>
 
+				<h4> Impresion APM </h4>
+				<hr>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$usar_apm_pago_cxp = 0;
+								if( isset($parametros['usar_apm_pago_cxp'] ) )
+								{
+									$usar_apm_pago_cxp = $parametros['usar_apm_pago_cxp'];
+								}
+							?>
+							{{ Form::bsSelect('usar_apm_pago_cxp', $usar_apm_pago_cxp, 'Usar APM para pagos CxP', ['0' => 'No', '1' => 'Si'], ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$apm_printer_id_pago_cxp = '';
+								if( isset($parametros['apm_printer_id_pago_cxp'] ) )
+								{
+									$apm_printer_id_pago_cxp = $parametros['apm_printer_id_pago_cxp'];
+								}
+							?>
+							{{ Form::bsText('apm_printer_id_pago_cxp', $apm_printer_id_pago_cxp, 'APM PrinterId pagos CxP', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
 				<h4> Parámetros por defecto de Libreta de pagos  </h4>
 				<hr>
 				<div class="row">
@@ -418,3 +450,4 @@
 		<script src="{{ asset( $archivo_js ) }}"></script>
 	@endif
 @endsection
+

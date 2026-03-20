@@ -23,6 +23,8 @@ use App\Tesoreria\TesoCaja;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoDocEncabezado;
+use App\Tesoreria\TesoDocEncabezadoPagoCxp;
+use App\Tesoreria\TesoDocRegistro;
 use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\ControlCheque;
 use App\Tesoreria\TesoEntidadFinanciera;
@@ -47,6 +49,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
+use NumerosEnLetras;
 
 class PagoCxpController extends TransaccionController
 {
@@ -260,6 +263,10 @@ class PagoCxpController extends TransaccionController
 
     public function imprimir($id)
     {
+        if (Input::get('formato_impresion_id') === 'apm') {
+            return response()->json($this->build_apm_payload_response($id));
+        }
+
         $doc_encabezado = TesoDocEncabezado::get_registro_impresion( $id );
 
         // Documentos pagados
@@ -281,35 +288,199 @@ class PagoCxpController extends TransaccionController
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
     }
 
+    public function get_apm_payload($id)
+    {
+        try {
+            return response()->json($this->build_apm_payload_response($id));
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
 
+    protected function build_apm_payload_response($id)
+    {
+        $encabezado = TesoDocEncabezadoPagoCxp::with([
+            'empresa',
+            'tipo_documento_app',
+            'tercero.tipo_doc_identidad',
+            'tercero.ciudad',
+            'caja',
+            'cuenta_bancaria.entidad_financiera',
+            'medio_recaudo'
+        ])->findOrFail($id);
+
+        $registros = TesoDocRegistro::get_registros_impresion($id);
+        $payload = $this->build_json_egreso_apm($encabezado, $registros);
+
+        return [
+            'payload' => $payload,
+            'document_meta' => [
+                'core_empresa_id' => (int) $encabezado->core_empresa_id,
+                'core_tipo_transaccion_id' => (int) $encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => (int) $encabezado->core_tipo_doc_app_id,
+                'consecutivo' => (int) $encabezado->consecutivo,
+                'document_type' => 'comprobante_egreso',
+                'document_label' => $encabezado->get_label_documento()
+            ]
+        ];
+    }
+
+    protected function build_json_egreso_apm($encabezado, $registros)
+    {
+        $printerId = trim((string) config('tesoreria.apm_printer_id_pago_cxp'));
+        $stationId = 'TESORERIA';
+        $dateInfo = $this->build_apm_date_info($encabezado->fecha);
+        $cheque = $encabezado->cheques_relacionados_pagos()->first();
+        $receiver = $encabezado->tercero;
+        $receiverName = is_null($receiver) ? '' : $receiver->descripcion;
+        $receiverId = is_null($receiver) ? '' : $receiver->numero_identificacion;
+        $city = '';
+
+        if (!is_null($receiver) && !is_null($receiver->ciudad)) {
+            $city = $receiver->ciudad->descripcion;
+        }
+
+        $bankCode = '';
+        if (!is_null($encabezado->cuenta_bancaria) && !is_null($encabezado->cuenta_bancaria->entidad_financiera)) {
+            $bankCode = (string) $encabezado->cuenta_bancaria->entidad_financiera->id;
+        }
+
+        $conceptLines = $this->build_apm_concept_lines($encabezado, $registros);
+        $createdBy = strtoupper(explode('@', (string) $encabezado->creado_por)[0]);
+
+        return [
+            'JobId' => 'EGR-' . $encabezado->id . '-' . time(),
+            'StationId' => $stationId,
+            'PrinterId' => $printerId,
+            'DocumentType' => 'comprobante_egreso',
+            'Document' => [
+                'cheque' => [
+                    'COPY' => 'COPIA # 1',
+                    'Number' => is_null($cheque) ? '' : (string) $cheque->numero_cheque,
+                    'DateInfo' => $dateInfo,
+                    'PayTo' => $receiverName,
+                    'AmountText' => strtoupper(trim(NumerosEnLetras::convertir((float) $encabezado->valor_total, 'pesos', false))),
+                    'Amount' => number_format((float) $encabezado->valor_total, 2, ',', '.'),
+                    'City' => strtoupper($city)
+                ],
+                'egreso' => [
+                    'COPY' => 'COPIA # 1',
+                    'Number' => $encabezado->get_label_documento(),
+                    'DateInfo' => $dateInfo,
+                    'BankCode' => $bankCode,
+                    'ReceiverName' => $receiverName,
+                    'ReceiverId' => (string) $receiverId,
+                    'Concept' => $conceptLines,
+                    'Description' => trim(strip_tags((string) $encabezado->documento_soporte)),
+                    'Items' => $this->build_apm_items($registros),
+                    'TotalDebit' => $this->format_apm_money($encabezado->valor_total),
+                    'TotalCredit' => $this->format_apm_money($encabezado->valor_total),
+                    'CreatedBy' => $createdBy
+                ]
+            ]
+        ];
+    }
+
+    protected function build_apm_items($registros)
+    {
+        $items = [];
+
+        foreach ($registros as $registro) {
+            $valor = (float) $registro->valor;
+            $items[] = [
+                'Account' => (string) $registro->motivo_id,
+                'CO' => !empty($registro->caja) ? (string) $registro->caja : '-',
+                'ThirdParty' => (string) $registro->numero_identificacion,
+                'Reference' => !empty($registro->medio_recaudo) ? (string) $registro->medio_recaudo : '-',
+                'Debit' => $valor >= 0 ? $this->format_apm_money($valor) : $this->format_apm_money(0),
+                'Credit' => $valor < 0 ? $this->format_apm_money(abs($valor)) : $this->format_apm_money(0)
+            ];
+        }
+
+        return $items;
+    }
+
+    protected function build_apm_concept_lines($encabezado, $registros)
+    {
+        $lines = [];
+        $baseConcept = trim(strip_tags((string) $encabezado->descripcion));
+
+        if ($baseConcept !== '') {
+            foreach (preg_split("/(\r\n|\n|\r)/", $baseConcept) as $line) {
+                $line = trim($line);
+                if ($line !== '') {
+                    $lines[] = strtoupper($line);
+                }
+            }
+        }
+
+        foreach ($registros as $registro) {
+            if (count($lines) >= 4) {
+                break;
+            }
+
+            $detalle = trim((string) $registro->detalle_operacion);
+            if ($detalle !== '') {
+                $lines[] = strtoupper($detalle);
+            }
+        }
+
+        if (empty($lines)) {
+            $lines[] = 'PAGO DE CUENTAS POR PAGAR';
+        }
+
+        while (count($lines) < 4) {
+            $lines[] = '';
+        }
+
+        return array_slice($lines, 0, 4);
+    }
+
+    protected function build_apm_date_info($fecha)
+    {
+        $partes = explode('-', substr((string) $fecha, 0, 10));
+        if (count($partes) !== 3) {
+            return ['Day' => '', 'Month' => '', 'Year' => ''];
+        }
+
+        return [
+            'Day' => $partes[2],
+            'Month' => $partes[1],
+            'Year' => $partes[0]
+        ];
+    }
+
+    protected function format_apm_money($value)
+    {
+        return '$' . number_format((float) $value, 2, '.', ',');
+    }
 
     public function get_documentos_pendientes_cxp()
-    {                
+    {
         $operador = '=';
-        $cadena = Input::get('core_tercero_id');    
+        $cadena = Input::get('core_tercero_id');
 
-        $movimiento = DocumentosPendientes::get_documentos_referencia_tercero( $operador, $cadena );
+        $movimiento = DocumentosPendientes::get_documentos_referencia_tercero($operador, $cadena);
 
-        $vista = View::make( 'compras.incluir.ctas_por_pagar', compact('movimiento') )->render();
-   
+        $vista = View::make('compras.incluir.ctas_por_pagar', compact('movimiento'))->render();
+
         return $vista;
     }
 
-    public function ajax_get_terceros($tercero_id){
-        $registros = Tercero::where('estado','Activo')
-                            ->get();
-            $opciones='<option value=""></option>';                
+    public function ajax_get_terceros($tercero_id)
+    {
+        $registros = Tercero::where('estado', 'Activo')->get();
+        $opciones = '<option value=""></option>';
         foreach ($registros as $campo) {
-            if ( $campo->id == $tercero_id ) {
+            if ($campo->id == $tercero_id) {
                 $selected = ' selected="selected"';
-            }else{
+            } else {
                 $selected = '';
             }
-            $opciones.= '<option value="'.$campo->id.'"'.$selected.'>'.$campo->descripcion.'</option>';
+            $opciones .= '<option value="' . $campo->id . '"' . $selected . '>' . $campo->descripcion . '</option>';
         }
         return $opciones;
     }
-
     /*
         Proceso de eliminar PAGO DE CXP
         Se eliminan los registros de:

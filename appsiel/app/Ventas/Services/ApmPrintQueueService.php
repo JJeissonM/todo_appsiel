@@ -177,6 +177,14 @@ class ApmPrintQueueService
             $payload['Document']['header']['COPY'] = $copyLabel;
         }
 
+        if (isset($payload['Document']['egreso']) && is_array($payload['Document']['egreso'])) {
+            $payload['Document']['egreso']['COPY'] = $copyLabel;
+        }
+
+        if (isset($payload['Document']['cheque']) && is_array($payload['Document']['cheque'])) {
+            $payload['Document']['cheque']['COPY'] = $copyLabel;
+        }
+
         if (!isset($payload['Document']['COPY'])) {
             $payload['Document']['COPY'] = $copyLabel;
         }
@@ -190,12 +198,22 @@ class ApmPrintQueueService
             return $this->statusIds[$code];
         }
 
-        $statusId = ApmPrintStatus::where('code', $code)->value('id');
-        if (is_null($statusId)) {
-            throw new \RuntimeException('No existe el estado de cola APM: ' . $code);
+        $defaults = [
+            'pending' => 'Pendiente de reimpresion manual',
+            'printed' => 'Impreso correctamente',
+            'cancelled' => 'Cancelado manualmente'
+        ];
+
+        if (!isset($defaults[$code])) {
+            throw new untimeException('No existe la definicion del estado de cola APM: ' . $code);
         }
 
-        $this->statusIds[$code] = (int) $statusId;
+        $status = ApmPrintStatus::firstOrCreate(
+            ['code' => $code],
+            ['description' => $defaults[$code]]
+        );
+
+        $this->statusIds[$code] = (int) $status->id;
 
         return $this->statusIds[$code];
     }

@@ -1,4 +1,4 @@
-﻿// client.js - Cliente WebSocket para Appsiel Print Manager (APM)
+// client.js - Cliente WebSocket para Appsiel Print Manager (APM)
 
 ((global) => {
     const DEFAULT_WS_URL = 'ws://localhost:7000/websocket/';
@@ -688,6 +688,51 @@
                 cufe: 'abc1234567890def...'
             }
         },
+        egreso: {
+            JobId: 'UNI-001',
+            StationId: 'TESORERIA',
+            PrinterId: 'LX300_LOCAL',
+            DocumentType: 'comprobante_egreso',
+            Document: {
+                cheque: {
+                    Number: '002216',
+                    DateInfo: {
+                        Day: '15',
+                        Month: '02',
+                        Year: '2026'
+                    },
+                    PayTo: 'JUAN SEBASTIAN CAMACHO MUNOZ',
+                    AmountText: 'UN MILLON DE PESOS M/CTE',
+                    Amount: '1.000.000,00',
+                    City: 'VALLEDUPAR'
+                },
+                egreso: {
+                    Number: 'CE-456',
+                    DateInfo: {
+                        Day: '13',
+                        Month: '02',
+                        Year: '2025'
+                    },
+                    BankCode: '007',
+                    ReceiverName: 'JUAN SEBASTIAN CAMACHO MUNOZ',
+                    ReceiverId: '1.003.376.130',
+                    Concept: [
+                        'PAGO DE SERVICIO DE DESARROLLO DE SOFTWARE',
+                        'APM ENERO - FEBRERO 2026',
+                        'ADICIONAL LINEA 3',
+                        'ADICIONAL LINEA 4'
+                    ],
+                    Description: 'F\nF',
+                    Items: [
+                        { Account: '250501', CO: '001', ThirdParty: '1121825689', Reference: '-', Debit: '$939,360,532.00', Credit: '$0.00' },
+                        { Account: '11100506', CO: '001', ThirdParty: '1121825689', Reference: '-', Debit: '$0.00', Credit: '$939,360,532.00' }
+                    ],
+                    TotalDebit: '$939,360,532.00',
+                    TotalCredit: '$939,360,532.00',
+                    CreatedBy: 'S. CAMACHO'
+                }
+            }
+        },        
         sticker: {
             JobId: 'STICKER-001',
             StationId: 'ALMACEN',
@@ -704,5 +749,6 @@
         }
     };
 })(window);
+
 
 

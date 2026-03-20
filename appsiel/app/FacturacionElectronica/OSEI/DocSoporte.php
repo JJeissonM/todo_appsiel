@@ -126,11 +126,34 @@ class DocSoporte
          }
 
          // Esto captura errores 4xx
+         $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
          $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
-         $responseBody = json_decode($responseBody, true);
+         \Log::warning('Error 4xx de OSEI al enviar documento soporte. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
+
+         $decodedBody = json_decode($responseBody, true);
+         $errorMessage = '';
+
+         if (is_array($decodedBody)) {
+            if (!empty($decodedBody['message'])) {
+               $errorMessage = $decodedBody['message'];
+            } elseif (!empty($decodedBody['error'])) {
+               $errorMessage = $decodedBody['error'];
+            } elseif (!empty($decodedBody['errors'])) {
+               $errorMessage = is_array($decodedBody['errors']) ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['errors'];
+            } else {
+               $errorMessage = json_encode($decodedBody, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+         } else {
+            $errorMessage = trim($responseBody);
+         }
+
+         if ($errorMessage === '') {
+            $errorMessage = 'HTTP ' . $statusCode . ' sin detalle retornado por OSEI.';
+         }
+
          return (object)[
             'tipo' => 'mensaje_error',
-            'contenido' => "Error de Empresa: " . $responseBody['message']
+            'contenido' => "Error de Empresa: " . $errorMessage
          ];
       } catch (\GuzzleHttp\Exception\ServerException $e) {
          // Esto captura errores 5xx

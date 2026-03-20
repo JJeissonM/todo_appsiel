@@ -83,6 +83,7 @@ Route::get('teso_get_formulario_control_cheques/{teso_medio_recaudo_id}', 'Tesor
 Route::get('tesoreria/get_documentos_pendientes_cxp', 'Tesoreria\PagoCxpController@get_documentos_pendientes_cxp');
 // Anular
 Route::get('teso_anular_pago_cxp/{id}', 'Tesoreria\PagoCxpController@anular_pago_cxp');
+Route::get('tesoreria_pagos_cxp_apm_payload/{id}', 'Tesoreria\PagoCxpController@get_apm_payload');
 Route::get('tesoreria_pagos_cxp_imprimir/{id}', 'Tesoreria\PagoCxpController@imprimir');
 Route::resource('tesoreria/pagos_cxp', 'Tesoreria\PagoCxpController');
 
@@ -144,3 +145,4 @@ Route::get('teso_traslado_efectivo_recontabilizar/{doc_encabezado_id}', 'Tesorer
 Route::get('teso_traslado_efectivo_recontabilizacion_masiva/{fecha_inicial}/{fecha_final}', 'Tesoreria\TrasladoEfectivosController@recontabilizacion_masiva');
 
 Route::get('teso_generar_libretas_de_estudiantes_matriculados', 'Tesoreria\ProcessController@generar_libretas_de_estudiantes_matriculados');
+
