@@ -168,6 +168,17 @@ class FacturaMasivaEstudianteController extends TransaccionController
                         <td style="display:none;" colspan="10"> Error en concepto con la libreta de pago ID='. $registro_plan_pagos->id_libreta .'
                         </td>
                     </tr>';
+                continue;
+            }
+
+            $btn_ver_libreta = '<span class="btn btn-default btn-xs disabled" title="La libreta asociada no existe o fue eliminada."><i class="fa fa-btn fa-eye"></i>&nbsp;</span>';
+
+            if ( !is_null( $registro_plan_pagos->libreta ) )
+            {
+                $btn_ver_libreta = '<a class="btn btn-primary btn-xs btn-detail" href="' . url( 'tesoreria/ver_plan_pagos/' . $registro_plan_pagos->libreta->id . '?id=3&amp;id_modelo=31&amp;id_transaccion=') . '" title="Consultar libreta" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>';
+            }else{
+                $clase_danger = 'danger';
+                $error_esta_en .= ' - Libreta no encontrada';
             }
                 
             $tbody .= '<tr class="'.$clase_danger.'">
@@ -181,7 +192,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
                         <td>1</td>
                         <td>$'. number_format( $registro_plan_pagos->valor_cartera, 0, ',', '.') . '</td>
                         <td> 
-                            <a class="btn btn-primary btn-xs btn-detail" href="' . url( 'tesoreria/ver_plan_pagos/' . $registro_plan_pagos->libreta->id . '?id=3&amp;id_modelo=31&amp;id_transaccion=') . '" title="Consultar libreta" target="_blank"><i class="fa fa-btn fa-eye"></i>&nbsp;</a>
+                            ' . $btn_ver_libreta . '
                             ' . $btn_imprimir_factura . '
                             <button type="button" class="btn btn-danger btn-xs btn_eliminar"><i class="fa fa-trash"></i></button>                        
                         </td>

@@ -42,7 +42,8 @@ class DescuentoProntoPago extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = DescuentoProntoPago::where('compras_descuentos_pronto_pago.estado','Activo')
+        $opciones = DescuentoProntoPago::join('contab_cuentas', 'contab_cuentas.id', '=', 'compras_descuentos_pronto_pago.contab_cuenta_id')
+                    ->where('compras_descuentos_pronto_pago.estado','Activo')
                     ->select('compras_descuentos_pronto_pago.id','compras_descuentos_pronto_pago.descripcion')
                     ->get();
 

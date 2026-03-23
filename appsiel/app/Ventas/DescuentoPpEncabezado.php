@@ -52,7 +52,8 @@ class DescuentoPpEncabezado extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = DescuentoPpEncabezado::where('vtas_descuentos_pp_encabezados.estado', 'Activo')
+        $opciones = DescuentoPpEncabezado::join('contab_cuentas', 'contab_cuentas.id', '=', 'vtas_descuentos_pp_encabezados.contab_cuenta_id')
+            ->where('vtas_descuentos_pp_encabezados.estado', 'Activo')
             ->select('vtas_descuentos_pp_encabezados.id', 'vtas_descuentos_pp_encabezados.descripcion')
             ->get();
 

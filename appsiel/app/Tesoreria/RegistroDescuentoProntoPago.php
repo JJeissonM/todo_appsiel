@@ -5,6 +5,7 @@ namespace App\Tesoreria;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Contabilidad\ContabMovimiento;
+use App\Contabilidad\ContabCuenta;
 use App\Compras\DescuentoProntoPago;
 use App\Ventas\DescuentoPpEncabezado;
 
@@ -48,6 +49,16 @@ class RegistroDescuentoProntoPago extends Model
                 default:
                     # code...
                     break;
+            }
+
+            if ( is_null($descuento) )
+            {
+                throw new \Exception('El descuento por pronto pago seleccionado no existe.');
+            }
+
+            if ( empty($descuento->contab_cuenta_id) || !ContabCuenta::find($descuento->contab_cuenta_id) )
+            {
+                throw new \Exception('El descuento por pronto pago "' . $descuento->descripcion . '" no tiene una cuenta contable válida. Revise su parametrización.');
             }
             
             $datos['tipo_transaccion'] = '';
