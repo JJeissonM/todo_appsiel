@@ -28,10 +28,28 @@
 		</p>
 		<table class="table table-striped" id="tabla_registros">
 			<thead>
+				@if($usar_encabezados_por_anio)
+					<tr>
+						<th>&nbsp;</th>
+						@foreach($grupos_titulo_encabezados as $grupo_titulo)
+							<th colspan="{{ $grupo_titulo->cantidad }}" style="text-align: center; vertical-align: middle;">
+								@if($grupo_titulo->titulo != '')
+									<div style="border: 2px solid #222; padding: 4px 2px; color: #d9534f; font-weight: bold;">
+										{{ $grupo_titulo->titulo }}
+									</div>
+								@else
+									&nbsp;
+								@endif
+							</th>
+						@endforeach
+						<th colspan="3">&nbsp;</th>
+					</tr>
+				@endif
 				<tr>
 					<th>Estudiantes</th>
 					@for($k=1; $k < $cantidad_calificaciones; $k++)
 						<?php
+							$encabezado_columna = $encabezados_columnas[$k];
 							if( $array_pesos[$k] == 0 )
 							{
 								$color_btn = 'white';
@@ -40,7 +58,7 @@
 							}
 						?>	
 						<th class="celda_C{{$k}}">
-							<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}">C{{$k}}</button>
+							<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}" data-peso="{{$array_pesos[$k]}}" title="Peso= {{$array_pesos[$k]}}%" id="btn_C{{$k}}" style="background-color: {{$color_btn}}; @if($usar_encabezados_por_anio) cursor: default; @endif" @if($usar_encabezados_por_anio) disabled="disabled" @endif>{{ $encabezado_columna->label }}</button>
 						</th>
 					@endfor
 					<th>

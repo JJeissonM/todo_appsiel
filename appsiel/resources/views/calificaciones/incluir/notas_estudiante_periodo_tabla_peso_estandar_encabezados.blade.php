@@ -59,7 +59,7 @@
                         $n = 0;
                         foreach($lbl_calificaciones_aux as $lbl_calificacion_aux)
                         {                            
-                            $c = $lbl_calificacion_aux->label;
+                            $c = $lbl_calificacion_aux->columna_calificacion;
                             $texto_calificacion = '';
                             
                             if ( $registros[$i]->$c != 0) 
@@ -77,13 +77,9 @@
                             
                             $fecha_calificacion = '';
                             $detalle_calificacion = 'Sin detalle.';
-
-                            $encabezado_calificacion = App\Calificaciones\EncabezadoCalificacion::where( [ 'columna_calificacion' => $c, 'periodo_id' => $periodo->id, 'curso_id' => $curso->id, 'asignatura_id' => $registros[$i]->asignatura_id] )->get()->first();
-
-                            if ( $encabezado_calificacion != null )
+                            if ( $lbl_calificacion_aux->descripcion != '' )
                             {
-                                $fecha_calificacion = 'Fecha: '.$encabezado_calificacion->fecha;
-                                $detalle_calificacion = ',    Detalle de la actividad: '.$encabezado_calificacion->descripcion;
+                                $detalle_calificacion = ',    Detalle de la actividad: '.$lbl_calificacion_aux->descripcion;
                             }
                     ?>
                             <td>

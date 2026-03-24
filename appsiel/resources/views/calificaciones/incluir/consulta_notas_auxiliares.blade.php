@@ -19,8 +19,12 @@
 			<tr>
 				<th>Estudiantes</th>
 				@for($k=1; $k < $cantidad_calificaciones; $k++)
+					<?php
+						$encabezado = $encabezados_calificaciones->where('columna_calificacion', 'C'.$k)->first();
+						$label = $encabezado && !empty($encabezado->label) ? $encabezado->label : 'C'.$k;
+					?>
 					<th class="celda_C{{$k}}">
-						<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}">C{{$k}}</button>
+						<button class="btn btn-default btn-xs encabezado_calificacion" value="C{{$k}}">{{ $label }}</button>
 					</th>
 				@endfor
 				<th>
@@ -67,6 +71,12 @@
 					Encabezado
 				</th>
 				<th>
+					Label
+				</th>
+				<th>
+					Título
+				</th>
+				<th>
 					Descripción actividad
 				</th>
 				<th>
@@ -81,6 +91,8 @@
 			@foreach($encabezados_calificaciones AS $encabezado)
 				<tr>
 					<td align="center">{{ $encabezado->columna_calificacion }}</td>
+					<td align="center">{{ $encabezado->label }}</td>
+					<td align="center">{{ $encabezado->titulo }}</td>
 					<td align="center">{{ $encabezado->descripcion }}</td>
 					<td align="center">{{ $encabezado->fecha }}</td>
 					<td align="center">{{ $encabezado->peso }}</td>

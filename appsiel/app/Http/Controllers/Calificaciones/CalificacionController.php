@@ -22,6 +22,7 @@ use App\Calificaciones\Logro;
 
 use App\Core\Colegio;
 use App\Sistema\Aplicacion;
+use App\Calificaciones\Services\EncabezadosCalificacionService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
@@ -32,6 +33,7 @@ class CalificacionController extends Controller
 {
     protected $escala_valoracion;
     protected $colegio, $aplicacion;
+    protected $encabezadosCalificacionService;
 
     public function __construct()
     {
@@ -42,6 +44,8 @@ class CalificacionController extends Controller
         if (Auth::check()) {
             $this->colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
         }
+
+        $this->encabezadosCalificacionService = app(EncabezadosCalificacionService::class);
     }
 
     /**
@@ -311,42 +315,12 @@ class CalificacionController extends Controller
         $escala_min_max = EscalaValoracion::get_min_max($periodo->periodo_lectivo_id);
         $modo_ingreso_calificaciones = config('calificaciones.modo_ingreso_calificaciones', 'teclado');
 
-        if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
-            return view('calificaciones.encabezados_fijos.lineal.calificar2', [
-                'vec_estudiantes' => $vec_estudiantes,
-                'cantidad_estudiantes' => count($estudiantes),
-                'anio' => $anio,
-                'curso' => $curso,
-                'periodo' => $periodo,
-                'periodo_lectivo' => $periodo_lectivo,
-                'datos_asignatura' => $datos_asignatura,
-                'ruta' => $request->ruta,
-                'escala_min_max' => $escala_min_max,
-                'creado_por' => $creado_por,
-                'modificado_por' => $modificado_por,
-                'id_colegio' => $this->colegio->id,
-                'modo_ingreso_calificaciones' => $modo_ingreso_calificaciones
-            ]);
-        }
-
-        $pesos_encabezados = EncabezadoCalificacion::where([
-            ['periodo_id', '=', $request->id_periodo],
-            ['curso_id', '=', $request->curso_id],
-            ['asignatura_id', '=', $request->id_asignatura],
-            ['peso', '>', 0]
-        ])
-            ->select('columna_calificacion', 'peso')
-            ->orderBy('columna_calificacion')
-            ->get();
-
-        $array_pesos = array_fill(0, 16, 0);
-        $hay_pesos = false;
-        $suma_porcentajes = 0;
-        foreach ($pesos_encabezados as $peso_encabezado) {
-            $array_pesos[(int)str_replace('C', '', $peso_encabezado->columna_calificacion)] = $peso_encabezado->peso;
-            $hay_pesos = true;
-            $suma_porcentajes += $peso_encabezado->peso;
-        }
+        $resumen_encabezados = $this->encabezadosCalificacionService->getResumenParaCarga(
+            (int)$anio,
+            (int)$request->id_periodo,
+            (int)$request->curso_id,
+            (int)$request->id_asignatura
+        );
 
         return view('calificaciones.calificar2', [
             'vec_estudiantes' => $vec_estudiantes,
@@ -358,9 +332,12 @@ class CalificacionController extends Controller
             'datos_asignatura' => $datos_asignatura,
             'ruta' => $request->ruta,
             'escala_min_max' => $escala_min_max,
-            'array_pesos' => $array_pesos,
-            'hay_pesos' => $hay_pesos,
-            'suma_porcentajes' => $suma_porcentajes,
+            'encabezados_columnas' => $resumen_encabezados['columnas'],
+            'array_pesos' => $resumen_encabezados['array_pesos'],
+            'hay_pesos' => $resumen_encabezados['hay_pesos'],
+            'suma_porcentajes' => $resumen_encabezados['suma_porcentajes'],
+            'grupos_titulo_encabezados' => $resumen_encabezados['grupos_titulo'],
+            'usar_encabezados_por_anio' => $this->encabezadosCalificacionService->usarEncabezadosPorAnio(),
             'creado_por' => $creado_por,
             'modificado_por' => $modificado_por,
             'id_colegio' => $this->colegio->id,
@@ -617,7 +594,13 @@ class CalificacionController extends Controller
     public function verificar_peso($curso, $periodo, $asignatura)
     {
         $tienePeso = "false";
-        $ec = EncabezadoCalificacion::where([['curso_id', $curso], ['asignatura_id', $asignatura], ['periodo_id', $periodo]])->get();
+        $atributos = $this->encabezadosCalificacionService->getAtributosDesdePeriodo($periodo, $curso, $asignatura);
+        $ec = $this->encabezadosCalificacionService->getEncabezados(
+            (int)$atributos['anio'],
+            $periodo,
+            $curso,
+            $asignatura
+        );
         if (count($ec) > 0) {
             foreach ($ec as $e) {
                 if ($e->peso > 0) {
@@ -630,13 +613,14 @@ class CalificacionController extends Controller
 
     public function get_peso($curso, $periodo, $asignatura, $celda)
     {
-        $ec = EncabezadoCalificacion::where([
-            ['curso_id', $curso],
-            ['asignatura_id', $asignatura],
-            ['periodo_id', $periodo],
-            ['columna_calificacion', 'C' . $celda]
-        ])
-            ->first();
+        $atributos = $this->encabezadosCalificacionService->getAtributosDesdePeriodo($periodo, $curso, $asignatura);
+        $ec = $this->encabezadosCalificacionService->getEncabezado(
+            (int)$atributos['anio'],
+            $periodo,
+            $curso,
+            $asignatura,
+            'C' . $celda
+        );
         if ($ec != null) {
             return $ec->peso;
         }

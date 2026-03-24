@@ -138,3 +138,17 @@
 
 
 <script src="{{ asset( 'assets/js/calificaciones/form_create_v2_encabezados.js?aux=' . uniqid() )}}"></script>
+
+<script>
+	$(document).off('click.calificacionesModalClose', '#myModal [data-dismiss="modal"], #myModal .close');
+	$(document).on('click.calificacionesModalClose', '#myModal [data-dismiss="modal"], #myModal .close', function(event) {
+		event.preventDefault();
+		$('#myModal').modal('hide');
+	});
+
+	$(document).off('hidden.bs.modal.calificacionesModalClose', '#myModal');
+	$(document).on('hidden.bs.modal.calificacionesModalClose', '#myModal', function() {
+		$('body').removeClass('modal-open');
+		$('.modal-backdrop').remove();
+	});
+</script>

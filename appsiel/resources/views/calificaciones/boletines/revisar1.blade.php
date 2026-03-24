@@ -19,6 +19,9 @@
 
 			<div class="row" style="padding:5px;">
 				{{ Form::bsSelect('curso_id','','Seleccionar curso',[],['required'=>'required']) }}
+				<div class="col-md-6 col-md-offset-3" id="curso_id_loading" style="display: none; margin-top: 5px; color: gray;">
+					<i class="fa fa-spinner fa-spin"></i> Cargando cursos...
+				</div>
 			</div>
 
 			@if( config( 'calificaciones.manejar_preinformes_academicos' ) == 'Si' )
@@ -70,8 +73,12 @@
 			
 			$('#id_periodo').on('change',function()
 			{
-				$('#curso_id').html('<option value=""></option>');
-				if ( $(this).val() == '') { return false; }
+				$('#curso_id').html('<option value=""></option>').prop('disabled', true);
+				$('#curso_id_loading').show();
+				if ( $(this).val() == '' ) {
+					$('#curso_id_loading').hide();
+					return false;
+				}
 
 	    		$('#div_cargando').show();
 
@@ -91,11 +98,22 @@
 							success: function(datos){
 
 								$('#div_cargando').hide();
+								$('#curso_id_loading').hide();
 								
-								$('#curso_id').html( datos );
+								$('#curso_id').html( datos ).prop('disabled', false);
 								$('#curso_id').focus();
+							},
+							error: function(){
+								$('#div_cargando').hide();
+								$('#curso_id_loading').hide();
+								$('#curso_id').prop('disabled', false);
 							}
 						});
+			        },
+			        error: function(){
+			        	$('#div_cargando').hide();
+			        	$('#curso_id_loading').hide();
+			        	$('#curso_id').prop('disabled', false);
 			        }
 			    });
 			});

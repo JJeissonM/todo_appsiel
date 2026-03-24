@@ -12,6 +12,18 @@
             <label for="descripcion"> {!! $mensaje_descripcion !!} Descripción actividad: </label>
             <textarea name="descripcion" class="form-control" id="descripcion" rows="2" required="required"> {{ $descripcion }} </textarea>
         </div>
+
+        @if( $usar_encabezados_por_anio )
+            <div class="form-group">
+                <label for="titulo">Título agrupador</label>
+                <input name="titulo" type="text" class="form-control" id="titulo" value="{{ $titulo }}">
+            </div>
+
+            <div class="form-group">
+                <label for="label">Label del encabezado</label>
+                <input name="label" type="text" class="form-control" id="label" value="{{ $label }}">
+            </div>
+        @endif
         
         <div class="form-group">
             <label for="fecha">Peso actividad (%)</label>

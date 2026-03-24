@@ -14,6 +14,9 @@
             <div class="col-md-3">
                 <div class="row" style="padding:5px;">
                     {{Form::bsSelect('id_asignatura', $asignatura_id, 'Asignatura', $asignaturas, ['required'=>'required'])}}
+                    <div id="spinner_asignaturas" style="display: none; padding-top: 4px; color: #777;">
+                        <i class="fa fa-spinner fa-spin"></i> Cargando asignaturas...
+                    </div>
                 </div>
             </div>
 
@@ -25,7 +28,12 @@
 
             <div class="col-md-3">
                 <button class="btn btn-primary" id="btn_continuar">
-                    <i class="fa fa-btn fa-arrow-right"></i>Continuar
+                    <span class="lbl_btn_continuar">
+                        <i class="fa fa-btn fa-arrow-right"></i>Continuar
+                    </span>
+                    <span class="spinner_btn_continuar" style="display: none;">
+                        <i class="fa fa-spinner fa-spin"></i> Cargando...
+                    </span>
                 </button>
             </div>
         </div>

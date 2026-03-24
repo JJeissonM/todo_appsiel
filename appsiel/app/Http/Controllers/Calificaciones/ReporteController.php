@@ -24,6 +24,7 @@ use App\Calificaciones\Area;
 
 use App\Core\Colegio;
 use App\Core\FirmaAutorizada;
+use App\Calificaciones\Services\EncabezadosCalificacionService;
 use App\Matriculas\Estudiante;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,7 @@ class ReporteController extends Controller
 {
     protected $escala_valoracion;
     protected $colegio;
+    protected $encabezadosCalificacionService;
 
     public function __construct()
     {
@@ -44,6 +46,8 @@ class ReporteController extends Controller
         {
             $this->colegio = Colegio::where( 'empresa_id', Auth::user()->empresa_id )->get()->first();
         }
+
+        $this->encabezadosCalificacionService = app(EncabezadosCalificacionService::class);
     }
 
     /**
@@ -390,15 +394,14 @@ class ReporteController extends Controller
             $cantidad_estudiantes = count($estudiantes);
         }        
 
-        $encabezados_calificaciones = EncabezadoCalificacion::where('periodo_id', $request->periodo_id)
-                                                            ->where('curso_id', $request->curso_id)
-                                                            ->where('asignatura_id', $request->asignatura_id)
-                                                            ->get();
+        $encabezados_calificaciones = $this->encabezadosCalificacionService->getEncabezados(
+            (int)$anio,
+            (int)$request->periodo_id,
+            (int)$request->curso_id,
+            (int)$request->asignatura_id
+        );
 
         $vista_blade = 'calificaciones.incluir.consulta_notas_auxiliares';
-        if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
-            $vista_blade = 'calificaciones.incluir.encabezados_fijos.lineal.consulta_notas_auxiliares';
-        }
 
         $vista = View::make( $vista_blade, compact('vec_estudiantes', 'cantidad_estudiantes', 'anio','curso','periodo','periodo_lectivo', 'asignatura', 'encabezados_calificaciones') )->render();   
 

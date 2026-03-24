@@ -63,7 +63,11 @@ $(document).ready(function(){
         if ( !validar_requeridos_form_filtros() )
         {
             return false;
-        }			
+        }
+
+        if (typeof window.activarCargaContinuar === 'function') {
+            window.activarCargaContinuar();
+        }
         
         $('#div_form_ingreso').html('');
         $('#div_cargando').show();
@@ -80,7 +84,17 @@ $(document).ready(function(){
 
             $('#div_form_ingreso').html( respuesta );
 
-        })
+            if (typeof window.desactivarCargaContinuar === 'function') {
+                window.desactivarCargaContinuar();
+            }
+        }).fail(function(){
+            $('#div_cargando').hide();
+            $('#div_spin').hide();
+
+            if (typeof window.desactivarCargaContinuar === 'function') {
+                window.desactivarCargaContinuar();
+            }
+        });
     });
 
 });

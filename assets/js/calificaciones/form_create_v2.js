@@ -22,10 +22,15 @@ function ventana(id, id_textbox, curso_id) {
 function getChildVar(a_value) {
     var caja;
     caja = document.getElementById("caja_logro").value;
-    document.getElementById("logros_" + caja).value = a_value;
+    var inputLogro = document.getElementById("logros_" + caja);
+    inputLogro.value = a_value;
     $("#mensaje_guardadas").hide();
     $("#mensaje_sin_guardar").show();
     $("#bs_boton_guardar").prop("disabled", false);
+
+    if (typeof window.marcarFilaDesdeInput === "function") {
+        window.marcarFilaDesdeInput(inputLogro);
+    }
 }
 
 $(document).ready(function () {
@@ -511,6 +516,9 @@ $(document).ready(function () {
 
         if (filas_modificadas.length === 0) {
             $("#div_cargando").hide();
+            $("#bs_boton_guardar").prop("disabled", false);
+            $("#bs_boton_volver").prop("disabled", false);
+            $("#bs_boton_guardar").html('<i class="fa fa-save"></i> Guardar');
             Swal.fire({
                 icon: "info",
                 title: "Sin cambios",

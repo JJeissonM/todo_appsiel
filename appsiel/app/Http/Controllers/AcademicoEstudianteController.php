@@ -37,6 +37,7 @@ use App\Tesoreria\TesoPlanPagosEstudiante;
 
 use App\AcademicoEstudiante\ProgramacionAulaVirtual;
 use App\Calificaciones\Services\CalificacionesService;
+use App\Calificaciones\Services\EncabezadosCalificacionService;
 use App\Matriculas\Services\ObservadorEstudianteService;
 use App\Matriculas\Services\TutorAcademicoService;
 use Illuminate\Support\Facades\Input;
@@ -51,6 +52,7 @@ class AcademicoEstudianteController extends Controller
     protected $esTutor = false;
     protected $tutorService;
     protected $estudianteActual;
+    protected $encabezadosCalificacionService;
 
     /**
      * Create a new controller instance.
@@ -66,6 +68,7 @@ class AcademicoEstudianteController extends Controller
             $this->estudiante = Estudiante::where('user_id', Auth::user()->id)->get()->first();
         }
         $this->tutorService = app(TutorAcademicoService::class);
+        $this->encabezadosCalificacionService = app(EncabezadosCalificacionService::class);
         $this->esTutor = Auth::check() && Auth::user()->hasRole('Tutor de estudiante');
     }
 
@@ -309,12 +312,10 @@ class AcademicoEstudianteController extends Controller
             return View::make('calificaciones.incluir.notas_estudiante_periodo_final', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante', 'periodos_del_anio_lectivo'))->render();
         } else {
 
-            if (config('calificaciones.manejar_encabezados_fijos_en_calificaciones') == 'Si') {
-                return View::make('calificaciones.incluir.encabezados_fijos.lineal.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante'))->render();
-            }
+            $usar_encabezados_por_anio = $this->encabezadosCalificacionService->usarEncabezadosPorAnio();
 
-            if ((int)config('calificaciones.manejar_peso_estandar_encabezados_calificaciones')) {
-                return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla_peso_estandar_encabezados', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux'))->render();
+            if ((int)config('calificaciones.manejar_peso_estandar_encabezados_calificaciones') || $usar_encabezados_por_anio) {
+                return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla_peso_estandar_encabezados', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux', 'usar_encabezados_por_anio'))->render();
             }
 
             return View::make('calificaciones.incluir.notas_estudiante_periodo_tabla', compact('registros', 'periodo', 'curso', 'observacion_boletin', 'estudiante','lbl_calificaciones_aux'))->render();

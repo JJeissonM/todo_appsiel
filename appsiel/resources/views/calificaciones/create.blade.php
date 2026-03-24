@@ -44,6 +44,35 @@
 	<script>
 		$(document).ready(function(){
 
+			function mostrarCargaAsignaturas()
+			{
+				$("#spinner_asignaturas").show();
+				$("#id_asignatura").prop('disabled', true);
+			}
+
+			function ocultarCargaAsignaturas()
+			{
+				$("#spinner_asignaturas").hide();
+				$("#id_asignatura").prop('disabled', false);
+			}
+
+			function activarCargaContinuar()
+			{
+				$("#btn_continuar").prop('disabled', true);
+				$("#btn_continuar .lbl_btn_continuar").hide();
+				$("#btn_continuar .spinner_btn_continuar").show();
+				$('#div_form_ingreso').html('');
+				$('#div_cargando').show();
+			}
+
+			function desactivarCargaContinuar()
+			{
+				$("#btn_continuar").prop('disabled', false);
+				$("#btn_continuar .spinner_btn_continuar").hide();
+				$("#btn_continuar .lbl_btn_continuar").show();
+				$('#div_cargando').hide();
+			}
+
 			$("#curso_id").on('change',function(){
 
 				$('#div_form_ingreso').html( '' );
@@ -58,6 +87,7 @@
 		    	
 		    	if( curso_id != '' ){
 
+					mostrarCargaAsignaturas();
 				    $('#div_cargando').show();
 
 					var url = "{{ url('get_select_asignaturas') }}" + "/" + curso_id + "/" + periodo_id;
@@ -67,6 +97,7 @@
 			        	success: function(datos){
 		                    
 		                    $('#div_cargando').hide();
+							ocultarCargaAsignaturas();
 							
 							$("#id_asignatura").html(datos);
 							
@@ -74,13 +105,18 @@
 				        },
 				        error: function(xhr) {
 		                    $('#div_cargando').hide();
+							ocultarCargaAsignaturas();
 					        alert('Error en los datos seleccionados. '+xhr);
 					    }
 				    });
 				}else{
+					ocultarCargaAsignaturas();
 					$("#id_asignatura").html('<option value=""></option>');
 				}
 			});
+
+			window.activarCargaContinuar = activarCargaContinuar;
+			window.desactivarCargaContinuar = desactivarCargaContinuar;
 			
 		});
 	</script>

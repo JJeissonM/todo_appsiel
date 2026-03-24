@@ -99,13 +99,13 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php 
-								$manejar_encabezados_fijos_en_calificaciones = 'No';
-								if( isset($parametros['manejar_encabezados_fijos_en_calificaciones'] ) )
+								$manejar_encabezados_por_anio_lectivo_en_calificaciones = 'No';
+								if( isset($parametros['manejar_encabezados_por_anio_lectivo_en_calificaciones'] ) )
 								{
-									$manejar_encabezados_fijos_en_calificaciones = $parametros['manejar_encabezados_fijos_en_calificaciones'];
+									$manejar_encabezados_por_anio_lectivo_en_calificaciones = $parametros['manejar_encabezados_por_anio_lectivo_en_calificaciones'];
 								}
 							?>
-							{{ Form::bsSelect('manejar_encabezados_fijos_en_calificaciones', $manejar_encabezados_fijos_en_calificaciones, 'Manejar encabezados fijos en calificaicones', [''=>'','Si'=>'Si','No'=>'No'], ['class'=>'form-control']) }}
+							{{ Form::bsSelect('manejar_encabezados_por_anio_lectivo_en_calificaciones', $manejar_encabezados_por_anio_lectivo_en_calificaciones, 'Manejar encabezados fijos por año lectivo en calificaciones', ['No'=>'No','Si'=>'Si'], ['class'=>'form-control']) }}
 						</div>
 					</div>
 

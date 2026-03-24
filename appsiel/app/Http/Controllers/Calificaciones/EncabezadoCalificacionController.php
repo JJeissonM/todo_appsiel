@@ -7,15 +7,19 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 use App\Calificaciones\EncabezadoCalificacion;
+use App\Calificaciones\Services\EncabezadosCalificacionService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
 class EncabezadoCalificacionController extends Controller
 {
+    protected $encabezadosCalificacionService;
+
     public function __construct()
     {
         //$this->middleware('auth');
+        $this->encabezadosCalificacionService = app(EncabezadosCalificacionService::class);
     }
 
     /**
@@ -36,15 +40,18 @@ class EncabezadoCalificacionController extends Controller
      */
     public function create()
     {
-        // Verificar si ya hay encabezado ingresado para la columna enviada
-        $encabezado = EncabezadoCalificacion::where([
-                                'columna_calificacion' => Input::get('columna_calificacion'),
-                                'periodo_id' => Input::get('periodo_id'),
-                                'curso_id' => Input::get('curso_id'),
-                                'asignatura_id' => Input::get('asignatura_id')
-                            ])
-                            ->get()
-                            ->first();
+        $anio = (int)Input::get('anio');
+        $periodoId = (int)Input::get('periodo_id');
+        $cursoId = (int)Input::get('curso_id');
+        $asignaturaId = (int)Input::get('asignatura_id');
+
+        $encabezado = $this->encabezadosCalificacionService->getEncabezado(
+            $anio,
+            $periodoId,
+            $cursoId,
+            $asignaturaId,
+            Input::get('columna_calificacion')
+        );
         
         // Datos Para crear nuevo
         $mensaje_descripcion = '';
@@ -55,6 +62,8 @@ class EncabezadoCalificacionController extends Controller
         $creado_por = Auth::user()->email;
         $modificado_por = '';
         $peso = 0;
+        $label = '';
+        $titulo = '';
         if ( $encabezado != null )
         {
             // Datos Para editar
@@ -65,11 +74,15 @@ class EncabezadoCalificacionController extends Controller
             $creado_por = $encabezado->creado_por;
             $modificado_por = Auth::user()->email;
             $peso = $encabezado->peso;
+            $label = $encabezado->label;
+            $titulo = $encabezado->titulo;
 
             $mensaje_descripcion = '<span style="color:#ff4d4d; font-size: 0.9em;">Para eliminar el encabezado, deje vacía la descripción de la actividad y presione guardar.</span><br>';
         }
 
-        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'mensaje_descripcion' ))->render();
+        $usar_encabezados_por_anio = $this->encabezadosCalificacionService->usarEncabezadosPorAnio();
+
+        return View::make('calificaciones.encabezados_estandar.formulario', compact( 'fecha', 'descripcion', 'opcion', 'id_encabezado_calificacion', 'creado_por', 'modificado_por', 'peso', 'label', 'titulo', 'mensaje_descripcion', 'usar_encabezados_por_anio' ))->render();
     }
 
     /**
@@ -78,14 +91,19 @@ class EncabezadoCalificacionController extends Controller
     public function store(Request $request)
     {
         $cerrar_modal = "true";
+        $scope = $this->encabezadosCalificacionService->getAtributosDePersistencia(
+            (int)$request->anio,
+            (int)$request->periodo_id,
+            (int)$request->curso_id,
+            (int)$request->asignatura_id
+        );
 
-        $encabezados = EncabezadoCalificacion::where([
-                                                        ['curso_id', $request->curso_id],
-                                                        ['asignatura_id', $request->asignatura_id],
-                                                        ['periodo_id', $request->periodo_id],
-                                                        ['peso', '>', 0 ]
-                                                    ])
-                                                ->get();
+        $encabezados = $this->encabezadosCalificacionService->getQuery(
+            (int)$scope['anio'],
+            (int)$request->periodo_id,
+            (int)$request->curso_id,
+            (int)$request->asignatura_id
+        )->where('peso', '>', 0)->get();
 
         $sumaPesos = 0;
         
@@ -95,7 +113,32 @@ class EncabezadoCalificacionController extends Controller
         }
 
         $data =  $request->all();
+        $data = array_merge($data, $scope);
         $data['descripcion'] = trim( $request->descripcion );
+
+        if ($this->encabezadosCalificacionService->soportaLabelYTitulo()) {
+            $data['label'] = trim((string)$request->label) === '' ? null : trim((string)$request->label);
+            $data['titulo'] = trim((string)$request->titulo) === '' ? null : trim((string)$request->titulo);
+        } else {
+            unset($data['label']);
+            unset($data['titulo']);
+        }
+
+        $duplicate = $this->encabezadosCalificacionService->getQuery(
+            (int)$scope['anio'],
+            (int)$request->periodo_id,
+            (int)$request->curso_id,
+            (int)$request->asignatura_id
+        )
+            ->where('columna_calificacion', $request->columna_calificacion)
+            ->when((int)$request->id_encabezado_calificacion > 0, function ($query) use ($request) {
+                $query->where('id', '<>', (int)$request->id_encabezado_calificacion);
+            })
+            ->exists();
+
+        if ($duplicate) {
+            return "duplicado";
+        }
 
         switch ( $request->id_encabezado_calificacion )
         {
@@ -146,11 +189,19 @@ class EncabezadoCalificacionController extends Controller
     public function verificarUnicidad(Request $request)
     {
         $idExcluido = (int) $request->input('id_encabezado_calificacion', 0);
+        $scope = $this->encabezadosCalificacionService->getAtributosDePersistencia(
+            (int)$request->input('anio'),
+            (int)$request->input('periodo_id'),
+            (int)$request->input('curso_id'),
+            (int)$request->input('asignatura_id')
+        );
 
-        $query = EncabezadoCalificacion::where('columna_calificacion', $request->input('columna_calificacion'))
-            ->where('periodo_id', $request->input('periodo_id'))
-            ->where('curso_id', $request->input('curso_id'))
-            ->where('asignatura_id', $request->input('asignatura_id'));
+        $query = $this->encabezadosCalificacionService->getQuery(
+            (int)$scope['anio'],
+            (int)$request->input('periodo_id'),
+            (int)$request->input('curso_id'),
+            (int)$request->input('asignatura_id')
+        )->where('columna_calificacion', $request->input('columna_calificacion'));
 
         if ($idExcluido > 0) {
             $query->where('id', '<>', $idExcluido);
