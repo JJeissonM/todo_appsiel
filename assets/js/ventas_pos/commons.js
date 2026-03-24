@@ -37,9 +37,12 @@ function validar_fecha_diferente() {
 /**
  * 
  */
-document.getElementById("btn_pruebas").addEventListener("click", function(event){
-  event.preventDefault()
-});
+var btnPruebas = document.getElementById("btn_pruebas");
+if (btnPruebas) {
+  btnPruebas.addEventListener("click", function(event){
+    event.preventDefault();
+  });
+}
 document.addEventListener("DOMContentLoaded", function(){
   inicializar_contexto_pos_multitab();
 });
@@ -403,6 +406,9 @@ function get_text_from_select_for_value( value )
 {
   let texto_motivo = '';
   let a = document.getElementById("teso_motivo_id");
+  if (!a) {
+    return texto_motivo;
+  }
   for (let i = 0; i < a.length; i++) {
       let option = a.options[i];
       if (option.value == value) {
@@ -1808,7 +1814,10 @@ $(document).ready(function () {
     $.get(url, function (respuesta) {
       $("#div_spin2").hide();
       $("#contenido_modal2").html(respuesta);
-      document.getElementById("mySearchInput").focus();
+      var mySearchInput = document.getElementById("mySearchInput");
+      if (mySearchInput) {
+        mySearchInput.focus();
+      }
       
     }); /**/
   });

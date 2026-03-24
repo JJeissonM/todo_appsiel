@@ -172,9 +172,9 @@ class FormBuilder
         return input;
     }
 
-    FechaInput()
+    FechaInput( field )
     {
-        return '<div class="form-group"> <label class="control-label col-sm-3" for="' + field.name + '">' + field.descripcion + ':</label> <div class="col-sm-9"><input type="date" id="' + field.name + '" name="' + field.name + '" value="' + field.value + '" class="form-control"' + (( field.requerido == 1 ) ? ' required="required"' : '') + '> </div> </div>';
+        return '<div class="form-group"> <label class="control-label col-sm-3" for="' + field.name + '">' + field.descripcion + ':</label> <div class="col-sm-9"><input type="date" id="' + field.name + '" name="' + field.name + '" value="' + this.get_value( field ) + '" class="form-control"' + (( field.requerido == 1 ) ? ' required="required"' : '') + '> </div> </div>';
     }
 
     get_value( field )
