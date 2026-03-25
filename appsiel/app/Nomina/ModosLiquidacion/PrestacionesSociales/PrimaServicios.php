@@ -164,12 +164,12 @@ class PrimaServicios implements Estrategia
             
             case 'promedio_agrupacion':
 
-                $valor_acumulado_agrupacion_variables = PrestacionSocial::get_valor_acumulado_agrupacion_entre_meses_conceptos_no_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_promedios );
-
-                $fecha_inicial = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
-                $valor_acumulado_agrupacion_salario = $this->get_valor_acumulado_agrupacion_entre_meses_conceptos_solo_salario( $empleado, $parametros_prestacion->nom_agrupacion_id, $fecha_inicial, $this->fecha_final_liquidacion );
-
-                $valor_acumulado_agrupacion = $valor_acumulado_agrupacion_salario + $valor_acumulado_agrupacion_variables;                
+                $valor_acumulado_agrupacion = PrestacionSocial::get_valor_acumulado_agrupacion_entre_meses(
+                    $empleado,
+                    $parametros_prestacion->nom_agrupacion_id,
+                    $fecha_inicial,
+                    $this->fecha_final_promedios
+                );
 
                 if ( $cantidad_dias != 0 )
                 {

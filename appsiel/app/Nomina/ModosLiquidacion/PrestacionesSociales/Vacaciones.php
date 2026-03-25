@@ -23,6 +23,8 @@ class Vacaciones implements Estrategia
     protected $historial_vacaciones;
     protected $tabla_resumen = [];
     protected $novedad_id;
+    protected $fecha_final_promedios;
+    protected $fecha_final_liquidacion;
 
     /*
         ** Hay vacaciones Compensadas y Disfrutadas
@@ -60,10 +62,13 @@ class Vacaciones implements Estrategia
                                                     ->orderBy('periodo_pagado_hasta')
                                                     ->get();
 
+        $this->fecha_final_promedios = $liquidacion['fecha_final_promedios'];
+        $this->fecha_final_liquidacion = $liquidacion['fecha_final_liquidacion'];
+
         $dias_pendientes = $this->get_dias_pendientes( $liquidacion['empleado'], $liquidacion['documento_nomina'], $parametros_prestacion );
         $this->tabla_resumen['dias_pendientes'] = $dias_pendientes;
 
-        $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $liquidacion['documento_nomina']->fecha, $liquidacion['documento_nomina']->tipo_liquidacion, $parametros_prestacion );
+        $valor_base_diaria =  $this->get_valor_base_diaria( $liquidacion['empleado'], $this->get_fecha_final_promedios( $liquidacion['documento_nomina'] ), $liquidacion['documento_nomina']->tipo_liquidacion, $parametros_prestacion );
 
         $this->tabla_resumen['valor_base_diaria'] = $valor_base_diaria;
 
@@ -320,9 +325,11 @@ class Vacaciones implements Estrategia
             $dias_pagados_vacaciones = 0;
         }
 
-        $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $empleado->fecha_ingreso, $documento_nomina->fecha );
+        $fecha_final_causacion = $this->get_fecha_final_causacion( $documento_nomina );
 
-        $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $documento_nomina->fecha );
+        $dias_totales_laborados = PrestacionSocial::get_dias_reales_laborados( $empleado, $empleado->fecha_ingreso, $fecha_final_causacion );
+
+        $dias_calendario_laborados = PrestacionSocial::calcular_dias_laborados_calendario_30_dias( $empleado->fecha_ingreso, $fecha_final_causacion );
         
         // 22 = Profesor de establecimiento particular
         if ( $empleado->tipo_cotizante == 22) {
@@ -345,15 +352,15 @@ class Vacaciones implements Estrategia
         $dias_pendientes = $dias_totales_vacaciones - $dias_pagados_vacaciones;
 
         $this->tabla_resumen['fecha_ingreso'] = $empleado->fecha_ingreso;
-        $this->tabla_resumen['fecha_liquidacion'] = $documento_nomina->fecha;
+        $this->tabla_resumen['fecha_liquidacion'] = $fecha_final_causacion;
         $this->tabla_resumen['dias_totales_laborados'] = $dias_totales_laborados;
         $this->tabla_resumen['dias_totales_no_laborados'] = $dias_totales_no_laborados;
         $this->tabla_resumen['dias_totales_vacaciones'] = $dias_totales_vacaciones;
         $this->tabla_resumen['dias_pagados_vacaciones'] = $dias_pagados_vacaciones;
         $this->tabla_resumen['dias_pendientes'] = $dias_pendientes;
 
-        $this->tabla_resumen['fecha_inicial_disfrute'] = $documento_nomina->fecha;
-        $this->tabla_resumen['fecha_final_disfrute'] = $documento_nomina->fecha;
+        $this->tabla_resumen['fecha_inicial_disfrute'] = $fecha_final_causacion;
+        $this->tabla_resumen['fecha_final_disfrute'] = $fecha_final_causacion;
 
         $this->tabla_resumen['dias_habiles'] = $dias_pendientes;
         $this->tabla_resumen['dias_no_habiles'] = 0;
@@ -375,7 +382,7 @@ class Vacaciones implements Estrategia
 
         if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' )
         {
-            $periodo_pagado_hasta = $documento_nomina->fecha;
+            $periodo_pagado_hasta = $this->get_fecha_final_causacion( $documento_nomina );
         }else{
             // 15 días de vacaciones por cada 360 días del año
             // 24.35 días calendario por cada 1 día de vacaciones
@@ -385,6 +392,26 @@ class Vacaciones implements Estrategia
 
         $this->tabla_resumen['periodo_pagado_desde'] = $periodo_pagado_desde;
         $this->tabla_resumen['periodo_pagado_hasta'] = $periodo_pagado_hasta;
+    }
+
+    protected function get_fecha_final_promedios( $documento_nomina )
+    {
+        if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' && !empty($this->fecha_final_promedios) )
+        {
+            return $this->fecha_final_promedios;
+        }
+
+        return $documento_nomina->fecha;
+    }
+
+    protected function get_fecha_final_causacion( $documento_nomina )
+    {
+        if ( $documento_nomina->tipo_liquidacion == 'terminacion_contrato' && !empty($this->fecha_final_liquidacion) )
+        {
+            return $this->fecha_final_liquidacion;
+        }
+
+        return $documento_nomina->fecha;
     }
 
     public function actualizar_libro_vacaciones( $empleado, $documento_nomina, $libro_vacaciones )

@@ -50,16 +50,10 @@ class PrestacionSocial
             if ( $suma == 0 )
             {
                 $cantidad_horas_laboradas += $registro->cantidad_horas;
-            }            
+            }
         }
 
-        $array_fecha_final = explode('-', $fecha_final);
-        $dias_adicionales = 0;
-        if ( $array_fecha_final[1] == '02' && $array_fecha_final[2] == 28) {
-            $dias_adicionales = 2; // Se completan los treinta días
-        }
-
-        $dias_totales_laborados = ( $dias_calendario - $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral') ) + $dias_adicionales;
+        $dias_totales_laborados = $dias_calendario - $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral');
 
         return $dias_totales_laborados;
     }
@@ -69,15 +63,46 @@ class PrestacionSocial
         $vec_fecha_inicial = explode("-", $fecha_inicial);
         $vec_fecha_final = explode("-", $fecha_final);
 
+        $dia_inicial = self::normalizar_dia_calendario_30_dias(
+            (int)$vec_fecha_inicial[0],
+            (int)$vec_fecha_inicial[1],
+            (int)$vec_fecha_inicial[2]
+        );
+
+        $dia_final = self::normalizar_dia_calendario_30_dias(
+            (int)$vec_fecha_final[0],
+            (int)$vec_fecha_final[1],
+            (int)$vec_fecha_final[2]
+        );
+
         // Días iniciales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
-        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + (int)$vec_fecha_inicial[2];
+        $dias_iniciales = ( (int)$vec_fecha_inicial[0] * 360 ) + ( ( (int)$vec_fecha_inicial[1] - 1 ) * 30) + $dia_inicial;
 
         // Días finales = (Año ingreso x 360) + ((Mes ingreso-1) x 30) + días ingreso
-        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + (int)$vec_fecha_final[2];
+        $dias_finales = ( (int)$vec_fecha_final[0] * 360 ) + ( ( (int)$vec_fecha_final[1] - 1 ) * 30) + $dia_final;
 
         $dias_totales_laborados = ($dias_finales - $dias_iniciales) + 1;
 
         return $dias_totales_laborados;
+    }
+
+    protected static function normalizar_dia_calendario_30_dias( int $anio, int $mes, int $dia )
+    {
+        if ( $dia == 31 )
+        {
+            return 30;
+        }
+
+        if ( $mes == 2 )
+        {
+            $fecha = Carbon::createFromDate($anio, $mes, $dia);
+            if ( $fecha->isLastOfMonth() )
+            {
+                return 30;
+            }
+        }
+
+        return $dia;
     }
 
 

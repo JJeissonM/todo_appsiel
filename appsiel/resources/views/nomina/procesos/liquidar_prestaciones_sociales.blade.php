@@ -50,7 +50,7 @@
 							</div>
 
 							<div class="row" style="padding:5px;">
-								<label class="control-label col-sm-4" > <b> *Fecha final para promedios de acumulados: </b> </label>
+								<label class="control-label col-sm-4" > <b> *Fecha final acumular valores: </b> </label>
 
 								<div class="col-sm-8">
 									{{ Form::date( 'fecha_final_promedios',null, [ 'class' => 'form-control', 'id' => 'fecha_final_promedios' ]) }}
@@ -58,7 +58,7 @@
 							</div>
 
 							<div class="row" style="padding:5px;">
-								<label class="control-label col-sm-4" > <b> *Fecha final para promedios de liquidación: </b> </label>
+								<label class="control-label col-sm-4" > <b> *Fecha final para pagar liquidación: </b> </label>
 
 								<div class="col-sm-8">
 									{{ Form::date( 'fecha_final_liquidacion',null, [ 'class' => 'form-control', 'id' => 'fecha_final_liquidacion' ]) }}
