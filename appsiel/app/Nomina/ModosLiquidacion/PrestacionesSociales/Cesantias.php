@@ -114,7 +114,8 @@ class Cesantias implements Estrategia
 
         $nom_agrupacion_id = $parametros_prestacion->nom_agrupacion_id;
 
-        $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final );
+        $fecha_inicial_liquidacion = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
+        $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial_liquidacion, $this->fecha_final_liquidacion );
 
         $this->tabla_resumen['cantidad_dias'] = $cantidad_dias;
 

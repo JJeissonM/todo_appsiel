@@ -111,7 +111,8 @@ class InteresesCesantias implements Estrategia
         $this->tabla_resumen['fecha_inicial_promedios'] = $fecha_inicial;
         $this->tabla_resumen['fecha_final_promedios'] = $fecha_final;
 
-        $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial, $fecha_final );
+        $fecha_inicial_liquidacion = $parametros_prestacion->get_fecha_inicial_promedios( $this->fecha_final_liquidacion, $empleado );
+        $cantidad_dias = PrestacionSocial::get_dias_reales_laborados( $empleado, $fecha_inicial_liquidacion, $this->fecha_final_liquidacion );
 
         $this->tabla_resumen['dias_reales_laborados'] = $cantidad_dias;
 
