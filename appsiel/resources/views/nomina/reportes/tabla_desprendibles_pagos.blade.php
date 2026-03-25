@@ -82,8 +82,7 @@
                         $total_devengos += $registro->valor_devengo;
                         $total_deducciones += $registro->valor_deduccion;
 
-                        // 7: Tiempo NO Laborado, 1: tiempo laborado
-                        if ( in_array( $modo_liquidacion_id, [1,7] ) ) {
+                        if ( $registro->cantidad_horas != 0 ) {
                             $total_horas += $registro->cantidad_horas;
                         }
                     ?>
@@ -95,7 +94,7 @@
 
                 <tr>
                     <td>Totales</td>
-                    <td style="text-align: center;"><hr> {{ $total_horas }} </td>
+                    <td style="text-align: center;"><hr> {{ number_format( $total_horas, 2, ',', '.') }} </td>
                     <td><hr> {{ Form::TextoMoneda($total_devengos) }} </td>
                     <td><hr> {{ Form::TextoMoneda($total_deducciones) }} </td>
                 </tr>
