@@ -422,6 +422,10 @@ class PedidoRestauranteController extends TransaccionController
         $cliente = $doc_encabezado->cliente->tercero ?? null;
 
         return [
+            'core_empresa_id' => (int) $doc_encabezado->core_empresa_id,
+            'core_tipo_transaccion_id' => (int) $doc_encabezado->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => (int) $doc_encabezado->core_tipo_doc_app_id,
+            'consecutivo' => (int) $doc_encabezado->consecutivo,
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
             'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo,
             'doc_encabezado_fecha' => $doc_encabezado->fecha,

@@ -31,7 +31,7 @@ class SellerUser extends User
     {
         $opciones = UserHasRole::leftJoin('users', 'users.id', '=', 'user_has_roles.user_id')
                                 ->leftJoin('roles', 'roles.id', '=', 'user_has_roles.role_id')
-                                ->where(['roles.name'=>'Vendedor'])
+                                ->whereIn('roles.name',['Vendedor','Mesero'])
                                 ->select('roles.name','users.name AS descripcion','users.id')
                                 ->get();
 
