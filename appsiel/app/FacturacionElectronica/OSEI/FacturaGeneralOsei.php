@@ -76,6 +76,28 @@ class FacturaGeneralOsei
         return '""';
     }
 
+    protected function decodeErrorResponseBody($responseBody)
+    {
+        $decodedBody = json_decode($responseBody, true);
+        $errorMessage = '';
+
+        if (is_array($decodedBody)) {
+            if (!empty($decodedBody['message'])) {
+                $errorMessage = $decodedBody['message'];
+            } elseif (!empty($decodedBody['error'])) {
+                $errorMessage = $decodedBody['error'];
+            } elseif (!empty($decodedBody['errors'])) {
+                $errorMessage = is_array($decodedBody['errors']) ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['errors'];
+            } else {
+                $errorMessage = json_encode($decodedBody, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            }
+        } else {
+            $errorMessage = trim($responseBody);
+        }
+
+        return $errorMessage;
+    }
+
     public function procesar_envio_factura($factura_doc_encabezado)
     {
         $auth_token = config('facturacion_electronica.tokenEmpresa');
@@ -170,22 +192,7 @@ class FacturaGeneralOsei
             $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
             Log::warning('Error 4xx de OSEI al enviar documento. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
 
-            $decodedBody = json_decode($responseBody, true);
-            $errorMessage = '';
-
-            if (is_array($decodedBody)) {
-                if (!empty($decodedBody['message'])) {
-                    $errorMessage = $decodedBody['message'];
-                } elseif (!empty($decodedBody['error'])) {
-                    $errorMessage = $decodedBody['error'];
-                } elseif (!empty($decodedBody['errors'])) {
-                    $errorMessage = is_array($decodedBody['errors']) ? json_encode($decodedBody['errors'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : $decodedBody['errors'];
-                } else {
-                    $errorMessage = json_encode($decodedBody, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-                }
-            } else {
-                $errorMessage = trim($responseBody);
-            }
+            $errorMessage = $this->decodeErrorResponseBody($responseBody);
 
             if ($errorMessage === '') {
                 $errorMessage = 'HTTP ' . $statusCode . ' sin detalle retornado por OSEI.';
@@ -196,9 +203,18 @@ class FacturaGeneralOsei
                 'contenido' => 'Error de Empresa: ' . $errorMessage
             ];
         } catch (\GuzzleHttp\Exception\ServerException $e) {
+            $statusCode = $e->getResponse() ? $e->getResponse()->getStatusCode() : null;
+            $responseBody = $e->getResponse() ? (string) $e->getResponse()->getBody() : 'No response body';
+            Log::error('Error 5xx de OSEI al enviar documento. HTTP ' . $statusCode . '. Respuesta: ' . $responseBody);
+
+            $errorMessage = $this->decodeErrorResponseBody($responseBody);
+            if ($errorMessage === '') {
+                $errorMessage = 'HTTP ' . $statusCode . ' sin detalle retornado por OSEI.';
+            }
+
             return (object)[
                 'tipo' => 'mensaje_error',
-                'contenido' => 'Error de servidor: Este es un error de conexion, intente nuevamente.'
+                'contenido' => 'Error de servidor OSEI: ' . $errorMessage
             ];
         } catch (\GuzzleHttp\Exception\RequestException $e) {
             return (object)[
@@ -359,10 +375,17 @@ class FacturaGeneralOsei
 
         $currency = 'COP';
         $resolucionFactura = $this->doc_encabezado->resolucion_facturacion();
-        $start_date = date_format(date_create($resolucionFactura->fecha_expedicion), 'd/m/Y');
-        $end_date = date_format(date_create($resolucionFactura->fecha_expiracion), 'd/m/Y');
-        $from = $resolucionFactura->numero_fact_inicial;
-        $to = $resolucionFactura->numero_fact_final;
+        $start_date = '';
+        $end_date = '';
+        $from = 0;
+        $to = 0;
+
+        if ($resolucionFactura != null) {
+            $start_date = date_format(date_create($resolucionFactura->fecha_expedicion), 'd/m/Y');
+            $end_date = date_format(date_create($resolucionFactura->fecha_expiracion), 'd/m/Y');
+            $from = $resolucionFactura->numero_fact_inicial;
+            $to = $resolucionFactura->numero_fact_final;
+        }
 
         return '"env": ' . $this->jsonString($this->env) . ',"authorization_token": ' . $this->jsonString($auth_token) . ',"number":' . $this->doc_encabezado->consecutivo . ',"issue_date": ' . $this->jsonString(date_format(date_create($this->doc_encabezado->fecha), 'd/m/Y')) . ',"payment_date": ' . $this->jsonString(date_format(date_create($fecha_vencimiento), 'd/m/Y')) . ',"invoice_type_code": ' . $this->jsonString($this->invoice_type_code) . ',"payment_means_type": ' . $this->jsonString($payment_means_type) . ',"payment_means": ' . $this->jsonString($payment_means) . ',"currency":' . $this->jsonString($currency) . ',"resolution":{"number":' . $this->jsonString($resolucion->numero_resolucion) . ',"prefix":' . $this->jsonString($resolucion->prefijo) . ',"flexible":' . $this->jsonString($flexible) . ',"start_date": ' . $this->jsonString($start_date) . ',"end_date": ' . $this->jsonString($end_date) . ',"from": ' . $from . ',"to": ' . $to . '},"anotation":' . $this->jsonString($notes2) . ', "customer": ' . $this->get_datos_cliente();
     }
