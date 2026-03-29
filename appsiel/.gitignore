@@ -3,6 +3,7 @@
 /node_modules
 /public/storage
 /storage/logs/laravel.log
+/storage/fonts
 ../img
 Homestead.yaml
 Homestead.json

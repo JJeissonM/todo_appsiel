@@ -44,7 +44,15 @@
 
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
-							&nbsp;
+							<?php 
+								$usar_modal_botones_medios_pago = '';
+								if( isset($parametros['usar_modal_botones_medios_pago'] ) )
+								{
+									$usar_modal_botones_medios_pago = $parametros['usar_modal_botones_medios_pago'];
+								}else{
+								}
+							?>
+							{{ Form::bsSelect('usar_modal_botones_medios_pago', $usar_modal_botones_medios_pago, 'Usar modal para botones de medios de pago', [ ''=>'', '1' => 'Si', '0' => 'No' ], ['class'=>'form-control', 'required'=>'required']) }}
 						</div>
 					</div>
 

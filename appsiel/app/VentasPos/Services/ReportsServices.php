@@ -2,6 +2,7 @@
 
 namespace App\VentasPos\Services;
 
+use App\User;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMovimiento;
@@ -452,7 +453,13 @@ class ReportsServices
                             ->where('teso_caja_id', 0);
 
         if ( !is_null($creado_por) ) {
-            $query->where('creado_por', $creado_por);
+            $user = User::where('email', $creado_por)->first();
+
+            if ( !is_null($user) ) {
+                $query = TesoMovimiento::aplicarFiltroCreadoPorUsuarioSeleccionado($query, $user, 'creado_por');
+            } else {
+                $query->where('creado_por', $creado_por);
+            }
         }
 
         return $query->orderBy('valor_movimiento','DESC')

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\VentasPos;
 
-use App\Http\Controllers\Tesoreria\RecaudoController;
 use App\Http\Requests\VentasPos\StoreFacturaPosRequest;
 use App\Http\Requests\VentasPos\UpdateFacturaPosRequest;
 use Illuminate\Http\Request;
@@ -63,7 +62,6 @@ use App\Tesoreria\TesoMovimiento;
 use App\Tesoreria\TesoMotivo;
 
 use App\Sistema\Services\ModeloService;
-use App\Tesoreria\TesoCuentaBancaria;
 use App\Ventas\Services\CxCServices;
 use App\Ventas\Services\PrintServices;
 use App\VentasPos\Services\AccountingServices;
@@ -74,6 +72,7 @@ use App\VentasPos\Services\RecipeServices;
 use App\VentasPos\Services\TipService;
 use App\VentasPos\Services\FacturaPosService;
 use App\VentasPos\Services\InvoicingService;
+use App\VentasPos\Services\PosPaymentModalService;
 use App\VentasPos\Services\TreasuryService;
 
 class FacturaPosController extends TransaccionController
@@ -161,11 +160,13 @@ class FacturaPosController extends TransaccionController
 
         $id_transaccion = 8; // 8 = Recaudo cartera
         $motivos =  $factura_pos_service->get_motivos_tesoreria();
-        $medios_recaudo = RecaudoController::get_medios_recaudo();
-
-        $cajas = TesoCaja::opciones_campo_select();
-        
-        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
+        $payment_modal_service = new PosPaymentModalService();
+        $payment_modal_data = $payment_modal_service->buildData();
+        $medios_recaudo = $payment_modal_data['medios_recaudo'];
+        $cajas = $payment_modal_data['cajas'];
+        $cuentas_bancarias = $payment_modal_data['cuentas_bancarias'];
+        $usar_modal_botones_medios_pago = $payment_modal_data['usar_modal_botones'];
+        $modal_botones_medios_pago_data = $payment_modal_data['modal_botones_data'];
 
         $miga_pan = [
                   [ 
@@ -233,7 +234,7 @@ class FacturaPosController extends TransaccionController
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla_dibujada', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'valor_ajuste_al_peso', 'valor_total_cambio', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'tabla_dibujada', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'valor_ajuste_al_peso', 'valor_total_cambio', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion','msj_resolucion_facturacion', 'pdv_descripcion','tipo_doc_app', 'valor_sub_total_factura' , 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago', 'resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas', 'usar_modal_botones_medios_pago', 'modal_botones_medios_pago_data'));
     }
 
     /**
@@ -610,11 +611,13 @@ class FacturaPosController extends TransaccionController
 
         $id_transaccion = 8; // 8 = Recaudo cartera
         $motivos =  $factura_pos_service->get_motivos_tesoreria();
-        $medios_recaudo = RecaudoController::get_medios_recaudo();
-
-        $cajas = TesoCaja::opciones_campo_select();
-
-        $cuentas_bancarias = TesoCuentaBancaria::opciones_campo_select();
+        $payment_modal_service = new PosPaymentModalService();
+        $payment_modal_data = $payment_modal_service->buildData();
+        $medios_recaudo = $payment_modal_data['medios_recaudo'];
+        $cajas = $payment_modal_data['cajas'];
+        $cuentas_bancarias = $payment_modal_data['cuentas_bancarias'];
+        $usar_modal_botones_medios_pago = $payment_modal_data['usar_modal_botones'];
+        $modal_botones_medios_pago_data = $payment_modal_data['modal_botones_data'];
 
         $numero_linea = count($factura->lineas_registros) + 1;
 
@@ -625,7 +628,7 @@ class FacturaPosController extends TransaccionController
             $cuerpo_tabla_medios_recaudos = $this->armar_cuerpo_tabla_medios_recaudos($factura);
         }
 
-        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos'))->render();
+        $vista_medios_recaudo = View::make('tesoreria.incluir.medios_recaudos', compact('id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cuerpo_tabla_medios_recaudos', 'usar_modal_botones_medios_pago', 'modal_botones_medios_pago_data'))->render();
         
         $total_efectivo_recibido = $factura->total_efectivo_recibido;
         $valor_ajuste_al_peso = $factura->valor_ajuste_al_peso;
@@ -685,7 +688,7 @@ class FacturaPosController extends TransaccionController
 
         $precio_bolsa = $factura_pos_service->get_precio_bolsa($pdv->cliente->lista_precios_id);
 
-        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla_dibujada', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas'));
+        return view('ventas_pos.crud_factura', compact('form_create', 'miga_pan', 'factura', 'archivo_js', 'url_action', 'pdv', 'inv_motivo_id', 'tabla_dibujada', 'productos', 'contenido_modal', 'plantilla_factura', 'redondear_centena', 'numero_linea', 'lineas_registros', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias', 'vista_medios_recaudo', 'total_efectivo_recibido','valor_ajuste_al_peso','valor_total_cambio','vista_categorias_productos','cliente', 'pedido_id', 'valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'vendedores','vendedor','fecha','fecha_vencimiento', 'params_JSPrintManager','resolucion', 'msj_resolucion_facturacion', 'valor_sub_total_factura', 'valor_lbl_propina', 'valor_lbl_datafono', 'medios_pago','resolucion_facturacion_electronica', 'precio_bolsa', 'valor_total_bolsas', 'usar_modal_botones_medios_pago', 'modal_botones_medios_pago_data'));
     }
 
     /**
@@ -1662,8 +1665,6 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
-
-
 
 
 

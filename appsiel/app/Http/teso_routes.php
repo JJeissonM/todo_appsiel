@@ -89,6 +89,8 @@ Route::resource('tesoreria/pagos_cxp', 'Tesoreria\PagoCxpController');
 
 // CUENTAS BANCARIAS (SHOW PERSONALIZADO)
 Route::resource('teso_cuentas_bancarias', 'Tesoreria\TesoCuentaBancariaController', ['only' => ['show']]);
+Route::post('teso_medios_recaudo/{teso_medio_recaudo_id}/destinos', 'Tesoreria\TesoMedioRecaudoDestinoController@store');
+Route::delete('teso_medios_recaudo/{teso_medio_recaudo_id}/destinos/{id}', 'Tesoreria\TesoMedioRecaudoDestinoController@destroy');
 
 // CHEQUERAS POR CUENTA
 Route::get('teso_cuentas_bancarias/{teso_cuenta_bancaria_id}/chequeras/create', 'Tesoreria\TesoChequeraController@create');
@@ -145,4 +147,3 @@ Route::get('teso_traslado_efectivo_recontabilizar/{doc_encabezado_id}', 'Tesorer
 Route::get('teso_traslado_efectivo_recontabilizacion_masiva/{fecha_inicial}/{fecha_final}', 'Tesoreria\TrasladoEfectivosController@recontabilizacion_masiva');
 
 Route::get('teso_generar_libretas_de_estudiantes_matriculados', 'Tesoreria\ProcessController@generar_libretas_de_estudiantes_matriculados');
-

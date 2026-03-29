@@ -8,6 +8,8 @@ class TesoMedioRecaudo extends Model
 {
     protected $table = 'teso_medios_recaudo';
 
+    public $vistas = '{"show":"tesoreria.medios_recaudo.show"}';
+
     /*
         comportamiento: { Efectivo | Tarjeta bancaria | Otro }
     */
@@ -69,5 +71,10 @@ class TesoMedioRecaudo extends Model
         }
 
         return $vec;
+    }
+
+    public function destinos()
+    {
+        return $this->hasMany(TesoMedioRecaudoDestino::class, 'teso_medio_recaudo_id');
     }
 }

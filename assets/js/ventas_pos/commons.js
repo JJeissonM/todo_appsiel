@@ -1217,6 +1217,51 @@ $(document).ready(function () {
     validar_fecha_diferente();
   });
 
+  function pos_es_atajo_ctrl_m(event) {
+    var key = (event.key || "").toString().toLowerCase();
+    var code = (event.code || "").toString().toLowerCase();
+    var keyCode = event.which || event.keyCode;
+
+    return (
+      event.ctrlKey &&
+      !event.altKey &&
+      !event.shiftKey &&
+      !event.metaKey &&
+      (key === "m" || code === "keym" || keyCode === 77 || keyCode === 109)
+    );
+  }
+
+  function pos_enviar_foco_a_medios_pago(event) {
+    if (!pos_es_atajo_ctrl_m(event)) {
+      return true;
+    }
+
+    var $elementoActivo = $(document.activeElement);
+    if ($elementoActivo.attr("id") !== "inv_producto_id") {
+      return true;
+    }
+
+    if (!$("#btn_nuevo").is(":visible")) {
+      return true;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    var botonMediosPago = document.getElementById("btn_nuevo");
+    if (botonMediosPago && typeof botonMediosPago.click === "function") {
+      botonMediosPago.click();
+    } else {
+      $("#btn_nuevo").trigger("click");
+    }
+
+    return false;
+  }
+
+  document.addEventListener("keydown", pos_enviar_foco_a_medios_pago, true);
+  $(window).on("keydown", pos_enviar_foco_a_medios_pago);
+  $(document).on("keydown", pos_enviar_foco_a_medios_pago);
+  $("#inv_producto_id").on("keydown", pos_enviar_foco_a_medios_pago);
+
   // Al ingresar código, descripción o código de barras del producto
   $("#inv_producto_id").on("keyup", function (event) {
     $("[data-toggle='tooltip']").tooltip("hide");

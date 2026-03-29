@@ -1,0 +1,56 @@
+services:
+  app:
+    build:
+      context: ./appsiel
+      dockerfile: docker/php/Dockerfile
+    container_name: appsiel_10_app
+    restart: unless-stopped
+    ports:
+      - "8010:80"
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    networks:
+      - appsiel_10_net
+
+  db:
+    image: mysql:5.7
+    container_name: appsiel_10_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: appsiel_10
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: appsiel
+      MYSQL_PASSWORD: appsiel123
+    ports:
+      - "3310:3306"
+    volumes:
+      - appsiel_10_mysql_data:/var/lib/mysql
+      - ./appsiel/database/init:/docker-entrypoint-initdb.d
+      - ./mysql/init:/docker-entrypoint-initdb.d/custom
+    networks:
+      - appsiel_10_net
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: appsiel_10_phpmyadmin
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+      UPLOAD_LIMIT: 256M
+    networks:
+      - appsiel_10_net
+
+volumes:
+  appsiel_10_mysql_data:
+
+networks:
+  appsiel_10_net:

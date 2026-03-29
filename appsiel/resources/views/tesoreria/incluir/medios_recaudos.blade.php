@@ -67,10 +67,13 @@ $datos = [
             </div>
         </div>
 
-        <a id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer;"><i class="fa fa-btn fa-plus"></i> Agregar registro</a>
+        <button type="button" id="btn_nuevo" style="background-color: transparent; color: #3394FF; border: none; cursor: pointer; padding: 0;"><i class="fa fa-btn fa-plus"></i> Agregar registro</button>
     </div>
 
 </div>
 
 <!-- Modal -->
-@include('tesoreria.incluir.ingreso_valores_recaudos')
+@include('tesoreria.incluir.ingreso_valores_recaudos', [
+    'usar_modal_botones_medios_pago' => $usar_modal_botones_medios_pago ?? false,
+    'modal_botones_medios_pago_data' => $modal_botones_medios_pago_data ?? ['medios' => [], 'destinos' => []]
+])

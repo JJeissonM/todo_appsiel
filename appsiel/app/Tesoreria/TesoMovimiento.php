@@ -4,7 +4,6 @@ namespace App\Tesoreria;
 
 use App\Compras\ComprasDocEncabezado;
 use App\Traits\FiltraRegistrosPorUsuario;
-use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Tesoreria\TesoDocEncabezado;
@@ -377,9 +376,9 @@ class TesoMovimiento extends Model
 
         if ( (int)$user_id != 0 )
         {
-            $user = User::where('empresa_id', Auth::user()->empresa_id)->find( (int)$user_id );
+            $user = self::obtenerUsuarioFiltro((int)$user_id, Auth::user()->empresa_id);
             if ( !is_null($user) ) {
-                $query->where('teso_movimientos.creado_por', $user->email);
+                $query = self::aplicarFiltroCreadoPorUsuarioSeleccionado($query, $user, 'teso_movimientos.creado_por');
             }
         }
 
@@ -427,9 +426,9 @@ class TesoMovimiento extends Model
 
         if ( (int)$user_id != 0 )
         {
-            $user = User::where('empresa_id', Auth::user()->empresa_id)->find( (int)$user_id );
+            $user = self::obtenerUsuarioFiltro((int)$user_id, Auth::user()->empresa_id);
             if ( !is_null($user) ) {
-                $query->where('teso_movimientos.creado_por', $user->email);
+                $query = self::aplicarFiltroCreadoPorUsuarioSeleccionado($query, $user, 'teso_movimientos.creado_por');
             }
         }
 

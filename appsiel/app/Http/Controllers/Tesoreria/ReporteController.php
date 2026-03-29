@@ -25,7 +25,6 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
 use App\Inventarios\InvProducto;
-use App\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -1121,10 +1120,10 @@ class ReporteController extends TesoreriaController
             $qDetalle = TesoMovimiento::query()->where($array_wheres)->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
 
             if ( (int)$user_id != 0 ) {
-                $userFiltro = User::where('empresa_id', Auth::user()->empresa_id)->find((int)$user_id);
+                $userFiltro = TesoMovimiento::obtenerUsuarioFiltro((int)$user_id, Auth::user()->empresa_id);
                 if ( !is_null($userFiltro) ) {
-                    $qSaldo->where('teso_movimientos.creado_por', $userFiltro->email);
-                    $qDetalle->where('teso_movimientos.creado_por', $userFiltro->email);
+                    $qSaldo = TesoMovimiento::aplicarFiltroCreadoPorUsuarioSeleccionado($qSaldo, $userFiltro, 'teso_movimientos.creado_por');
+                    $qDetalle = TesoMovimiento::aplicarFiltroCreadoPorUsuarioSeleccionado($qDetalle, $userFiltro, 'teso_movimientos.creado_por');
                 }
             } elseif ( TesoMovimiento::usuario_tiene_restriccion_movimientos() ) {
                 $qSaldo->where('teso_movimientos.creado_por', Auth::user()->email);
@@ -1347,5 +1346,3 @@ class ReporteController extends TesoreriaController
         return $vista;
     }
 }
-
-

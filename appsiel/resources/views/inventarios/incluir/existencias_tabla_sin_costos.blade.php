@@ -1,3 +1,26 @@
+<style>
+    .container_item {
+        position: relative; /* Permite posicionar la imagen flotante de forma absoluta */
+        display: inline-block; /* Asegura que el contenedor se ajuste al tamaño de la imagen */
+    }
+
+    .imagen-flotante img{
+        max-width: 250px;
+        max-height: 380px;
+    }
+
+    .imagen-flotante {
+        position: absolute;
+        top: 100%; /* Muestra la imagen flotante debajo de la base */
+        left: 250px;
+        display: none; /* Oculta la imagen por defecto */
+        z-index: 1; /* Asegura que la imagen flotante esté por encima de otros elementos */
+    }
+
+    .container_item:hover .imagen-flotante {
+        display: block; /* Muestra la imagen flotante al pasar el mouse sobre el contenedor */
+    }
+</style>
 <div class="table-responsive">
     <table class="table table-bordered table-striped" style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%">
         <tr style="background: #ccc; font-weight: bold; text-align: center;">
@@ -25,7 +48,19 @@
                     @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
                         <td> {{ $productos[$i]['referencia'] }} </td>
                     @endif
-	                <td>{{ $productos[$i]['descripcion'] }}</td>
+	                <td>
+                            @if( $productos[$i]['url_imagen'] != '')
+                                    <div class="container_item">
+                                        {{ $productos[$i]['descripcion'] }} <i class="fa fa-image"></i>
+                                        <div class="imagen-flotante">
+                                            <img src="{{ $productos[$i]['url_imagen'] }}" alt="Imagen flotante">
+                                        </div>
+                                    </div>
+                            @else
+                                {{ $productos[$i]['descripcion'] }}
+                            @endif
+                            
+                        </td>
                     <td> {{ $productos[$i]['bodega'] }} </td>
 
                     <td> &nbsp; </td>
@@ -41,7 +76,7 @@
                     $total_costo_total+= $productos[$i]['Costo'];
                 ?>
             @else
-                @if($mostrar_cantidad)
+                @if($mostrar_cantidad && $bodega == 'VARIAS')
                     <tr style="background: #4a4a4a; color: white;">
                         @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
                             <td colspan="4"> &nbsp; </td>

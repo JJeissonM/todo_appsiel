@@ -34,7 +34,7 @@ class AyudaController extends Controller
         $arrayUrl = null;
         if ($total > 0) {
             foreach ($generales as $key => $value) {
-                $arrayUrl[$key] = $value;
+                $arrayUrl[$key] = $this->prepararVideo($value);
             }
             $videos['Generales'] = ['total' => $total,  'urls' => $arrayUrl];
         } else {
@@ -48,7 +48,7 @@ class AyudaController extends Controller
                         $total2 = count($value3['urls']);
                         if ($total2 > 0) {
                             foreach ($value3['urls'] as $label => $url) {
-                                $arrayUrl[$label] = $url;
+                                $arrayUrl[$label] = $this->prepararVideo($url);
                             }
                             $videos[$value2->descripcion] = ['total' => $total2, 'urls' => $arrayUrl];
                         } else {
@@ -93,5 +93,74 @@ class AyudaController extends Controller
         }
         //pdfs---------------------
         return view('ayuda.videos', compact('aplicaciones', 'empresa', 'logo', 'videos','pdfs','miga_pan'));
+    }
+
+    protected function prepararVideo($video)
+    {
+        $video['player_type'] = 'video';
+        $video['player_url'] = $video['url'];
+
+        if ($this->esUrlYoutube($video['url'])) {
+            $video['player_type'] = 'youtube';
+            $video['player_url'] = $this->generarUrlEmbedYoutube($video['url']);
+        }
+
+        return $video;
+    }
+
+    protected function esUrlYoutube($url)
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+
+        if (empty($host)) {
+            return false;
+        }
+
+        $host = strtolower($host);
+
+        return strpos($host, 'youtube.com') !== false || strpos($host, 'youtu.be') !== false;
+    }
+
+    protected function generarUrlEmbedYoutube($url)
+    {
+        $videoId = $this->obtenerIdVideoYoutube($url);
+
+        if (empty($videoId)) {
+            return $url;
+        }
+
+        return 'https://www.youtube.com/embed/' . $videoId . '?rel=0';
+    }
+
+    protected function obtenerIdVideoYoutube($url)
+    {
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        $path = trim((string) parse_url($url, PHP_URL_PATH), '/');
+        $query = parse_url($url, PHP_URL_QUERY);
+
+        if (strpos($host, 'youtu.be') !== false) {
+            return $path;
+        }
+
+        parse_str($query, $queryParams);
+
+        if (!empty($queryParams['v'])) {
+            return $queryParams['v'];
+        }
+
+        $segments = explode('/', $path);
+        $embedIndex = array_search('embed', $segments);
+
+        if ($embedIndex !== false && isset($segments[$embedIndex + 1])) {
+            return $segments[$embedIndex + 1];
+        }
+
+        $shortsIndex = array_search('shorts', $segments);
+
+        if ($shortsIndex !== false && isset($segments[$shortsIndex + 1])) {
+            return $segments[$shortsIndex + 1];
+        }
+
+        return null;
     }
 }

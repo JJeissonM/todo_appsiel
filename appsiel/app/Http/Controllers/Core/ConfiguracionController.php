@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Input;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class ConfiguracionController extends ModeloController
 {
@@ -272,11 +273,26 @@ class ConfiguracionController extends ModeloController
         */
         $data = var_export($array, 1);
 
-        if( File::put( app_path() . '/../config/'.$app->app.'.php', "<?php\n return $data ;") )
+        $ruta_archivo = base_path('config/' . $app->app . '.php');
+        $ruta_directorio = dirname($ruta_archivo);
+
+        if ( !File::exists($ruta_directorio) || !is_writable($ruta_directorio) || ( File::exists($ruta_archivo) && !is_writable($ruta_archivo) ) )
         {
-            return redirect( 'config?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Configuración ACTUALIZADA correctamente.' );
-        }else{
-            echo 'No se guardó el archivo de configuración << '.$app->app.'.php >>. Consultar con el administrador del Sistema.';
+            return redirect( 'config?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )
+                ->with( 'mensaje_error', 'No se pudo guardar la configuración. El archivo o la carpeta no tienen permisos de escritura: ' . $ruta_archivo );
         }
+
+        try {
+            if( File::put( $ruta_archivo, "<?php\n return $data ;") )
+            {
+                return redirect( 'config?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )->with( 'flash_message','Configuración ACTUALIZADA correctamente.' );
+            }
+        } catch (Throwable $e) {
+            return redirect( 'config?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )
+                ->with( 'mensaje_error', 'No se pudo guardar la configuración. Error: ' . $e->getMessage() );
+        }
+
+        return redirect( 'config?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo )
+            ->with( 'mensaje_error', 'No se guardó el archivo de configuración << ' . $app->app . '.php >>. Consultar con el administrador del sistema.' );
     }
 }
