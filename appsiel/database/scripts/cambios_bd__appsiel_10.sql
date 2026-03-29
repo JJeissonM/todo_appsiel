@@ -502,3 +502,6 @@ UPDATE `permissions` SET `modelo_id` = '337' WHERE `name` = 'nomina.turnos.impor
 
 -- 3 marzo 2026
 ALTER TABLE `nom_contratos` CHANGE `horas_laborales` `horas_laborales` DOUBLE NOT NULL DEFAULT '240';
+
+-- 29 marzo
+INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '5', '44', '22');

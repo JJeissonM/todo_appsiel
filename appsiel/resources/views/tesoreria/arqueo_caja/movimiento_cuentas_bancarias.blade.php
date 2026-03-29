@@ -8,7 +8,8 @@
 
 @if( $movimentos_cuentas_bancarias->count() > 0 )
     <div class="row">
-        <table class="table table-bordered">
+        <div class="arqueo-table-wrap">
+        <table class="table table-bordered arqueo-table-sm">
             <thead>
                 <tr>
                     <th colspan="3" style="color: black !important; background-color: #f2f2f2;">
@@ -102,6 +103,7 @@
                 @endforeach
             </tbody>
         </table>
+        </div>
     </div>
     <br>
 @endif

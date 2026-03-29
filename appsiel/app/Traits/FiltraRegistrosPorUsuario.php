@@ -112,4 +112,34 @@ trait FiltraRegistrosPorUsuario
 
         return $query->find((int)$user_id);
     }
+
+    public static function obtenerUsuarioFiltroPorEmail($email, $empresa_id = null)
+    {
+        if (empty($email)) {
+            return null;
+        }
+
+        $query = User::query()->where('email', $email);
+
+        if (!is_null($empresa_id)) {
+            $query->where('empresa_id', $empresa_id);
+        }
+
+        return $query->first();
+    }
+
+    public static function obtenerEmailsFiltroPorEmail($email, $empresa_id = null): array
+    {
+        if (empty($email)) {
+            return [];
+        }
+
+        $user = self::obtenerUsuarioFiltroPorEmail($email, $empresa_id);
+
+        if (is_null($user)) {
+            return [$email];
+        }
+
+        return self::obtenerEmailsFiltroUsuarioSeleccionado($user);
+    }
 }

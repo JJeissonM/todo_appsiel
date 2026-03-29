@@ -63,6 +63,8 @@ class ArqueoCajaController extends ModeloController
         {
             $registro->detalles_mov_salidas = [];
         }
+
+        $registro = $this->recalcular_movimientos_sistema_si_estan_vacios($registro);
         
         // Crear vista
         $view = View::make('tesoreria.arqueo_caja.formatos_impresion.' . $formato_impresion, compact('registro', 'empresa', 'doc_encabezado', 'user'))->render();
@@ -137,6 +139,8 @@ class ArqueoCajaController extends ModeloController
             $registro->detalles_mov_salidas = [];
         }
 
+        $registro = $this->recalcular_movimientos_sistema_si_estan_vacios($registro);
+
         return view('tesoreria.arqueo_caja.show', compact('miga_pan', 'registro', 'url_crear', 'url_edit', 'reg_anterior', 'reg_siguiente', 'botones', 'empresa', 'doc_encabezado', 'user'));
     }
 
@@ -181,6 +185,37 @@ class ArqueoCajaController extends ModeloController
         $registro->monedas_contadas = json_decode($registro->monedas_contadas);
         
         return view('tesoreria.arqueo_caja.edit', compact('form_create', 'miga_pan', 'registro', 'archivo_js', 'url_action'));
+    }
+
+    protected function recalcular_movimientos_sistema_si_estan_vacios($registro)
+    {
+        $sin_detalle_entradas = empty((array)$registro->detalles_mov_entradas);
+        $sin_detalle_salidas = empty((array)$registro->detalles_mov_salidas);
+
+        if ( (float)$registro->total_mov_entradas != 0 || (float)$registro->total_mov_salidas != 0 || !$sin_detalle_entradas || !$sin_detalle_salidas ) {
+            return $registro;
+        }
+
+        $modelo = new ArqueoCaja();
+        $datos = $modelo->get_datos_adicionales([
+            'fecha' => $registro->fecha,
+            'teso_caja_id' => $registro->teso_caja_id,
+            'base' => (float)$registro->base,
+            'total_billetes' => (float)$registro->total_billetes,
+            'total_monedas' => (float)$registro->total_monedas,
+            'otros_saldos' => (float)$registro->otros_saldos,
+            'creado_por' => $registro->creado_por,
+            'sumar_efectivo_base_en_saldo_esperado' => (int)config('ventas_pos.sumar_efectivo_base_en_saldo_esperado')
+        ]);
+
+        $registro->detalles_mov_entradas = json_decode($datos['movimientos_entradas']) ?: [];
+        $registro->total_mov_entradas = $datos['total_mov_entradas'];
+        $registro->detalles_mov_salidas = json_decode($datos['movimientos_salidas']) ?: [];
+        $registro->total_mov_salidas = $datos['total_mov_salidas'];
+        $registro->lbl_total_sistema = $datos['lbl_total_sistema'];
+        $registro->total_saldo = $datos['total_saldo'];
+
+        return $registro;
     }
 
 }

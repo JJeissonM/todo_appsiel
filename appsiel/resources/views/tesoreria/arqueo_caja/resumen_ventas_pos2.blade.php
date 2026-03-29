@@ -2,7 +2,7 @@
 	use App\VentasPos\Services\ReportsServices;
 
     $service = new ReportsServices();
-    $result = $service->resumen_ventas_arqueo_caja($registro->fecha, $registro->teso_caja_id);
+    $result = $service->resumen_ventas_arqueo_caja($registro->fecha, $registro->teso_caja_id, $registro->creado_por);
 
     $total_consignaciones = 0; 
 ?>

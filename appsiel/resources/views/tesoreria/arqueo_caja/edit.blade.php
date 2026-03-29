@@ -7,6 +7,7 @@
     <br>
     
     <div class="container-fluid">
+        <input type="hidden" id="creado_por_arqueo" value="{{ $registro->creado_por }}">
         
         <h4><i class="fa fa-money"></i> Saldo inicial:</h4>
         <input type="number" id="base" min="0" autocomplete="off" class="form-control" name="base" placeholder="$" value="{{$valor_base}}" required="required" style="width: 200px; text-align: right;">
@@ -257,7 +258,8 @@
                     movimiento: 'entrada',
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
-                    teso_caja_id: $('#teso_caja_id').val()
+                    teso_caja_id: $('#teso_caja_id').val(),
+                    creado_por: $('#creado_por_arqueo').val()
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();
@@ -303,7 +305,8 @@
                     movimiento: 'salida',
                     fecha_desde: $('#fecha').val(),
                     fecha_hasta: $('#fecha').val(),
-                    teso_caja_id: $('#teso_caja_id').val()
+                    teso_caja_id: $('#teso_caja_id').val(),
+                    creado_por: $('#creado_por_arqueo').val()
                 })
                     .done(function (respuesta) {
                         $('#div_cargando').hide();

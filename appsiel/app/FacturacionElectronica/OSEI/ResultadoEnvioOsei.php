@@ -89,7 +89,7 @@ class ResultadoEnvioOsei
 
             default:
                 $mensaje->tipo = 'mensaje_error';
-                $mensaje->contenido = '<h3><i class="fa fa-warning"></i> Documento fue enviado a la DIAN. Presenta errores de validación.</h3>';
+                $mensaje->contenido = '<h3><i class="fa fa-warning"></i> Documento NO fue enviado a la DIAN. Presenta errores de validación.</h3>';
                 $mensaje->contenido .= "Código: " . $resultado["status_code"] . "</br>Fecha de Respuesta:  " . $resultado["createdDate"] . "</br>Mensaje Validación:  " . $resultado["status_description"];
                 $mensaje->contenido .= "</br>" . $resultado["reglasNotificacionDIAN"];
                 break;

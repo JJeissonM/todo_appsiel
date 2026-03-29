@@ -256,7 +256,7 @@ class TesoMovimiento extends Model
         return $registros;
     }
 
-    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null)
+    public static function movimiento_por_tipo_motivo($tipo_movimiento, $fecha_inicial, $fecha_final, $teso_caja_id = null, $creado_por = null)
     {
         $operador = '>';
         if( $tipo_movimiento == 'salida' )
@@ -271,17 +271,27 @@ class TesoMovimiento extends Model
             $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
         }
 
-        return TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
+        $query = TesoMovimiento::leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                                 ->whereBetween('teso_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
-                                ->where( $array_wheres )
-                                ->groupBy('teso_movimientos.teso_motivo_id')
-                                ->select(
-                                            'teso_motivos.descripcion as motivo',
-                                            'teso_motivos.movimiento',
-                                            'teso_movimientos.codigo_referencia_tercero',
-                                            DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
-                                        )
-                                ->get();
+                                ->where( $array_wheres );
+
+        if ( !is_null($creado_por) )
+        {
+            $empresa_id = Auth::check() ? Auth::user()->empresa_id : null;
+            $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+            $query->whereIn('teso_movimientos.creado_por', $emails);
+        }else{
+            $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
+        }
+
+        return $query->groupBy('teso_movimientos.teso_motivo_id')
+                    ->select(
+                                'teso_motivos.descripcion as motivo',
+                                'teso_motivos.movimiento',
+                                'teso_movimientos.codigo_referencia_tercero',
+                                DB::raw('sum(teso_movimientos.valor_movimiento) AS valor_movimiento')
+                            )
+                    ->get();
     }
 
     public static function get_suma_movimientos_menor_a_la_fecha($fecha)

@@ -921,7 +921,19 @@ class ReporteController extends TesoreriaController
 
     public function get_tabla_movimiento()
     {
-        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo( Input::get('movimiento'), Input::get('fecha_desde'), Input::get('fecha_hasta'), Input::get('teso_caja_id') )->toArray();
+        $creado_por = Input::get('creado_por');
+
+        if ( empty($creado_por) ) {
+            $creado_por = Auth::user()->email;
+        }
+
+        $movimiento = TesoMovimiento::movimiento_por_tipo_motivo(
+            Input::get('movimiento'),
+            Input::get('fecha_desde'),
+            Input::get('fecha_hasta'),
+            Input::get('teso_caja_id'),
+            $creado_por
+        )->toArray();
 
         $total_valor_movimiento = 0;
         foreach ($movimiento as $linea)

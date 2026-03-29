@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class TesoMedioRecaudo extends Model
 {
     protected $table = 'teso_medios_recaudo';
+    const ESTADO_ACTIVO = 'Activo';
 
     public $vistas = '{"show":"tesoreria.medios_recaudo.show"}';
 
     /*
         comportamiento: { Efectivo | Tarjeta bancaria | Otro }
     */
-    protected $fillable = ['descripcion','comportamiento','por_defecto','maneja_puntos'];
+    protected $fillable = ['descripcion','comportamiento','por_defecto','maneja_puntos','estado'];
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Comportamiento', 'Por defecto', 'Maneja puntos'];
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Descripción', 'Comportamiento', 'Por defecto', 'Maneja puntos', 'Estado'];
 
     public static function consultar_registros($nro_registros, $search)
     {
@@ -24,13 +25,15 @@ class TesoMedioRecaudo extends Model
             'teso_medios_recaudo.comportamiento AS campo2',
             'teso_medios_recaudo.por_defecto AS campo3',
             'teso_medios_recaudo.maneja_puntos AS campo4',
-            'teso_medios_recaudo.id AS campo5'
+            'teso_medios_recaudo.estado AS campo5',
+            'teso_medios_recaudo.id AS campo6'
         )
 
             ->where("teso_medios_recaudo.descripcion", "LIKE", "%$search%")
             ->orWhere("teso_medios_recaudo.comportamiento", "LIKE", "%$search%")
             ->orWhere("teso_medios_recaudo.por_defecto", "LIKE", "%$search%")
             ->orWhere("teso_medios_recaudo.maneja_puntos", "LIKE", "%$search%")
+            ->orWhere("teso_medios_recaudo.estado", "LIKE", "%$search%")
             ->orderBy('teso_medios_recaudo.created_at', 'DESC')
             ->paginate($nro_registros);
 
@@ -43,12 +46,14 @@ class TesoMedioRecaudo extends Model
             'teso_medios_recaudo.descripcion AS DESCRIPCIÓN',
             'teso_medios_recaudo.comportamiento AS COMPORTAMIENTO',
             'teso_medios_recaudo.por_defecto AS POR_DEFECTO',
-            'teso_medios_recaudo.maneja_puntos AS MANEJA_PUNTOS'
+            'teso_medios_recaudo.maneja_puntos AS MANEJA_PUNTOS',
+            'teso_medios_recaudo.estado AS ESTADO'
         )
             ->where("teso_medios_recaudo.descripcion", "LIKE", "%$search%")
             ->orWhere("teso_medios_recaudo.comportamiento", "LIKE", "%$search%")
             ->orWhere("teso_medios_recaudo.por_defecto", "LIKE", "%$search%")
             ->orWhere("teso_medios_recaudo.maneja_puntos", "LIKE", "%$search%")
+            ->orWhere("teso_medios_recaudo.estado", "LIKE", "%$search%")
             ->orderBy('teso_medios_recaudo.created_at', 'DESC')
             ->toSql();
         return str_replace('?', '"%' . $search . '%"', $string);
@@ -62,7 +67,7 @@ class TesoMedioRecaudo extends Model
 
     public static function opciones_campo_select()
     {
-        $opciones = TesoMedioRecaudo::all();
+        $opciones = TesoMedioRecaudo::where('estado', self::ESTADO_ACTIVO)->get();
 
         $vec['']='';
         foreach ($opciones as $opcion)

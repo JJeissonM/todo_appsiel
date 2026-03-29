@@ -530,7 +530,7 @@ class RecaudoController extends TransaccionController
     }
 
     public static function get_medios_recaudo(){
-        $registros = TesoMedioRecaudo::all();  
+        $registros = TesoMedioRecaudo::where('estado', TesoMedioRecaudo::ESTADO_ACTIVO)->get();
         $vec_m['']=''; 
         foreach ($registros as $fila) {
             $vec_m[$fila->id.'-'.$fila->comportamiento]=$fila->descripcion; 

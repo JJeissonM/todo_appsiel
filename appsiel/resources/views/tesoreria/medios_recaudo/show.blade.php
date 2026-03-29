@@ -90,7 +90,7 @@
         <div id="tab_relaciones" class="tab-pane fade">
             <div class="marco_formulario">
                 <div class="container">
-                    <h4>{{ $tab_relaciones_label }} relacionadas</h4>
+                    <h4>{{ $tab_relaciones_label }} relacionadas para "{{ $registro->descripcion }}"</h4>
                     <hr>
 
                     <div class="row" style="margin-bottom: 15px;">

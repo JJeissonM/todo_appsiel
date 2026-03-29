@@ -2,7 +2,6 @@
 
 namespace App\VentasPos\Services;
 
-use App\User;
 use App\Tesoreria\TesoCuentaBancaria;
 use App\Tesoreria\TesoEntidadFinanciera;
 use App\Tesoreria\TesoMovimiento;
@@ -82,7 +81,7 @@ class ReportsServices
         return View::make( 'ventas_pos.formatos_impresion.resumen_diario', compact('data_by_items', 'fecha_desde', 'fecha_hasta', 'ventas_por_medios_pago_con_iva', 'ventas_contado_sin_iva', 'ventas_credito_sin_iva', 'pdv_id', 'movimientos', 'view') )->render();
     }
 
-    public function resumen_ventas_arqueo_caja($fecha, $teso_caja_id)
+    public function resumen_ventas_arqueo_caja($fecha, $teso_caja_id, $creado_por = null)
     {
         $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
 
@@ -97,8 +96,15 @@ class ReportsServices
                                         ['pdv_id','=',$pdv->id],
                                         ['estado', '<>', 'Anulado']
                                     ])
-                                ->whereBetween('fecha', [$fecha, $fecha])
-                                ->get();
+                                ->whereBetween('fecha', [$fecha, $fecha]);
+
+        if ( !is_null($creado_por) ) {
+            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
+            $emails = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+            $documentos_pdv->whereIn('creado_por', $emails);
+        }
+
+        $documentos_pdv = $documentos_pdv->get();
 
         $total_credito = $documentos_pdv->where( 'forma_pago', 'credito' )->sum('valor_total');
                 
@@ -157,7 +163,7 @@ class ReportsServices
     /**
      * 
      */
-    public function resumen_propinas_arqueo_caja($fecha, $teso_caja_id)
+    public function resumen_propinas_arqueo_caja($fecha, $teso_caja_id, $creado_por = null)
     {
         $pdv = Pdv::where('caja_default_id',$teso_caja_id)->get()->first();
 
@@ -172,8 +178,15 @@ class ReportsServices
                                         ['pdv_id','=',$pdv->id],
                                         ['estado', '<>', 'Anulado']
                                     ])
-                                ->whereBetween('fecha', [$fecha, $fecha])
-                                ->get();
+                                ->whereBetween('fecha', [$fecha, $fecha]);
+
+        if ( !is_null($creado_por) ) {
+            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
+            $emails = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+            $documentos_pdv->whereIn('creado_por', $emails);
+        }
+
+        $documentos_pdv = $documentos_pdv->get();
                 
         $movimientos_tesoreria_propinas = $this->get_movimiento_tesoreria_propinas($documentos_pdv, $fecha, $fecha);
         
@@ -453,13 +466,9 @@ class ReportsServices
                             ->where('teso_caja_id', 0);
 
         if ( !is_null($creado_por) ) {
-            $user = User::where('email', $creado_por)->first();
-
-            if ( !is_null($user) ) {
-                $query = TesoMovimiento::aplicarFiltroCreadoPorUsuarioSeleccionado($query, $user, 'creado_por');
-            } else {
-                $query->where('creado_por', $creado_por);
-            }
+            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
+            $emails = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+            $query->whereIn('creado_por', $emails);
         }
 
         return $query->orderBy('valor_movimiento','DESC')

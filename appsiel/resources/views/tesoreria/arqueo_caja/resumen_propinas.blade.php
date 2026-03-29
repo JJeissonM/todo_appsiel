@@ -2,7 +2,7 @@
 	use App\VentasPos\Services\ReportsServices;
 
     $service = new ReportsServices();
-    $result = $service->resumen_propinas_arqueo_caja($registro->fecha, $registro->teso_caja_id);
+    $result = $service->resumen_propinas_arqueo_caja($registro->fecha, $registro->teso_caja_id, $registro->creado_por);
 
     $total_propinas = 0; 
 ?>
@@ -11,7 +11,8 @@
     <!-- SOLO VENTAS POS -->
 
     <div class="row">
-        <table class="table table-bordered">
+        <div class="arqueo-table-wrap">
+        <table class="table table-bordered arqueo-table-sm">
             <thead>
                 <tr>
                     <td colspan="2" style="color: black !important; background-color: #f2f2f2;">
@@ -62,6 +63,7 @@
                 </tr>
             </tbody>
         </table>
+        </div>
     </div>
     <br>
 @else
