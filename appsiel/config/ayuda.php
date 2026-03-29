@@ -353,7 +353,15 @@ return array(
             ],
             '20' => [
                 'app' => 'facturacion_electronica',
-                'urls' => array()
+                'urls' => array(
+                    '0' => array(
+                        'label' => 'Nota Crédito de Ventas',
+                        'preview' => '',
+                        'url' => 'https://www.youtube.com/watch?v=i8go1Icu7uM',
+                        'duracion' => '',
+                        'publicacion' => ''
+                    )
+                )
             ]
         )
     ),
