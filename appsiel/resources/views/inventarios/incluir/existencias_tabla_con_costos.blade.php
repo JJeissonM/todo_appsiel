@@ -21,6 +21,9 @@
         display: block; /* Muestra la imagen flotante al pasar el mouse sobre el contenedor */
     }
 </style>
+@php
+    $cantidad_columnas_izquierda = 2 + (((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1) ? 1 : 0) + ($mostrar_columna_bodega ? 1 : 0);
+@endphp
 <div class="table-responsive">
     <table class="table table-bordered table-striped" style="font-size: 15px; border: 1px solid; border-collapse: collapse;" border="1" width="100%" id="myTable">
 
@@ -30,7 +33,9 @@
                     <td> Ref. </td>
                 @endif
                 <td> Producto </td>
-                <td> Bodega </td>
+                @if($mostrar_columna_bodega)
+                    <td> Bodega </td>
+                @endif
                 <td> Cantidad </td>
                 <td> Costo Prom. </td>
                 <td> Costo Total </td>
@@ -66,15 +71,17 @@
                             @endif
                             
                         </td>
-                        <td> {{ $productos[$i]['bodega'] }} </td>
+                        @if($mostrar_columna_bodega)
+                            <td> {{ $productos[$i]['bodega'] }} </td>
+                        @endif
     	                <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
                         <td>${{ number_format( $productos[$i]['CostoPromedio'], 2, ',', '.') }}</td>
                         <td>${{ number_format( $productos[$i]['Cantidad'] * $productos[$i]['CostoPromedio'], 2, ',', '.') }}</td>
     	            </tr>
                 @else
-                    @if($productos[$i]['Cantidad'] != 0 && $bodega == 'VARIAS')
+                    @if($productos[$i]['Cantidad'] != 0 && $mostrar_columna_bodega)
                         <tr style="background: #4a4a4a; color: white;">
-                            <td colspan="3"> &nbsp; </td>
+                            <td colspan="{{ $cantidad_columnas_izquierda }}"> &nbsp; </td>
                             <td>{{ number_format($productos[$i]['Cantidad'], 2, ',', '.') }} </td>
                             <td>${{ number_format( $productos[$i]['CostoPromedio'], 2, ',', '.') }}</td>
                             <td>${{ number_format( $productos[$i]['Cantidad'] * $productos[$i]['CostoPromedio'], 2, ',', '.') }}</td>
@@ -89,11 +96,7 @@
                 }
             } ?>
             <tr>
-                @if((int)config('inventarios.mostrar_columna_referencia_en_reportes') == 1)
-                    <td colspan="4"> &nbsp; </td>
-                @else
-                    <td colspan="3"> &nbsp; </td>
-                @endif  
+                <td colspan="{{ $cantidad_columnas_izquierda }}"> &nbsp; </td>
                 <td> {{ number_format($total_cantidad, 2, ',', '.') }} </td>
                 <td> &nbsp; </td>
                 <td> {{ number_format($total_costo_total, 2, ',', '.') }} </td>

@@ -1,6 +1,5 @@
 <?php 
     $referencia = '';
-    dd();
 ?>
 <div class="table-responsive">
     <table class="table table-bordered">

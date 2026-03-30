@@ -100,24 +100,76 @@ class ReporteController extends Controller
 
         $cantidad_registros = $movement_serv->cantidad_registros;
 
-        $view = $this->get_vista_inv_movimiento_corte( $productos, $bodega, $request->mostrar_costo, $request->mostrar_cantidad, $request->fecha_corte, $cantidad_registros );
+        $mostrar_columna_bodega = ($request->mov_bodega_id == '');
+        $filtros = $this->get_filtros_reporte_existencias($request);
+
+        $view = $this->get_vista_inv_movimiento_corte( $productos, $bodega, $request->mostrar_costo, $request->mostrar_cantidad, $request->fecha_corte, $cantidad_registros, $mostrar_columna_bodega, $filtros );
 
         Cache::put( 'pdf_reporte_inv_existencias_corte', $view, 720 ); // 720 minutos = 12 horas
         
         return $view;
     }
 
-    public function get_vista_inv_movimiento_corte( $productos, $bodega, $mostrar_costo, $mostrar_cantidad, $fecha_corte, $cantidad_registros )
+    public function get_vista_inv_movimiento_corte( $productos, $bodega, $mostrar_costo, $mostrar_cantidad, $fecha_corte, $cantidad_registros, $mostrar_columna_bodega, $filtros )
     {
-        $view_1 = View::make('inventarios.incluir.existencias_encabezado',compact('bodega','fecha_corte','productos', 'cantidad_registros'));
+        $view_1 = View::make('inventarios.incluir.existencias_encabezado',compact('bodega','fecha_corte','productos', 'cantidad_registros', 'filtros'));
 
         if ( $mostrar_costo ) {            
-            $view_2 = View::make('inventarios.incluir.existencias_tabla_con_costos',compact('bodega','productos'));
+            $view_2 = View::make('inventarios.incluir.existencias_tabla_con_costos',compact('bodega','productos', 'mostrar_columna_bodega'));
         }else{
-            $view_2 = View::make('inventarios.incluir.existencias_tabla_sin_costos',compact('bodega','productos', 'mostrar_cantidad' ));
+            $view_2 = View::make('inventarios.incluir.existencias_tabla_sin_costos',compact('bodega','productos', 'mostrar_cantidad', 'mostrar_columna_bodega' ));
         }
             
         return $view_1.$view_2;
+    }
+
+    protected function get_filtros_reporte_existencias(Request $request)
+    {
+        $filtros = [];
+
+        if ( $request->mov_bodega_id != '' ) {
+            $bodega = InvBodega::find($request->mov_bodega_id);
+            if ( $bodega != null ) {
+                $filtros['Bodega'] = $bodega->descripcion;
+            }
+        }
+
+        if ( $request->grupo_inventario_id != '' ) {
+            $grupo = InvGrupo::find($request->grupo_inventario_id);
+            if ( $grupo != null ) {
+                $filtros['Grupo de inventarios'] = $grupo->descripcion;
+            }
+        }
+
+        if ( $request->prefijo_referencia_id != '' ) {
+            $prefijo = PrefijoReferencia::find($request->prefijo_referencia_id);
+            if ( $prefijo != null ) {
+                $filtros[config('inventarios.etiqueta_prefijo_referencia')] = $prefijo->descripcion;
+            }
+        }
+
+        if ( $request->tipo_prenda_id != '' ) {
+            $tipo_prenda = TipoPrenda::find($request->tipo_prenda_id);
+            if ( $tipo_prenda != null ) {
+                $filtros['Tipo de prenda'] = $tipo_prenda->descripcion;
+            }
+        }
+
+        if ( $request->tipo_material_id != '' ) {
+            $tipo_material = TipoMaterial::find($request->tipo_material_id);
+            if ( $tipo_material != null ) {
+                $filtros['Tipo de material'] = $tipo_material->descripcion;
+            }
+        }
+
+        if ( $request->item_id != '' ) {
+            $item = InvProducto::find($request->item_id);
+            if ( $item != null ) {
+                $filtros['Producto'] = $item->get_value_to_show_interno(true);
+            }
+        }
+
+        return $filtros;
     }
 
     public function get_total_cost_amount_item($movin_filtrado, $inv_bodega_id, $inv_producto_id)
