@@ -3,6 +3,7 @@
 namespace App\Tesoreria;
 
 use App\Compras\ComprasDocEncabezado;
+use App\Tesoreria\Services\PdvResolver;
 use App\Traits\FiltraRegistrosPorUsuario;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,19 +11,35 @@ use App\Tesoreria\TesoDocEncabezado;
 use App\Tesoreria\TesoDocRegistro;
 use App\Ventas\VtasDocEncabezado;
 use App\VentasPos\FacturaPos;
+use App\VentasPos\Pdv;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Schema;
 
 class TesoMovimiento extends Model
 {
     use FiltraRegistrosPorUsuario;
 
-    protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
+    protected $fillable = ['fecha', 'core_empresa_id', 'core_tercero_id', 'core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'teso_medio_recaudo_id', 'teso_motivo_id', 'teso_caja_id', 'teso_cuenta_bancaria_id', 'pdv_id', 'valor_movimiento', 'documento_soporte', 'descripcion', 'estado', 'creado_por', 'modificado_por', 'codigo_referencia_tercero'];
 
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Fecha', 'Documento', 'Caja/Banco', 'Tercero', 'Motivo', 'Valor movimiento', 'Detalle'];
 
     public $vistas = '{"index":"layouts.index3"}';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if ( !Schema::hasColumn($model->getTable(), 'pdv_id') ) {
+                return;
+            }
+
+            $pdv_id = PdvResolver::resolveFromArray($model->getAttributes());
+            $model->pdv_id = $pdv_id;
+        });
+    }
     
     public function tipo_transaccion()
     {
@@ -57,6 +74,11 @@ class TesoMovimiento extends Model
     public function cuenta_bancaria()
     {
         return $this->belongsTo( TesoCuentaBancaria::class,'teso_cuenta_bancaria_id');
+    }
+
+    public function pdv()
+    {
+        return $this->belongsTo(Pdv::class, 'pdv_id');
     }
 
     public function get_label_documento()

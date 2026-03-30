@@ -35,7 +35,9 @@ use App\FacturacionElectronica\NotaCredito;
 
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\FacturacionElectronica\OSEI\FacturaGeneralOsei;
+use App\FacturacionElectronica\Services\DocumentHeaderService;
 use App\Ventas\Services\NotaCreditoServices;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
@@ -234,6 +236,16 @@ class NotaCreditoController extends TransaccionController
     {
         $encabezado_nota_credito = Factura::find( $id );
 
+        $error_message = $this->validar_resolucion_y_tercero($encabezado_nota_credito);
+        if ($error_message != '') {
+            return (object)[
+                'tipo' => 'mensaje_error',
+                'contenido' => $error_message
+            ];
+        }
+
+        $this->sincronizar_fecha_documento_para_envio($encabezado_nota_credito);
+
         switch ( config('facturacion_electronica.proveedor_tecnologico_default') )
         {
             case 'DATAICO':
@@ -269,6 +281,38 @@ class NotaCreditoController extends TransaccionController
         $encabezado_nota_credito->save();
 
         return $mensaje;
+    }
+
+    protected function validar_resolucion_y_tercero(Factura $vtas_doc_encabezado)
+    {
+        $error_message = '';
+
+        $doc_header_service = new DocumentHeaderService();
+        $cliente = $doc_header_service->get_cliente($vtas_doc_encabezado);
+        $result = $doc_header_service->validar_datos_tercero($cliente->tercero);
+
+        if ($result->status == 'error') {
+            $error_message = 'Documento no puede ser enviado. <br> El cliente ' . $cliente->tercero->descripcion . ' presenta inconsistencia en sus datos básicos: ' . $result->message;
+        }
+
+        return $error_message;
+    }
+
+    protected function sincronizar_fecha_documento_para_envio(Factura $encabezado_nota_credito)
+    {
+        $fecha_hoy = Carbon::today()->format('Y-m-d');
+
+        if ($encabezado_nota_credito->fecha != $fecha_hoy) {
+            $encabezado_nota_credito->fecha = $fecha_hoy;
+        }
+
+        if (empty($encabezado_nota_credito->fecha_vencimiento) || explode('-', $encabezado_nota_credito->fecha_vencimiento)[0] == '0000') {
+            $encabezado_nota_credito->fecha_vencimiento = $fecha_hoy;
+        } elseif ($encabezado_nota_credito->fecha_vencimiento < $fecha_hoy) {
+            $encabezado_nota_credito->fecha_vencimiento = $fecha_hoy;
+        }
+
+        $encabezado_nota_credito->save();
     }
 
     public function procesar_envio_factura( $encabezado_nota_credito, $adjuntos = 0 )

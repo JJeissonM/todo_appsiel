@@ -572,12 +572,16 @@ class PagoController extends TransaccionController
            return redirect( 'tesoreria/pagos/' . $doc_encabezado_id . '?id='.Input::get('id').'&id_modelo='.Input::get('id_modelo').'&id_transaccion='.Input::get('id_transaccion') )->with('mensaje_error','Los documentos que tienen MOTIVOS que afectan movimientos de CxP o CxC no pueden ser recontabilizados.');
         }
 
-        $datos = $documento->toArray();
-
         $array_wheres = ['core_empresa_id'=>$documento->core_empresa_id, 
             'core_tipo_transaccion_id' => $documento->core_tipo_transaccion_id,
             'core_tipo_doc_app_id' => $documento->core_tipo_doc_app_id,
             'consecutivo' => $documento->consecutivo];
+
+        $datos = $documento->toArray();
+        $pdv_id = TesoMovimiento::where( $array_wheres )->value('pdv_id');
+        if ( !is_null($pdv_id) ) {
+            $datos['pdv_id'] = $pdv_id;
+        }
 
         TesoMovimiento::where( $array_wheres )->delete(); 
 

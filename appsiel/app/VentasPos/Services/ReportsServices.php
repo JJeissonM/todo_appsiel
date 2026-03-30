@@ -456,23 +456,43 @@ class ReportsServices
     /**
      * 
      */
-    public function get_movimentos_cuentas_bancarias($fecha, $creado_por = null)
+    public function get_movimentos_cuentas_bancarias($fecha, $teso_caja_id, $creado_por = null)
     {
-        $query = TesoMovimiento::where([
-                                ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
-                                ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
-                                ['fecha', '=', $fecha]
-                            ])
-                            ->where('teso_caja_id', 0);
-
-        if ( !is_null($creado_por) ) {
-            $empresa_id = auth()->check() ? auth()->user()->empresa_id : null;
-            $emails = TesoMovimiento::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
-            $query->whereIn('creado_por', $emails);
+        $pdv = Pdv::where('caja_default_id', $teso_caja_id)->first();
+        if ( is_null($pdv) ) {
+            return collect([]);
         }
 
-        return $query->orderBy('valor_movimiento','DESC')
-                    ->get()
+        $documentos_pdv = FacturaPos::where([
+                                    ['pdv_id', '=', $pdv->id],
+                                    ['estado', '<>', 'Anulado']
+                                ])
+                            ->whereBetween('fecha', [$fecha, $fecha])
+                            ->get();
+
+        $movimientos_documentos_pos = collect([]);
+        if ( $documentos_pdv->count() > 0 ) {
+            $movimientos_documentos_pos = $this->get_movimiento_tesoreria_pdv($documentos_pdv)
+                ->filter(function ($movimiento) {
+                    return (int)$movimiento->teso_caja_id === 0 && (int)$movimiento->teso_cuenta_bancaria_id > 0;
+                })
+                ->values();
+        }
+
+        $movimientos_externos_pdv = TesoMovimiento::where([
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_propinas') ],
+                                    ['teso_motivo_id', '<>', (int)config('ventas_pos.motivo_tesoreria_datafono') ],
+                                    ['fecha', '=', $fecha],
+                                    ['teso_caja_id', '=', 0],
+                                    ['teso_cuenta_bancaria_id', '>', 0],
+                                    ['pdv_id', '=', $pdv->id]
+                                ])
+                                ->orderBy('valor_movimiento', 'DESC')
+                                ->get();
+
+        return $movimientos_documentos_pos->merge($movimientos_externos_pdv)
+                    ->unique('id')
+                    ->sortByDesc('valor_movimiento')
                     ->groupBy('teso_cuenta_bancaria_id');
     }
 }

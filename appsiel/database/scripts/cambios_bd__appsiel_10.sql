@@ -505,3 +505,6 @@ ALTER TABLE `nom_contratos` CHANGE `horas_laborales` `horas_laborales` DOUBLE NO
 
 -- 29 marzo
 INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '5', '44', '22');
+
+
+

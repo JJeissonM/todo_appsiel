@@ -76,6 +76,42 @@ class FacturaGeneralOsei
         return '""';
     }
 
+    protected function normalizeDateToDmy($value, $default = '')
+    {
+        if (empty($value)) {
+            return $default;
+        }
+
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format('d/m/Y');
+        }
+
+        $value = trim((string)$value);
+        if ($value === '') {
+            return $default;
+        }
+
+        $formats = ['Y-m-d', 'Y-m-d H:i:s', 'd/m/Y', 'd-m-Y', 'Y/m/d'];
+        foreach ($formats as $format) {
+            $date = \DateTime::createFromFormat($format, $value);
+            if ($date instanceof \DateTime) {
+                return $date->format('d/m/Y');
+            }
+        }
+
+        $timestamp = strtotime($value);
+        if ($timestamp !== false) {
+            return date('d/m/Y', $timestamp);
+        }
+
+        return $default;
+    }
+
+    protected function isValidEmail($email)
+    {
+        return is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
     protected function decodeErrorResponseBody($responseBody)
     {
         $decodedBody = json_decode($responseBody, true);
@@ -302,6 +338,11 @@ class FacturaGeneralOsei
             $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
         }
 
+        if (!$this->isValidEmail($this->doc_encabezado->cliente->tercero->email)) {
+            $send_email = 'false';
+            $lista_emails = config('facturacion_electronica.email_copia_factura');
+        }
+
         $prefixFE = $factura_doc_encabezado->tipo_documento_app->prefijo;
         $numberFE = (string) $factura_doc_encabezado->consecutivo;
 
@@ -320,7 +361,7 @@ class FacturaGeneralOsei
             ];
         } else {
             $invoice_id = $response_dian['contenido']['cufe'];
-            $billing_reference_issue_date = $response_dian['contenido']['issue_date'];
+            $billing_reference_issue_date = $this->normalizeDateToDmy($response_dian['contenido']['issue_date'] ?? '', $this->normalizeDateToDmy($factura_doc_encabezado->fecha));
         }
 
         return '{"actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"credit_note": {' . $this->get_encabezado_nota_credito($auth_token, $invoice_id, $prefixFE, $numberFE, $billing_reference_issue_date) . ',"customer": ' . $this->get_datos_cliente() . ',"items": ' . $this->get_lineas_registros() . ',"charges": []},"aditional_info": ' . $this->get_aditional_info() . '}';
@@ -392,13 +433,12 @@ class FacturaGeneralOsei
 
     public function get_encabezado_nota_credito($auth_token, $invoice_id, $prefixFE, $numberFE, $billing_reference_issue_date)
     {
-        $payment_means_type = 'CREDITO';
-        $payment_means = 'CREDITO';
+        $payment_means_type = $this->doc_encabezado->forma_pago == 'credito' ? 'CREDITO' : 'DEBITO';
+        $payment_means = 'MUTUAL_AGREEMENT';
         $purpose_code = 1;
         $reason = 'DEVOLUCION';
-        $issue_date = date_format(date_create($this->doc_encabezado->fecha), 'd/m/Y');
-        $fecha_vencimiento = date_create($this->doc_encabezado->fecha_vencimiento);
-        $payment_date = date_format(date_add($fecha_vencimiento, date_interval_create_from_date_string('1 month')), 'd/m/Y');
+        $issue_date = $this->normalizeDateToDmy($this->doc_encabezado->fecha, date('d/m/Y'));
+        $payment_date = $this->normalizeDateToDmy($this->doc_encabezado->fecha_vencimiento, $issue_date);
 
         $currency = 'COP';
         $type = 'NOTA_CREDITO';
@@ -419,7 +459,7 @@ class FacturaGeneralOsei
             }
         }
 
-        return '"env": ' . $this->jsonString($this->env) . ',"anotation":' . $this->jsonString($notes2) . ',"type":' . $this->jsonString($type) . ',"authorization_token": ' . $this->jsonString($auth_token) . ',"issue_date": ' . $this->jsonString($issue_date) . ',"payment_means_type": ' . $this->jsonString($payment_means_type) . ',"payment_means": ' . $this->jsonString($payment_means) . ',"payment_date": ' . $this->jsonString($payment_date) . ',"reason": ' . $this->jsonString($reason) . ',"purpose_code": ' . $this->jsonString($purpose_code) . ',"number":' . $this->doc_encabezado->consecutivo . ',"currency":' . $this->jsonString($currency) . ',"related_invoice":{"cufe":' . $this->jsonString($invoice_id) . ',"number":' . $this->jsonString($numberFE) . ',"prefix":' . $this->jsonString($prefixFE) . ',"issue_date":' . $this->jsonString($billing_reference_issue_date) . '}' . ',"resolution":{"prefix":' . $this->jsonString($this->doc_encabezado->tipo_documento_app->prefijo) . '}';
+        return '"env": ' . $this->jsonString($this->env) . ',"anotation":' . $this->jsonString($notes2) . ',"type":' . $this->jsonString($type) . ',"authorization_token": ' . $this->jsonString($auth_token) . ',"issue_date": ' . $this->jsonString($issue_date) . ',"payment_means_type": ' . $this->jsonString($payment_means_type) . ',"payment_means": ' . $this->jsonString($payment_means) . ',"payment_date": ' . $this->jsonString($payment_date) . ',"reason": ' . $this->jsonString($reason) . ',"purpose_code": ' . $this->jsonString($purpose_code) . ',"number":' . $this->doc_encabezado->consecutivo . ',"currency":' . $this->jsonString($currency) . ',"related_invoice":{"cufe":' . $this->jsonString($invoice_id) . ',"number":' . $this->jsonString($numberFE) . ',"prefix":' . $this->jsonString($prefixFE) . ',"issue_date":' . $this->jsonString($this->normalizeDateToDmy($billing_reference_issue_date, $issue_date)) . '}' . ',"resolution":{"prefix":' . $this->jsonString($this->doc_encabezado->tipo_documento_app->prefijo) . '}';
     }
 
     public function get_lineas_registros()
@@ -443,7 +483,9 @@ class FacturaGeneralOsei
 
             $unidad_medida = $linea->item->unidad_medida1;
 
-            $string_items .= '{"sku": ' . $this->jsonString($linea->item->id) . ',"u.m": ' . $this->jsonString($unidad_medida) . ',"description": ' . $this->jsonString($linea->item->descripcion) . ',"quantity": ' . abs(number_format($linea->cantidad, $this->cantidadDecimales, '.', '')) . ',"price": ' . abs(number_format($price, $this->cantidadDecimales, '.', ''));
+            $quantity = abs((float) $linea->cantidad);
+            $priceValue = abs((float) $price);
+            $string_items .= '{"sku": ' . $this->jsonString($linea->item->id) . ',"u.m": ' . $this->jsonString($unidad_medida) . ',"description": ' . $this->jsonString($linea->item->descripcion) . ',"quantity": ' . number_format($quantity, $this->cantidadDecimales, '.', '') . ',"price": ' . number_format($priceValue, $this->cantidadDecimales, '.', '');
 
             if ($original_price != 0) {
                 $string_items .= ',"original_price": ' . $original_price;
@@ -462,9 +504,10 @@ class FacturaGeneralOsei
             if ($impuesto->tax_category != null && $impuesto->tax_category != '') {
                 $tax_category = $impuesto->tax_category;
             }
-            $vlor_total_desc = $linea->valor_total_descuento;
+            $vlor_total_desc = abs((float) $linea->valor_total_descuento);
+            $taxable_amount = max(($quantity * $priceValue) - $vlor_total_desc, 0);
 
-            $string_items .= ',"taxes": [  {    "tax_rate": ' . $linea->tasa_impuesto . ',"total_discount": ' . $vlor_total_desc . ',"tax_category": ' . $this->jsonString($tax_category) . '}]}';
+            $string_items .= ',"taxes": [  {    "tax_rate": ' . number_format((float) $linea->tasa_impuesto, $this->cantidadDecimales, '.', '') . ',"taxable_amount": ' . number_format($taxable_amount, $this->cantidadDecimales, '.', '') . ',"total_discount": ' . number_format($vlor_total_desc, $this->cantidadDecimales, '.', '') . ',"tax_category": ' . $this->jsonString($tax_category) . '}]}';
             $es_primera_linea = false;
         }
 
@@ -482,14 +525,24 @@ class FacturaGeneralOsei
         $trade_name = '';
         $tax_level_code = $cliente->tercero->tax_level_code;
 
+        if ($cliente->tercero->tipo == 'Persona natural') {
+            $party_type = 'PERSONA_NATURAL';
+        }
+
         if ($cliente->tercero->razon_social != '') {
             $legal_name = $cliente->tercero->razon_social;
             $trade_name = $cliente->tercero->descripcion;
         }
 
+        if (!is_string($tax_level_code) || trim($tax_level_code) === '') {
+            $tax_level_code = 'O-47';
+        }
+
         $tax_scheme_id = '01';
         if ($cliente->tercero->numero_identificacion == '222222222222' || $cliente->tercero->numero_identificacion == '222222222') {
             $tax_scheme_id = 'ZZ';
+            $legal_name = 'CONSUMIDOR FINAL';
+            $trade_name = '';
         }
         $department_id = substr($cliente->tercero->ciudad->id, 3, 2);
         $city_id = substr($cliente->tercero->ciudad->id, 5, strlen($cliente->tercero->ciudad->id) - 1);
@@ -499,6 +552,9 @@ class FacturaGeneralOsei
             $address_line = $cliente->tercero->direccion1;
         }
         $verification_digit = $cliente->tercero->digito_verificacion;
+        if ($tax_scheme_id == 'ZZ') {
+            $verification_digit = '';
+        }
 
         $party_identification_type = $cliente->tercero->id_tipo_documento_id;
 

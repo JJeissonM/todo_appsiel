@@ -181,6 +181,7 @@ class Pdv extends Model
         $opciones = Pdv::all();
 
         $vec = [];
+        $vec[] = '';
         foreach ($opciones as $opcion)
         {
             $vec[$opcion->id] = $opcion->descripcion;
