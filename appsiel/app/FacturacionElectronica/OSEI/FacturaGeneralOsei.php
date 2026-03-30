@@ -52,7 +52,17 @@ class FacturaGeneralOsei
         }
 
         $value = (string)$value;
-        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', ' ', $value);
+
+        if (function_exists('mb_check_encoding') && !mb_check_encoding($value, 'UTF-8')) {
+            $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+        } elseif (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($converted !== false) {
+                $value = $converted;
+            }
+        }
+
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', ' ', $value) ?? preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', ' ', $value);
         $value = str_replace(["\r\n", "\r", "\n", "\t"], ' ', $value);
         $value = preg_replace('/\s+/u', ' ', $value);
 
@@ -74,6 +84,41 @@ class FacturaGeneralOsei
         }
 
         return '""';
+    }
+
+    protected function sanitizeJsonData($value)
+    {
+        if (is_array($value)) {
+            $sanitized = [];
+            foreach ($value as $key => $item) {
+                $sanitized[$this->sanitizeJsonText($key)] = $this->sanitizeJsonData($item);
+            }
+            return $sanitized;
+        }
+
+        if (is_object($value)) {
+            return $this->sanitizeJsonData((array) $value);
+        }
+
+        if (is_string($value) || $value === null) {
+            return $this->sanitizeJsonText($value);
+        }
+
+        return $value;
+    }
+
+    protected function jsonData($value, $fallback = '{}')
+    {
+        $json = json_encode(
+            $this->sanitizeJsonData($value),
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+        );
+
+        if ($json !== false) {
+            return $json;
+        }
+
+        return $fallback;
     }
 
     protected function normalizeDateToDmy($value, $default = '')
@@ -325,6 +370,11 @@ class FacturaGeneralOsei
             $lista_emails .= ';' . config('facturacion_electronica.email_copia_factura');
         }
 
+        if (!$this->isValidEmail($this->doc_encabezado->cliente->tercero->email)) {
+            $send_email = 'false';
+            $lista_emails = config('facturacion_electronica.email_copia_factura');
+        }
+
         return '{ "actions": {"send_dian": ' . $send_dian . ',"send_email": ' . $send_email . ',"email": ' . $this->jsonString($lista_emails) . '},"invoice": {' . $this->get_encabezado_factura($auth_token) . ',"items": ' . $this->get_lineas_registros() . ',"charges": []},"aditional_info": ' . $this->get_aditional_info() . '}';
     }
 
@@ -369,7 +419,12 @@ class FacturaGeneralOsei
 
     public function get_aditional_info()
     {
-        return (new PrintServices())->get_etiquetas_for_osei();
+        $aditionalInfo = json_decode((new PrintServices())->get_etiquetas_for_osei(), true);
+        if (!is_array($aditionalInfo)) {
+            $aditionalInfo = [];
+        }
+
+        return $this->jsonData($aditionalInfo);
     }
 
     public function get_encabezado_factura($auth_token)

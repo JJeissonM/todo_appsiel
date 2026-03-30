@@ -24,6 +24,30 @@ class PrintServices
 
     protected $datos;    
 
+    protected function sanitizeJsonText($value)
+    {
+        if ($value === null) {
+            return '';
+        }
+
+        $value = (string) $value;
+
+        if (function_exists('mb_check_encoding') && !mb_check_encoding($value, 'UTF-8')) {
+            $value = mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+        } elseif (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+            if ($converted !== false) {
+                $value = $converted;
+            }
+        }
+
+        $value = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/u', ' ', $value) ?? preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', ' ', $value);
+        $value = str_replace(["\r\n", "\r", "\n", "\t"], ' ', $value);
+        $value = preg_replace('/\s+/u', ' ', $value);
+
+        return trim($value);
+    }
+
     public function set_variables_globales()
     {
         $this->empresa = Empresa::find( Auth::user()->empresa_id );
@@ -205,37 +229,37 @@ class PrintServices
 
         if (isset($parametros['encabezado_linea_1']))
         {
-            $encabezado['slogan'] = $parametros['encabezado_linea_1'];
+            $encabezado['slogan'] = $this->sanitizeJsonText($parametros['encabezado_linea_1']);
         }
 
         if (isset($parametros['encabezado_linea_2']))
         {
-            $encabezado['header_text_1'] = $parametros['encabezado_linea_2'];
+            $encabezado['header_text_1'] = $this->sanitizeJsonText($parametros['encabezado_linea_2']);
         }
 
         if (isset($parametros['encabezado_linea_3']))
         {
-            $encabezado['header_text_2'] = $parametros['encabezado_linea_3'];
+            $encabezado['header_text_2'] = $this->sanitizeJsonText($parametros['encabezado_linea_3']);
         }
 
         $pie_pagina = [];
 
         if (isset($parametros['pie_pagina_linea_1']))
         {
-            $pie_pagina['footer_text_1'] = $parametros['pie_pagina_linea_1'];
+            $pie_pagina['footer_text_1'] = $this->sanitizeJsonText($parametros['pie_pagina_linea_1']);
         }
 
         if (isset($parametros['pie_pagina_linea_2']))
         {
-            $pie_pagina['footer_text_2'] = $parametros['pie_pagina_linea_2'];
+            $pie_pagina['footer_text_2'] = $this->sanitizeJsonText($parametros['pie_pagina_linea_2']);
         }
 
         if (isset($parametros['pie_pagina_linea_3']))
         {
-            $pie_pagina['footer_text_3'] = $parametros['pie_pagina_linea_3'];
+            $pie_pagina['footer_text_3'] = $this->sanitizeJsonText($parametros['pie_pagina_linea_3']);
         }
 
-        return json_encode([ 'headers_text' => $encabezado, 'footers_text' => $pie_pagina ]);
+        return json_encode([ 'headers_text' => $encabezado, 'footers_text' => $pie_pagina ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
         
 }
