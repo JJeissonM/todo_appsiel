@@ -54,8 +54,18 @@
 
                     $msj_warning = '';
                     $teso_caja_id = isset($fila['teso_caja_id']) ? (int)$fila['teso_caja_id'] : 0;
+                    $caja_o_banco = isset($fila['caja_o_banco']) ? trim((string)$fila['caja_o_banco']) : '';
+                    $caja_o_banco_normalizada = strtolower($caja_o_banco);
+                    $mensaje_normalizado = strtolower(trim((string)$mensaje));
+                    $mostrar_warning = false;
 
-                    if ($teso_caja_id != 0 && $teso_caja_id !== (int)$caja_pdv_id)
+                    if ($teso_caja_id != 0) {
+                        $mostrar_warning = ($teso_caja_id !== (int)$caja_pdv_id);
+                    } elseif ($caja_o_banco !== '') {
+                        $mostrar_warning = ($caja_o_banco_normalizada !== $mensaje_normalizado);
+                    }
+
+                    if ($mostrar_warning)
                     {
                         $msj_warning = '<i class="fa fa-warning" title="El movimiento se realizó por ' . $fila['caja_o_banco'] . ' y no por ' . $mensaje . '"></i>';
                     }                 

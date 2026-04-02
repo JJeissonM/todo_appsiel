@@ -12,6 +12,7 @@ use App\VentasPos\FacturaPos;
 
 
 use App\Tesoreria\TesoCaja;
+use App\Tesoreria\TesoCuentaBancaria;
 
 use App\Tesoreria\TesoMovimiento;
 use App\Ventas\VtasMovimiento;
@@ -148,29 +149,34 @@ class ReporteController extends Controller
 
             $valor_entrada = (float)substr($linea_medio_recaudo['valor'], 1);
             $arr_motivo = explode('-', $linea_medio_recaudo['teso_motivo_id']);
-
-            $arr_caja = explode("-", $linea_medio_recaudo['teso_caja_id']);
-            $arr_cuenta_bancaria = explode("-", $linea_medio_recaudo['teso_cuenta_bancaria_id']);
+            $datos_caja = $this->parse_referencia_tesoreria(
+                isset($linea_medio_recaudo['teso_caja_id']) ? $linea_medio_recaudo['teso_caja_id'] : '',
+                'caja'
+            );
+            $datos_cuenta_bancaria = $this->parse_referencia_tesoreria(
+                isset($linea_medio_recaudo['teso_cuenta_bancaria_id']) ? $linea_medio_recaudo['teso_cuenta_bancaria_id'] : '',
+                'cuenta_bancaria'
+            );
 
             $caja_cuenta_bancaria = '';
             $forma_pago = 'credito';
-            if ($arr_caja[0] != 0) {
-                $caja_cuenta_bancaria = $arr_caja[1];
+            if ($datos_caja['id'] != 0) {
+                $caja_cuenta_bancaria = $datos_caja['descripcion'];
                 $forma_pago = 'efectivo';
             }
 
-            if ($arr_cuenta_bancaria[0] != 0) {
-                $caja_cuenta_bancaria = $arr_cuenta_bancaria[1];
+            if ($datos_cuenta_bancaria['id'] != 0) {
+                $caja_cuenta_bancaria = $datos_cuenta_bancaria['descripcion'];
                 $forma_pago = 'cuenta_bancaria';
             }
 
             $object[] = (object)[
                 'forma_pago' => $forma_pago, // [efectivo | cuenta_bancaria | credito]
                 'caja_o_banco' => $caja_cuenta_bancaria,
-                'teso_caja_id' => (int)$arr_caja[0],
-                'teso_cuenta_bancaria_id' => (int)$arr_cuenta_bancaria[0],
+                'teso_caja_id' => $datos_caja['id'],
+                'teso_cuenta_bancaria_id' => $datos_cuenta_bancaria['id'],
                 'concepto' => '',
-                'motivo' => $arr_motivo[1],
+                'motivo' => isset($arr_motivo[1]) ? $arr_motivo[1] : $linea_medio_recaudo['teso_motivo_id'],
                 'valor_entrada' => $valor_entrada,
                 'valor_salida' => 0,
             ];
@@ -244,6 +250,62 @@ class ReporteController extends Controller
         $lineas_movimientos = $sorted->values()->all();
 
         return $lineas_movimientos;
+    }
+
+    protected function parse_referencia_tesoreria($valor, $tipo)
+    {
+        $valor = trim((string)$valor);
+        if ($valor === '' || $valor === '0' || $valor === '0-') {
+            return ['id' => 0, 'descripcion' => ''];
+        }
+
+        $partes = explode('-', $valor, 2);
+        $id = isset($partes[0]) && is_numeric(trim($partes[0])) ? (int)trim($partes[0]) : 0;
+        $descripcion = isset($partes[1]) ? trim($partes[1]) : '';
+
+        if ($id > 0 && $descripcion === '') {
+            $descripcion = $this->buscar_descripcion_referencia_tesoreria($id, $tipo);
+        }
+
+        if ($id === 0 && $descripcion === '' && !is_numeric($valor)) {
+            $descripcion = $valor;
+        }
+
+        if ($id === 0 && $descripcion !== '') {
+            $id = $this->buscar_id_referencia_tesoreria_por_descripcion($descripcion, $tipo);
+        }
+
+        if ($id > 0 && $descripcion === '') {
+            $descripcion = $this->buscar_descripcion_referencia_tesoreria($id, $tipo);
+        }
+
+        return ['id' => $id, 'descripcion' => $descripcion];
+    }
+
+    protected function buscar_descripcion_referencia_tesoreria($id, $tipo)
+    {
+        if ($tipo === 'caja') {
+            $registro = TesoCaja::find((int)$id);
+            return is_null($registro) ? '' : (string)$registro->descripcion;
+        }
+
+        $registro = TesoCuentaBancaria::find((int)$id);
+        if (is_null($registro)) {
+            return '';
+        }
+
+        return 'Cuenta ' . $registro->tipo_cuenta . ' ' . $registro->entidad_financiera->descripcion . ' No. ' . $registro->descripcion;
+    }
+
+    protected function buscar_id_referencia_tesoreria_por_descripcion($descripcion, $tipo)
+    {
+        if ($tipo === 'caja') {
+            $registro = TesoCaja::where('descripcion', $descripcion)->first();
+            return is_null($registro) ? 0 : (int)$registro->id;
+        }
+
+        $registro = TesoCuentaBancaria::where('descripcion', $descripcion)->first();
+        return is_null($registro) ? 0 : (int)$registro->id;
     }
 
     public function revisar_pedidos_ventas($pdv_id)
