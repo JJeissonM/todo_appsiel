@@ -10,7 +10,8 @@ class ApmPrintStatusesSeeder extends Seeder
         $statuses = [
             ['code' => 'pending', 'description' => 'Pendiente de reimpresion manual'],
             ['code' => 'printed', 'description' => 'Impreso correctamente'],
-            ['code' => 'cancelled', 'description' => 'Cancelado manualmente']
+            ['code' => 'cancelled', 'description' => 'Cancelado manualmente'],
+            ['code' => 'retired', 'description' => 'Retirado manualmente']
         ];
 
         foreach ($statuses as $status) {

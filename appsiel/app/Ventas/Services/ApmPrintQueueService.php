@@ -39,7 +39,7 @@ class ApmPrintQueueService
             ->where('document_type', $meta['document_type'])
             ->max('copy_number') + 1;
 
-        $copyLabel = 'COPIA # ' . $copyNumber;
+        $copyLabel = $this->buildCopyLabel($copyNumber);
         $payload = $this->applyCopyLabel($payload, $copyLabel);
 
         $user = Auth::user();
@@ -111,6 +111,24 @@ class ApmPrintQueueService
         return $job;
     }
 
+    public function markRetired($jobId)
+    {
+        $job = ApmPrintJob::findOrFail($jobId);
+
+        if ((int) $job->apm_print_status_id !== (int) $this->getStatusId('pending')) {
+            throw new \RuntimeException('El trabajo seleccionado ya no esta pendiente en la cola de APM.');
+        }
+
+        $user = Auth::user();
+
+        $job->apm_print_status_id = $this->getStatusId('retired');
+        $job->retired_at = Carbon::now()->toDateTimeString();
+        $job->retired_by = is_null($user) ? null : $user->email;
+        $job->save();
+
+        return $job;
+    }
+
     public function serializeJob(ApmPrintJob $job)
     {
         return [
@@ -128,7 +146,9 @@ class ApmPrintQueueService
             'last_error' => $job->last_error,
             'queued_at' => $job->queued_at,
             'last_attempt_at' => $job->last_attempt_at,
-            'printed_at' => $job->printed_at
+            'printed_at' => $job->printed_at,
+            'retired_by' => $job->retired_by,
+            'retired_at' => $job->retired_at
         ];
     }
 
@@ -192,6 +212,15 @@ class ApmPrintQueueService
         return $payload;
     }
 
+    protected function buildCopyLabel($copyNumber)
+    {
+        if ((int) $copyNumber === 1) {
+            return 'ORIGINAL';
+        }
+
+        return 'COPIA # ' . (int) $copyNumber;
+    }
+
     protected function getStatusId($code)
     {
         if (isset($this->statusIds[$code])) {
@@ -201,7 +230,8 @@ class ApmPrintQueueService
         $defaults = [
             'pending' => 'Pendiente de reimpresion manual',
             'printed' => 'Impreso correctamente',
-            'cancelled' => 'Cancelado manualmente'
+            'cancelled' => 'Cancelado manualmente',
+            'retired' => 'Retirado manualmente'
         ];
 
         if (!isset($defaults[$code])) {

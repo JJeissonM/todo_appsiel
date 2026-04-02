@@ -506,4 +506,5 @@ ALTER TABLE `nom_contratos` CHANGE `horas_laborales` `horas_laborales` DOUBLE NO
 -- 29 marzo
 INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '5', '44', '22');
 
-
+-- 2 abril 2026 - Permiso para retirar de la cola de impresión
+insert into permissions (id, core_app_id, modelo_id, name, descripcion, url, parent, orden, enabled, fa_icon, created_at, updated_at) values (null, '20', '0', 'vtas_apm_retirar_cola_impresion', 'Retirar de la cola de impresión', 'web', '0', '99', '0', '', '2026-04-02 00:00:00', null);

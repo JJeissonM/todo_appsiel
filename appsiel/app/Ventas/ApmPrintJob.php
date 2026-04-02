@@ -25,9 +25,11 @@ class ApmPrintJob extends Model
         'last_error',
         'queued_by',
         'printed_by',
+        'retired_by',
         'queued_at',
         'last_attempt_at',
-        'printed_at'
+        'printed_at',
+        'retired_at'
     ];
 
     public function status()

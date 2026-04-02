@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Ventas;
 
 use App\Http\Controllers\Controller;
 use App\Ventas\Services\ApmPrintQueueService;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ApmPrintQueueController extends Controller
 {
     protected $service;
+    const RETIRE_PERMISSION = 'vtas_apm_retirar_cola_impresion';
 
     public function __construct(ApmPrintQueueService $service)
     {
@@ -22,7 +24,12 @@ class ApmPrintQueueController extends Controller
             return $this->service->serializeJob($job);
         });
 
-        return response()->json(['data' => $jobs->values()]);
+        return response()->json([
+            'data' => $jobs->values(),
+            'permissions' => [
+                'can_retire' => $this->userCanRetireQueue()
+            ]
+        ]);
     }
 
     public function prepare(Request $request)
@@ -74,5 +81,26 @@ class ApmPrintQueueController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         }
+    }
+
+    public function markRetired($jobId)
+    {
+        if (!$this->userCanRetireQueue()) {
+            return response()->json(['message' => 'No tiene permiso para retirar documentos de la cola APM.'], 403);
+        }
+
+        try {
+            $job = $this->service->markRetired($jobId);
+            return response()->json(['job' => $this->service->serializeJob($job)]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+    }
+
+    protected function userCanRetireQueue()
+    {
+        $user = Auth::user();
+
+        return !is_null($user) && $user->can(self::RETIRE_PERMISSION);
     }
 }

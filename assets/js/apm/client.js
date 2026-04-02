@@ -52,6 +52,7 @@
             this.wsUrlIndex = 0;
             this.pendingJobs = {};
             this.queueItems = [];
+            this.canRetireQueue = false;
             this.queueModalOpen = false;
             this.uiInitialized = false;
             this.queueSyncInterval = null;
@@ -322,12 +323,14 @@
             return this.request('GET', 'apm_print_queue')
                 .then((response) => {
                     this.queueItems = response && response.data ? response.data : [];
+                    this.canRetireQueue = !!(response && response.permissions && response.permissions.can_retire);
                     this.renderQueueButton();
                     this.renderQueueModalContent();
                     return this.queueItems;
                 })
                 .catch(() => {
                     this.queueItems = [];
+                    this.canRetireQueue = false;
                     this.renderQueueButton();
                     this.renderQueueModalContent();
                     return [];
@@ -415,6 +418,14 @@
                                 });
                             });
                         });
+                });
+        }
+
+        retireQueuedJob(jobId) {
+            return this.request('POST', `apm_print_queue/${jobId}/mark_retired`, {})
+                .then((response) => {
+                    this.syncQueueItems();
+                    return response;
                 });
         }
 
@@ -517,6 +528,10 @@
 
             return this.queueItems.map((item) => {
                 const label = item.document_label || `${item.document_type} ${item.consecutivo}`;
+                const retireButtonHtml = this.canRetireQueue
+                    ? `<button type="button" class="btn btn-default btn-xs apm-retire-btn" data-job-id="${item.id}" style="margin-left:6px;">Retirar</button>`
+                    : '';
+
                 return `
                     <div class="apm-queue-item">
                         <div class="apm-queue-item-title">${label}</div>
@@ -526,6 +541,7 @@
                         </div>
                         <div class="apm-queue-item-error">${item.last_error || 'Pendiente de reimpresion manual.'}</div>
                         <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">Reimprimir</button>
+                        ${retireButtonHtml}
                     </div>
                 `;
             }).join('');
@@ -550,6 +566,13 @@
             buttons.forEach((button) => {
                 button.onclick = () => {
                     this.handleManualReprint(button.getAttribute('data-job-id'), button);
+                };
+            });
+
+            const retireButtons = document.querySelectorAll('.apm-retire-btn');
+            retireButtons.forEach((button) => {
+                button.onclick = () => {
+                    this.handleManualRetire(button.getAttribute('data-job-id'), button);
                 };
             });
         }
@@ -591,6 +614,63 @@
                         this.openQueueModal();
                     }
                 });
+        }
+
+        handleManualRetire(jobId, button) {
+            if (!jobId || !this.canRetireQueue) {
+                return;
+            }
+
+            const executeRetire = () => {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Retirando...';
+                }
+
+                this.retireQueuedJob(jobId)
+                    .then(() => {
+                        if (global.Swal) {
+                            global.Swal.fire({
+                                icon: 'success',
+                                title: 'Documento retirado',
+                                text: 'El documento fue retirado de la cola APM y ya no requiere impresión.'
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        if (global.Swal) {
+                            global.Swal.fire({
+                                icon: 'error',
+                                title: 'Error al retirar',
+                                text: error && error.ErrorMessage ? error.ErrorMessage : 'No fue posible retirar el documento de la cola APM.'
+                            });
+                        }
+                    })
+                    .then(() => this.syncQueueItems())
+                    .then(() => {
+                        if (this.queueModalOpen) {
+                            this.openQueueModal();
+                        }
+                    });
+            };
+
+            if (!global.Swal) {
+                executeRetire();
+                return;
+            }
+
+            global.Swal.fire({
+                icon: 'warning',
+                title: 'Retirar documento',
+                text: 'Este documento se marcará como retirado y saldrá de la cola de impresión. ¿Desea continuar?',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, retirar',
+                cancelButtonText: 'No'
+            }).then((result) => {
+                if (result && result.isConfirmed) {
+                    executeRetire();
+                }
+            });
         }
 
         openQueueModal() {
@@ -749,6 +829,5 @@
         }
     };
 })(window);
-
 
 

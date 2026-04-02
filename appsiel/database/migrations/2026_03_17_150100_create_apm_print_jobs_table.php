@@ -30,9 +30,11 @@ class CreateApmPrintJobsTable extends Migration
             $table->text('last_error')->nullable();
             $table->string('queued_by', 120)->nullable();
             $table->string('printed_by', 120)->nullable();
+            $table->string('retired_by', 120)->nullable();
             $table->dateTime('queued_at');
             $table->dateTime('last_attempt_at')->nullable();
             $table->dateTime('printed_at')->nullable();
+            $table->dateTime('retired_at')->nullable();
             $table->timestamps();
 
             $table->unique(['core_tipo_transaccion_id', 'core_tipo_doc_app_id', 'consecutivo', 'document_type', 'copy_number'], 'uniq_apm_print_doc_copy');

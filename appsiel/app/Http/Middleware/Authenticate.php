@@ -32,7 +32,7 @@ class Authenticate
                 'session_id' => $request->hasSession() ? $request->session()->getId() : null,
                 'has_session_cookie' => $request->cookies->has(config('session.cookie')),
                 'referer' => $request->headers->get('referer'),
-                'user_agent' => $request->userAgent(),
+                'user_agent' => $request->header('User-Agent'),
                 'query' => $request->query()
             ]);
 
