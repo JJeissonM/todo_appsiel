@@ -50,7 +50,15 @@
                     $salida = '$'.number_format( $fila['valor_salida'], 0, ',','.');
                     $total_salidas += $fila['valor_salida'];
 
-                    $saldo += $fila['valor_entrada'] - $fila['valor_salida'];                    
+                    $saldo += $fila['valor_entrada'] - $fila['valor_salida'];
+
+                    $msj_warning = '';
+                    $teso_caja_id = isset($fila['teso_caja_id']) ? (int)$fila['teso_caja_id'] : 0;
+
+                    if ($teso_caja_id != 0 && $teso_caja_id !== (int)$caja_pdv_id)
+                    {
+                        $msj_warning = '<i class="fa fa-warning" title="El movimiento se realizó por ' . $fila['caja_o_banco'] . ' y no por ' . $mensaje . '"></i>';
+                    }                 
                 ?>
                 <tr>
                     <td> {{ $fila['fecha'] }}</td>
@@ -58,20 +66,14 @@
                     <td> 
                         {{ $fila['tercero'] }}
                     </td>
-                    <!-- <td> { { $fila['caja_o_banco'] }} </td>
-                    <td> { { $fila['concepto'] }} </td> -->
                     <td> {{ $fila['motivo'] }} </td>
                     <td> 
-                        @if($mensaje == $fila['caja_o_banco'])
-                            {{ $entrada }}
-                        @else
-                            {{ $entrada }} 
-                            @if($entrada != '$0')
-                                <i class="fa fa-warning" title="{{ $fila['caja_o_banco'] }}"></i>
-                            @endif                            
-                        @endif                         
+                        {{ $entrada }}
+                        {!! $msj_warning !!}
                     </td>
-                    <td> {{ $salida}} </td>
+                    <td>
+                        {{ $salida}}
+                    </td>
                     <td> ${{ number_format( $saldo, 0, ',','.') }} </td>
                 </tr>
             @endforeach

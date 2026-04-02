@@ -25,6 +25,7 @@ use App\Tesoreria\TesoMotivo;
 use App\Tesoreria\TesoMedioRecaudo;
 use App\Tesoreria\TesoMovimiento;
 use App\Inventarios\InvProducto;
+use App\VentasPos\Pdv;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -1095,6 +1096,7 @@ class ReporteController extends TesoreriaController
 
         $teso_caja_id = $this->get_numeric_id_from_select($request->teso_caja_id);
         $teso_cuenta_bancaria_id = $this->get_numeric_id_from_select($request->teso_cuenta_bancaria_id);
+        $pdv_id = $this->get_numeric_id_from_select($request->pdv_id);
         $teso_motivo_id = (int)$request->teso_motivo_id;
         $core_tercero_id = (int)$request->core_tercero_id;
         $user_id = (int)$request->user_id;
@@ -1131,6 +1133,9 @@ class ReporteController extends TesoreriaController
             $qSaldo = TesoMovimiento::query()->where($array_wheres_saldo)->where('teso_movimientos.fecha', '<', $fecha_desde);
             $qDetalle = TesoMovimiento::query()->where($array_wheres)->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
 
+            TesoMovimiento::aplicarFiltroPdv($qSaldo, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
+            TesoMovimiento::aplicarFiltroPdv($qDetalle, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
+
             if ( (int)$user_id != 0 ) {
                 $userFiltro = TesoMovimiento::obtenerUsuarioFiltro((int)$user_id, Auth::user()->empresa_id);
                 if ( !is_null($userFiltro) ) {
@@ -1147,6 +1152,7 @@ class ReporteController extends TesoreriaController
                 'fecha_hasta' => $fecha_hasta,
                 'teso_caja_id' => $teso_caja_id,
                 'teso_cuenta_bancaria_id' => $teso_cuenta_bancaria_id,
+                'pdv_id' => $pdv_id,
                 'teso_medio_recaudo_id' => $teso_medio_recaudo_id,
                 'teso_medio_recaudo_comportamiento' => $teso_medio_recaudo_comportamiento,
                 'teso_motivo_id' => $teso_motivo_id,
@@ -1170,14 +1176,15 @@ class ReporteController extends TesoreriaController
         
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
+        $pdv = Pdv::find( $pdv_id );
 
-        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres_saldo, 0 );
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial2( $fecha_desde, $array_wheres_saldo, 0, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id );
 
-        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id );
+        $movimiento = TesoMovimiento::get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id );
 
         $usuario_tiene_restriccion_movimientos = TesoMovimiento::usuario_tiene_restriccion_movimientos();
         
-        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'usuario_tiene_restriccion_movimientos') )->render();
+        $vista = View::make( 'tesoreria.reportes.movimiento_caja_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento','caja', 'cuenta_bancaria', 'pdv', 'usuario_tiene_restriccion_movimientos') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 
@@ -1284,34 +1291,26 @@ class ReporteController extends TesoreriaController
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta  = $request->fecha_hasta;
 
-        $teso_caja_id = $request->teso_caja_id;
-        $teso_cuenta_bancaria_id = $request->teso_cuenta_bancaria_id;
-
-        if ( $request->teso_caja_id == '')
-        {
-            $teso_caja_id = 0;
-        }
-
-        if ( $request->teso_cuenta_bancaria_id == '')
-        {
-            $teso_cuenta_bancaria_id = 0;
-        }
+        $teso_caja_id = $this->get_numeric_id_from_select($request->teso_caja_id);
+        $teso_cuenta_bancaria_id = $this->get_numeric_id_from_select($request->teso_cuenta_bancaria_id);
+        $pdv_id = $this->get_numeric_id_from_select($request->pdv_id);
 
         $caja = TesoCaja::find( $teso_caja_id );
         $cuenta_bancaria = TesoCuentaBancaria::find( $teso_cuenta_bancaria_id );
+        $pdv = Pdv::find( $pdv_id );
 
-        $saldo_inicial = TesoMovimiento::get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde );
+        $saldo_inicial = TesoMovimiento::get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $pdv_id );
 
-        $movimiento = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta );
+        $movimiento = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, null, $pdv_id );
 
         $ids_cajas = array_keys( $movimiento->groupBy('teso_caja_id')->toArray() );
         $ids_cuentas_bancarias = array_keys( $movimiento->groupBy('teso_cuenta_bancaria_id')->toArray() );
 
-        $movimiento_entradas = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, 'entrada' );
+        $movimiento_entradas = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, 'entrada', $pdv_id );
 
-        $movimiento_salidas = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, 'salida' );
+        $movimiento_salidas = TesoMovimiento::get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, 'salida', $pdv_id );
         
-        $vista = View::make( 'tesoreria.reportes.resumen_movimientos_cajas_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento_entradas', 'movimiento_salidas', 'caja', 'cuenta_bancaria','ids_cajas','ids_cuentas_bancarias') )->render();
+        $vista = View::make( 'tesoreria.reportes.resumen_movimientos_cajas_bancos', compact( 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'movimiento_entradas', 'movimiento_salidas', 'caja', 'cuenta_bancaria', 'pdv', 'ids_cajas','ids_cuentas_bancarias') )->render();
 
         Cache::forever('pdf_reporte_' . json_decode($request->reporte_instancia)->id, $vista);
 

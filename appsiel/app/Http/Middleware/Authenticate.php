@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class Authenticate
 {
@@ -21,6 +22,20 @@ class Authenticate
 
         if ( Auth::guard($guard)->guest() )
         {
+            Log::warning('AUTH_GUEST_REDIRECT', [
+                'path' => $request->path(),
+                'full_url' => $request->fullUrl(),
+                'method' => $request->method(),
+                'host' => $request->getHost(),
+                'ip' => $request->ip(),
+                'guard' => $guard,
+                'session_id' => $request->hasSession() ? $request->session()->getId() : null,
+                'has_session_cookie' => $request->cookies->has(config('session.cookie')),
+                'referer' => $request->headers->get('referer'),
+                'user_agent' => $request->userAgent(),
+                'query' => $request->query()
+            ]);
+
             if ( $request->ajax() || $request->wantsJson() )
             {
                 return response('Unauthorized.', 401);

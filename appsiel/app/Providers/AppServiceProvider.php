@@ -13,7 +13,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        config([
+            'session.lifetime' => env('SESSION_LIFETIME', config('session.lifetime')),
+            'session.cookie' => env('SESSION_COOKIE', config('session.cookie')),
+            'session.same_site' => env('SESSION_SAME_SITE', config('session.same_site')),
+            'session.domain' => env('SESSION_DOMAIN', config('session.domain')),
+            'session.secure' => env('SESSION_SECURE_COOKIE', config('session.secure')),
+        ]);
     }
 
     /**

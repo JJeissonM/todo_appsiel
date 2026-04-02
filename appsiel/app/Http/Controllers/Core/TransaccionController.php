@@ -49,7 +49,7 @@ class TransaccionController extends Controller
 
     public function __construct()
     {
-        //$this->middleware('auth');
+        $this->middleware('auth');
     }
 
     public function set_variables_globales()

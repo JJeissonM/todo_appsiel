@@ -1,6 +1,9 @@
 {{ Form::bsBtnExcel('movimiento_tesoreria') }}
 <h3>Resumen de Movimientos de Cajas/Bancos</h3>
 <h4> {{"Desde: ".$fecha_desde." - Hasta: ".$fecha_hasta }} </h4>
+@if( !is_null($pdv) )
+    <h4> {{"Punto de ventas: " . $pdv->descripcion }} </h4>
+@endif
 <div class="table-responsive">
     <table class="table table-striped table-bordered tabla_pdf">
         <thead>
@@ -122,4 +125,3 @@
         </tfoot>
     </table>
 </div>
-    

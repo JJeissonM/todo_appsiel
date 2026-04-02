@@ -28,6 +28,7 @@ use App\Sistema\TipoTransaccion;
 // Modelos
 use App\Sistema\Modelo;
 use App\Core\TipoDocApp;
+use App\Core\Tercero;
 
 use App\VentasPos\Services\AccumulationService;
 use App\VentasPos\Services\InventoriesServices;
@@ -1275,9 +1276,20 @@ class FacturaPosController extends TransaccionController
      */
     public function store_registro_ingresos_gastos(Request $request)
     {
+        $core_tercero_id = (int)$request->cliente_proveedor_id;
+
+        if ($core_tercero_id <= 0) {
+            return '<div class="alert alert-danger"><strong>Error:</strong> Debe seleccionar un Cliente/Proveedor válido antes de guardar el registro.</div>';
+        }
+
+        $tercero = Tercero::find($core_tercero_id);
+        if (is_null($tercero)) {
+            return '<div class="alert alert-danger"><strong>Error:</strong> El Cliente/Proveedor seleccionado no existe o ya no está disponible. Por favor, selecciónelo nuevamente.</div>';
+        }
+
         // $this->datos es una variable de 
         $this->datos = $request->all();
-        $this->datos['core_tercero_id'] = $request->cliente_proveedor_id;
+        $this->datos['core_tercero_id'] = $core_tercero_id;
         $this->datos['descripcion'] = $request->detalle_operacion;
 
         
@@ -1306,10 +1318,10 @@ class FacturaPosController extends TransaccionController
         // Guardar registro del documentos
         $tipo_transaccion = TipoTransaccion::find($request->core_tipo_transaccion_id);
         app($tipo_transaccion->modelo_registros_documentos)->create(
-            ['teso_encabezado_id' => $doc_encabezado->id] +
+                ['teso_encabezado_id' => $doc_encabezado->id] +
                 ['teso_motivo_id' => $request->campo_motivos] +
                 ['teso_caja_id' => $request->teso_caja_id] +
-                ['core_tercero_id' => $request->cliente_proveedor_id] +
+                ['core_tercero_id' => $core_tercero_id] +
                 ['detalle_operacion' => $request->detalle_operacion] +
                 ['valor' => $valor_movimiento] +
                 ['estado' => 'Activo']
@@ -1665,7 +1677,6 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
-
 
 
 

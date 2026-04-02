@@ -24,7 +24,7 @@ class FacturaMasivaEstudianteController extends TransaccionController
 
     public function __construct()
     {
-        $this->middleware('auth');
+        parent::__construct();
     }
 
 

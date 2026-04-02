@@ -1,6 +1,9 @@
 {{ Form::bsBtnExcel('movimiento_tesoreria') }}
 <h3>Movimiento de Cajas / Bancos</h3>
 <h4> {{"Desde: ".$fecha_desde." - Hasta: ".$fecha_hasta }} </h4>
+@if( !is_null($pdv) )
+    <h4> {{"Punto de ventas: " . $pdv->descripcion }} </h4>
+@endif
 @if( isset($usuario_tiene_restriccion_movimientos) && $usuario_tiene_restriccion_movimientos )
     <div class="alert alert-warning" style="padding: 8px 12px; margin-bottom: 10px;">
         Mostrando solo movimientos creados por el usuario logueado.

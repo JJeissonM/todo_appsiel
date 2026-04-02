@@ -323,24 +323,24 @@ class TesoMovimiento extends Model
             ->sum('teso_movimientos.valor_movimiento');
     }
 
-    public static function get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde )
+    public static function get_saldo_inicial( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $pdv_id = 0 )
     {
-        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
-        
-        if ( $teso_caja_id != 0 ) 
+        $query = TesoMovimiento::query()->where('teso_movimientos.id', '>', 0);
+
+        if ( $teso_caja_id != 0 )
         {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
-        }
-        
-        if ( $teso_cuenta_bancaria_id != 0 ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
+            $query->where('teso_movimientos.teso_caja_id', (int) $teso_caja_id);
         }
 
-        $saldo_inicial = TesoMovimiento::where( $array_wheres )
-                            ->where( 'fecha','<',$fecha_desde )
-                            ->select(
-                                        DB::raw('sum(valor_movimiento) as valor_movimiento') )
+        if ( $teso_cuenta_bancaria_id != 0 )
+        {
+            $query->where('teso_movimientos.teso_cuenta_bancaria_id', (int) $teso_cuenta_bancaria_id);
+        }
+
+        self::aplicarFiltroPdv($query, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
+
+        $saldo_inicial = $query->where('teso_movimientos.fecha', '<', $fecha_desde)
+                            ->select(DB::raw('sum(valor_movimiento) as valor_movimiento'))
                             ->get()
                             ->first();
 
@@ -352,32 +352,32 @@ class TesoMovimiento extends Model
         return $saldo_inicial->valor_movimiento;
     }
 
-    public static function get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, $tipo_movimiento = null )
+    public static function get_movimiento( $teso_caja_id, $teso_cuenta_bancaria_id, $fecha_desde, $fecha_hasta, $tipo_movimiento = null, $pdv_id = 0 )
     {
-
-        $array_wheres = [ ['teso_movimientos.id' ,'>', 0 ] ];
-        
-        if ( !is_null($tipo_movimiento) ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_motivos.movimiento' => $tipo_movimiento ]);
-        }
-        
-        if ( $teso_caja_id != 0 ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_caja_id' => (int) $teso_caja_id ]);
-        }
-        
-        if ( $teso_cuenta_bancaria_id != 0 ) 
-        {
-            $array_wheres = array_merge($array_wheres, ['teso_movimientos.teso_cuenta_bancaria_id' => (int) $teso_cuenta_bancaria_id ]);
-        }
-
-        return TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
+        $query = TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                             ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                             ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
-                            ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                            ->where( $array_wheres )
-                            ->select(
+                            ->where('teso_movimientos.id', '>', 0)
+                            ->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta]);
+
+        if ( !is_null($tipo_movimiento) )
+        {
+            $query->where('teso_motivos.movimiento', $tipo_movimiento);
+        }
+
+        if ( $teso_caja_id != 0 )
+        {
+            $query->where('teso_movimientos.teso_caja_id', (int) $teso_caja_id);
+        }
+
+        if ( $teso_cuenta_bancaria_id != 0 )
+        {
+            $query->where('teso_movimientos.teso_cuenta_bancaria_id', (int) $teso_cuenta_bancaria_id);
+        }
+
+        self::aplicarFiltroPdv($query, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
+
+        return $query->select(
                                         DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",teso_movimientos.consecutivo) AS documento_transaccion_prefijo_consecutivo'),
                                         'teso_motivos.descripcion AS motivo_descripcion',
                                         'teso_movimientos.fecha',
@@ -398,13 +398,38 @@ class TesoMovimiento extends Model
                             ->get();
     }
 
-    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id = 0 )
+    public static function aplicarFiltroPdv($query, $pdv_id, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0)
+    {
+        $pdv_id = (int)$pdv_id;
+        if ( $pdv_id == 0 ) {
+            return $query;
+        }
+
+        $teso_caja_id = (int)$teso_caja_id;
+        $teso_cuenta_bancaria_id = (int)$teso_cuenta_bancaria_id;
+        $pdv = Pdv::find($pdv_id);
+
+        return $query->where(function ($subquery) use ($pdv_id, $pdv, $teso_caja_id, $teso_cuenta_bancaria_id) {
+            $subquery->where('teso_movimientos.pdv_id', $pdv_id);
+
+            if ( $teso_caja_id == 0 && $teso_cuenta_bancaria_id == 0 && !is_null($pdv) && (int)$pdv->caja_default_id != 0 ) {
+                $subquery->orWhere(function ($legacyQuery) use ($pdv) {
+                    $legacyQuery->whereNull('teso_movimientos.pdv_id')
+                                ->where('teso_movimientos.teso_caja_id', (int)$pdv->caja_default_id);
+                });
+            }
+        });
+    }
+
+    public static function get_movimiento2( $fecha_desde, $fecha_hasta, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0 )
     {
         $query = TesoMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'teso_movimientos.core_tipo_doc_app_id')
                                 ->leftJoin('teso_motivos', 'teso_motivos.id', '=', 'teso_movimientos.teso_motivo_id')
                                 ->leftJoin('core_terceros', 'core_terceros.id', '=', 'teso_movimientos.core_tercero_id')
                                 ->whereBetween('teso_movimientos.fecha', [$fecha_desde, $fecha_hasta])
                                 ->where( $array_wheres );
+
+        self::aplicarFiltroPdv($query, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
 
         if ( (int)$user_id != 0 )
         {
@@ -451,10 +476,12 @@ class TesoMovimiento extends Model
         return !self::usuarioTieneRolPrivilegiado($user, self::rolesSinFiltro());
     }
 
-    public static function get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id = 0 )
+    public static function get_saldo_inicial2( $fecha_desde, $array_wheres, $user_id = 0, $pdv_id = 0, $teso_caja_id = 0, $teso_cuenta_bancaria_id = 0 )
     {
         $query = TesoMovimiento::where( $array_wheres )
                             ->where( 'teso_movimientos.fecha', '<', $fecha_desde );
+
+        self::aplicarFiltroPdv($query, $pdv_id, $teso_caja_id, $teso_cuenta_bancaria_id);
 
         if ( (int)$user_id != 0 )
         {

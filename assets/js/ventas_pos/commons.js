@@ -1771,7 +1771,7 @@ $(document).ready(function () {
     $("#contenido_modal2").html("");
     $("#div_spin2").fadeIn();
 
-    $("#myModal2").modal({ backdrop: "static" });
+    $("#myModal2").modal({ backdrop: "static", keyboard: true });
 
     $("#myModal2 .modal-title").text(
       "Nuevo registro de " + $(this).attr("data-lbl_ventana")
@@ -1809,7 +1809,7 @@ $(document).ready(function () {
     $("#contenido_modal2").html("");
     $("#div_spin2").fadeIn();
 
-    $("#myModal2").modal({ backdrop: "static", keyboard: false });
+    $("#myModal2").modal({ backdrop: "static", keyboard: true });
 
     $("#myModal2 .modal-title").text(
       "Consulta de " + $(this).attr("data-lbl_ventana")
@@ -1844,7 +1844,7 @@ $(document).ready(function () {
     $("#contenido_modal2").html("");
     $("#div_spin2").fadeIn();
 
-    $("#myModal2").modal({ keyboard: true });
+    $("#myModal2").modal({ backdrop: "static", keyboard: true });
 
     $("#myModal2 .modal-title").text(
       "Consulta de " + $(this).attr("data-lbl_ventana")
@@ -1940,6 +1940,22 @@ $(document).ready(function () {
       $("#div_spin2").hide();
       $("#contenido_modal2").html(respuesta);
     }); /**/
+  });
+
+  $("#myModal2").on("shown.bs.modal", function () {
+    $(this).focus();
+  });
+
+  $(document).on("keydown", function (event) {
+    var codigoTecla = event.which || event.keyCode;
+
+    if (codigoTecla !== 27) {
+      return;
+    }
+
+    if ($("#myModal2").hasClass("in")) {
+      $("#myModal2").modal("hide");
+    }
   });
 
   var fila;

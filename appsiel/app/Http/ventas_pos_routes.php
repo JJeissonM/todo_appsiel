@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+Route::group(['middleware' => ['auth']], function () {
 Route::resource('ventas_pos', 'VentasPos\AplicacionController');
 
 Route::get('ventas_pos_testing', 'VentasPos\AplicacionController@testing');
@@ -91,3 +92,4 @@ Route::resource('pos_factura_restaurante', 'VentasPos\FacturaRestauranteControll
 
 
 Route::resource('pos_clientes', 'VentasPos\ClienteController');
+});

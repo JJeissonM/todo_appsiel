@@ -53,10 +53,10 @@ class CxCController extends TransaccionController
   protected $tercero;
   protected $id_transaccion = 15;// 15 = Cuenta de cobro
 
-  /*public function __construct()
+  public function __construct()
   {
-      $this->middleware('auth');
-  }*/
+      parent::__construct();
+  }
 
   /**
    * Display a listing of the resource.

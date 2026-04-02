@@ -50,13 +50,14 @@ class ReporteController extends Controller
         // 
         $caja = TesoCaja::find($pdv->caja_default_id);
         $mensaje = $caja->descripcion;
+        $caja_pdv_id = (int)$pdv->caja_default_id;
         $saldo_inicial = TesoMovimiento::get_saldo_inicial($pdv->caja_default_id, 0, $fecha_desde);
         
         $lineas_movimientos = $this->get_lista_movimientos_caja_pdv($fecha_desde, $fecha_hasta, $pdv->caja_default_id, $lista_por_medios_recaudos);
 
         //$vista_movimiento = View::make('ventas_pos.incluir.movimiento_caja_bancos', compact('fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje'));
         
-        return View::make('ventas_pos.incluir.vista_estado_pdv', compact('total_efectivo', 'total_bancos', 'total_credito', 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje'))->render();
+        return View::make('ventas_pos.incluir.vista_estado_pdv', compact('total_efectivo', 'total_bancos', 'total_credito', 'fecha_desde', 'fecha_hasta', 'saldo_inicial', 'lineas_movimientos', 'mensaje', 'caja_pdv_id'))->render();
         //return $resumen_ventas . '<br><br>' . $vista_movimiento;
     }
 
@@ -166,6 +167,8 @@ class ReporteController extends Controller
             $object[] = (object)[
                 'forma_pago' => $forma_pago, // [efectivo | cuenta_bancaria | credito]
                 'caja_o_banco' => $caja_cuenta_bancaria,
+                'teso_caja_id' => (int)$arr_caja[0],
+                'teso_cuenta_bancaria_id' => (int)$arr_cuenta_bancaria[0],
                 'concepto' => '',
                 'motivo' => $arr_motivo[1],
                 'valor_entrada' => $valor_entrada,
@@ -226,6 +229,8 @@ class ReporteController extends Controller
                 'tercero' => $movimiento->tercero->descripcion,
                 'forma_pago' => $forma_pago, // [efectivo | cuenta_bancaria | credito]
                 'caja_o_banco' => $caja . ' ' . $cuenta_bancaria,
+                'teso_caja_id' => (int)$movimiento->teso_caja_id,
+                'teso_cuenta_bancaria_id' => (int)$movimiento->teso_cuenta_bancaria_id,
                 'concepto' => '',
                 'motivo' => $movimiento->motivo_descripcion,
                 'valor_entrada' => $entrada,
