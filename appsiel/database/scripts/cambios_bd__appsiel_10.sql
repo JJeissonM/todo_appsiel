@@ -506,9 +506,4 @@ ALTER TABLE `nom_contratos` CHANGE `horas_laborales` `horas_laborales` DOUBLE NO
 -- 29 marzo
 INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '5', '44', '22');
 
--- 2 abril 2026 - Tesorería
-INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1583', 'Punto de ventas', 'select', 'pdv_id', 'model_App\\VentasPos\\Pdv', 'null', '', '', '0', '1', '0', '2026-04-02 00:00:00', NULL);
-INSERT INTO `sys_reporte_tiene_campos` (`orden`, `core_reporte_id`, `core_campo_id`) VALUES ('7', '36', '1583');
-INSERT INTO `sys_reporte_tiene_campos` (`orden`, `core_reporte_id`, `core_campo_id`) VALUES ('10', '23', '1583');
-INSERT INTO `sys_reporte_tiene_campos` (`orden`, `core_reporte_id`, `core_campo_id`) VALUES ('11', '51', '1583');
 
