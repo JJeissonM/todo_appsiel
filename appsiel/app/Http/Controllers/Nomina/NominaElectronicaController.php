@@ -357,20 +357,101 @@ class NominaElectronicaController extends TransaccionController
             ];
         }
 
-        $mensajes = isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : [];
-        if (is_string($mensajes)) {
-            $mensajes = json_decode($mensajes, true);
-        }
-        if (!is_array($mensajes)) {
-            $mensajes = [ (string)$mensajes ];
-        }
+        $mensajes = $this->normalizar_mensajes_dian(isset($array_respuesta['dian_messages']) ? $array_respuesta['dian_messages'] : []);
 
         return [
             'ok' => false,
             'documento_id' => (int)$document_header->id,
             'documento' => $document_header->get_value_to_show(),
-            'message' => implode(' | ', array_filter($mensajes))
+            'message' => empty($mensajes) ? 'El documento fue rechazado por el proveedor tecnológico.' : implode(' | ', $mensajes)
         ];
+    }
+
+    protected function normalizar_mensajes_dian($mensajes)
+    {
+        if (is_string($mensajes)) {
+            $decoded = json_decode($mensajes, true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $mensajes = $decoded;
+            }
+        }
+
+        if (!is_array($mensajes)) {
+            $mensajes = [ (string) $mensajes ];
+        }
+
+        $resultado = [];
+        foreach ($mensajes as $mensaje) {
+            foreach ($this->extraer_textos_mensaje_dian($mensaje) as $texto) {
+                $texto = trim($texto);
+                if ($texto !== '') {
+                    $resultado[] = $texto;
+                }
+            }
+        }
+
+        return array_values(array_unique($resultado));
+    }
+
+    protected function extraer_textos_mensaje_dian($mensaje)
+    {
+        if (is_null($mensaje)) {
+            return [];
+        }
+
+        if (is_string($mensaje) || is_numeric($mensaje) || is_bool($mensaje)) {
+            return [ (string) $mensaje ];
+        }
+
+        if (!is_array($mensaje)) {
+            return [ (string) $mensaje ];
+        }
+
+        $textos = [];
+
+        if (isset($mensaje['message'])) {
+            if (is_array($mensaje['message'])) {
+                foreach ($mensaje['message'] as $item) {
+                    $item = trim((string) $item);
+                    if ($item !== '') {
+                        $textos[] = $item;
+                    }
+                }
+            } else {
+                $texto = trim((string) $mensaje['message']);
+                if ($texto !== '') {
+                    $textos[] = $texto;
+                }
+            }
+        }
+
+        $path = '';
+        if (isset($mensaje['path'])) {
+            $path = is_array($mensaje['path']) ? implode('.', $mensaje['path']) : (string) $mensaje['path'];
+            $path = trim($path);
+        }
+
+        if (!empty($textos)) {
+            if ($path !== '') {
+                return array_map(function ($texto) use ($path) {
+                    return $path . ': ' . $texto;
+                }, $textos);
+            }
+
+            return $textos;
+        }
+
+        $fallback = [];
+        foreach ($mensaje as $valor) {
+            foreach ($this->extraer_textos_mensaje_dian($valor) as $texto) {
+                $texto = trim($texto);
+                if ($texto !== '') {
+                    $fallback[] = $texto;
+                }
+            }
+        }
+
+        return $fallback;
     }
 
     protected function parse_arr_ids($arr_ids)

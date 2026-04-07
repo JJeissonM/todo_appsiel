@@ -494,6 +494,8 @@ INSERT INTO `permissions` (`id`, `core_app_id`, `modelo_id`, `name`, `descripcio
 ALTER TABLE `nom_agrupacion_tiene_conceptos` CHANGE `nom_concepto_id` `nom_concepto_id` INT(10) UNSIGNED NOT NULL;
 INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1582', 'Excluir de Nóm. Electrónica', 'select', 'excluir_documentos_nomina_electronica', '{\"0\":\"No\",\"1\":\"Sí\"}', 'null', '', '', '0', '1', '0', '2026-02-04 21:53:07', NULL);
 INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '22', '83', '1582');
+INSERT INTO `sys_modelos` (`id`, `descripcion`, `modelo`, `name_space`, `modelo_relacionado`, `url_crear`, `url_edit`, `url_print`, `url_ver`, `enlaces`, `url_estado`, `url_eliminar`, `controller_complementario`, `url_form_create`, `home_miga_pan`, `ruta_storage_imagen`, `ruta_storage_archivo_adjunto`, `created_at`, `updated_at`) VALUES ('330', 'Resultados de envío Docs. Soportes Nom. Electrónica', 'resultado.envio.documento.nomina.electronica', 'App\\NominaElectronica\\ResultadoEnvioDocumento', '', '', '', '', '', '', '', '', '', '', '', '', '', '2023-04-25 12:29:57', '2023-04-25 12:29:57');
+INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '2', '330', '1446'), (NULL, '4', '330', '1447');
 
 
 -- 8 febrero - CONTABILIDAD
