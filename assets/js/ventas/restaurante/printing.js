@@ -120,8 +120,6 @@ function apm_imprimir_pedido_restaurante( doc_encabezado )
     }
 
     var payload = crear_payload_apm_comanda( doc_encabezado );
-
-    console.log('Payload a enviar a APM:', payload);
     
     if ( !payload.PrinterId ) {
         return Promise.reject({
