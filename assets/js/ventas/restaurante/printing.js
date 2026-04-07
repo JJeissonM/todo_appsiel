@@ -17,7 +17,7 @@
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showConfirmButton: false,
-                didOpen: function () {
+                onOpen: function () {
                     Swal.showLoading();
                 }
             });
@@ -120,6 +120,9 @@ function apm_imprimir_pedido_restaurante( doc_encabezado )
     }
 
     var payload = crear_payload_apm_comanda( doc_encabezado );
+
+    console.log('Payload a enviar a APM:', payload);
+    
     if ( !payload.PrinterId ) {
         return Promise.reject({
             Status: 'ERROR',
@@ -132,6 +135,26 @@ function apm_imprimir_pedido_restaurante( doc_encabezado )
         documentMeta: crear_meta_documento_apm_pedido_restaurante(doc_encabezado),
         timeoutMs: 30000
     });
+}
+
+function crear_fecha_hora_local_apm()
+{
+    var ahora = new Date();
+    var pad = function (valor) {
+        return String(valor).padStart(2, '0');
+    };
+    var timezoneOffset = -ahora.getTimezoneOffset();
+    var offsetSign = timezoneOffset >= 0 ? '+' : '-';
+    var offsetHours = pad(Math.floor(Math.abs(timezoneOffset) / 60));
+    var offsetMinutes = pad(Math.abs(timezoneOffset) % 60);
+
+    return ahora.getFullYear() +
+        '-' + pad(ahora.getMonth() + 1) +
+        '-' + pad(ahora.getDate()) +
+        'T' + pad(ahora.getHours()) +
+        ':' + pad(ahora.getMinutes()) +
+        ':' + pad(ahora.getSeconds()) +
+        offsetSign + offsetHours + ':' + offsetMinutes;
 }
 
 function crear_meta_documento_apm_pedido_restaurante( doc_encabezado )
@@ -150,6 +173,7 @@ function crear_meta_documento_apm_pedido_restaurante( doc_encabezado )
 
 function crear_payload_apm_comanda( doc_encabezado )
 {
+    var fecha_hora_actual = crear_fecha_hora_local_apm();
     var printer_id = $('#apm_printer_id_pedidos_restaurante').val();
     if ( typeof printer_id === 'undefined' || printer_id === '' ) {
         printer_id = $('#printer_ip').val();
@@ -212,10 +236,10 @@ function crear_payload_apm_comanda( doc_encabezado )
                 'Number': doc_encabezado.doc_encabezado_documento_transaccion_prefijo_consecutivo || '',
                 'Table': mesa || '',
                 'Waiter': mesero || '',
-                'Date': new Date().toISOString(),
+                'Date': fecha_hora_actual,
                 'RestaurantName': station_id || '',
                 'Items': items,
-                'GeneratedDate': new Date().toISOString(),
+                'GeneratedDate': fecha_hora_actual,
                 'CreatedBy': doc_encabezado.doc_encabezado_vendedor_descripcion || ''
             },
             'Detail': detalle,

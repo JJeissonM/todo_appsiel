@@ -73,6 +73,10 @@ class PedidosRestauranteServices
         $lineas_registro = $this->armar_cuerpo_tabla_lineas_registros($pedido->lineas_registros);
 
         return [
+            'core_empresa_id' => (int) $pedido->core_empresa_id,
+            'core_tipo_transaccion_id' => (int) $pedido->core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => (int) $pedido->core_tipo_doc_app_id,
+            'consecutivo' => (int) $pedido->consecutivo,
             'doc_encabezado_documento_transaccion_descripcion' => $pedido->tipo_documento_app->descripcion,
             'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $pedido->tipo_documento_app->prefijo . ' ' . $pedido->consecutivo,
             'doc_encabezado_fecha' => $pedido->fecha,

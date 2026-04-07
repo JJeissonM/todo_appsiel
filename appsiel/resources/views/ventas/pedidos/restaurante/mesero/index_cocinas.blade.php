@@ -48,6 +48,10 @@
     (function () {
         var apm_modal_open = false;
 
+        function getSwalInstance() {
+            return window.Swal || null;
+        }
+
         function metodo_apm_activo() {
             return ((document.getElementById('metodo_impresion_pedido_restaurante') || {}).value || 'normal') === 'apm';
         }
@@ -56,8 +60,13 @@
             if (apm_modal_open) {
                 return;
             }
+            var swal = getSwalInstance();
+            if (!swal) {
+                apm_modal_open = true;
+                return;
+            }
             apm_modal_open = true;
-            Swal.fire({
+            swal.fire({
                 icon: 'error',
                 title: 'APM no conectado',
                 text: 'No se puede seleccionar cocina hasta que Appsiel Print Manager (APM) este en linea.',
@@ -71,7 +80,10 @@
             if (!apm_modal_open) {
                 return;
             }
-            Swal.close();
+            var swal = getSwalInstance();
+            if (swal && typeof swal.close === 'function') {
+                swal.close();
+            }
             apm_modal_open = false;
         }
 
@@ -157,4 +169,3 @@
         setInterval(validar_apm, 2000);
     })();
 </script>
-

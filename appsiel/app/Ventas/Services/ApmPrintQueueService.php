@@ -33,11 +33,13 @@ class ApmPrintQueueService
             throw new \RuntimeException('Este documento ya esta pendiente en la cola de APM.');
         }
 
-        $copyNumber = (int) ApmPrintJob::where('core_tipo_transaccion_id', $meta['core_tipo_transaccion_id'])
+        $maxCopyNumber = ApmPrintJob::where('core_tipo_transaccion_id', $meta['core_tipo_transaccion_id'])
             ->where('core_tipo_doc_app_id', $meta['core_tipo_doc_app_id'])
             ->where('consecutivo', $meta['consecutivo'])
             ->where('document_type', $meta['document_type'])
-            ->max('copy_number') + 1;
+            ->max('copy_number');
+
+        $copyNumber = is_null($maxCopyNumber) ? 0 : ((int) $maxCopyNumber + 1);
 
         $copyLabel = $this->buildCopyLabel($copyNumber);
         $payload = $this->applyCopyLabel($payload, $copyLabel);
@@ -214,7 +216,7 @@ class ApmPrintQueueService
 
     protected function buildCopyLabel($copyNumber)
     {
-        if ((int) $copyNumber === 1) {
+        if ((int) $copyNumber === 0) {
             return 'ORIGINAL';
         }
 
@@ -235,7 +237,8 @@ class ApmPrintQueueService
         ];
 
         if (!isset($defaults[$code])) {
-            throw new untimeException('No existe la definicion del estado de cola APM: ' . $code);
+            throw new 
+untimeException('No existe la definicion del estado de cola APM: ' . $code);
         }
 
         $status = ApmPrintStatus::firstOrCreate(

@@ -1083,15 +1083,6 @@
     @yield('odontograma')
     @yield('multiselect')
 
-    <script src="{{ asset('assets/js/gstatic/loader.js') }}"></script>
-    <script>
-        window.google.charts.load('46', {
-        packages: ['corechart'],
-        language: 'es'
-        
-    });
-    </script>
-
 </body>
 
 </html>

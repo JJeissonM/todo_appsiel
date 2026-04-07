@@ -51,6 +51,10 @@
             this.reconnectTimer = null;
             this.wsUrlIndex = 0;
             this.pendingJobs = {};
+            this.dispatchQueue = [];
+            this.activeDispatch = null;
+            this.processingQueueJobs = {};
+            this.processingDocumentKeys = {};
             this.queueItems = [];
             this.canRetireQueue = false;
             this.queueModalOpen = false;
@@ -223,6 +227,158 @@
             });
         }
 
+        buildDocumentKey(documentMeta = {}) {
+            const coreTipoTransaccionId = parseInt(documentMeta.core_tipo_transaccion_id || 0, 10) || 0;
+            const coreTipoDocAppId = parseInt(documentMeta.core_tipo_doc_app_id || 0, 10) || 0;
+            const consecutivo = parseInt(documentMeta.consecutivo || 0, 10) || 0;
+            const documentType = String(documentMeta.document_type || '').trim();
+
+            if (!coreTipoTransaccionId || !coreTipoDocAppId || !consecutivo || !documentType) {
+                return '';
+            }
+
+            return [coreTipoTransaccionId, coreTipoDocAppId, consecutivo, documentType].join(':');
+        }
+
+        getDispatchPromise(options = {}) {
+            const queueJobId = options.queueJobId ? String(options.queueJobId) : '';
+            const documentKey = options.documentKey ? String(options.documentKey) : '';
+
+            if (queueJobId && this.processingQueueJobs[queueJobId]) {
+                return this.processingQueueJobs[queueJobId];
+            }
+
+            if (documentKey && this.processingDocumentKeys[documentKey]) {
+                return this.processingDocumentKeys[documentKey];
+            }
+
+            return null;
+        }
+
+        registerDispatchPromise(promise, options = {}) {
+            const queueJobId = options.queueJobId ? String(options.queueJobId) : '';
+            const documentKey = options.documentKey ? String(options.documentKey) : '';
+
+            if (queueJobId) {
+                this.processingQueueJobs[queueJobId] = promise;
+            }
+
+            if (documentKey) {
+                this.processingDocumentKeys[documentKey] = promise;
+            }
+
+            const cleanup = () => {
+                if (queueJobId && this.processingQueueJobs[queueJobId] === promise) {
+                    delete this.processingQueueJobs[queueJobId];
+                }
+
+                if (documentKey && this.processingDocumentKeys[documentKey] === promise) {
+                    delete this.processingDocumentKeys[documentKey];
+                }
+            };
+
+            promise.then(cleanup, cleanup);
+            return promise;
+        }
+
+        queueDispatch(options = {}) {
+            const payload = options.payload || null;
+            const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+
+            return new Promise((resolve, reject) => {
+                this.dispatchQueue.push({
+                    payload: payload,
+                    timeoutMs: timeoutMs,
+                    resolve: resolve,
+                    reject: reject
+                });
+
+                this.processDispatchQueue();
+            });
+        }
+
+        processDispatchQueue() {
+            if (this.activeDispatch || !this.dispatchQueue.length) {
+                return;
+            }
+
+            const nextDispatch = this.dispatchQueue.shift();
+            this.activeDispatch = nextDispatch;
+            this.waitForSocketReady()
+                .then(() => this.sendAndWait(nextDispatch.payload, nextDispatch.timeoutMs))
+                .then((response) => {
+                    nextDispatch.resolve(response);
+                })
+                .catch((error) => {
+                    nextDispatch.reject(error);
+                })
+                .then(() => {
+                    this.activeDispatch = null;
+                    this.processDispatchQueue();
+                });
+        }
+
+        waitForSocketReady(timeoutMs = 5000) {
+            if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                return Promise.resolve();
+            }
+
+            this.connect();
+
+            return new Promise((resolve, reject) => {
+                const startedAt = Date.now();
+
+                const poll = () => {
+                    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+                        resolve();
+                        return;
+                    }
+
+                    if (Date.now() - startedAt >= timeoutMs) {
+                        reject({
+                            Status: 'ERROR',
+                            ErrorMessage: 'APM no conectado o en reconexion.'
+                        });
+                        return;
+                    }
+
+                    global.setTimeout(poll, 150);
+                };
+
+                poll();
+            });
+        }
+
+        completeQueuedJob(job, apmResponse) {
+            return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
+                .then(() => {
+                    this.syncQueueItems();
+                    return Object.assign({}, apmResponse, {
+                        QueueJobId: job.id,
+                        CopyNumber: job.copy_number,
+                        CopyLabel: job.copy_label
+                    });
+                });
+        }
+
+        failQueuedJob(job, apmError) {
+            const errorWithQueueMeta = Object.assign({}, apmError, {
+                QueueJobId: job.id,
+                CopyNumber: job.copy_number,
+                CopyLabel: job.copy_label
+            });
+
+            return this.request('POST', `apm_print_queue/${job.id}/mark_failed`, {
+                error_message: apmError && apmError.ErrorMessage ? apmError.ErrorMessage : 'Error desconocido al imprimir con APM.'
+            }).then(() => {
+                this.syncQueueItems();
+                throw errorWithQueueMeta;
+            }, () => {
+                this.syncQueueItems();
+                throw errorWithQueueMeta;
+            });
+        }
+
         isConnected() {
             if (!this.socket || this.socket.readyState === WebSocket.CLOSED) {
                 this.connect();
@@ -341,84 +497,55 @@
             const payload = options.payload || null;
             const documentMeta = options.documentMeta || {};
             const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+            const documentKey = this.buildDocumentKey(documentMeta);
+            const existingPromise = this.getDispatchPromise({ documentKey: documentKey });
 
-            return this.request('POST', 'apm_print_queue/prepare', {
+            if (existingPromise) {
+                return existingPromise;
+            }
+
+            const enqueuePromise = this.request('POST', 'apm_print_queue/prepare', {
                 payload: payload,
                 document_meta: documentMeta
             }).then((prepared) => {
                 const job = prepared.job;
                 const payloadToSend = prepared.payload;
 
-                return this.sendAndWait(payloadToSend, timeoutMs)
-                    .then((apmResponse) => {
-                        return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
-                            .then(() => {
-                                this.syncQueueItems();
-                                return Object.assign({}, apmResponse, {
-                                    QueueJobId: job.id,
-                                    CopyNumber: job.copy_number,
-                                    CopyLabel: job.copy_label
-                                });
-                            });
-                    })
+                return this.queueDispatch({
+                    payload: payloadToSend,
+                    timeoutMs: timeoutMs,
+                    queueJobId: job.id
+                })
+                    .then((apmResponse) => this.completeQueuedJob(job, apmResponse))
                     .catch((apmError) => {
-                        return this.request('POST', `apm_print_queue/${job.id}/mark_failed`, {
-                            error_message: apmError && apmError.ErrorMessage ? apmError.ErrorMessage : 'Error desconocido al imprimir con APM.'
-                        }).then(() => {
-                            this.syncQueueItems();
-                            throw Object.assign({}, apmError, {
-                                QueueJobId: job.id,
-                                CopyNumber: job.copy_number,
-                                CopyLabel: job.copy_label
-                            });
-                        }).catch(() => {
-                            this.syncQueueItems();
-                            throw Object.assign({}, apmError, {
-                                QueueJobId: job.id,
-                                CopyNumber: job.copy_number,
-                                CopyLabel: job.copy_label
-                            });
-                        });
+                        return this.failQueuedJob(job, apmError);
                     });
             });
+
+            return this.registerDispatchPromise(enqueuePromise, { documentKey: documentKey });
         }
 
         reprintQueuedJob(jobId, timeoutMs = DEFAULT_TIMEOUT_MS) {
-            return this.request('POST', `apm_print_queue/${jobId}/prepare_reprint`, {})
+            const existingPromise = this.getDispatchPromise({ queueJobId: jobId });
+            if (existingPromise) {
+                return existingPromise;
+            }
+
+            const reprintPromise = this.request('POST', `apm_print_queue/${jobId}/prepare_reprint`, {})
                 .then((prepared) => {
                     const job = prepared.job;
-                    return this.sendAndWait(prepared.payload, timeoutMs)
-                        .then((apmResponse) => {
-                            return this.request('POST', `apm_print_queue/${job.id}/mark_printed`, {})
-                                .then(() => {
-                                    this.syncQueueItems();
-                                    return Object.assign({}, apmResponse, {
-                                        QueueJobId: job.id,
-                                        CopyNumber: job.copy_number,
-                                        CopyLabel: job.copy_label
-                                    });
-                                });
-                        })
+                    return this.queueDispatch({
+                        payload: prepared.payload,
+                        timeoutMs: timeoutMs,
+                        queueJobId: job.id
+                    })
+                        .then((apmResponse) => this.completeQueuedJob(job, apmResponse))
                         .catch((apmError) => {
-                            return this.request('POST', `apm_print_queue/${job.id}/mark_failed`, {
-                                error_message: apmError && apmError.ErrorMessage ? apmError.ErrorMessage : 'Error desconocido al imprimir con APM.'
-                            }).then(() => {
-                                this.syncQueueItems();
-                                throw Object.assign({}, apmError, {
-                                    QueueJobId: job.id,
-                                    CopyNumber: job.copy_number,
-                                    CopyLabel: job.copy_label
-                                });
-                            }).catch(() => {
-                                this.syncQueueItems();
-                                throw Object.assign({}, apmError, {
-                                    QueueJobId: job.id,
-                                    CopyNumber: job.copy_number,
-                                    CopyLabel: job.copy_label
-                                });
-                            });
+                            return this.failQueuedJob(job, apmError);
                         });
                 });
+
+            return this.registerDispatchPromise(reprintPromise, { queueJobId: jobId });
         }
 
         retireQueuedJob(jobId) {
@@ -447,7 +574,7 @@
                         z-index: 10050;
                         border: 0;
                         border-radius: 999px;
-                        background: #1f2d3d;
+                        background: #574696;
                         color: #fff;
                         padding: 10px 16px;
                         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
@@ -537,7 +664,6 @@
                         <div class="apm-queue-item-title">${label}</div>
                         <div class="apm-queue-item-meta">
                             Copia: ${item.copy_label}<br>
-                            Documento: ${item.core_tipo_transaccion_id}/${item.core_tipo_doc_app_id}/${item.consecutivo}
                         </div>
                         <div class="apm-queue-item-error">${item.last_error || 'Pendiente de reimpresion manual.'}</div>
                         <button type="button" class="btn btn-primary btn-xs apm-reprint-btn" data-job-id="${item.id}">Reimprimir</button>
@@ -667,7 +793,8 @@
                 confirmButtonText: 'Sí, retirar',
                 cancelButtonText: 'No'
             }).then((result) => {
-                if (result && result.isConfirmed) {
+                const isConfirmed = !!(result && (result.isConfirmed === true || result.value === true));
+                if (isConfirmed) {
                     executeRetire();
                 }
             });
@@ -688,8 +815,8 @@
                     width: 700,
                     showConfirmButton: false,
                     showCloseButton: true,
-                    didOpen: () => this.bindQueueModalActions(),
-                    willClose: () => {
+                    onOpen: () => this.bindQueueModalActions(),
+                    onClose: () => {
                         this.queueModalOpen = false;
                     }
                 });
@@ -829,5 +956,3 @@
         }
     };
 })(window);
-
-

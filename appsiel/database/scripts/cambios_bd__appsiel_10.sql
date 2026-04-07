@@ -1,6 +1,11 @@
 -- 30 ENERO 2025
 -- Se agregaron nuevas config para Ventas POS
 
+-- 06 ABRIL 2026 - APM
+-- Primera impresion: ORIGINAL (copy_number = 0)
+-- Reimpresiones del mismo documento: COPIA #1, COPIA #2, ...
+ALTER TABLE `apm_print_jobs` ALTER COLUMN `copy_number` SET DEFAULT 0;
+
 -- Eliminar Campo cliente_input del Modelo Pedidos POS
 DELETE FROM `sys_modelo_tiene_campos` WHERE `core_modelo_id` = 175 AND core_campo_id = 522;
 

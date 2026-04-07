@@ -70,7 +70,7 @@
             allowOutsideClick: false,
             allowEscapeKey: false,
             showConfirmButton: false,
-            didOpen: function () {
+            onOpen: function () {
                 global.Swal.showLoading();
             }
         });
