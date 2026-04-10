@@ -1,13 +1,5 @@
 @extends('layouts.principal')
 
-<?php
-	use App\Http\Controllers\Sistema\VistaController;
-
-	if ( $valor_total == 0) {
-		$valor_total = 0.0000001;
-	}
-?>
-
 @section('content')
 	{{ Form::bsMigaPan($miga_pan) }}
 	<hr>
@@ -20,6 +12,10 @@
 				<div class="col-md-6">
 					<br><br>
 					<div class="row" style="padding:5px;">
+						{{ Form::bsSelect( 'periodo_lectivo_id', $periodo_lectivo_id, 'Año lectivo',$periodos_lectivos, [ ] ) }}
+			        </div>
+
+					<div class="row" style="padding:5px;">
 						{{ Form::bsSelect( 'periodo_id', $periodo_id, 'Periodo',$periodos, [ ] ) }}
 			        </div>
 
@@ -28,7 +24,7 @@
 			        </div>
 
 					<div class="row" style="padding:5px; text-align: center;">
-						<a href="{{ url('calificaciones?id='.Input::get('id').'&periodo_id='.Input::get('periodo_id').'&curso_id='.Input::get('curso_id')) }}" class="btn btn-info btn-bg" id="btn_actualizar">Actualizar</a>
+						<a href="{{ url('calificaciones?id='.Input::get('id').'&periodo_lectivo_id='.$periodo_lectivo_id.'&periodo_id='.Input::get('periodo_id').'&curso_id='.Input::get('curso_id')) }}" class="btn btn-info btn-bg" id="btn_actualizar">Actualizar</a>
 			        </div>
 
 
@@ -46,6 +42,7 @@
 						<thead>
 							<tr>
 								<th>Escala</th>
+								<th>Cantidad calificaciones</th>
 								<th>Calificación promedio</th>
 								<th>Porcentaje</th>
 							</tr>
@@ -54,12 +51,16 @@
 							@for($i=0; $i < $cant; $i++)
 								<tr>
 									<td>{{ $tabla[$i]['escala'] }}</td>
-									<td>{{ number_format($tabla[$i]['valor'], 2, ',', '.') }}</td>
-									<td>{{ number_format(($tabla[$i]['valor'] * 100) / $valor_total, 2, ',', '.') }} %</td>
+									<td>{{ number_format($tabla[$i]['cantidad'], 0, ',', '.') }}</td>
+									<td>{{ number_format($tabla[$i]['promedio'], 2, ',', '.') }}</td>
+									<td>{{ $total_calificaciones > 0 ? number_format(($tabla[$i]['cantidad'] * 100) / $total_calificaciones, 2, ',', '.') : '0,00' }} %</td>
 								</tr>
 							@endfor		
 						</tbody>
 					</table>
+					<div class="well well-sm" style="margin-top: 10px;">
+						<strong>Interpretación del reporte:</strong> la gráfica muestra cómo se distribuyen las calificaciones registradas en las escalas de valoración del año lectivo, periodo y curso seleccionados. La columna <strong>Cantidad calificaciones</strong> indica cuántos registros quedaron en cada escala, <strong>Calificación promedio</strong> muestra el promedio de esas notas dentro de la misma escala y <strong>Porcentaje</strong> corresponde a la participación de cada escala sobre el total de calificaciones analizadas.
+					</div>
 				</div>
 				
 			</div>
@@ -74,16 +75,56 @@
 		$(document).ready(function(){
 
 			var id = getParameterByName('id');
+			var baseUrl = "{{ url('calificaciones') }}";
+
+			function actualizarUrl()
+			{
+				$('#btn_actualizar').attr('href', baseUrl + '?id=' + id + '&periodo_lectivo_id=' + $('#periodo_lectivo_id').val() + '&periodo_id=' + $('#periodo_id').val() + '&curso_id=' + $('#curso_id').val());
+			}
+
+			$('#periodo_lectivo_id').on('change',function()
+			{
+				$('#periodo_id').html('<option value="">Todos</option>');
+				$('#curso_id').html('<option value="">Todos</option>');
+
+				var periodo_lectivo_id = $(this).val();
+
+				actualizarUrl();
+
+				if ( periodo_lectivo_id == '') {
+					return false;
+				}
+
+				$.ajax({
+		        	url: "{{ url('get_select_periodos') }}" + "/" + periodo_lectivo_id,
+		        	type: 'get',
+		        	success: function(datos){
+	    				$('#periodo_id').html(datos.replace('Seleccionar...', 'Todos'));
+	    				actualizarUrl();
+			        }
+			    });
+
+				$.ajax({
+		        	url: "{{ url('get_select_cursos') }}" + "/" + periodo_lectivo_id,
+		        	type: 'get',
+		        	success: function(datos){
+	    				$('#curso_id').html(datos.replace('Seleccionar...', 'Todos'));
+	    				actualizarUrl();
+			        }
+			    });
+			});
 
 			$('#periodo_id').on('change',function()
 			{
-				$('#btn_actualizar').attr('href','calificaciones?id='+id+'&periodo_id='+$('#periodo_id').val()+'&curso_id='+$('#curso_id').val());					
+				actualizarUrl();					
 			});
 
 			$('#curso_id').on('change',function()
 			{
-				$('#btn_actualizar').attr('href','calificaciones?id='+id+'&periodo_id='+$('#periodo_id').val()+'&curso_id='+$('#curso_id').val());					
+				actualizarUrl();					
 			});
+
+			actualizarUrl();
 
 			function getParameterByName(name) {
 			    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");

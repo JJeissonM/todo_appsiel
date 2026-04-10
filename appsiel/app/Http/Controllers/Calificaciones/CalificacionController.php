@@ -56,13 +56,37 @@ class CalificacionController extends Controller
     public function index()
     {
         if (!is_null($this->colegio)) {
+            $periodo_lectivo_actual = PeriodoLectivo::get_actual();
+
+            $periodo_lectivo_id = is_null($periodo_lectivo_actual) ? '' : $periodo_lectivo_actual->id;
+            if (Input::get('periodo_lectivo_id') !== null && Input::get('periodo_lectivo_id') !== '') {
+                $periodo_lectivo_id = (int) Input::get('periodo_lectivo_id');
+            }
+
+            $periodos_lectivos = PeriodoLectivo::where('id_colegio', $this->colegio->id)
+                ->where('estado', 'Activo')
+                ->orderBy('fecha_desde', 'DESC')
+                ->get();
+
+            $vec_periodos_lectivos = [];
+            foreach ($periodos_lectivos as $opcion) {
+                $vec_periodos_lectivos[$opcion->id] = $opcion->descripcion;
+            }
+            $periodos_lectivos = $vec_periodos_lectivos;
+
             $periodo_id = '';
             $periodo_lbl = 'Todos';
-            $periodos = Periodo::where('periodo_lectivo_id', PeriodoLectivo::get_actual()->id)->where('id_colegio', $this->colegio->id)->where('estado', 'Activo')->get();
+            $periodos = Periodo::where('periodo_lectivo_id', $periodo_lectivo_id)
+                ->where('id_colegio', $this->colegio->id)
+                ->where('estado', 'Activo')
+                ->orderBy('numero')
+                ->get();
             if (Input::get('periodo_id') !== null) {
                 $periodo_id = Input::get('periodo_id');
-                if (Input::get('periodo_id') != '') {
+                if (Input::get('periodo_id') != '' && $periodos->contains('id', (int) Input::get('periodo_id'))) {
                     $periodo_lbl = Periodo::find(Input::get('periodo_id'))->descripcion;
+                } else {
+                    $periodo_id = '';
                 }
             }
             $vec1[''] = 'Todos';
@@ -73,11 +97,22 @@ class CalificacionController extends Controller
 
             $curso_id = '';
             $curso_lbl = 'Todos';
-            $cursos = Curso::where('id_colegio', $this->colegio->id)->where('estado', 'Activo')->get();
+            $cursos = Curso::where('id_colegio', $this->colegio->id)
+                ->where('estado', 'Activo')
+                ->whereIn('id', function ($query) use ($periodo_lectivo_id) {
+                    $query->from('sga_curso_tiene_asignaturas')
+                        ->select('curso_id')
+                        ->where('periodo_lectivo_id', $periodo_lectivo_id)
+                        ->distinct();
+                })
+                ->orderBy('descripcion')
+                ->get();
             if (Input::get('curso_id') !== null) {
                 $curso_id = Input::get('curso_id');
-                if (Input::get('curso_id') != '') {
+                if (Input::get('curso_id') != '' && $cursos->contains('id', (int) Input::get('curso_id'))) {
                     $curso_lbl = Curso::find(Input::get('curso_id'))->descripcion;
+                } else {
+                    $curso_id = '';
                 }
             }
             $vec2[''] = 'Todos';
@@ -87,26 +122,52 @@ class CalificacionController extends Controller
             $cursos = $vec2;
 
 
-            $escalas = EscalaValoracion::where('periodo_lectivo_id', PeriodoLectivo::get_actual()->id)->orderBy('calificacion_minima', 'ASC')->get();
+            $escalas = EscalaValoracion::where('periodo_lectivo_id', $periodo_lectivo_id)
+                ->orderBy('calificacion_minima', 'ASC')
+                ->get();
 
+            $calificaciones_query = Calificacion::query()
+                ->join('sga_periodos', 'sga_periodos.id', '=', 'sga_calificaciones.id_periodo')
+                ->where('sga_calificaciones.id_colegio', $this->colegio->id)
+                ->where('sga_periodos.periodo_lectivo_id', $periodo_lectivo_id);
+
+            if ($periodo_id !== '') {
+                $calificaciones_query->where('sga_calificaciones.id_periodo', $periodo_id);
+            }
+
+            if ($curso_id !== '') {
+                $calificaciones_query->where('sga_calificaciones.curso_id', $curso_id);
+            }
+
+            $asignatura_id_para_asistencias = config('calificaciones.asignatura_id_para_asistencias');
+            if ($asignatura_id_para_asistencias !== '') {
+                $calificaciones_query->where('sga_calificaciones.id_asignatura', '<>', $asignatura_id_para_asistencias);
+            }
+
+            $total_calificaciones = (clone $calificaciones_query)->count();
 
             // Gráfica de rendimiento académico
             $stocksTable1 = Lava::DataTable();
 
             $stocksTable1->addStringColumn('Escala')
-                ->addNumberColumn('Valor');
+                ->addNumberColumn('Cantidad');
 
             $tabla = [];
             $i = 0;
-            $valor_total = 0;
             foreach ($escalas as $escala) {
-                $valor_calificacion = Calificacion::where('calificacion', '>=', $escala->calificacion_minima)->where('calificacion', '<=', $escala->calificacion_maxima)->where('id_periodo', 'LIKE', '%' . $periodo_id . '%')->where('curso_id', 'LIKE', '%' . $curso_id . '%')->avg('calificacion');
+                $calificaciones_por_escala = (clone $calificaciones_query)
+                    ->whereBetween('sga_calificaciones.calificacion', [$escala->calificacion_minima, $escala->calificacion_maxima]);
 
-                $stocksTable1->addRow([$escala->nombre_escala, (float)$valor_calificacion]);
+                $cantidad_calificaciones = $calificaciones_por_escala->count();
+                $promedio_calificaciones = (clone $calificaciones_query)
+                    ->whereBetween('sga_calificaciones.calificacion', [$escala->calificacion_minima, $escala->calificacion_maxima])
+                    ->avg('sga_calificaciones.calificacion');
+
+                $stocksTable1->addRow([$escala->nombre_escala, $cantidad_calificaciones]);
 
                 $tabla[$i]['escala'] = $escala->nombre_escala;
-                $tabla[$i]['valor'] = (float)$valor_calificacion;
-                $valor_total += (float)$valor_calificacion;
+                $tabla[$i]['cantidad'] = $cantidad_calificaciones;
+                $tabla[$i]['promedio'] = (float) $promedio_calificaciones;
                 $i++;
             }
 
@@ -120,7 +181,7 @@ class CalificacionController extends Controller
                 ['url' => 'NO', 'etiqueta' => 'Informes y listados']
             ];
 
-            return view('calificaciones.informes_listados', compact('miga_pan', 'periodos', 'periodo_id', 'periodo_lbl', 'cursos', 'curso_id', 'curso_lbl', 'tabla', 'valor_total'));
+            return view('calificaciones.informes_listados', compact('miga_pan', 'periodos_lectivos', 'periodo_lectivo_id', 'periodos', 'periodo_id', 'periodo_lbl', 'cursos', 'curso_id', 'curso_lbl', 'tabla', 'total_calificaciones'));
         } else {
             echo "La Empresa asociada al Usuario actual no tiene ningún Colegio asociado.";
         }
@@ -632,4 +693,3 @@ class CalificacionController extends Controller
         return Periodo::find($periodo_id)->periodo_lectivo_id;
     }
 }
-
