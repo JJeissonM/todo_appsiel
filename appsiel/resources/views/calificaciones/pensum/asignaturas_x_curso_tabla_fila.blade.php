@@ -9,6 +9,11 @@
         <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('calificaciones_cambiar_intensidad_horaria_asignatura') . "/" . $periodo_lectivo_id . "/" . $curso_id . "/" . $asignatura_id }}"> {{ $intensidad_horaria }} 
         </div>
     </td>
+    <td>
+        <div class="elemento_modificar" title="Doble click para modificar." data-url_modificar="{{ url('calificaciones_cambiar_cantidad_guias_asignatura') . "/" . $periodo_lectivo_id . "/" . $curso_id . "/" . $asignatura_id }}" data-allow-empty="true" data-empty-token="vacio_config" data-empty-label="Config. general" data-edit-value="{{ is_null($cantidad_guias) ? '' : $cantidad_guias }}">
+            {{ is_null($cantidad_guias) ? 'Config. general' : $cantidad_guias }}
+        </div>
+    </td>
     <td> {{ $maneja_calificacion }} </td>
     <td> 
     	@if( $profesor == 'No' )

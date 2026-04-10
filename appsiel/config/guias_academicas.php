@@ -11,7 +11,7 @@ return [
      | especifica, se usa la cantidad por defecto.
      |
      */
-    'cantidad_por_defecto' => 4,
+    'cantidad_por_defecto' => 10,
 
     'cantidad_por_curso' => [
         // '35' => 3, // ejemplo: el curso con ID 35 requiere 3 guías

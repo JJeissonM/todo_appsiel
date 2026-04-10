@@ -18,7 +18,7 @@ class CursoTieneAsignatura extends Model
 	protected $table = 'sga_curso_tiene_asignaturas';
 
     // peso: para calcular media ponderada del area
-    protected $fillable = ['periodo_lectivo_id','curso_id','asignatura_id','intensidad_horaria','orden_boletin','maneja_calificacion','peso'];
+    protected $fillable = ['periodo_lectivo_id','curso_id','asignatura_id','intensidad_horaria','orden_boletin','maneja_calificacion','peso','cantidad_guias'];
 
     public function periodo_lectivo()
     {
@@ -91,6 +91,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.intensidad_horaria',
                                         'sga_curso_tiene_asignaturas.orden_boletin',
                                         'sga_curso_tiene_asignaturas.maneja_calificacion',
+                                        'sga_curso_tiene_asignaturas.cantidad_guias',
                                         'sga_areas.id as area_id',
                                         'sga_areas.descripcion as area',
                                         'sga_areas.orden_listados as orden',
@@ -144,6 +145,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.orden_boletin',
                                         'sga_curso_tiene_asignaturas.maneja_calificacion',
                                         'sga_curso_tiene_asignaturas.peso',
+                                        'sga_curso_tiene_asignaturas.cantidad_guias',
                                         'sga_areas.id as area_id',
                                         'sga_areas.descripcion as area',
                                         'sga_areas.orden_listados as orden',
@@ -179,6 +181,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.intensidad_horaria',
                                         'sga_curso_tiene_asignaturas.orden_boletin',
                                         'sga_curso_tiene_asignaturas.maneja_calificacion',
+                                        'sga_curso_tiene_asignaturas.cantidad_guias',
                                         'sga_areas.id as area_id',
                                         'sga_areas.descripcion as area',
                                         'sga_areas.orden_listados as orden',
@@ -215,6 +218,7 @@ class CursoTieneAsignatura extends Model
                                         'sga_curso_tiene_asignaturas.intensidad_horaria',
                                         'sga_curso_tiene_asignaturas.orden_boletin',
                                         'sga_curso_tiene_asignaturas.maneja_calificacion',
+                                        'sga_curso_tiene_asignaturas.cantidad_guias',
                                         'sga_areas.id as area_id',
                                         'sga_areas.descripcion as area',
                                         'sga_areas.orden_listados as orden',

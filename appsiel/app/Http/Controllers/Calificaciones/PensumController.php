@@ -56,6 +56,10 @@ class PensumController extends CalificacionController
      */
     public function guardar_asignacion_asignatura( Request $request )
     {
+        $request->merge([
+            'cantidad_guias' => $request->cantidad_guias === '' ? null : $request->cantidad_guias
+        ]);
+
         CursoTieneAsignatura::create( $request->all() );
 
         $registro = CursoTieneAsignatura::get_datos_asignacion( $request->periodo_lectivo_id, $request->curso_id, $request->asignatura_id );
@@ -72,6 +76,7 @@ class PensumController extends CalificacionController
                                                         'area_descripcion' => $registro->area,
                                                         'asignatura_descripcion' => $registro->descripcion,
                                                         'intensidad_horaria' => $registro->intensidad_horaria, 
+                                                        'cantidad_guias' => $registro->cantidad_guias,
                                                         'maneja_calificacion' => $maneja_calificacion,
                                                         'periodo_lectivo_id' => $registro->periodo_lectivo_id,
                                                         'curso_id' => $registro->curso_id,
@@ -119,6 +124,25 @@ class PensumController extends CalificacionController
                                     'asignatura_id' => $asignatura_id 
                                     ] )
                             ->update( [ 'intensidad_horaria' => $nueva_ih ] );
+
+        return 'true';
+        
+    }
+
+    public function cambiar_cantidad_guias_asignatura( $periodo_lectivo_id, $curso_id, $asignatura_id, $nueva_cantidad )
+    {
+        $cantidadGuias = $nueva_cantidad;
+
+        if ( in_array( strtolower( $nueva_cantidad ), ['null', 'vacio', 'vacio_config'] ) ) {
+            $cantidadGuias = null;
+        }
+
+        CursoTieneAsignatura::where( [
+                                    'periodo_lectivo_id' => $periodo_lectivo_id,
+                                    'curso_id' => $curso_id,
+                                    'asignatura_id' => $asignatura_id 
+                                    ] )
+                            ->update( [ 'cantidad_guias' => $cantidadGuias ] );
 
         return 'true';
         

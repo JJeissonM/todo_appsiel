@@ -6,7 +6,7 @@
 
 <div class="table-responsive">
     <table class="table table-bordered table-striped" id="lista_asignaciones">
-    	{{ Form::bsTableHeader(['Orden boletín','Área','Descripción','Intensidad horaria','Maneja calificación','Acción']) }}
+    	{{ Form::bsTableHeader(['Orden boletín','Área','Descripción','Intensidad horaria','Cantidad guías','Maneja calificación','Acción']) }}
         <tbody>
 	    	<?php 
 	        	$ih_total = 0;
@@ -36,6 +36,7 @@
 	            												'area_descripcion' => $fila->area,
 	            												'asignatura_descripcion' => $fila->descripcion,
 	            												'intensidad_horaria' => $fila->intensidad_horaria, 
+	            												'cantidad_guias' => $fila->cantidad_guias,
 	            												'maneja_calificacion' => $maneja_calificacion,
 	            												'periodo_lectivo_id' => $fila->periodo_lectivo_id,
 	            												'curso_id' => $fila->curso_id,
@@ -56,7 +57,7 @@
             	<td class="text-center"> 
             		<div id="ih_total"> {{ $ih_total }} </div> 
             	</td>
-            	<td colspan="2"> </td>
+            	<td colspan="3"> </td>
             </tr>
         </tfoot>
 

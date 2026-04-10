@@ -56,6 +56,19 @@
 
 				</div>
 
+				<div class="row">
+	                <div class="col-md-6">
+		            	<div class="row" style="padding:5px;">
+		            		{{ Form::bsText('cantidad_guias',null,'Cantidad guías académicas',['type' => 'number','min' => 0]) }}
+		            	</div>
+	                </div>
+	                <div class="col-md-6">
+	                	<div class="well well-sm" style="margin: 5px 0 0 0;">
+	                		Deje este campo vacío para usar la configuración general de guías académicas.
+	                	</div>
+	                </div>
+				</div>
+
 				<br/>
 
 				<div class="row" style="padding:5px;">
@@ -184,6 +197,7 @@
 				$("#asignatura_id").html('<option value=""></option>');
 		    	$('#intensidad_horaria').val('');
 		    	$('#orden_boletin').val('');
+		    	$('#cantidad_guias').val('');
 		    	
 		    	$("#listado").html('');
 		    }
@@ -276,6 +290,7 @@
 
 	                    $('#intensidad_horaria').val('');
     					$('#orden_boletin').val('');
+    					$('#cantidad_guias').val('');
 
     					$("#asignatura_id option[value='"+asignatura_id+"']").remove();
     					$("#asignatura_id").val("");
@@ -303,7 +318,7 @@
 
 				elemento_padre = elemento_modificar.parent();
 
-				valor_actual = $(this).html();
+				valor_actual = $.trim( $(this).attr('data-edit-value') ?? $(this).text() );
 
 				elemento_modificar.hide();
 
@@ -341,27 +356,47 @@
 
 			function guardar_valor_nuevo( caja_texto )
 			{
-				if( !validar_input_numerico( $( document.getElementById('valor_nuevo') ) ) )
+				var permite_vacio = caja_texto.prev().attr('data-allow-empty') == 'true';
+				var valor_nuevo = $.trim( document.getElementById('valor_nuevo').value );
+
+				if( valor_nuevo === '' && !permite_vacio )
+				{
+					elemento_padre.find('#valor_nuevo').focus();
+					return false;
+				}
+
+				if( valor_nuevo !== '' && !validar_input_numerico( $( document.getElementById('valor_nuevo') ) ) )
 				{
 					return false;
 				}
 
-				var valor_nuevo = document.getElementById('valor_nuevo').value;
+				var valor_enviado = valor_nuevo;
+				if( valor_nuevo === '' && permite_vacio )
+				{
+					valor_enviado = caja_texto.prev().attr('data-empty-token');
+				}
 
 				// Si no cambió el valor_nuevo, no pasa nada
 				if ( valor_nuevo == valor_actual) { return false; }
 
 				$('#div_cargando').show();
 
-				console.log( caja_texto.prev().attr('data-url_modificar') + "/" + valor_nuevo );
+				console.log( caja_texto.prev().attr('data-url_modificar') + "/" + valor_enviado );
 
 				$.ajax({
-		        	url: caja_texto.prev().attr('data-url_modificar') + "/" + valor_nuevo,
+		        	url: caja_texto.prev().attr('data-url_modificar') + "/" + valor_enviado,
 		        	method: "GET",
 		        	success: function( data ){
 		        		$('#div_cargando').hide();
 				    	
-				    	elemento_modificar.html( valor_nuevo );
+				    	var texto_mostrar = valor_nuevo;
+				    	if( valor_nuevo === '' && permite_vacio )
+				    	{
+				    		texto_mostrar = caja_texto.prev().attr('data-empty-label');
+				    	}
+
+				    	elemento_modificar.attr( 'data-edit-value', valor_nuevo );
+				    	elemento_modificar.html( texto_mostrar );
 						elemento_modificar.show();
 
 						elemento_padre.find('#valor_nuevo').remove();

@@ -111,6 +111,7 @@ Route::resource('calificaciones', 'Calificaciones\CalificacionController', ['exc
 Route::get('calificaciones_cambiar_orden_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_posicion}', 'Calificaciones\PensumController@cambiar_orden_asignatura');
 
 Route::get('calificaciones_cambiar_intensidad_horaria_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_ih}', 'Calificaciones\PensumController@cambiar_intensidad_horaria_asignatura');
+Route::get('calificaciones_cambiar_cantidad_guias_asignatura/{periodo_lectivo_id}/{curso_id}/{asignatura_id}/{nueva_cantidad}', 'Calificaciones\PensumController@cambiar_cantidad_guias_asignatura');
 
 Route::get('calificaciones/asignar_asignaturas', 'Calificaciones\PensumController@asignar_asignaturas');
 Route::post('calificaciones/guardar_asignacion_asignatura', 'Calificaciones\PensumController@guardar_asignacion_asignatura');
@@ -156,4 +157,3 @@ Route::get('calcular_promedio_notas_periodo_final_curso/{periodo_lectivo_id}/{cu
 
 Route::get('sga_consultar_areas_asignaturas_pesos/{periodo_lectivo_id}/{grado_id}', 'Calificaciones\ProcesoController@consultar_areas_asignaturas_pesos');
 Route::post('sga_almacenar_pesos_asignaturas_areas', 'Calificaciones\ProcesoController@almacenar_pesos_asignaturas_areas');
-

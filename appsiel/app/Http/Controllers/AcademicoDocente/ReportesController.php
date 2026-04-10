@@ -291,6 +291,7 @@ class ReportesController extends ModeloController
             ->groupBy(
                 'sga_curso_tiene_asignaturas.curso_id',
                 'sga_curso_tiene_asignaturas.asignatura_id',
+                'sga_curso_tiene_asignaturas.cantidad_guias',
                 'sga_cursos.descripcion',
                 'sga_asignaturas.descripcion',
                 'sga_asignaciones_profesores.id_user',
@@ -299,6 +300,7 @@ class ReportesController extends ModeloController
             ->select(
                 'sga_curso_tiene_asignaturas.curso_id',
                 'sga_curso_tiene_asignaturas.asignatura_id',
+                'sga_curso_tiene_asignaturas.cantidad_guias',
                 'sga_cursos.descripcion AS curso',
                 'sga_asignaturas.descripcion AS asignatura',
                 'sga_asignaciones_profesores.id_user AS user_id',
@@ -404,7 +406,7 @@ class ReportesController extends ModeloController
                     ];
                 })->values()->toArray()
                 : [];
-            $requeridas = self::obtenerCantidadGuiasRequeridas($registro->curso_id, $registro->asignatura_id);
+            $requeridas = self::obtenerCantidadGuiasRequeridas($registro->curso_id, $registro->asignatura_id, $registro->cantidad_guias);
             $cumplimiento = $requeridas > 0
                 ? round(($guiasElaboradas / $requeridas) * 100, 2)
                 : ($guiasElaboradas ? 100 : 0);
@@ -439,8 +441,12 @@ class ReportesController extends ModeloController
         return $vista;
     }
 
-    private static function obtenerCantidadGuiasRequeridas($curso_id, $asignatura_id)
+    private static function obtenerCantidadGuiasRequeridas($curso_id, $asignatura_id, $cantidadGuiasAsignada = null)
     {
+        if ( $cantidadGuiasAsignada !== null ) {
+            return (int) $cantidadGuiasAsignada;
+        }
+
         $config = config('guias_academicas');
         $cantidadPorDefecto = (int) data_get($config, 'cantidad_por_defecto', 0);
         $cantidadPorCurso = data_get($config, 'cantidad_por_curso', []);
@@ -463,8 +469,6 @@ class ReportesController extends ModeloController
     }
 
 }
-
-
 
 
 
