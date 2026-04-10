@@ -86,6 +86,40 @@ class FacturaGeneralOsei
         return '""';
     }
 
+    protected function sanitizeLegalName($value)
+    {
+        $value = $this->sanitizeJsonText($value);
+
+        // Normaliza caracteres invisibles o variantes tipograficas comunes
+        $value = preg_replace('/[\p{Cf}\x{00AD}]+/u', '', $value) ?? $value;
+        $value = str_replace(["\xC2\xA0", "–", "—", "−"], [' ', '-', '-', '-'], $value);
+        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+
+        return trim($value);
+    }
+
+    protected function hasInvalidLegalNameCharacters($value)
+    {
+        $value = $this->sanitizeLegalName($value);
+
+        if ($value === '') {
+            return false;
+        }
+
+        return preg_match('/^[a-zA-Z0-9\s\-.&";]+$/', $value) !== 1;
+    }
+
+    protected function getInvalidLegalNameCharacters($value)
+    {
+        $value = $this->sanitizeLegalName($value);
+
+        if ($value === '' || preg_match_all('/[^a-zA-Z0-9\s\-.&";]/', $value, $matches) !== 1) {
+            return [];
+        }
+
+        return array_values(array_unique($matches[0]));
+    }
+
     protected function sanitizeJsonData($value)
     {
         if (is_array($value)) {
@@ -216,10 +250,26 @@ class FacturaGeneralOsei
         if (!is_array($json_doc_electronico_enviado)) {
             $json_doc_electronico_enviado = json_decode($json_doc_electronico_enviado, true);
 
-            $invoiceLegalName = isset($json_doc_electronico_enviado['invoice']['customer']['legal_name']) ? $json_doc_electronico_enviado['invoice']['customer']['legal_name'] : '';
-            $creditNoteLegalName = isset($json_doc_electronico_enviado['credit_note']['customer']['legal_name']) ? $json_doc_electronico_enviado['credit_note']['customer']['legal_name'] : '';
+            $invoiceLegalName = isset($json_doc_electronico_enviado['invoice']['customer']['legal_name']) ? $this->sanitizeLegalName($json_doc_electronico_enviado['invoice']['customer']['legal_name']) : '';
+            $creditNoteLegalName = isset($json_doc_electronico_enviado['credit_note']['customer']['legal_name']) ? $this->sanitizeLegalName($json_doc_electronico_enviado['credit_note']['customer']['legal_name']) : '';
 
-            if (($invoiceLegalName !== '' && preg_match('/[^a-zA-Z0-9\s.]/', $invoiceLegalName)) || ($creditNoteLegalName !== '' && preg_match('/[^a-zA-Z0-9\s.]/', $creditNoteLegalName))) {
+            if (isset($json_doc_electronico_enviado['invoice']['customer']['legal_name'])) {
+                $json_doc_electronico_enviado['invoice']['customer']['legal_name'] = $invoiceLegalName;
+            }
+
+            if (isset($json_doc_electronico_enviado['credit_note']['customer']['legal_name'])) {
+                $json_doc_electronico_enviado['credit_note']['customer']['legal_name'] = $creditNoteLegalName;
+            }
+
+            if ($this->hasInvalidLegalNameCharacters($invoiceLegalName) || $this->hasInvalidLegalNameCharacters($creditNoteLegalName)) {
+                Log::warning('Caracteres invalidos detectados en legal_name antes de enviar a OSEI.', [
+                    'invoice_legal_name' => $invoiceLegalName,
+                    'invoice_invalid_chars' => $this->getInvalidLegalNameCharacters($invoiceLegalName),
+                    'credit_note_legal_name' => $creditNoteLegalName,
+                    'credit_note_invalid_chars' => $this->getInvalidLegalNameCharacters($creditNoteLegalName),
+                    'documento_id' => $this->doc_encabezado->id ?? null
+                ]);
+
                 return (object)[
                     'tipo' => 'mensaje_error',
                     'contenido' => 'Error de cliente: El nombre de la empresa no puede contener caracteres no alfanumericos'
@@ -599,6 +649,10 @@ class FacturaGeneralOsei
             $legal_name = 'CONSUMIDOR FINAL';
             $trade_name = '';
         }
+
+        $legal_name = $this->sanitizeLegalName($legal_name);
+        $trade_name = $this->sanitizeLegalName($trade_name);
+
         $department_id = substr($cliente->tercero->ciudad->id, 3, 2);
         $city_id = substr($cliente->tercero->ciudad->id, 5, strlen($cliente->tercero->ciudad->id) - 1);
 
