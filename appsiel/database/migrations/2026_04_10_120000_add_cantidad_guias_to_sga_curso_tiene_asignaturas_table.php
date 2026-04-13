@@ -8,6 +8,10 @@ class AddCantidadGuiasToSgaCursoTieneAsignaturasTable extends Migration
 {
     public function up()
     {
+        if ( !Schema::hasTable('sga_curso_tiene_asignaturas') ) {
+            return;
+        }
+
         Schema::table('sga_curso_tiene_asignaturas', function (Blueprint $table) {
             if ( !Schema::hasColumn('sga_curso_tiene_asignaturas', 'cantidad_guias') ) {
                 $table->unsignedInteger('cantidad_guias')->nullable()->after('maneja_calificacion');
@@ -17,6 +21,10 @@ class AddCantidadGuiasToSgaCursoTieneAsignaturasTable extends Migration
 
     public function down()
     {
+        if ( !Schema::hasTable('sga_curso_tiene_asignaturas') ) {
+            return;
+        }
+
         Schema::table('sga_curso_tiene_asignaturas', function (Blueprint $table) {
             if ( Schema::hasColumn('sga_curso_tiene_asignaturas', 'cantidad_guias') ) {
                 $table->dropColumn('cantidad_guias');

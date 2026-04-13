@@ -1,9 +1,9 @@
 <br>
-<div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Cuadrade de Contabilidad vs Tesorería 
-    <br> Estos documentos se generaron en el módulo de contabilidad y no se reflejan en el movimiento de Tesorería 
+<div style="text-align: center; font-weight: bold; width: 100%; background-color: #ddd;"> Listado de documentos Descuadrados 
+    <br> Estos documentos tienen movimientos de débito y crédito que no cuadran, por lo tanto, el saldo no es cero. 
     
     <p style=" color: orange;"> 
-        NOTA: Solo se puede actualizar el movimiento de Tesorería en una Caja. Depués se puede hacer un traslado de efectivo en el módulo para mover los valores a Cuentas bancarias.
+        NOTA: Esto ocurre cuando hay alguna caida de Internet o bloqueo en la sincronización de datos.
     </p>
 </div>
 

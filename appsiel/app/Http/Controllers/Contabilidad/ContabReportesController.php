@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\View;
 use Khill\Lavacharts\Laravel\LavachartsFacade;
@@ -94,44 +95,44 @@ class ContabReportesController extends Controller
 
     public function contab_ajax_balance_comprobacion(Request $request)
     {
-        $contab_grupo_cuenta_id = $request->contab_grupo_cuenta_id;
-        $contab_cuenta_id = $request->contab_cuenta_id;
-        $fecha_desde = $request->fecha_desde;
-        $fecha_hasta = $request->fecha_hasta;
-        
-        if ( $contab_grupo_cuenta_id != 'todos' ) {
-            $detallar_grupo_cuentas = 1;
-            // cuando se escoge un grupo de cuenta, se omite la selección de una cuenta específica
-            $contab_cuenta_id = 'todas';
-        }
-        
-        $detallar_grupo_cuentas = $request->detallar_grupo_cuentas;
-        $detallar_terceros = $request->detalla_terceros;
-        $detallar_documentos = $request->detallar_documentos;
+        try {
+            $contab_grupo_cuenta_id = $request->has('contab_grupo_cuenta_id') ? $request->contab_grupo_cuenta_id : 'todos';
+            $contab_cuenta_id = $request->has('contab_cuenta_id') ? $request->contab_cuenta_id : 'todas';
+            $fecha_desde = $request->fecha_desde;
+            $fecha_hasta = $request->fecha_hasta;
+            $detallar_terceros = $request->detalla_terceros;
 
-        if ( $contab_cuenta_id == 'todas' ) {
-            $movimiento_agrupado_por_cuentas = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-                                        ->whereBetween('fecha',[$fecha_desde,$fecha_hasta])
-                                        ->select('contab_movimientos.*','contab_cuentas.contab_cuenta_clase_id')
-                                        ->orderBy('contab_cuentas.contab_cuenta_clase_id')
-                                        ->get()
-                                        ->groupBy('contab_cuenta_id');
-
-            if ( $detallar_terceros == 'Si') {
-                $movimientos_cuentas = $this->get_movimientos_cuentas_por_terceros($movimiento_agrupado_por_cuentas, $fecha_desde);
-            }else{
-                $movimientos_cuentas = $this->get_movimientos_cuentas($movimiento_agrupado_por_cuentas, $fecha_desde);
+            if ( $contab_grupo_cuenta_id != 'todos' && !empty($contab_grupo_cuenta_id) ) {
+                $contab_cuenta_id = 'todas';
             }
+
+            $movimientos_cuentas = $this->get_balance_comprobacion_movimientos(
+                $fecha_desde,
+                $fecha_hasta,
+                $detallar_terceros == 'Si',
+                $contab_grupo_cuenta_id,
+                $contab_cuenta_id
+            );
 
             $vista = View::make( 'contabilidad.formatos.balance_comprobacion_new', compact('movimientos_cuentas','fecha_desde', 'fecha_hasta') )->render();
 
-            Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
-  
-        }else{
+            if ($request->has('reporte_instancia')) {
+                Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+            }
 
+            return $vista;
+        } catch (\Throwable $e) {
+            Log::error('Error al generar Balance de comprobacion.', [
+                'empresa_id' => Auth::user()->empresa_id,
+                'user_id' => Auth::user()->id,
+                'request' => $request->all(),
+                'exception' => $e
+            ]);
+
+            return $this->render_ajax_error(
+                'No fue posible generar el balance de comprobacion. Detalle tecnico: ' . $e->getMessage()
+            );
         }
-   
-        return $vista;
     }
 
     public function get_movimientos_cuentas($movimiento_agrupado_por_cuentas, $fecha_desde)
@@ -156,6 +157,104 @@ class ContabReportesController extends Controller
             $arr->debitos = $contab_movim->sum('valor_debito');
             $arr->creditos = $contab_movim->sum('valor_credito');
             $arr->saldo_final = $arr->saldo_inicial + $arr->debitos + $arr->creditos;
+
+            $movimientos_cuentas->push($arr);
+        }
+
+        return $movimientos_cuentas;
+    }
+
+    protected function get_balance_comprobacion_movimientos($fecha_desde, $fecha_hasta, $detallar_terceros, $contab_grupo_cuenta_id = 'todos', $contab_cuenta_id = 'todas')
+    {
+        $empresa_id = Auth::user()->empresa_id;
+
+        $query = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                    ->where('contab_movimientos.core_empresa_id', $empresa_id)
+                    ->where('contab_movimientos.fecha', '<=', $fecha_hasta);
+
+        if ($contab_cuenta_id != 'todas' && !empty($contab_cuenta_id)) {
+            $query->where('contab_movimientos.contab_cuenta_id', $contab_cuenta_id);
+        }
+
+        if ($contab_grupo_cuenta_id != 'todos' && !empty($contab_grupo_cuenta_id)) {
+            $query->where('contab_cuentas.contab_cuenta_grupo_id', $contab_grupo_cuenta_id);
+        }
+
+        $selects = [
+            'contab_movimientos.contab_cuenta_id',
+            'contab_cuentas.codigo AS cuenta_codigo',
+            'contab_cuentas.descripcion AS cuenta_descripcion'
+        ];
+
+        if ($detallar_terceros) {
+            $query->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id');
+            $selects[] = 'contab_movimientos.core_tercero_id';
+            $selects[] = 'core_terceros.numero_identificacion AS tercero_numero_identificacion';
+            $selects[] = 'core_terceros.descripcion AS tercero_descripcion';
+        }
+
+        $query->select($selects)
+            ->selectRaw(
+                'SUM(CASE WHEN contab_movimientos.fecha < ? THEN contab_movimientos.valor_saldo ELSE 0 END) AS saldo_inicial',
+                [$fecha_desde]
+            )
+            ->selectRaw(
+                'SUM(CASE WHEN contab_movimientos.fecha >= ? AND contab_movimientos.fecha <= ? THEN contab_movimientos.valor_debito ELSE 0 END) AS debitos',
+                [$fecha_desde, $fecha_hasta]
+            )
+            ->selectRaw(
+                'SUM(CASE WHEN contab_movimientos.fecha >= ? AND contab_movimientos.fecha <= ? THEN contab_movimientos.valor_credito ELSE 0 END) AS creditos',
+                [$fecha_desde, $fecha_hasta]
+            );
+
+        if ($detallar_terceros) {
+            $query->groupBy(
+                'contab_movimientos.contab_cuenta_id',
+                'contab_cuentas.codigo',
+                'contab_cuentas.descripcion',
+                'contab_movimientos.core_tercero_id',
+                'core_terceros.numero_identificacion',
+                'core_terceros.descripcion'
+            );
+        } else {
+            $query->groupBy(
+                'contab_movimientos.contab_cuenta_id',
+                'contab_cuentas.codigo',
+                'contab_cuentas.descripcion'
+            );
+        }
+
+        $rows = $query->orderBy('contab_cuentas.codigo')->get();
+
+        $movimientos_cuentas = collect([]);
+        foreach ($rows as $row) {
+            $saldo_inicial = (float)$row->saldo_inicial;
+            $debitos = (float)$row->debitos;
+            $creditos = (float)$row->creditos;
+            $saldo_final = $saldo_inicial + $debitos + $creditos;
+
+            if ($saldo_inicial == 0 && $debitos == 0 && $creditos == 0 && $saldo_final == 0) {
+                continue;
+            }
+
+            $arr = (object)[];
+            $arr->cuenta = (object)[
+                'id' => $row->contab_cuenta_id,
+                'codigo' => $row->cuenta_codigo,
+                'descripcion' => $row->cuenta_descripcion
+            ];
+            $arr->tercero = null;
+            if ($detallar_terceros && !is_null($row->core_tercero_id)) {
+                $arr->tercero = (object)[
+                    'id' => $row->core_tercero_id,
+                    'numero_identificacion' => $row->tercero_numero_identificacion,
+                    'descripcion' => $row->tercero_descripcion
+                ];
+            }
+            $arr->saldo_inicial = $saldo_inicial;
+            $arr->debitos = $debitos;
+            $arr->creditos = $creditos;
+            $arr->saldo_final = $saldo_final;
 
             $movimientos_cuentas->push($arr);
         }
@@ -654,91 +753,134 @@ class ContabReportesController extends Controller
 
     public function lista_documentos_descuadrados( Request $request )
     {
-        $fecha_desde = $request->fecha_desde;
-        $fecha_hasta = $request->fecha_hasta;
+        try {
+            $fecha_desde = $request->fecha_desde;
+            $fecha_hasta = $request->fecha_hasta;
 
-        $movimiento = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
-                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                        
-                        ->select( 
-                                    DB::raw('SUM(contab_movimientos.valor_saldo) AS suma_saldos'),
-                                    DB::raw('SUM(contab_movimientos.valor_debito) AS suma_debitos'),
-                                    DB::raw('SUM(contab_movimientos.valor_credito) AS suma_creditos'),
-                                    DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
-                                    'contab_movimientos.core_tipo_transaccion_id',
-                                    'contab_movimientos.core_tipo_doc_app_id',
-                                    'contab_movimientos.consecutivo',
-                                    'contab_movimientos.fecha',
-                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento') )
-                        ->groupBy('llave_primaria_documento')
-                        ->orderBy('contab_movimientos.fecha')
-                        ->get();
+            $registros = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+                            ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('contab_movimientos.fecha', [$fecha_desde, $fecha_hasta])
+                            ->select( 
+                                DB::raw('SUM(contab_movimientos.valor_saldo) AS suma_saldos'),
+                                DB::raw('SUM(contab_movimientos.valor_debito) AS suma_debitos'),
+                                DB::raw('SUM(contab_movimientos.valor_credito) AS suma_creditos'),
+                                'contab_movimientos.core_tipo_transaccion_id',
+                                'contab_movimientos.core_tipo_doc_app_id',
+                                'contab_movimientos.consecutivo',
+                                DB::raw('MIN(contab_movimientos.fecha) AS fecha'),
+                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento')
+                            )
+                            ->groupBy(
+                                'contab_movimientos.core_tipo_transaccion_id',
+                                'contab_movimientos.core_tipo_doc_app_id',
+                                'contab_movimientos.consecutivo',
+                                'core_tipos_docs_apps.prefijo'
+                            )
+                            ->havingRaw('ROUND(SUM(contab_movimientos.valor_saldo), 2) <> 0')
+                            ->orderBy('fecha')
+                            ->get();
+            
+            $vista = View::make( 'contabilidad.incluir.listado_documentos_descuadrados', compact('registros') )->render();
 
-        $registros = $movimiento->filter(function ($value, $key) {
-            return round( $value->suma_saldos ) != 0;
-        });
-        
-        $vista = View::make( 'contabilidad.incluir.listado_documentos_descuadrados', compact('registros') )->render();
+            if ($request->has('reporte_instancia')) {
+                Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+            }
 
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+            return $vista;
+        } catch (\Throwable $e) {
+            Log::error('Error al generar listado de documentos descuadrados.', [
+                'empresa_id' => Auth::user()->empresa_id,
+                'user_id' => Auth::user()->id,
+                'request' => $request->all(),
+                'exception' => $e
+            ]);
 
-        return $vista;
+            return $this->render_ajax_error(
+                'No fue posible generar el listado de documentos descuadrados. Detalle tecnico: ' . $e->getMessage()
+            );
+        }
     }
 
     public function cuadre_contabilidad_vs_tesoreria( Request $request )
     {
-        $fecha_desde = $request->fecha_desde;
-        $fecha_hasta = $request->fecha_hasta;
+        try {
+            $fecha_desde = $request->fecha_desde;
+            $fecha_hasta = $request->fecha_hasta;
+            $limite_registros = 2000;
 
-        $cuentas_tesoreria = [];
+            $cuentas_tesoreria = array_unique(array_merge(
+                \App\Tesoreria\TesoCaja::whereNotNull('contab_cuenta_id')->groupBy('contab_cuenta_id')->pluck('contab_cuenta_id')->toArray(),
+                \App\Tesoreria\TesoCuentaBancaria::whereNotNull('contab_cuenta_id')->groupBy('contab_cuenta_id')->pluck('contab_cuenta_id')->toArray()
+            ));
 
-        $cuentas_tesoreria = array_merge ( $cuentas_tesoreria, \App\Tesoreria\TesoCaja::groupBy('contab_cuenta_id')->get()->pluck('contab_cuenta_id')->toArray() );
+            if (empty($cuentas_tesoreria)) {
+                $registros = collect([]);
+            } else {
+                $registros = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+                            ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                            ->leftJoin('teso_movimientos AS teso_mov_rel', function ($join) {
+                                $join->on('teso_mov_rel.core_empresa_id', '=', 'contab_movimientos.core_empresa_id')
+                                    ->on('teso_mov_rel.core_tipo_transaccion_id', '=', 'contab_movimientos.core_tipo_transaccion_id')
+                                    ->on('teso_mov_rel.core_tipo_doc_app_id', '=', 'contab_movimientos.core_tipo_doc_app_id')
+                                    ->on('teso_mov_rel.consecutivo', '=', 'contab_movimientos.consecutivo');
+                            })
+                            ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('contab_movimientos.fecha', [$fecha_desde, $fecha_hasta])
+                            ->whereIn('contab_movimientos.contab_cuenta_id', $cuentas_tesoreria)
+                            ->where(function ($query) {
+                                $query->where('contab_movimientos.valor_saldo', '<', -1)
+                                      ->orWhere('contab_movimientos.valor_saldo', '>', 1);
+                            })
+                            ->whereNull('teso_mov_rel.id')
+                            ->select(
+                                'contab_movimientos.id',
+                                DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
+                                'contab_movimientos.core_tipo_transaccion_id',
+                                'contab_movimientos.core_tipo_doc_app_id',
+                                'contab_movimientos.consecutivo',
+                                'contab_movimientos.fecha',
+                                'contab_cuentas.codigo AS codigo_cuenta',
+                                DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento'),
+                                'contab_movimientos.valor_debito',
+                                'contab_movimientos.valor_credito',
+                                'contab_movimientos.valor_saldo',
+                                'contab_movimientos.teso_caja_id',
+                                'contab_movimientos.teso_cuenta_bancaria_id',
+                                'contab_movimientos.core_tercero_id',
+                                'contab_movimientos.contab_cuenta_id',
+                                'contab_movimientos.core_empresa_id',
+                                'contab_movimientos.detalle_operacion'
+                            )
+                            ->orderBy('contab_movimientos.fecha')
+                            ->limit($limite_registros + 1)
+                            ->get();
+            }
 
-        $cuentas_tesoreria = array_merge ( $cuentas_tesoreria, \App\Tesoreria\TesoCuentaBancaria::groupBy('contab_cuenta_id')->get()->pluck('contab_cuenta_id')->toArray() );
+            $registros_truncados = false;
+            if (count($registros) > $limite_registros) {
+                $registros = $registros->take($limite_registros);
+                $registros_truncados = true;
+            }
 
-        $movimiento = ContabMovimiento::leftJoin('core_tipos_docs_apps', 'core_tipos_docs_apps.id', '=', 'contab_movimientos.core_tipo_doc_app_id')
-                        ->leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
-                        ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                        ->whereIn( 'contab_cuenta_id', $cuentas_tesoreria )
-                        ->select( 
-                                    'contab_movimientos.id',
-                                    DB::raw('CONCAT(contab_movimientos.core_tipo_transaccion_id,contab_movimientos.core_tipo_doc_app_id,contab_movimientos.consecutivo) AS llave_primaria_documento'),
-                                    'contab_movimientos.core_tipo_transaccion_id',
-                                    'contab_movimientos.core_tipo_doc_app_id',
-                                    'contab_movimientos.consecutivo',
-                                    'contab_movimientos.fecha',
-                                    'contab_cuentas.codigo AS codigo_cuenta',
-                                    DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",contab_movimientos.consecutivo) AS documento'),
-                                    'contab_movimientos.valor_debito',
-                                    'contab_movimientos.valor_credito',
-                                    'contab_movimientos.valor_saldo',
-                                    'contab_movimientos.teso_caja_id',
-                                    'contab_movimientos.teso_cuenta_bancaria_id',
-                                    'contab_movimientos.core_tercero_id',
-                                    'contab_movimientos.contab_cuenta_id',
-                                    'contab_movimientos.core_empresa_id',
-                                    'contab_movimientos.detalle_operacion' )
-                        ->orderBy('contab_movimientos.fecha')
-                        ->get();
+            $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros', 'registros_truncados', 'limite_registros') )->render();
 
-        // Se filtran los registros del movimiento contable que no están en el movimiento de tesorería
-        $registros = $movimiento->filter(function ($value, $key)
-        {
-            return \App\Tesoreria\TesoMovimiento::where(
-                                                        [ 
-                                                            'core_tipo_transaccion_id' => $value->core_tipo_transaccion_id,
-                                                            'core_tipo_doc_app_id' => $value->core_tipo_doc_app_id,
-                                                            'consecutivo' => $value->consecutivo,
-                                                        ]
-                                                        )
-                                                ->get()->first() == null;
-        });
+            if ($request->has('reporte_instancia')) {
+                Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
+            }
 
-        $vista = View::make( 'contabilidad.incluir.listado_cuadre_contabilidad_vs_tesoreria', compact('registros') )->render();
+            return $vista;
+        } catch (\Throwable $e) {
+            Log::error('Error al generar Cuadre Contabilidad vs Tesoreria.', [
+                'empresa_id' => Auth::user()->empresa_id,
+                'user_id' => Auth::user()->id,
+                'request' => $request->all(),
+                'exception' => $e
+            ]);
 
-        Cache::forever( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista );
-
-        return $vista;
+            return $this->render_ajax_error(
+                'No fue posible generar el cuadre Contabilidad vs Tesoreria. Detalle tecnico: ' . $e->getMessage()
+            );
+        }
     }
 
     public static function grafica_riqueza_neta( $fecha_desde, $fecha_hasta )
@@ -795,22 +937,34 @@ class ContabReportesController extends Controller
     
     public function contab_ajax_generacion_eeff(Request $request)
     {
-        $anio = $request->lapso1_lbl;
-        $fecha_inicial = $request->lapso1_ini;
-        $fecha_final = $request->lapso1_fin;
-        $modalidad_reporte = $request->modalidad_reporte;
-        $reporte_id = $request->reporte_id;
-        $detallar_cuentas = $request->detallar_cuentas;
-        
-        echo $this->get_vista_eeff( $anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas );
+        try {
+            $anio = $request->lapso1_lbl;
+            $fecha_inicial = $request->lapso1_ini;
+            $fecha_final = $request->lapso1_fin;
+            $modalidad_reporte = $request->modalidad_reporte;
+            $reporte_id = $request->reporte_id;
+            $detallar_cuentas = $request->detallar_cuentas;
+
+            return $this->get_vista_eeff($anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas);
+        } catch (\Throwable $e) {
+            $user = Auth::user();
+
+            Log::error('Error al generar EEFF.', [
+                'empresa_id' => is_null($user) ? null : $user->empresa_id,
+                'user_id' => is_null($user) ? null : $user->id,
+                'request' => $request->all(),
+                'exception' => $e
+            ]);
+
+            return $this->render_ajax_error(
+                'No fue posible generar el reporte. Revise la configuracion de cuentas y grupos contables. Detalle tecnico: ' . $e->getMessage()
+            );
+        }
     }
 
     public function get_vista_eeff( $anio, $fecha_inicial, $fecha_final, $modalidad_reporte, $reporte_id, $detallar_cuentas )
     {
-        if ( $modalidad_reporte == 'acumular_movimiento' )
-        {
-            $fecha_inicial = '1900-01-01';
-        }
+        $fecha_inicial = $this->normalizar_fecha_inicial_eeff($modalidad_reporte, $fecha_inicial);
 
         switch ( $reporte_id )
         {
@@ -843,66 +997,113 @@ class ContabReportesController extends Controller
 
     public function get_filas_eeff_new( $ids_clases_cuentas, $detallar_cuentas, $fecha_inicial, $fecha_final, $obj_repor_serv)
     {
-        $obj_repor_serv->clases_cuentas = ClaseCuenta::all();
+        $obj_repor_serv->totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
+        $estructura = [];
+        $cuentas_sin_catalogo = [];
+        $cuentas_con_configuracion_invalida = [];
 
-        $obj_repor_serv->grupos_cuentas = ContabCuentaGrupo::all();
-
-        $obj_repor_serv->movimiento = ContabMovimiento::leftJoin('contab_cuentas','contab_cuentas.id','=','contab_movimientos.contab_cuenta_id')
-                            ->leftJoin('contab_cuenta_clases','contab_cuenta_clases.id','=','contab_cuentas.contab_cuenta_clase_id')
-                            ->whereBetween( 'contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ] )
+        $movimientos_agrupados = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                            ->leftJoin('contab_cuenta_clases', 'contab_cuenta_clases.id', '=', 'contab_cuentas.contab_cuenta_clase_id')
+                            ->leftJoin('contab_cuenta_grupos AS grupos_hijos', 'grupos_hijos.id', '=', 'contab_cuentas.contab_cuenta_grupo_id')
+                            ->leftJoin('contab_cuenta_grupos AS grupos_padres', 'grupos_padres.id', '=', 'grupos_hijos.grupo_padre_id')
+                            ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('contab_movimientos.fecha', [ $fecha_inicial, $fecha_final ])
+                            ->whereIn('contab_cuentas.contab_cuenta_clase_id', $ids_clases_cuentas)
                             ->select(
-                                    'contab_cuentas.contab_cuenta_clase_id',
-                                    'contab_cuentas.contab_cuenta_grupo_id',
-                                    'contab_cuentas.codigo',
-                                    'contab_movimientos.contab_cuenta_id',
-                                    'contab_movimientos.valor_saldo',
-                                    'contab_movimientos.fecha'
-                                )
+                                'contab_movimientos.contab_cuenta_id AS cuenta_id',
+                                'contab_cuentas.codigo AS cuenta_codigo',
+                                'contab_cuentas.descripcion AS cuenta_descripcion',
+                                'contab_cuentas.contab_cuenta_clase_id AS cuenta_clase_id',
+                                'contab_cuenta_clases.descripcion AS cuenta_clase_descripcion',
+                                'contab_cuentas.contab_cuenta_grupo_id AS cuenta_grupo_hijo_id',
+                                'grupos_hijos.descripcion AS cuenta_grupo_hijo_descripcion',
+                                'grupos_padres.id AS cuenta_grupo_padre_id',
+                                'grupos_padres.descripcion AS cuenta_grupo_padre_descripcion',
+                                DB::raw('SUM(contab_movimientos.valor_saldo) AS valor_saldo')
+                            )
+                            ->groupBy(
+                                'contab_movimientos.contab_cuenta_id',
+                                'contab_cuentas.codigo',
+                                'contab_cuentas.descripcion',
+                                'contab_cuentas.contab_cuenta_clase_id',
+                                'contab_cuenta_clases.descripcion',
+                                'contab_cuentas.contab_cuenta_grupo_id',
+                                'grupos_hijos.descripcion',
+                                'grupos_padres.id',
+                                'grupos_padres.descripcion'
+                            )
+                            ->orderBy('contab_cuentas.codigo')
                             ->get();
 
-        $obj_repor_serv->cuentas = ContabCuenta::whereIn('id', $obj_repor_serv->movimiento->unique('contab_cuenta_id')->pluck('contab_cuenta_id')->toArray())->get(); 
+        foreach ($movimientos_agrupados as $linea_movim) {
+            if (is_null($linea_movim->cuenta_codigo) || $linea_movim->cuenta_codigo === '') {
+                $cuentas_sin_catalogo[$linea_movim->cuenta_id] = $linea_movim->cuenta_id;
+                continue;
+            }
 
-        // Cada cuenta debe estar, obligatoriamente, asignada a un grupo hijo
-        $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos();
-        if( !empty( $grupos_invalidos ) )
-        {
-            dd( 'Las siguientes Cuentas no tienen correctamente asociado un Grupo de cuentas. por favor modifique la Cuenta en los Catálogos para continuar.', $grupos_invalidos );
+            if (empty($linea_movim->cuenta_clase_id) || empty($linea_movim->cuenta_grupo_hijo_id) || empty($linea_movim->cuenta_grupo_padre_id)) {
+                $cuentas_con_configuracion_invalida[$linea_movim->cuenta_codigo . ' ' . $linea_movim->cuenta_descripcion] = $linea_movim->cuenta_codigo . ' ' . $linea_movim->cuenta_descripcion;
+                continue;
+            }
+
+            $clase_cuenta_id = (int)$linea_movim->cuenta_clase_id;
+            $grupo_padre_id = (int)$linea_movim->cuenta_grupo_padre_id;
+            $grupo_hijo_id = (int)$linea_movim->cuenta_grupo_hijo_id;
+            $valor_saldo = (float)$linea_movim->valor_saldo;
+
+            if (!isset($estructura[$clase_cuenta_id])) {
+                $estructura[$clase_cuenta_id] = [
+                    'descripcion' => strtoupper($linea_movim->cuenta_clase_descripcion),
+                    'valor' => 0,
+                    'grupos_padres' => []
+                ];
+            }
+
+            if (!isset($estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id])) {
+                $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id] = [
+                    'descripcion' => $linea_movim->cuenta_grupo_padre_descripcion,
+                    'valor' => 0,
+                    'grupos_hijos' => []
+                ];
+            }
+
+            if (!isset($estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id])) {
+                $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id] = [
+                    'descripcion' => $linea_movim->cuenta_grupo_hijo_descripcion,
+                    'valor' => 0,
+                    'cuentas' => []
+                ];
+            }
+
+            $estructura[$clase_cuenta_id]['valor'] += $valor_saldo;
+            $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['valor'] += $valor_saldo;
+            $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id]['valor'] += $valor_saldo;
+
+            if ($detallar_cuentas) {
+                $estructura[$clase_cuenta_id]['grupos_padres'][$grupo_padre_id]['grupos_hijos'][$grupo_hijo_id]['cuentas'][] = (object)[
+                    'descripcion' => $linea_movim->cuenta_codigo . ' ' . $linea_movim->cuenta_descripcion,
+                    'valor' => $valor_saldo
+                ];
+            }
         }
 
-        $valores_cuentas = $obj_repor_serv->movimiento->sortBy('codigo')->groupby('codigo');
-        
-        $groupwithcount = $valores_cuentas->map(function ($arr_cuenta) {
-                                $linea_movim = $arr_cuenta->first();
+        if (!empty($cuentas_sin_catalogo)) {
+            throw new \RuntimeException('Hay movimientos con cuentas inexistentes en el catalogo: ' . implode(', ', array_values($cuentas_sin_catalogo)) . '.');
+        }
 
-                                if ($linea_movim->cuenta == null) {
-                                    dd('La cuenta con ID=' . $linea_movim['contab_cuenta_id'] . ' No existe en el catalogo de Cuentas.', $linea_movim);
-                                }
+        if (!empty($cuentas_con_configuracion_invalida)) {
+            throw new \RuntimeException('Las siguientes cuentas no tienen correctamente asociado un grupo hijo con grupo padre: ' . implode(', ', array_values($cuentas_con_configuracion_invalida)) . '.');
+        }
 
-                                if ($linea_movim->cuenta->clase_cuenta == null) {
-                                    dd('La cuenta \"' . $linea_movim->cuenta->descripcion . '\", con ID=' . $linea_movim['contab_cuenta_id'] . ' No tiena asignada una Clase de Cuentas valida. Por favor, modifique la cuenta y asigne su Clase de cuentas nuevamente.');
-                                }
-
-                                return [
-                                    'cuenta_id' => $linea_movim['contab_cuenta_id'],
-                                    'cuenta_descripcion' => $linea_movim->cuenta->descripcion,
-                                    'cuenta_codigo' => $linea_movim['codigo'],
-                                    'valor_saldo' => $arr_cuenta->sum('valor_saldo'),
-                                    'cuenta_clase_id' => $linea_movim->contab_cuenta_clase_id,
-                                    'cuenta_clase_descripcion' => $linea_movim->cuenta->clase_cuenta->descripcion,
-                                    'cuenta_grupo_hijo_id' => $linea_movim->contab_cuenta_grupo_id,
-                                    'cuenta_grupo_hijo_descripcion' => $linea_movim->cuenta->grupo_cuenta->descripcion,
-                                    'cuenta_grupo_padre_id' => $linea_movim->cuenta->grupo_cuenta->grupo_padre->id,
-                                    'cuenta_grupo_padre_descripcion' => $linea_movim->cuenta->grupo_cuenta->grupo_padre->descripcion
-                                ];
-                            });
-
-        $obj_repor_serv->totales_clases = [ 0, 0, 0, 0, 0, 0, 0 ];
         $filas = [];
-        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id )
-        {
+        foreach ( $ids_clases_cuentas as $key => $clase_cuenta_id ) {
+            if (!isset($estructura[$clase_cuenta_id]) || $estructura[$clase_cuenta_id]['valor'] == 0) {
+                continue;
+            }
+
             $valor_clase = (object)[ 
-                'descripcion' => strtoupper( $groupwithcount->where('cuenta_clase_id', $clase_cuenta_id)->first()['cuenta_clase_descripcion'] ),
-                'valor' => $groupwithcount->where('cuenta_clase_id',$clase_cuenta_id)->sum('valor_saldo')
+                'descripcion' => $estructura[$clase_cuenta_id]['descripcion'],
+                'valor' => $estructura[$clase_cuenta_id]['valor']
             ];
             
             if ( $valor_clase->valor == 0 )
@@ -919,13 +1120,10 @@ class ContabReportesController extends Controller
                                 'datos_cuenta' => 0
                                 ];
             
-            $grupos_padres = $groupwithcount->where('cuenta_clase_id', $clase_cuenta_id)->groupby('cuenta_grupo_padre_id' );
-
-            foreach ( $grupos_padres as $grupo_padre_id => $array_data )
-            {
+            foreach ( $estructura[$clase_cuenta_id]['grupos_padres'] as $grupo_padre_id => $grupo_padre_data ) {
                 $valor_padre = (object)[ 
-                    'descripcion' => $groupwithcount->where('cuenta_grupo_padre_id', $grupo_padre_id)->first()['cuenta_grupo_padre_descripcion'],
-                    'valor' => $groupwithcount->where('cuenta_grupo_padre_id',$grupo_padre_id)->sum('valor_saldo')
+                    'descripcion' => $grupo_padre_data['descripcion'],
+                    'valor' => $grupo_padre_data['valor']
                 ];
 
                 if ( $valor_padre->valor == 0 )
@@ -940,13 +1138,10 @@ class ContabReportesController extends Controller
                                     'datos_cuenta' => 0
                                     ];
 
-                $grupos_hijos = $groupwithcount->where('cuenta_grupo_padre_id', $grupo_padre_id)->groupby('cuenta_grupo_hijo_id' );                
-
-                foreach ( $grupos_hijos as $grupo_hijo_id => $array_data2 )
-                {
+                foreach ( $grupo_padre_data['grupos_hijos'] as $grupo_hijo_id => $grupo_hijo_data ) {
                     $valor_hijo = (object)[ 
-                        'descripcion' => $groupwithcount->where('cuenta_grupo_hijo_id', $grupo_hijo_id)->first()['cuenta_grupo_hijo_descripcion'],
-                        'valor' => $groupwithcount->where('cuenta_grupo_hijo_id',$grupo_hijo_id)->sum('valor_saldo')
+                        'descripcion' => $grupo_hijo_data['descripcion'],
+                        'valor' => $grupo_hijo_data['valor']
                     ];
 
                     if ( $valor_hijo->valor == 0 )
@@ -961,20 +1156,11 @@ class ContabReportesController extends Controller
                         'datos_cuenta' => 0
                         ];
                     
-                    $cuentas_del_grupo = $groupwithcount->where('cuenta_grupo_hijo_id', $grupo_hijo_id)->groupby('cuenta_id' );
-
-                    foreach ($cuentas_del_grupo as $cuenta_id => $array_data3)
-                    {
+                    foreach ($grupo_hijo_data['cuentas'] as $valor_cuenta) {
                         if( !$detallar_cuentas )
                         {
                             continue;
                         }
-                        
-                        $la_cuenta = $groupwithcount->where('cuenta_id', $cuenta_id)->first();
-                        $valor_cuenta = (object)[ 
-                            'descripcion' => $la_cuenta['cuenta_codigo'] . ' ' . $la_cuenta['cuenta_descripcion'],
-                            'valor' => $groupwithcount->where('cuenta_id',$cuenta_id)->sum('valor_saldo')
-                        ];
 
                         if ( $valor_cuenta->valor == 0 )
                         {
@@ -1122,50 +1308,33 @@ class ContabReportesController extends Controller
             (object)[
                 'title' => 'Impuestos en ventas (generados)',
                 'arr_transactions_types' => $arr_trasacciones_ventas,
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
-                                            ->get()
-                                            ->pluck('cta_ventas_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_ventas_id')
             ],
             (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
                 'arr_transactions_types' => $arr_trasacciones_devoluciones_ventas,
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
-                                            ->get()
-                                            ->pluck('cta_ventas_devol_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_ventas_devol_id')
             ],
             (object)[
                 'title' => 'Impuestos en compras (descontables)',
                 'arr_transactions_types' => [25,29,48],
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_id' )
-                                            ->get()
-                                            ->pluck('cta_compras_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_compras_id')
             ],
             (object)[
                 'title' => 'Impuestos por devoluciones en compras',
                 'arr_transactions_types' => [36,40],
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_devol_id' )
-                                            ->get()
-                                            ->pluck('cta_compras_devol_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_compras_devol_id')
             ]
        ];
 
        $vista = '<table><tr><td>';
        foreach ($reports_list as $report) {
-            $movements = ContabMovimiento::whereIn('core_tipo_transaccion_id',$report->arr_transactions_types)
-                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                    ->whereIn('contab_cuenta_id',$report->campo_filtrar_ctas)
-                    ->select( 
-                            DB::raw( 'CAST(tasa_impuesto AS CHAR) as tasa_impuesto','' ),
-                            'valor_saldo',
-                            'impuesto_id'
-                        )
-                    ->get();
-
-            $group_taxes = $this->get_totals_by_tax($movements, 'tasa_impuesto', 'tasa_impuesto');
+            $group_taxes = $this->get_group_taxes_report(
+                $report->arr_transactions_types,
+                $report->campo_filtrar_ctas,
+                $fecha_desde,
+                $fecha_hasta
+            );
             $title = $report->title;
 
             $vista .= View::make( 'contabilidad.incluir.listado_iva_por_tasas', compact('group_taxes','title') )->render();
@@ -1187,76 +1356,34 @@ class ContabReportesController extends Controller
             'sales_taxes' => (object)[
                 'title' => 'Impuestos en ventas (generados)',
                 'arr_transactions_types' => [23,44,49,50,52],
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_id' )
-                                            ->get()
-                                            ->pluck('cta_ventas_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_ventas_id')
             ],
             'sales_return_taxes' => (object)[
                 'title' => 'Impuestos por devoluciones en ventas',
                 'arr_transactions_types' => [41,38,53,54],
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_ventas_devol_id' )
-                                            ->get()
-                                            ->pluck('cta_ventas_devol_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_ventas_devol_id')
             ],
             'purchases_taxes' => (object)[
                 'title' => 'Impuestos en compras (descontables)',
                 'arr_transactions_types' => [25,29,48],
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_id' )
-                                            ->get()
-                                            ->pluck('cta_compras_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_compras_id')
             ],
             'purchases_return_taxes' => (object)[
                 'title' => 'Impuestos por devoluciones en compras',
                 'arr_transactions_types' => [36,40],
-                'campo_filtrar_ctas' => Impuesto::groupBy( 'cta_compras_devol_id' )
-                                            ->get()
-                                            ->pluck('cta_compras_devol_id')
-                                            ->toArray()
+                'campo_filtrar_ctas' => $this->get_impuesto_account_ids('cta_compras_devol_id')
             ]
         ];
 
         $params = $reports_list[$request->tax_report_type];
 
         $vista = '<table><tr><td>';
-
-        $arr_third_parties = ContabMovimiento::whereIn('core_tipo_transaccion_id',$params->arr_transactions_types)
-                ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                ->whereIn('contab_cuenta_id',$params->campo_filtrar_ctas)
-                ->groupBy( 'core_tercero_id' )
-                ->get()
-                ->pluck('core_tercero_id')
-                ->toArray();
-
-        $group_taxes_third_parties = [];
-        foreach ($arr_third_parties as $key => $core_tercero_id) {
-
-            $tercero = Tercero::find($core_tercero_id);
-
-            $movements = ContabMovimiento::whereIn('core_tipo_transaccion_id',$params->arr_transactions_types)
-                    ->whereBetween('fecha', [$fecha_desde, $fecha_hasta])
-                    ->whereIn('contab_cuenta_id',$params->campo_filtrar_ctas)
-                    ->where('core_tercero_id',$core_tercero_id)
-                    ->select( 
-                            DB::raw( 'CAST(tasa_impuesto AS CHAR) as tasa_impuesto','' ),
-                            'valor_saldo'
-                        )
-                    ->get();
-
-            $group_taxes = $this->get_totals_by_tax($movements, 'tasa_impuesto', 'tasa_impuesto');
-            
-            foreach ($group_taxes as $key => $tax) {
-                $group_taxes_third_parties[] = (object)[
-                    'tercero_numero_identificacion' => $tercero->numero_identificacion,
-                    'tercero_descripcion' => $tercero->descripcion,
-                    'group' => $tax['group'],
-                    'base_impuesto' => $tax['base_impuesto'],
-                    'valor_impuesto' => $tax['valor_impuesto']
-                ];
-            }
-        }
+        $group_taxes_third_parties = $this->get_group_taxes_by_third_party_report(
+            $params->arr_transactions_types,
+            $params->campo_filtrar_ctas,
+            $fecha_desde,
+            $fecha_hasta
+        );
 
         $title = $params->title;
 
@@ -1310,19 +1437,19 @@ class ContabReportesController extends Controller
 
         $lapso1_ini = Input::get('lapso1_ini');
         $lapso1_fin = Input::get('lapso1_fin');
+        $lapso1_ini = $this->normalizar_fecha_inicial_eeff(Input::get('modalidad_reporte'), $lapso1_ini);
 
-        $arr_ids_cuentas = ContabCuenta::where( 'contab_cuenta_clase_id', $clase_cuenta_id )
-                                   ->get()->pluck('id')->all();
-
-        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
-                            ->whereIn('contab_cuenta_id', $arr_ids_cuentas )
-                            ->sum('valor_saldo');
+        $valor_saldo = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                            ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('contab_movimientos.fecha', [ $lapso1_ini, $lapso1_fin ])
+                            ->where('contab_cuentas.contab_cuenta_clase_id', $clase_cuenta_id)
+                            ->sum('contab_movimientos.valor_saldo');
 
         $arr_ids_grupos_padres = ContabCuentaGrupo::where( [
+                                        ['core_empresa_id', '=', Auth::user()->empresa_id],
                                         ['grupo_padre_id', '=', 0],
                                         ['contab_cuenta_clase_id', '=', $clase_cuenta_id]
                                     ] )
-                                        ->get()
                                         ->pluck('id')
                                         ->all();
 
@@ -1342,20 +1469,23 @@ class ContabReportesController extends Controller
 
         $lapso1_ini = Input::get('lapso1_ini');
         $lapso1_fin = Input::get('lapso1_fin');
+        $lapso1_ini = $this->normalizar_fecha_inicial_eeff(Input::get('modalidad_reporte'), $lapso1_ini);
 
         $arr_ids_grupos_hijos = ContabCuentaGrupo::where( [
+                                        ['core_empresa_id', '=', Auth::user()->empresa_id],
                                         ['grupo_padre_id', '=', $grupo_padre_id]
                                     ] )
-                                        ->get()
                                         ->pluck('id')
                                         ->all();
 
-        $arr_ids_cuentas = ContabCuenta::whereIn( 'contab_cuenta_grupo_id', $arr_ids_grupos_hijos )
-                                   ->get()->pluck('id')->all();
-
-        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
-                            ->whereIn('contab_cuenta_id', $arr_ids_cuentas )
-                            ->sum('valor_saldo');
+        $valor_saldo = 0;
+        if (!empty($arr_ids_grupos_hijos)) {
+            $valor_saldo = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                                ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                                ->whereBetween('contab_movimientos.fecha', [ $lapso1_ini, $lapso1_fin ])
+                                ->whereIn('contab_cuentas.contab_cuenta_grupo_id', $arr_ids_grupos_hijos)
+                                ->sum('contab_movimientos.valor_saldo');
+        }
 
         return Response::json(
                             [
@@ -1373,21 +1503,22 @@ class ContabReportesController extends Controller
 
         $lapso1_ini = Input::get('lapso1_ini');
         $lapso1_fin = Input::get('lapso1_fin');
+        $lapso1_ini = $this->normalizar_fecha_inicial_eeff(Input::get('modalidad_reporte'), $lapso1_ini);
 
-        $arr_ids_cuentas_aux = ContabCuenta::where( 'contab_cuenta_grupo_id', $grupo_hijo_id )
-                                   ->get()->pluck('id')->all();
+        $movimientos_por_cuenta = ContabMovimiento::leftJoin('contab_cuentas', 'contab_cuentas.id', '=', 'contab_movimientos.contab_cuenta_id')
+                            ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween('contab_movimientos.fecha', [ $lapso1_ini, $lapso1_fin ])
+                            ->where('contab_cuentas.contab_cuenta_grupo_id', $grupo_hijo_id)
+                            ->select(
+                                'contab_movimientos.contab_cuenta_id',
+                                DB::raw('SUM(contab_movimientos.valor_saldo) AS valor_saldo')
+                            )
+                            ->groupBy('contab_movimientos.contab_cuenta_id')
+                            ->havingRaw('SUM(contab_movimientos.valor_saldo) <> 0')
+                            ->get();
 
-        $valor_saldo = 0;
-        $arr_ids_cuentas = [];
-        foreach ($arr_ids_cuentas_aux as $cuenta_id) {
-            $aux_valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
-                            ->where('contab_cuenta_id', $cuenta_id )
-                            ->sum('valor_saldo');
-            if ($aux_valor_saldo != 0) {
-                $valor_saldo += $aux_valor_saldo;
-                $arr_ids_cuentas[] = $cuenta_id;
-            }
-        }        
+        $valor_saldo = $movimientos_por_cuenta->sum('valor_saldo');
+        $arr_ids_cuentas = $movimientos_por_cuenta->pluck('contab_cuenta_id')->all();
 
         return Response::json(
                             [
@@ -1405,8 +1536,10 @@ class ContabReportesController extends Controller
 
         $lapso1_ini = Input::get('lapso1_ini');
         $lapso1_fin = Input::get('lapso1_fin');
+        $lapso1_ini = $this->normalizar_fecha_inicial_eeff(Input::get('modalidad_reporte'), $lapso1_ini);
 
-        $valor_saldo = ContabMovimiento::whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
+        $valor_saldo = ContabMovimiento::where('core_empresa_id', Auth::user()->empresa_id)
+                            ->whereBetween( 'fecha', [ $lapso1_ini, $lapso1_fin ] )
                             ->where('contab_cuenta_id', $cuenta_id )
                             ->sum('valor_saldo');
 
@@ -1417,5 +1550,157 @@ class ContabReportesController extends Controller
                                 'lbl_cr' => ($valor_saldo < 0) ? 'CR' : ''
                             ]
                         );
+    }
+
+    protected function validar_integridad_eeff($obj_repor_serv)
+    {
+        $cuentas_sin_catalogo = collect($obj_repor_serv->movimiento->all())->filter(function ($linea) {
+                                return is_null($linea->codigo) || $linea->codigo === '';
+                            })
+                            ->pluck('contab_cuenta_id')
+                            ->unique()
+                            ->values()
+                            ->toArray();
+        if (!empty($cuentas_sin_catalogo)) {
+            throw new \RuntimeException('Hay movimientos con cuentas inexistentes en el catalogo: ' . implode(', ', $cuentas_sin_catalogo) . '.');
+        }
+
+        $grupos_invalidos = $obj_repor_serv->validar_grupos_hijos();
+        if (!empty($grupos_invalidos)) {
+            throw new \RuntimeException('Las siguientes cuentas no tienen correctamente asociado un grupo hijo con grupo padre: ' . implode(', ', $grupos_invalidos) . '.');
+        }
+    }
+
+    protected function render_ajax_error($message)
+    {
+        return '<div class="alert alert-danger">' . e($message) . '</div>';
+    }
+
+    protected function normalizar_fecha_inicial_eeff($modalidad_reporte, $fecha_inicial)
+    {
+        if ($modalidad_reporte == 'acumular_movimiento') {
+            return '1900-01-01';
+        }
+
+        return $fecha_inicial;
+    }
+
+    protected function get_impuesto_account_ids($column_name)
+    {
+        return Impuesto::whereNotNull($column_name)
+                    ->groupBy($column_name)
+                    ->pluck($column_name)
+                    ->toArray();
+    }
+
+    protected function get_group_taxes_report($transaction_types, $account_ids, $fecha_desde, $fecha_hasta)
+    {
+        if (empty($account_ids)) {
+            return [];
+        }
+
+        $rows = ContabMovimiento::leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'contab_movimientos.impuesto_id')
+                    ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                    ->whereIn('contab_movimientos.core_tipo_transaccion_id', $transaction_types)
+                    ->whereBetween('contab_movimientos.fecha', [ $fecha_desde, $fecha_hasta ])
+                    ->whereIn('contab_movimientos.contab_cuenta_id', $account_ids)
+                    ->whereNotNull('contab_movimientos.tasa_impuesto')
+                    ->select(
+                        'contab_movimientos.tasa_impuesto',
+                        'contab_impuestos.tax_category',
+                        DB::raw('SUM(contab_movimientos.valor_saldo) AS valor_impuesto')
+                    )
+                    ->groupBy('contab_movimientos.tasa_impuesto', 'contab_impuestos.tax_category')
+                    ->orderBy('contab_movimientos.tasa_impuesto')
+                    ->get();
+
+        return $this->format_group_taxes_rows($rows);
+    }
+
+    protected function get_group_taxes_by_third_party_report($transaction_types, $account_ids, $fecha_desde, $fecha_hasta)
+    {
+        if (empty($account_ids)) {
+            return [];
+        }
+
+        $rows = ContabMovimiento::leftJoin('contab_impuestos', 'contab_impuestos.id', '=', 'contab_movimientos.impuesto_id')
+                    ->leftJoin('core_terceros', 'core_terceros.id', '=', 'contab_movimientos.core_tercero_id')
+                    ->where('contab_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                    ->whereIn('contab_movimientos.core_tipo_transaccion_id', $transaction_types)
+                    ->whereBetween('contab_movimientos.fecha', [ $fecha_desde, $fecha_hasta ])
+                    ->whereIn('contab_movimientos.contab_cuenta_id', $account_ids)
+                    ->whereNotNull('contab_movimientos.tasa_impuesto')
+                    ->select(
+                        'contab_movimientos.core_tercero_id',
+                        'core_terceros.numero_identificacion AS tercero_numero_identificacion',
+                        'core_terceros.descripcion AS tercero_descripcion',
+                        'contab_movimientos.tasa_impuesto',
+                        'contab_impuestos.tax_category',
+                        DB::raw('SUM(contab_movimientos.valor_saldo) AS valor_impuesto')
+                    )
+                    ->groupBy(
+                        'contab_movimientos.core_tercero_id',
+                        'core_terceros.numero_identificacion',
+                        'core_terceros.descripcion',
+                        'contab_movimientos.tasa_impuesto',
+                        'contab_impuestos.tax_category'
+                    )
+                    ->orderBy('core_terceros.descripcion')
+                    ->orderBy('contab_movimientos.tasa_impuesto')
+                    ->get();
+
+        $formatted_rows = [];
+        foreach ($rows as $row) {
+            if (is_null($row->tasa_impuesto)) {
+                continue;
+            }
+
+            $valor_impuesto = abs((float)$row->valor_impuesto);
+            $tasa = (float)$row->tasa_impuesto / 100;
+            $base_impuesto = 0;
+            if ($tasa != 0) {
+                $base_impuesto = $valor_impuesto / $tasa;
+            }
+
+            $formatted_rows[] = (object)[
+                'tercero_numero_identificacion' => $row->tercero_numero_identificacion,
+                'tercero_descripcion' => $row->tercero_descripcion,
+                'group' => $this->build_tax_group_label($row->tax_category, $row->tasa_impuesto),
+                'base_impuesto' => $base_impuesto,
+                'valor_impuesto' => $valor_impuesto
+            ];
+        }
+
+        return $formatted_rows;
+    }
+
+    protected function format_group_taxes_rows($rows)
+    {
+        $formatted_rows = [];
+        foreach ($rows as $row) {
+            if (is_null($row->tasa_impuesto)) {
+                continue;
+            }
+
+            $valor_impuesto = abs((float)$row->valor_impuesto);
+            $tasa = (float)$row->tasa_impuesto / 100;
+            $base_impuesto = 0;
+            if ($tasa != 0) {
+                $base_impuesto = $valor_impuesto / $tasa;
+            }
+
+            $formatted_rows[] = [
+                'group' => $this->build_tax_group_label($row->tax_category, $row->tasa_impuesto),
+                'base_impuesto' => $base_impuesto,
+                'valor_impuesto' => $valor_impuesto
+            ];
+        }
+
+        return $formatted_rows;
+    }
+
+    protected function build_tax_group_label($tax_category, $tasa_impuesto)
+    {
+        return trim($tax_category . ' ' . $tasa_impuesto . '%');
     }
 }
