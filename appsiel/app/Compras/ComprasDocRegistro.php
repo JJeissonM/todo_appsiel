@@ -15,7 +15,7 @@ class ComprasDocRegistro extends Model
     // base_impuesto: precio_unitario * cantidad (se calcula sobre el costo total, NO es unitario)
     // valor_impuesto: precio_total - base_impuesto (tambien es total, NO es unitario)
 
-	protected $fillable = ['compras_doc_encabezado_id', 'inv_doc_registro_id', 'inv_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'tasa_descuento', 'valor_total_descuento', 'contab_retencion_id', 'tasa_retencion', 'valor_retencion', 'cantidad_recibida', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado'];
+	protected $fillable = ['compras_doc_encabezado_id', 'inv_doc_registro_id', 'inv_motivo_id', 'inv_producto_id', 'precio_unitario', 'cantidad', 'precio_total', 'base_impuesto', 'tasa_impuesto', 'valor_impuesto', 'tasa_descuento', 'valor_total_descuento', 'contab_retencion_id', 'tasa_retencion', 'valor_retencion', 'cantidad_recibida', 'cantidad_devuelta', 'creado_por', 'modificado_por', 'estado', 'xml_producto', 'xml_codigo'];
 
 	// En compras los impuestos se calculan con base en el costo_unitario (precio_compra)
 	public $campos_invisibles_linea_registro = ['inv_motivo_id','inv_bodega_id','inv_producto_id','costo_unitario','precio_unitario','base_impuesto','tasa_impuesto','valor_impuesto','cantidad','costo_total','precio_total', 'tasa_descuento', 'valor_total_descuento', 'contab_retencion_id', 'tasa_retencion', 'valor_retencion']; // 16 campos
@@ -62,6 +62,8 @@ class ComprasDocRegistro extends Model
                                 'compras_doc_registros.estado',
                                 'compras_doc_registros.creado_por',
                                 'compras_doc_registros.modificado_por',
+                                'compras_doc_registros.xml_producto',
+                                'compras_doc_registros.xml_codigo',
                                 'inv_productos.id AS producto_id',
                                 'inv_productos.descripcion AS producto_descripcion',
                                 'inv_productos.unidad_medida1',

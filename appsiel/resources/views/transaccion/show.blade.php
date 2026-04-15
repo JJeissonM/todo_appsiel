@@ -1,14 +1,14 @@
 @extends('layouts.principal')
 
 <?php
+    $alerta_tercero_incompleto = null;
 	if ( is_null( $doc_encabezado->tercero ) )
 	{
-		dd('Hay un Error con el tercero del documento. ');
+		$alerta_tercero_incompleto = 'Hay un Error con el tercero del documento (Está nulo o no se encontró en la base de datos).';
 	}
-
-	if ( is_null( $doc_encabezado->tercero->ciudad ) )
+	else if ( is_null( $doc_encabezado->tercero->ciudad ) )
 	{
-		dd('Error en ciudad. El tercero no tiene una ciudad asignada correctamente. Tercero: ' . $doc_encabezado->tercero->descripcion );
+		$alerta_tercero_incompleto = 'Error en ciudad. El tercero no tiene una ciudad asignada correctamente. Tercero: ' . $doc_encabezado->tercero->descripcion;
 	}
 ?>
 
@@ -51,6 +51,12 @@
 
 	@include('layouts.mensajes')
 
+    @if($alerta_tercero_incompleto)
+        <div class="alert alert-danger" style="margin-top:20px;">
+            <i class="fa fa-warning"></i> <strong>{{ $alerta_tercero_incompleto }}</strong>
+        </div>
+    @endif
+
 	@yield('div_advertencia_anulacion')
 
 	<div class="container-fluid">
@@ -73,6 +79,9 @@
 			                    <b>Fecha:</b> {{ date_format(date_create($doc_encabezado->fecha),"d-m-Y") }}
 			                    <br/>
 			                    <b>Estado:</b> {{ $doc_encabezado->estado }}
+								@if( isset($doc_encabezado->sincronizado_bot) && $doc_encabezado->sincronizado_bot )
+									(Sinc. DIAN)
+								@endif
 
 			                    @yield('datos_adicionales_encabezado')
 			                    

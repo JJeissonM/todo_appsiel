@@ -71,3 +71,16 @@ Route::get('recontabilizar_documentos_compras', 'Compras\ProcesoController@recon
 Route::get('compras_recontabilizar_nota/{id}', 'Compras\ProcesoController@recontabilizar_documento_nota_credito');
 
 Route::get('compras_recontabilizar_un_documento/{id}', 'Compras\ProcesoController@recontabilizar_un_documento');
+
+// ============================================================
+// SINCRONIZACIÓN BOT – FACTURAS DE COMPRA DIAN
+// ============================================================
+Route::post(
+    'api/compras/sync-facturas',
+    'Compras\SyncFacturaCompraController@store'
+)->name('compras.sync.facturas');
+
+Route::post(
+    'compras/mapeo-productos-xml',
+    'Compras\ProductoXmlMapeoController@store'
+)->name('compras.mapeo.productos.xml');
