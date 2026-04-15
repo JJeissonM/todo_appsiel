@@ -122,7 +122,11 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-						<button type="button" class="btn btn-primary" id="btn_confirmar_modal_accion">Confirmar</button>
+						<button type="button" class="btn btn-primary" id="btn_confirmar_modal_accion">
+							<i class="fa fa-check" id="icon_confirmar_modal"></i>
+							<i class="fa fa-spinner fa-spin" id="icon_confirmar_modal_spin" style="display: none;"></i>
+							<span id="texto_confirmar_modal">Confirmar</span>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -330,6 +334,10 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 
 			$('#btn_confirmar_modal_accion').click(function(e){
 				e.preventDefault();
+				$(this).prop('disabled', true);
+				$('#icon_confirmar_modal').hide();
+				$('#icon_confirmar_modal_spin').show();
+				$('#texto_confirmar_modal').text('Procesando...');
 				$('#form_confirmar_documento').submit();
 			});
 
