@@ -8,6 +8,7 @@ use App\Compras\ComprasPivotItemXml;
 use App\Compras\Proveedor;
 use App\Compras\SyncFacturaCompraLog;
 use App\Core\Tercero;
+use App\Sistema\TipoTransaccion;
 use Illuminate\Support\Facades\DB;
 
 class SyncFacturaCompraService
@@ -178,7 +179,7 @@ class SyncFacturaCompraService
         string     $creado_por
     ): ComprasDocEncabezado {
 
-        $parametros = config('compras');
+        $documentConfig = $this->getFacturaCompraDocumentConfig();
 
         $descripcion = $invoice['anotation'] ?? '';
         if (!$proveedor) {
@@ -189,13 +190,13 @@ class SyncFacturaCompraService
 
         // Consecutivo: último + 1 para este tipo_doc_app
         $ultimo_consecutivo = ComprasDocEncabezado::where(
-            'core_tipo_doc_app_id', $parametros['fc_tipo_doc_app_id']
+            'core_tipo_doc_app_id', $documentConfig['core_tipo_doc_app_id']
         )->max('consecutivo') ?? 0;
 
         return ComprasDocEncabezado::create([
             'core_empresa_id'             => $empresa_id,
-            'core_tipo_transaccion_id'    => $parametros['fc_tipo_transaccion_id'],
-            'core_tipo_doc_app_id'        => $parametros['fc_tipo_doc_app_id'],
+            'core_tipo_transaccion_id'    => $documentConfig['core_tipo_transaccion_id'],
+            'core_tipo_doc_app_id'        => $documentConfig['core_tipo_doc_app_id'],
             'core_tercero_id'             => $proveedor ? $proveedor->core_tercero_id : 0,
             'proveedor_id'                => $proveedor ? $proveedor->id : 0,
             'entrada_almacen_id'          => 0,
@@ -215,6 +216,48 @@ class SyncFacturaCompraService
             'valor_total'                 => $this->calcular_total_factura($invoice['items']),
             'creado_por'                  => $creado_por,
         ]);
+    }
+
+    private function getFacturaCompraDocumentConfig(): array
+    {
+        $core_tipo_transaccion_id = (int) config('compras.fc_tipo_transaccion_id');
+        $core_tipo_doc_app_id = (int) config('compras.fc_tipo_doc_app_id');
+
+        if ($core_tipo_transaccion_id <= 0) {
+            $fc_modelo_id = (int) config('compras.fc_modelo_id');
+
+            if ($fc_modelo_id > 0) {
+                $core_tipo_transaccion_id = (int) TipoTransaccion::where('core_modelo_id', $fc_modelo_id)
+                    ->where('estado', 'Activo')
+                    ->value('id');
+            }
+        }
+
+        if ($core_tipo_transaccion_id <= 0) {
+            $core_tipo_transaccion_id = 25;
+        }
+
+        if ($core_tipo_doc_app_id <= 0) {
+            $core_tipo_doc_app_id = (int) DB::table('core_transaccion_tiene_documento')
+                ->where('core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                ->orderBy('orden')
+                ->value('core_tipo_doc_id');
+        }
+
+        if ($core_tipo_doc_app_id <= 0) {
+            $core_tipo_doc_app_id = (int) ComprasDocEncabezado::where('core_tipo_transaccion_id', $core_tipo_transaccion_id)
+                ->orderBy('id', 'desc')
+                ->value('core_tipo_doc_app_id');
+        }
+
+        if ($core_tipo_transaccion_id <= 0 || $core_tipo_doc_app_id <= 0) {
+            throw new \Exception('No fue posible resolver la configuración de factura de compra. Verifique compras.fc_tipo_transaccion_id y compras.fc_tipo_doc_app_id.');
+        }
+
+        return [
+            'core_tipo_transaccion_id' => $core_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $core_tipo_doc_app_id,
+        ];
     }
 
     // ─────────────────────────────────────────────────────────────
