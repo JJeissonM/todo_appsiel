@@ -7,6 +7,9 @@
 @section('botones_acciones')
 	@if($doc_encabezado->estado != 'Anulado')
         <button class="btn-gmail" id="btn_anular" title="Anular"><i class="fa fa-close"></i></button>
+		@if($mostrar_boton_confirmar)
+			<button class="btn-gmail" id="btn_confirmar_documento" title="Confirmar"><i class="fa fa-check"></i></button>
+		@endif
 		<a href="{{ url('tesoreria/pagos_cxp/create?id=3&id_modelo=150&id_transaccion=33') }}" target="_blank" class="btn-gmail" title="Hacer abono"><i class="fa fa-btn fa-money"></i></a>	
         @if(!$docs_relacionados[1])
         	<!-- WARNING: Solo se hacen notas para facturas con una sola éntrada de almacén -->
@@ -88,6 +91,40 @@
 				{{ Form::hidden( 'factura_id', $id ) }}
 
 	{{ Form::close() }}
+
+	@if($mostrar_boton_confirmar)
+		{{ Form::open(['url' => 'compras_confirmar_factura', 'id' => 'form_confirmar_documento']) }}
+			{{ Form::hidden('url_id', Input::get('id')) }}
+			{{ Form::hidden('url_id_modelo', Input::get('id_modelo')) }}
+			{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion')) }}
+			{{ Form::hidden('factura_id', $id) }}
+		{{ Form::close() }}
+
+		<div class="modal fade" id="modal_confirmar_documento" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title">Confirmar documento</h4>
+					</div>
+					<div class="modal-body">
+						<div class="alert alert-warning">
+							<strong>Advertencia!</strong>
+							<br>
+							Se generará la entrada de almacén, los movimientos de compras, las contabilizaciones y los registros de pago del documento actual.
+							<br><br>
+							Esta operación debe ejecutarse una sola vez.
+						</div>
+						<p>¿Desea continuar con la confirmación del documento?</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+						<button type="button" class="btn btn-primary" id="btn_confirmar_modal_accion">Confirmar</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	@endif
 @endsection
 
 @section('documento_vista')
@@ -275,6 +312,16 @@
             	$('#form_anular').submit();
 
             });
+
+			$('#btn_confirmar_documento').click(function(e){
+				e.preventDefault();
+				$('#modal_confirmar_documento').modal({backdrop: "static"});
+			});
+
+			$('#btn_confirmar_modal_accion').click(function(e){
+				e.preventDefault();
+				$('#form_confirmar_documento').submit();
+			});
 
 			/*
 				validar_existencia_actual

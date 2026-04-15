@@ -48,6 +48,7 @@ Route::delete('compras_proveedores/{proveedor_id}/cuentas_bancarias/{cuenta_id}'
 
 // Anular
 Route::post('compras_anular_factura', 'Compras\CompraController@anular_factura');
+Route::post('compras_confirmar_factura', 'Compras\CompraController@confirmar_documento');
 /*Route::get('compras/eliminar_bodega/{id}', 'Compras\CompraController@eliminar_bodega');
 Route::get('compras/eliminar_producto/{id}', 'Compras\CompraController@eliminar_producto');
 */

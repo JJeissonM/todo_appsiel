@@ -31,6 +31,7 @@ use App\Compras\ComprasMovimiento;
 use App\Compras\NotaCredito;
 use App\Compras\Proveedor;
 use App\Compras\Services\ContabilidadService;
+use App\Compras\Services\CompraConfirmationService;
 use App\Compras\Services\SupplierService;
 use App\Compras\Services\TesoreriaService;
 use App\Ventas\ResolucionFacturacion;
@@ -584,7 +585,36 @@ class CompraController extends TransaccionController
 
         $valor_retenciones = (new ContabilidadService())->get_valor_retenciones( $doc_encabezado );
 
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear','medios_pago', 'valor_retenciones') );
+        $mostrar_boton_confirmar = false;
+        if ( $doc_encabezado->estado != 'Anulado' )
+        {
+            $mostrar_boton_confirmar = !ComprasMovimiento::where([
+                'core_empresa_id' => $doc_encabezado->core_empresa_id,
+                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                'consecutivo' => $doc_encabezado->consecutivo
+            ])->exists();
+        }
+
+        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear','medios_pago', 'valor_retenciones', 'mostrar_boton_confirmar') );
+    }
+
+    public function confirmar_documento(Request $request)
+    {
+        $factura = ComprasDocEncabezado::find( (int)$request->factura_id );
+
+        if ( is_null( $factura ) )
+        {
+            return redirect()->back()->with('mensaje_error','No se encontró el documento de compras a confirmar.');
+        }
+
+        try {
+            (new CompraConfirmationService())->confirm( $factura );
+        } catch (\Exception $e) {
+            return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('mensaje_error', $e->getMessage() );
+        }
+
+        return redirect( 'compras/'.$factura->id.'?id='.$request->url_id.'&id_modelo='.$request->url_id_modelo.'&id_transaccion='.$request->url_id_transaccion )->with('flash_message','Documento confirmado correctamente.');
     }
 
     /*
@@ -1187,4 +1217,3 @@ class CompraController extends TransaccionController
     }
 
 }
-
