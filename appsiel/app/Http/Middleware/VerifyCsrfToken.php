@@ -14,6 +14,7 @@ class VerifyCsrfToken extends BaseVerifier
     protected $except = [
         'vtas_crear_factura_desde_pasarela_de_pago*',
         'compras',
-        'transaction'
+        'transaction',
+        'api/compras/sync-facturas',
     ];
 }

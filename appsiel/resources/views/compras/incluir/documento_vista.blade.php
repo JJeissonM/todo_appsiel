@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped" style="font-size: 13px;">
         {{ Form::bsTableHeader(['Cód.','Producto','U.M.','Cantidad','Precio','Total bruto','Sub-total <br> (Sin IVA)','% Dcto.','Total Dcto.','IVA','Total IVA','Total','Acción']) }}
         <tbody>
             <?php            
@@ -11,6 +11,7 @@
                 $total_factura = 0;
                 $cantidad_items = 0;
             ?>
+            
             @foreach($doc_registros as $linea )
 
                 <?php
@@ -20,7 +21,16 @@
                     $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
                     $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
 
-                    $producto_descripcion = $linea->item->get_value_to_show(true);
+                    $es_pendiente = false;
+                    if (is_null($linea->item)) {
+                        $producto_descripcion = '* ' . ($linea->xml_producto ?? 'Pendiente de mapeo');
+                        $pivot_um = \App\Compras\ComprasPivotItemXml::where('codigo_item_xml', $linea->xml_codigo)->where('proveedor_id', $doc_encabezado->proveedor_id)->first();
+                        $unidad_medida = $pivot_um ? $pivot_um->unidad_medida_xml : 'No Def.';
+                        $es_pendiente = true;
+                    } else {
+                        $producto_descripcion = $linea->item->get_value_to_show(true);
+                        $unidad_medida = $linea->item->get_unidad_medida1();
+                    }
                     
                     $referencia = '';
                     if($linea->referencia != '')
@@ -34,7 +44,7 @@
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
                     <td> {{ $producto_descripcion }} </td>
-                    <td style="text-align: center;"> {{ $linea->item->get_unidad_medida1() }} </td>
+                    <td style="text-align: center;"> {{ $unidad_medida }} </td>
                     <td style="text-align: center;"> {{ number_format( $linea->cantidad, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $precio_original, 2, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->cantidad * $precio_original, 0, ',', '.') }} </td>
@@ -44,11 +54,14 @@
                     <td style="text-align: center;"> {{ number_format( $linea->tasa_impuesto, 0, ',', '.').'%' }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->valor_impuesto, 0, ',', '.') }} </td>
                     <td style="text-align: right;"> ${{ number_format( $linea->precio_total, 2, ',', '.') }} </td>
-                    <td>
+                    <td class="text-center">
                         @if($doc_encabezado->estado != 'Anulado' && !$docs_relacionados[1] )
-                            <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
-
-                            @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
+                            @if($es_pendiente)
+                                <button class="btn btn-default btn-xs" type="button" title="Debes mapear el producto al final de la página primero" disabled><i class="fa fa-ban"></i></button>
+                            @else
+                                <button class="btn btn-warning btn-xs btn-detail btn_editar_registro" type="button" title="Modificar" data-linea_registro_id="{{$linea->id}}"><i class="fa fa-btn fa-edit"></i>&nbsp; </button>
+                                @include('components.design.ventana_modal',['titulo'=>'Editar registro','texto_mensaje'=>''])
+                            @endif
                         @endif
                     </td>
                 </tr>

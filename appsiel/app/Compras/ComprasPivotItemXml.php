@@ -14,6 +14,9 @@ class ComprasPivotItemXml extends Model
         'codigo_item_xml',
         'nombre_item_xml',
         'proveedor_id',
+        'referencia',
+        'unidad_medida_xml',
+        'compras_sync_log_id',
     ];
 
     public function producto()
