@@ -580,6 +580,17 @@ class CompraController extends TransaccionController
                 ->orderBy('descripcion')
                 ->select('id', 'descripcion')
                 ->get();
+        }        
+
+        $mostrar_boton_confirmar = false;
+        if ( $doc_encabezado->estado != 'Anulado' )
+        {
+            $mostrar_boton_confirmar = !ComprasMovimiento::where([
+                'core_empresa_id' => $doc_encabezado->core_empresa_id,
+                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
+                'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
+                'consecutivo' => $doc_encabezado->consecutivo
+            ])->exists();
         }
 
         return view($vista, compact(
@@ -600,22 +611,9 @@ class CompraController extends TransaccionController
             'valor_retenciones',
             'pivot_items_xml',
             'productos_para_select',
-            'mensaje_advertencia_retencion'
+            'mensaje_advertencia_retencion', 
+            'mostrar_boton_confirmar'
         ));
-        $valor_retenciones = (new ContabilidadService())->get_valor_retenciones( $doc_encabezado );
-
-        $mostrar_boton_confirmar = false;
-        if ( $doc_encabezado->estado != 'Anulado' )
-        {
-            $mostrar_boton_confirmar = !ComprasMovimiento::where([
-                'core_empresa_id' => $doc_encabezado->core_empresa_id,
-                'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
-                'core_tipo_doc_app_id' => $doc_encabezado->core_tipo_doc_app_id,
-                'consecutivo' => $doc_encabezado->consecutivo
-            ])->exists();
-        }
-
-        return view( $vista, compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan','doc_encabezado', 'doc_registros', 'registros_contabilidad', 'abonos', 'notas_credito', 'empresa', 'docs_relacionados','url_crear','medios_pago', 'valor_retenciones', 'mostrar_boton_confirmar') );
     }
 
     public function confirmar_documento(Request $request)
