@@ -14,6 +14,17 @@ class Proveedor extends Model
 
     protected $fillable = ['core_tercero_id', 'clase_proveedor_id', 'inv_bodega_id', 'liquida_impuestos', 'condicion_pago_id', 'codigo', 'estado'];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($proveedor) {
+            if (empty($proveedor->inv_bodega_id)) {
+                $proveedor->inv_bodega_id = static::getDefaultInvBodegaId();
+            }
+        });
+    }
+
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Identificación', 'Tercero',  'Establecimiento', 'Dirección', 'Teléfono', 'Clase de proveedor', 'Liquida impuestos', 'Condición de pago', 'Estado'];
 
     public $urls_acciones = '{"eliminar":"web_eliminar/id_fila"}';
@@ -21,6 +32,13 @@ class Proveedor extends Model
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public static function getDefaultInvBodegaId()
+    {
+        $inv_bodega_id = (int) config('inventarios.item_bodega_principal_id');
+
+        return $inv_bodega_id > 0 ? $inv_bodega_id : 1;
     }
 
     public static function consultar_registros($nro_registros, $search)

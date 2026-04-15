@@ -143,7 +143,7 @@ class SyncFacturaCompraService
             $proveedor = Proveedor::create([
                 'core_tercero_id'    => $tercero->id,
                 'clase_proveedor_id' => 1,
-                'inv_bodega_id'      => $this->getBodegaDefaultId(),
+                'inv_bodega_id'      => Proveedor::getDefaultInvBodegaId(),
                 'condicion_pago_id'  => 1,
                 'estado'             => 'Activo'
             ]);
@@ -381,10 +381,4 @@ class SyncFacturaCompraService
         return round($total, 2);
     }
 
-    private function getBodegaDefaultId(): int
-    {
-        $inv_bodega_id = (int) config('inventarios.item_bodega_principal_id');
-
-        return $inv_bodega_id > 0 ? $inv_bodega_id : 1;
-    }
 }
