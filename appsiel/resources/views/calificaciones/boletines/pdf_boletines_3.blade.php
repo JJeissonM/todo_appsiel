@@ -4,7 +4,8 @@
 @section('contenido_formato')
 
 	@foreach($datos as $registro)
-		
+
+		<?php $centrar_banner_en_hoja = true; ?>
 	    @include('calificaciones.boletines.banner_2')
 
 		<?php 

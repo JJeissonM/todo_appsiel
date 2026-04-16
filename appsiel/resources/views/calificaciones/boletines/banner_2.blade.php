@@ -6,7 +6,7 @@
             </div>
         </td>
 
-        <td align="center">
+        <td align="center" @if( isset($centrar_banner_en_hoja) && $centrar_banner_en_hoja ) width="50%" @endif>
             <b style="font-size: {{$tam_letra}}mm;">{{ $colegio->descripcion }}</b>
             <br/>
             <b style="font-size: {{$tam_letra - 0.7}}mm;">{!! $colegio->slogan !!}</b>
@@ -16,5 +16,9 @@
                 {{ $colegio->direccion }}, {{ $colegio->ciudad }}, Teléfono: {{ $colegio->telefonos }}
             </span>
         </td>
+
+        @if( isset($centrar_banner_en_hoja) && $centrar_banner_en_hoja )
+            <td width="25%">&nbsp;</td>
+        @endif
     </tr>
 </table>
