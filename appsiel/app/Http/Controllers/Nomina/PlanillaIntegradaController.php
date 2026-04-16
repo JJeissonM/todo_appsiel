@@ -335,9 +335,27 @@ class PlanillaIntegradaController extends Controller
         return $this->smmlv() / 30;
     }
 
+    protected function valor_ibc_minimo_legal_por_dias($dias)
+    {
+        return $this->valor_ibc_dia_minimo_legal() * $this->normalizar_dias_cotizados_pila($dias);
+    }
+
     protected function normalizar_dias_cotizados_pila($dias)
     {
         return min(30, max(0, (int)round($dias, 0)));
+    }
+
+    protected function validar_ibc_parafiscales_mayor_al_minimo_legal()
+    {
+        $this->cantidad_dias_parafiscales = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_parafiscales);
+        if ($this->cantidad_dias_parafiscales == 0) {
+            return;
+        }
+
+        $ibc_minimo_legal = $this->valor_ibc_minimo_legal_por_dias($this->cantidad_dias_parafiscales);
+        if ($this->ibc_parafiscales < $ibc_minimo_legal) {
+            $this->ibc_parafiscales = $ibc_minimo_legal;
+        }
     }
 
 
@@ -365,6 +383,7 @@ class PlanillaIntegradaController extends Controller
         $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
 
         $this->cantidad_dias_parafiscales = $this->normalizar_dias_cotizados_pila($this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_parafiscales') ));
+        $this->validar_ibc_parafiscales_mayor_al_minimo_legal();
     }
 
     public function validar_ibc_mayor_al_minimino_legal()
@@ -826,6 +845,7 @@ class PlanillaIntegradaController extends Controller
 
         $this->cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_laborados);
         $this->cantidad_dias_parafiscales = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_parafiscales);
+        $this->validar_ibc_parafiscales_mayor_al_minimo_legal();
     }
 
     public function almacenar_datos_salud($planilla, $empleado)
@@ -1012,6 +1032,8 @@ class PlanillaIntegradaController extends Controller
         {
             $porcentaje_caja_compensacion = 4 / 100;
             $this->ibc_parafiscales = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_parafiscales, $this->smmlv());
+        }else{
+            $this->validar_ibc_parafiscales_mayor_al_minimo_legal();
         }
         $valor_cotizacion_ccf = number_format( $this->ibc_parafiscales * $porcentaje_caja_compensacion, 0,'','');
         $tarifa_ccf = $this->formatear_campo( $porcentaje_caja_compensacion,'0','derecha',7);
