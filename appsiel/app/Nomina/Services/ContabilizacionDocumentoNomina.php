@@ -4,6 +4,7 @@ namespace App\Nomina\Services;
 
 use App\Nomina\NomContrato;
 use App\Nomina\NomDocEncabezado;
+use App\Nomina\PilaDatosEmpresa;
 
 use App\Core\Tercero;
 use App\Contabilidad\ContabCuenta;
@@ -22,10 +23,13 @@ class ContabilizacionDocumentoNomina
 	public $valor_credito_total;
 	public $movimiento_contabilizar;
 	public $ids_contratos = [];
+	protected $tercero_operador_pila;
+	protected $operador_pila_configurado = false;
 
 	public function __construct( $nom_doc_encabezado_id )
 	{
 		$this->encabezado_doc = NomDocEncabezado::find( $nom_doc_encabezado_id );
+		$this->set_operador_pila();
 	}
 
 	public function set_movimiento_contabilizar()
@@ -55,6 +59,8 @@ class ContabilizacionDocumentoNomina
 			$valor_credito = $this->get_valor_credito( $equ_contab, $linea_registro_nomina );
 
 			$tercero_mov = $this->get_tercero_movimiento( $equ_contab, $linea_registro_nomina->contrato );
+			$tercero_mov = $this->get_tercero_movimiento_cxp_aportes($equ_contab, $linea_registro_nomina, $tercero_mov);
+			$detalle_operador_pila = $this->get_detalle_operador_pila($equ_contab, $linea_registro_nomina);
 			$registro_equivalencia_contable = (object)[
 									'es_contrapartida' => 0,
 									'error' => 0,
@@ -70,6 +76,7 @@ class ContabilizacionDocumentoNomina
 									'valor_debito' => $valor_debito,
 									'valor_credito' => $valor_credito,
 									'tipo_transaccion' => $equ_contab->tipo_causacion,
+									'detalle_operador_pila' => $detalle_operador_pila,
 									'estado' => 'Activo',
 									'creado_por' => Auth::user()->email,
 									'fecha_vencimiento' => $this->encabezado_doc->fecha
@@ -124,6 +131,7 @@ class ContabilizacionDocumentoNomina
 					'valor_debito' => $valor_debito,
 					'valor_credito' => $valor_credito ,
 					'tipo_transaccion' => 'crear_cxp',
+					'detalle_operador_pila' => '',
 					'estado' => 'Activo',
 					'creado_por' => Auth::user()->email,
 					'fecha_vencimiento' => $this->encabezado_doc->fecha
@@ -156,12 +164,79 @@ class ContabilizacionDocumentoNomina
 															'valor_debito' => $valor_debito,
 															'valor_credito' => $valor_credito,
 															'tipo_transaccion' => 'crear_cxp',
+															'detalle_operador_pila' => '',
 															'estado' => 'Activo',
 															'creado_por' => Auth::user()->email,
 															'fecha_vencimiento' => $this->encabezado_doc->fecha
 														] );
 		}
 
+	}
+
+	protected function set_operador_pila()
+	{
+		$datos_empresa = PilaDatosEmpresa::where('core_empresa_id', $this->encabezado_doc->core_empresa_id)
+			->where('estado', 'Activo')
+			->orderBy('id')
+			->first();
+
+		if (is_null($datos_empresa) || (int)$datos_empresa->operador_pila_core_tercero_id <= 0) {
+			return;
+		}
+
+		$this->operador_pila_configurado = true;
+		$this->tercero_operador_pila = Tercero::find((int)$datos_empresa->operador_pila_core_tercero_id);
+	}
+
+	protected function get_tercero_movimiento_cxp_aportes($equ_contab, $linea_registro_nomina, $tercero_movimiento)
+	{
+		if (!$this->operador_pila_configurado) {
+			return $tercero_movimiento;
+		}
+
+		if ($equ_contab->tipo_causacion != 'crear_cxp' || $equ_contab->tercero_movimiento != 'entidad_relacionada') {
+			return $tercero_movimiento;
+		}
+
+		if (!$this->es_concepto_aporte_pila($linea_registro_nomina->concepto)) {
+			return $tercero_movimiento;
+		}
+
+		if (is_null($this->tercero_operador_pila)) {
+			return (object)[
+				'id' => 0,
+				'numero_identificacion' => 0,
+				'descripcion'  => 'Operador PILA no está definido. Revise el campo Operador PILA CxP en Datos de la empresa.'
+			];
+		}
+
+		return $this->tercero_operador_pila;
+	}
+
+	protected function es_concepto_aporte_pila($concepto)
+	{
+		if (is_null($concepto)) {
+			return false;
+		}
+
+		return in_array((int)$concepto->modo_liquidacion_id, [10, 12, 13]);
+	}
+
+	protected function get_detalle_operador_pila($equ_contab, $linea_registro_nomina)
+	{
+		if (!$this->operador_pila_configurado) {
+			return '';
+		}
+
+		if ($equ_contab->tipo_causacion != 'crear_cxp' || $equ_contab->tercero_movimiento != 'entidad_relacionada') {
+			return '';
+		}
+
+		if (!$this->es_concepto_aporte_pila($linea_registro_nomina->concepto)) {
+			return '';
+		}
+
+		return 'La CxP de este aporte se genera al operador PILA configurado.';
 	}
 
 	public function get_tercero_movimiento( $equ_contab, NomContrato $contrato )
@@ -278,7 +353,7 @@ class ContabilizacionDocumentoNomina
 										'concepto' => $concepto,
 										'valor_debito' => $movimiento->valor_debito,
 										'valor_credito' => $movimiento->valor_credito,
-										'observacion' => $observacion->descripcion,
+										'observacion' => $observacion->descripcion . $movimiento->detalle_operador_pila,
 									];
 		}
 

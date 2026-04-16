@@ -8,7 +8,7 @@ class PilaDatosEmpresa extends Model
 {
     protected $table = 'nom_pila_datos_empresa';
 
-    protected $fillable = ['core_empresa_id', 'tipo_aportante', 'clase_aportante', 'forma_presentacion', 'tipo_persona', 'naturaleza_juridica', 'tipo_pagador_pensiones', 'tipo_accion', 'administradora_riesgos_laborales_id', 'actividad_economica_ciiu', 'rep_legal_core_tercero_id', 'porcentaje_sena', 'porcentaje_icbf', 'porcentaje_caja_compensacion', 'porcentaje_eps_empresa', 'porcentaje_afp_empresa', 'modo_exoneracion_aportes', 'estado', 'contab_cuenta_db_eps_id', 'contab_cuenta_cr_eps_id', 'contab_cuenta_db_afp_id', 'contab_cuenta_cr_afp_id', 'contab_cuenta_db_arl_id', 'contab_cuenta_cr_arl_id', 'contab_cuenta_db_sena_id', 'contab_cuenta_cr_sena_id', 'contab_cuenta_db_icbf_id', 'contab_cuenta_cr_icbf_id', 'contab_cuenta_db_caja_compensacion_id', 'contab_cuenta_cr_caja_compensacion_id'];
+    protected $fillable = ['core_empresa_id', 'tipo_aportante', 'clase_aportante', 'forma_presentacion', 'tipo_persona', 'naturaleza_juridica', 'tipo_pagador_pensiones', 'tipo_accion', 'administradora_riesgos_laborales_id', 'actividad_economica_ciiu', 'rep_legal_core_tercero_id', 'operador_pila_core_tercero_id', 'porcentaje_sena', 'porcentaje_icbf', 'porcentaje_caja_compensacion', 'porcentaje_eps_empresa', 'porcentaje_afp_empresa', 'modo_exoneracion_aportes', 'estado', 'contab_cuenta_db_eps_id', 'contab_cuenta_cr_eps_id', 'contab_cuenta_db_afp_id', 'contab_cuenta_cr_afp_id', 'contab_cuenta_db_arl_id', 'contab_cuenta_cr_arl_id', 'contab_cuenta_db_sena_id', 'contab_cuenta_cr_sena_id', 'contab_cuenta_db_icbf_id', 'contab_cuenta_cr_icbf_id', 'contab_cuenta_db_caja_compensacion_id', 'contab_cuenta_cr_caja_compensacion_id'];
 
     public function empresa()
     {
@@ -25,7 +25,12 @@ class PilaDatosEmpresa extends Model
         return $this->belongsTo('App\Core\Tercero', 'rep_legal_core_tercero_id');
     }
 
-    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Tipo de aportante', 'Clase de aportante', 'Forma de presentación', 'Tipo de persona', 'Naturaleza jurídica', 'Tipo pagador pensiones', 'Tipo de acción', 'Administradora de riesgos laborales', 'Actividad económica (CIIU)', 'Representante Legal', '% SENA', '% ICBF', '% CCF', 'Modo exoneración aportes', 'Estado'];
+    public function operador_pila()
+    {
+        return $this->belongsTo('App\Core\Tercero', 'operador_pila_core_tercero_id');
+    }
+
+    public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Empresa', 'Tipo de aportante', 'Clase de aportante', 'Forma de presentación', 'Tipo de persona', 'Naturaleza jurídica', 'Tipo pagador pensiones', 'Tipo de acción', 'Administradora de riesgos laborales', 'Actividad económica (CIIU)', 'Representante Legal', 'Operador PILA CxP', '% SENA', '% ICBF', '% CCF', 'Modo exoneración aportes', 'Estado'];
 
     public $urls_acciones = '{"create":"web/create","edit":"web/id_fila/edit"}';
 
@@ -44,12 +49,13 @@ class PilaDatosEmpresa extends Model
             'nom_pila_datos_empresa.administradora_riesgos_laborales_id AS campo9',
             'nom_pila_datos_empresa.actividad_economica_ciiu AS campo10',
             'nom_pila_datos_empresa.rep_legal_core_tercero_id AS campo11',
-            'nom_pila_datos_empresa.porcentaje_sena AS campo12',
-            'nom_pila_datos_empresa.porcentaje_icbf AS campo13',
-            'nom_pila_datos_empresa.porcentaje_caja_compensacion AS campo14',
-            'nom_pila_datos_empresa.modo_exoneracion_aportes AS campo15',
-            'nom_pila_datos_empresa.estado AS campo16',
-            'nom_pila_datos_empresa.id AS campo17'
+            'nom_pila_datos_empresa.operador_pila_core_tercero_id AS campo12',
+            'nom_pila_datos_empresa.porcentaje_sena AS campo13',
+            'nom_pila_datos_empresa.porcentaje_icbf AS campo14',
+            'nom_pila_datos_empresa.porcentaje_caja_compensacion AS campo15',
+            'nom_pila_datos_empresa.modo_exoneracion_aportes AS campo16',
+            'nom_pila_datos_empresa.estado AS campo17',
+            'nom_pila_datos_empresa.id AS campo18'
         )
             ->where("nom_pila_datos_empresa.core_empresa_id", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.tipo_aportante", "LIKE", "%$search%")
@@ -62,6 +68,7 @@ class PilaDatosEmpresa extends Model
             ->orWhere("nom_pila_datos_empresa.administradora_riesgos_laborales_id", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.actividad_economica_ciiu", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.rep_legal_core_tercero_id", "LIKE", "%$search%")
+            ->orWhere("nom_pila_datos_empresa.operador_pila_core_tercero_id", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.porcentaje_sena", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.porcentaje_icbf", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.porcentaje_caja_compensacion", "LIKE", "%$search%")
@@ -86,6 +93,7 @@ class PilaDatosEmpresa extends Model
             'nom_pila_datos_empresa.administradora_riesgos_laborales_id AS ADM_DE_RIESGOS_LABORALES',
             'nom_pila_datos_empresa.actividad_economica_ciiu AS ACTIVIDAD_ECONÓMICA_(CIIU)',
             'nom_pila_datos_empresa.rep_legal_core_tercero_id AS %REPRESENTANTE_LEGAL',
+            'nom_pila_datos_empresa.operador_pila_core_tercero_id AS OPERADOR_PILA_CXP',
             'nom_pila_datos_empresa.porcentaje_sena AS %_SENA',
             'nom_pila_datos_empresa.porcentaje_icbf AS %_ICBF',
             'nom_pila_datos_empresa.porcentaje_caja_compensacion AS %_CCF',
@@ -103,6 +111,7 @@ class PilaDatosEmpresa extends Model
             ->orWhere("nom_pila_datos_empresa.administradora_riesgos_laborales_id", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.actividad_economica_ciiu", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.rep_legal_core_tercero_id", "LIKE", "%$search%")
+            ->orWhere("nom_pila_datos_empresa.operador_pila_core_tercero_id", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.porcentaje_sena", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.porcentaje_icbf", "LIKE", "%$search%")
             ->orWhere("nom_pila_datos_empresa.porcentaje_caja_compensacion", "LIKE", "%$search%")

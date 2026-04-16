@@ -5,6 +5,7 @@ namespace App\Nomina\Services;
 use App\Contabilidad\ContabCuenta;
 use App\Contabilidad\ContabMovimiento;
 use App\Contabilidad\ContabDocEncabezado;
+use App\Core\Tercero;
 
 use App\CxP\CxpMovimiento;
 use App\CxP\CxpAbono;
@@ -65,6 +66,8 @@ class ContabilizacionPilaNomina
 			return;
 		}
 
+		$tercero_cxp_configurado = (int)$datos_empresa->operador_pila_core_tercero_id > 0;
+		$tercero_cxp = $this->getTerceroCxpPila($datos_empresa);
 		$registros_consolidados = [];
 		$pila_service = new SaludService();
         $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios, $planilla_ids ) );
@@ -161,6 +164,8 @@ class ContabilizacionPilaNomina
 
 			$cuenta_contable_db = ContabCuenta::find( $cuenta_contable_db_id );
 			$cuenta_contable_cr = ContabCuenta::find( $cuenta_contable_cr_id );
+			$tercero_credito = $tercero_cxp_configurado ? $tercero_cxp : $linea_registro->entidad->tercero;
+			$detalle_cxp_operador = $tercero_cxp_configurado ? ' La CxP se genera al operador PILA configurado.' : '';
 
 			// REG. DEBITO
 			$valor_debito = $valor_cotizacion;
@@ -198,12 +203,12 @@ class ContabilizacionPilaNomina
 									'consecutivo' => 0,
 									'fecha' => $this->fecha_final_promedios,
 									'core_empresa_id' =>  Auth::user()->empresa_id,
-									'tercero' => $linea_registro->entidad->tercero,
+									'tercero' => $tercero_credito,
 									'cuenta_contable' => $cuenta_contable_cr,
 									'valor_pila' => $valor_pila,
 									'valor_debito' => 0,
 									'valor_credito' => $valor_credito,
-									'detalle_calculo_contable' => $detalle_calculo_contable,
+									'detalle_calculo_contable' => $detalle_calculo_contable . $detalle_cxp_operador,
 									'tipo_transaccion' => 'crear_cxp',
 									'estado' => 'Activo',
 									'creado_por' => Auth::user()->email,
@@ -214,6 +219,17 @@ class ContabilizacionPilaNomina
 			$this->movimiento_contabilizar->push( $registro_equivalencia_contable );
 			$this->valor_credito_total += $valor_credito;
 		}
+	}
+
+	protected function getTerceroCxpPila($datos_empresa)
+	{
+		$tercero_id = (int)$datos_empresa->operador_pila_core_tercero_id;
+
+		if ($tercero_id <= 0) {
+			return null;
+		}
+
+		return Tercero::find($tercero_id);
 	}
 
 
@@ -234,13 +250,19 @@ class ContabilizacionPilaNomina
 			if ( !is_null( $movimiento->cuenta_contable ) )
 			{
 				$cuenta_contable = $movimiento->cuenta_contable->codigo . ' ' . $movimiento->cuenta_contable->descripcion;
-			}			
+			}
+
+			$tercero_movimiento = '';
+			if ( !is_null( $movimiento->tercero ) )
+			{
+				$tercero_movimiento = $movimiento->tercero->numero_identificacion . ' ' . $movimiento->tercero->descripcion;
+			}
 
 			$lineas_tabla[] = (object)[
 										'error' => $observacion->error,
 										'tipo_causacion' => $movimiento->tipo_transaccion,
 										'cuenta_contable' => $cuenta_contable,
-										'tercero_movimiento' => $movimiento->tercero->numero_identificacion . ' ' . $movimiento->tercero->descripcion,
+										'tercero_movimiento' => $tercero_movimiento,
 										'concepto' => $concepto,
 										'valor_pila' => $movimiento->valor_pila,
 										'valor_debito' => $movimiento->valor_debito,
