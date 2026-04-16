@@ -335,6 +335,11 @@ class PlanillaIntegradaController extends Controller
         return $this->smmlv() / 30;
     }
 
+    protected function normalizar_dias_cotizados_pila($dias)
+    {
+        return min(30, max(0, (int)round($dias, 0)));
+    }
+
 
     public function calcular_ibc( $planilla, $empleado )
     {
@@ -342,7 +347,7 @@ class PlanillaIntegradaController extends Controller
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
             $diasCalculados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
-            $this->cantidad_dias_laborados = $cotizante51Service->getDiasLaboradosMes($empleado, $diasCalculados);
+            $this->cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($cotizante51Service->getDiasLaboradosMes($empleado, $diasCalculados));
             $this->ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_laborados, $this->smmlv());
             $this->valor_ibc_un_dia = 0;
 
@@ -353,18 +358,19 @@ class PlanillaIntegradaController extends Controller
 
         $this->ibc_salud = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_salud'), $this->fecha_inicial, $this->fecha_final );// + 10;// $10 para que alcance la siguiente decena más cercana
 
-        $this->cantidad_dias_laborados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
+        $this->cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ));
         
         $this->validar_ibc_mayor_al_minimino_legal();
 
         $this->ibc_parafiscales = $this->get_valor_acumulado_agrupacion_entre_meses( $empleado, (int)config('nomina.agrupacion_calculo_ibc_parafiscales'), $this->fecha_inicial, $this->fecha_final );
 
-        $this->cantidad_dias_parafiscales = $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_parafiscales') );
+        $this->cantidad_dias_parafiscales = $this->normalizar_dias_cotizados_pila($this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_parafiscales') ));
     }
 
     public function validar_ibc_mayor_al_minimino_legal()
     {
         // No se puede tener un IBC por debajo del salario mínimo legal
+        $this->cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_laborados);
         $this->valor_ibc_un_dia = 0;
         if ( $this->cantidad_dias_laborados != 0 )
         {
@@ -684,10 +690,11 @@ class PlanillaIntegradaController extends Controller
                                                                 ['nom_contrato_id','=',$empleado->id]
                                                             ])
                                                         ->sum('aux_cantidad_dias_laborados');
-            if ( ( $dias_ya_laborados_novedades + $this->cantidad_dias_laborados ) > 30 )
+            $exceso_dias_cotizados = ($dias_ya_laborados_novedades + $this->cantidad_dias_laborados) - 30;
+            if ( $exceso_dias_cotizados > 0 )
             {
-                $this->cantidad_dias_laborados--;
-                $this->cantidad_dias_parafiscales--;
+                $this->cantidad_dias_laborados = max(0, $this->cantidad_dias_laborados - $exceso_dias_cotizados);
+                $this->cantidad_dias_parafiscales = max(0, $this->cantidad_dias_parafiscales - $exceso_dias_cotizados);
             }
         }
 
@@ -783,7 +790,7 @@ class PlanillaIntegradaController extends Controller
                                                     ->whereBetween( 'fecha', [ $this->fecha_inicial, $this->fecha_final ] )
                                                     ->get();
 
-        $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / $this->horas_dia_laboral() , 0 );
+        $this->cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($registros_asociados_novedad->sum('cantidad_horas') / $this->horas_dia_laboral());
 
         // sumar devengos/deducciones asociados a la novedad
         $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');// + 10;// $10 para que alcance la siguiente decena más cercana
@@ -815,14 +822,17 @@ class PlanillaIntegradaController extends Controller
         $this->cantidad_dias_laborados -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');
 
         $this->ibc_parafiscales -= $datos_lineas_adicionales->sum('aux_ibc_salud');
-        $this->cantidad_dias_parafiscales -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');            
+        $this->cantidad_dias_parafiscales -= $datos_lineas_adicionales->sum('aux_cantidad_dias_laborados');
+
+        $this->cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_laborados);
+        $this->cantidad_dias_parafiscales = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_parafiscales);
     }
 
     public function almacenar_datos_salud($planilla, $empleado)
     {
         $cotizante51Service = new Cotizante51Service();
         $esCotizante51 = $cotizante51Service->esCotizante51($empleado);
-        $diasCotizadosSalud = $this->cantidad_dias_laborados;
+        $diasCotizadosSalud = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_laborados);
         $ibcSaludLiquidacion = $this->ibc_salud;
 
         // Vacaciones de liq. de contrato se tienen en cuenta en parafiscales, mas no para salud y pensión.
@@ -882,7 +892,7 @@ class PlanillaIntegradaController extends Controller
     {
         $cotizante51Service = new Cotizante51Service();
         $this->el_empleado_id = $empleado->id;
-        $cantidad_dias_laborados = $this->cantidad_dias_laborados;
+        $cantidad_dias_laborados = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_laborados);
         $ibc_salud = $this->ibc_salud;
 
         $codigo_entidad_pension = $this->formatear_campo( is_null($empleado->entidad_pension) ? '' : $empleado->entidad_pension->codigo_nacional,' ','derecha',6);
@@ -959,7 +969,7 @@ class PlanillaIntegradaController extends Controller
             $porcentaje_riesgo_laboral = '0.0';
         }
 
-        $diasCotizadosRiesgos = $this->cantidad_dias_laborados;
+        $diasCotizadosRiesgos = $this->normalizar_dias_cotizados_pila($this->cantidad_dias_laborados);
         $ibcRiesgos = $cotizante51Service->getIbcRiesgosLaborales($empleado, $this->ibc_salud, $this->smmlv());
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
@@ -1043,7 +1053,7 @@ class PlanillaIntegradaController extends Controller
                     [ 'fecha_final_mes' => $planilla->fecha_final_mes ] +
                     [ 'cotizante_exonerado_de_aportes_parafiscales' => $cotizante_exonerado_de_aportes_parafiscales ] +
                     [ 'codigo_entidad_ccf' => $codigo_entidad_ccf ] +
-                    [ 'dias_cotizados' => $this->formatear_campo($this->cantidad_dias_parafiscales,'0','izquierda',2) ] +
+                    [ 'dias_cotizados' => $this->formatear_campo($this->normalizar_dias_cotizados_pila($this->cantidad_dias_parafiscales),'0','izquierda',2) ] +
                     [ 'ibc_parafiscales' => $this->formatear_campo( number_format( $this->ibc_parafiscales,0,'',''),'0','izquierda',9) ] +
                     [ 'tarifa_ccf' => $tarifa_ccf ] +
                     [ 'cotizacion_ccf' => $cotizacion_ccf ] +

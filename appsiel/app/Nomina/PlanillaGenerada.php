@@ -72,6 +72,11 @@ class PlanillaGenerada extends Model
         return $parametros;
     }
 
+    protected function normalizarDiasCotizadosPila($dias)
+    {
+        return min(30, max(0, (int)round($dias, 0)));
+    }
+
     public function lapso()
     {
         $array_fecha = explode('-', $this->fecha_final_mes);
@@ -252,7 +257,7 @@ class PlanillaGenerada extends Model
                                                 'planilla_generada_id' => $planilla_generada->id,
                                                 'nom_contrato_id' => $contrato->id,
                                                 'tipo_linea' => 'adicional',
-                                                'cantidad_dias_linea_adicional' => round( $registro_documentos_nomina->cantidad_horas / (float)$parametrosLegales->horas_dia_laboral, 0),
+                                                'cantidad_dias_linea_adicional' => $this->normalizarDiasCotizadosPila( $registro_documentos_nomina->cantidad_horas / (float)$parametrosLegales->horas_dia_laboral ),
                                                 'novedad_tnl_id' => $registro_documentos_nomina->novedad_tnl_id,
                                                 'nom_concepto_id' => $registro_documentos_nomina->nom_concepto_id,
                                             ]);
