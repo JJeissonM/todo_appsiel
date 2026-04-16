@@ -330,6 +330,11 @@ class PlanillaIntegradaController extends Controller
         return (float)$this->parametros_legales->horas_dia_laboral;
     }
 
+    protected function valor_ibc_dia_minimo_legal()
+    {
+        return $this->smmlv() / 30;
+    }
+
 
     public function calcular_ibc( $planilla, $empleado )
     {
@@ -366,7 +371,7 @@ class PlanillaIntegradaController extends Controller
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }        
             
-        $valor_ibc_un_dia_minimo_legal = $this->smmlv() / $this->horas_laborales() * $this->horas_dia_laboral();
+        $valor_ibc_un_dia_minimo_legal = $this->valor_ibc_dia_minimo_legal();
         if ( ($this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal) && ($this->cantidad_dias_laborados != 0) )
         {
             $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados );// + 10;// $10 para que alcance la siguiente decena más cercana
