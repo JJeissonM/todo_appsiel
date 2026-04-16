@@ -1,8 +1,8 @@
 <table class="banner">
     <tr>
-        <td width="25%">
+        <td width="25%" align="center">
             <div class="imagen">
-                <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen }}" style="max-width: 190px; max-height: 70px; padding: 2px;" />
+                <img src="{{ asset( config('configuracion.url_instancia_cliente') ).'/storage/app/escudos/'.$colegio->imagen }}" style="display: block; margin-left: auto; margin-right: auto; max-width: 190px; max-height: 70px; padding: 2px;" />
             </div>
         </td>
 
