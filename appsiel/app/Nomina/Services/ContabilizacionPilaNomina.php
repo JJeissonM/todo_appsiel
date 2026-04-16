@@ -81,6 +81,8 @@ class ContabilizacionPilaNomina
 		foreach ( $registros_consolidados as $linea_registro )
 		{
 			$valor_cotizacion = $linea_registro->total_cotizacion;
+			$valor_pila = $linea_registro->total_cotizacion;
+			$detalle_calculo_contable = '';
 
 			if ($linea_registro->entidad == null) {
 				continue;
@@ -92,6 +94,7 @@ class ContabilizacionPilaNomina
 					$cuenta_contable_db_id = $datos_empresa->contab_cuenta_db_eps_id;
 					$cuenta_contable_cr_id = $datos_empresa->contab_cuenta_cr_eps_id;
 					$valor_cotizacion = isset($linea_registro->total_cotizacion_empresa) ? $linea_registro->total_cotizacion_empresa : 0;
+					$detalle_calculo_contable = 'Se contabiliza solo el aporte patronal de salud. El 4% del trabajador ya debe quedar causado como deducción de nómina.';
 					break;
 				
 				case 'AFP':
@@ -107,7 +110,8 @@ class ContabilizacionPilaNomina
 					$valor_fondo_solidaridad = $linea_doc_service->total_deducciones_modo_liquidacion_entidad_pension( new LapsoNomina($this->fecha_final_promedios), $modo_liquidacion_id, $linea_registro->entidad->id );
 					
 					// A lo que ya está liquidado en la planilla se le resta lo que ya está descontado en los documentos de nómina; y que ya debería estar contabilizado.
-					$valor_cotizacion = $linea_registro->total_cotizacion - $valor_pension_obligatoria - $valor_fondo_solidaridad;
+					$valor_cotizacion = max(0, $linea_registro->total_cotizacion - $valor_pension_obligatoria - $valor_fondo_solidaridad);
+					$detalle_calculo_contable = 'Total PILA menos deducciones de nómina ya causadas: pensión obligatoria $' . number_format($valor_pension_obligatoria, 0, ',', '.') . ' y FSP $' . number_format($valor_fondo_solidaridad, 0, ',', '.') . '.';
 
 					if( $linea_registro->entidad->tercero->numero_identificacion == 900336004 )
 					{
@@ -150,7 +154,7 @@ class ContabilizacionPilaNomina
 			}
 
 			// Algunas entidades no registran valor cotizado para contabilizar
-			if ( $valor_cotizacion == 0 )
+			if ( $valor_cotizacion <= 0 )
 			{
 				continue;
 			}
@@ -170,8 +174,10 @@ class ContabilizacionPilaNomina
 									'core_empresa_id' =>  Auth::user()->empresa_id,
 									'tercero' => $linea_registro->entidad->tercero,
 									'cuenta_contable' => $cuenta_contable_db,
+									'valor_pila' => $valor_pila,
 									'valor_debito' => $valor_debito,
 									'valor_credito' => 0,
+									'detalle_calculo_contable' => $detalle_calculo_contable,
 									'tipo_transaccion' => 'causacion',
 									'estado' => 'Activo',
 									'creado_por' => Auth::user()->email,
@@ -194,8 +200,10 @@ class ContabilizacionPilaNomina
 									'core_empresa_id' =>  Auth::user()->empresa_id,
 									'tercero' => $linea_registro->entidad->tercero,
 									'cuenta_contable' => $cuenta_contable_cr,
+									'valor_pila' => $valor_pila,
 									'valor_debito' => 0,
 									'valor_credito' => $valor_credito,
+									'detalle_calculo_contable' => $detalle_calculo_contable,
 									'tipo_transaccion' => 'crear_cxp',
 									'estado' => 'Activo',
 									'creado_por' => Auth::user()->email,
@@ -234,8 +242,10 @@ class ContabilizacionPilaNomina
 										'cuenta_contable' => $cuenta_contable,
 										'tercero_movimiento' => $movimiento->tercero->numero_identificacion . ' ' . $movimiento->tercero->descripcion,
 										'concepto' => $concepto,
+										'valor_pila' => $movimiento->valor_pila,
 										'valor_debito' => $movimiento->valor_debito,
 										'valor_credito' => $movimiento->valor_credito,
+										'detalle_calculo_contable' => $movimiento->detalle_calculo_contable,
 										'observacion' => $observacion->descripcion,
 									];
 		}

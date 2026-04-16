@@ -32,6 +32,11 @@
 		            	<b>Nota: </b>
 		            	Las líneas sombreadas de rojo no serán contabilizadas.
 		         	</span>
+		            <br>
+		            <span class="text-info">
+		                <b>Conciliación PILA: </b>
+		                El valor PILA corresponde al total almacenado en las tablas de liquidación. El valor contable puede ser menor en EPS y AFP porque allí solo se causa el aporte patronal pendiente; las deducciones del trabajador deben venir causadas desde la nómina.
+		            </span>
 		        </td>
 		    </tr>
 		</table>
@@ -54,9 +59,11 @@
 					<th>Cuenta contable</th>
 					<th>Tercero movimiento</th>
 					<th>Concepto</th>
+					<th>Valor PILA</th>
 					<th>Débito</th>
 					<th>Crédito</th>
-					<th></th>
+					<th>Detalle</th>
+					<th>Observación</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -79,8 +86,10 @@
 						<td> {{ $linea->cuenta_contable }} </td>
 						<td> {{ $linea->tercero_movimiento }} </td>
 						<td> {{ $linea->concepto }} </td>
+						<td> ${{ number_format($linea->valor_pila,0,',','.') }} </td>
 						<td> ${{ number_format($linea->valor_debito,0,',','.') }} </td>
 						<td> ${{ number_format($linea->valor_credito,0,',','.') }} </td>
+						<td> {{ $linea->detalle_calculo_contable }} </td>
 						<td> {!! $linea->observacion !!} </td>
 					</tr>
 					<?php 
@@ -92,9 +101,11 @@
 			</tbody>
 			<tfoot>
 				<tr>
-					<td colspan="4"></td>
+					<td colspan="5"></td>
+					<td></td>
 					<td> ${{ number_format($valor_debito_total,0,',','.') }} </td>
 					<td> ${{ number_format($valor_credito_total,0,',','.') }} </td>
+					<td></td>
 					<td></td>
 				</tr>
 			</tfoot>
