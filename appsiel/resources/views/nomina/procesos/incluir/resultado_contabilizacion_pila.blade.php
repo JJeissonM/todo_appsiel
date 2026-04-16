@@ -68,6 +68,7 @@
 			</thead>
 			<tbody>
 				<?php 
+					$valor_pila_total = 0;
 					$valor_debito_total = 0;
 					$valor_credito_total = 0;
 					$i = 1;
@@ -93,6 +94,7 @@
 						<td> {!! $linea->observacion !!} </td>
 					</tr>
 					<?php 
+						$valor_pila_total += $linea->valor_pila;
 						$valor_debito_total += $linea->valor_debito;
 						$valor_credito_total += $linea->valor_credito;
 						$i++;
@@ -102,7 +104,7 @@
 			<tfoot>
 				<tr>
 					<td colspan="5"></td>
-					<td></td>
+					<td> ${{ number_format($valor_pila_total,0,',','.') }} </td>
 					<td> ${{ number_format($valor_debito_total,0,',','.') }} </td>
 					<td> ${{ number_format($valor_credito_total,0,',','.') }} </td>
 					<td></td>
