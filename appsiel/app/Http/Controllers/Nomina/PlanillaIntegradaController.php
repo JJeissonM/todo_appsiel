@@ -27,7 +27,9 @@ use App\Nomina\Services\Pila\SaludService;
 use App\Nomina\Services\Pila\PensionService;
 use App\Nomina\Services\Pila\RiesgoLaboralService;
 use App\Nomina\Services\Pila\ParafiscalService;
+use App\Nomina\Services\Pila\ExoneracionAportesService;
 use App\Nomina\Services\Cotizante51Service;
+use App\Nomina\Services\ParametroLegalService;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\View;
 
@@ -47,6 +49,7 @@ class PlanillaIntegradaController extends Controller
     protected $dias_incapacidad_accidente_trabajo;
     protected $novedad_de_ausentismo;
     protected $el_empleado_id;
+    protected $parametros_legales;
 
     public function show($planilla_generada_id)
     {
@@ -279,6 +282,7 @@ class PlanillaIntegradaController extends Controller
         $planilla = PlanillaGenerada::find( $planilla_id );
         $this->fecha_inicial = $planilla->lapso()->fecha_inicial;
         $this->fecha_final = $planilla->lapso()->fecha_final;
+        $this->set_parametros_legales_planilla($planilla);
 
         $empleados_planilla = EmpleadoPlanilla::where( 'planilla_generada_id', $planilla_id )->get();
 
@@ -294,6 +298,38 @@ class PlanillaIntegradaController extends Controller
         return redirect( 'nom_pila_show/' . $planilla_id . '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' )->with('flash_message', 'Registros de Planilla actualizados correctamente.');
     }
 
+    protected function set_parametros_legales_planilla($planilla)
+    {
+        $this->parametros_legales = $planilla->getParametrosLegales();
+    }
+
+    protected function smmlv()
+    {
+        if (is_null($this->parametros_legales)) {
+            $this->parametros_legales = (new ParametroLegalService())->getParametrosParaFecha($this->fecha_final);
+        }
+
+        return (float)$this->parametros_legales->smmlv;
+    }
+
+    protected function horas_laborales()
+    {
+        if (is_null($this->parametros_legales)) {
+            $this->parametros_legales = (new ParametroLegalService())->getParametrosParaFecha($this->fecha_final);
+        }
+
+        return (float)$this->parametros_legales->horas_laborales;
+    }
+
+    protected function horas_dia_laboral()
+    {
+        if (is_null($this->parametros_legales)) {
+            $this->parametros_legales = (new ParametroLegalService())->getParametrosParaFecha($this->fecha_final);
+        }
+
+        return (float)$this->parametros_legales->horas_dia_laboral;
+    }
+
 
     public function calcular_ibc( $planilla, $empleado )
     {
@@ -302,7 +338,7 @@ class PlanillaIntegradaController extends Controller
         {
             $diasCalculados = round( $this->calcular_dias_reales_laborados( $empleado, $this->fecha_inicial, $this->fecha_final, (int)config('nomina.agrupacion_calculo_ibc_salud') ), 0);
             $this->cantidad_dias_laborados = $cotizante51Service->getDiasLaboradosMes($empleado, $diasCalculados);
-            $this->ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_laborados);
+            $this->ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_laborados, $this->smmlv());
             $this->valor_ibc_un_dia = 0;
 
             $this->ibc_parafiscales = $this->ibc_salud;
@@ -330,7 +366,7 @@ class PlanillaIntegradaController extends Controller
             $this->valor_ibc_un_dia = $this->ibc_salud / $this->cantidad_dias_laborados;
         }        
             
-        $valor_ibc_un_dia_minimo_legal = (float)config('nomina.SMMLV') / (float)config('nomina.horas_laborales') * (float)config('nomina.horas_dia_laboral');
+        $valor_ibc_un_dia_minimo_legal = $this->smmlv() / $this->horas_laborales() * $this->horas_dia_laboral();
         if ( ($this->valor_ibc_un_dia < $valor_ibc_un_dia_minimo_legal) && ($this->cantidad_dias_laborados != 0) )
         {
             $this->ibc_salud = ( $valor_ibc_un_dia_minimo_legal * $this->cantidad_dias_laborados );// + 10;// $10 para que alcance la siguiente decena más cercana
@@ -399,7 +435,7 @@ class PlanillaIntegradaController extends Controller
                                             ->whereBetween( 'fecha', [$fecha_inicial,$fecha_final] )
                                             ->sum( 'cantidad_horas' );
 
-        return ( $cantidad_horas_laboradas / (float)config('nomina.horas_dia_laboral') );
+        return ( $cantidad_horas_laboradas / $this->horas_dia_laboral() );
     }
 
     public function conceptos_liquidados_mes( $empleado, $fecha_inicial, $fecha_final )
@@ -728,7 +764,7 @@ class PlanillaIntegradaController extends Controller
         $fecha_ini = Carbon::createFromFormat('Y-m-d', $fecha_inicial);
         $fecha_fin = Carbon::createFromFormat('Y-m-d', $fecha_final );
 
-        return abs( $fecha_ini->diffInDays($fecha_fin) );
+        return abs( $fecha_ini->diffInDays($fecha_fin) ) + 1;
     }
 
     // PARA LÍNEAS ADICIONALES
@@ -742,7 +778,7 @@ class PlanillaIntegradaController extends Controller
                                                     ->whereBetween( 'fecha', [ $this->fecha_inicial, $this->fecha_final ] )
                                                     ->get();
 
-        $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / (float)config('nomina.horas_dia_laboral') , 0 );
+        $this->cantidad_dias_laborados = round( $registros_asociados_novedad->sum('cantidad_horas') / $this->horas_dia_laboral() , 0 );
 
         // sumar devengos/deducciones asociados a la novedad
         $this->ibc_salud = $registros_asociados_novedad->sum('valor_devengo') - $registros_asociados_novedad->sum('valor_deduccion');// + 10;// $10 para que alcance la siguiente decena más cercana
@@ -757,7 +793,7 @@ class PlanillaIntegradaController extends Controller
         if ( $this->ibc_salud <= 0 )
         {
             // No se puede asignar un valor por defecto a $this->ibc_salud porque hace calculos para otras cotizaciones
-            $this->ibc_parafiscales = (float)config('nomina.SMMLV');
+            $this->ibc_parafiscales = $this->smmlv();
         }
     }
 
@@ -797,7 +833,8 @@ class PlanillaIntegradaController extends Controller
             $ibcSaludLiquidacion -= $devengo_salud_liquidacion_contrato;
         }
 
-        $porcentaje_salud = 4 / 100;
+        $reglasExoneracion = $this->get_reglas_exoneracion($planilla, $empleado, $this->ibc_parafiscales);
+        $porcentaje_salud = $reglasExoneracion->tarifa_salud_total;
         if ( $esCotizante51 )
         {
             $porcentaje_salud = 0;
@@ -826,6 +863,16 @@ class PlanillaIntegradaController extends Controller
         PilaSalud::create($datos);
     }
 
+    protected function cotizante_exonerado_de_aportes($planilla, $empleado)
+    {
+        return $this->get_reglas_exoneracion($planilla, $empleado, $this->ibc_parafiscales)->cotizante_exonerado;
+    }
+
+    protected function get_reglas_exoneracion($planilla, $empleado, $ibc)
+    {
+        return (new ExoneracionAportesService())->getReglas($planilla->datos_empresa, $empleado, $ibc, $this->smmlv());
+    }
+
     public function almacenar_datos_pension($planilla, $empleado)
     {
         $cotizante51Service = new Cotizante51Service();
@@ -838,7 +885,7 @@ class PlanillaIntegradaController extends Controller
 
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
-            $ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($cantidad_dias_laborados);
+            $ibc_salud = $cotizante51Service->getIbcProporcionalPorDias($cantidad_dias_laborados, $this->smmlv());
         }
 
         // 32. Cotizante miembro de la carrera diplomática o consular de un país extranjero o funcionario de organismo multilateral
@@ -908,7 +955,7 @@ class PlanillaIntegradaController extends Controller
         }
 
         $diasCotizadosRiesgos = $this->cantidad_dias_laborados;
-        $ibcRiesgos = $cotizante51Service->getIbcRiesgosLaborales($empleado, $this->ibc_salud);
+        $ibcRiesgos = $cotizante51Service->getIbcRiesgosLaborales($empleado, $this->ibc_salud, $this->smmlv());
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
             $diasCotizadosRiesgos = 30;
@@ -937,7 +984,8 @@ class PlanillaIntegradaController extends Controller
     {
         $cotizante51Service = new Cotizante51Service();
         $codigo_entidad_ccf = $this->formatear_campo( is_null($empleado->entidad_caja_compensacion) ? '' : $empleado->entidad_caja_compensacion->codigo_nacional,' ','derecha',6);
-        $cotizante_exonerado_de_aportes_parafiscales = 'S';
+        $reglasExoneracion = $this->get_reglas_exoneracion($planilla, $empleado, $this->ibc_parafiscales);
+        $cotizante_exonerado_de_aportes_parafiscales = $reglasExoneracion->cotizante_exonerado ? 'S' : 'N';
         if ( $empleado->es_pasante_sena )
         {
             $cotizante_exonerado_de_aportes_parafiscales = 'N';
@@ -948,7 +996,7 @@ class PlanillaIntegradaController extends Controller
         if ( $cotizante51Service->esCotizante51($empleado) )
         {
             $porcentaje_caja_compensacion = 4 / 100;
-            $this->ibc_parafiscales = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_parafiscales);
+            $this->ibc_parafiscales = $cotizante51Service->getIbcProporcionalPorDias($this->cantidad_dias_parafiscales, $this->smmlv());
         }
         $valor_cotizacion_ccf = number_format( $this->ibc_parafiscales * $porcentaje_caja_compensacion, 0,'','');
         $tarifa_ccf = $this->formatear_campo( $porcentaje_caja_compensacion,'0','derecha',7);
@@ -964,7 +1012,7 @@ class PlanillaIntegradaController extends Controller
         $valor_cotizacion_sena = number_format( $this->ibc_parafiscales * $porcentaje_sena, 0,'','');
         $tarifa_sena = $this->formatear_campo( $porcentaje_sena,'0','derecha',7);
         $cotizacion_sena = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_sena, 100, 'superior'),'0','izquierda',9);
-        if ( $empleado->es_pasante_sena || ( $this->ibc_parafiscales < 10 * (float)config('nomina.SMMLV') ) || $this->novedad_de_ausentismo )
+        if ( !$reglasExoneracion->aporta_sena || $this->novedad_de_ausentismo )
         {
             $tarifa_sena = '0.00000';
             $valor_cotizacion_sena = 0;
@@ -975,7 +1023,7 @@ class PlanillaIntegradaController extends Controller
         $valor_cotizacion_icbf = number_format( $this->ibc_parafiscales * $porcentaje_icbf, 0,'','');
         $tarifa_icbf = $this->formatear_campo( $porcentaje_icbf,'0','derecha',7);
         $cotizacion_icbf = $this->formatear_campo( $this->redondear_a_unidad_seguida_ceros( $valor_cotizacion_icbf, 100, 'superior'),'0','izquierda',9);
-        if ( $empleado->es_pasante_icbf || ( $this->ibc_parafiscales < 10 * (float)config('nomina.SMMLV') ) || $this->novedad_de_ausentismo )
+        if ( !$reglasExoneracion->aporta_icbf || $this->novedad_de_ausentismo )
         {
             $tarifa_icbf = '0.00000';
             $valor_cotizacion_icbf = 0;
@@ -1005,18 +1053,21 @@ class PlanillaIntegradaController extends Controller
     }
     
     /**
-     * ANEXO TÉCNICO 3
-     * Aportes a Seguridad Social de Pensionados
+     * ANEXO TÉCNICO 2
+     * Aportantes activos
      * ARCHIVO TIPO 2. INFORMACIÓN PLANILLA INTEGRADA
      * 
      */
     public function descargar_archivo_plano( $planilla_id )
     {
         $planilla = PlanillaGenerada::find($planilla_id);
+        $this->fecha_inicial = $planilla->lapso()->fecha_inicial;
+        $this->fecha_final = $planilla->lapso()->fecha_final;
+        $this->set_parametros_legales_planilla($planilla);
 
         $namefile = str_slug( $planilla->descripcion ) . '.txt';
 
-        $content = $this->get_datos_encabezado_para_plano( $planilla ) . $this->get_datos_planilla_para_plano( $planilla ) . $this->get_datos_archivo_plano_registro_tipo_6( $planilla );
+        $content = $this->get_datos_encabezado_para_plano( $planilla ) . $this->get_datos_planilla_para_plano( $planilla );
 
         //save file
         $file = fopen($namefile, "w") or die("No se pudo generar el archivo. Problemas con el Internet. Por favor, intente nuevamente!");
@@ -1087,7 +1138,9 @@ class PlanillaIntegradaController extends Controller
         return $fila;
     }
 
-    // REGISTRO TIPO 6. TOTAL APORTES DEL PERIODO A CAJAS DE COMPENSACIÓN FAMILIAR
+    // La Resolución 2388 de 2016 y sus modificaciones dejan los registros de totales
+    // al operador de información; el aportante envía encabezado y detalle.
+    // Se conserva este método por compatibilidad, pero no debe anexarse al archivo.
     public function get_datos_archivo_plano_registro_tipo_6( $planilla )
     {
 
@@ -1216,6 +1269,7 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_novedades->vct;
 
             $datos_columnas .= $datos_riesgos_laborales->dias_incapacidad_accidente_trabajo;
+            $datos_columnas .= ' '; // SUS: para activos se reporta en blanco.
 
             $datos_columnas .= $datos_pension->codigo_entidad_pension;
             $datos_columnas .= '      '; // Código de la administradora de fondos de pensiones a la cual se traslada el afiliado
@@ -1294,7 +1348,7 @@ class PlanillaIntegradaController extends Controller
             $datos_columnas .= $datos_novedades->fecha_final_incapacidad_riesgos_laborales_irl;
 
             $datos_columnas .= '000000000';
-            $datos_columnas .= $this->formatear_campo($datos_novedades->aux_cantidad_dias_laborados * (float)config('nomina.horas_dia_laboral'),'0','izquierda',3);
+            $datos_columnas .= $this->formatear_campo($datos_novedades->aux_cantidad_dias_laborados * $this->horas_dia_laboral(),'0','izquierda',3);
             $datos_columnas .= '          '; // Fecha radicación en el exterior
 
             $datos_filas .= $datos_columnas . "\n";
@@ -1383,4 +1437,3 @@ class PlanillaIntegradaController extends Controller
     }
 
 }
-

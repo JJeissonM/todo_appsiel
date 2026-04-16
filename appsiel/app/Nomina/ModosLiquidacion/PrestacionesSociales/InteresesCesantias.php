@@ -254,11 +254,7 @@ class InteresesCesantias implements Estrategia
 
         if ( $registro->nom_concepto_id == $parametros_prestacion->nom_concepto_id )
         {
-            PrestacionesLiquidadas::where(
-                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
-                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
-                                        )
-                                    ->delete();
+            PrestacionesLiquidadas::retirar_prestacion( $registro->nom_doc_encabezado_id, $registro->nom_contrato_id, 'intereses_cesantias' );
 
             $registro->delete();
         }

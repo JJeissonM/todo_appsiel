@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(TesoreriaChequerasPermissionSeeder::class);
         $this->call(ComprasRetencionesLineaSeeder::class);
         $this->call(ApmPrintStatusesSeeder::class);
+        $this->call(NominaParametrosLegalesSeeder::class);
     }
 }

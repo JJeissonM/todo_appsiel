@@ -15,6 +15,84 @@ class PrestacionesLiquidadas extends Model
 
 	public $urls_acciones = '{"show":"nom_prestaciones_liquidadas_show/id_fila"}';
 
+	public static function get_prestaciones_desde_json( $prestaciones_liquidadas )
+	{
+		$prestaciones = json_decode( $prestaciones_liquidadas );
+
+		if ( is_null( $prestaciones ) )
+		{
+			return [];
+		}
+
+		if ( is_array( $prestaciones ) )
+		{
+			return $prestaciones;
+		}
+
+		return array_values( (array)$prestaciones );
+	}
+
+	public static function existe_prestacion_liquidada( $nom_doc_encabezado_id, $nom_contrato_id, $prestacion )
+	{
+		$registros = PrestacionesLiquidadas::where(
+													['nom_doc_encabezado_id' => $nom_doc_encabezado_id ] +
+													['nom_contrato_id' => $nom_contrato_id ]
+												)
+										->get();
+
+		foreach ( $registros as $registro )
+		{
+			foreach ( self::get_prestaciones_desde_json( $registro->prestaciones_liquidadas ) as $prestacion_liquidada )
+			{
+				if ( isset($prestacion_liquidada->prestacion) && $prestacion_liquidada->prestacion == $prestacion )
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public static function retirar_prestacion( $nom_doc_encabezado_id, $nom_contrato_id, $prestacion )
+	{
+		$registros = PrestacionesLiquidadas::where(
+													['nom_doc_encabezado_id' => $nom_doc_encabezado_id ] +
+													['nom_contrato_id' => $nom_contrato_id ]
+												)
+										->get();
+
+		foreach ( $registros as $registro )
+		{
+			$prestaciones = self::get_prestaciones_desde_json( $registro->prestaciones_liquidadas );
+			$prestaciones_restantes = [];
+
+			foreach ( $prestaciones as $prestacion_liquidada )
+			{
+				if ( isset($prestacion_liquidada->prestacion) && $prestacion_liquidada->prestacion == $prestacion )
+				{
+					continue;
+				}
+
+				$prestaciones_restantes[] = $prestacion_liquidada;
+			}
+
+			if ( count($prestaciones_restantes) == count($prestaciones) )
+			{
+				continue;
+			}
+
+			if ( empty($prestaciones_restantes) )
+			{
+				$registro->delete();
+				continue;
+			}
+
+			$registro->prestaciones_liquidadas = json_encode( array_values($prestaciones_restantes) );
+			$registro->save();
+		}
+	}
+
 	public static function consultar_registros($nro_registros, $search)
 	{
 	    return PrestacionesLiquidadas::leftJoin('nom_doc_encabezados','nom_doc_encabezados.id','=','nom_prestaciones_liquidadas.nom_doc_encabezado_id')

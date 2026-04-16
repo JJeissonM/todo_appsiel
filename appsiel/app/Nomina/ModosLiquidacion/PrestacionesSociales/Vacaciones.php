@@ -136,12 +136,12 @@ class Vacaciones implements Estrategia
         $this->set_periodo_causacion_vacaciones( $liquidacion['empleado'], $liquidacion['documento_nomina'] );
 
         $cantidad_dias_amortizar = $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $liquidacion['documento_nomina'] );
+        $cantidad_dias_amortizar = max( 0, min( $cantidad_dias_amortizar, $programacion_vacaciones->cantidad_dias_pendientes_amortizar ) );
 
         if ( $liquidacion['almacenar_registros'] )
         {    
             // Actualiza programación de vacaciones (TNL)
-            $programacion_vacaciones->cantidad_dias_amortizados += $cantidad_dias_amortizar;
-            $programacion_vacaciones->cantidad_dias_pendientes_amortizar -= $cantidad_dias_amortizar;
+            $this->actualizar_dias_amortizados_programacion( $programacion_vacaciones, $cantidad_dias_amortizar );
             $programacion_vacaciones->save();
 
             // Almacenar registro para los días no hábiles
@@ -294,6 +294,24 @@ class Vacaciones implements Estrategia
         }
 
         return $this->diferencia_en_dias_entre_fechas( $programacion_vacaciones->fecha_inicial_tnl, $fecha_final ) + 1;
+    }
+
+    public function actualizar_dias_amortizados_programacion( &$programacion_vacaciones, $cantidad_dias )
+    {
+        $programacion_vacaciones->cantidad_dias_amortizados += $cantidad_dias;
+
+        if ( $programacion_vacaciones->cantidad_dias_amortizados < 0 )
+        {
+            $programacion_vacaciones->cantidad_dias_amortizados = 0;
+        }
+
+        if ( $programacion_vacaciones->cantidad_dias_amortizados > $programacion_vacaciones->cantidad_dias_tnl )
+        {
+            $programacion_vacaciones->cantidad_dias_amortizados = $programacion_vacaciones->cantidad_dias_tnl;
+        }
+
+        $programacion_vacaciones->cantidad_dias_amortizados = round( $programacion_vacaciones->cantidad_dias_amortizados, 6 );
+        $programacion_vacaciones->cantidad_dias_pendientes_amortizar = round( $programacion_vacaciones->cantidad_dias_tnl - $programacion_vacaciones->cantidad_dias_amortizados, 6 );
     }
 
     public function formatear_numero_a_texto_dos_digitos( $numero )
@@ -504,11 +522,7 @@ class Vacaciones implements Estrategia
             }
             
             // Borrar registro prestaciones liquidadas
-            PrestacionesLiquidadas::where(
-                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
-                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
-                                        )
-                                    ->delete();
+            PrestacionesLiquidadas::retirar_prestacion( $registro->nom_doc_encabezado_id, $registro->nom_contrato_id, 'vacaciones' );
             
             // Borrar registro libro de vacaciones
             LibroVacacion::where(
@@ -548,17 +562,13 @@ class Vacaciones implements Estrategia
         {
             // 1. Actualiza programación de vacaciones (TNL)
             $programacion_vacaciones = ProgramacionVacacion::find( $novedad->id );
+            $cantidad_dias_amortizar = $registro->cantidad_horas / (float)config('nomina.horas_dia_laboral');
 
-            $programacion_vacaciones->cantidad_dias_amortizados -= $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
-            $programacion_vacaciones->cantidad_dias_pendientes_amortizar += $this->get_cantidad_dias_amortizar( $programacion_vacaciones, $registro->encabezado_documento );
+            $this->actualizar_dias_amortizados_programacion( $programacion_vacaciones, -1 * $cantidad_dias_amortizar );
             $programacion_vacaciones->save();
             
             // 2.
-            PrestacionesLiquidadas::where(
-                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
-                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
-                                        )
-                                    ->delete();
+            PrestacionesLiquidadas::retirar_prestacion( $registro->nom_doc_encabezado_id, $registro->nom_contrato_id, 'vacaciones' );
             
             // 3.
             $libro_vacaciones = LibroVacacion::where( 'novedad_tnl_id', $programacion_vacaciones->id )->get()->first();

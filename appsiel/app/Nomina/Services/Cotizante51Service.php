@@ -26,10 +26,10 @@ class Cotizante51Service
         return $this->normalizarDias((int)$diasFallback);
     }
 
-    public function getIbcProporcionalPorDias($diasLaborados)
+    public function getIbcProporcionalPorDias($diasLaborados, $smmlv = null)
     {
         $dias = $this->normalizarDias((int)$diasLaborados);
-        $smmlv = (float)config('nomina.SMMLV');
+        $smmlv = is_null($smmlv) ? (float)config('nomina.SMMLV') : (float)$smmlv;
 
         if ($dias <= 0.9) {
             return 0;
@@ -50,10 +50,10 @@ class Cotizante51Service
         return $smmlv;
     }
 
-    public function getIbcRiesgosLaborales(NomContrato $empleado, $ibcBase)
+    public function getIbcRiesgosLaborales(NomContrato $empleado, $ibcBase, $smmlv = null)
     {
         if ($this->esCotizante51($empleado)) {
-            return (float)config('nomina.SMMLV');
+            return is_null($smmlv) ? (float)config('nomina.SMMLV') : (float)$smmlv;
         }
 
         return (float)$ibcBase;

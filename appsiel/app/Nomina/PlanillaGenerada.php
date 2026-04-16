@@ -7,12 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 //use App\Nomina\EmpleadoPlanilla;
 
 use DB;
+use App\Nomina\Services\ParametroLegalService;
 
 class PlanillaGenerada extends Model
 {
     protected $table = 'nom_pila_planillas_generadas';
     
-    protected $fillable = ['pila_datos_empresa_id', 'descripcion', 'fecha_final_mes', 'estado'];
+    protected $fillable = [
+        'pila_datos_empresa_id',
+        'descripcion',
+        'fecha_final_mes',
+        'parametro_legal_id',
+        'smmlv',
+        'uvt',
+        'horas_laborales',
+        'horas_dia_laboral',
+        'normatividad',
+        'estado',
+    ];
     
     public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Código', 'Descripción', 'Estado'];
 
@@ -26,6 +38,38 @@ class PlanillaGenerada extends Model
     public function datos_empresa()
     {
         return $this->belongsTo(PilaDatosEmpresa::class, 'pila_datos_empresa_id');
+    }
+
+    public function parametro_legal()
+    {
+        return $this->belongsTo(ParametroLegal::class, 'parametro_legal_id');
+    }
+
+    public function getParametrosLegales()
+    {
+        $parametros = (new ParametroLegalService())->getParametrosParaFecha($this->fecha_final_mes);
+
+        if (!empty($this->smmlv)) {
+            $parametros->smmlv = (float)$this->smmlv;
+        }
+
+        if (!empty($this->uvt)) {
+            $parametros->uvt = (float)$this->uvt;
+        }
+
+        if (!empty($this->horas_laborales)) {
+            $parametros->horas_laborales = (float)$this->horas_laborales;
+        }
+
+        if (!empty($this->horas_dia_laboral)) {
+            $parametros->horas_dia_laboral = (float)$this->horas_dia_laboral;
+        }
+
+        if (!empty($this->normatividad)) {
+            $parametros->normatividad = $this->normatividad;
+        }
+
+        return $parametros;
     }
 
     public function lapso()
@@ -121,6 +165,8 @@ class PlanillaGenerada extends Model
 
     public function store_adicional($datos, $planilla_generada)
     {
+        $this->guardarParametrosLegales($planilla_generada);
+
         $fecha_lapso = explode("-", $datos['fecha_final_mes']);
 
         $fecha_inicial = $fecha_lapso[0] . '-' . $fecha_lapso[1] . '-01';
@@ -156,9 +202,23 @@ class PlanillaGenerada extends Model
         }
     }
 
+    protected function guardarParametrosLegales($planilla_generada)
+    {
+        $parametros = (new ParametroLegalService())->getParametrosParaFecha($planilla_generada->fecha_final_mes);
+
+        $planilla_generada->parametro_legal_id = $parametros->id;
+        $planilla_generada->smmlv = $parametros->smmlv;
+        $planilla_generada->uvt = $parametros->uvt;
+        $planilla_generada->horas_laborales = $parametros->horas_laborales;
+        $planilla_generada->horas_dia_laboral = $parametros->horas_dia_laboral;
+        $planilla_generada->normatividad = $parametros->normatividad;
+        $planilla_generada->save();
+    }
+
     public function agregar_lineas_adicionales( $planilla_generada, $contrato, $orden, $fecha_inicial, $fecha_final_mes )
     {
         $registros_conceptos_liquidados_mes = $this->registros_conceptos_liquidados_mes($contrato, $fecha_inicial, $fecha_final_mes);
+        $parametrosLegales = $planilla_generada->getParametrosLegales();
         
         foreach( $registros_conceptos_liquidados_mes as $registro_documentos_nomina )
         {
@@ -192,7 +252,7 @@ class PlanillaGenerada extends Model
                                                 'planilla_generada_id' => $planilla_generada->id,
                                                 'nom_contrato_id' => $contrato->id,
                                                 'tipo_linea' => 'adicional',
-                                                'cantidad_dias_linea_adicional' => round( $registro_documentos_nomina->cantidad_horas / (float)config('nomina.horas_dia_laboral'), 0),
+                                                'cantidad_dias_linea_adicional' => round( $registro_documentos_nomina->cantidad_horas / (float)$parametrosLegales->horas_dia_laboral, 0),
                                                 'novedad_tnl_id' => $registro_documentos_nomina->novedad_tnl_id,
                                                 'nom_concepto_id' => $registro_documentos_nomina->nom_concepto_id,
                                             ]);

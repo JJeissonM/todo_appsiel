@@ -72,6 +72,13 @@ class PrestacionesSocialesController extends TransaccionController
             foreach ($request->prestaciones as $key => $prestacion )
             {
                 $array_aux_prestacion = (object)[];
+
+                if ( $request->almacenar_registros && PrestacionesLiquidadas::existe_prestacion_liquidada( $documento_nomina->id, $empleado->id, $prestacion ) )
+                {
+                    $vista .= '<br>' . $prestacion . '. La prestación ya está liquidada en el documento.';
+                    $p++;
+                    continue;
+                }
                 
                 // Se llama al subsistema de liquidación
                 $liquidacion = new LiquidacionPrestacionSocial( $prestacion, $empleado, $documento_nomina, $request->almacenar_registros, $request->fecha_final_promedios, $request->fecha_final_liquidacion);
@@ -146,7 +153,8 @@ class PrestacionesSocialesController extends TransaccionController
                                         ['nom_doc_encabezado_id' => $array_prestaciones_liquidadas->nom_doc_encabezado_id ] + 
                                         ['nom_contrato_id' => $array_prestaciones_liquidadas->nom_contrato_id ] + 
                                         ['fecha_final_promedios' => $array_prestaciones_liquidadas->fecha_final_promedios] +  
-                                        ['prestaciones_liquidadas' => json_encode( $array_prestaciones_liquidadas->prestaciones ) ]
+                                        ['prestaciones_liquidadas' => json_encode( array_values($array_prestaciones_liquidadas->prestaciones) ) ] +
+                                        ['datos_liquidacion' => '' ]
                                     );
     }
 
@@ -287,7 +295,7 @@ class PrestacionesSocialesController extends TransaccionController
         $registro = PrestacionesLiquidadas::find( $id );
         $documento_nomina = NomDocEncabezado::find( $registro->nom_doc_encabezado_id );
         $empleado = NomContrato::find($registro->nom_contrato_id);
-        $prestaciones_liquidadas = json_decode( $registro->prestaciones_liquidadas );
+        $prestaciones_liquidadas = PrestacionesLiquidadas::get_prestaciones_desde_json( $registro->prestaciones_liquidadas );
 
         $vista = $this->generar_vista_prestaciones_liquidadas_show( $empleado, $prestaciones_liquidadas );
         
@@ -309,7 +317,7 @@ class PrestacionesSocialesController extends TransaccionController
             
             $vista .= View::make( 'nomina.prestaciones_sociales.liquidacion_' . $prestacion, compact( 'empleado', 'tabla_resumen' ) )->render();
 
-            if ( $tipo_vista = 'imprimir' )
+            if ( $tipo_vista == 'imprimir' )
             {
                 $vista .= '<div class="page-break"></div>';
             }
@@ -323,7 +331,7 @@ class PrestacionesSocialesController extends TransaccionController
         $registro = PrestacionesLiquidadas::find( $id );
         $documento_nomina = NomDocEncabezado::find( $registro->nom_doc_encabezado_id );
         $empleado = NomContrato::find($registro->nom_contrato_id);
-        $prestaciones_liquidadas = json_decode( $registro->prestaciones_liquidadas );
+        $prestaciones_liquidadas = PrestacionesLiquidadas::get_prestaciones_desde_json( $registro->prestaciones_liquidadas );
 
         $encabezado = View::make( 'nomina.incluir.encabezado_transaccion', ['encabezado_doc' => $documento_nomina, 'empresa' => $documento_nomina->empresa , 'descripcion_transaccion' => $documento_nomina->tipo_documento_app->descripcion ] )->render();
 

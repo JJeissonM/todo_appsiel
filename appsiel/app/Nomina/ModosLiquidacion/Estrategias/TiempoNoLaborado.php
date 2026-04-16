@@ -72,6 +72,12 @@ class TiempoNoLaborado implements Estrategia
 			}
 
 			$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
+			$cantidad_horas_a_liquidar = $this->limitar_horas_a_liquidar( $cantidad_horas_a_liquidar, $novedad, $liquidacion['documento_nomina'], $horas_liquidadas_empleado );
+
+			if ( $cantidad_horas_a_liquidar <= 0 )
+			{
+				continue;
+			}
 
 			$salario_x_hora = $liquidacion['empleado']->salario_x_hora();
 
@@ -82,8 +88,7 @@ class TiempoNoLaborado implements Estrategia
         		$this->crear_registro_concepto_pagado_por_la_empresa( $novedad, $liquidacion['documento_nomina'], $liquidacion['empleado'], $cantidad_horas_a_liquidar );
         	}        		
 
-			$novedad->cantidad_dias_amortizados += ($cantidad_horas_a_liquidar / $this->get_horas_dia_laboral());
-			$novedad->cantidad_dias_pendientes_amortizar -= ($cantidad_horas_a_liquidar / $this->get_horas_dia_laboral());
+			$this->actualizar_dias_amortizados( $novedad, ($cantidad_horas_a_liquidar / $this->get_horas_dia_laboral()) );
         	$novedad->save();
             
             $novedad_id = $novedad->id;
@@ -108,6 +113,33 @@ class TiempoNoLaborado implements Estrategia
         }
 
         return $valores_novedades;
+	}
+
+	public function limitar_horas_a_liquidar( $cantidad_horas_a_liquidar, $novedad, $documento_nomina, $horas_liquidadas_empleado )
+	{
+		$horas_pendientes_novedad = $novedad->cantidad_dias_pendientes_amortizar * $this->get_horas_dia_laboral();
+		$horas_pendientes_documento = $documento_nomina->tiempo_a_liquidar - $horas_liquidadas_empleado;
+
+		return min( $cantidad_horas_a_liquidar, $horas_pendientes_novedad, $horas_pendientes_documento );
+	}
+
+	public function actualizar_dias_amortizados( &$novedad, $cantidad_dias )
+	{
+		$novedad->cantidad_dias_amortizados += $cantidad_dias;
+		$novedad->cantidad_dias_pendientes_amortizar -= $cantidad_dias;
+
+		if ( $novedad->cantidad_dias_amortizados < 0 )
+		{
+			$novedad->cantidad_dias_amortizados = 0;
+		}
+
+		if ( $novedad->cantidad_dias_amortizados > $novedad->cantidad_dias_tnl )
+		{
+			$novedad->cantidad_dias_amortizados = $novedad->cantidad_dias_tnl;
+		}
+
+		$novedad->cantidad_dias_amortizados = round( $novedad->cantidad_dias_amortizados, 6 );
+		$novedad->cantidad_dias_pendientes_amortizar = round( $novedad->cantidad_dias_tnl - $novedad->cantidad_dias_amortizados, 6 );
 	}
 
 
@@ -428,14 +460,12 @@ class TiempoNoLaborado implements Estrategia
 			dd( [ 'TiempoNoLaborado@retirar(), $registro->contrato = NULL', $registro] );
 		}
 
-		$lapso_documento = $registro->encabezado_documento->lapso();
-		$cantidad_horas_a_liquidar = abs( $this->calcular_cantidad_horas_liquidar_novedad( $novedad, $lapso_documento ) );
+		$cantidad_horas_a_liquidar = abs( $registro->cantidad_horas );
 
 		// Para todas las novedades
 		if ( $registro->nom_concepto_id != (int)config('nomina.id_concepto_pagar_empresa_en_incapacidades')  )
 		{
-			$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
-			$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
+			$this->actualizar_dias_amortizados( $novedad, -1 * ( $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral() ) );
 		}
 
 		if ( $novedad->tipo_novedad_tnl == 'incapacidad' )
@@ -449,8 +479,7 @@ class TiempoNoLaborado implements Estrategia
 			$valor_registro = $this->valor_a_pagar_eps + $this->valor_a_pagar_arl + $this->valor_a_pagar_afp;
 			if ( ($this->valor_a_pagar_empresa > 0) && ($valor_registro == 0) )
 			{
-				$novedad->cantidad_dias_amortizados -= $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
-				$novedad->cantidad_dias_pendientes_amortizar += $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral();
+				$this->actualizar_dias_amortizados( $novedad, -1 * ( $cantidad_horas_a_liquidar / $this->get_horas_dia_laboral() ) );
 			}
 		
 			$novedad->valor_a_pagar_eps -= $this->valor_a_pagar_eps;

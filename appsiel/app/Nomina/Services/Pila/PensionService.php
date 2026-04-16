@@ -35,10 +35,14 @@ class PensionService
         return $vector;
     }
 
-    public function get_total_cotizacion_por_entidad( $fecha_final_mes )
+    public function get_total_cotizacion_por_entidad( $fecha_final_mes, array $planilla_ids = [] )
     {
-        $entidades_con_movimiento = PilaPension::where('fecha_final_mes',$fecha_final_mes)
-                                                    ->get()
+        $query = PilaPension::where('fecha_final_mes',$fecha_final_mes);
+        if (!empty($planilla_ids)) {
+            $query->whereIn('planilla_generada_id', $planilla_ids);
+        }
+
+        $entidades_con_movimiento = $query->get()
                                                     ->unique('codigo_entidad_pension')
                                                     ->values()
                                                     ->all();
@@ -47,12 +51,15 @@ class PensionService
         {
             $obj = (object)[];
             $obj->entidad = $entidad->entidad(); 
-            $obj->total_cotizacion = PilaPension::where( [
+            $total_query = PilaPension::where( [
                                                         ['fecha_final_mes', '=', $fecha_final_mes],
                                                         ['codigo_entidad_pension', '=', $entidad->codigo_entidad_pension ] 
                                                     ] 
-                                                ) 
-                                                ->sum('total_cotizacion_pension');
+                                                );
+            if (!empty($planilla_ids)) {
+                $total_query->whereIn('planilla_generada_id', $planilla_ids);
+            }
+            $obj->total_cotizacion = $total_query->sum('total_cotizacion_pension');
             $coleccion_movimientos[] = $obj;
         }
 

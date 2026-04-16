@@ -184,28 +184,33 @@ class ParametroLiquidacionPrestacionesSociales extends Model
     
     public function get_fecha_ultima_liquidacion( $empleado, $prestacion )
     {
-        $prestaciones_liquidadas_empleado = PrestacionesLiquidadas::where( 'nom_contrato_id', $empleado->id )->get();
+        $prestaciones_liquidadas_empleado = PrestacionesLiquidadas::where( 'nom_contrato_id', $empleado->id )
+                                                                    ->orderBy('fecha_final_promedios')
+                                                                    ->orderBy('id')
+                                                                    ->get();
 
         $fecha_ultima_liquidacion = null;
         foreach ( $prestaciones_liquidadas_empleado as $registro )
         {
-            if( !is_array(json_decode( $registro->prestaciones_liquidadas ) ) )
+            $prestaciones_liquidadas = PrestacionesLiquidadas::get_prestaciones_desde_json( $registro->prestaciones_liquidadas );
+
+            foreach ( $prestaciones_liquidadas as $prestacion_liquidada )
             {
-                $prestacion_liquidada = current(json_decode( $registro->prestaciones_liquidadas ) );
-            }else{
-                $prestacion_liquidada = json_decode( $registro->prestaciones_liquidadas )[0];
-            }
-            
-            
-            if( $prestacion_liquidada->prestacion == $prestacion  )
-            {
+                if( !isset($prestacion_liquidada->prestacion) || $prestacion_liquidada->prestacion != $prestacion  )
+                {
+                    continue;
+                }
+
                 $tabla_resumen = (array)$prestacion_liquidada->tabla_resumen;
-                if ( $prestacion == 'vacaciones' )
+                if ( $prestacion == 'vacaciones' && isset($tabla_resumen['periodo_pagado_hasta']) )
                 {
                     $fecha_ultima_liquidacion = $tabla_resumen['periodo_pagado_hasta'];
-                }else{
+                }
+
+                if ( $prestacion != 'vacaciones' && isset($tabla_resumen['fecha_liquidacion']) )
+                {
                     $fecha_ultima_liquidacion = $tabla_resumen['fecha_liquidacion'];
-                }                
+                }
             }
         }
         

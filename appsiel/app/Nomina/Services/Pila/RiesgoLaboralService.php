@@ -36,10 +36,14 @@ class RiesgoLaboralService
         return $vector;
     }
 
-    public function get_total_cotizacion_por_entidad( $fecha_final_mes )
+    public function get_total_cotizacion_por_entidad( $fecha_final_mes, array $planilla_ids = [] )
     {
-        $entidades_con_movimiento = PilaRiesgoLaboral::where('fecha_final_mes',$fecha_final_mes)
-                                                    ->get()
+        $query = PilaRiesgoLaboral::where('fecha_final_mes',$fecha_final_mes);
+        if (!empty($planilla_ids)) {
+            $query->whereIn('planilla_generada_id', $planilla_ids);
+        }
+
+        $entidades_con_movimiento = $query->get()
                                                     ->unique('codigo_arl')
                                                     ->values()
                                                     ->all();
@@ -48,12 +52,15 @@ class RiesgoLaboralService
         {
             $obj = (object)[];
             $obj->entidad = $entidad->entidad(); 
-            $obj->total_cotizacion = PilaRiesgoLaboral::where( [
+            $total_query = PilaRiesgoLaboral::where( [
                                                         ['fecha_final_mes', '=', $fecha_final_mes],
                                                         ['codigo_arl', '=', $entidad->codigo_arl ] 
                                                     ] 
-                                                ) 
-                                                ->sum('total_cotizacion_riesgos_laborales');
+                                                );
+            if (!empty($planilla_ids)) {
+                $total_query->whereIn('planilla_generada_id', $planilla_ids);
+            }
+            $obj->total_cotizacion = $total_query->sum('total_cotizacion_riesgos_laborales');
             $coleccion_movimientos[] = $obj;
         }
 

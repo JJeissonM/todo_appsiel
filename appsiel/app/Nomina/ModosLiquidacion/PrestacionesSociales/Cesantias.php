@@ -275,11 +275,7 @@ class Cesantias implements Estrategia
         // 15: Cesantías consignadas, 17: Cesantías pagadas
         if ( in_array( $registro->concepto->modo_liquidacion_id, [15,17] ) )
         {
-            PrestacionesLiquidadas::where(
-                                            ['nom_doc_encabezado_id' => $registro->nom_doc_encabezado_id ] + 
-                                            ['nom_contrato_id' => $registro->nom_contrato_id ]
-                                        )
-                                    ->delete();
+            PrestacionesLiquidadas::retirar_prestacion( $registro->nom_doc_encabezado_id, $registro->nom_contrato_id, 'cesantias' );
 
             $registro->delete();
         }

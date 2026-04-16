@@ -4,7 +4,7 @@
 
 @section('detalles')
 	<p>
-		Este proceso permiter generar la planilla integrada según los últimos cambios y modificaciones definidas en las resoluciones 2388 y 5858 de 2016.
+		Este proceso permite generar la planilla integrada con parámetros legales congelados por periodo, según la Resolución 2388 de 2016 y sus modificaciones vigentes.
 	</p>
 	
 	<br>

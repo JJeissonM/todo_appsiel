@@ -36,10 +36,14 @@ class ParafiscalService
         return $vector;
     }
 
-    public function get_total_cotizacion_por_entidad( $fecha_final_mes )
+    public function get_total_cotizacion_por_entidad( $fecha_final_mes, array $planilla_ids = [] )
     {
-        $entidades_con_movimiento = PilaParafiscales::where('fecha_final_mes',$fecha_final_mes)
-                                                    ->get()
+        $query = PilaParafiscales::where('fecha_final_mes',$fecha_final_mes);
+        if (!empty($planilla_ids)) {
+            $query->whereIn('planilla_generada_id', $planilla_ids);
+        }
+
+        $entidades_con_movimiento = $query->get()
                                                     ->unique('codigo_entidad_ccf')
                                                     ->values()
                                                     ->all();
@@ -48,33 +52,42 @@ class ParafiscalService
         {
             $obj = (object)[];
             $obj->entidad = $entidad->entidad(); 
-            $obj->total_cotizacion = PilaParafiscales::where( [
+            $total_query = PilaParafiscales::where( [
                                                         ['fecha_final_mes', '=', $fecha_final_mes],
                                                         ['codigo_entidad_ccf', '=', $entidad->codigo_entidad_ccf ] 
                                                     ] 
-                                                ) 
-                                                ->sum('cotizacion_ccf');
+                                                );
+            if (!empty($planilla_ids)) {
+                $total_query->whereIn('planilla_generada_id', $planilla_ids);
+            }
+            $obj->total_cotizacion = $total_query->sum('cotizacion_ccf');
             $coleccion_movimientos[] = $obj;
         }
 
         // SENA
         $obj = (object)[];
         $obj->entidad = NomEntidad::where('codigo_nacional','PASENA')->get()->first(); 
-        $obj->total_cotizacion = PilaParafiscales::where( [
+        $sena_query = PilaParafiscales::where( [
                                                     ['fecha_final_mes', '=', $fecha_final_mes]
                                                 ] 
-                                            ) 
-                                            ->sum('cotizacion_sena');
+                                            );
+        if (!empty($planilla_ids)) {
+            $sena_query->whereIn('planilla_generada_id', $planilla_ids);
+        }
+        $obj->total_cotizacion = $sena_query->sum('cotizacion_sena');
         $coleccion_movimientos[] = $obj;
 
         // ICBF
         $obj = (object)[];
         $obj->entidad = NomEntidad::where('codigo_nacional','PAICBF')->get()->first(); 
-        $obj->total_cotizacion = PilaParafiscales::where( [
+        $icbf_query = PilaParafiscales::where( [
                                                     ['fecha_final_mes', '=', $fecha_final_mes]
                                                 ] 
-                                            ) 
-                                            ->sum('cotizacion_icbf');
+                                            );
+        if (!empty($planilla_ids)) {
+            $icbf_query->whereIn('planilla_generada_id', $planilla_ids);
+        }
+        $obj->total_cotizacion = $icbf_query->sum('cotizacion_icbf');
         $coleccion_movimientos[] = $obj;
 
 

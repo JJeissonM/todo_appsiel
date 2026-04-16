@@ -11,6 +11,7 @@ use App\CxP\CxpAbono;
 
 use App\Nomina\ContabilizacionProceso;
 use App\Nomina\PilaDatosEmpresa;
+use App\Nomina\PlanillaGenerada;
 
 use App\Nomina\ValueObjects\LapsoNomina;
 
@@ -43,25 +44,40 @@ class ContabilizacionPilaNomina
 	// La contabilización se hará con base en la planilla generada en el mes a contabilizar
 	public function set_movimiento_contabilizar()
 	{
-		$registros_consolidados = [];
-		$pila_service = new SaludService();
-        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios ) );
-
-		$pila_service = new PensionService();
-        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios ) );
-
-		$pila_service = new RiesgoLaboralService();
-        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios ) );
-
-		$pila_service = new ParafiscalService();
-        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios ) );
-
 		$this->valor_debito_total = 0;
 		$this->valor_credito_total = 0;
 		$this->movimiento_contabilizar = collect([]);
-		$datos_empresa = PilaDatosEmpresa::find(1);
 
-		// Por cada registro se generan dos movimientos contables
+		$planillas = PlanillaGenerada::where('fecha_final_mes', $this->fecha_final_promedios)->get();
+		if ($planillas->isEmpty()) {
+			$this->agregar_movimiento_grupo(PilaDatosEmpresa::find(1), []);
+			return;
+		}
+
+		foreach ($planillas->groupBy('pila_datos_empresa_id') as $pila_datos_empresa_id => $grupo_planillas) {
+			$this->agregar_movimiento_grupo(PilaDatosEmpresa::find($pila_datos_empresa_id), $grupo_planillas->pluck('id')->toArray());
+		}
+	}
+
+	protected function agregar_movimiento_grupo($datos_empresa, array $planilla_ids)
+	{
+		if (is_null($datos_empresa)) {
+			return;
+		}
+
+		$registros_consolidados = [];
+		$pila_service = new SaludService();
+        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios, $planilla_ids ) );
+
+		$pila_service = new PensionService();
+        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios, $planilla_ids ) );
+
+		$pila_service = new RiesgoLaboralService();
+        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios, $planilla_ids ) );
+
+		$pila_service = new ParafiscalService();
+        $registros_consolidados = array_merge( $registros_consolidados, $pila_service->get_total_cotizacion_por_entidad( $this->fecha_final_promedios, $planilla_ids ) );
+
 		foreach ( $registros_consolidados as $linea_registro )
 		{
 			$valor_cotizacion = $linea_registro->total_cotizacion;
@@ -75,7 +91,7 @@ class ContabilizacionPilaNomina
 				case 'EPS':
 					$cuenta_contable_db_id = $datos_empresa->contab_cuenta_db_eps_id;
 					$cuenta_contable_cr_id = $datos_empresa->contab_cuenta_cr_eps_id;
-					$valor_cotizacion = $linea_registro->total_cotizacion * $datos_empresa->porcentaje_eps_empresa / 100;
+					$valor_cotizacion = isset($linea_registro->total_cotizacion_empresa) ? $linea_registro->total_cotizacion_empresa : 0;
 					break;
 				
 				case 'AFP':
@@ -190,7 +206,6 @@ class ContabilizacionPilaNomina
 			$this->movimiento_contabilizar->push( $registro_equivalencia_contable );
 			$this->valor_credito_total += $valor_credito;
 		}
-
 	}
 
 
