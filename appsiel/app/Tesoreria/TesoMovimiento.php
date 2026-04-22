@@ -300,8 +300,15 @@ class TesoMovimiento extends Model
         if ( !is_null($creado_por) )
         {
             $empresa_id = Auth::check() ? Auth::user()->empresa_id : null;
-            $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
-            $query->whereIn('teso_movimientos.creado_por', $emails);
+            $userFiltro = self::obtenerUsuarioFiltroPorEmail($creado_por, $empresa_id);
+
+            if ( is_null($userFiltro) || !self::usuarioTieneRolPrivilegiado($userFiltro, self::rolesSinFiltro()) )
+            {
+                $emails = self::obtenerEmailsFiltroPorEmail($creado_por, $empresa_id);
+                if ( !empty($emails) ) {
+                    $query->whereIn('teso_movimientos.creado_por', $emails);
+                }
+            }
         }else{
             $query = self::aplicarFiltroCreadoPor($query, 'teso_movimientos.creado_por');
         }
