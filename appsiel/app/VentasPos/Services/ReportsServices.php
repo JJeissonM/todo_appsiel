@@ -154,6 +154,7 @@ class ReportsServices
         
         return (object)[
             'status' => 'success',
+            'cantidad_facturas' => $documentos_pdv->count(),
             'total_contado' => $total_contado,
             'total_credito' => $total_credito,
             'totales_cuentas_bancarias' => $totales_cuentas_bancarias

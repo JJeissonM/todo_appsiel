@@ -174,6 +174,10 @@
 				$('#btn_print').attr('href', new_url);
 
 				var btn_email = $('#btn_email').attr('href');
+				if ( typeof btn_email == 'undefined' )
+				{
+					return;
+				}
 
 				n = btn_email.search('formato_impresion_id');
 				var url_aux = btn_email.substr(0,n);

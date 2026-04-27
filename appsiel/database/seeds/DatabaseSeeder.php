@@ -16,5 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(ComprasRetencionesLineaSeeder::class);
         $this->call(ApmPrintStatusesSeeder::class);
         $this->call(NominaParametrosLegalesSeeder::class);
+        $this->call(RestauranteCocinasSeeder::class);
     }
 }

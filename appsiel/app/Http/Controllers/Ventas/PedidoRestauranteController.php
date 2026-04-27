@@ -33,6 +33,7 @@ use App\Ventas\Services\PedidosRestauranteServices;
 use App\VentasPos\Services\CrudService;
 use App\VentasPos\Services\RecipeServices;
 use App\Ventas\ResolucionFacturacion;
+use App\Ventas\RestauranteCocina;
 use App\Ventas\Services\PrintServices;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -158,12 +159,17 @@ class PedidoRestauranteController extends TransaccionController
         
         $url_index = 'ventas?id=' . Input::get('id');
         
-        $cocinas = config('pedidos_restaurante.cocinas');
-        $cocina_index = Input::get('cocina_index');
+        $la_cocina = null;
+        $cocina_id = (int)Input::get('cocina_id');
         $cocina_label = 'Cocina';
-        if ( isset($cocinas[$cocina_index]) )
+        if ( $cocina_id != 0 )
         {
-            $cocina_label = $cocinas[$cocina_index]['label'];
+            $la_cocina = RestauranteCocina::where('estado', 'Activo')->find($cocina_id);
+        }
+
+        if ( $la_cocina != null )
+        {
+            $cocina_label = $la_cocina->label;
         }
 
         $miga_pan = [
@@ -177,11 +183,21 @@ class PedidoRestauranteController extends TransaccionController
                                         ->get()
                                         ->keyBy('id');
         
-        $categoria_cocina = InvGrupo::find((int)Input::get('grupo_inventarios_id'));
+        $grupo_inventarios_id = (int)Input::get('grupo_inventarios_id');
+        if ( $la_cocina != null )
+        {
+            $grupo_inventarios_id = (int)$la_cocina->grupo_inventarios_id;
+        }
+
+        $categoria_cocina = InvGrupo::find($grupo_inventarios_id);
         
         $productosTemp = null;
         foreach ($productos as $pr)
         {
+            if (!$pr->mostrar_en_pagina_web) {
+                continue;
+            }
+
             if ( $categoria_cocina != null) {
                 if ( $pr->inv_grupo_id != $categoria_cocina->id) {
                     continue;
@@ -225,7 +241,7 @@ class PedidoRestauranteController extends TransaccionController
         
         $mesas = $this->get_mesas();
 
-        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','mesas'));
+        return view('ventas.pedidos.restaurante.crud_pedido', compact('form_create', 'miga_pan', 'tabla', 'pdv', 'inv_motivo_id', 'contenido_modal', 'vista_categorias_productos', 'plantilla_factura', 'id_transaccion', 'motivos', 'medios_recaudo', 'cajas', 'cuentas_bancarias','cliente', 'pedido_id', 'lineas_registros', 'numero_linea','valor_subtotal', 'valor_descuento', 'valor_total_impuestos', 'valor_total_factura', 'total_efectivo_recibido', 'vendedores','vendedor','mesas', 'la_cocina'));
     }
 
     public function get_mesas()

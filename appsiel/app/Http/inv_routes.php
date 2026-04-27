@@ -49,6 +49,7 @@ Route::get('inv_fisico_imprimir/{id}','Inventarios\InvFisicoController@imprimir'
 Route::get('inv_fisico_hacer_ajuste','Inventarios\InvFisicoController@hacer_ajuste');
 Route::post('inv_fisico_unificar_registros/{id}','Inventarios\\InvFisicoController@unificar_registros');
 Route::post('inv_fisico_ajustar_saldos_bodega/{id}','Inventarios\\InvFisicoController@ajustar_saldos_bodega');
+Route::post('inv_fisico_descontar_ventas/{id}','Inventarios\\InvFisicoController@descontar_ventas')->middleware('permission:inventarios.inventario_fisico.descontar_ventas');
 Route::get('inv_get_productos_del_grupo','Inventarios\InvFisicoController@get_productos_del_grupo');
 Route::get('inv_cargar_lista_ingredientes_fabricacion/{item_producir_id}/{cantidad_fabricar}','Inventarios\InvFisicoController@cargar_lista_ingredientes_fabricacion');
 Route::resource('inv_fisico', 'Inventarios\InvFisicoController');
@@ -114,4 +115,3 @@ Route::get('inv_corregir_cantidades', 'Inventarios\ProcesoController@corregir_ca
 Route::get('inv_asignar_codigos_barras_desde_id', 'Inventarios\ProcesoController@asignar_codigos_barras_desde_id');
 
 Route::get('inv_unificar_ids_items_repetidos_en_lineas_registros/{inv_document_header_id}', 'Inventarios\ProcesoController@unificar_ids_items_repetidos_en_lineas_registros');
-

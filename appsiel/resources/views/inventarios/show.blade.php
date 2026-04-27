@@ -74,6 +74,10 @@
     
     {!! $enlace2 !!}
 
+    @if( isset($enlace3) )
+        {!! $enlace3 !!}
+    @endif
+
     @if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
         <br>
         <b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}

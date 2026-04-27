@@ -14,6 +14,7 @@ use App\Inventarios\InvProducto;
 use App\Inventarios\InvDocRegistro;
 use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvMotivo;
+use App\Inventarios\InvDocumentoRelacionado;
 
 use App\Contabilidad\Impuesto;
 use App\Contabilidad\ContabMovimiento;
@@ -55,6 +56,16 @@ class InvDocEncabezado extends Model
     public function movimientos()
     {
         return $this->hasMany('App\Inventarios\InvMovimiento');
+    }
+
+    public function documentos_relacionados_origen()
+    {
+        return $this->hasMany(InvDocumentoRelacionado::class, 'inv_doc_encabezado_origen_id');
+    }
+
+    public function documentos_relacionados_destino()
+    {
+        return $this->hasMany(InvDocumentoRelacionado::class, 'inv_doc_encabezado_relacionado_id');
     }
 
     public function documento_ventas_padre()

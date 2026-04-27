@@ -60,6 +60,10 @@
 					{{ Form::bsHidden( 'doc_ventas_id', Input::get('doc_ventas_id') ) }}
 				@endif
 
+				@if( !is_null( Input::get('doc_inv_fisico_id') ))
+					{{ Form::bsHidden( 'doc_inv_fisico_id', Input::get('doc_inv_fisico_id') ) }}
+				@endif
+
 				@if( isset( $hay_existencias_negativas ) )
 					{{ Form::bsHidden( 'hay_existencias_negativas', $hay_existencias_negativas ) }}
 				@else

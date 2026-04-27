@@ -29,6 +29,16 @@
             <tbody>
                 <tr>
                     <td style="color: black !important;text-align: center; border-bottom: 1px #ddd solid; background-color: #f2f2f2;">
+                        <b>Cantidad de facturas realizadas</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="subject" style="color: black !important;">
+                        {{ number_format($result->cantidad_facturas,0,',','.') }}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: black !important;text-align: center; border-bottom: 1px #ddd solid; background-color: #f2f2f2;">
                         <b>Ventas en efectivo</b>
                     </td>
                 </tr>

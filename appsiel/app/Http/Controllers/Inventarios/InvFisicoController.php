@@ -23,9 +23,12 @@ use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
+use App\Inventarios\InvDocumentoRelacionado;
 use App\Inventarios\InvCostoPromProducto;
 use App\Inventarios\RecetaCocina;
 use App\Inventarios\Services\AjustarSaldosBodegaService;
+use App\Ventas\RestauranteCocina;
+use App\Ventas\VtasMovimiento;
 use App\Compras\Proveedor;
 use App\Sistema\Campo;
 use Illuminate\Support\Facades\App;
@@ -37,6 +40,8 @@ use Illuminate\Support\Facades\View;
 
 class InvFisicoController extends TransaccionController
 {
+    const PERMISO_DESCONTAR_VENTAS = 'inventarios.inventario_fisico.descontar_ventas';
+    const MODELO_DOCUMENTOS_INVENTARIO_ID = 25;
 
     /**
      * Show the form for creating a new resource.
@@ -196,6 +201,8 @@ class InvFisicoController extends TransaccionController
 
         $empresa = $this->empresa;
         $id_transaccion = $this->transaccion->id;
+        $ajustes_asociados = $this->get_ajustes_asociados($doc_encabezado->id);
+        $inventario_fisico_tiene_ajuste = $ajustes_asociados->count() > 0;
 
         $documento_vista = View::make( 'inventarios.inventario_fisico.documento_vista', compact('doc_encabezado', 'doc_registros' ) )->render();
 
@@ -205,7 +212,7 @@ class InvFisicoController extends TransaccionController
                 ['url'=>'NO','etiqueta'=> $doc_encabezado->documento_transaccion_prefijo_consecutivo ]
             ];
         
-        return view( 'inventarios.inventario_fisico.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'empresa','doc_encabezado') );
+        return view( 'inventarios.inventario_fisico.show', compact( 'id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'empresa','doc_encabezado', 'inventario_fisico_tiene_ajuste', 'ajustes_asociados') );
     }
 
     /**
@@ -224,21 +231,190 @@ class InvFisicoController extends TransaccionController
 
         $empresa = $this->empresa;
 
-        $documento_vista = View::make( 'inventarios.inventario_fisico.formato_estandar', compact('doc_encabezado', 'doc_registros', 'empresa' ) )->render();
+        $formato_impresion_id = Input::get('formato_impresion_id');
+        if ( $formato_impresion_id == '' )
+        {
+            $formato_impresion_id = 'estandar';
+        }
+
+        $orientacion = 'portrait';
+        $vista = 'inventarios.inventario_fisico.formato_estandar';
+        $datos_balance = [];
+
+        if ( $formato_impresion_id == 'balance_inventarios' )
+        {
+            $orientacion = 'landscape';
+            $vista = 'inventarios.inventario_fisico.balance_inventarios';
+            $datos_balance = $this->preparar_datos_balance_inventario_fisico( $id );
+        }
+
+        $documento_vista = View::make( $vista, compact('doc_encabezado', 'doc_registros', 'empresa', 'datos_balance' ) )->render();
 
         // Se prepara el PDF
-        $orientacion='portrait';
         $tam_hoja = 'Letter';//array(0,0,50,800);//'A4';
 
         $pdf = App::make('dompdf.wrapper');
-        $pdf->loadHTML( $documento_vista );//->setPaper( $tam_hoja, $orientacion );
+        $pdf->loadHTML( $documento_vista )->setPaper( $tam_hoja, $orientacion );
 
         return $pdf->stream( $doc_encabezado->documento_transaccion_descripcion.' - '.$doc_encabezado->documento_transaccion_prefijo_consecutivo.'.pdf');
+    }
+
+    private function preparar_datos_balance_inventario_fisico( $id )
+    {
+        $doc_encabezado = InvDocEncabezado::findOrFail( $id );
+        $fecha = \Carbon\Carbon::parse( $doc_encabezado->fecha )->format('Y-m-d');
+        $inv_bodega_id = (int)$doc_encabezado->inv_bodega_id;
+        $core_empresa_id = (int)$doc_encabezado->core_empresa_id;
+
+        $lineas = InvDocRegistro::where('inv_doc_encabezado_id', $id)
+                    ->orderBy('id')
+                    ->get();
+
+        $cantidades_if = [];
+        $item_ids = [];
+        foreach ( $lineas as $linea )
+        {
+            $item_id = (int)$linea->inv_producto_id;
+            if ( !isset($cantidades_if[$item_id]) )
+            {
+                $cantidades_if[$item_id] = 0;
+                $item_ids[] = $item_id;
+            }
+
+            $cantidades_if[$item_id] += (float)$linea->cantidad;
+        }
+
+        if ( empty($item_ids) )
+        {
+            return [
+                'fecha_desde' => $fecha,
+                'fecha_hasta' => $fecha,
+                'bodega' => null,
+                'items' => [],
+                'totales' => (object)[
+                    'saldo_ini' => 0,
+                    'entradas' => 0,
+                    'salidas' => 0,
+                    'saldo_fin' => 0,
+                    'cantidad_if' => 0,
+                    'diferencia' => 0
+                ]
+            ];
+        }
+
+        $items = InvProducto::whereIn('id', $item_ids)->get()->keyBy('id');
+        $bodega = DB::table('inv_bodegas')->where('id', $inv_bodega_id)->first();
+
+        $saldos_items = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->where('inv_doc_encabezados.fecha', '<', $fecha)
+                            ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
+                            ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
+                            ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
+                            ->select(
+                                'inv_productos.id AS item_id',
+                                DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento')
+                            )
+                            ->groupBy('inv_movimientos.inv_producto_id')
+                            ->get()
+                            ->pluck('cantidad_total_movimiento', 'item_id');
+
+        $movimientos_entradas = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
+                            ->where('inv_doc_encabezados.fecha', '>=', $fecha)
+                            ->where('inv_doc_encabezados.fecha', '<=', $fecha)
+                            ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
+                            ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
+                            ->where('inv_motivos.movimiento', 'entrada')
+                            ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
+                            ->select(
+                                'inv_productos.id AS item_id',
+                                DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento')
+                            )
+                            ->groupBy('inv_movimientos.inv_producto_id')
+                            ->get()
+                            ->pluck('cantidad_total_movimiento', 'item_id');
+
+        $movimientos_salidas = InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
+                            ->where('inv_doc_encabezados.fecha', '>=', $fecha)
+                            ->where('inv_doc_encabezados.fecha', '<=', $fecha)
+                            ->where('inv_movimientos.inv_bodega_id', $inv_bodega_id)
+                            ->where('inv_movimientos.core_empresa_id', $core_empresa_id)
+                            ->where('inv_motivos.movimiento', 'salida')
+                            ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
+                            ->select(
+                                'inv_productos.id AS item_id',
+                                DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento')
+                            )
+                            ->groupBy('inv_movimientos.inv_producto_id')
+                            ->get()
+                            ->pluck('cantidad_total_movimiento', 'item_id');
+
+        $filas = [];
+        $totales = (object)[
+            'saldo_ini' => 0,
+            'entradas' => 0,
+            'salidas' => 0,
+            'saldo_fin' => 0,
+            'cantidad_if' => 0,
+            'diferencia' => 0
+        ];
+
+        foreach ( $item_ids as $item_id )
+        {
+            $item = $items[$item_id] ?? null;
+            if ( $item == null )
+            {
+                continue;
+            }
+
+            $saldo_ini = (float)($saldos_items[$item_id] ?? 0);
+            $entradas = (float)($movimientos_entradas[$item_id] ?? 0);
+            $salidas = (float)($movimientos_salidas[$item_id] ?? 0);
+            $saldo_fin = $saldo_ini + $entradas + $salidas;
+            $cantidad_if = (float)($cantidades_if[$item_id] ?? 0);
+            $diferencia = $cantidad_if - $saldo_fin;
+
+            $filas[] = (object)[
+                'id' => $item->id,
+                'descripcion' => $item->descripcion,
+                'unidad_medida1' => $item->get_unidad_medida1(),
+                'saldo_ini' => $saldo_ini,
+                'entradas' => $entradas,
+                'salidas' => $salidas,
+                'saldo_fin' => $saldo_fin,
+                'cantidad_if' => $cantidad_if,
+                'diferencia' => $diferencia
+            ];
+
+            $totales->saldo_ini += $saldo_ini;
+            $totales->entradas += $entradas;
+            $totales->salidas += $salidas;
+            $totales->saldo_fin += $saldo_fin;
+            $totales->cantidad_if += $cantidad_if;
+            $totales->diferencia += $diferencia;
+        }
+
+        return [
+            'fecha_desde' => $fecha,
+            'fecha_hasta' => $fecha,
+            'bodega' => $bodega,
+            'items' => $filas,
+            'totales' => $totales
+        ];
     }
 
 
     public function hacer_ajuste()
     {
+        if ( InvDocumentoRelacionado::existe_ajuste_para_inventario_fisico((int)Input::get('doc_inv_fisico_id')) )
+        {
+            return redirect()->back()
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se puede generar otro ajuste.');
+        }
 
         $id_transaccion = Input::get('id_transaccion');
 
@@ -318,6 +494,11 @@ class InvFisicoController extends TransaccionController
      */
     public function edit($id)
     {
+        if ( $this->tiene_ajuste_asociado($id) )
+        {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url_from_input())
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se puede modificar.');
+        }
 
         $id_transaccion = Input::get('id_transaccion');
 
@@ -418,6 +599,12 @@ class InvFisicoController extends TransaccionController
      */
     public function update(Request $request, $id)
     {
+        if ( $this->tiene_ajuste_asociado($id) )
+        {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se puede modificar.');
+        }
+
         $lineas_registros = $this->preparar_array_lineas_registros( $request->movimiento );
 
         // Actualizar datos del encabezado
@@ -755,6 +942,12 @@ class InvFisicoController extends TransaccionController
      */
     public function unificar_registros(Request $request, $id)
     {
+        if ( $this->tiene_ajuste_asociado($id) )
+        {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se pueden unificar lineas.');
+        }
+
         $doc_encabezado = InvDocEncabezado::findOrFail($id);
 
         $lineas = InvDocRegistro::where('inv_doc_encabezado_id', $doc_encabezado->id)
@@ -823,6 +1016,12 @@ class InvFisicoController extends TransaccionController
 
     public function ajustar_saldos_bodega(Request $request, $id)
     {
+        if ( $this->tiene_ajuste_asociado($id) )
+        {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se pueden ajustar saldos.');
+        }
+
         try {
             $service = new AjustarSaldosBodegaService();
             $response = $service->ejecutar($id);
@@ -834,6 +1033,254 @@ class InvFisicoController extends TransaccionController
         return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
                 ->with('flash_message', 'Proceso finalizado. Lineas agregadas: ' . $response->agregadas . '.');
     }
+
+    public function descontar_ventas(Request $request, $id)
+    {
+        if ( !Auth::user()->can(self::PERMISO_DESCONTAR_VENTAS) )
+        {
+            abort(403);
+        }
+
+        if ( $this->tiene_ajuste_asociado($id) )
+        {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se pueden descontar ventas nuevamente.');
+        }
+
+        try {
+            $response = $this->crear_ajuste_descontando_ventas($id);
+        } catch (\Exception $e) {
+            return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                    ->with('flash_message', 'Error al descontar ventas: ' . $e->getMessage());
+        }
+
+        return redirect('inv_fisico/' . $id . $this->build_variables_url($request))
+                ->with('flash_message', 'Proceso finalizado. AI generado: ' . $response->documento . '. Ingredientes descontados: ' . $response->ingredientes . '.');
+    }
+
+    private function crear_ajuste_descontando_ventas($inv_fisico_id)
+    {
+        $doc_inv_fisico = InvDocEncabezado::findOrFail($inv_fisico_id);
+        $bodega_if_id = (int)$doc_inv_fisico->inv_bodega_id;
+        $bodega_principal_id = (int)config('inventarios.item_bodega_principal_id');
+
+        if ( $bodega_if_id == 0 )
+        {
+            throw new \Exception('El inventario fisico no tiene bodega asociada.');
+        }
+
+        if ( $bodega_principal_id == 0 )
+        {
+            throw new \Exception('No esta configurada la bodega principal de inventarios.');
+        }
+
+        $ai_tipo_transaccion_id = (int)config('inventarios.ai_tipo_transaccion_id');
+        $ai_tipo_doc_app_id = (int)config('inventarios.ai_tipo_doc_app_id');
+        $ai_motivo_entrada_id = (int)config('inventarios.ai_motivo_entrada_id');
+        $ai_motivo_salida_id = (int)config('inventarios.ai_motivo_salida_id');
+        $ai_tercero_id = (int)config('inventarios.ai_tercero_id');
+
+        if ( $ai_tipo_transaccion_id == 0 || $ai_tipo_doc_app_id == 0 || $ai_motivo_entrada_id == 0 || $ai_motivo_salida_id == 0 || $ai_tercero_id == 0 )
+        {
+            throw new \Exception('Faltan parametros de configuracion para crear ajustes de inventario.');
+        }
+
+        $cocina = RestauranteCocina::where('bodega_default_id', $bodega_if_id)
+                    ->where('estado', 'Activo')
+                    ->first();
+
+        if ( $cocina == null )
+        {
+            $bodega_descripcion = DB::table('inv_bodegas')->where('id', $bodega_if_id)->value('descripcion');
+            throw new \Exception('No existe una cocina activa asociada a la bodega del inventario fisico. Bodega: ' . $bodega_if_id . ' - ' . $bodega_descripcion . '.');
+        }
+
+        $grupo_inventario = InvGrupo::find((int)$cocina->grupo_inventarios_id);
+        $grupo_descripcion = $grupo_inventario != null ? $grupo_inventario->descripcion : '';
+        $bodega_descripcion = DB::table('inv_bodegas')->where('id', $bodega_if_id)->value('descripcion');
+        $parametros_consulta = ' Fecha: ' . $doc_inv_fisico->fecha .
+            '. Bodega IF: ' . $bodega_if_id . ' - ' . $bodega_descripcion .
+            '. Cocina: ' . $cocina->label .
+            '. Grupo inventario: ' . (int)$cocina->grupo_inventarios_id . ' - ' . $grupo_descripcion . '.';
+
+        $lineas_if = InvDocRegistro::where('inv_doc_encabezado_id', $doc_inv_fisico->id)
+                        ->orderBy('id')
+                        ->get()
+                        ->unique('inv_producto_id')
+                        ->values();
+
+        if ( $lineas_if->count() == 0 )
+        {
+            throw new \Exception('El inventario fisico no tiene lineas de registro.');
+        }
+
+        $ingredientes_ids = $lineas_if->pluck('inv_producto_id')->unique()->values()->all();
+
+        $ventas_platillos = VtasMovimiento::leftJoin('inv_productos', 'inv_productos.id', '=', 'vtas_movimientos.inv_producto_id')
+                            ->where('vtas_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->where('vtas_movimientos.fecha', $doc_inv_fisico->fecha)
+                            ->where('inv_productos.inv_grupo_id', (int)$cocina->grupo_inventarios_id)
+                            ->where('vtas_movimientos.estado', '<>', 'Anulado')
+                            ->select(
+                                'vtas_movimientos.inv_producto_id',
+                                DB::raw('SUM(vtas_movimientos.cantidad) AS cantidad')
+                            )
+                            ->groupBy('vtas_movimientos.inv_producto_id')
+                            ->get()
+                            ->pluck('cantidad', 'inv_producto_id');
+
+        if ( $ventas_platillos->count() == 0 )
+        {
+            throw new \Exception('No se encontraron ventas para los parametros consultados.' . $parametros_consulta);
+        }
+
+        $recetas = RecetaCocina::whereIn('item_ingrediente_id', $ingredientes_ids)
+                    ->whereIn('item_platillo_id', $ventas_platillos->keys()->all())
+                    ->get();
+
+        if ( $recetas->count() == 0 )
+        {
+            throw new \Exception('No se encontraron recetas que relacionen los ingredientes del IF con los platillos vendidos.');
+        }
+
+        $consumos_por_ingrediente = [];
+        foreach ( $recetas as $receta )
+        {
+            $cantidad_vendida = (float)$ventas_platillos[$receta->item_platillo_id];
+            $cantidad_consumida = $cantidad_vendida * (float)$receta->cantidad_porcion;
+
+            if ( $cantidad_consumida <= 0 )
+            {
+                continue;
+            }
+
+            if ( !isset($consumos_por_ingrediente[$receta->item_ingrediente_id]) )
+            {
+                $consumos_por_ingrediente[$receta->item_ingrediente_id] = 0;
+            }
+
+            $consumos_por_ingrediente[$receta->item_ingrediente_id] += $cantidad_consumida;
+        }
+
+        if ( count($consumos_por_ingrediente) == 0 )
+        {
+            throw new \Exception('Las recetas encontradas no generaron consumos positivos.');
+        }
+
+        $items = InvProducto::whereIn('id', array_keys($consumos_por_ingrediente))->get()->keyBy('id');
+        $lineas_por_ingrediente = $lineas_if->keyBy('inv_producto_id');
+        $lineas_ajuste = [];
+
+        foreach ( $consumos_por_ingrediente as $ingrediente_id => $cantidad_consumida )
+        {
+            $item = $items[$ingrediente_id] ?? null;
+            if ( $item == null )
+            {
+                continue;
+            }
+
+            $linea_if = $lineas_por_ingrediente[$ingrediente_id] ?? null;
+            $costo_unitario = 0;
+            if ( $linea_if != null && (float)$linea_if->costo_unitario > 0 )
+            {
+                $costo_unitario = (float)$linea_if->costo_unitario;
+            }else{
+                $costo_unitario = (float)$item->get_costo_promedio($bodega_if_id);
+            }
+
+            $costo_total = $cantidad_consumida * $costo_unitario;
+
+            $lineas_ajuste[] = (object)[
+                'inv_motivo_id' => $ai_motivo_entrada_id,
+                'inv_bodega_id' => $bodega_principal_id,
+                'inv_producto_id' => (int)$ingrediente_id,
+                'costo_unitario' => $costo_unitario,
+                'cantidad' => $cantidad_consumida,
+                'costo_total' => $costo_total
+            ];
+
+            $lineas_ajuste[] = (object)[
+                'inv_motivo_id' => $ai_motivo_salida_id,
+                'inv_bodega_id' => $bodega_if_id,
+                'inv_producto_id' => (int)$ingrediente_id,
+                'costo_unitario' => $costo_unitario,
+                'cantidad' => $cantidad_consumida,
+                'costo_total' => $costo_total
+            ];
+        }
+
+        if ( count($lineas_ajuste) == 0 )
+        {
+            throw new \Exception('No fue posible preparar lineas para el ajuste de inventario.');
+        }
+
+        $request_ajuste = new Request([
+            'core_empresa_id' => Auth::user()->empresa_id,
+            'core_tipo_transaccion_id' => $ai_tipo_transaccion_id,
+            'core_tipo_doc_app_id' => $ai_tipo_doc_app_id,
+            'fecha' => $doc_inv_fisico->fecha,
+            'inv_bodega_id' => $bodega_if_id,
+            'core_tercero_id' => $ai_tercero_id,
+            'codigo_referencia_tercero' => '',
+            'documento_soporte' => 'IF ' . $doc_inv_fisico->id,
+            'descripcion' => 'Descuento de ventas con base en Inventario Fisico ID ' . $doc_inv_fisico->id,
+            'estado' => 'Activo',
+            'creado_por' => Auth::user()->email,
+            'modificado_por' => Auth::user()->email,
+            'hora_inicio' => '00:00:00',
+            'hora_finalizacion' => '00:00:00',
+            'vtas_doc_encabezado_origen_id' => 0,
+            'bodega_destino_id' => 0
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $doc_ajuste_id = InventarioController::crear_documento($request_ajuste, $lineas_ajuste, self::MODELO_DOCUMENTOS_INVENTARIO_ID);
+            InvDocumentoRelacionado::firstOrCreate(
+                [
+                    'inv_doc_encabezado_origen_id' => (int)$doc_inv_fisico->id,
+                    'inv_doc_encabezado_relacionado_id' => $doc_ajuste_id,
+                    'tipo_relacion' => InvDocumentoRelacionado::TIPO_IF_AJUSTE
+                ],
+                [
+                    'creado_por' => Auth::user()->email,
+                    'modificado_por' => Auth::user()->email
+                ]
+            );
+            DB::commit();
+        } catch ( \Exception $e ) {
+            DB::rollBack();
+            throw $e;
+        }
+
+        $doc_ajuste = InvDocEncabezado::find($doc_ajuste_id);
+
+        $documento_ajuste = $doc_ajuste_id;
+        if ( $doc_ajuste != null && $doc_ajuste->tipo_documento_app != null )
+        {
+            $documento_ajuste = $doc_ajuste->tipo_documento_app->prefijo . ' ' . $doc_ajuste->consecutivo;
+        }
+
+        return (object)[
+            'id' => $doc_ajuste_id,
+            'documento' => $documento_ajuste,
+            'ingredientes' => count($consumos_por_ingrediente)
+        ];
+    }
+
+    private function tiene_ajuste_asociado($inv_fisico_id)
+    {
+        return InvDocumentoRelacionado::existe_ajuste_para_inventario_fisico($inv_fisico_id);
+    }
+
+    private function get_ajustes_asociados($inv_fisico_id)
+    {
+        return InvDocumentoRelacionado::where('inv_doc_encabezado_origen_id', (int)$inv_fisico_id)
+                ->where('tipo_relacion', InvDocumentoRelacionado::TIPO_IF_AJUSTE)
+                ->with('documento_relacionado.tipo_documento_app')
+                ->get();
+    }
+
     private function build_variables_url(Request $request)
     {
         $id_app = $request->get('url_id', Input::get('id'));
@@ -843,5 +1290,9 @@ class InvFisicoController extends TransaccionController
         return '?id=' . $id_app . '&id_modelo=' . $id_modelo . '&id_transaccion=' . $id_transaccion;
     }
 
-}
+    private function build_variables_url_from_input()
+    {
+        return '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion');
+    }
 
+}

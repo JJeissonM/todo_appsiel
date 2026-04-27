@@ -37,6 +37,7 @@ use App\Inventarios\InvMovimiento;
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\InvDocRegistro;
+use App\Inventarios\InvDocumentoRelacionado;
 use App\Inventarios\InvCostoPromProducto;
 
 
@@ -184,7 +185,28 @@ class InventarioController extends TransaccionController
             self::hacer_preparaciones_recetas($request->core_tipo_transaccion_id, $request->fecha, $request->inv_bodega_id, $lineas_registros);
         }
 
+        if ( (int)$request->doc_inv_fisico_id > 0 && InvDocumentoRelacionado::existe_ajuste_para_inventario_fisico((int)$request->doc_inv_fisico_id) )
+        {
+            return redirect()->back()
+                    ->with('flash_message', 'El Inventario Fisico ya tiene un ajuste relacionado. No se puede generar otro ajuste.');
+        }
+
         $doc_encabezado_id = self::crear_documento($request, $lineas_registros, $request->url_id_modelo);
+
+        if ( (int)$request->doc_inv_fisico_id > 0 )
+        {
+            InvDocumentoRelacionado::firstOrCreate(
+                [
+                    'inv_doc_encabezado_origen_id' => (int)$request->doc_inv_fisico_id,
+                    'inv_doc_encabezado_relacionado_id' => $doc_encabezado_id,
+                    'tipo_relacion' => InvDocumentoRelacionado::TIPO_IF_AJUSTE
+                ],
+                [
+                    'creado_por' => Auth::user()->email,
+                    'modificado_por' => Auth::user()->email
+                ]
+            );
+        }
 
         if ( isset( $request->ruta_redirect ) )
         {
@@ -329,9 +351,16 @@ class InventarioController extends TransaccionController
     {
         $tipo_transferencia = 2;
 
-        // WARNING: Cuidar de no enviar campos en el request que se repitan en las lineas de registros 
-        // Ahora mismo el campo inv_bodega_id se envía en el request, pero se debe tomar de cada línea de registro
         $datos = $request->all();
+        unset(
+            $datos['inv_bodega_id'],
+            $datos['inv_motivo_id'],
+            $datos['inv_producto_id'],
+            $datos['costo_unitario'],
+            $datos['cantidad'],
+            $datos['costo_total'],
+            $datos['linea_registro_doc_origen_id']
+        );
         
         $average_cost_serv = new AverageCost();
 
@@ -370,7 +399,14 @@ class InventarioController extends TransaccionController
                 $linea_registro_doc_origen_id = $lineas_registros[$i]->linea_registro_doc_origen_id;
             }
 
-            $linea_datos = ['inv_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
+            $inv_bodega_id = (int)$request->inv_bodega_id;
+            if ( isset( $lineas_registros[$i]->inv_bodega_id ) )
+            {
+                $inv_bodega_id = (int)$lineas_registros[$i]->inv_bodega_id;
+            }
+
+            $linea_datos = ['inv_bodega_id' => $inv_bodega_id] +
+                            ['inv_motivo_id' => $lineas_registros[$i]->inv_motivo_id] +
                             ['linea_registro_doc_origen_id' => $linea_registro_doc_origen_id ] +
                             ['inv_producto_id' => $lineas_registros[$i]->inv_producto_id] +
                             ['costo_unitario' => $costo_unitario] +
@@ -437,9 +473,9 @@ class InventarioController extends TransaccionController
             if ($motivo->movimiento == 'entrada')
             {
                 // Se CALCULA el costo promedio del movimiento, si no existe será el enviado en el request
-                $costo_prom = $average_cost_serv->calculate_average_cost($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha, $cantidad);
+                $costo_prom = $average_cost_serv->calculate_average_cost($inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_unitario, $request->fecha, $cantidad);
                 
-                self::actualizar_costo_promedio($request->inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom, $request->core_tipo_transaccion_id, $average_cost_serv);
+                self::actualizar_costo_promedio($inv_bodega_id, $lineas_registros[$i]->inv_producto_id, $costo_prom, $request->core_tipo_transaccion_id, $average_cost_serv);
             }
         }
     }
@@ -678,6 +714,24 @@ class InventarioController extends TransaccionController
                     <b>Factura POS: </b> <a href="' . url('pos_factura/' . $fatura_venta->id . '?id=20&id_modelo=230&id_transaccion=' . $reg_factura_venta->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_venta->documento_transaccion_prefijo_consecutivo . '</a>';
         }
 
+        $enlace3 = '';
+        $relacion_if = InvDocumentoRelacionado::where('inv_doc_encabezado_relacionado_id', $doc_encabezado->id)
+                        ->where('tipo_relacion', InvDocumentoRelacionado::TIPO_IF_AJUSTE)
+                        ->with('documento_origen.tipo_documento_app')
+                        ->first();
+        if ( $relacion_if != null && $relacion_if->documento_origen != null )
+        {
+            $documento_if = $relacion_if->documento_origen;
+            $prefijo_if = '';
+            if ( $documento_if->tipo_documento_app != null )
+            {
+                $prefijo_if = $documento_if->tipo_documento_app->prefijo . ' ';
+            }
+
+            $enlace3 = '<br/>
+                    <b>Inventario Fisico origen: </b> <a href="' . url('inv_fisico/' . $documento_if->id . '?id=8&id_modelo=151&id_transaccion=27') . '" target="_blank">' . $prefijo_if . $documento_if->consecutivo . '</a>';
+        }
+
         $documento_vista = View::make('inventarios.incluir.documento_vista', compact('doc_encabezado', 'doc_registros', 'empresa', 'registros_contabilidad', 'enlace1', 'enlace2'))->render();
         $id_transaccion = $this->transaccion->id;
 
@@ -687,7 +741,7 @@ class InventarioController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
 
-        return view('inventarios.show', compact('id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'registros_contabilidad', 'doc_encabezado', 'empresa', 'enlace1', 'enlace2'));
+        return view('inventarios.show', compact('id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'registros_contabilidad', 'doc_encabezado', 'empresa', 'enlace1', 'enlace2', 'enlace3'));
     }
 
 
@@ -1433,6 +1487,9 @@ class InventarioController extends TransaccionController
         {
             OrdenDeTrabajo::where( 'inv_doc_encabezado_id',$documento->id )->update(['inv_doc_encabezado_id'=>0]);
         }
+
+        InvDocumentoRelacionado::where('inv_doc_encabezado_relacionado_id', $documento->id)
+            ->delete();
 
         // Marcar documento como Anulado
         $documento->update(['estado' => 'Anulado', 'modificado_por' => Auth::user()->email]);

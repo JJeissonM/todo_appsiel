@@ -257,17 +257,8 @@ input[type=number]::-webkit-outer-spin-button {
     <input type="hidden" id="apm_ws_url" value="{{ config('ventas.apm_ws_url') }}">
     <input type="hidden" id="apm_printer_id_pedidos_restaurante" value="{{ config('ventas.apm_printer_id_pedidos_restaurante') }}">
 
-
-    <?php 
-        $cocinas = config('pedidos_restaurante.cocinas');
-        $la_cocina = [];
-        if (isset($cocinas[Input::get('cocina_index')])) {
-            $la_cocina = $cocinas[Input::get('cocina_index')];
-        }
-    ?>
-
-    @if( isset( $la_cocina['printer_ip'] ) )
-        <input type="hidden" name="printer_ip" id="printer_ip" value="{{ $la_cocina['printer_ip'] }}">        
+    @if( isset( $la_cocina ) && $la_cocina != null && $la_cocina->printer_ip != '' )
+        <input type="hidden" name="printer_ip" id="printer_ip" value="{{ $la_cocina->printer_ip }}">
     @endif
     
 @endsection

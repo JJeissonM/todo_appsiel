@@ -18,6 +18,10 @@
         			// Si se quiere agregar una nueva variable al archivo de configuración, hay que agregar también un campo nuevo a este formulario
 		    	-->
 
+				<?php 
+					$arr_motivos = App\Inventarios\InvMotivo::opciones_campo_select();
+				?>
+
 				{{ Form::hidden('titulo', $parametros['titulo'] ) }}
 
 				<h4> Parámetros Generales  </h4>
@@ -250,7 +254,7 @@
 									$motivo_salida_id = $parametros['motivo_salida_id'];
 								}
 							?>
-							{{ Form::bsSelect('motivo_salida_id', $motivo_salida_id, 'Motivo salida default', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('motivo_salida_id', $motivo_salida_id, 'Motivo salida default', $arr_motivos, ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -263,7 +267,7 @@
 									$motivo_entrada_id = $parametros['motivo_entrada_id'];
 								}
 							?>
-							{{ Form::bsSelect('motivo_entrada_id', $motivo_entrada_id, 'Motivo entrada default', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('motivo_entrada_id', $motivo_entrada_id, 'Motivo entrada default', $arr_motivos, ['class'=>'form-control']) }}
 						</div>
 					</div>
 
@@ -451,7 +455,92 @@
 									$ea_motivo_id = $parametros['ea_motivo_id'];
 								}
 							?>
-							{{ Form::bsSelect('ea_motivo_id', $ea_motivo_id, 'Motivo entrada', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'combobox']) }}
+							{{ Form::bsSelect('ea_motivo_id', $ea_motivo_id, 'Motivo entrada', $arr_motivos, ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<h4> Parámetros por defecto creación Ajustes de Inventarios  </h4>
+				<hr>
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+									$ai_tipo_transaccion_id = 28;
+								if( isset($parametros['ai_tipo_transaccion_id'] ) )
+								{
+									$ai_tipo_transaccion_id = $parametros['ai_tipo_transaccion_id'];
+								}
+							?>
+							{{ Form::bsSelect('ai_tipo_transaccion_id', $ai_tipo_transaccion_id, 'Tipo de transacción', App\Sistema\TipoTransaccion::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+									$ai_tipo_doc_app_id = 33;
+								if( isset($parametros['ai_tipo_doc_app_id'] ) )
+								{
+									$ai_tipo_doc_app_id = $parametros['ai_tipo_doc_app_id'];
+								}
+							?>
+							{{ Form::bsSelect('ai_tipo_doc_app_id', $ai_tipo_doc_app_id, 'Tipo Documento', App\Core\TipoDocApp::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ai_motivo_entrada_id = 13;
+								if( isset($parametros['ai_motivo_entrada_id'] ) )
+								{
+									$ai_motivo_entrada_id = $parametros['ai_motivo_entrada_id'];
+								}
+							?>
+							{{ Form::bsSelect('ai_motivo_entrada_id', $ai_motivo_entrada_id, 'Motivo entrada default', $arr_motivos, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$ai_motivo_salida_id = 14;
+								if( isset($parametros['ai_motivo_salida_id'] ) )
+								{
+									$ai_motivo_salida_id = $parametros['ai_motivo_salida_id'];
+								}
+							?>
+							{{ Form::bsSelect('ai_motivo_salida_id', $ai_motivo_salida_id, 'Motivo salida default', $arr_motivos, ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+				</div>
+
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+									$ai_tercero_id = 1;
+								if( isset($parametros['ai_tercero_id'] ) )
+								{
+									$ai_tercero_id = $parametros['ai_tercero_id'];
+								}
+							?>
+							{{ Form::bsSelect('ai_tercero_id', $ai_tercero_id, 'Tercero', App\Core\Tercero::opciones_campo_select(), ['class'=>'combobox']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
 						</div>
 					</div>
 
@@ -471,7 +560,7 @@
 									$motivo_salida_id_ot = $parametros['motivo_salida_id_ot'];
 								}
 							?>
-							{{ Form::bsSelect('motivo_salida_id_ot', $motivo_salida_id_ot, 'Motivo salida default en OT', App\Inventarios\InvMotivo::opciones_campo_select(), ['class'=>'form-control']) }}
+							{{ Form::bsSelect('motivo_salida_id_ot', $motivo_salida_id_ot, 'Motivo salida default en OT', $arr_motivos, ['class'=>'form-control']) }}
 						</div>
 					</div>
 
