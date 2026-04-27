@@ -32,7 +32,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="subject" style="color: black !important;">
+                    <td class="subject" style="color: black !important; text-align: center;">
                         {{ number_format($result->cantidad_facturas,0,',','.') }}
                     </td>
                 </tr>
