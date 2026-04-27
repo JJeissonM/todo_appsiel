@@ -124,17 +124,19 @@ class EncabezadoCalificacionController extends Controller
             unset($data['titulo']);
         }
 
-        $duplicate = $this->encabezadosCalificacionService->getQuery(
+        $duplicateQuery = $this->encabezadosCalificacionService->getQuery(
             (int)$scope['anio'],
             (int)$request->periodo_id,
             (int)$request->curso_id,
             (int)$request->asignatura_id
         )
-            ->where('columna_calificacion', $request->columna_calificacion)
-            ->when((int)$request->id_encabezado_calificacion > 0, function ($query) use ($request) {
-                $query->where('id', '<>', (int)$request->id_encabezado_calificacion);
-            })
-            ->exists();
+            ->where('columna_calificacion', $request->columna_calificacion);
+
+        if ((int)$request->id_encabezado_calificacion > 0) {
+            $duplicateQuery->where('id', '<>', (int)$request->id_encabezado_calificacion);
+        }
+
+        $duplicate = $duplicateQuery->exists();
 
         if ($duplicate) {
             return "duplicado";

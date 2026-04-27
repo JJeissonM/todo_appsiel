@@ -11,7 +11,7 @@ class EncabezadoCalificacion extends Model
 	
 	protected $fillable = ['columna_calificacion', 'label', 'titulo', 'descripcion', 'peso', 'fecha', 'anio', 'periodo_id', 'curso_id', 'asignatura_id', 'creado_por', 'modificado_por'];
 
-	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Fecha', 'Columna calificación', 'Detalle', 'Peso (%)'];
+	public $encabezado_tabla = ['<i style="font-size: 20px;" class="fa fa-check-square-o"></i>', 'Año lectivo', 'Periodo', 'Curso', 'Asignatura', 'Fecha', 'Columna calificación', 'Detalle', 'Label', 'Peso (%)'];
 
 	public static function consultar_registros($nro_registros, $search)
 	{
@@ -27,8 +27,9 @@ class EncabezadoCalificacion extends Model
 				'sga_calificaciones_encabezados.fecha AS campo5',
 				'sga_calificaciones_encabezados.columna_calificacion AS campo6',
 				'sga_calificaciones_encabezados.descripcion AS campo7',
-				'sga_calificaciones_encabezados.peso AS campo8',
-				'sga_calificaciones_encabezados.id AS campo9'
+				'sga_calificaciones_encabezados.label AS campo8',
+				'sga_calificaciones_encabezados.peso AS campo9',
+				'sga_calificaciones_encabezados.id AS campo10'
 			)->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
@@ -55,7 +56,8 @@ class EncabezadoCalificacion extends Model
 				'sga_calificaciones_encabezados.fecha AS campo5',
 				'sga_calificaciones_encabezados.columna_calificacion AS campo6',
 				'sga_calificaciones_encabezados.descripcion AS campo7',
-				'sga_calificaciones_encabezados.peso AS campo8'
+				'sga_calificaciones_encabezados.label AS campo8',
+				'sga_calificaciones_encabezados.peso AS campo9'
 			)->where("sga_periodos_lectivos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_periodos.descripcion", "LIKE", "%$search%")
 			->orWhere("sga_cursos.descripcion", "LIKE", "%$search%")
