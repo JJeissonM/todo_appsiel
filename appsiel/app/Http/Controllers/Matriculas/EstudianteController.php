@@ -466,7 +466,9 @@ class EstudianteController extends ModeloController
 
     private function construir_resumen_estudiantes(Colegio $colegio, PeriodoLectivo $periodo_lectivo = null, $grado_id = 'Todos', $curso_id = 'Todos')
     {
-        $matriculas = $this->get_matriculas_resumen_query($colegio->id, $periodo_lectivo ? $periodo_lectivo->id : null, $grado_id, $curso_id)
+        $solo_activas = $this->resumen_debe_contar_solo_activas($periodo_lectivo);
+
+        $matriculas = $this->get_matriculas_resumen_query($colegio->id, $periodo_lectivo ? $periodo_lectivo->id : null, $grado_id, $curso_id, $solo_activas)
             ->select(
                 'sga_matriculas.id',
                 'sga_matriculas.id_estudiante',
@@ -500,8 +502,19 @@ class EstudianteController extends ModeloController
             'curso_mayor' => $por_curso->sortByDesc('cantidad')->first(),
             'grado_mayor' => $por_grado->sortByDesc('cantidad')->first(),
             'genero_mayor' => $por_genero->sortByDesc('cantidad')->first(),
+            'solo_activas' => $solo_activas,
+            'criterio_total' => $solo_activas ? 'Matriculas activas en el periodo seleccionado.' : 'Matriculas activas e inactivas registradas en el periodo seleccionado.',
             'filtros' => $this->get_labels_filtros_resumen($grado_id, $curso_id)
         ];
+    }
+
+    private function resumen_debe_contar_solo_activas(PeriodoLectivo $periodo_lectivo = null)
+    {
+        if ($periodo_lectivo == null) {
+            return true;
+        }
+
+        return (int)$periodo_lectivo->cerrado == 0;
     }
 
     private function construir_historico_resumen_estudiantes(Colegio $colegio, $grado_id = 'Todos', $curso_id = 'Todos')
@@ -514,7 +527,7 @@ class EstudianteController extends ModeloController
         $total_anterior = null;
 
         foreach ($periodos as $periodo) {
-            $matriculas = $this->get_matriculas_resumen_query($colegio->id, $periodo->id, $grado_id, $curso_id)
+            $matriculas = $this->get_matriculas_resumen_query($colegio->id, $periodo->id, $grado_id, $curso_id, false)
                 ->select('sga_matriculas.id', 'sga_matriculas.id_estudiante', 'sga_estudiantes.genero')
                 ->get();
 
@@ -539,13 +552,16 @@ class EstudianteController extends ModeloController
         return $historico;
     }
 
-    private function get_matriculas_resumen_query($colegio_id, $periodo_lectivo_id, $grado_id = 'Todos', $curso_id = 'Todos')
+    private function get_matriculas_resumen_query($colegio_id, $periodo_lectivo_id, $grado_id = 'Todos', $curso_id = 'Todos', $solo_activas = true)
     {
         $query = Matricula::where('sga_matriculas.id_colegio', $colegio_id)
-            ->where('sga_matriculas.estado', 'Activo')
             ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
             ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
             ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id');
+
+        if ($solo_activas) {
+            $query->where('sga_matriculas.estado', 'Activo');
+        }
 
         if ($periodo_lectivo_id != null) {
             $query->where('sga_matriculas.periodo_lectivo_id', $periodo_lectivo_id);
@@ -673,7 +689,7 @@ class EstudianteController extends ModeloController
             return null;
         }
 
-        $total_anterior = $this->get_matriculas_resumen_query($colegio->id, $periodo_anterior->id, $grado_id, $curso_id)->count();
+        $total_anterior = $this->get_matriculas_resumen_query($colegio->id, $periodo_anterior->id, $grado_id, $curso_id, false)->count();
         $variacion = $total_actual - $total_anterior;
         $variacion_porcentaje = $total_anterior > 0 ? round(($variacion / $total_anterior) * 100, 1) : null;
 

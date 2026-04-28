@@ -132,9 +132,9 @@
 	<table class="metricas">
 		<tr>
 			<td class="metrica">
-				<span class="metrica-label">Estudiantes activos</span>
+				<span class="metrica-label">{{ $resumen['solo_activas'] ? 'Estudiantes activos' : 'Estudiantes matriculados' }}</span>
 				<span class="metrica-valor">{{ number_format($total, 0, ',', '.') }}</span>
-				<span class="nota">Matriculas activas en el periodo seleccionado.</span>
+				<span class="nota">{{ $resumen['criterio_total'] }}</span>
 			</td>
 			<td class="metrica">
 				<span class="metrica-label">Antiguos</span>
