@@ -15,6 +15,11 @@
 		text-align-last: center;
 		list-style-type: none;
 	}
+
+	.chart-matriculas {
+		min-height: 260px;
+		width: 100%;
+	}
 </style>
 
 	{{ Form::bsMigaPan($miga_pan) }}
@@ -30,17 +35,10 @@
 			</div>
 			
 			<div class="panel-body collapse in" id="demo2">
-				<?php 
-					//echo Lava::render('PieChart', 'MyStocks', 'stocks-chart');
-					echo Lava::render('BarChart', 'MyStocks', 'stocks-chart');
-					echo Lava::render('PieChart', 'Generos', 'stocks-chart2');
-					echo Lava::render('BarChart', 'antiguedad', 'stocks-chart3');
-					//dd($generos);
-				?>
 				<div class="row">
 					<div  class="col-sm-6">
 						<b>Cantidad de estudiantes por antiguedad</b>
-						<div id="stocks-chart3"></div>
+						<div id="stocks-chart3" class="chart-matriculas"></div>
 						<table>
 							@php $total=0 @endphp
 							@foreach($nuevos_matriculados as $fila)
@@ -60,7 +58,7 @@
 				<div class="row">
 					<div  class="col-sm-6">
 						<b>Cantidad de estudiantes por curso</b>
-						<div id="stocks-chart"></div>
+						<div id="stocks-chart" class="chart-matriculas"></div>
 						<table>
 							@php $total=0 @endphp
 						@foreach($alumnos_por_curso as $curso)
@@ -78,7 +76,7 @@
 					</div>
 					<div  class="col-sm-6">
 						<b>Cantidad por géneros</b>
-						<div id="stocks-chart2"></div>
+						<div id="stocks-chart2" class="chart-matriculas"></div>
 						<table>
 							@php $total=0 @endphp
 						@foreach($generos as $genero)
@@ -99,4 +97,76 @@
 		</div>
 	</div>
 </div>
+@endsection
+
+@section('scripts')
+	<?php
+		$datos_antiguedad = [['ESTUDIANTES', 'CANTIDAD']];
+		foreach ($nuevos_matriculados as $fila) {
+			$datos_antiguedad[] = [$fila[0] == '' ? 'Indefinido' : $fila[0], (int) $fila[1]];
+		}
+
+		$datos_cursos = [['Curso', 'Cantidad']];
+		foreach ($alumnos_por_curso as $curso) {
+			$datos_cursos[] = [$curso->curso == '' ? 'Indefinido' : $curso->curso, (int) $curso->Cantidad];
+		}
+
+		$datos_generos = [['Genero', 'Cantidad']];
+		foreach ($generos as $genero) {
+			$datos_generos[] = [$genero->Genero == '' ? 'Indefinido' : $genero->Genero, (int) $genero->Cantidad];
+		}
+	?>
+
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		(function () {
+			var datosAntiguedad = {!! json_encode($datos_antiguedad) !!};
+			var datosCursos = {!! json_encode($datos_cursos) !!};
+			var datosGeneros = {!! json_encode($datos_generos) !!};
+
+			google.charts.load('current', { packages: ['corechart'] });
+			google.charts.setOnLoadCallback(dibujarGraficasMatriculas);
+
+			function dibujarGraficasMatriculas() {
+				dibujarBarras('stocks-chart3', datosAntiguedad);
+				dibujarBarras('stocks-chart', datosCursos);
+				dibujarTorta('stocks-chart2', datosGeneros);
+			}
+
+			function dibujarBarras(elementId, datos) {
+				var elemento = document.getElementById(elementId);
+
+				if (!elemento || datos.length < 2) {
+					return;
+				}
+
+				var dataTable = google.visualization.arrayToDataTable(datos);
+				var chart = new google.visualization.BarChart(elemento);
+
+				chart.draw(dataTable, {
+					height: 260,
+					legend: { position: 'none' },
+					chartArea: { left: 95, top: 20, width: '70%', height: '75%' }
+				});
+			}
+
+			function dibujarTorta(elementId, datos) {
+				var elemento = document.getElementById(elementId);
+
+				if (!elemento || datos.length < 2) {
+					return;
+				}
+
+				var dataTable = google.visualization.arrayToDataTable(datos);
+				var chart = new google.visualization.PieChart(elemento);
+
+				chart.draw(dataTable, {
+					height: 260,
+					chartArea: { left: 20, top: 20, width: '90%', height: '80%' }
+				});
+			}
+
+			$(window).on('resize', dibujarGraficasMatriculas);
+		})();
+	</script>
 @endsection

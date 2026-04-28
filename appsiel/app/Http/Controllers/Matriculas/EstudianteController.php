@@ -363,6 +363,10 @@ class EstudianteController extends ModeloController
 
         $colegio = Colegio::where('empresa_id', Auth::user()->empresa_id)->get()->first();
 
+        if ($request->tipo_listado == '6') {
+            return $this->generar_resumen_estudiantes($request, $colegio);
+        }
+
         if ($request->sga_grado_id == "Todos")
         {
             $grados = Grado::where('estado', 'Activo')->get();
@@ -422,6 +426,284 @@ class EstudianteController extends ModeloController
 
         return $pdf->download('listado_estudiantes.pdf');
         */
+    }
+
+    private function generar_resumen_estudiantes(Request $request, Colegio $colegio)
+    {
+        $periodo_lectivo = PeriodoLectivo::find($request->periodo_lectivo_id);
+
+        $resumen = $this->construir_resumen_estudiantes(
+            $colegio,
+            $periodo_lectivo,
+            $request->sga_grado_id,
+            $request->curso_id
+        );
+
+        $historico = collect([]);
+        if ($request->mostrar_historico == 'Si') {
+            $historico = $this->construir_historico_resumen_estudiantes(
+                $colegio,
+                $request->sga_grado_id,
+                $request->curso_id
+            );
+        }
+
+        $tam_letra = $request->tam_letra;
+        $tam_hoja = $request->tam_hoja;
+        $mostrar_historico = $request->mostrar_historico;
+
+        $view = View::make(
+            'matriculas/estudiantes/pdf_estudiantes6',
+            compact('colegio', 'periodo_lectivo', 'resumen', 'historico', 'tam_letra', 'tam_hoja', 'mostrar_historico')
+        )->render();
+
+        $vista = View::make('layouts.pdf3', compact('view'))->render();
+
+        Cache::forever('pdf_reporte_999', $vista);
+
+        return $view;
+    }
+
+    private function construir_resumen_estudiantes(Colegio $colegio, PeriodoLectivo $periodo_lectivo = null, $grado_id = 'Todos', $curso_id = 'Todos')
+    {
+        $matriculas = $this->get_matriculas_resumen_query($colegio->id, $periodo_lectivo ? $periodo_lectivo->id : null, $grado_id, $curso_id)
+            ->select(
+                'sga_matriculas.id',
+                'sga_matriculas.id_estudiante',
+                'sga_matriculas.fecha_matricula',
+                'sga_matriculas.estado',
+                'sga_estudiantes.genero',
+                'sga_estudiantes.fecha_nacimiento',
+                'sga_cursos.id AS curso_id',
+                'sga_cursos.descripcion AS curso',
+                'sga_grados.id AS grado_id',
+                'sga_grados.descripcion AS grado'
+            )
+            ->get();
+
+        $total = $matriculas->count();
+        $antiguedad = $this->contar_antiguedad_estudiantes($matriculas, $periodo_lectivo, $colegio->id);
+        $por_genero = $this->agrupar_con_total($matriculas, 'genero', 'Indefinido');
+        $por_curso = $this->agrupar_con_total($matriculas, 'curso', 'Sin curso');
+        $por_grado = $this->agrupar_con_total($matriculas, 'grado', 'Sin grado');
+        $por_edad = $this->agrupar_por_rangos_edad($matriculas, $periodo_lectivo);
+        $comparativo = $this->comparar_con_periodo_anterior($colegio, $periodo_lectivo, $grado_id, $curso_id, $total);
+
+        return [
+            'total' => $total,
+            'antiguedad' => $antiguedad,
+            'por_genero' => $por_genero,
+            'por_curso' => $por_curso,
+            'por_grado' => $por_grado,
+            'por_edad' => $por_edad,
+            'comparativo' => $comparativo,
+            'curso_mayor' => $por_curso->sortByDesc('cantidad')->first(),
+            'grado_mayor' => $por_grado->sortByDesc('cantidad')->first(),
+            'genero_mayor' => $por_genero->sortByDesc('cantidad')->first(),
+            'filtros' => $this->get_labels_filtros_resumen($grado_id, $curso_id)
+        ];
+    }
+
+    private function construir_historico_resumen_estudiantes(Colegio $colegio, $grado_id = 'Todos', $curso_id = 'Todos')
+    {
+        $periodos = PeriodoLectivo::where('id_colegio', $colegio->id)
+            ->orderBy('fecha_desde', 'ASC')
+            ->get();
+
+        $historico = collect([]);
+        $total_anterior = null;
+
+        foreach ($periodos as $periodo) {
+            $matriculas = $this->get_matriculas_resumen_query($colegio->id, $periodo->id, $grado_id, $curso_id)
+                ->select('sga_matriculas.id', 'sga_matriculas.id_estudiante', 'sga_estudiantes.genero')
+                ->get();
+
+            $total = $matriculas->count();
+            $antiguedad = $this->contar_antiguedad_estudiantes($matriculas, $periodo, $colegio->id);
+            $variacion = is_null($total_anterior) ? null : $total - $total_anterior;
+            $variacion_porcentaje = (!is_null($total_anterior) && $total_anterior > 0) ? round(($variacion / $total_anterior) * 100, 1) : null;
+
+            $historico->push((object)[
+                'periodo' => $periodo->descripcion,
+                'anio' => $periodo->get_anio(),
+                'total' => $total,
+                'nuevos' => $antiguedad['nuevos'],
+                'antiguos' => $antiguedad['antiguos'],
+                'variacion' => $variacion,
+                'variacion_porcentaje' => $variacion_porcentaje
+            ]);
+
+            $total_anterior = $total;
+        }
+
+        return $historico;
+    }
+
+    private function get_matriculas_resumen_query($colegio_id, $periodo_lectivo_id, $grado_id = 'Todos', $curso_id = 'Todos')
+    {
+        $query = Matricula::where('sga_matriculas.id_colegio', $colegio_id)
+            ->where('sga_matriculas.estado', 'Activo')
+            ->leftJoin('sga_estudiantes', 'sga_estudiantes.id', '=', 'sga_matriculas.id_estudiante')
+            ->leftJoin('sga_cursos', 'sga_cursos.id', '=', 'sga_matriculas.curso_id')
+            ->leftJoin('sga_grados', 'sga_grados.id', '=', 'sga_cursos.sga_grado_id');
+
+        if ($periodo_lectivo_id != null) {
+            $query->where('sga_matriculas.periodo_lectivo_id', $periodo_lectivo_id);
+        }
+
+        if ($grado_id != 'Todos' && $grado_id != '') {
+            $query->where('sga_cursos.sga_grado_id', $grado_id);
+        }
+
+        if ($curso_id != 'Todos' && $curso_id != '') {
+            $query->where('sga_matriculas.curso_id', $curso_id);
+        }
+
+        return $query;
+    }
+
+    private function contar_antiguedad_estudiantes($matriculas, PeriodoLectivo $periodo_lectivo = null, $colegio_id = null)
+    {
+        $antiguos = 0;
+        $nuevos = 0;
+
+        foreach ($matriculas as $matricula) {
+            $query = Matricula::where('sga_matriculas.id_estudiante', $matricula->id_estudiante)
+                ->where('sga_matriculas.id', '<>', $matricula->id);
+
+            if ($colegio_id != null) {
+                $query->where('sga_matriculas.id_colegio', $colegio_id);
+            }
+
+            if ($periodo_lectivo != null && $periodo_lectivo->fecha_desde != '') {
+                $query->leftJoin('sga_periodos_lectivos', 'sga_periodos_lectivos.id', '=', 'sga_matriculas.periodo_lectivo_id')
+                    ->where('sga_periodos_lectivos.fecha_desde', '<', $periodo_lectivo->fecha_desde);
+            }
+
+            if ($query->count() > 0) {
+                $antiguos++;
+            } else {
+                $nuevos++;
+            }
+        }
+
+        return [
+            'antiguos' => $antiguos,
+            'nuevos' => $nuevos,
+            'total' => $antiguos + $nuevos
+        ];
+    }
+
+    private function agrupar_con_total($registros, $campo, $label_vacio)
+    {
+        return $registros->groupBy(function ($registro) use ($campo, $label_vacio) {
+                return $registro->{$campo} == '' ? $label_vacio : $registro->{$campo};
+            })
+            ->map(function ($grupo, $label) {
+                return (object)[
+                    'label' => $label,
+                    'cantidad' => $grupo->count()
+                ];
+            })
+            ->sortByDesc('cantidad')
+            ->values();
+    }
+
+    private function agrupar_por_rangos_edad($matriculas, PeriodoLectivo $periodo_lectivo = null)
+    {
+        $fecha_corte = date('Y-m-d');
+        if ($periodo_lectivo != null && $periodo_lectivo->fecha_hasta != '') {
+            $fecha_corte = $periodo_lectivo->fecha_hasta;
+        }
+
+        $rangos = [
+            'Sin fecha' => 0,
+            '0 a 5' => 0,
+            '6 a 10' => 0,
+            '11 a 14' => 0,
+            '15 o mas' => 0
+        ];
+
+        foreach ($matriculas as $matricula) {
+            if ($matricula->fecha_nacimiento == '' || $matricula->fecha_nacimiento == '0000-00-00') {
+                $rangos['Sin fecha']++;
+                continue;
+            }
+
+            $nacimiento = date_create($matricula->fecha_nacimiento);
+            $corte = date_create($fecha_corte);
+            if ($nacimiento === false || $corte === false) {
+                $rangos['Sin fecha']++;
+                continue;
+            }
+
+            $edad = date_diff($nacimiento, $corte)->y;
+
+            if ($edad <= 5) {
+                $rangos['0 a 5']++;
+            } elseif ($edad <= 10) {
+                $rangos['6 a 10']++;
+            } elseif ($edad <= 14) {
+                $rangos['11 a 14']++;
+            } else {
+                $rangos['15 o mas']++;
+            }
+        }
+
+        return collect($rangos)->map(function ($cantidad, $label) {
+            return (object)[
+                'label' => $label,
+                'cantidad' => $cantidad
+            ];
+        })->values();
+    }
+
+    private function comparar_con_periodo_anterior(Colegio $colegio, PeriodoLectivo $periodo_lectivo = null, $grado_id = 'Todos', $curso_id = 'Todos', $total_actual = 0)
+    {
+        if ($periodo_lectivo == null) {
+            return null;
+        }
+
+        $periodo_anterior = PeriodoLectivo::where('id_colegio', $colegio->id)
+            ->where('fecha_desde', '<', $periodo_lectivo->fecha_desde)
+            ->orderBy('fecha_desde', 'DESC')
+            ->first();
+
+        if ($periodo_anterior == null) {
+            return null;
+        }
+
+        $total_anterior = $this->get_matriculas_resumen_query($colegio->id, $periodo_anterior->id, $grado_id, $curso_id)->count();
+        $variacion = $total_actual - $total_anterior;
+        $variacion_porcentaje = $total_anterior > 0 ? round(($variacion / $total_anterior) * 100, 1) : null;
+
+        return (object)[
+            'periodo' => $periodo_anterior->descripcion,
+            'total_anterior' => $total_anterior,
+            'variacion' => $variacion,
+            'variacion_porcentaje' => $variacion_porcentaje
+        ];
+    }
+
+    private function get_labels_filtros_resumen($grado_id = 'Todos', $curso_id = 'Todos')
+    {
+        $grado = 'Todos';
+        $curso = 'Todos';
+
+        if ($grado_id != 'Todos' && $grado_id != '') {
+            $registro_grado = Grado::find($grado_id);
+            $grado = $registro_grado != null ? $registro_grado->descripcion : 'Todos';
+        }
+
+        if ($curso_id != 'Todos' && $curso_id != '') {
+            $registro_curso = Curso::find($curso_id);
+            $curso = $registro_curso != null ? $registro_curso->descripcion : 'Todos';
+        }
+
+        return [
+            'grado' => $grado,
+            'curso' => $curso
+        ];
     }
 
     /**
@@ -789,4 +1071,3 @@ class EstudianteController extends ModeloController
         return redirect($redirect)->with('mensaje_error', $resultado['message']);
     }
 }
-

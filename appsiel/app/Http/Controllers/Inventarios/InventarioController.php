@@ -124,6 +124,7 @@ class InventarioController extends TransaccionController
 
                     $titulos[$cantidad_graficas]['bodega_id'] = $una_bodega->id;
                     $titulos[$cantidad_graficas]['bodega_nombre'] = $una_bodega->descripcion;
+                    $titulos[$cantidad_graficas]['registros'] = $movimientos['registros'][$i];
                     $cantidad_graficas++;
                 }
             }

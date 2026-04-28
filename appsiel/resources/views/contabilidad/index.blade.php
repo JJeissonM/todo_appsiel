@@ -41,6 +41,13 @@
 @extends('layouts.principal')
 
 @section('content')
+	<style>
+		.chart-contabilidad {
+			min-height: 260px;
+			width: 100%;
+		}
+	</style>
+
 	{{ Form::bsMigaPan($miga_pan) }}
 	<!-- { !! $select_crear !!} -->
 	<hr>
@@ -59,10 +66,7 @@
 						Riqueza Neta
 						<hr>
 					</h5>
-					<?php 
-						echo Lava::render('PieChart', 'Riqueza', 'riqueza-neta-chart');
-					?>
-					<div id="riqueza-neta-chart"></div>
+					<div id="riqueza-neta-chart" class="chart-contabilidad"></div>
 					
 					<div class="container-fluid">
 						<div class="row">
@@ -98,10 +102,7 @@
 						<hr>
 					</h5>
 
-					<?php 
-						echo Lava::render('PieChart', 'FlujoNeto', 'flujo-neto-chart');
-					?>
-					<div id="flujo-neto-chart"></div>
+					<div id="flujo-neto-chart" class="chart-contabilidad"></div>
 					
 					<div class="container-fluid">
 						<div class="row">
@@ -150,6 +151,54 @@
 
 
 @section('scripts')
+	<?php
+		$datos_riqueza_neta = [
+			['Rubro', 'Valor'],
+			['Activos', (float) abs($riqueza_neta->activos)],
+			['Pasivos', (float) abs($riqueza_neta->pasivos)]
+		];
+
+		$datos_flujo_efectivo = [
+			['Rubro', 'Valor'],
+			['Ingresos', (float) abs($flujo_efectivo_neto->ingresos)],
+			['Costos y Gastos', (float) abs($flujo_efectivo_neto->costos_y_gastos)]
+		];
+	?>
+
+	<script src="https://www.gstatic.com/charts/loader.js"></script>
+	<script>
+		(function () {
+			var datosRiquezaNeta = {!! json_encode($datos_riqueza_neta) !!};
+			var datosFlujoEfectivo = {!! json_encode($datos_flujo_efectivo) !!};
+
+			google.charts.load('current', { packages: ['corechart'] });
+			google.charts.setOnLoadCallback(dibujarGraficasContabilidad);
+
+			function dibujarGraficasContabilidad() {
+				dibujarTorta('riqueza-neta-chart', datosRiquezaNeta);
+				dibujarTorta('flujo-neto-chart', datosFlujoEfectivo);
+			}
+
+			function dibujarTorta(elementId, datos) {
+				var elemento = document.getElementById(elementId);
+
+				if (!elemento || datos.length < 2) {
+					return;
+				}
+
+				var dataTable = google.visualization.arrayToDataTable(datos);
+				var chart = new google.visualization.PieChart(elemento);
+
+				chart.draw(dataTable, {
+					height: 260,
+					chartArea: { left: 20, top: 20, width: '90%', height: '80%' }
+				});
+			}
+
+			$(window).on('resize', dibujarGraficasContabilidad);
+		})();
+	</script>
+
 	<script type="text/javascript">
 
 		var cambio_fecha_desde = 0;

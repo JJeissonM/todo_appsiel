@@ -7,7 +7,8 @@
 		'2' => 'Ficha de datos básicos',
 		'3' => 'Listado de datos básicos',
 		'4' => 'Listado de usuarios',
-		'5' => 'Datos de matrículas y pensiones'
+		'5' => 'Datos de matrículas y pensiones',
+		'6' => 'Resumen de Estudiantes'
 	];
 ?>
 
@@ -39,6 +40,10 @@
 
 						<div class="row" style="padding:5px;">
                             {{ Form::bsSelect('curso_id', null, 'Curso', ['Todos'=>'Todos'], []) }}
+                        </div>
+
+						<div class="row" style="padding:5px;" id="fila_mostrar_historico">
+                            {{ Form::bsSelect('mostrar_historico', 'No', 'Histórico por años', ['No'=>'No','Si'=>'Si'], []) }}
                         </div>
 
 						<div class="row" style="padding:5px;">
@@ -98,12 +103,27 @@
 				});
 			});
 
+			function ajustar_opciones_resumen()
+			{
+				if ($('#tipo_listado').val() == '6') {
+					$('#orientacion').val('landscape');
+					$('#tam_letra').val('3');
+					$('#fila_mostrar_historico').show();
+				}else{
+					$('#fila_mostrar_historico').hide();
+					$('#mostrar_historico').val('No');
+				}
+			}
+
+			ajustar_opciones_resumen();
+
 			$('#tipo_listado').change( function(){
-				if ($(this).val() == '3' ) {
+				if ($(this).val() == '3' || $(this).val() == '6' ) {
 					$('#orientacion').val('landscape');
 				}else{
 					$('#orientacion').val('portrait');
 				}
+				ajustar_opciones_resumen();
 			});
 
 			// Click para generar la consulta
