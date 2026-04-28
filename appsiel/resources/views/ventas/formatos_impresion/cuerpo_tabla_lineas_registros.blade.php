@@ -5,6 +5,7 @@
     $total_impuestos = 0;
     $total_factura = 0;
     $array_tasas = [];
+    $categoria_paquetes_id = (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos');
 
     $arr_inv_grupos_ids = [];
     $sum_precio_total = 0;
@@ -13,22 +14,23 @@
         $arr_inv_grupos_ids[] = $linea->item->inv_grupo_id;
         $sum_precio_total += $linea->precio_total;
 
-        if( (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos') == $linea->item->inv_grupo_id  ){
+        if( $categoria_paquetes_id == $linea->item->inv_grupo_id  ){
             $sum_cantidad += $linea->cantidad;
         }
     }
 ?>
 
-@if( in_array( (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos'), $arr_inv_grupos_ids ) )
+@if( in_array( $categoria_paquetes_id, $arr_inv_grupos_ids ) )
     @foreach($doc_registros as $linea )
         <tr>
             <?php
                 $tasa_impuesto = '';
                 $precio_unitario = '';
                 $precio_total = '';
-                if( (int)config('inventarios.categoria_id_paquetes_con_materiales_ocultos') == $linea->item->inv_grupo_id  ){
+                if( $categoria_paquetes_id == $linea->item->inv_grupo_id  ){
                     $tasa_impuesto = number_format( $linea->tasa_impuesto, 0, ',', '.') . '%';
-                    $precio_unitario = ' ($' . number_format( $sum_precio_total / $sum_cantidad, 0, ',', '.') . ')';
+                    $precio_unitario_paquete = $sum_cantidad > 0 ? $sum_precio_total / $sum_cantidad : 0;
+                    $precio_unitario = ' ($' . number_format( $precio_unitario_paquete, 0, ',', '.') . ')';
                     $precio_total = '$' . number_format( $sum_precio_total, 0, ',', '.');
                 }
 

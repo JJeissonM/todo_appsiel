@@ -51,7 +51,8 @@
                     <td style="color: black !important; text-align: center; background-color: #f2f2f2;">
                         <b>QR/Transf.</b>
                     </td>
-                </tr> 
+                </tr>
+                <tr>
                     <td class="subject">
                         <table class="table">
                             @foreach($result->totales_cuentas_bancarias as $linea_total)
@@ -70,9 +71,9 @@
                                     $total_consignaciones += $linea_total['total'];
                                 ?>
                             @endforeach
-                        </table>                        
+                        </table>
                     </td>
-                <tr> 
+                </tr>
                 <tr> 
                     <td style="color: black !important;text-align: center; background-color: #f2f2f2;">
                         <b>Ventas Crédito</b>
