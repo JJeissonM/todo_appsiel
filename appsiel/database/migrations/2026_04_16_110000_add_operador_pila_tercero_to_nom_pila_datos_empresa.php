@@ -13,12 +13,25 @@ class AddOperadorPilaTerceroToNomPilaDatosEmpresa extends Migration
             return;
         }
 
-        Schema::table('nom_pila_datos_empresa', function (Blueprint $table) {
+        $columnaAnterior = null;
+
+        if (Schema::hasColumn('nom_pila_datos_empresa', 'rep_legal_core_tercero_id')) {
+            $columnaAnterior = 'rep_legal_core_tercero_id';
+        } elseif (Schema::hasColumn('nom_pila_datos_empresa', 'actividad_economica_ciiu')) {
+            $columnaAnterior = 'actividad_economica_ciiu';
+        } elseif (Schema::hasColumn('nom_pila_datos_empresa', 'administradora_riesgos_laborales_id')) {
+            $columnaAnterior = 'administradora_riesgos_laborales_id';
+        }
+
+        Schema::table('nom_pila_datos_empresa', function (Blueprint $table) use ($columnaAnterior) {
             if (!Schema::hasColumn('nom_pila_datos_empresa', 'operador_pila_core_tercero_id')) {
-                $table->integer('operador_pila_core_tercero_id')
+                $campo = $table->integer('operador_pila_core_tercero_id')
                     ->unsigned()
-                    ->default(0)
-                    ->after('rep_legal_core_tercero_id');
+                    ->default(0);
+
+                if ($columnaAnterior) {
+                    $campo->after($columnaAnterior);
+                }
             }
         });
 

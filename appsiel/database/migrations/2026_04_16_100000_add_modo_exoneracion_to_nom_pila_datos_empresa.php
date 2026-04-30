@@ -13,11 +13,24 @@ class AddModoExoneracionToNomPilaDatosEmpresa extends Migration
             return;
         }
 
-        Schema::table('nom_pila_datos_empresa', function (Blueprint $table) {
+        $columnaAnterior = null;
+
+        if (Schema::hasColumn('nom_pila_datos_empresa', 'porcentaje_afp_empresa')) {
+            $columnaAnterior = 'porcentaje_afp_empresa';
+        } elseif (Schema::hasColumn('nom_pila_datos_empresa', 'porcentaje_eps_empresa')) {
+            $columnaAnterior = 'porcentaje_eps_empresa';
+        } elseif (Schema::hasColumn('nom_pila_datos_empresa', 'porcentaje_caja_compensacion')) {
+            $columnaAnterior = 'porcentaje_caja_compensacion';
+        }
+
+        Schema::table('nom_pila_datos_empresa', function (Blueprint $table) use ($columnaAnterior) {
             if (!Schema::hasColumn('nom_pila_datos_empresa', 'modo_exoneracion_aportes')) {
-                $table->string('modo_exoneracion_aportes', 10)
-                    ->default('auto')
-                    ->after('porcentaje_afp_empresa');
+                $campo = $table->string('modo_exoneracion_aportes', 10)
+                    ->default('auto');
+
+                if ($columnaAnterior) {
+                    $campo->after($columnaAnterior);
+                }
             }
         });
 
