@@ -39,9 +39,9 @@ use Illuminate\Support\Facades\View;
 
 class PagoController extends TransaccionController
 {
-    protected array $datos = [];
+    protected $datos = [];
 
-    protected bool $duplicado = false;
+    protected $duplicado = false;
 
     protected $doc_encabezado;
 
