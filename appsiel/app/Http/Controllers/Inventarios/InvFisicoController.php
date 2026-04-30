@@ -1080,9 +1080,35 @@ class InvFisicoController extends TransaccionController
         $ai_motivo_salida_id = (int)config('inventarios.ai_motivo_salida_id');
         $ai_tercero_id = (int)config('inventarios.ai_tercero_id');
 
-        if ( $ai_tipo_transaccion_id == 0 || $ai_tipo_doc_app_id == 0 || $ai_motivo_entrada_id == 0 || $ai_motivo_salida_id == 0 || $ai_tercero_id == 0 )
+        $parametros_faltantes = [];
+        if ( $ai_tipo_transaccion_id == 0 )
         {
-            throw new \Exception('Faltan parametros de configuracion para crear ajustes de inventario.');
+            $parametros_faltantes[] = 'ai_tipo_transaccion_id (Tipo de transaccion para crear el Ajuste de Inventarios AI)';
+        }
+
+        if ( $ai_tipo_doc_app_id == 0 )
+        {
+            $parametros_faltantes[] = 'ai_tipo_doc_app_id (Tipo de documento que usara el AI)';
+        }
+
+        if ( $ai_motivo_entrada_id == 0 )
+        {
+            $parametros_faltantes[] = 'ai_motivo_entrada_id (Motivo de entrada para registrar ingreso a la bodega principal)';
+        }
+
+        if ( $ai_motivo_salida_id == 0 )
+        {
+            $parametros_faltantes[] = 'ai_motivo_salida_id (Motivo de salida para registrar descuento de la bodega del IF)';
+        }
+
+        if ( $ai_tercero_id == 0 )
+        {
+            $parametros_faltantes[] = 'ai_tercero_id (Tercero que quedara asociado al AI)';
+        }
+
+        if ( !empty($parametros_faltantes) )
+        {
+            throw new \Exception('Faltan parametros de configuracion para crear ajustes de inventario: ' . implode('; ', $parametros_faltantes) . '. Configuracion: Configuracion > Inventarios > Parametros por defecto creacion Ajustes de Inventarios.');
         }
 
         $cocina = RestauranteCocina::where('bodega_default_id', $bodega_if_id)

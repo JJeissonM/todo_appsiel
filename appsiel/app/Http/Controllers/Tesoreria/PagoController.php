@@ -39,9 +39,9 @@ use Illuminate\Support\Facades\View;
 
 class PagoController extends TransaccionController
 {
-    protected $datos = [];
+    protected array $datos = [];
 
-    protected $duplicado = false;
+    protected bool $duplicado = false;
 
     protected $doc_encabezado;
 
@@ -396,6 +396,8 @@ class PagoController extends TransaccionController
         $request['core_tipo_transaccion_id'] = $doc_encabezado->core_tipo_transaccion_id;
         $request['core_tipo_doc_app_id'] = $doc_encabezado->core_tipo_doc_app_id;
         $request['consecutivo'] = $doc_encabezado->consecutivo;
+        $request['creado_por'] = $doc_encabezado->creado_por ?: Auth::user()->email;
+        $request['modificado_por'] = Auth::user()->email;
 
         // Contabilizar nuevos registros
         $tabla_registros_documento = json_decode($request->tabla_registros_documento);

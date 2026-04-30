@@ -72,6 +72,11 @@ class FacturaPos extends Model
         return $this->tipo_documento_app->prefijo . ' ' . $this->consecutivo;
     } 
 
+    private static function valor_total_factura_expression()
+    {
+        return 'COALESCE(vtas_pos_doc_encabezados.valor_total, 0) + COALESCE(vtas_pos_doc_encabezados.valor_ajuste_al_peso, 0) + COALESCE(vtas_pos_doc_encabezados.valor_total_bolsas, 0)';
+    }
+
     // Doc. desde el cual fue generado
     public function documento_ventas_padre()
     {
@@ -218,7 +223,7 @@ class FacturaPos extends Model
                 DB::raw('core_terceros.descripcion AS campo3'),
                 'vtas_pos_doc_encabezados.forma_pago AS campo4',
                 'vtas_pos_doc_encabezados.descripcion AS campo5',
-                'vtas_pos_doc_encabezados.valor_total AS campo6',
+                DB::raw(self::valor_total_factura_expression() . ' AS campo6'),
                 'vtas_pos_puntos_de_ventas.descripcion AS campo7',
                 'vtas_pos_doc_encabezados.estado AS campo8',
                 'vtas_pos_doc_encabezados.id AS campo9'
@@ -228,7 +233,7 @@ class FacturaPos extends Model
             ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
             ->orWhere("vtas_pos_doc_encabezados.forma_pago", "LIKE", "%$search%")
             ->orWhere("vtas_pos_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere(DB::raw(self::valor_total_factura_expression()), "LIKE", "%$search%")
             ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')
@@ -248,14 +253,14 @@ class FacturaPos extends Model
             ->where('vtas_pos_doc_encabezados.core_tipo_transaccion_id', $core_tipo_transaccion_id)
             ->having('nueva_cadena', 'LIKE', $texto_busqueda)
             ->select(
-                DB::raw('CONCAT( vtas_pos_doc_encabezados.fecha, " ", core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo, " ", core_terceros.descripcion, " ", vtas_pos_doc_encabezados.descripcion, " ", vtas_pos_doc_encabezados.valor_total, " ", vtas_pos_doc_encabezados.forma_pago, " ", vtas_pos_doc_encabezados.estado) AS nueva_cadena'),
+                DB::raw('CONCAT( vtas_pos_doc_encabezados.fecha, " ", core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo, " ", core_terceros.descripcion, " ", vtas_pos_doc_encabezados.descripcion, " ", ' . self::valor_total_factura_expression() . ', " ", vtas_pos_doc_encabezados.forma_pago, " ", vtas_pos_doc_encabezados.estado) AS nueva_cadena'),
                 'vtas_pos_doc_encabezados.fecha AS FECHA',
                 DB::raw('CONCAT(core_tipos_docs_apps.prefijo," ",vtas_pos_doc_encabezados.consecutivo) AS DOCUMENTO'),
                 DB::raw('core_terceros.numero_identificacion AS CC_NIT'),
                 DB::raw('core_terceros.descripcion AS CLIENTE'),
                 'vtas_pos_doc_encabezados.forma_pago AS COND._PAGO',
                 'vtas_pos_doc_encabezados.descripcion AS DETALLE',
-                'vtas_pos_doc_encabezados.valor_total AS VALOR_TOTAL',
+                DB::raw(self::valor_total_factura_expression() . ' AS VALOR_TOTAL'),
                 'vtas_pos_puntos_de_ventas.descripcion AS PDV',
                 'vtas_pos_doc_encabezados.estado AS ESTADO'
             )
@@ -289,7 +294,7 @@ class FacturaPos extends Model
                 DB::raw('core_terceros.descripcion AS campo3'),
                 'vtas_pos_doc_encabezados.forma_pago AS campo4',
                 'vtas_pos_doc_encabezados.descripcion AS campo5',
-                'vtas_pos_doc_encabezados.valor_total AS campo6',
+                DB::raw(self::valor_total_factura_expression() . ' AS campo6'),
                 'vtas_pos_puntos_de_ventas.descripcion AS campo7',
                 'vtas_pos_doc_encabezados.estado AS campo8',
                 'vtas_pos_doc_encabezados.id AS campo9'
@@ -299,7 +304,7 @@ class FacturaPos extends Model
             ->orWhere(DB::raw('core_terceros.descripcion'), "LIKE", "%$search%")
             ->orWhere("vtas_pos_doc_encabezados.forma_pago", "LIKE", "%$search%")
             ->orWhere("vtas_pos_doc_encabezados.descripcion", "LIKE", "%$search%")
-            ->orWhere("vtas_pos_doc_encabezados.valor_total", "LIKE", "%$search%")
+            ->orWhere(DB::raw(self::valor_total_factura_expression()), "LIKE", "%$search%")
             ->orWhere("vtas_pos_puntos_de_ventas.descripcion", "LIKE", "%$search%")
             ->orWhere("vtas_pos_doc_encabezados.estado", "LIKE", "%$search%")
             ->orderBy('vtas_pos_doc_encabezados.created_at', 'DESC')

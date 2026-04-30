@@ -7,12 +7,13 @@
 @endif
 
 <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total', 'Motivo','Cantidad a devolver']) }}
+    <table class="table table-bordered table-striped" id="tabla_registros_nota_credito">
+        {{ Form::bsTableHeader(['Cód.','Producto','Precio','IVA','Cantidad','Total', 'Motivo','Cantidad a devolver', '<button type="button" class="btn btn-primary btn-xs" id="btn_devolver_todo">Devolver todo</button>']) }}
         <tbody>
             @foreach($doc_registros as $linea )
                 <?php 
                     $cantidad_real = $linea->cantidad - $linea->cantidad_devuelta;
+                    $cantidad_real_input = rtrim(rtrim(number_format((float)$cantidad_real, 6, '.', ''), '0'), '.');
                 ?>
                 <tr>
                     <td class="text-center"> {{ $linea->producto_id }} </td>
@@ -23,9 +24,12 @@
                     <td class="text-right"> {{ '$ '.number_format( $linea->precio_unitario * $cantidad_real, 2, ',', '.') }} </td>
                     <td> {{ Form::select('motivos_ids[]',$motivos,null,['id'=>'inv_motivo_id']) }} </td>
                     <td> 
-                        <input type="hidden" class="cantidad_linea" value="{{ $cantidad_real }}">
+                        <input type="hidden" class="cantidad_linea" value="{{ $cantidad_real_input }}">
                         <input type="hidden" name="doc_registros_ids[]" value="{{ $linea->id }}">
                         <input type="text" name="cantidad_devolver[]" class="form-control cantidad_devolver" autocomplete="off">
+                    </td>
+                    <td class="text-center">
+                        <button type="button" class="btn btn-default btn-xs btn_devolver_linea">Total</button>
                     </td>
                 </tr>
             @endforeach

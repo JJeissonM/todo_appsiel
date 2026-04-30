@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 
-use Khill\Lavacharts\Laravel\LavachartsFacade as Lava;
-
 use Illuminate\Support\Facades\Input;
 
 use Illuminate\Support\Facades\Schema;
@@ -74,64 +72,44 @@ class InventarioController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => 'Inventarios']
         ];
 
-        $movimientos = [];
+        $empresa_id = Auth::user()->empresa_id;
 
-        // Existencias por bodegas
-        $bodegas = InvBodega::take(10)->get();
-        $i = 0;
-        $cantidad_graficas = 0;
-        $titulos = [];
-        foreach ($bodegas as $una_bodega)
-        {
-            unset($movimientos);
-            //$movimientos['bodega'][$i] = $una_bodega->descripcion;
-            $movimientos['registros'][$i] = InvMovimiento::where('inv_movimientos.inv_bodega_id', '=', $una_bodega->id)
-                ->where('inv_productos.tipo', '=', 'producto')
-                ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
-                ->leftJoin('inv_productos', 'inv_productos.id', '=', 'inv_movimientos.inv_producto_id')
-                ->select('inv_productos.descripcion as Producto', DB::raw('sum(inv_movimientos.cantidad) as Cantidad'))
-                ->groupBy('inv_movimientos.inv_producto_id')
-                ->get()
-                ->toArray();
+        $resumen_bodegas = DB::select(
+            'SELECT
+                inv_bodegas.id AS bodega_id,
+                inv_bodegas.descripcion AS bodega_nombre,
+                COALESCE(SUM(CASE WHEN saldos.existencia > 0 THEN 1 ELSE 0 END), 0) AS total_con_existencia,
+                COALESCE(SUM(CASE WHEN saldos.inv_producto_id IS NOT NULL AND saldos.existencia = 0 THEN 1 ELSE 0 END), 0) AS total_en_cero,
+                COALESCE(SUM(CASE WHEN saldos.existencia < 0 THEN 1 ELSE 0 END), 0) AS total_negativos,
+                COALESCE(SUM(CASE WHEN min_stocks.inv_producto_id IS NOT NULL AND saldos.existencia < min_stocks.stock_minimo THEN 1 ELSE 0 END), 0) AS total_bajo_minimo
+            FROM inv_bodegas
+            LEFT JOIN (
+                SELECT
+                    inv_movimientos.inv_bodega_id,
+                    inv_movimientos.inv_producto_id,
+                    ROUND(SUM(inv_movimientos.cantidad), 2) AS existencia
+                FROM inv_movimientos
+                INNER JOIN inv_productos ON inv_productos.id = inv_movimientos.inv_producto_id
+                    AND inv_productos.tipo = "producto"
+                WHERE inv_movimientos.core_empresa_id = ?
+                GROUP BY inv_movimientos.inv_bodega_id, inv_movimientos.inv_producto_id
+            ) AS saldos ON saldos.inv_bodega_id = inv_bodegas.id
+            LEFT JOIN (
+                SELECT
+                    inv_bodega_id,
+                    inv_producto_id,
+                    MAX(stock_minimo) AS stock_minimo
+                FROM inv_min_stocks
+                GROUP BY inv_bodega_id, inv_producto_id
+            ) AS min_stocks ON min_stocks.inv_bodega_id = inv_bodegas.id
+                AND min_stocks.inv_producto_id = saldos.inv_producto_id
+            WHERE inv_bodegas.core_empresa_id = ?
+            GROUP BY inv_bodegas.id, inv_bodegas.descripcion
+            ORDER BY inv_bodegas.descripcion',
+            [$empresa_id, $empresa_id]
+        );
 
-            if (!empty($movimientos['registros'][$i])) {
-
-                $dibujar_grafica = false;
-
-                // Creación de gráfico de Torta
-                $stocksTable = Lava::DataTable();
-
-                $stocksTable->addStringColumn('Producto')
-                    ->addNumberColumn('Cantidad');
-
-                foreach ($movimientos['registros'][$i] as $registro) {
-                    $stocksTable->addRow([$registro['Producto'], round($registro['Cantidad'], 2)]);
-                    // Se valida si los productos tienen cantidad mayor que cero
-                    // Si al menos un producto tiene existencia, se dibuja la grafica
-                    if (round($registro['Cantidad'], 2) > 0) {
-                        $dibujar_grafica = true;
-                    }
-                }
-
-                if ($dibujar_grafica) {
-                    $grafica = 'MyStocks_' . $cantidad_graficas;
-                    Lava::BarChart($grafica, $stocksTable, [
-                        'is3D'                  => True,
-                        'orientation' => 'horizontal',
-                        'vAxis' => ['gridlines' => ['count' => 30]],
-                        'height' => 600
-                    ]);
-
-                    $titulos[$cantidad_graficas]['bodega_id'] = $una_bodega->id;
-                    $titulos[$cantidad_graficas]['bodega_nombre'] = $una_bodega->descripcion;
-                    $titulos[$cantidad_graficas]['registros'] = $movimientos['registros'][$i];
-                    $cantidad_graficas++;
-                }
-            }
-            $i++;
-        }
-
-        return view('inventarios.index', compact('miga_pan', 'select_crear', 'cantidad_graficas', 'titulos', 'movimientos'));
+        return view('inventarios.index', compact('miga_pan', 'select_crear', 'resumen_bodegas'));
     }
 
     /**

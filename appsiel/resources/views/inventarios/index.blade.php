@@ -2,9 +2,73 @@
 
 @section('content')
 	<style>
-		.chart-inventarios {
-			min-height: 600px;
+		.resumen-bodegas {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 16px;
+			align-items: stretch;
+		}
+
+		.resumen-bodega {
+			border: 1px solid #ddd;
+			border-radius: 4px;
+			flex: 1 1 320px;
+			min-width: 280px;
+			background: #fff;
+		}
+
+		.resumen-bodega__encabezado {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			padding: 12px 14px;
+			background-color: #50B794;
+			border-bottom: 1px solid #43a883;
+		}
+
+		.resumen-bodega__titulo {
+			font-weight: 700;
+			line-height: 1.3;
+			color: #fff;
+		}
+
+		.resumen-bodega__accion {
+			flex: 0 0 auto;
+			font-size: 16px;
+			color: #fff;
+		}
+
+		.resumen-bodega__accion:hover,
+		.resumen-bodega__accion:focus {
+			color: #fff;
+		}
+
+		.resumen-bodega__tabla {
 			width: 100%;
+			margin-bottom: 0;
+		}
+
+		.resumen-bodega__tabla th,
+		.resumen-bodega__tabla td {
+			padding: 9px 14px !important;
+			vertical-align: middle !important;
+		}
+
+		.resumen-bodega__tabla td {
+			text-align: right;
+			font-weight: 700;
+		}
+
+		@media (max-width: 640px) {
+			.resumen-bodegas {
+				display: block;
+			}
+
+			.resumen-bodega {
+				margin-bottom: 14px;
+				min-width: 0;
+			}
 		}
 	</style>
 
@@ -16,78 +80,50 @@
 
 	<div class="container-fluid">
 		<div class="marco_formulario">
-			<h4>Existencias por bodega</h4>
-		    <hr>
-		    <br/>
-			@for ($i = 0; $i < $cantidad_graficas; $i++)
-				<div class="row">
-					<div class="col-md-12" style="border: 1px solid;">
-						<b>
-							{{ $titulos[$i]['bodega_nombre'] }}
-							<a href="{{ url('inv_consultar_existencias/'.$titulos[$i]['bodega_id'].'?id='.Input::get('id')).'&fecha_corte='.date('Y-m-d') }}" title="Consultar existencias">
-								<i class="fa fa-search"></i>
-							</a>
-						</b>
-						<div id="div_chart_{{ $i }}" class="chart-inventarios"></div>
-					</div>
+			<h4>Resumen por bodega <small>({{ count($resumen_bodegas) }})</small></h4>
+			<hr>
+			<br/>
+
+			@if( count($resumen_bodegas) == 0 )
+				<div class="alert alert-info">
+					No hay bodegas registradas.
 				</div>
-				<br/>
-			@endfor
+			@else
+				<div class="resumen-bodegas">
+					@foreach ($resumen_bodegas as $resumen)
+						<div class="resumen-bodega">
+							<div class="resumen-bodega__encabezado">
+								<div class="resumen-bodega__titulo">{{ $resumen->bodega_nombre }}</div>
+								<a class="resumen-bodega__accion" href="{{ url('inv_consultar_existencias/'.$resumen->bodega_id.'?id='.Input::get('id')).'&fecha_corte='.date('Y-m-d') }}" title="Consultar existencias">
+									<i class="fa fa-search"></i>
+								</a>
+							</div>
+							<table class="table table-striped table-condensed resumen-bodega__tabla">
+								<tbody>
+									<tr>
+										<th>Total con existencia</th>
+										<td>{{ number_format($resumen->total_con_existencia, 0, ',', '.') }}</td>
+									</tr>
+									<tr>
+										<th>Total en cero</th>
+										<td>{{ number_format($resumen->total_en_cero, 0, ',', '.') }}</td>
+									</tr>
+									<tr style="color: #e86a6a;">
+										<th>Total negativos</th>
+										<td>{{ number_format($resumen->total_negativos, 0, ',', '.') }}</td>
+									</tr>
+									<tr style="color: #f2d200;">
+										<th>Total con bajo stock mínimo</th>
+										<td>{{ number_format($resumen->total_bajo_minimo, 0, ',', '.') }}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					@endforeach
+				</div>
+			@endif
 		</div>
 	</div>
 
 	<br/>
-@endsection
-
-@section('scripts')
-	<?php
-		$datos_graficas = [];
-
-		for ($i = 0; $i < $cantidad_graficas; $i++) {
-			$datos_graficas[$i] = [['Producto', 'Cantidad']];
-
-			foreach ($titulos[$i]['registros'] as $registro) {
-				$datos_graficas[$i][] = [
-					$registro['Producto'] == '' ? 'Indefinido' : $registro['Producto'],
-					(float) round($registro['Cantidad'], 2)
-				];
-			}
-		}
-	?>
-
-	<script src="https://www.gstatic.com/charts/loader.js"></script>
-	<script>
-		(function () {
-			var datosGraficas = {!! json_encode($datos_graficas) !!};
-
-			google.charts.load('current', { packages: ['corechart'] });
-			google.charts.setOnLoadCallback(dibujarGraficasInventarios);
-
-			function dibujarGraficasInventarios() {
-				for (var i = 0; i < datosGraficas.length; i++) {
-					dibujarBarras('div_chart_' + i, datosGraficas[i]);
-				}
-			}
-
-			function dibujarBarras(elementId, datos) {
-				var elemento = document.getElementById(elementId);
-
-				if (!elemento || datos.length < 2) {
-					return;
-				}
-
-				var dataTable = google.visualization.arrayToDataTable(datos);
-				var chart = new google.visualization.BarChart(elemento);
-
-				chart.draw(dataTable, {
-					height: 600,
-					legend: { position: 'none' },
-					chartArea: { left: 220, top: 20, width: '70%', height: '85%' },
-					vAxis: { gridlines: { count: 30 } }
-				});
-			}
-
-			$(window).on('resize', dibujarGraficasInventarios);
-		})();
-	</script>
 @endsection

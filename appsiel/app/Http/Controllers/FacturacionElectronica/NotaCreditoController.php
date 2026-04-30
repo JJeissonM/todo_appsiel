@@ -36,6 +36,7 @@ use App\FacturacionElectronica\NotaCredito;
 use App\FacturacionElectronica\DATAICO\FacturaGeneral;
 use App\FacturacionElectronica\OSEI\FacturaGeneralOsei;
 use App\FacturacionElectronica\Services\DocumentHeaderService;
+use App\Ventas\Services\AccountingServices;
 use App\Ventas\Services\NotaCreditoServices;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -454,6 +455,10 @@ class NotaCreditoController extends TransaccionController
 
         }
 
+        $ajustes_nota = self::aplicar_ajustes_factura_devuelta($nota_credito, $factura);
+        $total_documento += $ajustes_nota['valor_ajuste_al_peso'] + $ajustes_nota['valor_total_bolsas'];
+        self::contabilizar_ajustes_factura_devuelta($datos, $ajustes_nota);
+
         $nota_credito->valor_total = $total_documento;
         $nota_credito->save();
         
@@ -563,6 +568,10 @@ class NotaCreditoController extends TransaccionController
 
         }
 
+        $ajustes_nota = self::aplicar_ajustes_factura_devuelta($nota_credito, $factura);
+        $total_documento += $ajustes_nota['valor_ajuste_al_peso'] + $ajustes_nota['valor_total_bolsas'];
+        self::contabilizar_ajustes_factura_devuelta($datos, $ajustes_nota);
+
         $nota_credito->valor_total = $total_documento;
         $nota_credito->remision_doc_encabezado_id = $remision_doc_encabezado_id;
         $nota_credito->save();
@@ -578,6 +587,100 @@ class NotaCreditoController extends TransaccionController
         } 
 
         return true;
+    }
+
+    private static function aplicar_ajustes_factura_devuelta($nota_credito, $factura)
+    {
+        $ajustes_nota = [
+            'valor_ajuste_al_peso' => 0,
+            'valor_total_bolsas' => 0
+        ];
+
+        if (!self::factura_queda_totalmente_devuelta($factura)) {
+            return $ajustes_nota;
+        }
+
+        $ajuste_pendiente = (float)$factura->valor_ajuste_al_peso + self::sumar_ajustes_notas_previas($factura->id, $nota_credito->id, 'valor_ajuste_al_peso');
+        $bolsas_pendiente = (float)$factura->valor_total_bolsas + self::sumar_ajustes_notas_previas($factura->id, $nota_credito->id, 'valor_total_bolsas');
+
+        $ajustes_nota['valor_ajuste_al_peso'] = $ajuste_pendiente * -1;
+        $ajustes_nota['valor_total_bolsas'] = $bolsas_pendiente * -1;
+
+        $nota_credito->valor_ajuste_al_peso = $ajustes_nota['valor_ajuste_al_peso'];
+        $nota_credito->valor_total_bolsas = $ajustes_nota['valor_total_bolsas'];
+
+        return $ajustes_nota;
+    }
+
+    private static function factura_queda_totalmente_devuelta($factura)
+    {
+        $lineas_factura = VtasDocRegistro::where('vtas_doc_encabezado_id', $factura->id)->get();
+
+        foreach ($lineas_factura as $linea) {
+            if ((float)$linea->cantidad_devuelta + 0.000001 < (float)$linea->cantidad) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function sumar_ajustes_notas_previas($factura_id, $nota_credito_id, $campo)
+    {
+        return (float)VtasDocEncabezado::where('ventas_doc_relacionado_id', $factura_id)
+            ->where('id', '<>', $nota_credito_id)
+            ->where('estado', '<>', 'Anulado')
+            ->sum($campo);
+    }
+
+    private static function contabilizar_ajustes_factura_devuelta($datos, array $ajustes_nota)
+    {
+        self::contabilizar_ajuste_redondeo($datos, $ajustes_nota['valor_ajuste_al_peso']);
+        self::contabilizar_ajuste_bolsas($datos, $ajustes_nota['valor_total_bolsas']);
+    }
+
+    private static function contabilizar_ajuste_redondeo($datos, $valor_ajuste_nota)
+    {
+        if ($valor_ajuste_nota == 0) {
+            return;
+        }
+
+        $accounting_service = new AccountingServices();
+
+        if ($valor_ajuste_nota < 0) {
+            $cta_ingresos_redondeo = (int)config('ventas_pos.cta_ingresos_redondeo');
+            if ($cta_ingresos_redondeo != 0) {
+                $accounting_service->contabilizar_registro($datos, $cta_ingresos_redondeo, 'Reversión redondeo factura', abs($valor_ajuste_nota), 0, null, null);
+            }
+            return;
+        }
+
+        $cta_gastos_redondeo = (int)config('ventas_pos.cta_gastos_redondeo');
+        if ($cta_gastos_redondeo != 0) {
+            $accounting_service->contabilizar_registro($datos, $cta_gastos_redondeo, 'Reversión redondeo factura', 0, abs($valor_ajuste_nota), null, null);
+        }
+    }
+
+    private static function contabilizar_ajuste_bolsas($datos, $valor_bolsas_nota)
+    {
+        if ($valor_bolsas_nota == 0) {
+            return;
+        }
+
+        $cta_ingresos_id = (int)config('ventas_pos.cta_ingresos_facturacion_bolsas');
+
+        if ($cta_ingresos_id == 0) {
+            return;
+        }
+
+        $accounting_service = new AccountingServices();
+
+        if ($valor_bolsas_nota < 0) {
+            $accounting_service->contabilizar_registro($datos, $cta_ingresos_id, 'Reversión cobro de bolsas en factura de ventas', abs($valor_bolsas_nota), 0, null, null);
+            return;
+        }
+
+        $accounting_service->contabilizar_registro($datos, $cta_ingresos_id, 'Reversión cobro de bolsas en factura de ventas', 0, abs($valor_bolsas_nota), null, null);
     }
 
     public function enviar( $id )

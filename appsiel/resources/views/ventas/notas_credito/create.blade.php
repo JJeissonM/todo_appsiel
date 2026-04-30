@@ -113,21 +113,61 @@
 					$('#btn_guardar').show();
 				}
 
-				var fila = $(this).closest('tr');
-				var cantidad_linea = parseFloat( fila.find('.cantidad_linea').val() );
-				if ( $(this).val() > cantidad_linea )
+				validar_cantidad_devolver($(this));
+			});
+
+			$(document).on('click', '.btn_devolver_linea', function(event){
+				event.preventDefault();
+
+				asignar_cantidad_total($(this).closest('tr'));
+			});
+
+			$(document).on('click', '#btn_devolver_todo', function(event){
+				event.preventDefault();
+
+				$('#tabla_registros_nota_credito tbody tr').each(function(){
+					asignar_cantidad_total($(this));
+				});
+			});
+
+			function asignar_cantidad_total(fila)
+			{
+				var cantidad_linea = fila.find('.cantidad_linea').val();
+				var input_cantidad = fila.find('.cantidad_devolver');
+
+				input_cantidad.val(cantidad_linea);
+				validar_cantidad_devolver(input_cantidad);
+			}
+
+			function validar_cantidad_devolver(input_cantidad)
+			{
+				var fila = input_cantidad.closest('tr');
+				var cantidad_linea = parseFloat(fila.find('.cantidad_linea').val());
+				var cantidad_devolver = parseFloat(input_cantidad.val());
+
+				if (isNaN(cantidad_devolver)) {
+					input_cantidad.attr('style','background-color:white;');
+					$('#popup_alerta').hide();
+					$('#btn_guardar').show();
+					return true;
+				}
+
+				if (cantidad_devolver > cantidad_linea)
 				{
-					$(this).attr('style','background-color:#FF8C8C;');
+					input_cantidad.attr('style','background-color:#FF8C8C;');
 					$('#popup_alerta').show();
 					$('#popup_alerta').css('background-color','red');
 					$('#popup_alerta').text( 'La cantidad a devolver es mayor que la cantidad de la factura.' );
 					$('#btn_guardar').hide();
-				}else{
-					$(this).attr('style','background-color:white;');
-					$('#popup_alerta').hide();
-					$('#btn_guardar').show();
+					return false;
 				}
-			});
+
+				input_cantidad.attr('style','background-color:white;');
+				$('#popup_alerta').hide();
+				$('#btn_guardar').show();
+
+				return true;
+			}
 
 
 
@@ -160,11 +200,20 @@
 				var cantidad = 0;
 				$('.cantidad_devolver').each(function()
 				{
-				    if ( $(this).val() != '' )
-				    {
-				    	cantidad += parseFloat( $(this).val() );
-				    }
+					if ( $(this).val() != '' )
+					{
+						if (!validar_cantidad_devolver($(this))) {
+							control = false;
+							return false;
+						}
+
+						cantidad += parseFloat( $(this).val() );
+					}
 				});
+
+				if (!control) {
+					return control;
+				}
 
 				$('#popup_alerta').hide();
 
