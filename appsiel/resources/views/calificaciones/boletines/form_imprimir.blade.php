@@ -113,7 +113,7 @@
 					<br>
 					Deben estar activas las ventanas emergentes.
 					<br>
-					<button class="btn btn-sm btn-info" id="download_zip_again">Si el archivo no se descargó, haga clic aquí para descargar nuevamente</button>
+					<button class="btn btn-sm btn-info" id="download_file_again">Si el archivo no se descargó, haga clic aquí para descargar nuevamente</button>
 				</div>
 
 				{{ Form::hidden('url_id',Input::get('id')) }}
@@ -288,13 +288,7 @@
 					$('#message_print').show();
 					$('#message_counting').hide();
 					
-					if ( $('#forma_generar_pdfs').val() == 0) {
-						// Un Solo PDF
-						window.open( '../../calif_merge_pdfs_and_download_by_curso/' + $('#curso_id').val(), '_blank');
-					}else{
-						// PDFs individuales
-						window.open( '../../calif_create_zip_of_folder_of_curso_id/' + $('#curso_id').val(), '_blank');
-					}
+					download_generated_file();
 
 					return true;
 				}
@@ -324,12 +318,23 @@
 			}
 
 			/*
-			* download_zip_again
+			* download_file_again
 			*/
-			$('#download_zip_again').click(function(event){        
+			$('#download_file_again').click(function(event){        
 				event.preventDefault();
-				window.open( '../../calif_download_zip_of_curso_id/' + $('#curso_id').val(), '_blank');
+				download_generated_file();
 			});
+
+			function download_generated_file()
+			{
+				if ( $('#forma_generar_pdfs').val() == 0) {
+					// Un Solo PDF
+					window.open( '../../calif_merge_pdfs_and_download_by_curso/' + $('#curso_id').val(), '_blank');
+				}else{
+					// PDFs individuales
+					window.open( '../../calif_create_zip_of_folder_of_curso_id/' + $('#curso_id').val(), '_blank');
+				}
+			}
 
 			// Accordion
 			var acc = document.getElementsByClassName("accordion");

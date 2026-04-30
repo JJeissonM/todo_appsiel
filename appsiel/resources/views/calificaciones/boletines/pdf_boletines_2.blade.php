@@ -2,6 +2,30 @@
 
 <!-- PRESCOLAR -->
 @section('contenido_formato')
+	<style type="text/css">
+		.boletin-preescolar .fila-desempenos {
+			min-height: 86px;
+		}
+
+		.boletin-preescolar .celda-emoji {
+			width: 118px;
+			min-width: 118px;
+			text-align: center;
+			vertical-align: middle;
+			padding: 2px 4px;
+		}
+
+		.boletin-preescolar .celda-desempenos {
+			text-align: justify;
+			vertical-align: middle;
+			padding: 4px 14px 4px 8px;
+			line-height: 1.15;
+		}
+
+		.boletin-preescolar .tabla-desempenos {
+			table-layout: fixed;
+		}
+	</style>
 
 	@foreach($datos as $registro)
 		
@@ -16,7 +40,7 @@
 		
 		@include('calificaciones.boletines.encabezado_2')
 				
-		<table class="contenido table-bordered">
+		<table class="contenido table-bordered boletin-preescolar">
 			<tbody>
 				@foreach( $lineas_cuerpo_boletin as $linea )
 
@@ -46,18 +70,18 @@
 						</td>
 					</tr>
 
-					<tr style="font-size: {{$tam_letra}}mm;">
+					<tr class="fila-desempenos" style="font-size: {{$tam_letra}}mm;">
 						<td colspan="2">
-							<table width="100%" style="border: 0px;">
+							<table class="tabla-desempenos" width="100%" style="border: 0px;">
 								<tr>
-									<td style="border: 0px;">
+									<td class="celda-emoji" width="118" style="border: 0px;">
 										@if( !is_null( $linea->calificacion ) )
 											@if( $linea->calificacion->calificacion > 0)
 												<img alt="emoji.jpg" src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/" . $linea->escala_valoracion->imagen ) }}" style="width: {{ 80 + $tam_letra * 3 }}px; height: {{ 80 + $tam_letra * 3 }}px ;" />
 											@endif
 										@endif
 									</td>
-									<td style="border: 0px; text-align: justify;" width="75%">
+									<td class="celda-desempenos" style="border: 0px;">
 										@include('calificaciones.boletines.proposito')
 
 										@include('calificaciones.boletines.lista_logros')
