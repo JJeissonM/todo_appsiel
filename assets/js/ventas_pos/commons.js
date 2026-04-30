@@ -184,6 +184,130 @@ function pos_get_manejo_recargos_flags()
   };
 }
 
+function pos_parse_numero_linea(valor)
+{
+  if (valor === undefined || valor === null) {
+    return 0;
+  }
+
+  if (typeof valor === "number") {
+    return valor;
+  }
+
+  valor = valor.toString().replace(/\$/g, "").replace(/%/g, "").replace(/\s/g, "");
+
+  if (valor.indexOf(",") !== -1 && valor.indexOf(".") !== -1) {
+    valor = valor.replace(/\./g, "").replace(",", ".");
+  } else {
+    valor = valor.replace(/,/g, ".");
+  }
+
+  var numero = parseFloat(valor);
+  return isNaN(numero) ? 0 : numero;
+}
+
+function pos_recalcular_linea_registro($fila)
+{
+  var producto_id = parseInt($fila.find(".inv_producto_id").text(), 10);
+  if (isNaN(producto_id) || producto_id <= 0) {
+    return { ok: true };
+  }
+
+  var producto = productos.find(function (item) {
+    return item.id === producto_id;
+  });
+
+  var cantidad = pos_parse_numero_linea($fila.find(".cantidad").text());
+  if ($fila.find(".elemento_modificar").eq(0).length > 0) {
+    cantidad = pos_parse_numero_linea($fila.find(".elemento_modificar").eq(0).text());
+  }
+
+  var precio_unitario = pos_parse_numero_linea($fila.find(".precio_unitario").text());
+  if ($fila.find(".elemento_modificar").eq(1).length > 0) {
+    precio_unitario = pos_parse_numero_linea($fila.find(".elemento_modificar").eq(1).text());
+  }
+
+  var tasa_descuento = pos_parse_numero_linea($fila.find(".tasa_descuento").text());
+  var tasa_impuesto = pos_parse_numero_linea($fila.find(".tasa_impuesto").text());
+  if (producto && !isNaN(parseFloat(producto.tasa_impuesto))) {
+    tasa_impuesto = parseFloat(producto.tasa_impuesto);
+  }
+
+  var valor_unitario_descuento = precio_unitario * tasa_descuento / 100;
+  var valor_total_descuento = valor_unitario_descuento * cantidad;
+  var precio_total = (precio_unitario - valor_unitario_descuento) * cantidad;
+  var precio_venta = precio_unitario - valor_unitario_descuento;
+  var base_impuesto_unitario = precio_venta / (1 + tasa_impuesto / 100);
+  var valor_impuesto_unitario = precio_venta - base_impuesto_unitario;
+  var base_impuesto_total = base_impuesto_unitario * cantidad;
+  var total_desde_base = base_impuesto_total + (valor_impuesto_unitario * cantidad);
+  var tolerancia = 1;
+
+  if (cantidad <= 0 || precio_unitario < 0 || precio_total < 0) {
+    return {
+      ok: false,
+      message: "La linea del producto " + producto_id + " tiene cantidad o precio invalido."
+    };
+  }
+
+  if (Math.abs(total_desde_base - precio_total) > tolerancia) {
+    return {
+      ok: false,
+      message: "La linea del producto " + producto_id + " no cuadra: base mas impuesto no coincide con el total."
+    };
+  }
+
+  $fila.find(".precio_unitario").text(precio_unitario);
+  $fila.find(".cantidad").text(cantidad);
+  $fila.find(".base_impuesto").text(base_impuesto_unitario);
+  $fila.find(".tasa_impuesto").text(tasa_impuesto);
+  $fila.find(".valor_impuesto").text(valor_impuesto_unitario);
+  $fila.find(".base_impuesto_total").text(base_impuesto_total);
+  $fila.find(".precio_total").text(precio_total);
+  $fila.find(".valor_total_descuento").text(valor_total_descuento);
+  $fila.find(".lbl_tasa_impuesto").text(tasa_impuesto);
+  $fila.find(".lbl_valor_total_descuento").text(new Intl.NumberFormat("de-DE").format(valor_total_descuento.toFixed(0)));
+
+  if ($fila.find(".elemento_modificar").eq(0).length > 0) {
+    $fila.find(".elemento_modificar").eq(0).text(cantidad);
+  }
+
+  if ($fila.find(".elemento_modificar").eq(1).length > 0) {
+    $fila.find(".elemento_modificar").eq(1).text(precio_unitario);
+  }
+
+  if ($fila.find(".elemento_modificar_precio_total").length > 0) {
+    $fila.find(".elemento_modificar_precio_total").text("$" + new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)));
+  } else {
+    $fila.find(".lbl_precio_total").text("$" + new Intl.NumberFormat("de-DE").format(precio_total.toFixed(0)));
+  }
+
+  return { ok: true };
+}
+
+function pos_validar_y_recalcular_lineas_registros()
+{
+  var resultado = { ok: true };
+
+  $(".linea_registro").each(function () {
+    if (!resultado.ok) {
+      return false;
+    }
+
+    resultado = pos_recalcular_linea_registro($(this));
+  });
+
+  if (!resultado.ok) {
+    Swal.fire({
+      icon: "error",
+      title: "Factura no guardada",
+      text: resultado.message
+    });
+  }
+
+  return resultado.ok;
+}
+
 function pos_preparar_payload_guardado(opciones)
 {
   opciones = opciones || {};
@@ -191,6 +315,10 @@ function pos_preparar_payload_guardado(opciones)
   var refrescar_identificadores = (opciones.refrescar_identificadores !== false);
 
   var flags = pos_get_manejo_recargos_flags();
+
+  if (!pos_validar_y_recalcular_lineas_registros()) {
+    return null;
+  }
 
   $("#linea_ingreso_default").remove();
 
@@ -1635,6 +1763,11 @@ $(document).ready(function () {
       }
 
       var payload_guardado = pos_preparar_payload_guardado({ incluir_impuesto_id: true });
+      if (payload_guardado === null) {
+        reset_estado_boton_guardar_factura();
+        return false;
+      }
+
       var data = payload_guardado.data;
       var tiempo_espera_guardar_factura = 7000; // 7 segundos
       var tiempo_espera_config = parseInt($('#tiempo_espera_guardar_factura').val(), 10);

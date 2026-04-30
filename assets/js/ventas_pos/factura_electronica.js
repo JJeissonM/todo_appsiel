@@ -117,6 +117,12 @@ $(document).ready(function () {
         var data = '';
         if (typeof pos_preparar_payload_guardado === "function") {
             payload_guardado = pos_preparar_payload_guardado({ incluir_impuesto_id: false });
+            if (payload_guardado === null) {
+                $('#btn_guardando_fe').html( '<i class="fa fa-check"></i> Guardar como F.E.' );
+                $('#btn_guardando_fe').removeAttr( 'disabled' );
+                $('#btn_guardando_fe').attr( 'id', 'btn_guardar_factura_electronica' );
+                return false;
+            }
             data = payload_guardado.data;
         } else {
             data = $("#form_create").serialize();

@@ -367,6 +367,15 @@ class FacturaPosController extends TransaccionController
         } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('POS_SAVE_EXCEPTION', $log_context + [ 'error' => $e->getMessage() ]);
+
+            if ($e instanceof \InvalidArgumentException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    'request_id' => $request_id
+                ], 422);
+            }
+
             throw $e;
         }
 
@@ -395,7 +404,7 @@ class FacturaPosController extends TransaccionController
 
         $response = $this->build_json_doc_encabezado($doc_encabezado);
         $response['request_id'] = $request_id;
-        Log::info('POS_SAVE_SUCCESS', $log_context + [ 'doc_id' => $doc_encabezado->id, 'consecutivo' => $doc_encabezado->consecutivo ]);
+        //Log::info('POS_SAVE_SUCCESS', $log_context + [ 'doc_id' => $doc_encabezado->id, 'consecutivo' => $doc_encabezado->consecutivo ]);
         return response()->json( $response, 200);
     }
 
@@ -703,6 +712,15 @@ class FacturaPosController extends TransaccionController
 
         if ((int)config('inventarios.manejar_platillos_con_contorno')) {
             $lineas_registros = (new RecipeServices)->cambiar_items_con_contornos($lineas_registros);
+        }
+
+        try {
+            (new InvoicingService())->validar_lineas_registros_pos($lineas_registros);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 422);
         }
 
         $doc_encabezado = FacturaPos::with('lineas_registros')->find($id);
@@ -1677,8 +1695,6 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
-
-
 
 
 
