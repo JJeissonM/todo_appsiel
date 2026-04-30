@@ -8,22 +8,18 @@
 		}
 
 		.boletin-preescolar .celda-emoji {
-			width: 118px;
-			min-width: 118px;
+			width: 112px;
 			text-align: center;
 			vertical-align: middle;
-			padding: 2px 4px;
+			padding: 2px 6px;
 		}
 
 		.boletin-preescolar .celda-desempenos {
 			text-align: justify;
 			vertical-align: middle;
-			padding: 4px 14px 4px 8px;
+			padding: 4px 14px 4px 6px;
 			line-height: 1.15;
-		}
-
-		.boletin-preescolar .tabla-desempenos {
-			table-layout: fixed;
+			width: auto;
 		}
 	</style>
 
@@ -72,16 +68,16 @@
 
 					<tr class="fila-desempenos" style="font-size: {{$tam_letra}}mm;">
 						<td colspan="2">
-							<table class="tabla-desempenos" width="100%" style="border: 0px;">
+							<table width="100%" style="border: 0px; table-layout: auto;">
 								<tr>
-									<td class="celda-emoji" width="118" style="border: 0px;">
+									<td class="celda-emoji" width="112" style="border: 0px; width: 112px;">
 										@if( !is_null( $linea->calificacion ) )
 											@if( $linea->calificacion->calificacion > 0)
 												<img alt="emoji.jpg" src="{{ asset( config('configuracion.url_instancia_cliente') . "/storage/app/" . $linea->escala_valoracion->imagen ) }}" style="width: {{ 80 + $tam_letra * 3 }}px; height: {{ 80 + $tam_letra * 3 }}px ;" />
 											@endif
 										@endif
 									</td>
-									<td class="celda-desempenos" style="border: 0px;">
+									<td class="celda-desempenos" style="border: 0px; width: auto;">
 										@include('calificaciones.boletines.proposito')
 
 										@include('calificaciones.boletines.lista_logros')
