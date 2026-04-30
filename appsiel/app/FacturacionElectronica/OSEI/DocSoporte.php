@@ -290,39 +290,52 @@ class DocSoporte
          $resolucion = (object)['prefijo' => 'SETT', 'numero_resolucion' => 18760000001];
       }
 
-      /*
-               DATOS APPSIEL SAS - Para Pruebas      
-         Dataico Account Id: a2532b03-a8bf-4514-a4e8-5fd7ec0499e9
-         Dataico Auth Token: 088c164ef2ff8964cca84f76e8059f18
-         $tokenPassword = '088c164ef2ff8964cca84f76e8059f18';
-         $prefijo_resolucion = 'DS';
-         $consecutivo_doc_encabezado = 14;
-         $url_emision = 'https://api.dataico.com/dataico_api/v2/support_docs';
-      */
-      /*
-*/
-      $tokenPassword = config('facturacion_electronica.tokenPassword');
-
       $prefijo_resolucion = $resolucion->prefijo;
       $consecutivo_doc_encabezado = $this->doc_encabezado->consecutivo;
-      $url_emision = $this->url_emision;
+      $authorization_token = config('facturacion_electronica.tokenEmpresa');
+      $url_consulta = 'https://osei.com.co/api/v1/invoices/get_cufe/' . $prefijo_resolucion . '/' . $consecutivo_doc_encabezado . '/' . $authorization_token;
 
       try {
-         $client = new Client(['base_uri' => $url_emision]);
+         $client = new Client(['base_uri' => 'https://osei.com.co']);
 
-         $response = $client->get($this->url_emision . '?prefix=' . $prefijo_resolucion . '&number=' . $consecutivo_doc_encabezado, [
-            // un array con la data de los headers como tipo de peticion, etc.
+         $response = $client->get($url_consulta, [
             'headers' => [
-               'content-type' => 'application/json',
-               'auth-token' => $tokenPassword
+               'content-type' => 'application/json'
             ]
          ]);
       } catch (\GuzzleHttp\Exception\RequestException $e) {
          $response = $e->getResponse();
       }
 
+      if ($response == null) {
+         return (object)[
+            'error' => 'No se recibió respuesta desde OSEI.'
+         ];
+      }
 
-      return json_decode((string) $response->getBody());
+      $json = json_decode((string) $response->getBody());
+
+      if (!isset($json->contenido)) {
+         return $json;
+      }
+
+      $support_doc = (object)[
+         'cufe' => isset($json->contenido->cufe) ? $json->contenido->cufe : '',
+         'issue_date' => isset($json->contenido->issue_date) ? $json->contenido->issue_date : ''
+      ];
+
+      if (isset($json->contenido->pdf_url)) {
+         $support_doc->pdf_url = $json->contenido->pdf_url;
+      }
+
+      if (isset($json->contenido->pdf_base64)) {
+         $support_doc->pdf_base64 = $json->contenido->pdf_base64;
+      }
+
+      return (object)[
+         'support_doc' => $support_doc,
+         'respuesta_osei' => $json
+      ];
    }
 
    public function get_datos_cliente()

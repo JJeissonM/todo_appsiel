@@ -5,6 +5,7 @@ namespace App\Http\Controllers\FacturacionElectronica;
 use App\Core\Services\ResolucionFacturacionService;
 use App\Core\TipoDocApp;
 use App\FacturacionElectronica\DATAICO\DocSoporte as DATAICODocSoporte;
+use App\FacturacionElectronica\OSEI\DocSoporte as OSEIDocSoporte;
 use App\Http\Controllers\Controller;
 
 use App\FacturacionElectronica\Factura;
@@ -36,7 +37,7 @@ class AplicacionController extends Controller
         {
             case 'support_doc':
                 $encabezado_doc = DocSoporte::find( $doc_encabezado_id );
-                $documento_electronico = new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
+                $documento_electronico = $this->get_documento_soporte_electronico( $encabezado_doc, $tipo_operacion );
                 break;
             
             default:
@@ -49,22 +50,45 @@ class AplicacionController extends Controller
         $json_dataico = $documento_electronico->get_einvoice_in_dataico();
 
         if ( isset($json_dataico->invoice) ) {
-            $pdf_url = $json_dataico->invoice->pdf_url;
+            $pdf_url = isset($json_dataico->invoice->pdf_url) ? $json_dataico->invoice->pdf_url : null;
+            $pdf_base64 = isset($json_dataico->invoice->pdf_base64) ? $json_dataico->invoice->pdf_base64 : null;
         }  
 
         if ( isset($json_dataico->credit_note) ) {
-            $pdf_url = $json_dataico->credit_note->pdf_url;
+            $pdf_url = isset($json_dataico->credit_note->pdf_url) ? $json_dataico->credit_note->pdf_url : null;
+            $pdf_base64 = isset($json_dataico->credit_note->pdf_base64) ? $json_dataico->credit_note->pdf_base64 : null;
         }
         
         if ( isset($json_dataico->support_doc) ) {
-            $pdf_url = $json_dataico->support_doc->pdf_url;
+            $pdf_url = isset($json_dataico->support_doc->pdf_url) ? $json_dataico->support_doc->pdf_url : null;
+            $pdf_base64 = isset($json_dataico->support_doc->pdf_base64) ? $json_dataico->support_doc->pdf_base64 : null;
         }
 
-        if ( !isset($pdf_url) ) {
+        if ( isset($pdf_base64) && $pdf_base64 != '' ) {
+            return response( base64_decode($pdf_base64), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="documento-electronico.pdf"'
+            ] );
+        }
+
+        if ( $tipo_operacion == 'support_doc' && config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI' && isset($json_dataico->support_doc) ) {
+            return redirect( 'inicio' )->with( 'mensaje_error', '<h5>OSEI encontró el documento electrónico, pero no retornó la representación gráfica en PDF.</h5>' . json_encode($json_dataico) );
+        }
+
+        if ( !isset($pdf_url) || $pdf_url == '' ) {
             return redirect( 'inicio' )->with( 'mensaje_error', '<h5>Documento no encontrado</h5>' . json_encode($json_dataico) );
         }
     	
         return Redirect::away( $pdf_url );
+    }
+
+    private function get_documento_soporte_electronico( $encabezado_doc, $tipo_operacion )
+    {
+        if ( config('facturacion_electronica.proveedor_tecnologico_default') == 'OSEI' ) {
+            return new OSEIDocSoporte( $encabezado_doc, $tipo_operacion );
+        }
+
+        return new DATAICODocSoporte( $encabezado_doc, $tipo_operacion );
     }
 
     public function testing()
