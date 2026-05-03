@@ -331,6 +331,45 @@ class InvMovimiento extends Model
                             ->get();
     }
 
+    public static function get_suma_movimientos_por_motivo( $grupo_inventario_id, $inv_bodega_id, $fecha_inicial, $fecha_final, $tipo_movimiento )
+    {
+        $array_wheres = [ 
+                            [ 'inv_doc_encabezados.fecha' ,'>=', $fecha_inicial ],
+                            [ 'inv_doc_encabezados.fecha' ,'<=', $fecha_final ]
+                        ];
+
+        if ( $grupo_inventario_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, [ 'inv_productos.inv_grupo_id' => $grupo_inventario_id ] );
+        }
+
+        if ( $inv_bodega_id != '')
+        {
+          $array_wheres = array_merge( $array_wheres, [ 'inv_movimientos.inv_bodega_id' => $inv_bodega_id ] );
+        }
+
+        if ( $tipo_movimiento != '')
+        {
+          $array_wheres = array_merge( $array_wheres, [ 'inv_motivos.movimiento' => $tipo_movimiento ] );
+        }
+
+        return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')
+                            ->leftJoin('inv_doc_encabezados','inv_doc_encabezados.id','=','inv_movimientos.inv_doc_encabezado_id')
+                            ->leftJoin('inv_motivos','inv_motivos.id','=','inv_movimientos.inv_motivo_id')
+                            ->where( $array_wheres )
+                            ->where('inv_movimientos.core_empresa_id', Auth::user()->empresa_id)
+                            ->select(
+                                        'inv_productos.id AS item_id',
+                                        'inv_motivos.id AS motivo_id',
+                                        'inv_motivos.descripcion AS motivo_descripcion',
+                                        DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento'),
+                                        DB::raw('sum(inv_movimientos.costo_total) as costo_total_movimiento') 
+                                    )
+                            ->groupBy( 'inv_productos.id', 'inv_motivos.id', 'inv_motivos.descripcion' )
+                            ->orderBy( 'inv_motivos.id' )
+                            ->get();
+    }
+
     public static function get_movimiento($id_producto, $id_bodega, $fecha_inicial, $fecha_final )
     {
         return InvMovimiento::leftJoin('inv_productos','inv_productos.id','=','inv_movimientos.inv_producto_id')

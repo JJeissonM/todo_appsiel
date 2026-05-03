@@ -23,7 +23,7 @@
             @foreach( $productos as $producto )
                 <?php
 
-                    $porcentaje_tolerancia = 20;
+                    $porcentaje_tolerancia = config('inventarios.porcentaje_tolerancia_stock_minimo', 20);
                     $cantidad_tolerancia = $producto->stock_minimo * ( 1 + $porcentaje_tolerancia/100 );
                     
                     $estado = "Óptimo";

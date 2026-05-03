@@ -53,12 +53,14 @@ class ReporteController extends Controller
       
         $bodega = InvBodega::find($id);
 
+        $stock_minimo = MinStock::where('inv_bodega_id', $id)->get();
+
         $miga_pan = [
                 ['url'=>'inventarios?id='.Input::get('id'),'etiqueta'=>'Inventarios'],
                 ['url'=>'NO','etiqueta'=>'Existencias']
             ];
         
-        return view('inventarios.existencias_una_bodega',compact('movimientos','bodega','miga_pan','fecha_corte'));
+        return view('inventarios.existencias_una_bodega',compact('movimientos','bodega','miga_pan','fecha_corte', 'stock_minimo'));
     }
 
 
@@ -658,6 +660,7 @@ class ReporteController extends Controller
         $fecha_desde = $request->fecha_desde;
         $fecha_hasta = $request->fecha_hasta;
         $mostrar_items_sin_movimiento = $request->mostrar_items_sin_movimiento;
+        $separar_salidas_por_motivo = $this->request_indica_salidas_por_motivo( $request );
                 
         $items = InvProducto::get_datos_basicos( $grupo_inventario_id, 'Activo' );
 
@@ -667,12 +670,43 @@ class ReporteController extends Controller
 
         $movimientos_salidas = InvMovimiento::get_suma_movimientos( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida' );
 
-        $vista = View::make( 'inventarios.reportes.balance_inventarios', compact('items', 'mostrar_items_sin_movimiento', 'saldos_items', 'movimientos_entradas', 'movimientos_salidas', 'fecha_desde', 'fecha_hasta', 'inv_bodega_id' ) )->render();
+        $movimientos_salidas_por_motivo = collect([]);
+        if ( $separar_salidas_por_motivo )
+        {
+            $movimientos_salidas_por_motivo = InvMovimiento::get_suma_movimientos_por_motivo( $grupo_inventario_id, $inv_bodega_id, $fecha_desde, $fecha_hasta, 'salida' );
+        }
+
+        $vista = View::make( 'inventarios.reportes.balance_inventarios', compact('items', 'mostrar_items_sin_movimiento', 'saldos_items', 'movimientos_entradas', 'movimientos_salidas', 'movimientos_salidas_por_motivo', 'separar_salidas_por_motivo', 'fecha_desde', 'fecha_hasta', 'inv_bodega_id' ) )->render();
 
         Cache::put( 'pdf_reporte_'.json_decode( $request->reporte_instancia )->id, $vista, 720 );
    
         return $vista;
 
+    }
+
+    private function request_indica_salidas_por_motivo( Request $request )
+    {
+        $campos = [
+            'separar_salidas_por_motivo',
+            'separar_salidas_por_motivos',
+            'mostrar_salidas_por_motivo',
+            'mostrar_salidas_por_motivos',
+            'salidas_por_motivo',
+            'salidas_por_motivos',
+            'mostrar_motivos_salidas',
+            'detallar_salidas_por_motivo',
+            'salidas_separadas_por_motivo'
+        ];
+
+        foreach ( $campos as $campo )
+        {
+            if ( $request->has( $campo ) )
+            {
+                return in_array( strtolower( (string)$request->input( $campo ) ), ['1', 'true', 'si', 'on', 'yes'] );
+            }
+        }
+
+        return false;
     }
 
     public function inv_existencias_corte(Request $request)

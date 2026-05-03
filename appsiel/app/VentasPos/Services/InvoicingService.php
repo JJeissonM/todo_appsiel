@@ -9,6 +9,7 @@ use App\Inventarios\Services\InvDocumentsService;
 use App\Ventas\VtasMovimiento;
 use App\VentasPos\DocRegistro;
 use App\VentasPos\Movimiento;
+use App\VentasPos\Pdv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,6 +39,8 @@ class InvoicingService
 
     public function almacenar_factura_pos( $request )
     {
+        $this->aplicar_fechas_factura_pos_por_defecto($request);
+
         $lineas_registros = json_decode($request->lineas_registros);
 
         $this->validar_lineas_registros_pos($lineas_registros);
@@ -67,6 +70,31 @@ class InvoicingService
         $obj_acumm_serv->accumulate_one_invoice($doc_encabezado->id);
 
         return $doc_encabezado;
+    }
+
+    protected function aplicar_fechas_factura_pos_por_defecto(Request $request)
+    {
+        $fecha = trim((string)$request->get('fecha', ''));
+        $pdv = Pdv::find((int)$request->get('pdv_id', 0));
+
+        if ($fecha == '') {
+            $fecha = date('Y-m-d');
+            if (!is_null($pdv) && config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
+                $fecha = $pdv->ultima_fecha_apertura();
+            }
+            $request->merge(['fecha' => $fecha]);
+        }
+
+        if (trim((string)$request->get('fecha_vencimiento', '')) != '') {
+            return;
+        }
+
+        $fecha_vencimiento = $fecha;
+        if (!is_null($pdv) && !is_null($pdv->cliente)) {
+            $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago($fecha);
+        }
+
+        $request->merge(['fecha_vencimiento' => $fecha_vencimiento]);
     }
 
     public function crear_registros_documento_pos(Request $request, $doc_encabezado, array $lineas_registros)

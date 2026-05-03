@@ -2,6 +2,14 @@
 
 <?php
     use App\Http\Controllers\Sistema\VistaController;
+
+    $formulario_tiene_campo_fecha = false;
+    foreach ($form_create['campos'] as $campo_formulario) {
+        if (isset($campo_formulario['name']) && $campo_formulario['name'] == 'fecha') {
+            $formulario_tiene_campo_fecha = true;
+            break;
+        }
+    }
 ?>
 
 @section('estilos_1')
@@ -99,11 +107,13 @@
                     <br/><br/>
 </div></div> <!-- INMODIFICABLE -->
                         
-                        <div class="container" style="display:none; color:red; font-size:1.1em;" id="msj_fecha_diferente"> 
-                            &nbsp; 
-                            <span><i class="fa fa-warning"></i> La fecha de la factura es diferente a la fecha del día.</span>
-                            <br><br>
-                        </div>
+                        @if($formulario_tiene_campo_fecha)
+                            <div class="container" style="display:none; color:red; font-size:1.1em;" id="msj_fecha_diferente"> 
+                                &nbsp; 
+                                <span><i class="fa fa-warning"></i> La fecha de la factura es diferente a la fecha del día.</span>
+                                <br><br>
+                            </div>
+                        @endif
 
                         @if( Input::get('action') == 'edit' )
                             {!! $vista_medios_recaudo !!}
@@ -205,6 +215,11 @@
         
         var fecha = "{{$fecha}}";
         var fecha_vencimiento = "{{$fecha_vencimiento}}";
+        var mostrar_advertencia_fecha_factura = {{ $formulario_tiene_campo_fecha ? 'true' : 'false' }};
+
+        if (!mostrar_advertencia_fecha_factura) {
+            $('#msj_fecha_diferente').hide();
+        }
 
         $('#numero_lineas').text( {{ $numero_linea - 1 }} );
 

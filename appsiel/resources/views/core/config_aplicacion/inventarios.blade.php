@@ -57,6 +57,29 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php 
+								$tolerancia_stock_minimo = 0;
+								if( isset($parametros['tolerancia_stock_minimo'] ) )
+								{
+									$tolerancia_stock_minimo = $parametros['tolerancia_stock_minimo'];
+								}
+							?>
+							{{ Form::bsText('tolerancia_stock_minimo', $tolerancia_stock_minimo, 'Tolerancia stock mínimo (%)', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
 				<h4> Parámetros por defecto creación de Productos  </h4>
 				<hr>
 				<div class="row">
