@@ -57,7 +57,7 @@ class AccumulationService
         return $obj_inv_doc_serv->create_document_making( $pdv_id, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion );
     }
 
-    public function hacer_preparaciones_recetas( $detalle_operacion = '', $fecha = null )
+    public function hacer_preparaciones_recetas( $detalle_operacion = '', $fecha = null, $factura_pos_id = null )
     {
         $pdv_id = $this->pos->id;
         $bodega_default_id = $this->pos->bodega_default_id;
@@ -70,9 +70,9 @@ class AccumulationService
 
         $obj_inv_doc_serv = new RecipeServices();
         
-        $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id);
+        $cantidades_facturadas = $obj_inv_doc_serv->resumen_cantidades_facturadas($pdv_id, null, $factura_pos_id);
         
-        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion );
+        return $obj_inv_doc_serv->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $detalle_operacion, $factura_pos_id );
     }
 
     /**

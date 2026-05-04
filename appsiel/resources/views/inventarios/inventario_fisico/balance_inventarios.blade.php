@@ -31,7 +31,7 @@
     }
 
     .tabla-balance th {
-        background-color: #777;
+        background-color: #d2d2d2;
         color: #000;
         border: 1px solid #777;
         padding: 6px 4px;
@@ -40,10 +40,6 @@
     .tabla-balance td {
         border-bottom: 1px solid #ddd;
         padding: 6px 4px;
-    }
-
-    .tabla-balance tbody tr:nth-child(odd) {
-        background-color: #eee;
     }
 
     .tabla-balance tfoot td {

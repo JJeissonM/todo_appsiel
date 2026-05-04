@@ -1,3 +1,33 @@
+@php
+        $formulario_tiene_campo_fecha = isset($formulario_tiene_campo_fecha) ? $formulario_tiene_campo_fecha : false;
+        $formulario_tiene_campo_fecha_vencimiento = isset($formulario_tiene_campo_fecha_vencimiento) ? $formulario_tiene_campo_fecha_vencimiento : false;
+
+        if (!$formulario_tiene_campo_fecha || !$formulario_tiene_campo_fecha_vencimiento) {
+                $campos_formulario = isset($form_create['campos']) ? $form_create['campos'] : [];
+                foreach ($campos_formulario as $campo_formulario) {
+                        if (!isset($campo_formulario['name'])) {
+                                continue;
+                        }
+
+                        if ($campo_formulario['name'] == 'fecha') {
+                                $formulario_tiene_campo_fecha = true;
+                        }
+
+                        if ($campo_formulario['name'] == 'fecha_vencimiento') {
+                                $formulario_tiene_campo_fecha_vencimiento = true;
+                        }
+                }
+        }
+@endphp
+
+@if(!$formulario_tiene_campo_fecha)
+        <input type="hidden" name="fecha" id="fecha" value="{{ $fecha }}">
+@endif
+
+@if(!$formulario_tiene_campo_fecha_vencimiento)
+        <input type="hidden" name="fecha_vencimiento" id="fecha_vencimiento" value="{{ $fecha_vencimiento }}">
+@endif
+
 {{ Form::hidden('url_id', Input::get('id'), ['id' => 'url_id']) }}
 {{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id' => 'url_id_modelo' ]) }}
 

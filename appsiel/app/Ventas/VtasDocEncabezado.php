@@ -195,7 +195,55 @@ class VtasDocEncabezado extends Model
 
     public function remisiones_hijas()
     {
-        return InvDocEncabezado::where( 'vtas_doc_encabezado_origen_id', $this->id )->get();
+        return InvDocEncabezado::where( 'vtas_doc_encabezado_origen_id', $this->id )
+            ->where('core_tipo_transaccion_id', (int)config('ventas.rm_tipo_transaccion_id', 24))
+            ->get();
+    }
+
+    public function ensambles_relacionados()
+    {
+        $factura_pos_id = 0;
+        $documento_padre = $this->documento_ventas_padre();
+
+        if ($documento_padre instanceof FacturaPos) {
+            $factura_pos_id = (int)$documento_padre->id;
+        }
+
+        $factura_pos_relacionada = FacturaPos::find((int)$this->ventas_doc_relacionado_id);
+        if (!is_null($factura_pos_relacionada) && in_array($factura_pos_relacionada->estado, ['Enviada', 'Anulado'])) {
+            $factura_pos_id = (int)$factura_pos_relacionada->id;
+        }
+
+        $ids_origen = [];
+        if ($factura_pos_id > 0) {
+            $ids_origen[] = $factura_pos_id;
+        }
+
+        if (empty($ids_origen)) {
+            return collect([]);
+        }
+
+        return InvDocEncabezado::whereIn('vtas_doc_encabezado_origen_id', array_unique($ids_origen))
+            ->where('core_tipo_transaccion_id', (int)config('inventarios.core_tipo_transaccion_id', 4))
+            ->get();
+    }
+
+    public function enlaces_ensambles_relacionados()
+    {
+        $ensambles = $this->ensambles_relacionados();
+        $lista = '';
+        $es_el_primero = true;
+
+        foreach ($ensambles as $ensamble) {
+            if ($es_el_primero) {
+                $lista = $ensamble->enlace_show_documento();
+                $es_el_primero = false;
+            } else {
+                $lista .= ', ' . $ensamble->enlace_show_documento();
+            }
+        }
+
+        return $lista;
     }
 
     public function enlace_show_documento()

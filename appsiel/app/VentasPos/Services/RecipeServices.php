@@ -9,6 +9,7 @@ use App\Inventarios\Services\InvDocumentsLinesService;
 
 use App\Inventarios\InvMotivo;
 use App\Inventarios\InvMovimiento;
+use App\Inventarios\InvDocEncabezado;
 use App\Inventarios\RecetaCocina;
 use App\VentasPos\FacturaPos;
 use App\VentasPos\DocRegistro;
@@ -23,7 +24,7 @@ class RecipeServices
 
     // item_ingrediente_id: el que se compra
     // item_platillo_id: el que se vende
-    public function get_lineas_registros_ensamble( $cantidades_facturadas, $bodega_default_id, $parametros_config_inventarios, $fecha )
+    public function get_lineas_registros_ensamble( $cantidades_facturadas, $bodega_default_id, $parametros_config_inventarios, $fecha, $factura_pos_id = null )
     {
         $motivo_salida = InvMotivo::find( (int)$parametros_config_inventarios['motivo_salida_id'] );
         $motivo_entrada = InvMotivo::find( (int)$parametros_config_inventarios['motivo_entrada_id'] );
@@ -57,7 +58,7 @@ class RecipeServices
                 $cantidad_a_sacar_ingrediente = $linea_receta->cantidad_porcion * $cantidad_a_ingresar_platillo_facturado;
 
                 // ---------------- Ensambles anidados
-                $this->create_document_making_for_ingredient( $linea_receta->item_ingrediente, $bodega_default_id, $fecha, $parametros_config_inventarios, $cantidades_facturadas, $items_con_receta );
+                $this->create_document_making_for_ingredient( $linea_receta->item_ingrediente, $bodega_default_id, $fecha, $parametros_config_inventarios, $cantidades_facturadas, $items_con_receta, $factura_pos_id );
                 // ----------------
 
                 $costo_unitario_ingrediente = $linea_receta->item_ingrediente->get_costo_promedio( $bodega_default_id );
@@ -92,12 +93,17 @@ class RecipeServices
     /**
      * 
      */
-    public function resumen_cantidades_facturadas($pdv_id, $inv_producto_id = null)
+    public function resumen_cantidades_facturadas($pdv_id, $inv_producto_id = null, $factura_pos_id = null)
     {
-        $ids_encabezados_documentos = FacturaPos::where('pdv_id', $pdv_id)
+        $query = FacturaPos::where('pdv_id', $pdv_id)
                                                 ->where('estado', 'Pendiente')
-                                                ->select('id')
-                                                ->get()
+                                                ->select('id');
+
+        if ($factura_pos_id !== null) {
+            $query->where('id', (int)$factura_pos_id);
+        }
+
+        $ids_encabezados_documentos = $query->get()
                                                 ->pluck('id')
                                                 ->all();
 
@@ -112,9 +118,9 @@ class RecipeServices
         return $cantidades_facturadas;
     }
 
-    public function create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $descripcion_encabezado = '' )
+    public function create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, $descripcion_encabezado = '', $factura_pos_id = null )
     {
-        $movimiento = $this->get_lineas_registros_ensamble($cantidades_facturadas, $bodega_default_id, $parametros_config_inventarios, $fecha);
+        $movimiento = $this->get_lineas_registros_ensamble($cantidades_facturadas, $bodega_default_id, $parametros_config_inventarios, $fecha, $factura_pos_id);
 
         if ( gettype($movimiento) == "integer" )
         {
@@ -127,9 +133,14 @@ class RecipeServices
         $lineas_registros = $obj_inv_docum_line_serv->preparar_array_lineas_registros( $bodega_default_id, $request->movimiento, null);
 
         $obj_inv_docum_head_serv = new InvDocumentsService();
-        $obj_inv_docum_head_serv->store_document($request, $lineas_registros, self::INV_DOC_HEADER_MODEL_NAME);
+        $doc_encabezado_id = $obj_inv_docum_head_serv->store_document($request, $lineas_registros, self::INV_DOC_HEADER_MODEL_NAME);
+
+        if ($factura_pos_id !== null) {
+            InvDocEncabezado::where('id', $doc_encabezado_id)
+                ->update(['vtas_doc_encabezado_origen_id' => (int)$factura_pos_id]);
+        }
         
-        return 1;
+        return $doc_encabezado_id;
     }
 
     public function built_ObjRequets_desarme( $parametros_config_inventarios, $bodega_default_id, $movimiento, $fecha, $descripcion_encabezado)
@@ -251,7 +262,7 @@ class RecipeServices
     /**
      * Se hace Un (1) ensamble para TODAS las cantidades del ingrediente requeridas en la preparación de TODOS los platillo facturados.
      */
-    public function create_document_making_for_ingredient( $item_ingrediente, $bodega_default_id, $fecha, $parametros_config_inventarios, $cantidades_facturadas_platillos, $items_con_receta )
+    public function create_document_making_for_ingredient( $item_ingrediente, $bodega_default_id, $fecha, $parametros_config_inventarios, $cantidades_facturadas_platillos, $items_con_receta, $factura_pos_id = null )
     {
         $lineas_recetas_ingrediente = RecetaCocina::where('item_platillo_id', $item_ingrediente->id)->get()->first();
 
@@ -262,7 +273,7 @@ class RecipeServices
         
         $cantidades_facturadas = $this->get_obj_cantidades_facturadas_ingrediente( $item_ingrediente->id, $cantidades_facturadas_platillos, $items_con_receta );
         
-        return $this->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, 'Ensamble de ' . $item_ingrediente->descripcion  . ' para todos los platillos facturados.');
+        return $this->create_document_making( $cantidades_facturadas, $bodega_default_id, $fecha, $parametros_config_inventarios, 'Ensamble de ' . $item_ingrediente->descripcion  . ' para todos los platillos facturados.', $factura_pos_id);
     }
 
     public function get_obj_cantidades_facturadas_ingrediente( $item_ingrediente_id, $cantidades_facturadas_platillos, $items_con_receta )

@@ -23,6 +23,7 @@
         <div class='form-group'>
             <?php
                 $aplicacion = 'Sin asignar';
+                $permissions_asignados = $role->permissions->pluck('id')->toArray();
                 for($i=0;$i<count($permissions);$i++){
 
                     if ($aplicacion!=$permissions[$i]['descripcion']) {
@@ -30,7 +31,7 @@
                         $aplicacion=$permissions[$i]['descripcion'];
                     }
                                         
-                    echo Form::checkbox('permissions[]',  $permissions[$i]['id'], $role->permissions );
+                    echo Form::checkbox('permissions[]',  $permissions[$i]['id'], in_array($permissions[$i]['id'], $permissions_asignados) );
                     echo Form::label($permissions[$i]['name'], $permissions[$i]['id'] . ' - ' . ucfirst($permissions[$i]['name'])).'<br>';
                 }
 

@@ -351,6 +351,12 @@ class FacturaPosService
             }
         }
 
+        foreach ($factura->ensambles_relacionados() as $ensamble) {
+            if ($ensamble->estado != 'Anulado') {
+                (new InvDocumentsService())->anular_documento_inventarios($ensamble->id);
+            }
+        }
+
         // 2do. Borrar registros contables del documento
         ContabMovimiento::where($array_wheres)->delete();
 

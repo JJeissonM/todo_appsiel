@@ -62,7 +62,7 @@ class InvoicingService
         $obj_acumm_serv = new AccumulationService( $doc_encabezado->pdv_id );
         
         // Realizar preparaciones de recetas
-        $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha );
+        $obj_acumm_serv->hacer_preparaciones_recetas( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha, $doc_encabezado->id );
 
         // Realizar desarme automático
         $obj_acumm_serv->hacer_desarme_automatico( 'Creado por factura POS ' . $doc_encabezado->get_label_documento(), $doc_encabezado->fecha);

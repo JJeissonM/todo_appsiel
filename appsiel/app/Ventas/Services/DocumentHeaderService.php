@@ -76,6 +76,12 @@ class DocumentHeaderService
             }
         }
 
+        foreach ($document_header->ensambles_relacionados() as $ensamble) {
+            if ($ensamble->estado != 'Anulado') {
+                InventarioController::anular_documento_inventarios($ensamble->id);
+            }
+        }
+
         // 2do. Borrar registros contables del documento
         ContabMovimiento::where($array_wheres)->delete();
 

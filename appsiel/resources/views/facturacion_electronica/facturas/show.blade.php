@@ -81,6 +81,11 @@
 @section('datos_adicionales_encabezado')
 	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
+	<?php $ensambles_relacionados = $doc_encabezado->enlaces_ensambles_relacionados(); ?>
+	@if( $ensambles_relacionados != '' )
+		<br/>
+		<b>Ensamble: </b> {!! $ensambles_relacionados !!}
+	@endif
 @endsection
 
 @section('filas_adicionales_encabezado')

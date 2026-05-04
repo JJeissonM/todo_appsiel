@@ -21,6 +21,11 @@
 @section('datos_adicionales_encabezado')
 	<br/>
 	<b>Remisión: </b> {!! $docs_relacionados[0] !!}
+	<?php $ensambles_relacionados = $doc_encabezado->enlaces_ensambles_relacionados(); ?>
+	@if( $ensambles_relacionados != '' )
+		<br>
+		<b>Ensamble: &nbsp;&nbsp;</b> {!! $ensambles_relacionados !!}
+	@endif
 	@if( !is_null( $doc_encabezado->documento_ventas_padre() ) )
 		<br>
 		<b>{{ $doc_encabezado->documento_ventas_padre()->tipo_transaccion->descripcion }}: &nbsp;&nbsp;</b> {!! $doc_encabezado->documento_ventas_padre()->enlace_show_documento() !!}

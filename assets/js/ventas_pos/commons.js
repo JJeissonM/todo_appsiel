@@ -27,6 +27,11 @@ function ejecutar_acciones_con_item_sugerencia(
  * 
  */
 function validar_fecha_diferente() {
+  if (typeof mostrar_advertencia_fecha_factura !== "undefined" && !mostrar_advertencia_fecha_factura) {
+    $("#msj_fecha_diferente").hide();
+    return;
+  }
+
   if ($("#fecha").length === 0) {
     $("#msj_fecha_diferente").hide();
     return;

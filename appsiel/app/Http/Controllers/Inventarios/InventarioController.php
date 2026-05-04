@@ -667,6 +667,7 @@ class InventarioController extends TransaccionController
         }
 
         $enlace2 = '';
+        $enlace4 = '';
         // Verificar si pertenece a una documento de ventas
         $reg_factura_venta = VtasDocEncabezado::where('remision_doc_encabezado_id', $doc_encabezado->id)
             ->orWhere('remision_doc_encabezado_id', 'LIKE', '%,' . $doc_encabezado->id)
@@ -678,6 +679,11 @@ class InventarioController extends TransaccionController
             $fatura_venta = VtasDocEncabezado::get_registro_impresion($reg_factura_venta->id);
             $enlace2 = '<br/>
                     <b>Factura de ventas: </b> <a href="' . url('ventas/' . $fatura_venta->id . '?id=13&id_modelo=139&id_transaccion=' . $reg_factura_venta->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_venta->documento_transaccion_prefijo_consecutivo . '</a>';
+
+            $ensambles_relacionados = $reg_factura_venta->enlaces_ensambles_relacionados();
+            if ($ensambles_relacionados != '') {
+                $enlace4 = '<br/><b>Ensamble relacionado: </b>' . $ensambles_relacionados;
+            }
         }
 
         // Verificar si pertenece a una documento de ventas POS
@@ -691,6 +697,19 @@ class InventarioController extends TransaccionController
             $fatura_venta = FacturaPos::get_registro_impresion($reg_factura_venta->id);
             $enlace2 = '<br/>
                     <b>Factura POS: </b> <a href="' . url('pos_factura/' . $fatura_venta->id . '?id=20&id_modelo=230&id_transaccion=' . $reg_factura_venta->core_tipo_transaccion_id) . '" target="_blank">' . $fatura_venta->documento_transaccion_prefijo_consecutivo . '</a>';
+
+            $ensambles_relacionados = $reg_factura_venta->enlaces_ensambles_relacionados();
+            if ($ensambles_relacionados != '') {
+                $enlace4 = '<br/><b>Ensamble relacionado: </b>' . $ensambles_relacionados;
+            }
+        }
+
+        if ($doc_encabezado->core_tipo_transaccion_id == (int)config('inventarios.core_tipo_transaccion_id', 4) && (int)$doc_encabezado->vtas_doc_encabezado_origen_id > 0) {
+            $factura_pos = FacturaPos::find((int)$doc_encabezado->vtas_doc_encabezado_origen_id);
+            if (!is_null($factura_pos)) {
+                $enlace4 = '<br/>
+                    <b>Factura POS origen: </b> <a href="' . url('pos_factura/' . $factura_pos->id . '?id=20&id_modelo=230&id_transaccion=' . $factura_pos->core_tipo_transaccion_id) . '" target="_blank">' . $factura_pos->get_label_documento() . '</a>';
+            }
         }
 
         $enlace3 = '';
@@ -720,7 +739,7 @@ class InventarioController extends TransaccionController
             ['url' => 'NO', 'etiqueta' => $doc_encabezado->documento_transaccion_prefijo_consecutivo]
         ];
 
-        return view('inventarios.show', compact('id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'registros_contabilidad', 'doc_encabezado', 'empresa', 'enlace1', 'enlace2', 'enlace3'));
+        return view('inventarios.show', compact('id', 'botones_anterior_siguiente', 'documento_vista', 'id_transaccion', 'miga_pan', 'registros_contabilidad', 'doc_encabezado', 'empresa', 'enlace1', 'enlace2', 'enlace3', 'enlace4'));
     }
 
 

@@ -123,7 +123,34 @@ class FacturaPos extends Model
 
     public function remisiones_hijas()
     {
-        return InvDocEncabezado::where( 'vtas_doc_encabezado_origen_id', $this->id )->get();
+        return InvDocEncabezado::where( 'vtas_doc_encabezado_origen_id', $this->id )
+            ->where('core_tipo_transaccion_id', (int)config('ventas.rm_tipo_transaccion_id', 24))
+            ->get();
+    }
+
+    public function ensambles_relacionados()
+    {
+        return InvDocEncabezado::where('vtas_doc_encabezado_origen_id', $this->id)
+            ->where('core_tipo_transaccion_id', (int)config('inventarios.core_tipo_transaccion_id', 4))
+            ->get();
+    }
+
+    public function enlaces_ensambles_relacionados()
+    {
+        $ensambles = $this->ensambles_relacionados();
+        $lista = '';
+        $es_el_primero = true;
+
+        foreach ($ensambles as $ensamble) {
+            if ($es_el_primero) {
+                $lista = $ensamble->enlace_show_documento();
+                $es_el_primero = false;
+            } else {
+                $lista .= ', ' . $ensamble->enlace_show_documento();
+            }
+        }
+
+        return $lista;
     }
 
     public function enlace_show_documento()
