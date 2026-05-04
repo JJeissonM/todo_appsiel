@@ -567,6 +567,21 @@ class CompraController extends TransaccionController
         $pivot_items_xml       = collect([]);
         $productos_para_select = collect([]);
 
+        // EAs asignadas a esta factura (IDs separados por coma en entrada_almacen_id)
+        $ea_asignadas = collect([]);
+        $ea_ids = array_filter(
+            array_map('intval', explode(',', $doc_encabezado->entrada_almacen_id ?? '')),
+            fn($v) => $v > 0
+        );
+        if (!empty($ea_ids)) {
+            $proveedor_ea = \App\Compras\Proveedor::find($doc_encabezado->proveedor_id);
+            $tercero_id   = $proveedor_ea ? $proveedor_ea->core_tercero_id : 0;
+            // Cargar con totales usando el método existente
+            $ea_asignadas = InvDocEncabezado::get_documentos_por_transaccion(35, $tercero_id, 'Facturada')
+                ->whereIn('id', $ea_ids);
+        }
+
+
         if ($doc_encabezado->sincronizado_bot) {
             $pivot_items_xml = \App\Compras\ComprasPivotItemXml::where(
                 'proveedor_id',
@@ -611,7 +626,8 @@ class CompraController extends TransaccionController
             'valor_retenciones',
             'pivot_items_xml',
             'productos_para_select',
-            'mensaje_advertencia_retencion', 
+            'ea_asignadas',
+            'mensaje_advertencia_retencion',
             'mostrar_boton_confirmar'
         ));
     }
@@ -761,6 +777,7 @@ class CompraController extends TransaccionController
                 'inv_productos.id',
                 'inv_productos.tipo',
                 'inv_productos.descripcion',
+                'inv_productos.unidad_medida1',
                 'inv_productos.precio_compra',
                 'inv_productos.precio_venta'
             )
@@ -950,6 +967,95 @@ class CompraController extends TransaccionController
     }
 
 
+    // ─────────────────────────────────────────────────────────────────
+    // ENTRADAS DE ALMACÉN  →  FACTURA DE COMPRA
+    // ─────────────────────────────────────────────────────────────────
+
+    /**
+     * AJAX GET: Devuelve las EA con estado 'Pendiente' del mismo proveedor,
+     * filtradas por core_tipo_transaccion_id = 35 (Entrada x Compra).
+     * Recibe: ?proveedor_id=X&compras_doc_encabezado_id=Y
+     */
+    public function ea_pendientes_proveedor()
+    {
+        $proveedor = \App\Compras\Proveedor::find((int) Input::get('proveedor_id'));
+        if (!$proveedor) {
+            return '<p class="text-muted">Proveedor no encontrado.</p>';
+        }
+
+        $entradas = InvDocEncabezado::get_documentos_por_transaccion(
+            35,
+            $proveedor->core_tercero_id,
+            'Pendiente'
+        );
+
+        if ($entradas->isEmpty()) {
+            return '<p class="text-muted" style="padding:10px;"><i class="fa fa-check-circle text-success"></i> No hay Entradas de Almacén pendientes para este proveedor.</p>';
+        }
+
+        $compras_doc_encabezado_id = (int) Input::get('compras_doc_encabezado_id');
+
+        return View::make(
+            'compras.incluir.ea_pendientes_para_asignar',
+            compact('entradas', 'compras_doc_encabezado_id')
+        )->render();
+    }
+
+    /**
+     * POST: Asigna una o varias EA a la factura.
+     *   - Agrega los IDs a entrada_almacen_id (separados por coma)
+     *   - Cambia el estado de cada EA a 'Facturada'
+     * Recibe: compras_doc_encabezado_id, ea_ids[] (array de ints)
+     */
+    public function asignar_ea(Request $request)
+    {
+        $factura = ComprasDocEncabezado::findOrFail((int) $request->compras_doc_encabezado_id);
+
+        $ea_ids_nuevos = array_map('intval', (array) $request->ea_ids);
+        if (empty($ea_ids_nuevos)) {
+            return response()->json(['ok' => false, 'msg' => 'Seleccione al menos una EA.'], 422);
+        }
+
+        // IDs ya asignados
+        $ids_actuales = array_filter(
+            array_map('intval', explode(',', $factura->entrada_almacen_id ?? '')),
+            fn($v) => $v > 0
+        );
+
+        $ids_finales = array_unique(array_merge($ids_actuales, $ea_ids_nuevos));
+
+        // Actualizar la factura
+        $factura->update(['entrada_almacen_id' => implode(',', $ids_finales)]);
+
+        // Cambiar estado de cada EA nueva a 'Facturada'
+        InvDocEncabezado::whereIn('id', $ea_ids_nuevos)->update(['estado' => 'Facturada']);
+
+        return response()->json(['ok' => true, 'msg' => count($ea_ids_nuevos) . ' EA(s) asignada(s) correctamente.']);
+    }
+
+    /**
+     * POST: Desasigna una EA de la factura.
+     *   - Elimina ese ID de entrada_almacen_id
+     *   - Devuelve el estado de la EA a 'Pendiente'
+     * Recibe: compras_doc_encabezado_id, ea_id
+     */
+    public function desasignar_ea(Request $request)
+    {
+        $factura  = ComprasDocEncabezado::findOrFail((int) $request->compras_doc_encabezado_id);
+        $ea_id    = (int) $request->ea_id;
+
+        $ids = array_filter(
+            array_map('intval', explode(',', $factura->entrada_almacen_id ?? '')),
+            fn($v) => $v > 0 && $v !== $ea_id
+        );
+
+        $factura->update(['entrada_almacen_id' => implode(',', $ids)]);
+
+        InvDocEncabezado::where('id', $ea_id)->update(['estado' => 'Pendiente']);
+
+        return response()->json(['ok' => true, 'msg' => 'EA desasignada correctamente.']);
+    }
+
     // Parámetro enviados por GET
     // Cuando se hace la Entrada por compras y queda pendiente hacer la factura
     public function consultar_entradas_pendientes()
@@ -961,6 +1067,7 @@ class CompraController extends TransaccionController
         }
 
         return View::make('compras.incluir.entradas_almacen_pendientes', compact('entradas'))->render();
+
     }
 
 
@@ -971,12 +1078,28 @@ class CompraController extends TransaccionController
 
         $factura = ComprasDocEncabezado::get_registro_impresion($linea_factura->compras_doc_encabezado_id);
 
-        $entrada_almacen = InvDocEncabezado::get_registro_impresion($factura->entrada_almacen_id);
-        $linea_entrada_almacen = InvDocRegistro::where('inv_doc_encabezado_id', $factura->entrada_almacen_id)
+        // Para facturas sincronizadas por BOT aún sin confirmar, entrada_almacen_id puede ser 0
+        $entrada_almacen_id = (int)$factura->entrada_almacen_id;
+        if ($entrada_almacen_id <= 0) {
+            return '<div class="alert alert-warning" style="margin:15px;">
+                        <strong>Edición no disponible aún:</strong> Esta factura fue sincronizada por el BOT pero aún no ha sido confirmada. Confirme el documento primero para poder editar sus registros.
+                    </div>';
+        }
+
+        $entrada_almacen = InvDocEncabezado::get_registro_impresion($entrada_almacen_id);
+
+        // Buscar la línea de inventario correspondiente (relajamos el filtro de cantidad
+        // porque puede haber diferido por el factor de conversión de U.M.)
+        $linea_entrada_almacen = InvDocRegistro::where('inv_doc_encabezado_id', $entrada_almacen_id)
             ->where('inv_producto_id', $linea_factura->producto_id)
-            ->where('cantidad', $linea_factura->cantidad)
             ->get()
             ->first();
+
+        if (is_null($linea_entrada_almacen)) {
+            return '<div class="alert alert-warning" style="margin:15px;">
+                        <strong>No se encontró la línea en la entrada de almacén.</strong> Es posible que el producto haya sido mapeado después de confirmar el documento. Por favor contacte al administrador.
+                    </div>';
+        }
 
         $saldo_a_la_fecha = InvMovimiento::get_existencia_actual($linea_entrada_almacen->inv_producto_id, $linea_entrada_almacen->inv_bodega_id, $entrada_almacen->fecha);
 

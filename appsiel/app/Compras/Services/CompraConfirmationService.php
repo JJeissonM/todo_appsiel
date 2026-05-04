@@ -9,6 +9,7 @@ use App\CxP\CxpMovimiento;
 use App\CxP\DocumentosPendientes;
 use App\Http\Controllers\Compras\CompraController;
 use App\Inventarios\InvDocEncabezado;
+use App\Inventarios\InvMotivo;
 use App\Tesoreria\TesoMovimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -41,6 +42,8 @@ class CompraConfirmationService
                 },
                 'proveedor'
             ]);
+
+            $this->ensureLinesHaveMotives($documento);
 
             $request = $this->buildRequestFromDocument($documento);
 
@@ -83,6 +86,8 @@ class CompraConfirmationService
             $inv_bodega_id = (int)config('inventarios.item_bodega_principal_id');
         }
 
+        $motivo_default_id = $this->getMotiveDefaultId();
+
         $lineas_registros = $documento->lineas_registros->map(function ($linea) {
             $cantidad = (float)$linea->cantidad;
             $costo_total = (float)$linea->base_impuesto;
@@ -107,6 +112,15 @@ class CompraConfirmationService
                 'contab_retencion_id' => (int)$linea->contab_retencion_id
             ];
         })->values()->toArray();
+
+        if ($motivo_default_id > 0) {
+            foreach ($lineas_registros as &$lr) {
+                if (empty($lr['inv_motivo_id']) || (int)$lr['inv_motivo_id'] <= 0) {
+                    $lr['inv_motivo_id'] = $motivo_default_id;
+                }
+            }
+            unset($lr);
+        }
 
         return new Request([
             'core_empresa_id' => $documento->core_empresa_id,
@@ -136,7 +150,7 @@ class CompraConfirmationService
         $datos['descripcion'] = $documento->descripcion;
         $datos['consecutivo'] = $documento->consecutivo;
         $datos['entrada_almacen_id'] = $documento->entrada_almacen_id;
-        $datos['clase_proveedor_id'] = $datos['clase_proveedor_id'] ?? optional($documento->proveedor)->clase_proveedor_id;
+        $datos['clase_proveedor_id'] = $datos['clase_proveedor_id'] ?? ($documento->proveedor ? $documento->proveedor->clase_proveedor_id : null);
         $datos['estado'] = 'Activo';
         $datos['creado_por'] = Auth::user()->email;
 
@@ -145,9 +159,14 @@ class CompraConfirmationService
         $total_retenciones = 0;
 
         foreach ($documento->lineas_registros as $linea) {
+            $motive_id = (int)$linea->inv_motivo_id;
+            if ($motive_id <= 0) {
+                $motive_id = $this->getMotiveDefaultId();
+            }
+
             $linea_datos = [
                 'compras_doc_encabezado_id' => $documento->id,
-                'inv_motivo_id' => $linea->inv_motivo_id,
+                'inv_motivo_id' => $motive_id,
                 'inv_bodega_id' => $datos['inv_bodega_id'],
                 'inv_producto_id' => $linea->inv_producto_id,
                 'precio_unitario' => $linea->precio_unitario,
@@ -178,6 +197,45 @@ class CompraConfirmationService
 
         CompraController::contabilizar_movimiento_credito($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
         CompraController::crear_registro_pago($documento->forma_pago, $datos, $total_documento, $detalle_operacion);
+    }
+
+    protected function ensureLinesHaveMotives(ComprasDocEncabezado $documento)
+    {
+        $motive_default_id = $this->getMotiveDefaultId();
+        if ($motive_default_id <= 0) {
+            return;
+        }
+
+        foreach ($documento->lineas_registros as $linea) {
+            if (empty($linea->inv_motivo_id) || (int)$linea->inv_motivo_id <= 0) {
+                $linea->inv_motivo_id = $motive_default_id;
+                $linea->save();
+            }
+        }
+    }
+
+    protected function getMotiveDefaultId()
+    {
+        // En facturas sincronizadas por BOT, normalmente inv_motivo_id viene en 0.
+        // Al crear la Entrada de Almacén o contabilizar la Factura, se requiere un motivo válido
+        // para determinar la cuenta contable (evita "Trying to get property 'cta_contrapartida_id' of non-object").
+        $motivo_id = (int) InvMotivo::where('core_empresa_id', Auth::user()->empresa_id)
+            ->where('core_tipo_transaccion_id', (int) config('compras.ea_tipo_transaccion_id'))
+            ->where('estado', 'Activo')
+            ->where('movimiento', 'entrada')
+            ->orderBy('id')
+            ->value('id');
+
+        if ($motivo_id <= 0) {
+            // Fallback conservador: cualquier motivo activo del tipo de transacción de EA (35)
+            $motivo_id = (int) InvMotivo::where('core_empresa_id', Auth::user()->empresa_id)
+                ->where('core_tipo_transaccion_id', (int) config('compras.ea_tipo_transaccion_id'))
+                ->where('estado', 'Activo')
+                ->orderBy('id')
+                ->value('id');
+        }
+
+        return $motivo_id;
     }
 
     protected function hasPurchaseMovements(ComprasDocEncabezado $documento)

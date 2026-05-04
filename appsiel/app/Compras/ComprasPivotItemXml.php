@@ -16,6 +16,8 @@ class ComprasPivotItemXml extends Model
         'proveedor_id',
         'referencia',
         'unidad_medida_xml',
+        'factor_conversion',
+        'tipo_factor',
         'compras_sync_log_id',
     ];
 

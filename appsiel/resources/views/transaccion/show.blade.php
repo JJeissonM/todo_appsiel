@@ -80,7 +80,19 @@
 			                    <br/>
 			                    <b>Estado:</b> {{ $doc_encabezado->estado }}
 								@if( isset($doc_encabezado->sincronizado_bot) && $doc_encabezado->sincronizado_bot )
-									(Sinc. DIAN)
+									(Sinc. DIAN
+									@if(isset($doc_registros))
+										@php
+											$cant_sin_mapear = $doc_registros->whereIn('inv_producto_id', [0, null])->count();
+										@endphp
+										@if($cant_sin_mapear > 0)
+											- Faltan {{ $cant_sin_mapear }} por mapear)
+										@else
+											- Mapeado)
+										@endif
+									@else
+										)
+									@endif
 								@endif
 
 			                    @yield('datos_adicionales_encabezado')

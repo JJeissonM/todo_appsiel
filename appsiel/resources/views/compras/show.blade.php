@@ -148,6 +148,14 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @include('compras.incluir.registros_abonos')
 @include('compras.incluir.notas_credito')
 
+{{-- Entradas de Almacén vinculadas: visible siempre que la factura tenga proveedor --}}
+@if($doc_encabezado->proveedor_id)
+@include('compras.incluir.asignar_ea_factura', [
+    'doc_encabezado' => $doc_encabezado,
+    'ea_asignadas'   => $ea_asignadas,
+])
+@endif
+
 {{-- Mapeo productos XML: solo para facturas sincronizadas por el BOT --}}
 @if($doc_encabezado->sincronizado_bot)
 @include('compras.incluir.mapeo_productos_xml', [
@@ -158,6 +166,7 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 ])
 @endif
 @endsection
+
 
 @section('otros_scripts')
 <script type="text/javascript">
@@ -374,4 +383,97 @@ Formato: {{ Form::select('formato_impresion_id',['pos'=>'POS','estandar'=>'Está
 @if($doc_encabezado->sincronizado_bot)
 <script src="{{ asset('assets/js/compras/mapeo_productos_xml.js?aux=' . uniqid()) }}"></script>
 @endif
+
+<script type="text/javascript">
+$(document).ready(function () {
+
+    var csrfToken = $('meta[name="csrf-token"]').attr('content');
+    var baseUrl   = '{{ url('/') }}';
+
+    // ── Buscar EAs pendientes del proveedor ──────────────────────────
+    $('#btn_buscar_ea_pendientes').on('click', function () {
+        var provId    = $(this).data('proveedor');
+        var facturaId = $(this).data('factura');
+
+        $('#ea_spinner').show();
+        $('#contenedor_ea_pendientes').hide().html('');
+
+        $.get(baseUrl + '/compras_ea_pendientes_proveedor', {
+            proveedor_id: provId,
+            compras_doc_encabezado_id: facturaId
+        })
+        .done(function (html) {
+            $('#contenedor_ea_pendientes').html(html).slideDown();
+            $('#chk_ea_all').on('change', function () {
+                $('.chk_ea_item').prop('checked', this.checked);
+            });
+        })
+        .fail(function (xhr) {
+            $('#contenedor_ea_pendientes').html(
+                '<p class="text-danger"><i class="fa fa-exclamation-circle"></i> Error al cargar las EAs. (' + xhr.status + ')</p>'
+            ).show();
+        })
+        .always(function () { $('#ea_spinner').hide(); });
+    });
+
+    // ── Asignar EAs seleccionadas ────────────────────────────────────
+    $(document).on('click', '#btn_confirmar_asignar_ea', function () {
+        var facturaId = $(this).data('factura');
+        var ids = [];
+        $('.chk_ea_item:checked').each(function () { ids.push($(this).val()); });
+
+        if (ids.length === 0) {
+            alert('Seleccione al menos una Entrada de Almacén.');
+            return;
+        }
+
+        var $btn = $(this);
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Asignando...');
+
+        $.ajax({
+            url:  baseUrl + '/compras_asignar_ea',
+            type: 'POST',
+            data: { ea_ids: ids, compras_doc_encabezado_id: facturaId, _token: csrfToken },
+            success: function (resp) {
+                if (resp.ok) { location.reload(); }
+                else { alert(resp.msg); }
+            },
+            error: function () { alert('Error al asignar las EAs.'); },
+            complete: function () {
+                $btn.prop('disabled', false).html('<i class="fa fa-link"></i> Asignar seleccionadas a esta factura');
+            }
+        });
+    });
+
+    // ── Desasignar una EA ────────────────────────────────────────────
+    $(document).on('click', '.btn_desasignar_ea', function () {
+        var eaId      = $(this).data('ea_id');
+        var facturaId = $(this).data('factura');
+        var $fila     = $(this).closest('tr');
+
+        if (!confirm('¿Desvincular esta EA? Volverá al estado Pendiente.')) return;
+
+        $.ajax({
+            url:  baseUrl + '/compras_desasignar_ea',
+            type: 'POST',
+            data: { ea_id: eaId, compras_doc_encabezado_id: facturaId, _token: csrfToken },
+            success: function (resp) {
+                if (resp.ok) {
+                    $fila.fadeOut(300, function () {
+                        $fila.remove();
+                        if ($('#tabla_ea_asignadas tbody tr').length === 0) {
+                            $('#tabla_ea_asignadas').html(
+                                '<p class="text-muted"><i class="fa fa-info-circle"></i> Aún no hay Entradas de Almacén vinculadas a esta factura.</p>'
+                            );
+                        }
+                    });
+                } else { alert(resp.msg); }
+            },
+            error: function () { alert('Error al desvincular la EA.'); }
+        });
+    });
+
+});
+</script>
 @endsection
+

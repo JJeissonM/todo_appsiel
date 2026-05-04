@@ -81,7 +81,11 @@ Route::post(
     'Compras\SyncFacturaCompraController@store'
 )->name('compras.sync.facturas');
 
-Route::post(
-    'compras/mapeo-productos-xml',
+Route::post('compras/mapeo-productos-xml',
     'Compras\ProductoXmlMapeoController@store'
 )->name('compras.mapeo.productos.xml');
+
+// Entradas de Almacén → Factura
+Route::get('compras_ea_pendientes_proveedor',  'Compras\CompraController@ea_pendientes_proveedor');
+Route::post('compras_asignar_ea',              'Compras\CompraController@asignar_ea');
+Route::post('compras_desasignar_ea',           'Compras\CompraController@desasignar_ea');

@@ -10,6 +10,7 @@ use App\Compras\SyncFacturaCompraLog;
 use App\Core\Tercero;
 use App\Sistema\TipoTransaccion;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class SyncFacturaCompraService
 {
@@ -285,8 +286,13 @@ class SyncFacturaCompraService
             $discount    = (float) ($tax['total_discount'] ?? 0);
             $precio_total = round((float) $item['line_extension_amount'] + $tax_amount, 2);
 
-            // Auto-Mapeo:
-            $inv_producto_id = 0;
+            // Auto-Mapeo y aplicación del factor de conversión de U.M.:
+            $inv_producto_id      = 0;
+            $factor_conversion    = 1.0;
+            $tipo_factor          = 'division';
+            $cantidad_xml         = (float) $item['quantity'];
+            $cantidad_local       = $cantidad_xml;
+
             if ($proveedor) {
                 $codigo = (isset($item['sku']) && $item['sku'] !== '' && $item['sku'] !== null)
                     ? $item['sku']
@@ -299,15 +305,46 @@ class SyncFacturaCompraService
                 if ($pivot && $pivot->inv_producto_id) {
                     $inv_producto_id = $pivot->inv_producto_id;
                 }
+
+                if ($pivot) {
+                    if ((float)$pivot->factor_conversion > 0) {
+                        $factor_conversion = (float) $pivot->factor_conversion;
+                    }
+                    if (!empty($pivot->tipo_factor) && in_array($pivot->tipo_factor, ['multiplicacion', 'division'])) {
+                        $tipo_factor = $pivot->tipo_factor;
+                    }
+                }
+
+                if ($factor_conversion <= 0) {
+                    $factor_conversion = 1.0;
+                }
+
+                // Regla nueva:
+                // - el total XML se respeta
+                // - la cantidad se convierte según operación + factor
+                // - el precio unitario se deriva como total_xml / cantidad_convertida
+                if ($tipo_factor === 'multiplicacion') {
+                    $cantidad_local = $cantidad_xml * $factor_conversion;
+                } else {
+                    $cantidad_local = $cantidad_xml / $factor_conversion;
+                }
             }
 
-            ComprasDocRegistro::create([
+            if ($cantidad_local <= 0) {
+                $cantidad_local = $cantidad_xml;
+            }
+
+            $precio_unitario = $cantidad_local > 0
+                ? round($precio_total / $cantidad_local, 6)
+                : 0;
+
+            $data_registro = [
                 'compras_doc_encabezado_id' => $encabezado->id,
                 'inv_producto_id'           => $inv_producto_id,
                 'inv_motivo_id'             => 0,
                 'contab_retencion_id'       => 0,
-                'precio_unitario'           => round((float) $item['price'], 4),
-                'cantidad'                  => (float) $item['quantity'],
+                'precio_unitario'           => $precio_unitario,
+                'cantidad'                  => $cantidad_local,
                 'precio_total'              => $precio_total,
                 'base_impuesto'             => round($taxable_amt, 2),
                 'tasa_impuesto'             => $tax_rate,
@@ -320,7 +357,17 @@ class SyncFacturaCompraService
                 'creado_por'                => $creado_por,
                 'xml_producto'              => $item['description'] ?? '',
                 'xml_codigo'                => $codigo ?? '',
-            ]);
+            ];
+
+            // Guardar valores fieles al XML si la tabla los tiene
+            if (Schema::hasColumn('compras_doc_registros', 'xml_cantidad')) {
+                $data_registro['xml_cantidad'] = $cantidad_xml;
+            }
+            if (Schema::hasColumn('compras_doc_registros', 'xml_precio_unitario')) {
+                $data_registro['xml_precio_unitario'] = round((float) $item['price'], 6);
+            }
+
+            ComprasDocRegistro::create($data_registro);
         }
     }
 

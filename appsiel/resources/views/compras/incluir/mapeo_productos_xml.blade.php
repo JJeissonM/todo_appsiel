@@ -17,7 +17,12 @@
     <p class="text-muted small">
         Asocie cada producto del XML del proveedor con su equivalente en Appsiel.
         Las asociaciones quedan guardadas por proveedor y se aplican automáticamente
-        en futuras sincronizaciones.
+        en futuras sincronizaciones. Si el proveedor factura en una unidad distinta
+        (ej. cajas/docenas) y usted la maneja en otra (ej. unidades), configure la
+        <strong>cantidad convertida</strong> y/o el <strong>factor de conversión</strong>
+        con su <strong>operación</strong>.
+        El <em>total XML</em> siempre se respeta; el <em>precio unitario</em> se sugiere como
+        <code>total_xml / cantidad_convertida</code>, pero queda editable.
     </p>
 
     @if( session('flash_message') )
@@ -28,6 +33,7 @@
 
         {{ Form::hidden('compras_doc_encabezado_id', $doc_encabezado->id) }}
         {{ Form::hidden('proveedor_id',              $doc_encabezado->proveedor_id) }}
+        {{ Form::hidden('fecha_doc',                $doc_encabezado->fecha) }}
         {{ Form::hidden('url_id',                    Input::get('id')) }}
         {{ Form::hidden('url_id_modelo',             Input::get('id_modelo')) }}
         {{ Form::hidden('url_id_transaccion',        Input::get('id_transaccion')) }}
@@ -39,11 +45,24 @@
                         <th>#</th>
                         <th>Descripción en XML (Proveedor)</th>
                         <th>SKU / Código XML</th>
-                        <th style="text-align:right;">Cant.</th>
-                        <th style="text-align:right;">Precio Unit.</th>
+                        <th style="text-align:right; min-width:80px;">Cant. XML</th>
+                        <th style="text-align:right; min-width:120px;">Precio Unit. XML</th>
                         <th style="text-align:right;">IVA %</th>
-                        <th style="text-align:right;">Total</th>
+                        <th style="text-align:right; min-width:100px;">Total XML</th>
                         <th style="min-width:280px;">Producto en Appsiel</th>
+                        <th style="text-align:center; min-width:80px;">U.M. Appsiel</th>
+                        <th style="text-align:right; min-width:110px;" title="Cantidad convertida (en la U.M. del producto Appsiel).">
+                            Cant. convertida
+                        </th>
+                        <th style="text-align:right; min-width:90px;" title="Factor de conversión configurado para este código XML y proveedor.">
+                            Factor
+                        </th>
+                        <th style="min-width:130px;" title="Operación del factor para convertir la cantidad.">
+                            Operación
+                        </th>
+                        <th style="text-align:right; min-width:140px;" title="Sugerido: total_xml / cantidad_convertida (editable).">
+                            Precio Unit. (calculado)
+                        </th>
                         <th>Estado</th>
                     </tr>
                 </thead>
@@ -51,22 +70,53 @@
                 @php $i = 1; @endphp
                 @foreach($doc_registros as $registro)
                     @php
-                        /*
-                         * Buscar el pivot correspondiente a este registro.
-                         * Utilizamos la nueva columna xml_codigo como llave primaria más segura que el nombre
-                         */
-                        $pivot = $pivot_items_xml
-                            ->where('codigo_item_xml', $registro->xml_codigo)
-                            ->first();
+                        $pivot = $pivot_items_xml->filter(function($p) use ($registro) {
+                            return (string)$p->codigo_item_xml === (string)$registro->xml_codigo;
+                        })->first();
 
                         $ya_mapeado = $pivot && $pivot->inv_producto_id > 0;
+
+                        // Factor de conversión guardado (por defecto 1)
+                        $factor_guardado = ($pivot && $pivot->factor_conversion > 0)
+                            ? (float)$pivot->factor_conversion
+                            : 1;
+
+                        $tipo_factor_guardado = ($pivot && !empty($pivot->tipo_factor))
+                            ? $pivot->tipo_factor
+                            : 'division';
+
+                        // Valores fieles al XML (NO deben cambiar nunca)
+                        // Si existen columnas xml_* en la tabla, se usan.
+                        // Si aún no existen, se hace fallback a los campos actuales.
+                        $cantidad_xml = isset($registro->xml_cantidad) && $registro->xml_cantidad !== null
+                            ? (float) $registro->xml_cantidad
+                            : (float) $registro->cantidad;
+                        $total_xml = (float) $registro->precio_total;
+                        $precio_unitario_xml = isset($registro->xml_precio_unitario) && $registro->xml_precio_unitario !== null
+                            ? (float) $registro->xml_precio_unitario
+                            : (float) $registro->precio_unitario;
+
+                        // Cantidad convertida sugerida a partir de factor+operación
+                        if ($tipo_factor_guardado === 'multiplicacion') {
+                            $cantidad_convertida = $cantidad_xml * $factor_guardado;
+                        } else {
+                            $cantidad_convertida = $factor_guardado > 0 ? ($cantidad_xml / $factor_guardado) : $cantidad_xml;
+                        }
+                        if ($cantidad_convertida <= 0) {
+                            $cantidad_convertida = $cantidad_xml;
+                        }
+
+                        // Precio unitario sugerido (editable): total_xml / cantidad_convertida
+                        $precio_unitario_sugerido = $cantidad_convertida > 0
+                            ? round($total_xml / $cantidad_convertida, 6)
+                            : 0;
                     @endphp
                     <tr>
-                        <td>{{ $i++ }}</td>
+                        <td>{{ $i }}</td>
                         <td>
                             <strong>{{ $registro->xml_producto }}</strong>
                             @if($pivot && $pivot->unidad_medida_xml)
-                                <br><small class="text-muted">UM: {{ $pivot->unidad_medida_xml }}</small>
+                                <br><small class="text-muted">U.M. XML: {{ $pivot->unidad_medida_xml }}</small>
                             @endif
                         </td>
                         <td>
@@ -74,25 +124,27 @@
                                 {{ $registro->xml_codigo ?: '—' }}
                             </small>
                         </td>
-                        <td style="text-align:right;">{{ $registro->cantidad }}</td>
+                        <td style="text-align:right;">{{ $cantidad_xml }}</td>
                         <td style="text-align:right;">
-                            $ {{ number_format($registro->precio_unitario, 2, ',', '.') }}
+                            $ {{ number_format($precio_unitario_xml, 4, ',', '.') }}
                         </td>
                         <td style="text-align:right;">{{ $registro->tasa_impuesto }}%</td>
                         <td style="text-align:right;">
-                            $ {{ number_format($registro->precio_total, 2, ',', '.') }}
+                            $ {{ number_format($total_xml, 2, ',', '.') }}
                         </td>
                         <td>
-                            {{-- Campos hidden con índice para el array mapeos[] --}}
-                            <input type="hidden"
-                                   name="mapeos[{{ $i }}][pivot_id]"
+                            {{-- Campos hidden con índice --}}
+                            <input type="hidden" name="mapeos[{{ $i }}][pivot_id]"
                                    value="{{ $pivot->id ?? 0 }}">
-                            <input type="hidden"
-                                   name="mapeos[{{ $i }}][compras_doc_registro_id]"
+                            <input type="hidden" name="mapeos[{{ $i }}][compras_doc_registro_id]"
                                    value="{{ $registro->id }}">
+                            <input type="hidden" class="cantidad-xml" value="{{ $cantidad_xml }}">
+                            <input type="hidden" class="total-xml" value="{{ $total_xml }}">
+                            <input type="hidden" name="mapeos[{{ $i }}][xml_cantidad]" value="{{ $cantidad_xml }}">
+                            <input type="hidden" name="mapeos[{{ $i }}][xml_precio_unitario]" value="{{ $precio_unitario_xml }}">
 
                             <select name="mapeos[{{ $i }}][inv_producto_id]"
-                                    class="form-control select2">
+                                    class="form-control select2 select2-mapeo">
                                 <option value="">-- Seleccionar producto --</option>
                                 @foreach($productos_para_select as $prod)
                                     <option value="{{ $prod->id }}"
@@ -102,6 +154,50 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </td>
+                        <td style="text-align:center;">
+                            <span class="label label-info label-um-appsiel" style="font-size: 1.1em;">—</span>
+                        </td>
+                        <td>
+                            <input type="number"
+                                   name="mapeos[{{ $i }}][cantidad_convertida]"
+                                   class="form-control input-sm cantidad-convertida"
+                                   min="0.000001"
+                                   step="any"
+                                   value="{{ $cantidad_convertida }}"
+                                   style="width:110px;">
+                        </td>
+                        <td>
+                            <input type="number"
+                                   name="mapeos[{{ $i }}][factor_conversion]"
+                                   class="form-control input-sm factor-conversion"
+                                   min="0.000001"
+                                   step="any"
+                                   value="{{ $factor_guardado }}"
+                                   style="width:90px;">
+                        </td>
+                        <td>
+                            <select name="mapeos[{{ $i }}][tipo_factor]"
+                                    class="form-control input-sm tipo-factor"
+                                    style="min-width:120px;">
+                                <option value="multiplicacion" {{ $tipo_factor_guardado === 'multiplicacion' ? 'selected' : '' }}>
+                                    Multiplicación
+                                </option>
+                                <option value="division" {{ $tipo_factor_guardado === 'division' ? 'selected' : '' }}>
+                                    División
+                                </option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="input-group input-group-sm" style="min-width:140px;">
+                                <span class="input-group-addon">$</span>
+                                <input type="number"
+                                       name="mapeos[{{ $i }}][precio_unitario_final]"
+                                       class="form-control precio-unitario-final"
+                                       step="any"
+                                       value="{{ $precio_unitario_sugerido }}"
+                                       title="Sugerido: total_xml/cantidad_convertida. Editable.">
+                            </div>
                         </td>
                         <td>
                             @if($ya_mapeado)
@@ -115,9 +211,18 @@
                             @endif
                         </td>
                     </tr>
+                @php $i++; @endphp
                 @endforeach
                 </tbody>
             </table>
+        </div>
+
+        <div class="alert alert-info alert-sm" style="padding:8px; margin-top:8px;">
+            <i class="fa fa-lightbulb-o"></i>
+            <strong>Reglas:</strong> El <em>Total XML</em> no cambia.
+            El sistema sugiere <em>Precio Unitario</em> como <code>Total XML / Cant. convertida</code>.
+            Puede ajustar manualmente el precio unitario; el <em>factor</em> y la <em>operación</em>
+            quedan guardados por proveedor/código XML para futuras sincronizaciones.
         </div>
 
         <div style="text-align: right; margin-top: 10px;">

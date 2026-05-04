@@ -19,7 +19,12 @@
                         continue;
                     }
                     $precio_original = $linea->precio_unitario + ( $linea->valor_total_descuento / $linea->cantidad );
-                    $subtotal_linea = ( $linea->cantidad * $precio_original ) - $linea->valor_impuesto;
+
+                    // El subtotal sin IVA se obtiene de base_impuesto (almacenado directamente
+                    // desde el XML en facturas BOT, y calculado correctamente en compras manuales).
+                    // La fórmula anterior (precio_original*cantidad - valor_impuesto) fallaba
+                    // cuando el precio_unitario del XML no incluye IVA.
+                    $subtotal_linea = (float)$linea->base_impuesto - (float)$linea->valor_total_descuento;
 
                     $es_pendiente = false;
                     if (is_null($linea->item)) {
