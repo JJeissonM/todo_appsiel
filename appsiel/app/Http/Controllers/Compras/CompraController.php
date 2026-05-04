@@ -569,9 +569,10 @@ class CompraController extends TransaccionController
 
         // EAs asignadas a esta factura (IDs separados por coma en entrada_almacen_id)
         $ea_asignadas = collect([]);
+        $entrada_almacen_id = is_null($doc_encabezado->entrada_almacen_id) ? '' : $doc_encabezado->entrada_almacen_id;
         $ea_ids = array_filter(
-            array_map('intval', explode(',', $doc_encabezado->entrada_almacen_id ?? '')),
-            fn($v) => $v > 0
+            array_map('intval', explode(',', $entrada_almacen_id)),
+            function($v) { return $v > 0; }
         );
         if (!empty($ea_ids)) {
             $proveedor_ea = \App\Compras\Proveedor::find($doc_encabezado->proveedor_id);
@@ -1017,9 +1018,10 @@ class CompraController extends TransaccionController
         }
 
         // IDs ya asignados
+        $entrada_almacen_id = is_null($factura->entrada_almacen_id) ? '' : $factura->entrada_almacen_id;
         $ids_actuales = array_filter(
-            array_map('intval', explode(',', $factura->entrada_almacen_id ?? '')),
-            fn($v) => $v > 0
+            array_map('intval', explode(',', $entrada_almacen_id)),
+            function($v) { return $v > 0; }
         );
 
         $ids_finales = array_unique(array_merge($ids_actuales, $ea_ids_nuevos));
@@ -1044,9 +1046,10 @@ class CompraController extends TransaccionController
         $factura  = ComprasDocEncabezado::findOrFail((int) $request->compras_doc_encabezado_id);
         $ea_id    = (int) $request->ea_id;
 
+        $entrada_almacen_id = is_null($factura->entrada_almacen_id) ? '' : $factura->entrada_almacen_id;
         $ids = array_filter(
-            array_map('intval', explode(',', $factura->entrada_almacen_id ?? '')),
-            fn($v) => $v > 0 && $v !== $ea_id
+            array_map('intval', explode(',', $entrada_almacen_id)),
+            function($v) use ($ea_id) { return $v > 0 && $v !== $ea_id; }
         );
 
         $factura->update(['entrada_almacen_id' => implode(',', $ids)]);
