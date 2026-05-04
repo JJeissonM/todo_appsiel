@@ -295,10 +295,12 @@ class InvFisicoController extends TransaccionController
                     'saldo_ini' => 0,
                     'entradas' => 0,
                     'salidas' => 0,
+                    'salidas_por_motivo' => [],
                     'saldo_fin' => 0,
                     'cantidad_if' => 0,
                     'diferencia' => 0
-                ]
+                ],
+                'motivos_salidas' => []
             ];
         }
 
@@ -347,17 +349,46 @@ class InvFisicoController extends TransaccionController
                             ->whereIn('inv_movimientos.inv_producto_id', $item_ids)
                             ->select(
                                 'inv_productos.id AS item_id',
+                                'inv_motivos.id AS motivo_id',
+                                'inv_motivos.descripcion AS motivo_descripcion',
                                 DB::raw('sum(inv_movimientos.cantidad) as cantidad_total_movimiento')
                             )
-                            ->groupBy('inv_movimientos.inv_producto_id')
-                            ->get()
-                            ->pluck('cantidad_total_movimiento', 'item_id');
+                            ->groupBy('inv_productos.id', 'inv_motivos.id', 'inv_motivos.descripcion')
+                            ->orderBy('inv_motivos.id')
+                            ->get();
+
+        $motivos_salidas = [];
+        $salidas_por_item_motivo = [];
+        $salidas_por_item = [];
+        foreach ( $movimientos_salidas as $movimiento_salida )
+        {
+            $item_id = (int)$movimiento_salida->item_id;
+            $motivo_id = (int)$movimiento_salida->motivo_id;
+            $cantidad = (float)$movimiento_salida->cantidad_total_movimiento;
+
+            if ( !isset($motivos_salidas[$motivo_id]) )
+            {
+                $motivos_salidas[$motivo_id] = (object)[
+                    'id' => $motivo_id,
+                    'descripcion' => $movimiento_salida->motivo_descripcion
+                ];
+            }
+
+            if ( !isset($salidas_por_item_motivo[$item_id]) )
+            {
+                $salidas_por_item_motivo[$item_id] = [];
+            }
+
+            $salidas_por_item_motivo[$item_id][$motivo_id] = $cantidad;
+            $salidas_por_item[$item_id] = (float)($salidas_por_item[$item_id] ?? 0) + $cantidad;
+        }
 
         $filas = [];
         $totales = (object)[
             'saldo_ini' => 0,
             'entradas' => 0,
             'salidas' => 0,
+            'salidas_por_motivo' => [],
             'saldo_fin' => 0,
             'cantidad_if' => 0,
             'diferencia' => 0
@@ -373,10 +404,11 @@ class InvFisicoController extends TransaccionController
 
             $saldo_ini = (float)($saldos_items[$item_id] ?? 0);
             $entradas = (float)($movimientos_entradas[$item_id] ?? 0);
-            $salidas = (float)($movimientos_salidas[$item_id] ?? 0);
+            $salidas = (float)($salidas_por_item[$item_id] ?? 0);
             $saldo_fin = $saldo_ini + $entradas + $salidas;
             $cantidad_if = (float)($cantidades_if[$item_id] ?? 0);
             $diferencia = $cantidad_if - $saldo_fin;
+            $salidas_por_motivo = $salidas_por_item_motivo[$item_id] ?? [];
 
             $filas[] = (object)[
                 'id' => $item->id,
@@ -385,6 +417,7 @@ class InvFisicoController extends TransaccionController
                 'saldo_ini' => $saldo_ini,
                 'entradas' => $entradas,
                 'salidas' => $salidas,
+                'salidas_por_motivo' => $salidas_por_motivo,
                 'saldo_fin' => $saldo_fin,
                 'cantidad_if' => $cantidad_if,
                 'diferencia' => $diferencia
@@ -393,6 +426,10 @@ class InvFisicoController extends TransaccionController
             $totales->saldo_ini += $saldo_ini;
             $totales->entradas += $entradas;
             $totales->salidas += $salidas;
+            foreach ( $salidas_por_motivo as $motivo_id => $cantidad_salida )
+            {
+                $totales->salidas_por_motivo[$motivo_id] = (float)($totales->salidas_por_motivo[$motivo_id] ?? 0) + (float)$cantidad_salida;
+            }
             $totales->saldo_fin += $saldo_fin;
             $totales->cantidad_if += $cantidad_if;
             $totales->diferencia += $diferencia;
@@ -403,7 +440,8 @@ class InvFisicoController extends TransaccionController
             'fecha_hasta' => $fecha,
             'bodega' => $bodega,
             'items' => $filas,
-            'totales' => $totales
+            'totales' => $totales,
+            'motivos_salidas' => $motivos_salidas
         ];
     }
 

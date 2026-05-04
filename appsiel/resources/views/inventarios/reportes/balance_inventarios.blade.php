@@ -8,7 +8,24 @@
 </h5>
 <div class="table-responsive">
     <table id="myTable" class="table table-striped">
-        {{ Form::bsTableHeader(['Cód.','Producto','S. Inicial','Entradas','Salidas','S. Final']) }}
+        <?php
+            $movimientos_salidas_por_motivo_aux = collect( $movimientos_salidas_por_motivo->toArray() );
+            $motivos_salidas = $movimientos_salidas_por_motivo_aux->unique('motivo_id')->values();
+            $encabezado_tabla = ['Cód.','Producto','S. Inicial','Entradas'];
+
+            if ( $separar_salidas_por_motivo )
+            {
+                foreach ( $motivos_salidas as $motivo_salida )
+                {
+                    $encabezado_tabla[] = $motivo_salida['motivo_descripcion'];
+                }
+            }else{
+                $encabezado_tabla[] = 'Salidas';
+            }
+
+            $encabezado_tabla[] = 'S. Final';
+        ?>
+        {{ Form::bsTableHeader($encabezado_tabla) }}
         <tbody>
             <?php 
                 $saldos_items_aux = collect( $saldos_items->toArray() );
@@ -18,6 +35,7 @@
                 $total_saldo_ini = 0;
                 $total_entradas =   0;
                 $total_salidas =   0;
+                $total_salidas_por_motivo = [];
                 $total_saldo_fin = 0;
 
             ?>
@@ -48,7 +66,18 @@
                         <td>{{ $item->descripcion }} ({{ $item->get_unidad_medida1() }})</td>
                         <td class="text-right">{{ number_format($saldo_ini, 2, ',', '.') }} </td>
                         <td class="text-right">{{ number_format( $entradas, 2, ',', '.') }}</td>
-                        <td class="text-right">{{ number_format( $salidas, 2, ',', '.') }}</td>
+                        @if( $separar_salidas_por_motivo )
+                            @foreach( $motivos_salidas as $motivo_salida )
+                                <?php
+                                    $salida_motivo = $movimientos_salidas_por_motivo_aux->where( 'item_id', $item->id )->where( 'motivo_id', $motivo_salida['motivo_id'] )->pluck('cantidad_total_movimiento')->first();
+                                    $salida_motivo = (float)$salida_motivo;
+                                    $total_salidas_por_motivo[$motivo_salida['motivo_id']] = (float)(isset($total_salidas_por_motivo[$motivo_salida['motivo_id']]) ? $total_salidas_por_motivo[$motivo_salida['motivo_id']] : 0) + $salida_motivo;
+                                ?>
+                                <td class="text-right">{{ number_format( $salida_motivo, 2, ',', '.') }}</td>
+                            @endforeach
+                        @else
+                            <td class="text-right">{{ number_format( $salidas, 2, ',', '.') }}</td>
+                        @endif
                         <td class="text-right">{{ number_format( $saldo_fin, 2, ',', '.') }}</td>
                     </tr>
                     <?php 
@@ -65,7 +94,13 @@
                 <td colspan="2"></td>
                 <td class="text-right"><b>{{ number_format( $total_saldo_ini, 2, ',', '.') }} </b> </td>
                 <td class="text-right"><b>{{ number_format( $total_entradas, 2, ',', '.') }} </b></td>
-                <td class="text-right"><b>{{ number_format( $total_salidas, 2, ',', '.') }} </b></td>
+                @if( $separar_salidas_por_motivo )
+                    @foreach( $motivos_salidas as $motivo_salida )
+                        <td class="text-right"><b>{{ number_format( isset($total_salidas_por_motivo[$motivo_salida['motivo_id']]) ? $total_salidas_por_motivo[$motivo_salida['motivo_id']] : 0, 2, ',', '.') }} </b></td>
+                    @endforeach
+                @else
+                    <td class="text-right"><b>{{ number_format( $total_salidas, 2, ',', '.') }} </b></td>
+                @endif
                 <td class="text-right"><b>{{ number_format( $total_saldo_fin, 2, ',', '.') }} </b></td>
             </tr>
         </tfoot>

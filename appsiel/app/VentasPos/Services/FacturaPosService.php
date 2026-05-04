@@ -61,6 +61,10 @@ class FacturaPosService
     public function ajustar_campos( $lista_campos, $pdv, $vendedor, $transaccion )
     {
         $cantidad_campos = count($lista_campos);
+        $fecha_factura = date('Y-m-d');
+        if (config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
+            $fecha_factura = $pdv->ultima_fecha_apertura();
+        }
 
         $lista_campos = (new ModeloService())->personalizar_campos($transaccion->id, $transaccion, $lista_campos, $cantidad_campos, 'create', null);
 
@@ -86,11 +90,11 @@ class FacturaPosService
                     break;
 
                 case 'fecha':
-                    $lista_campos[$i]['value'] = $pdv->ultima_fecha_apertura();
+                    $lista_campos[$i]['value'] = $fecha_factura;
                     break;
 
                 case 'fecha_vencimiento':
-                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $pdv->ultima_fecha_apertura() );
+                    $lista_campos[$i]['value'] = $pdv->cliente->fecha_vencimiento_pago( $fecha_factura );
                     break;
 
                 case 'inv_bodega_id':

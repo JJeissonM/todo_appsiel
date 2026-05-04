@@ -118,10 +118,18 @@ class PrintServices
 
             $lbl_total_factura = $doc_encabezado->valor_total + $lbl_ajuste_al_peso + $doc_encabezado->valor_total_bolsas;
             
+            $fecha_doc_encabezado = trim((string)$doc_encabezado->fecha);
+            if ($fecha_doc_encabezado == '' || $fecha_doc_encabezado == '0000-00-00') {
+                $fecha_doc_encabezado = date('Y-m-d');
+                if (!is_null($doc_encabezado->created_at)) {
+                    $fecha_doc_encabezado = date('Y-m-d', strtotime($doc_encabezado->created_at));
+                }
+            }
+
             $datos_factura = (object)[
                 'core_tipo_transaccion_id' => $doc_encabezado->core_tipo_transaccion_id,
                 'lbl_consecutivo_doc_encabezado' => $doc_encabezado->consecutivo,
-                'lbl_fecha' => $doc_encabezado->fecha,
+                'lbl_fecha' => $fecha_doc_encabezado,
                 'lbl_hora' => explode(" ", $doc_encabezado->created_at)[1],
                 'lbl_condicion_pago' => $doc_encabezado->condicion_pago,
                 'lbl_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,

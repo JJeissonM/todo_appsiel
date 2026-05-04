@@ -40,6 +40,25 @@
 						@foreach ( $movimientos as $movimiento)
 							<?php 
 								$item = $movimiento->producto;
+
+								$class_color = 'success';
+
+								if( $stock_minimo->where('inv_producto_id', $item->id)->first() )
+								{
+
+									$porcentaje_tolerancia = config('inventarios.porcentaje_tolerancia_stock_minimo', 20);
+									$cantidad_tolerancia = $stock_minimo->where('inv_producto_id', $item->id)->first()->stock_minimo * ( 1 + $porcentaje_tolerancia/100 );
+
+									if ( $movimiento->Cantidad <= $cantidad_tolerancia )
+									{
+										$class_color = 'warning';
+									}
+								}
+								
+								if($movimiento->Cantidad < 0)
+								{
+									$class_color = 'danger';
+								}
 								
 								$costo_unitario = 0;
 								
@@ -53,7 +72,7 @@
 									$movimiento->Costo = $movimiento->Cantidad * $costo_unitario;
 								}
 							?>
-							<tr>
+							<tr class="{{ $class_color }}">
 								<td class="text-center">{{$item->id}}</td>
 								<td>{{ $item->get_value_to_show( true ) }}</td>
 								<td class="text-center">

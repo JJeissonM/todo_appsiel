@@ -76,18 +76,24 @@
 
 <h3>Balance de inventarios</h3>
 
+@php
+    $motivos_salidas = $datos_balance['motivos_salidas'] ?? [];
+@endphp
+
 <table class="tabla-balance">
     <thead>
         <tr>
             <th style="width: 6%;">Cód.</th>
             <th>Producto</th>
-            <th style="width: 10%;">S. Inicial</th>
-            <th style="width: 10%;">Entradas</th>
-            <th style="width: 10%;">Salidas</th>
-            <th style="width: 10%;">S. Final</th>
-            <th style="width: 10%;">Cant. IF</th>
-            <th style="width: 8%;">Dif.</th>
-            <th style="width: 15%;">Observaciones</th>
+            <th>S. Inicial</th>
+            <th>Entradas</th>
+            @foreach( $motivos_salidas as $motivo_salida )
+                <th>{{ $motivo_salida->descripcion }}</th>
+            @endforeach
+            <th>S. Final</th>
+            <th>Cant. IF</th>
+            <th>Dif.</th>
+            <th>Observaciones</th>
         </tr>
     </thead>
     <tbody>
@@ -97,7 +103,9 @@
                 <td>{{ $item->descripcion }} ({{ $item->unidad_medida1 }})</td>
                 <td class="text-right">{{ number_format($item->saldo_ini, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item->entradas, 2, ',', '.') }}</td>
-                <td class="text-right">{{ number_format($item->salidas, 2, ',', '.') }}</td>
+                @foreach( $motivos_salidas as $motivo_salida )
+                    <td class="text-right">{{ number_format($item->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
+                @endforeach
                 <td class="text-right">{{ number_format($item->saldo_fin, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item->cantidad_if, 2, ',', '.') }}</td>
                 <td class="text-right">{{ number_format($item->diferencia, 2, ',', '.') }}</td>
@@ -110,7 +118,9 @@
             <td colspan="2"></td>
             <td class="text-right">{{ number_format($datos_balance['totales']->saldo_ini, 2, ',', '.') }}</td>
             <td class="text-right">{{ number_format($datos_balance['totales']->entradas, 2, ',', '.') }}</td>
-            <td class="text-right">{{ number_format($datos_balance['totales']->salidas, 2, ',', '.') }}</td>
+            @foreach( $motivos_salidas as $motivo_salida )
+                <td class="text-right">{{ number_format($datos_balance['totales']->salidas_por_motivo[$motivo_salida->id] ?? 0, 2, ',', '.') }}</td>
+            @endforeach
             <td class="text-right">{{ number_format($datos_balance['totales']->saldo_fin, 2, ',', '.') }}</td>
             <td class="text-right">{{ number_format($datos_balance['totales']->cantidad_if, 2, ',', '.') }}</td>
             <td class="text-right">{{ number_format($datos_balance['totales']->diferencia, 2, ',', '.') }}</td>

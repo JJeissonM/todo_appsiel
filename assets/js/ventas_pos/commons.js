@@ -27,11 +27,42 @@ function ejecutar_acciones_con_item_sugerencia(
  * 
  */
 function validar_fecha_diferente() {
+  if ($("#fecha").length === 0) {
+    $("#msj_fecha_diferente").hide();
+    return;
+  }
+
   if ($("#fecha").val() != get_fecha_hoy()) {
     $("#msj_fecha_diferente").show();
   } else {
     $("#msj_fecha_diferente").hide();
   }
+}
+
+function pos_get_fecha_factura()
+{
+  if ($("#fecha").length > 0 && $("#fecha").val() !== "") {
+    return $("#fecha").val();
+  }
+
+  if (typeof fecha !== "undefined" && fecha !== "") {
+    return fecha;
+  }
+
+  return get_fecha_hoy();
+}
+
+function pos_get_fecha_vencimiento_factura()
+{
+  if ($("#fecha_vencimiento").length > 0 && $("#fecha_vencimiento").val() !== "") {
+    return $("#fecha_vencimiento").val();
+  }
+
+  if (typeof fecha_vencimiento !== "undefined" && fecha_vencimiento !== "") {
+    return fecha_vencimiento;
+  }
+
+  return pos_get_fecha_factura();
 }
 
 /**
@@ -780,7 +811,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
   );
 
   $(".lbl_condicion_pago").text($("#forma_pago").val());
-  $(".lbl_fecha_vencimiento").text($("#fecha_vencimiento").val());
+  $(".lbl_fecha_vencimiento").text(pos_get_fecha_vencimiento_factura());
 
   $("#cantidad_total_productos").text(cantidad_total_productos);
 
@@ -793,7 +824,7 @@ function llenar_tabla_productos_facturados( con_medios_recaudos = true )
     $("#tr_total_cambio").hide();
   }
 
-  $("#lbl_fecha").text($("#fecha").val() );
+  $("#lbl_fecha").text(pos_get_fecha_factura());
   var d = new Date();
   $("#lbl_hora").text(
     addZero(get_hora(d.getHours())) +
@@ -1858,6 +1889,8 @@ $(document).ready(function () {
     $('#cliente_input').css('background-color', '#eee');
 
     $(".lbl_consecutivo_doc_encabezado").text(doc_encabezado.consecutivo);
+    $("#lbl_fecha").text(doc_encabezado.doc_encabezado_fecha || pos_get_fecha_factura());
+    $(".lbl_fecha_vencimiento").text(doc_encabezado.doc_encabezado_fecha_vencimiento || pos_get_fecha_vencimiento_factura());
 
     if( $('#mostrar_saldo_pendiente_cxc_al_imprimir').val() == 1 )
     {

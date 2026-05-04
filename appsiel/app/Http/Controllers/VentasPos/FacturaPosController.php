@@ -249,6 +249,7 @@ class FacturaPosController extends TransaccionController
         $email = Auth::user()->email; // Solo para verificar que la sesión esté activa. Si se cerró la sesión, Laravel lanza una excepción
 
         $this->aplicar_excedente_transferencia_como_otros_recaudos($request);
+        $this->aplicar_fechas_factura_pos_por_defecto($request);
 
         $request_id = $this->get_request_id_from_request($request);
         $request_uniqid = (string)$request->get('uniqid', '');
@@ -435,6 +436,7 @@ class FacturaPosController extends TransaccionController
     {
         $empresa = $doc_encabezado->empresa;
         $pdv = $doc_encabezado->pdv;
+        $fecha_doc_encabezado = $this->get_fecha_impresion_doc_encabezado($doc_encabezado);
 
         $resolucion = ResolucionFacturacion::where('tipo_doc_app_id', $pdv->tipo_doc_app_default_id)->where('estado', 'Activo')->get()->last();
 
@@ -459,7 +461,8 @@ class FacturaPosController extends TransaccionController
             'doc_encabezado_documento_transaccion_descripcion' => $doc_encabezado->tipo_documento_app->descripcion,
             'consecutivo' => $doc_encabezado->consecutivo,
             'doc_encabezado_documento_transaccion_prefijo_consecutivo' => $doc_encabezado->tipo_documento_app->prefijo . ' ' . $doc_encabezado->consecutivo,
-            'doc_encabezado_fecha' => $doc_encabezado->fecha,
+            'doc_encabezado_fecha' => $fecha_doc_encabezado,
+            'doc_encabezado_fecha_vencimiento' => $doc_encabezado->fecha_vencimiento,
             'doc_encabezado_forma_pago' => $doc_encabezado->forma_pago,
             'doc_encabezado_valor_total' => (float)$doc_encabezado->valor_total,
             'doc_encabezado_tercero_nombre_completo' => $doc_encabezado->cliente->tercero->descripcion,
@@ -476,9 +479,23 @@ class FacturaPosController extends TransaccionController
                 'descripcion_tipo_documento_identidad' => $doc_encabezado->cliente->tercero->tipo_doc_identidad->abreviatura,
                 'descripcion_ciudad' => $doc_encabezado->cliente->tercero->ciudad->descripcion,
             ]),
-            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $doc_encabezado->fecha),
+            'saldo_pendiente_cxc' => (new CxCServices())->get_movimiento_documentos_pendientes_fecha_corte($doc_encabezado->cliente->core_tercero_id, $fecha_doc_encabezado),
             'lbl_creado_por_fecha_y_hora' => explode('@', $doc_encabezado->creado_por)[0]
         ];        
+    }
+
+    protected function get_fecha_impresion_doc_encabezado($doc_encabezado)
+    {
+        $fecha = trim((string)$doc_encabezado->fecha);
+        if ($fecha != '' && $fecha != '0000-00-00') {
+            return $fecha;
+        }
+
+        if (!is_null($doc_encabezado->created_at)) {
+            return date('Y-m-d', strtotime($doc_encabezado->created_at));
+        }
+
+        return date('Y-m-d');
     }
 
     /**
@@ -724,6 +741,7 @@ class FacturaPosController extends TransaccionController
         }
 
         $doc_encabezado = FacturaPos::with('lineas_registros')->find($id);
+        $this->aplicar_fechas_factura_pos_por_defecto($request, $doc_encabezado->pdv_id);
 
         $datos_antes = [
             'fecha' => $doc_encabezado->fecha,
@@ -851,6 +869,36 @@ class FacturaPosController extends TransaccionController
         $response = $this->build_json_doc_encabezado($doc_encabezado);
         $response['request_id'] = $this->get_request_id_from_request($request);
         return response()->json( $response, 200);
+    }
+
+    protected function aplicar_fechas_factura_pos_por_defecto(Request $request, $pdv_id_default = null)
+    {
+        $fecha = trim((string)$request->get('fecha', ''));
+        $pdv_id = (int)$request->get('pdv_id', 0);
+        if ($pdv_id == 0 && !is_null($pdv_id_default)) {
+            $pdv_id = (int)$pdv_id_default;
+        }
+
+        $pdv = $pdv_id > 0 ? Pdv::find($pdv_id) : null;
+
+        if ($fecha == '') {
+            $fecha = date('Y-m-d');
+            if (!is_null($pdv) && config('ventas_pos.asignar_fecha_apertura_a_facturas')) {
+                $fecha = $pdv->ultima_fecha_apertura();
+            }
+            $request->merge(['fecha' => $fecha]);
+        }
+
+        if (trim((string)$request->get('fecha_vencimiento', '')) != '') {
+            return;
+        }
+
+        $fecha_vencimiento = $fecha;
+        if (!is_null($pdv) && !is_null($pdv->cliente)) {
+            $fecha_vencimiento = $pdv->cliente->fecha_vencimiento_pago($fecha);
+        }
+
+        $request->merge(['fecha_vencimiento' => $fecha_vencimiento]);
     }
 
     protected function sincronizar_cxc_credito_desde_encabezado($doc_encabezado)
@@ -1695,8 +1743,5 @@ class FacturaPosController extends TransaccionController
         return 0;
     }
 }
-
-
-
 
 
