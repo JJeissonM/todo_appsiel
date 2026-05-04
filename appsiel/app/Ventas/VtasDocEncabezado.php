@@ -210,17 +210,17 @@ class VtasDocEncabezado extends Model
         }
 
         $factura_pos_relacionada = FacturaPos::find((int)$this->ventas_doc_relacionado_id);
-        if (!is_null($factura_pos_relacionada) && in_array($factura_pos_relacionada->estado, ['Enviada', 'Anulado'])) {
+        if (!is_null($factura_pos_relacionada) && in_array($factura_pos_relacionada->estado, array('Enviada', 'Anulado'))) {
             $factura_pos_id = (int)$factura_pos_relacionada->id;
         }
 
-        $ids_origen = [];
+        $ids_origen = array();
         if ($factura_pos_id > 0) {
             $ids_origen[] = $factura_pos_id;
         }
 
         if (empty($ids_origen)) {
-            return collect([]);
+            return new \Illuminate\Support\Collection();
         }
 
         return InvDocEncabezado::whereIn('vtas_doc_encabezado_origen_id', array_unique($ids_origen))

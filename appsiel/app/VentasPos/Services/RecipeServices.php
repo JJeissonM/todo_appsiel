@@ -137,7 +137,7 @@ class RecipeServices
 
         if ($factura_pos_id !== null) {
             InvDocEncabezado::where('id', $doc_encabezado_id)
-                ->update(['vtas_doc_encabezado_origen_id' => (int)$factura_pos_id]);
+                ->update(array('vtas_doc_encabezado_origen_id' => (int)$factura_pos_id));
         }
         
         return $doc_encabezado_id;
@@ -228,11 +228,11 @@ class RecipeServices
                                         ->get()
                                         ->groupBy('item_platillo_id');
         
-        $keys_auxiliary_array = [];
+        $keys_auxiliary_array = array();
         foreach ($platillos_agrupados as $item_platillo_id => $lista_ingredientes) {
             $key_array = (object)[
                 'item_platillo_id' => $item_platillo_id,
-                'arr_ids_items_ingredientes' => []
+                'arr_ids_items_ingredientes' => array()
             ];
             
             foreach ($lista_ingredientes as $linea) {
