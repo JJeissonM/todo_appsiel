@@ -31,10 +31,22 @@
     }
 
     .tabla-balance th {
-        background-color: #d2d2d2;
-        color: #000;
+        background-color: #d2d2d2 !important;
+        color: #000 !important;
         border: 1px solid #777;
         padding: 6px 4px;
+    }
+
+    .tabla-balance thead tr {
+        background-color: #d2d2d2 !important;
+        color: #000 !important;
+    }
+
+    .tabla-balance thead th,
+    .tabla-balance thead th *,
+    .tabla-balance thead tr th,
+    .tabla-balance thead tr th * {
+        color: #000 !important;
     }
 
     .tabla-balance td {
