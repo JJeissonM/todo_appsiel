@@ -114,7 +114,7 @@
                         <h4 class="modal-title" id="modal_descontar_ventas_label">Descontar Ventas</h4>
                     </div>
                     <div class="modal-body">
-                        Este proceso calcula los ingredientes consumidos por ventas del dia <b>{{ date_format(date_create($doc_encabezado->fecha), "d-m-Y") }}</b> en la bodega <b>{{ $doc_encabezado->bodega_descripcion }}</b> y genera un ajuste de inventarios con entrada a bodega principal y salida de esa bodega.
+                        Este proceso calcula los ingredientes consumidos por ventas del dia <b>{{ date_format(date_create($doc_encabezado->fecha), "d-m-Y") }}</b> en la bodega <b>{{ $doc_encabezado->bodega_descripcion }}</b> y genera un ajuste de inventarios. <b>Recuerda confirmar las facturas de ventas antes de ejecutar el proceso</b>; las anulaciones posteriores pueden afectar la información.
                         <br><br>
                         ¿Deseas continuar?
                     </div>
