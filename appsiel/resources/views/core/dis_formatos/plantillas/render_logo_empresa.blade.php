@@ -2,6 +2,8 @@
 <?php
 
     $img = '';
+    $ancho_logo = $ancho_logo ?? 160;
+    $alto_logo = $alto_logo ?? 100;
 
     $image = false;
     $local_path = null;
@@ -35,27 +37,27 @@
 
     if ($image === false) {
         if (!empty($url)) {
-            $img = '<img src="'.$url.'" style="margin-left: 10px; max-width: 160px; max-height: 100px;" />';
+            $img = '<img src="'.$url.'" style="margin-left: 10px; max-width: '.$ancho_logo.'px; max-height: '.$alto_logo.'px;" />';
         }
     } else {
         $ancho = $image[0];            
         $alto = $image[1];
 
         if($ancho >= $alto ){
-        $pancho = (160*100)/$ancho;
+        $pancho = ($ancho_logo*100)/$ancho;
         $alto = $alto*$pancho/100;				
-        if($alto > 100){
-            $ancho = 160;
-            $palto = (100*100)/$alto;
+        if($alto > $alto_logo){
+            $ancho = $ancho_logo;
+            $palto = ($alto_logo*100)/$alto;
             $ancho = $ancho*$palto/100;
-            $img = '<img src="'.$url.'" width="'.$ancho.'" height="100" style="margin-left: 10px" />';
+            $img = '<img src="'.$url.'" width="'.$ancho.'" height="'.$alto_logo.'" style="margin-left: 10px" />';
         }else{
-            $img = '<img src="'.$url.'" height="'.$alto.'" width="160" style="margin-left: 10px" />';
+            $img = '<img src="'.$url.'" height="'.$alto.'" width="'.$ancho_logo.'" style="margin-left: 10px" />';
         }
         }else{
-        $palto = (100*100)/$alto;
+        $palto = ($alto_logo*100)/$alto;
         $ancho = $ancho*$palto/100;
-        $img = '<img src="'.$url.'" width="'.$ancho.'" height="100" style="margin-left: 10px" />';
+        $img = '<img src="'.$url.'" width="'.$ancho.'" height="'.$alto_logo.'" style="margin-left: 10px" />';
         }
     }
 

@@ -183,6 +183,31 @@
 
 				</div>
 
+				<div class="row">
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							<?php
+								$formato_1_tamano_letra = 12; 
+								if( isset($parametros['formato_1_tamano_letra'] ) )
+								{
+									$formato_1_tamano_letra = $parametros['formato_1_tamano_letra'];
+								}
+							?>
+							{{ Form::bsText('formato_1_tamano_letra', $formato_1_tamano_letra, 'Tamaño de letra para formato de impresión estándar', ['class'=>'form-control']) }}
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<div class="row" style="padding:5px;">
+							&nbsp;
+						</div>
+					</div>
+
+				</div>
+
+				
+
 				<h4> Parámetros para liquidación de Turnos  </h4>
 				<hr>
 

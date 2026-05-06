@@ -25,20 +25,29 @@
             ?>
             @foreach ($registros as $registro )
                 <?php
+                    $descripcion_concepto = $registro['code'];
+
                     $cantidad_dias = 0;
                     $deduccion = '';
-
+                    
                     $amount = 0;
                     if (isset($registro['amount'])) {
                         $amount = $registro['amount'];
-                    }                    
+                    }
                     if (isset($registro['amount-ns'])) {
                         $amount = $registro['amount-ns'];
-                    }                    
+                    }
+                    if (isset($registro['cesantias-interest'])) {
+
+                        if ($amount == 0) {
+                            $descripcion_concepto .= ' (Intereses)';
+                        }else {
+                            $descripcion_concepto .= ' (Cesantías + Intereses)';
+                        }
+                        $amount = $registro['cesantias-interest'];                        
+                    }                                     
 
                     $devengo = Form::TextoMoneda( $amount );
-
-                    $descripcion_concepto = $registro['code'];
 
                     if ( isset($registro['days']))
                     {

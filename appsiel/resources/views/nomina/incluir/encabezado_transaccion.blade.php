@@ -16,15 +16,55 @@
     {
         $color = 'green';
     }
-?>
-<table class="table table-bordered">
-    <tr>
-        <td style="border: solid 1px #ddd; margin-top: -40px;" width="70%">
-            @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir', 'doc_encabezado' => $encabezado_doc ] )
-        </td>
-        <td style="border: solid 1px #ddd; padding-top: -20px; font-size: 12px">
 
-            <b style="font-size: 1.6em; text-align: center; display: block;">{{ $descripcion_transaccion }}</b>
+    $es_impresion_nomina = isset($vista) && $vista == 'imprimir';
+    $tamano_letra_encabezado = $tamano_letra_encabezado ?? 12;
+    $tamano_letra_titulo = $tamano_letra_titulo ?? ($tamano_letra_encabezado * 1.35);
+    $alto_logo_formato_1 = $alto_logo_formato_1 ?? null;
+    $ancho_logo_formato_1 = $ancho_logo_formato_1 ?? null;
+?>
+@if($es_impresion_nomina)
+<style>
+    .nomina-formato-1-encabezado {
+        border-collapse: collapse;
+        margin: 0 0 2px 0 !important;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .nomina-formato-1-encabezado td {
+        border: solid 1px #ddd;
+        line-height: 1.08;
+        padding: 2px 4px !important;
+        vertical-align: middle;
+    }
+
+    .nomina-formato-1-resumen {
+        border-collapse: collapse;
+        margin: 0 0 4px 0 !important;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .nomina-formato-1-resumen td {
+        border: 0;
+        line-height: 1.05;
+        padding: 1px 6px !important;
+    }
+
+    .nomina-formato-1-resumen .detalle {
+        padding-top: 3px !important;
+    }
+</style>
+@endif
+<table class="{{ $es_impresion_nomina ? 'nomina-formato-1-encabezado' : 'table table-bordered' }}" style="{{ $es_impresion_nomina ? 'font-size: '.$tamano_letra_encabezado.'px;' : '' }}">
+    <tr>
+        <td style="{{ $es_impresion_nomina ? '' : 'border: solid 1px #ddd; margin-top: -40px;' }}" width="70%">
+            @include( 'core.dis_formatos.plantillas.banner_logo_datos_empresa', [ 'vista' => 'imprimir', 'doc_encabezado' => $encabezado_doc, 'tamano_letra' => $es_impresion_nomina ? $tamano_letra_encabezado : null, 'alto_logo' => $es_impresion_nomina ? $alto_logo_formato_1 : null, 'ancho_logo' => $es_impresion_nomina ? $ancho_logo_formato_1 : null ] )
+        </td>
+        <td style="{{ $es_impresion_nomina ? '' : 'border: solid 1px #ddd; padding-top: -20px; font-size: 12px' }}">
+
+            <b style="font-size: {{ $es_impresion_nomina ? $tamano_letra_titulo.'px' : '1.6em' }}; text-align: center; display: block; line-height: 1.05;">{{ $descripcion_transaccion }}</b>
                 <b>Documento:</b> {{ $encabezado_doc->documento_app }}
                 <br/>
 
@@ -52,9 +92,9 @@
     </tr>
 </table>
 
-<table class="table table-bordered">
+<table class="{{ $es_impresion_nomina ? 'nomina-formato-1-resumen' : 'table table-bordered' }}" style="{{ $es_impresion_nomina ? 'font-size: '.$tamano_letra_encabezado.'px;' : '' }}">
     <tr>
-        <td colspan="3">
+        <td colspan="3" class="detalle">
             <b>Detalle: </b> &nbsp; {{ $encabezado_doc->descripcion }}
         </td>
     </tr>

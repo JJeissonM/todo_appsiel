@@ -293,11 +293,15 @@ class NominaController extends TransaccionController
 
     public function nomina_print($id)
     {
+      ini_set('memory_limit', '512M');
+      set_time_limit(120);
+
       $view_pdf = $this->vista_preliminar($id,'imprimir');
 
       $tam_hoja = 'folio';
       $orientacion='landscape';
       $pdf = App::make('dompdf.wrapper');
+      $pdf->getDomPDF()->getOptions()->setLogOutputFile(storage_path('app/dompdf_log.htm'));
       $pdf->loadHTML(($view_pdf))->setPaper($tam_hoja,$orientacion);
       return $pdf->stream('nomina'.$this->encabezado_doc->documento_app.'.pdf');
     }
@@ -318,7 +322,18 @@ class NominaController extends TransaccionController
         $totales_por_concepto = $totales['totales_por_concepto'];
 
         $es_impresion = ($vista === 'imprimir');
-        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto', 'es_impresion' ) )->render();
+        $tamano_letra_formato_1 = (float) config('nomina.formato_1_tamano_letra', env('NOMINA_FORMATO_1_TAMANO_LETRA', 12));
+        if ($tamano_letra_formato_1 <= 0) {
+            $tamano_letra_formato_1 = 12;
+        }
+
+        $tamano_letra_encabezado = round($tamano_letra_formato_1, 2);
+        $tamano_letra_titulo = round($tamano_letra_formato_1 * 1.35, 2);
+        $tamano_letra_tabla = round($tamano_letra_formato_1 * 0.82, 2);
+        $alto_logo_formato_1 = round($tamano_letra_formato_1 * 5.5, 2);
+        $ancho_logo_formato_1 = round($tamano_letra_formato_1 * 13.5, 2);
+
+        $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto', 'es_impresion', 'tamano_letra_tabla' ) )->render();
 
         // DATOS ADICIONALES
         $tipo_doc_app = TipoDocApp::find($this->encabezado_doc->core_tipo_doc_app_id);
@@ -335,13 +350,14 @@ class NominaController extends TransaccionController
         $firmas = '';
         if(Input::get('formato_impresion_id') == 2)
         {
+            $tabla = View::make( 'nomina.incluir.tabla_registros_documento', compact( 'empleados', 'conceptos', 'encabezado_doc_id', 'totales_por_empleado_concepto', 'totales_por_empleado', 'totales_por_concepto', 'es_impresion' ) )->render();
             $view_1 = View::make('nomina.incluir.encabezado_transaccion2',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad') )->render();
 
             $view_pdf = $view_1.$tabla.$firmas.'<div class="page-break"></div>';
         }else{
-            $view_1 = View::make('nomina.incluir.encabezado_transaccion',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad') )->render();
+            $view_1 = View::make('nomina.incluir.encabezado_transaccion',compact('encabezado_doc','descripcion_transaccion','empresa','vista','ciudad','tamano_letra_encabezado','tamano_letra_titulo','alto_logo_formato_1','ancho_logo_formato_1') )->render();
 
-            $view_pdf = '<link rel="stylesheet" type="text/css" href="'.asset('assets/css/estilos_formatos.css').'" media="screen" /> '.$view_1.$tabla.$firmas.'<div class="page-break"></div>';    
+            $view_pdf = $view_1.$tabla.$firmas.'<div class="page-break"></div>';
         }
         
         
@@ -712,7 +728,3 @@ class NominaController extends TransaccionController
     }
     
 }
-
-
-
-

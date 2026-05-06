@@ -15,6 +15,7 @@ Route::post('nom_electronica_generar_doc_soporte', 'Nomina\NominaElectronicaCont
 Route::get('nom_electronica_enviar_documentos/{arr_ids}', 'Nomina\NominaElectronicaController@enviar_documentos');
 Route::post('nom_electronica_enviar_documento_ajax/{documento_id}', 'Nomina\NominaElectronicaController@enviar_documento_ajax');
 Route::get('nom_electronica_show_doc_soporte/{doc_soporte_id}', 'Nomina\NominaElectronicaController@show_doc_soporte');
+Route::post('nom_electronica_recalcular_doc_soporte/{doc_soporte_id}', 'Nomina\NominaElectronicaController@recalcular_doc_soporte');
 
 Route::get('nom_electronica_consultar_documentos_emitidos/{doc_encabezado_id}/{tipo_operacion}', 'Nomina\NominaElectronicaController@consultar_documentos_emitidos');
 

@@ -7,6 +7,8 @@ use App\Sistema\Services\AppDocType;
 use App\Sistema\TipoTransaccion;
 
 use App\Nomina\NomContrato;
+use App\Nomina\ValueObjects\LapsoNomina;
+use App\NominaElectronica\DATAICO\DocumentoSoporte;
 use App\NominaElectronica\ResultadoEnvioDocumento;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +30,132 @@ class DocumentoSoporteService
       );
    }
 
+   public function get_data_for_documento_soporte( DocumentoSoporte $documento_soporte )
+   {
+      $lapso = new LapsoNomina( $documento_soporte->fecha );
+
+      return array_merge(
+         ['empleado' => $documento_soporte->empleado],
+         $this->get_arr_head_data_from_documento( $documento_soporte, $lapso ),
+         $this->get_arr_content_data( $documento_soporte->empleado, $lapso ),
+         $this->get_arr_employee_data( $documento_soporte->empleado, $lapso )
+      );
+   }
+
+   public function get_data_to_store_from_calculation( array $datos_doc_soporte, $user_id = null )
+   {
+      $data = [
+         'consecutivo' => $datos_doc_soporte['number'],
+         'nom_contrato_id' => $datos_doc_soporte['empleado']->id,
+         'descripcion' => '',
+         'head_data_json' => json_encode( $this->get_head_data_to_store( $datos_doc_soporte ) ),
+         'accruals_json' => json_encode( $this->remove_status_line( $datos_doc_soporte['accruals'] ) ),
+         'deductions_json' => json_encode( $this->remove_status_line( $datos_doc_soporte['deductions'] ) ),
+         'employee_json' => json_encode( $datos_doc_soporte['employee'] ),
+         'estado' => 'Sin enviar'
+      ];
+
+      if ( !is_null($user_id) )
+      {
+         $data['creado_por'] = $user_id;
+      }
+
+      return $data;
+   }
+
+   public function recalcular_json_documento_soporte( DocumentoSoporte $documento_soporte, $user_id = null )
+   {
+      $datos_doc_soporte = $this->get_data_for_documento_soporte( $documento_soporte );
+
+      if ( $this->hay_errores($datos_doc_soporte) )
+      {
+         return [
+            'ok' => false,
+            'message' => 'No se pudo recalcular el documento porque hay conceptos sin configuración DIAN.',
+            'datos_doc_soporte' => $datos_doc_soporte
+         ];
+      }
+
+      $data = $this->get_data_to_store_from_calculation( $datos_doc_soporte );
+      unset( $data['consecutivo'], $data['nom_contrato_id'], $data['descripcion'], $data['estado'], $data['creado_por'] );
+
+      if ( !is_null($user_id) )
+      {
+         $data['modificado_por'] = $user_id;
+      }
+
+      $documento_soporte->fill( $data );
+      $documento_soporte->save();
+
+      return [
+         'ok' => true,
+         'message' => 'Documento recalculado correctamente.',
+         'datos_doc_soporte' => $datos_doc_soporte
+      ];
+   }
+
+   public function hay_errores($datos_doc_soporte)
+   {
+      foreach ($datos_doc_soporte['accruals'] as $line) {
+         if ( isset($line['status']) && $line['status'] == 'error' ) {
+            return true;
+         }
+      }
+
+      foreach ($datos_doc_soporte['deductions'] as $line) {
+         if ( isset($line['status']) && $line['status'] == 'error' ) {
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   public function remove_status_line($json_string)
+   {
+      $rows = [];
+      foreach ($json_string as $line) {
+         if (isset($line['status'])) {
+            unset($line['status']);
+         }
+
+         $rows[] = $line;
+      }
+
+      return $rows;
+   }
+
+   protected function get_head_data_to_store( array $datos_doc_soporte )
+   {
+      $keys = [
+         'env',
+         'send_dian',
+         'send_email',
+         'prefix',
+         'number',
+         'salary',
+         'periodicity',
+         'initial-settlement-date',
+         'final-settlement-date',
+         'issue-date',
+         'payment-date',
+         'notes',
+         'software'
+      ];
+
+      return array_intersect_key( $datos_doc_soporte, array_flip($keys) );
+   }
+
+   public function get_arr_head_data_from_documento( DocumentoSoporte $documento_soporte, $lapso )
+   {
+      return $this->build_arr_head_data(
+         $documento_soporte->empleado,
+         $lapso,
+         $documento_soporte->tipo_documento_app,
+         $documento_soporte->consecutivo
+      );
+   }
+
    public function get_arr_head_data( $empleado, $lapso, $almacenar_registros )
    {      
       $transaccion = TipoTransaccion::find( self::CORE_TIPO_TRANSACCION_ID );
@@ -43,6 +171,11 @@ class DocumentoSoporteService
          $app_doc_type->aumentar_consecutivo( $core_empresa_id, $core_tipo_doc_app->id );
       }
 
+      return $this->build_arr_head_data( $empleado, $lapso, $core_tipo_doc_app, $consecutivo );
+   }
+
+   protected function build_arr_head_data( $empleado, $lapso, $core_tipo_doc_app, $consecutivo )
+   {
       return [ 
          'env' => config('nomina.nom_elec_ambiente'),
          'send_dian' => true,
@@ -57,9 +190,13 @@ class DocumentoSoporteService
          'payment-date' => $lapso->fecha_final,
          'notes' => [ 
                'text' => ''
-            ]
+            ],
+         'software' => [
+            'pin' => config('nomina.pin_software'),
+            'test-set-id' => config('nomina.tokenEmpresa'),
+            'dian-id' => config('nomina.tokenDian'),
+         ]
       ];
-
    }
 
    public function get_arr_content_data( $empleado, $lapso )
@@ -70,6 +207,7 @@ class DocumentoSoporteService
       
       $line_accruals = [];
       $line_deductions = [];
+
       foreach ($registros_agrupados_por_concepto as $concepto_id => $registro_concepto) {         
          
          $concepto = $registro_concepto->all()[0]->concepto;
@@ -129,6 +267,7 @@ class DocumentoSoporteService
 
       $skip = false;   
       if($concepto->modo_liquidacion_id ==  16) { // Intereses de cesantías. Se agrega como subconcepto de las Cesantías
+
          foreach ($registros as $registro) {
             if ($registro->concepto->modo_liquidacion_id == 17) { // Cesantías pagadas
                $skip = true;   
@@ -139,8 +278,8 @@ class DocumentoSoporteService
          }
 
          $one_line['percentage'] = 12;
-         $one_line['cesantias-interest'] = $registro->valor_devengo;
-         $amount = $registro->valor_devengo;
+         $one_line['cesantias-interest'] = $amount;
+         $amount = 0;
          $codigo_cpto_dian = 'CESANTIAS';
       }
       
@@ -180,7 +319,7 @@ class DocumentoSoporteService
          }
       }
 
-      if ($amount <= 0) {
+      if ($amount <= 0 && $concepto->modo_liquidacion_id != 16) { // Intereses de cesantías
          return [];
       }
       

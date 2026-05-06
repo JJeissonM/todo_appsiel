@@ -1,4 +1,55 @@
-﻿<style> 
+﻿<style>
+@if( isset($es_impresion) && $es_impresion )
+    <?php $tamano_letra_tabla = $tamano_letra_tabla ?? 10; ?>
+    .tabla_registros_impresion {
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-top: 0 !important;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .tabla_registros_impresion th,
+    .tabla_registros_impresion td {
+        border: 1px solid #222;
+        font-size: {{ $tamano_letra_tabla }}px !important;
+        line-height: 1.05 !important;
+        padding: 2px 2px !important;
+        vertical-align: middle;
+    }
+
+    .tabla_registros_impresion th {
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .tabla_registros_impresion .col-numero {
+        text-align: center;
+        width: 20px;
+    }
+
+    .tabla_registros_impresion .col-empleado {
+        width: 120px;
+    }
+
+    .tabla_registros_impresion .col-cc {
+        text-align: center;
+        width: 62px;
+    }
+
+    .tabla_registros_impresion .col-firma {
+        width: 70px;
+    }
+
+    .tabla_registros_impresion .valor {
+        text-align: right;
+    }
+
+    .tabla_registros_impresion .cpto-deduccion {
+        color: #c0392b;
+        font-weight: 600;
+    }
+@else
     .celda_firma { 
         width: 100px;
     }
@@ -55,22 +106,15 @@
     border-spacing: 0;
 }
 
-.table-responsive {
-    position: relative;
-    overflow-x: auto;
-}
-@if( isset($es_impresion) && $es_impresion )
-    .tabla_registros th, .tabla_registros td {
-        font-size: 10px !important;
-        padding: 4px 2px !important;
-    }
-
-    .texto_moneda td {
-        font-size: 11px !important;
+    .table-responsive {
+        position: relative;
+        overflow-x: auto;
     }
 @endif
 </style>
+@if( !isset($es_impresion) || !$es_impresion )
 <br>
+@endif
 @if( !isset($es_impresion) || !$es_impresion )
 <div class="row" style="margin-bottom:10px;">
     <div class="col-md-4">
@@ -78,20 +122,20 @@
     </div>
 </div>
 @endif
-<div class="table-responsive">
-    <table id="tabla_registros_documento" data-conceptos-count="{{ count($conceptos) }}" class="tabla_registros table table-bordered table-striped sticky contenido" style="margin-top: 1px; width: 100%;">
+<div class="{{ isset($es_impresion) && $es_impresion ? '' : 'table-responsive' }}">
+    <table id="tabla_registros_documento" @if(!isset($es_impresion) || !$es_impresion) data-conceptos-count="{{ count($conceptos) }}" @endif class="{{ isset($es_impresion) && $es_impresion ? 'tabla_registros_impresion' : 'tabla_registros table table-bordered table-striped sticky contenido' }}" style="margin-top: 1px; width: 100%;">
         <thead>
             <tr class="">
-                <th class="sticky-col-1"> No. </th>
-                <th class="sticky-col-2"> EMPLEADO </th>
-                <th> C.C. </th>
+                <th class="{{ isset($es_impresion) && $es_impresion ? 'col-numero' : 'sticky-col-1' }}"> No. </th>
+                <th class="{{ isset($es_impresion) && $es_impresion ? 'col-empleado' : 'sticky-col-2' }}"> EMPLEADO </th>
+                <th class="{{ isset($es_impresion) && $es_impresion ? 'col-cc' : '' }}"> C.C. </th>
                 @foreach ($conceptos as $concepto)
                     <th class="{{ $concepto->naturaleza == 'deduccion' ? 'cpto-deduccion' : '' }}"> {{$concepto->abreviatura}} </th>
                 @endforeach
                 <th> T. DEVEN. </th>
                 <th>T. DEDUCC.</th>
                 <th>T. A PAGAR</th>
-                <th width="100px">FIRMA</th>
+                <th class="{{ isset($es_impresion) && $es_impresion ? 'col-firma' : '' }}" width="100px">FIRMA</th>
             </tr>
         </thead>
         <tbody>
@@ -101,6 +145,14 @@
                 $total_dev_doc = 0;
                 $total_ded_doc = 0;
                 $usar_totales_precalculados = !empty($totales_por_empleado_concepto);
+                $es_tabla_impresion = isset($es_impresion) && $es_impresion;
+                $formato_moneda = function($valor) use ($es_tabla_impresion) {
+                    if ($es_tabla_impresion) {
+                        return '$ '.number_format($valor, 0, ',', '.');
+                    }
+
+                    return Form::TextoMoneda($valor);
+                };
             ?>
             @foreach( $empleados as $empleado )
                 <?php
@@ -112,10 +164,10 @@
                         $total_deducciones_empleado = 0;
                     }
                 ?>
-                <tr data-contrato-id="{{ $empleado->id }}" data-search="{{ strtolower($empleado->tercero->descripcion.' '.$empleado->tercero->numero_identificacion) }}">
-                    <td class="text-center sticky-col-1"> {{ $i }} </td>
-                    <td class="text-left celda_nombre_empleado sticky-col-2"> {{ $empleado->tercero->descripcion }} </td>
-                    <td class="text-center"> {{ $empleado->tercero->numero_identificacion }} </td>
+                <tr @if(!isset($es_impresion) || !$es_impresion) data-contrato-id="{{ $empleado->id }}" data-search="{{ strtolower($empleado->tercero->descripcion.' '.$empleado->tercero->numero_identificacion) }}" @endif>
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'col-numero' : 'text-center sticky-col-1' }}"> {{ $i }} </td>
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'col-empleado' : 'text-left celda_nombre_empleado sticky-col-2' }}"> {{ $empleado->tercero->descripcion }} </td>
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'col-cc' : 'text-center' }}"> {{ $empleado->tercero->numero_identificacion }} </td>
                     <?php 
                         $pos = 0;
                     ?>
@@ -136,8 +188,8 @@
                             $valor = $dev + $ded;
                             //dd( $total_dev_ded_empleado, $concepto->modo_liquidacion );
                         ?>
-                        <td class="{{ $concepto->naturaleza == 'deduccion' ? 'cpto-deduccion' : '' }}" title="{{$concepto->descripcion}}"> 
-                            {{ Form::TextoMoneda( $valor ) }}
+                        <td class="{{ (isset($es_impresion) && $es_impresion ? 'valor ' : '') . ($concepto->naturaleza == 'deduccion' ? 'cpto-deduccion' : '') }}" @if(!isset($es_impresion) || !$es_impresion) title="{{$concepto->descripcion}}" @endif> 
+                            {!! $formato_moneda( $valor ) !!}
                         </td>
                         <?php
                             // Acumular totales del concepto
@@ -149,19 +201,19 @@
                         <?php
 
                         ?>
-                    <td title="Total devengos">
-                        {{ Form::TextoMoneda( $total_devengos_empleado ) }}
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'valor' : '' }}" @if(!isset($es_impresion) || !$es_impresion) title="Total devengos" @endif>
+                        {!! $formato_moneda( $total_devengos_empleado ) !!}
                     </td>
 
-                    <td title="Total deducciones">
-                        {{ Form::TextoMoneda( $total_deducciones_empleado ) }}
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'valor' : '' }}" @if(!isset($es_impresion) || !$es_impresion) title="Total deducciones" @endif>
+                        {!! $formato_moneda( $total_deducciones_empleado ) !!}
                     </td>
 
-                    <td title="Total a pagar">
-                        {{ Form::TextoMoneda( $total_devengos_empleado - $total_deducciones_empleado ) }}
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'valor' : '' }}" @if(!isset($es_impresion) || !$es_impresion) title="Total a pagar" @endif>
+                        {!! $formato_moneda( $total_devengos_empleado - $total_deducciones_empleado ) !!}
                     </td>
 
-                    <td class="celda_firma"> &nbsp; </td>
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'col-firma' : 'celda_firma' }}"> &nbsp; </td>
 
                     <?php
                         $vec_totales[$pos] += $total_devengos_empleado;
@@ -184,8 +236,8 @@
                     $cant = count( $vec_totales );
                 ?>
                 @for($j=0; $j < $cant; $j++)
-                    <td>
-                        {{ Form::TextoMoneda( $vec_totales[$j] ) }}
+                    <td class="{{ isset($es_impresion) && $es_impresion ? 'valor' : '' }}">
+                        {!! $formato_moneda( $vec_totales[$j] ) !!}
                     </td>
                 @endfor
                 <td> &nbsp; </td>
@@ -193,10 +245,4 @@
         </tbody>
     </table>
 </div>
-
-
-
-
-
-
 

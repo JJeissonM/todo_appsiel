@@ -151,19 +151,9 @@ class NominaElectronicaController extends TransaccionController
             
             $this->actualizar_datos_vista( $datos_doc_soporte );
 
-            if( $almacenar_registros && !$this->hay_errores($datos_doc_soporte) )
+            if( $almacenar_registros && !$doc_soporte_service->hay_errores($datos_doc_soporte) )
             {
-                $data2 = [
-                    'consecutivo' => $datos_doc_soporte['number'],
-                    'nom_contrato_id' => $datos_doc_soporte['empleado']->id,
-                    'descripcion' => '',
-                    'head_data_json' => '',
-                    'accruals_json' => json_encode( $this->remove_status_line($datos_doc_soporte['accruals']) ),
-                    'deductions_json' => json_encode( $this->remove_status_line($datos_doc_soporte['deductions']) ),
-                    'employee_json' => json_encode($datos_doc_soporte['employee']),
-                    'estado' => 'Sin enviar',
-                    'creado_por' => Auth::user()->id
-                ];
+                $data2 = $doc_soporte_service->get_data_to_store_from_calculation( $datos_doc_soporte, Auth::user()->id );
 
                 $dos_generado = DocumentoSoporte::create( $data + $data2 );
 
@@ -493,6 +483,33 @@ class NominaElectronicaController extends TransaccionController
         $documento_vista  = '';
 
         return view( 'nomina.nomina_electronica.show_documento_soporte', compact( 'id', 'botones_anterior_siguiente', 'miga_pan', 'doc_encabezado', 'empresa', 'url_crear','id_transaccion', 'documento_vista') );
+    }
+
+    public function recalcular_doc_soporte( Request $request, $doc_soporte_id )
+    {
+        $doc_encabezado = DocumentoSoporte::find($doc_soporte_id);
+
+        $variables_url = '?id=' . Input::get('id') . '&id_modelo=' . Input::get('id_modelo') . '&id_transaccion=' . Input::get('id_transaccion');
+        $redirect_url = 'nom_electronica_show_doc_soporte/' . $doc_soporte_id . $variables_url;
+
+        if ( is_null($doc_encabezado) )
+        {
+            return redirect()->back()->with('mensaje_error','Documento no encontrado.');
+        }
+
+        if ( $doc_encabezado->estado != 'Sin enviar' )
+        {
+            return redirect($redirect_url)->with('mensaje_error','Solo se pueden recalcular documentos en estado Sin enviar.');
+        }
+
+        $resultado = (new DocumentoSoporteService())->recalcular_json_documento_soporte( $doc_encabezado, Auth::user()->id );
+
+        if ( !$resultado['ok'] )
+        {
+            return redirect($redirect_url)->with('mensaje_error', $resultado['message']);
+        }
+
+        return redirect($redirect_url)->with('flash_message', $resultado['message']);
     }
 
     // SOLO DATAICO
