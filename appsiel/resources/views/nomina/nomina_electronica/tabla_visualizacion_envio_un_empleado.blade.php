@@ -41,10 +41,10 @@
 
                         if ($amount == 0) {
                             $descripcion_concepto .= ' (Intereses)';
+                            $amount = $registro['cesantias-interest'];  
                         }else {
                             $descripcion_concepto .= ' (Cesantías + Intereses)';
-                        }
-                        $amount = $registro['cesantias-interest'];                        
+                        }                      
                     }                                     
 
                     $devengo = Form::TextoMoneda( $amount );
