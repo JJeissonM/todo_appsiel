@@ -303,12 +303,15 @@ class DocumentoSoporteService
       
       if($concepto->modo_liquidacion_id == 17) // Cesantías pagadas
       {
+         $one_line['percentage'] = 12;
+         $cesantias_interest = 0;
          foreach ($registros as $registro) {
             if ($registro->concepto->modo_liquidacion_id == 16) { // Intereses de cesantías
-               $one_line['percentage'] = 12;
-               $one_line['cesantias-interest'] = $registro->valor_devengo;
+               $cesantias_interest = $registro->valor_devengo;
             }
          }
+
+         $one_line['cesantias-interest'] = $cesantias_interest;
       }
       
       if($concepto->cpto_dian->id == 32) // INCAPACIDAD
