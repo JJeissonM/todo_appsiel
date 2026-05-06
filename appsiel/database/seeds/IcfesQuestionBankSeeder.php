@@ -3,11 +3,21 @@
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class IcfesQuestionBankSeeder extends Seeder
 {
     public function run()
     {
+        if (
+            !Schema::hasTable('sga_cuestionarios') ||
+            !Schema::hasTable('sga_preguntas') ||
+            !Schema::hasTable('sga_cuestionario_tiene_preguntas') ||
+            !Schema::hasColumn('sga_cuestionarios', 'tipo_icfes')
+        ) {
+            return;
+        }
+
         $examBanks = [
             [
                 'tipo_icfes' => 'saber_3',
@@ -304,6 +314,14 @@ class IcfesQuestionBankSeeder extends Seeder
         $timestamp = Carbon::now();
 
         foreach ($examBanks as $exam) {
+            $exists = DB::table('sga_cuestionarios')
+                ->where('tipo_icfes', $exam['tipo_icfes'])
+                ->exists();
+
+            if ($exists) {
+                continue;
+            }
+
             $cuestionarioId = DB::table('sga_cuestionarios')->insertGetId([
                 'colegio_id' => 1,
                 'descripcion' => $exam['descripcion'],
@@ -331,14 +349,14 @@ class IcfesQuestionBankSeeder extends Seeder
 
                 DB::table('sga_cuestionario_tiene_preguntas')->insert([
                     'orden' => $orden++,
-                'cuestionario_id' => $cuestionarioId,
-                'pregunta_id' => $preguntaId,
-            ]);
+                    'cuestionario_id' => $cuestionarioId,
+                    'pregunta_id' => $preguntaId,
+                ]);
             }
         }
     }
 
-    private function buildSubjectQuestions(string $subject, array $concepts): array
+    private function buildSubjectQuestions($subject, array $concepts)
     {
         $questions = [];
         $templates = [

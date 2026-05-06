@@ -10,7 +10,7 @@ class TesoreriaChequerasPermissionSeeder extends Seeder
 {
     public function run()
     {
-        if (!Schema::hasTable('permissions')) {
+        if (!Schema::hasTable('permissions') || !Schema::hasTable('roles')) {
             return;
         }
 
@@ -43,7 +43,21 @@ class TesoreriaChequerasPermissionSeeder extends Seeder
 
         foreach (['SuperAdmin', 'Administrador'] as $roleName) {
             $role = Role::firstOrCreate(['name' => $roleName]);
-            $role->givePermissionTo($permission);
+            if (!$this->roleHasPermission($role->id, $permission->id)) {
+                $role->givePermissionTo($permission);
+            }
         }
+    }
+
+    private function roleHasPermission($roleId, $permissionId)
+    {
+        if (!Schema::hasTable('role_has_permissions')) {
+            return true;
+        }
+
+        return DB::table('role_has_permissions')
+            ->where('role_id', $roleId)
+            ->where('permission_id', $permissionId)
+            ->exists();
     }
 }

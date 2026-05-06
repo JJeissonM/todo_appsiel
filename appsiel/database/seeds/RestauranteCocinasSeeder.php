@@ -265,21 +265,25 @@ class RestauranteCocinasSeeder extends Seeder
                 DB::table('sys_campos')->where('id', $campoId)->update($campo);
             }
 
-            DB::table('sys_modelo_tiene_campos')->updateOrInsert(
-                [
+            $relacion = DB::table('sys_modelo_tiene_campos')
+                ->where('core_modelo_id', $modeloId)
+                ->where('core_campo_id', $campoId);
+
+            if ($relacion->exists()) {
+                $relacion->update(['orden' => $orden]);
+            } else {
+                DB::table('sys_modelo_tiene_campos')->insert([
                     'core_modelo_id' => $modeloId,
                     'core_campo_id' => $campoId,
-                ],
-                [
                     'orden' => $orden,
-                ]
-            );
+                ]);
+            }
         }
     }
 
     private function seedPermiso($modeloId)
     {
-        if ($modeloId == 0 || !Schema::hasTable('permissions')) {
+        if ($modeloId == 0 || !Schema::hasTable('permissions') || !Schema::hasTable('roles')) {
             return;
         }
 

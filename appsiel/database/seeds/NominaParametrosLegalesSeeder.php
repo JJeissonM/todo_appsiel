@@ -2,11 +2,16 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class NominaParametrosLegalesSeeder extends Seeder
 {
     public function run()
     {
+        if (!Schema::hasTable('nom_parametros_legales')) {
+            return;
+        }
+
         $parametros = [
             [
                 'fecha_inicio' => '2024-01-01',

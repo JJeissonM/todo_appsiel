@@ -8,7 +8,12 @@ class NominaCotizante51Seeder extends Seeder
 {
     public function run()
     {
-        if (!Schema::hasTable('nom_contratos') || !Schema::hasColumn('nom_contratos', 'dias_laborados_mes')) {
+        if (
+            !Schema::hasTable('nom_contratos') ||
+            !Schema::hasColumn('nom_contratos', 'dias_laborados_mes') ||
+            !Schema::hasColumn('nom_contratos', 'horas_laborales') ||
+            !Schema::hasColumn('nom_contratos', 'tipo_cotizante')
+        ) {
             return;
         }
 

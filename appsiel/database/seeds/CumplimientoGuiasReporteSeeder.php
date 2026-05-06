@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 
 class CumplimientoGuiasReporteSeeder extends Seeder
@@ -13,6 +14,14 @@ class CumplimientoGuiasReporteSeeder extends Seeder
      */
     public function run()
     {
+        if (
+            !Schema::hasTable('sys_reportes') ||
+            !Schema::hasTable('sys_campos') ||
+            !Schema::hasTable('sys_reporte_tiene_campos')
+        ) {
+            return;
+        }
+
         $now = Carbon::now();
 
         $reporte = DB::table('sys_reportes')->where('url_form_action', 'sga_cumplimiento_guias')->first();

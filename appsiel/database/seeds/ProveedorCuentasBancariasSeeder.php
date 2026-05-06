@@ -55,20 +55,31 @@ class ProveedorCuentasBancariasSeeder extends Seeder
         foreach ($registros as $registro) {
             $tipo_cuenta = $this->normalizar_tipo_cuenta($registro->tipo_cuenta);
 
-            DB::table('compras_proveedores_cuentas_bancarias')->updateOrInsert(
-                [
-                    'tercero_id' => $registro->tercero_id,
-                    'entidad_financiera_id' => $entidad_financiera_id,
-                    'numero_cuenta' => $registro->numero_cuenta
-                ],
-                [
-                    'tipo_cuenta' => $tipo_cuenta,
-                    'codigo_ciudad' => $registro->codigo_ciudad,
-                    'estado' => 'Activo',
-                    'updated_at' => $ahora,
+            $keys = [
+                'tercero_id' => $registro->tercero_id,
+                'entidad_financiera_id' => $entidad_financiera_id,
+                'numero_cuenta' => $registro->numero_cuenta
+            ];
+
+            $values = [
+                'tipo_cuenta' => $tipo_cuenta,
+                'codigo_ciudad' => $registro->codigo_ciudad,
+                'estado' => 'Activo',
+                'updated_at' => $ahora
+            ];
+
+            $query = DB::table('compras_proveedores_cuentas_bancarias')
+                ->where('tercero_id', $registro->tercero_id)
+                ->where('entidad_financiera_id', $entidad_financiera_id)
+                ->where('numero_cuenta', $registro->numero_cuenta);
+
+            if ($query->exists()) {
+                $query->update($values);
+            } else {
+                DB::table('compras_proveedores_cuentas_bancarias')->insert($keys + $values + [
                     'created_at' => $ahora
-                ]
-            );
+                ]);
+            }
         }
     }
 
