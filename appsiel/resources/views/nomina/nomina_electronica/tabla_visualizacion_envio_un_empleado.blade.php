@@ -37,15 +37,15 @@
                     if (isset($registro['amount-ns'])) {
                         $amount = $registro['amount-ns'];
                     }
-                    if (isset($registro['cesantias-interest'])) {
 
-                        if ($amount == 0) {
-                            $descripcion_concepto .= ' (Intereses)';
-                            $amount = $registro['cesantias-interest'];  
-                        }else {
-                            $descripcion_concepto .= ' (Cesantías + Intereses)';
-                        }                      
-                    }                                     
+                    if ($amount == 0) { // No se están pagando Cesantías
+                        $descripcion_concepto .= ' (Intereses)';
+                        $amount = $registro['cesantias-interest'];  
+                    }
+
+                    if ($registro['cesantias-interest'] != 0) {
+                        $descripcion_concepto .= ' (Cesantías + Intereses)';
+                    }                                
 
                     $devengo = Form::TextoMoneda( $amount );
 
