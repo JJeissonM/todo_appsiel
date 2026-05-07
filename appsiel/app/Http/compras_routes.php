@@ -11,6 +11,9 @@ Route::get('compras_consultar_proveedores', 'Compras\CompraController@consultar_
 Route::get('compras_consultar_existencia_producto', 'Compras\CompraController@consultar_existencia_producto');
 Route::get('compras_validar_documento_proveedor', 'Compras\CompraController@validar_documento_proveedor');
 Route::get('compras_retenciones_fuente_activas', 'Compras\RetencionFuenteController@activas');
+Route::get('compras_retenciones_fuente_conceptos', 'Compras\RetencionFuenteController@conceptos');
+Route::get('compras/{id}/retenciones/preliquidar', 'Compras\RetencionFuenteController@preliquidar_documento');
+Route::post('compras/{id}/retenciones/aplicar', 'Compras\RetencionFuenteController@aplicar_documento');
 
 
 Route::resource('factura_entrada_pendiente', 'Compras\FacturaEntradaPendienteController');

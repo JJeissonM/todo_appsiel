@@ -33,6 +33,10 @@ class DatabaseSeeder extends Seeder
                 'any_tables' => ['compras_doc_registros', 'contab_registros_retenciones'],
             ],
             [
+                'class' => ComprasRetencionFuente2026Seeder::class,
+                'tables' => ['compras_retencion_fuente_conceptos_anuales', 'contab_retenciones'],
+            ],
+            [
                 'class' => ApmPrintStatusesSeeder::class,
                 'tables' => ['apm_print_statuses'],
             ],
@@ -75,6 +79,7 @@ class DatabaseSeeder extends Seeder
     protected function callIfSafe(array $seeder)
     {
         $class = $seeder['class'];
+        $this->loadSeederClassIfNeeded($class);
 
         if (!class_exists($class)) {
             $this->warnSeeder($class, 'no existe la clase');
@@ -100,6 +105,18 @@ class DatabaseSeeder extends Seeder
             $this->call($class);
         } catch (Exception $exception) {
             $this->warnSeeder($class, $exception->getMessage());
+        }
+    }
+
+    protected function loadSeederClassIfNeeded($class)
+    {
+        if (class_exists($class)) {
+            return;
+        }
+
+        $file = __DIR__ . '/' . $class . '.php';
+        if (file_exists($file)) {
+            require_once $file;
         }
     }
 

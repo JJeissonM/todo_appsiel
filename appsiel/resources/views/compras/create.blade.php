@@ -67,6 +67,17 @@
 
 				{{ VistaController::campos_dos_colummnas($form_create['campos']) }}
 
+				<div class="row" style="margin: 5px 5px 20px 5px;">
+					<div class="col-md-6">
+						<label>Declarante renta proveedor</label>
+						<input type="text" id="lbl_declarante_renta" class="form-control" value="Declarante" readonly="readonly">
+					</div>
+					<div class="col-md-6">
+						<label>Concepto retención automático</label>
+						<input type="text" id="lbl_retencion_fuente_concepto_default" class="form-control" value="Automático según producto/servicio" readonly="readonly">
+					</div>
+				</div>
+
 				{{ Form::hidden('url_id', Input::get('id'), ['id'=>'url_id']) }}
 				{{ Form::hidden('url_id_modelo', Input::get('id_modelo'), ['id'=>'url_id_modelo']) }}
 				{{ Form::hidden('url_id_transaccion', Input::get('id_transaccion'), ['id'=>'url_id_transaccion'] ) }}
@@ -77,6 +88,8 @@
 
 				<input type="hidden" name="core_tercero_id" id="core_tercero_id" value="" required="required">
 				<input type="hidden" name="liquida_impuestos" id="liquida_impuestos" value="" required="required">
+				<input type="hidden" name="declarante_renta" id="declarante_renta" value="declarante">
+				<input type="hidden" name="retencion_fuente_concepto_default_id" id="retencion_fuente_concepto_default_id" value="0">
 				<input type="hidden" name="lineas_registros" id="lineas_registros" value="0">
 
 				<input type="hidden" name="tipo_transaccion"  id="tipo_transaccion" value="factura_directa">

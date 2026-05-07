@@ -14,7 +14,7 @@ class ComprasTransaccion
 
         if (!$aplica_retencion_fuente) {
             $campos_invisibles = array_values(array_filter($campos_invisibles, function ($campo) {
-                return !in_array($campo, ['contab_retencion_id', 'tasa_retencion', 'valor_retencion']);
+                return !in_array($campo, ['contab_retencion_id', 'tasa_retencion', 'valor_retencion', 'retencion_fuente_concepto_anual_id', 'retencion_fuente_codigo']);
             }));
 
             $campos_visibles = array_values(array_filter($campos_visibles, function ($campo) {

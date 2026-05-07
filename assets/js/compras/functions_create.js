@@ -57,6 +57,11 @@ function calcular_valor_retencion_linea(precio_unitario_linea, cantidad_linea, t
     }
 
     var base_sin_iva = valor_bruto / divisor_iva;
+    var cuantia_minima = parseFloat($('#linea_ingreso_default').data('retencion_fuente_cuantia_minima_pesos')) || 0;
+    if (base_sin_iva < cuantia_minima) {
+        return 0;
+    }
+
     var valor = base_sin_iva * parseFloat(tasa_retencion_linea) / 100;
     if (!$.isNumeric(valor)) {
         valor = 0;
@@ -197,6 +202,10 @@ function seleccionar_proveedor(item_sugerencia)
     $('#proveedor_id').val( item_sugerencia.attr('data-proveedor_id') );
     $('#clase_proveedor_id').val( item_sugerencia.attr('data-clase_proveedor_id') );
     $('#liquida_impuestos').val( item_sugerencia.attr('data-liquida_impuestos') );
+    $('#declarante_renta').val( item_sugerencia.attr('data-declarante_renta') || 'declarante' );
+    $('#retencion_fuente_concepto_default_id').val( item_sugerencia.attr('data-retencion_fuente_concepto_default_id') || 0 );
+    $('#lbl_declarante_renta').val( $('#declarante_renta').val() == 'no_declarante' ? 'No declarante' : 'Declarante' );
+    $('#lbl_retencion_fuente_concepto_default').val( parseInt($('#retencion_fuente_concepto_default_id').val()) > 0 ? 'Configurado en proveedor' : 'Automático según producto/servicio' );
     $('#core_tercero_id').val( item_sugerencia.attr('data-core_tercero_id') );
 
     // Asignar resto de campos
@@ -327,6 +336,7 @@ function consultar_existencia(bodega_id, producto_id)
             //var precio_compra = 
             $('#precio_unitario').val( respuesta.precio_compra  );
             $('#tasa_impuesto').val( respuesta.tasa_impuesto + '%' );
+            seleccionar_retencion_fuente_producto(respuesta);
 
             // Se pasa a ingresar las cantidades
             $('#cantidad').removeAttr('disabled');
@@ -335,6 +345,35 @@ function consultar_existencia(bodega_id, producto_id)
 
             return true;
         });
+}
+
+function seleccionar_retencion_fuente_producto(respuesta)
+{
+    var select = $('#contab_retencion_id');
+    if (!select.length) {
+        return false;
+    }
+
+    var contab_retencion_id = parseInt(respuesta.contab_retencion_id);
+    if (!$.isNumeric(contab_retencion_id) || contab_retencion_id <= 0) {
+        select.val('0');
+        tasa_retencion = 0;
+        valor_retencion = 0;
+        return false;
+    }
+
+    if (!select.find('option[value="' + contab_retencion_id + '"]').length) {
+        var label = contab_retencion_id + ' - ' + respuesta.retencion_fuente_concepto + ' (' + respuesta.tasa_retencion + '%)';
+        select.append('<option value="' + contab_retencion_id + '" data-tasa="' + respuesta.tasa_retencion + '">' + label + '</option>');
+    }
+
+    select.val(contab_retencion_id);
+    tasa_retencion = parseFloat(respuesta.tasa_retencion) || 0;
+    $('#linea_ingreso_default').data('retencion_fuente_concepto_anual_id', respuesta.retencion_fuente_concepto_anual_id || 0);
+    $('#linea_ingreso_default').data('retencion_fuente_codigo', respuesta.retencion_fuente_codigo || '');
+    $('#linea_ingreso_default').data('retencion_fuente_cuantia_minima_pesos', respuesta.retencion_fuente_cuantia_minima_pesos || 0);
+
+    return true;
 }
 
 /*
@@ -494,6 +533,14 @@ function generar_string_celdas( fila )
 
         celdas[ num_celda ] = '<td style="display: none;"><div class="valor_retencion">'+ valor_retencion.toFixed(2) +'</div></td>';
         
+        num_celda++;
+
+        celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_concepto_anual_id">'+ ($('#linea_ingreso_default').data('retencion_fuente_concepto_anual_id') || 0) +'</div></td>';
+
+        num_celda++;
+
+        celdas[ num_celda ] = '<td style="display: none;"><div class="retencion_fuente_codigo">'+ ($('#linea_ingreso_default').data('retencion_fuente_codigo') || '') +'</div></td>';
+
         num_celda++;
     } else {
         valor_retencion = 0;
@@ -660,6 +707,10 @@ function reset_campos_formulario()
     $('#lista_precios_id').val( '' );
     $('#lista_descuentos_id').val( '' );
     $('#liquida_impuestos').val( '' );
+    $('#declarante_renta').val( 'declarante' );
+    $('#retencion_fuente_concepto_default_id').val( 0 );
+    $('#lbl_declarante_renta').val( 'Declarante' );
+    $('#lbl_retencion_fuente_concepto_default').val( 'Automático según producto/servicio' );
 }
 
 function reset_tabla_ingreso()
@@ -722,6 +773,9 @@ function reset_linea_ingreso_default()
     if ($('#contab_retencion_id').length) {
         $('#contab_retencion_id').val('0');
     }
+    $('#linea_ingreso_default').data('retencion_fuente_concepto_anual_id', 0);
+    $('#linea_ingreso_default').data('retencion_fuente_codigo', '');
+    $('#linea_ingreso_default').data('retencion_fuente_cuantia_minima_pesos', 0);
 
     producto_id = 0; precio_total = 0; costo_total = 0; base_impuesto_total = 0; valor_impuesto_total = 0; tasa_impuesto = 0; tasa_descuento = 0; tasa_retencion = 0; valor_retencion = 0; valor_total_descuento = 0; cantidad = 0; costo_unitario = 0; precio_unitario = 0; base_impuesto_unitario = 0; valor_impuesto_unitario = 0; valor_unitario_descuento = 0;
 }

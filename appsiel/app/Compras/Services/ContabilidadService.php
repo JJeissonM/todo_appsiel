@@ -27,6 +27,10 @@ class ContabilidadService
         $ultimo_dato_movimiento = [];
 
         foreach ($lineas as $linea) {
+            if (RegistroRetencion::where('compras_doc_registro_id', $linea->id)->where('estado', 'Activo')->exists()) {
+                continue;
+            }
+
             $retencion = Retencion::find((int)$linea->contab_retencion_id);
             if (is_null($retencion)) {
                 continue;
@@ -63,7 +67,8 @@ class ContabilidadService
 
             $datos['estado'] = 'Activo';
 
-            RegistroRetencion::create($datos);
+            $registroRetencion = RegistroRetencion::create($datos);
+            $service->almacenar_liquidacion_linea($doc_encabezado, $linea, $retencion, $datos_retencion, $registroRetencion->id, 'automatico');
 
             // NIIF: retención practicada como menor valor pagado al proveedor y pasivo tributario.
             $datos['tipo_transaccion'] = '';

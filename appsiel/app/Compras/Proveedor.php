@@ -12,7 +12,7 @@ class Proveedor extends Model
 {
     protected $table = 'compras_proveedores';
 
-    protected $fillable = ['core_tercero_id', 'clase_proveedor_id', 'inv_bodega_id', 'liquida_impuestos', 'condicion_pago_id', 'codigo', 'estado'];
+    protected $fillable = ['core_tercero_id', 'clase_proveedor_id', 'inv_bodega_id', 'liquida_impuestos', 'condicion_pago_id', 'codigo', 'declarante_renta', 'retencion_fuente_concepto_default_id', 'estado'];
 
     protected static function boot()
     {
@@ -32,6 +32,11 @@ class Proveedor extends Model
     public function tercero()
     {
         return $this->belongsTo('App\Core\Tercero','core_tercero_id');
+    }
+
+    public function retencion_fuente_concepto_default()
+    {
+        return $this->belongsTo(RetencionFuenteConceptoAnual::class, 'retencion_fuente_concepto_default_id');
     }
 
     public static function getDefaultInvBodegaId()

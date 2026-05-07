@@ -14,12 +14,17 @@ class SupplierService
             $descripcion .=  ' ('. $linea->razon_social . ')';
         }
 
+        $declarante_renta = isset($linea->declarante_renta) && $linea->declarante_renta != '' ? $linea->declarante_renta : 'declarante';
+        $retencion_fuente_concepto_default_id = isset($linea->retencion_fuente_concepto_default_id) ? (int)$linea->retencion_fuente_concepto_default_id : 0;
+
         return '<a class="list-group-item list-group-item-proveedor '.$clase.'" data-proveedor_id="'.$linea->proveedor_id.
                             '" data-primer_item="'.$primer_item.
                             '" data-ultimo_item="'.$ultimo_item.
                             '" data-nombre_proveedor="'.$linea->nombre_proveedor.
                             '" data-clase_proveedor_id="'.$linea->clase_proveedor_id.
                             '" data-liquida_impuestos="'.$linea->liquida_impuestos.
+                            '" data-declarante_renta="'.$declarante_renta.
+                            '" data-retencion_fuente_concepto_default_id="'.$retencion_fuente_concepto_default_id.
                             '" data-core_tercero_id="'.$linea->core_tercero_id.
                             '" data-numero_identificacion="'.$linea->numero_identificacion.
                             '" data-inv_bodega_id="'.$linea->inv_bodega_id.
