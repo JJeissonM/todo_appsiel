@@ -310,6 +310,11 @@ class DocumentoSoporteService
                $cesantias_interest = $registro->valor_devengo;
             }
          }
+
+         $one_line['cesantias-interest'] = $cesantias_interest;
+         if ($cesantias_interest == 0) {
+            $one_line['cesantias-interest'] = $amount * $one_line['percentage'] / 100;
+         }
       }
       
       if($concepto->cpto_dian->id == 32) // INCAPACIDAD
