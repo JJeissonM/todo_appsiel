@@ -19,6 +19,9 @@
 
             <?php
                 $registros = json_decode($comprobante['accruals'],true);
+                if (!is_array($registros)) {
+                    $registros = [];
+                }
                 $total_devengos = 0;
                 $total_deducciones = 0;
                 $total_horas = 0;
@@ -38,12 +41,14 @@
                         $amount = $registro['amount-ns'];
                     }
 
-                    if ($amount == 0) { // No se están pagando Cesantías
+                    $cesantias_interest = isset($registro['cesantias-interest']) ? $registro['cesantias-interest'] : 0;
+
+                    if ($amount == 0 && $cesantias_interest != 0) { // No se están pagando Cesantías
                         $descripcion_concepto .= ' (Intereses)';
-                        $amount = $registro['cesantias-interest'];  
+                        $amount = $cesantias_interest;
                     }
 
-                    if ($registro['cesantias-interest'] != 0) {
+                    if ($cesantias_interest != 0) {
                         $descripcion_concepto .= ' (Cesantías + Intereses)';
                     }                                
 
@@ -83,6 +88,9 @@
 
             <?php
                 $registros = json_decode($comprobante['deductions'],true);
+                if (!is_array($registros)) {
+                    $registros = [];
+                }
             ?>
             @foreach ($registros as $registro )
                 <?php
