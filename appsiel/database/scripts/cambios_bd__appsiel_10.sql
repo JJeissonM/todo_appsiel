@@ -1,6 +1,20 @@
 -- 30 ENERO 2025
 -- Se agregaron nuevas config para Ventas POS
 
+-- 08 MAYO 2026 - Nomina: parametros legales 2025 y 2026
+-- Valores: SMMLV/auxilio transporte/UVT de cada vigencia.
+-- Jornada: Ley 2101 de 2021, reduccion gradual de 46h a 44h en 2025 y de 44h a 42h en 2026.
+DELETE FROM `nom_parametros_legales`
+WHERE `fecha_inicio` IN ('2025-01-01','2025-07-15','2026-01-01','2026-07-15');
+
+INSERT INTO `nom_parametros_legales`
+(`fecha_inicio`, `fecha_fin`, `smmlv`, `auxilio_transporte`, `uvt`, `horas_laborales`, `horas_dia_laboral`, `normatividad`, `estado`, `created_at`, `updated_at`)
+VALUES
+('2025-01-01', '2025-07-14', 1423500.00, 200000.00, 49799.00, 230.000, 7.667, 'Decretos 1572 y 1573 de 2024 / Resolucion DIAN 193 de 2024 / Ley 2101 de 2021: jornada 46h semanales hasta 2025-07-14', 'Activo', NOW(), NOW()),
+('2025-07-15', '2025-12-31', 1423500.00, 200000.00, 49799.00, 220.000, 7.333, 'Decretos 1572 y 1573 de 2024 / Resolucion DIAN 193 de 2024 / Ley 2101 de 2021: jornada 44h semanales desde 2025-07-15', 'Activo', NOW(), NOW()),
+('2026-01-01', '2026-07-14', 1750905.00, 249095.00, 52374.00, 220.000, 7.333, 'Decretos 1469 y 1470 de 2025 / Resolucion DIAN 238 de 2025 / Ley 2101 de 2021: jornada 44h semanales hasta 2026-07-14', 'Activo', NOW(), NOW()),
+('2026-07-15', '2026-12-31', 1750905.00, 249095.00, 52374.00, 210.000, 7.000, 'Decretos 1469 y 1470 de 2025 / Resolucion DIAN 238 de 2025 / Ley 2101 de 2021: jornada 42h semanales desde 2026-07-15', 'Activo', NOW(), NOW());
+
 -- 06 ABRIL 2026 - APM
 -- Primera impresion: ORIGINAL (copy_number = 0)
 -- Reimpresiones del mismo documento: COPIA #1, COPIA #2, ...
@@ -515,3 +529,37 @@ INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_ca
 
 -- 2 abril 2026 - Permiso para retirar de la cola de impresión
 insert into permissions (id, core_app_id, modelo_id, name, descripcion, url, parent, orden, enabled, fa_icon, created_at, updated_at) values (null, '20', '0', 'vtas_apm_retirar_cola_impresion', 'Retirar de la cola de impresión', 'web', '0', '99', '0', '', '2026-04-02 00:00:00', null);
+
+
+--- 8 mayo 2026
+INSERT INTO `sys_modelos` (`id`, `descripcion`, `modelo`, `name_space`, `modelo_relacionado`, `url_crear`, `url_edit`, `url_print`, `url_ver`, `enlaces`, `url_estado`, `url_eliminar`, `controller_complementario`, `url_form_create`, `home_miga_pan`, `ruta_storage_imagen`, `ruta_storage_archivo_adjunto`, `created_at`, `updated_at`) VALUES ('350', 'Parámetros anuales nómina', 'nom_parametros_legales', 'App\\Nomina\\ParametroLegal', '', '', '', '', '', '', '', 'web_eliminar/id_fila', '', '', '', '', '', '2025-10-28 00:00:00', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1600', 'SMMLV', 'bsText', 'smmlv', '', 'null', '', '', '1', '1', '0', '2026-05-07 09:44:37', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1601', 'Aux. Transporte', 'bsText', 'auxilio_transporte', '', 'null', '', '', '1', '1', '0', '2026-05-07 09:44:37', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1602', 'UVT', 'bsText', 'uvt', '', 'null', '', '', '1', '1', '0', '2026-05-07 09:44:37', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1603', 'Horas Laborales', 'bsText', 'horas_laborales', '', 'null', '', '', '1', '1', '0', '2026-05-07 09:44:37', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1604', 'Horas por día laboral', 'bsText', 'horas_dia_laboral', '', 'null', '', '', '1', '1', '0', '2026-05-07 09:44:37', NULL);
+INSERT INTO `sys_campos` (`id`, `descripcion`, `tipo`, `name`, `opciones`, `value`, `atributos`, `definicion`, `requerido`, `editable`, `unico`, `created_at`, `updated_at`) VALUES ('1605', 'Normatividad', 'bsText', 'normatividad', '', 'null', '', '', '1', '1', '0', '2026-05-07 09:44:37', NULL);
+INSERT INTO `sys_modelo_tiene_campos` (`id`, `orden`, `core_modelo_id`, `core_campo_id`) VALUES (NULL, '18', '350', '22'), (NULL, '2', '350', '125'), (NULL, '4', '350', '705'), (NULL, '6', '350', '1600'), (NULL, '8', '350', '1601'), (NULL, '10', '350', '1602'), (NULL, '12', '350', '1603'), (NULL, '14', '350', '1604'), (NULL, '16', '350', '1605');
+
+-- Quitar opciones del Menú Catálogos de Nómina
+UPDATE `permissions` SET `url` = 'nom_catalogos' WHERE `permissions`.`id` = 225;
+UPDATE `permissions` SET `parent` = '0', `enabled` = '0', `updated_at` = NULL WHERE `parent` = 225;
+UPDATE `permissions` SET `fa_icon` = 'modx' WHERE `permissions`.`id` = 227;
+UPDATE `permissions` SET `fa_icon` = 'file-text-o' WHERE `permissions`.`id` = 226;
+UPDATE `permissions` SET `fa_icon` = 'briefcase' WHERE `permissions`.`id` = 228;
+UPDATE `permissions` SET `fa_icon` = 'bank' WHERE `permissions`.`id` = 229;
+UPDATE `permissions` SET `fa_icon` = 'credit-card' WHERE `permissions`.`id` = 327;
+UPDATE `permissions` SET `fa_icon` = 'cubes' WHERE `permissions`.`id` = 477;
+UPDATE `permissions` SET `enabled` = '1' WHERE `permissions`.`id` = 486;
+UPDATE `permissions` SET `fa_icon` = 'pie-chart' WHERE `permissions`.`id` = 560;
+UPDATE `permissions` SET `fa_icon` = 'book' WHERE `permissions`.`id` = 496;
+UPDATE `permissions` SET `fa_icon` = 'dashboard' WHERE `permissions`.`id` = 485;
+UPDATE `permissions` SET `fa_icon` = 'th-large' WHERE `permissions`.`id` = 677;
+UPDATE `permissions` SET `fa_icon` = 'balance-scale' WHERE `permissions`.`id` = 495;
+UPDATE `permissions` SET `fa_icon` = 'calculator' WHERE `permissions`.`id` = 494;
+UPDATE `permissions` SET `fa_icon` = 'columns' WHERE `permissions`.`id` = 676;
+UPDATE `permissions` SET `fa_icon` = 'archive' WHERE `permissions`.`id` = 340;
+UPDATE `permissions` SET `fa_icon` = 'plus-square-o' WHERE `permissions`.`id` = 541;
+
+
+

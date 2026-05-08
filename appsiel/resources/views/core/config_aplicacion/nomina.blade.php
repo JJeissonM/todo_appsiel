@@ -38,66 +38,6 @@
 					<div class="col-md-6">
 						<div class="row" style="padding:5px;">
 							<?php
-								$SMMLV = '';
-								if( isset($parametros['SMMLV'] ) )
-								{
-									$SMMLV = $parametros['SMMLV'];
-								}
-							?>
-							{{ Form::bsText('SMMLV', $SMMLV, 'Salario Mínimo Mensual Legal Vigente', ['class'=>'form-control', 'required'=>'required']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php
-								$horas_laborales = 240; 
-								if( isset($parametros['horas_laborales'] ) )
-								{
-									$horas_laborales = $parametros['horas_laborales'];
-								}
-							?>
-							{{ Form::bsText('horas_laborales', $horas_laborales, 'Cantidad horas laborales mes', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php
-								$horas_dia_laboral = 8; 
-								if( isset($parametros['horas_dia_laboral'] ) )
-								{
-									$horas_dia_laboral = $parametros['horas_dia_laboral'];
-								}
-							?>
-							{{ Form::bsText('horas_dia_laboral', $horas_dia_laboral, 'Horas días laboral', ['class'=>'form-control']) }}
-						</div>
-					</div>
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php
-								$valor_uvt_actual = '';
-								if( isset($parametros['valor_uvt_actual'] ) )
-								{
-									$valor_uvt_actual = $parametros['valor_uvt_actual'];
-								}
-							?>
-							{{ Form::bsText('valor_uvt_actual', $valor_uvt_actual, 'Valor UVT año actual', ['class'=>'form-control', 'required'=>'required']) }}
-						</div>
-					</div>
-
-				</div>
-
-				<div class="row">
-
-					<div class="col-md-6">
-						<div class="row" style="padding:5px;">
-							<?php
 								$sabado_es_dia_habil = 1; 
 								if( isset($parametros['sabado_es_dia_habil'] ) )
 								{
