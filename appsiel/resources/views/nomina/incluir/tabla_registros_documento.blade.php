@@ -1,4 +1,4 @@
-﻿<style>
+<style>
 @if( isset($es_impresion) && $es_impresion )
     <?php $tamano_letra_tabla = $tamano_letra_tabla ?? 10; ?>
     .tabla_registros_impresion {
@@ -80,9 +80,9 @@
 
     .sticky-col-1 {
         left: 0;
-        width: 20px;
-        min-width: 20px;
-        max-width: 20px;
+        width: 40px;
+        min-width: 40px;
+        max-width: 40px;
         text-align: center;
     }
 
