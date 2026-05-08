@@ -193,6 +193,10 @@ class NominaElectronicaController extends TransaccionController
             }
         }
 
+        if (isset($datos_doc_soporte['employee_errors']) && !empty($datos_doc_soporte['employee_errors'])) {
+            $hay_errores = true;
+        }
+
         return $hay_errores;
     }
 

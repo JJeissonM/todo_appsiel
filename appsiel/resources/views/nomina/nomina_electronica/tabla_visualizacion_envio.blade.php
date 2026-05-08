@@ -37,6 +37,11 @@
                     $hay_errores = true;
                 }
             }
+
+            $errores_empleado = isset($comprobante['employee_errors']) ? $comprobante['employee_errors'] : [];
+            if (!empty($errores_empleado)) {
+                $hay_errores = true;
+            }
         ?>
 
         @include('nomina.reportes.tabla_datos_basicos_empleado',['empleado'=>$comprobante['empleado']])
@@ -44,7 +49,14 @@
         @if ( $hay_errores )
             <br>
             <div class="alert alert-warning">
-                <i class="fa fa-warning"></i> Hay errores en algunos conceptos. El Documento de soporte para este empleado NO será almacenado, ni Enviado.
+                <i class="fa fa-warning"></i> Hay errores en algunos conceptos o datos del empleado. El Documento de soporte para este empleado NO será almacenado, ni Enviado.
+                @if (!empty($errores_empleado))
+                    <ul style="margin-bottom: 0;">
+                        @foreach ($errores_empleado as $error_empleado)
+                            <li>{{ $error_empleado['message'] }}</li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
         @endif
 

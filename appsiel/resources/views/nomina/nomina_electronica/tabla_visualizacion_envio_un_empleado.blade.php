@@ -2,9 +2,25 @@
 
     <?php 
         $status = 'success';
+        $errores_empleado = isset($comprobante['employee_errors']) ? $comprobante['employee_errors'] : [];
+        if (!empty($errores_empleado)) {
+            $status = 'error';
+        }
     ?>
 
     @include('nomina.reportes.tabla_datos_basicos_empleado',['empleado'=>$comprobante['empleado']])
+
+    @if (!empty($errores_empleado))
+        <br>
+        <div class="alert alert-warning">
+            <i class="fa fa-warning"></i> Hay errores en los datos del empleado.
+            <ul style="margin-bottom: 0;">
+                @foreach ($errores_empleado as $error_empleado)
+                    <li>{{ $error_empleado['message'] }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <table style="width:100%; font-size: 12px;" class="table table-bordered table-striped">
         <thead>

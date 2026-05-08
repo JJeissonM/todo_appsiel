@@ -109,6 +109,10 @@ class DocumentoSoporteService
          }
       }
 
+      if ( isset($datos_doc_soporte['employee_errors']) && !empty($datos_doc_soporte['employee_errors']) ) {
+         return true;
+      }
+
       return false;
    }
 
@@ -378,8 +382,15 @@ class DocumentoSoporteService
 
    public function get_arr_employee_data($empleado, $lapso)
    {
+      $tercero = $empleado->tercero;
+      if ( is_null($tercero) ) {
+         return $this->get_employee_data_error([], 'El contrato #' . $empleado->id . ' no tiene tercero asociado.');
+      }
+
+      $employee_errors = [];
+
       $fecha_ingreso = explode('-',$empleado->fecha_ingreso);
-      $data['code'] = "" . $empleado->tercero->numero_identificacion . "";
+      $data['code'] = "" . $tercero->numero_identificacion . "";
       $data['payment-means'] = 'EFECTIVO';
       $data['worker-type'] = $this->get_worker_type_for_technology_supplier($empleado->tipo_cotizante);
       $data['sub-code'] = 'NO_APLICA';
@@ -388,50 +399,74 @@ class DocumentoSoporteService
       $data['high-risk'] = false;
       $data['integral-salary'] = ($empleado->salario_integral)?true:false;
       $data['contract-type'] = 'TERMINO_FIJO';
-      $data['identification-type'] = $this->get_identification_type_for_technology_supplier($empleado->tercero->tipo_doc_identidad->abreviatura);
-      $data['identification'] = "" . $empleado->tercero->numero_identificacion . "";
-      $data['first-name'] = $empleado->tercero->nombre1;
+      if ( is_null($tercero->tipo_doc_identidad) ) {
+         $employee_errors[] = 'El tercero ' . $tercero->descripcion . ' no tiene tipo de documento de identidad configurado.';
+         $data['identification-type'] = 'CEDULA_DE_CIUDADANIA';
+      } else {
+         $data['identification-type'] = $this->get_identification_type_for_technology_supplier($tercero->tipo_doc_identidad->abreviatura);
+      }
+      $data['identification'] = "" . $tercero->numero_identificacion . "";
+      $data['first-name'] = $tercero->nombre1;
 
-      if ($empleado->tercero->otros_nombres != '') {
-         $data['other-names'] = $empleado->tercero->otros_nombres;
+      if ($tercero->otros_nombres != '') {
+         $data['other-names'] = $tercero->otros_nombres;
       }
       
-      $data['last-name'] = $empleado->tercero->apellido1;
+      $data['last-name'] = $tercero->apellido1;
       if ($data['last-name'] == '') {
-         $nombre1 = explode(' ', $empleado->tercero->descripcion);
+         $nombre1 = explode(' ', $tercero->descripcion);
          $data['first-name'] = $nombre1[0];
-         $data['last-name'] = $nombre1[1];
+         $data['last-name'] = isset($nombre1[1]) ? $nombre1[1] : $nombre1[0];
       }
       
-      if ($empleado->tercero->apellido2 != '') {
-         $data['second-last-name'] = $empleado->tercero->apellido2;
+      if ($tercero->apellido2 != '') {
+         $data['second-last-name'] = $tercero->apellido2;
       }
 
       //$data['bank'] = '';
       //$data['account-type-kw'] = '';
       //$data['account-number'] = '';
-      
+
       // 16925001 = 169 pais, 25 departamento, 001 ciudad
-      $department_id = substr($empleado->tercero->ciudad->id,3,2);
-      $city_id = substr($empleado->tercero->ciudad->id, 5, strlen($empleado->tercero->ciudad->id)-1);
+      if ( is_null($tercero->ciudad) ) {
+         $employee_errors[] = 'El tercero ' . $tercero->descripcion . ' no tiene ciudad configurada.';
+      } else {
+         $department_id = substr($tercero->ciudad->id,3,2);
+         $city_id = substr($tercero->ciudad->id, 5, strlen($tercero->ciudad->id)-1);
 
-      $direccion1 = $empleado->tercero->direccion1;
-      if ($direccion1 == '') {
-         $direccion1 = $empleado->tercero->ciudad->descripcion;
+         $direccion1 = $tercero->direccion1;
+         if ($direccion1 == '') {
+            $direccion1 = $tercero->ciudad->descripcion;
+         }
+
+         $data['address'] = [
+            'city' => $city_id,
+            'line' => $direccion1,
+            'department' => $department_id
+         ];
       }
 
-      $data['address'] = [
-         'city' => $city_id,
-         'line' => $direccion1,
-         'department' => $department_id
-      ];      
-
-      if ( $empleado->tercero->email != '' && gettype( filter_var($empleado->tercero->email, FILTER_VALIDATE_EMAIL) ) == 'string') {
-         $data['email'] = $empleado->tercero->email;
+      if ( $tercero->email != '' && gettype( filter_var($tercero->email, FILTER_VALIDATE_EMAIL) ) == 'string') {
+         $data['email'] = $tercero->email;
       }
 
+      if ( !empty($employee_errors) ) {
+         return $this->get_employee_data_error($data, implode(' ', $employee_errors));
+      }
+
+      return ['employee' => $data];
+   }
+
+   protected function get_employee_data_error($data, $message)
+   {
       return [
-         'employee' => $data
+         'employee' => $data,
+         'employee_errors' => [
+            [
+               'status' => 'error',
+               'message' => $message
+            ]
+         ]
       ];
    }
 
