@@ -591,14 +591,21 @@ class DocumentoSoporteService
          $response = $client->get( $url_emision . '/' . $doc_encabezado->tipo_documento_app->prefijo . '/' .$doc_encabezado->consecutivo . '?include-pdf=true', [
              // un array con la data de los headers como tipo de peticion, etc.
              'headers' => [
-                           'content-type' => 'application/json',
-                           'auth-token' => config('facturacion_electronica.tokenPassword')
-                        ]
-         ]);
-      } catch (\GuzzleHttp\Exception\RequestException $e) {
-          $response = $e->getResponse();
-      }
+	                           'content-type' => 'application/json',
+	                           'auth-token' => config('nomina.tokenPassword')
+	                        ]
+	         ]);
+	      } catch (\GuzzleHttp\Exception\RequestException $e) {
+	          $response = $e->getResponse();
+	      }
 
-      return json_decode( (string) $response->getBody() );
-   }
-}
+	      if ( is_null($response) ) {
+	         return (object)[
+	            'dian_status' => 'DIAN_RECHAZADO',
+	            'dian_messages' => ['No fue posible consultar el documento emitido en DATAICO.']
+	         ];
+	      }
+
+	      return json_decode( (string) $response->getBody() );
+	   }
+	}

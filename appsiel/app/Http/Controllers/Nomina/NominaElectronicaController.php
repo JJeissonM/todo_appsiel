@@ -523,6 +523,11 @@ class NominaElectronicaController extends TransaccionController
         {
             case 'documento_soporte_nomina':
                 $encabezado_doc = DocumentoSoporte::find( $doc_encabezado_id );
+                if ( is_null($encabezado_doc) )
+                {
+                    return '<div class="alert alert-warning">Documento no encontrado.</div>';
+                }
+
                 $json_response = (new DocumentoSoporteService())->consultar_documento_emitido($encabezado_doc);
 
                 break;
@@ -545,12 +550,19 @@ class NominaElectronicaController extends TransaccionController
          * "request_xml": Cuando es rechazado.
          */
 
-        if($json_response->dian_status != 'DIAN_ACEPTADO')
+        if ( is_null($json_response) )
         {
-            return dd($json_response);
+            return '<div class="alert alert-warning">No fue posible leer la respuesta del proveedor tecnológico.</div>';
         }
 
-        $documento_electronico = $json_response->pdf;
+        $dian_status = isset($json_response->dian_status) ? $json_response->dian_status : null;
+        $documento_electronico = isset($json_response->pdf) ? $json_response->pdf : null;
+
+        if ( $documento_electronico == '' || is_null($documento_electronico) )
+        {
+            $detalle_respuesta = json_encode($json_response, JSON_PRETTY_PRINT);
+            return '<div class="alert alert-warning">El proveedor tecnológico no retornó la representación gráfica PDF para este documento. Estado DIAN: ' . ($dian_status ? $dian_status : 'No informado') . '</div><pre>' . htmlentities($detalle_respuesta) . '</pre>';
+        }
 
         $view_pdf = View::make('nomina.nomina_electronica.pdf_base64_show',compact('documento_electronico','encabezado_doc') )->render();
 
