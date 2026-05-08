@@ -181,6 +181,7 @@ class DocumentoSoporte extends Model
       }
       
       $one_line['code'] = $concepto->cpto_dian->codigo;
+      $one_line['concept-description'] = $concepto->descripcion;
 
       if ($amount <= 0) {
          return [];

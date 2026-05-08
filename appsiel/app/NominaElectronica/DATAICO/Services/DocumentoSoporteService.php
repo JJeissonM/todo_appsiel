@@ -123,6 +123,9 @@ class DocumentoSoporteService
          if (isset($line['status'])) {
             unset($line['status']);
          }
+         if (isset($line['concept-description'])) {
+            unset($line['concept-description']);
+         }
 
          $rows[] = $line;
       }
@@ -290,6 +293,7 @@ class DocumentoSoporteService
       }
       
       $one_line['code'] = $codigo_cpto_dian;
+      $one_line['concept-description'] = $concepto->descripcion;
 
       if ($amount <= 0 && $concepto->modo_liquidacion_id != 16) { // Intereses de cesantías
          return [];

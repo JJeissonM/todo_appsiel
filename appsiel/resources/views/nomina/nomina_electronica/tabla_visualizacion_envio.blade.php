@@ -93,6 +93,9 @@
                         $devengo = Form::TextoMoneda( $amount );
 
                         $descripcion_concepto = $registro['code'];
+                        if (isset($registro['concept-description']) && $registro['concept-description'] != '') {
+                            $descripcion_concepto .= ' (' . $registro['concept-description'] . ')';
+                        }
 
                         if ( isset($registro['days']))
                         {
@@ -142,6 +145,9 @@
                         $deduccion = Form::TextoMoneda( $amount );
 
                         $descripcion_concepto = $registro['code'];
+                        if (isset($registro['concept-description']) && $registro['concept-description'] != '') {
+                            $descripcion_concepto .= ' (' . $registro['concept-description'] . ')';
+                        }
 
                         if ( isset($registro['days']))
                         {

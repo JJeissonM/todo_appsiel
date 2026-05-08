@@ -45,6 +45,9 @@
             @foreach ($registros as $registro )
                 <?php
                     $descripcion_concepto = $registro['code'];
+                    if (isset($registro['concept-description']) && $registro['concept-description'] != '') {
+                        $descripcion_concepto .= ' (' . $registro['concept-description'] . ')';
+                    }
 
                     $cantidad_dias = 0;
                     $deduccion = '';
@@ -124,6 +127,9 @@
                     $deduccion = Form::TextoMoneda( $amount );
 
                     $descripcion_concepto = $registro['code'];
+                    if (isset($registro['concept-description']) && $registro['concept-description'] != '') {
+                        $descripcion_concepto .= ' (' . $registro['concept-description'] . ')';
+                    }
 
                     if ( isset($registro['days']))
                     {
